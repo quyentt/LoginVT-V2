@@ -1,0 +1,1108 @@
+﻿<!-- Main content -->
+<style>
+    .popover {
+        max-width: 100%;
+        /* Max Width of the popover (depending on the container!) */
+    }
+
+    .colorcard {
+        color: #009688
+    }
+
+    .pcard {
+        font-size: 18px !important;
+        line-height: 1.7 !important;
+    }
+
+    .pcard i {
+        width: 30px;
+    }
+
+    .activeOnSearch,
+    .activeSelect {
+        background-color: #eff6ff;
+    }
+
+    /* Override nền xanh chói của row đang chọn (2026-08-21)
+       Root cause: styles-content.css:7475-7487 tô var(--color-blue) lên .aps-hoso-table .activeSelect a/i
+       và .aps-hoso-table tr:hover a — cần kill nền trên <a> + <i> luôn, không chỉ tr/td */
+    .aps-hoso-table #tblHoSoKhoiTao tbody tr.activeSelect,
+    .aps-hoso-table #tblHoSoKhoiTao tbody tr.activeSelect td,
+    .aps-hoso-table #tblHoSoKhoiTao tbody tr.activeSelect td a,
+    .aps-hoso-table #tblHoSoKhoiTao tbody tr.activeSelect td a *,
+    .aps-hoso-table #tblHoSoKhoiTao tbody tr.activeSelect:hover td a,
+    .aps-hoso-table #tblHoSoKhoiTao tbody tr:hover td a,
+    .aps-hoso-table #tblHoSoKhoiTao tbody tr:hover td a *,
+    .aps-hoso-table #tblHoSoKhoiTao tbody tr:active,
+    .aps-hoso-table #tblHoSoKhoiTao tbody tr:focus {
+        background-color: transparent !important;
+        background-image: none !important;
+    }
+    /* Nền row: đặt trên <td> */
+    .aps-hoso-table #tblHoSoKhoiTao tbody tr.activeSelect td {
+        background-color: #eff6ff !important;
+        box-shadow: inset 3px 0 0 #2563eb;
+    }
+    .aps-hoso-table #tblHoSoKhoiTao tbody tr:hover td {
+        background-color: #f8fafc !important;
+    }
+    .aps-hoso-table #tblHoSoKhoiTao tbody tr.activeSelect:hover td {
+        background-color: #dbeafe !important;
+    }
+
+    /* Fix màu chữ danh sách sinh viên: luôn đen đậm, kể cả khi hover/active (2026-08-21) */
+    #tblHoSoKhoiTao tbody tr td,
+    #tblHoSoKhoiTao tbody tr td a,
+    #tblHoSoKhoiTao tbody tr td a span,
+    #tblHoSoKhoiTao tbody tr:hover td,
+    #tblHoSoKhoiTao tbody tr:hover td a,
+    #tblHoSoKhoiTao tbody tr:hover td a span,
+    #tblHoSoKhoiTao tbody tr.activeSelect td,
+    #tblHoSoKhoiTao tbody tr.activeSelect td a,
+    #tblHoSoKhoiTao tbody tr.activeSelect td a span {
+        color: #0f172a !important;
+        font-weight: 600 !important;
+        text-decoration: none !important;
+    }
+
+    /* Layout mỗi dòng sinh viên: flex avatar + info, tên dài không tràn ra ngoài (2026-08-21) */
+    #tblHoSoKhoiTao tbody tr td a.sv-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+    }
+    #tblHoSoKhoiTao tbody tr td a.sv-row .sv-avatar {
+        flex: 0 0 auto;
+        display: inline-flex;
+    }
+    #tblHoSoKhoiTao tbody tr td a.sv-row .sv-avatar img.table-img {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+    #tblHoSoKhoiTao tbody tr td a.sv-row .sv-info {
+        flex: 1 1 auto;
+        min-width: 0;
+        word-break: break-word;
+        line-height: 1.35;
+    }
+    #tblHoSoKhoiTao tbody tr td a.sv-row .sv-info .sv-meta {
+        font-weight: 500 !important;
+        color: #475569 !important;
+        font-size: 12.5px;
+    }
+
+    /* Modal #zoneEdit: overlay float toàn trang + backdrop (2026-08-21, revised)
+       toggle_overide chỉ slideDown DOM inline → force overlay bằng position:fixed */
+    #zoneEdit.fake-modal {
+        position: fixed !important;
+        top: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 96vw;
+        max-width: 1500px;
+        max-height: calc(100vh - 48px);
+        overflow-y: auto;
+        overflow-x: hidden;
+        z-index: 10050;
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 25px 70px rgba(15, 23, 42, 0.40);
+        padding: 0 !important;
+    }
+    /* Backdrop mờ */
+    body.zoneEdit-open::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.55);
+        z-index: 10040;
+    }
+    body.zoneEdit-open { overflow: hidden; }
+    body.zoneEdit-open .select2-container {
+        z-index: 10060 !important;
+    }
+
+    /* ========= Header xanh sạch, X ở góc phải ========= */
+    #zoneEdit .box-shadow.register-wish {
+        box-shadow: none !important;
+        border-radius: 12px !important;
+        padding: 0 !important;
+    }
+    #zoneEdit .box-header {
+        background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+        color: #ffffff !important;
+        border-radius: 12px 12px 0 0;
+        margin: 0 !important;
+        padding: 14px 24px !important;
+        min-height: 56px;
+        display: flex !important;
+        align-items: center;
+        justify-content: center !important;   /* title centered */
+        position: relative;                    /* để pin X vào cạnh phải */
+    }
+    #zoneEdit .box-header .nav-content-left {
+        text-align: center;
+        margin: 0 auto;
+    }
+    #zoneEdit .box-header .nav-content-left p.link { margin: 0; padding: 0; }
+    #zoneEdit .box-header .nav-content-left a,
+    #zoneEdit .box-header .zeIcon,
+    #zoneEdit .box-header .zeIcon i {
+        color: #ffffff !important;
+        font-size: 16px;
+        font-weight: 600;
+        text-decoration: none;
+    }
+    /* Right slot — pin sát lề phải */
+    #zoneEdit .box-header .nav-content-right {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        margin: 0 !important;
+    }
+    /* Nút X — force icon-only tròn glass, override style đỏ của theme */
+    body #zoneEdit .box-header .nav-content-right a.btnClose,
+    body #zoneEdit .box-header a.btnClose {
+        background: rgba(255,255,255,0.18) !important;
+        background-color: rgba(255,255,255,0.18) !important;
+        background-image: none !important;
+        color: #ffffff !important;
+        border: none !important;
+        border-radius: 50% !important;
+        width: 34px !important;
+        height: 34px !important;
+        min-width: 34px !important;
+        line-height: 34px !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        font-size: 15px !important;
+        cursor: pointer;
+        transition: background 0.15s;
+        text-align: center !important;
+        box-shadow: none !important;
+    }
+    body #zoneEdit .box-header a.btnClose:hover {
+        background: rgba(255,255,255,0.32) !important;
+        background-color: rgba(255,255,255,0.32) !important;
+    }
+    body #zoneEdit .box-header a.btnClose i {
+        color: #ffffff !important;
+        font-size: 15px !important;
+    }
+    #zoneEdit .box-header .btnClose::after,
+    #zoneEdit .box-header .btnClose::before {
+        content: none !important;
+    }
+    /* Ẩn text "Đóng" nếu theme tự chèn cạnh icon */
+    #zoneEdit .box-header .btnClose > *:not(i) { display: none !important; }
+
+    /* ========= Body layout ========= */
+    #zoneEdit .form-top {
+        padding: 20px 24px 8px 24px !important;
+        margin-bottom: 0 !important;
+        border-top: none !important;
+    }
+    #zoneEdit .form-item {
+        margin-bottom: 12px !important;
+        align-items: center;
+    }
+    #zoneEdit .form-item .form-label {
+        width: 170px !important;
+        font-weight: 500;
+        color: #334155;
+        font-size: 14px;
+        margin-bottom: 0;
+    }
+    #zoneEdit .form-item .input-group {
+        flex: 1;
+    }
+    #zoneEdit .form-control,
+    #zoneEdit .select-opt + .select2-container .select2-selection {
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 6px !important;
+        padding: 8px 12px !important;
+        font-size: 14px !important;
+        min-height: 38px !important;
+        color: #0f172a !important;
+    }
+    #zoneEdit .form-control:focus {
+        border-color: #2563eb !important;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
+        outline: none;
+    }
+    #zoneEdit #txtHoVaTen[readonly] {
+        background: #f1f5f9 !important;
+        color: #475569 !important;
+    }
+
+    /* ========= Avatar box ========= */
+    #zoneEdit .sv-info-profile {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding-top: 4px;
+    }
+    #zoneEdit .avata-img {
+        position: relative;
+        width: 220px;
+        height: 220px;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #f1f5f9;
+        border: 2px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    #zoneEdit .avata-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 12px;
+    }
+    #zoneEdit .avata-img .upload-avata {
+        position: absolute;
+        bottom: 8px;
+        right: 8px;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: #2563eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff !important;
+        box-shadow: 0 4px 12px rgba(37,99,235,0.4);
+        text-decoration: none;
+    }
+    #zoneEdit .avata-img .upload-avata i { color: #ffffff !important; }
+
+    /* ========= Bảng Định danh / Liên hệ ========= */
+    #zoneEdit .container-fluid { padding: 8px 24px !important; }
+    #zoneEdit .text-success {
+        color: #059669 !important;
+        font-size: 14px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+    #zoneEdit #tblDinhDanh,
+    #zoneEdit #tblLienHe {
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 6px;
+        overflow: hidden;
+    }
+    #zoneEdit #tblDinhDanh thead th,
+    #zoneEdit #tblLienHe thead th {
+        background: #f8fafc !important;
+        color: #334155 !important;
+        font-size: 12.5px;
+        font-weight: 600;
+        text-transform: uppercase;
+        padding: 10px 8px !important;
+        border-bottom: 1px solid #e2e8f0 !important;
+        vertical-align: middle;
+    }
+    #zoneEdit #tblDinhDanh tbody td,
+    #zoneEdit #tblLienHe tbody td {
+        padding: 10px 8px !important;
+        vertical-align: middle;
+        border-bottom: 1px solid #f1f5f9 !important;
+    }
+    #zoneEdit #tblDinhDanh tbody td input,
+    #zoneEdit #tblLienHe tbody td input {
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 4px !important;
+        padding: 6px 10px !important;
+        font-size: 13.5px !important;
+        width: 100%;
+    }
+    #zoneEdit #tblDinhDanh tbody td input:focus,
+    #zoneEdit #tblLienHe tbody td input:focus {
+        border-color: #2563eb !important;
+        box-shadow: 0 0 0 2px rgba(37,99,235,0.1) !important;
+    }
+
+    /* ========= Footer buttons ========= */
+    #zoneEdit hr {
+        margin: 8px 0 !important;
+        border-color: #e2e8f0;
+    }
+    #zoneEdit .d-flex.align-items-center.mt-4 {
+        padding: 12px 8px 4px 8px;
+    }
+    #zoneEdit .btn.btnClose:not(.box-header .btnClose) {
+        background: #ffffff !important;
+        color: #475569 !important;
+        border: 1px solid #cbd5e1 !important;
+        padding: 8px 20px !important;
+        border-radius: 6px !important;
+        font-weight: 500;
+        cursor: pointer;
+    }
+    #zoneEdit .btn.btnClose:not(.box-header .btnClose):hover {
+        background: #f1f5f9 !important;
+    }
+    #zoneEdit #btnSave_DeXuatHoSo {
+        background: #2563eb !important;
+        color: #ffffff !important;
+        border: 1px solid #2563eb !important;
+        padding: 8px 28px !important;
+        border-radius: 6px !important;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 2px 6px rgba(37,99,235,0.25);
+    }
+    #zoneEdit #btnSave_DeXuatHoSo:hover {
+        background: #1d4ed8 !important;
+        border-color: #1d4ed8 !important;
+    }
+    #zoneEdit .aps-gap-10 { display: flex; gap: 10px; }
+
+    /* ========= Tabs trong modal (2026-08-21) ========= */
+    #zoneEdit .zoneEdit-tabbar {
+        display: flex;
+        gap: 4px;
+        padding: 0 24px;
+        background: #ffffff;
+        border-bottom: 2px solid #e2e8f0;
+        margin-top: 0;
+        position: sticky;
+        top: 0;
+        z-index: 5;
+    }
+    #zoneEdit .zoneEdit-tab {
+        padding: 12px 20px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #64748b;
+        cursor: pointer;
+        border-bottom: 3px solid transparent;
+        margin-bottom: -2px;
+        transition: all 0.15s;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    #zoneEdit .zoneEdit-tab i { font-size: 15px; }
+    #zoneEdit .zoneEdit-tab:hover {
+        color: #2563eb;
+        background: #f8fafc;
+    }
+    #zoneEdit .zoneEdit-tab.active {
+        color: #2563eb;
+        border-bottom-color: #2563eb;
+        background: #eff6ff;
+    }
+    #zoneEdit .zoneEdit-pane {
+        display: none;
+        animation: fadeIn 0.2s;
+    }
+    #zoneEdit .zoneEdit-pane.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    /* ========= Styling APS-SV cho tab XHD — mirror kehoachtuyensinhnew (2026-08-21) ========= */
+    #zoneEdit .ze-form {
+        --aps-sv-primary: #2563eb;
+        --aps-sv-primary-soft: #eaf1ff;
+        --aps-sv-border: #e2e8f0;
+        --aps-sv-label: #475569;
+        --aps-sv-text: #0f172a;
+        --aps-sv-radius: 5px;
+        padding: 24px 28px !important;
+    }
+    #zoneEdit .ze-form .aps-sv-section + .aps-sv-section { margin-top: 24px; }
+    #zoneEdit .ze-form .aps-sv-section-title {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--aps-sv-primary);
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        margin: 6px 0 18px;
+    }
+    #zoneEdit .ze-form .aps-sv-section-title::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: linear-gradient(90deg, var(--aps-sv-border), transparent);
+    }
+    #zoneEdit .ze-form .aps-sv-section-title i { color: var(--aps-sv-primary); }
+    #zoneEdit .ze-form .aps-sv-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px 26px;
+    }
+    @media (max-width: 900px) {
+        #zoneEdit .ze-form .aps-sv-grid { grid-template-columns: 1fr; }
+    }
+    #zoneEdit .ze-form .aps-sv-field.aps-sv-col-full { grid-column: 1 / -1; }
+    #zoneEdit .ze-form .aps-sv-label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--aps-sv-label);
+        margin-bottom: 7px;
+    }
+    #zoneEdit .ze-form .aps-sv-label .aps-sv-req { color: #ef4444; margin-left: 2px; }
+    #zoneEdit .ze-form .aps-sv-input {
+        width: 100%;
+        height: 38px;
+        padding: 0 14px;
+        font-size: 14px;
+        color: var(--aps-sv-text) !important;
+        background: #fff;
+        border: 1px solid var(--aps-sv-border) !important;
+        border-radius: var(--aps-sv-radius) !important;
+        transition: border-color 0.15s, box-shadow 0.15s;
+        outline: none;
+        box-sizing: border-box;
+    }
+    #zoneEdit .ze-form .aps-sv-input::placeholder { color: #94a3b8; }
+    #zoneEdit .ze-form .aps-sv-input:focus {
+        border-color: var(--aps-sv-primary) !important;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14) !important;
+    }
+    #zoneEdit .ze-form .aps-sv-select { position: relative; }
+    #zoneEdit .ze-form .aps-sv-select select.aps-sv-input {
+        appearance: none;
+        -webkit-appearance: none;
+        padding-right: 38px;
+        cursor: pointer;
+    }
+    #zoneEdit .ze-form .aps-sv-select > i {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        pointer-events: none;
+        color: #94a3b8;
+        font-size: 13px;
+    }
+    #zoneEdit .ze-form .aps-sv-input-icon { position: relative; }
+    #zoneEdit .ze-form .aps-sv-input-icon > i {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+        font-size: 14px;
+    }
+    #zoneEdit .ze-form .aps-sv-input-icon .aps-sv-input { padding-left: 40px; }
+    #zoneEdit .ze-form .aps-sv-input.ze-readonly,
+    #zoneEdit .ze-form .aps-sv-input[readonly] { background: #f1f5f9 !important; color: #475569 !important; }
+    /* Tab 1 layout: form left + avatar right */
+    #zoneEdit .ze-canhan-layout { display: grid; grid-template-columns: 1fr 220px; gap: 24px; align-items: start; }
+    @media (max-width: 900px) { #zoneEdit .ze-canhan-layout { grid-template-columns: 1fr; } }
+    #zoneEdit .ze-canhan-avatar { align-self: start; }
+    #zoneEdit .ze-canhan-avatar .avata-img {
+        margin: 0; width: 200px; height: 200px;
+        overflow: hidden; position: relative; border-radius: 8px;
+        background: #f1f5f9; border: 1px solid #e2e8f0;
+    }
+    #zoneEdit .ze-canhan-avatar .avata-img fieldset {
+        border: none !important; padding: 0 !important; margin: 0 !important;
+        width: 100%; height: 100%; background: transparent;
+    }
+    #zoneEdit .ze-canhan-avatar .avata-img fieldset > div { width: 100%; height: 100%; }
+    #zoneEdit .ze-canhan-avatar .avata-img input[type="image"],
+    #zoneEdit .ze-canhan-avatar .avata-img img {
+        width: 100% !important; height: 100% !important;
+        object-fit: cover; display: block; border-radius: 8px;
+    }
+    #zoneEdit .ze-canhan-avatar .upload-avata {
+        position: absolute; bottom: 8px; right: 8px;
+        width: 36px; height: 36px; border-radius: 50%; background: #2563eb;
+        display: flex; align-items: center; justify-content: center;
+        color: #fff !important; box-shadow: 0 4px 12px rgba(37,99,235,.4);
+        text-decoration: none; z-index: 2;
+    }
+    #zoneEdit .ze-canhan-avatar .upload-avata i { color: #fff !important; }
+</style>
+<section class="content aps-sinhvien">
+    <div class="row aps-hoso-taomoi">
+        <!-- /.left-content -->
+        <div class="col-sm-3 aps-hoso-taomoi-l aps-box-l box-shadow pd0 ">
+            <!--Box search-->
+            <div class="box box-solid box-search pd15">
+                <div class="box-body pd0">
+                    <!-- Bộ tìm kiếm -->
+                    <div class="bs-item ">
+                        <input type="text" id="txtSearchSinhVien_TuKhoa" class="form-control"
+                            placeholder="Nhập từ khóa tìm kiếm">
+                    </div>
+                    <div class="bs-item pull-right mt-10 w-100">
+                        <a id="btnSearch_HSSV" class="btn btn-default  w-100 btn-search ml-0"><i
+                                class="fa fa-search"></i> <span class="lang" key="">Tìm kiếm</span></a>
+                    </div>
+                </div>
+            </div>
+            <!--Danh sách danh mục-->
+            <div class="box box-solid aps-list-danhmuc pd0 mt-15">
+                <div class="box-header pl15 pr15 pt15 mb-10">
+                    <h3 class="box-title mt-0" title="Danh sách sinh viên">
+                        <i class="fa-light fa-address-book"></i> Danh sách sinh viên
+                    </h3>
+                    <span class="pull-right badge bg-light-blue">
+                        <span id="lblHSLL_NhanSu_Tong"></span>
+                    </span>
+                </div>
+                <div class="box-body pd0 aps-hoso-table">
+                    <table id="tblHoSoKhoiTao" class="table table-hover tblHoSoKhoiTao mb-10">
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- /.right-content -->
+        <div class="col-sm-9 aps-hoso-taomoi-r pl20 aps-box-r">
+            <!-- Khởi tạo hồ sơ  -->
+            <div class="box box-solid box-shadow aps-dm-tapchiqt-detail pd0">
+                <div class="box-header with-border bg-header">
+                    <h3 class="box-title color-blue"><i class="fa-light fa-address-card"></i> Khởi tạo hồ sơ </h3>
+                </div>
+                <div class="box-body pd0">
+                    <!-- Ẩn form khởi tạo theo yêu cầu 2026-08-21: chỉ giữ nút Import + Lưu -->
+                    <div class="row aps-add-new" style="display: none;">
+                        <div class="row aps-form pd20 ">
+                            <div class="row aps-lable-name">
+                                <p class="group-group-title-name border-0 mb-0">
+                                    <span class="badge bg-blue">1) Thông tin cơ bản</span>
+                                </p>
+                            </div>
+                            <!-- Row 1 -->
+                            <div class="row aps-form-item">
+                                <div class="col-sm-2 aps-form-img">
+                                    <div id="txtAnh"></div>
+                                </div>
+                                <div class="col-sm-10 aps-form-detail pl30">
+                                    <!-- Row 1 -->
+                                    <div class="row aps-form-item">
+                                        <div class="col-sm-2 aps-form-lable">
+                                            <div class="title-name">Họ <span class="title-colon">:</span></div>
+                                        </div>
+                                        <div class="col-sm-4 aps-form-input aps-form-input">
+                                            <input type="text" id="txtSinhVien_Ho" placeholder="Nhập họ"
+                                                class="form-control form-border" />
+                                        </div>
+                                        <div class="col-sm-2 aps-form-lable pr15 text-right">
+                                            <div class="title-name">
+                                                Tên <span class="title-colon">:</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4 aps-form-input">
+                                            <input type="text" id="txtSinhVien_Ten" placeholder="Nhập tên"
+                                                class="form-control form-border" />
+                                        </div>
+                                    </div>
+                                    <!-- Row 2 -->
+                                    <div class="row aps-form-item">
+                                        <div class="col-sm-2 aps-form-lable">
+                                            <div class="title-name">
+                                                Mã số <span class="title-colon">:</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4 aps-form-input">
+                                            <input type="text" id="txtSinhVien_MaSo" placeholder="Mã sinh viên"
+                                                class="form-control form-border" />
+                                        </div>
+                                        <div class="col-sm-2 aps-form-lable pr15 text-right">
+                                            <div class="title-name">
+                                                Sinh ngày <span class="title-colon">:</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-1">
+                                            <input type="text" id="txtSinhVien_NgaySinh"
+                                                class="form-control form-border" placeholder="dd" />
+                                        </div>
+                                        <div class="col-sm-1 pl10">
+                                            <input type="text" id="txtSinhVien_ThangSinh"
+                                                class="form-control form-border" placeholder="mm" />
+                                        </div>
+                                        <div class="col-sm-2 aps-form-lable pl10">
+                                            <input type="text" id="txtSinhVien_NamSinh" class="form-control form-border"
+                                                placeholder="yyyy" />
+                                        </div>
+                                    </div>
+                                    <!-- Row 3 -->
+                                    <div class="row aps-form-item">
+                                        <div class="col-sm-2 aps-form-lable">
+                                            <div class="title-name">
+                                                Quốc tịch <span class="title-colon">:</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4 aps-form-input">
+                                            <select id="dropSinhVien_QuocTich" class="select-opt">
+                                                <option>--Chọn quốc tịch--</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-2 aps-form-lable pr15 text-right">
+                                            <div class="title-name">
+                                                Giới tính <span class="title-colon">:</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4 aps-form-input">
+                                            <select id="dropSinhVien_GioiTinh" class="select-opt">
+                                                <option id="" value="">--Chọn giới tính-- </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <!-- Row 4 -->
+                                    <div class="row aps-form-item">
+                                        <div class="col-sm-2 aps-form-lable">
+                                            <div class="title-name">
+                                                Dân tộc <span class="title-colon">:</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4 aps-form-input">
+                                            <select id="dropSinhVien_DanToc" class="select-opt">
+                                                <option id="" value="">--Chọn dân tộc-- </option>
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-2 aps-form-lable pr15 text-right">
+                                            <div class="title-name">
+                                                Tôn giáo <span class="title-colon">:</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4 aps-form-input">
+                                            <select id="dropSinhVien_TonGiao" class="select-opt">
+                                                <option id="" value="">--Chọn tôn giáo-- </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <!-- Row 5 -->
+                                    <div class="row aps-form-item">
+                                        <div class="col-sm-2 aps-form-lable">
+                                            <div class="title-name">
+                                                Email <span class="title-colon">:</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4 aps-form-input">
+                                            <input type="text" id="txtSinhVien_Email" placeholder="client@mail.com"
+                                                class="form-control form-border" />
+                                        </div>
+                                        <div class="col-sm-2 aps-form-lable  pr15 text-right">
+                                            <div class="title-name">
+                                                Điện thoại:
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4 aps-form-input">
+                                            <input type="text" id="txtSinhVien_DienThoai" placeholder="035 789 567"
+                                                class="form-control form-border" />
+                                        </div>
+                                    </div>
+                                    <!-- Row 6 -->
+                                    <div class="row aps-form-item">
+                                        <div class="col-sm-2 aps-form-lable">
+                                            <div class="title-name">
+                                                Cơ quan<span class="title-colon">:</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4 aps-form-input">
+                                            <input type="text" id="txtCoQuanCongTac" class="form-control form-border" />
+                                        </div>
+                                        <div class="col-sm-2 aps-form-lable pr15 text-right">
+                                            <div class="title-name">
+                                                Mã số thuế:
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4 aps-form-input">
+                                            <input type="text" id="txtMaSoThue" class="form-control form-border" />
+                                        </div>
+                                    </div>
+
+                                    <!-- Row 7 - Que quan -->
+                                    <div class="row aps-form-item">
+                                        <div class="col-sm-2 aps-form-lable">
+                                            <div class="title-name">
+                                                Nơi sinh <span class="title-colon">:</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-10 aps-form-input">
+                                            <input type="text" id="txtSinhVien_NoiSinh"
+                                                class="form-control form-border" />
+                                        </div>
+                                    </div>
+                                    <!-- Row 8 - Que quan -->
+                                    <div class="row aps-form-item">
+                                        <div class="col-sm-2 aps-form-lable">
+                                            <div class="title-name">
+                                                Quê quán <span class="title-colon">:</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-10 aps-form-input">
+                                            <input type="text" id="txtSinhVien_QueQuan"
+                                                class="form-control form-border" />
+                                        </div>
+                                    </div>
+                                    <!-- Row 9 - Ho khau thuong tru -->
+                                    <div class="row aps-form-item">
+                                        <div class="col-sm-2 aps-form-lable">
+                                            <div class="title-name">
+                                                Hộ khẩu thường trú <span class="title-colon">:</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-10 aps-form-input">
+                                            <input type="text" id="txtSinhVien_HoKhauThuongTru"
+                                                class="form-control form-border" />
+                                        </div>
+                                    </div>
+                                    <!-- Row 10 - No o hien nay -->
+                                    <div class="row aps-form-item">
+                                        <div class="col-sm-2 aps-form-lable">
+                                            <div class="title-name">
+                                                Nơi ở hiện nay <span class="title-colon">:</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-10 aps-form-input">
+                                            <input type="text" id="txtSinhVien_NoiOHienNay"
+                                                class="form-control form-border" />
+                                        </div>
+                                    </div>
+                                    <!-- Row 11 - Khi can bao tin cho ai -->
+                                    <div class="row aps-form-item">
+                                        <div class="col-sm-2 aps-form-lable">
+                                            <div class="title-name">
+                                                Cần báo tin cho ai <span class="title-colon">:</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-10 aps-form-input">
+                                            <input type="text" id="txtSinhVien_DiaChiBaoTin"
+                                                class="form-control form-border" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row aps-form">
+                                <div class="row aps-lable-name">
+                                    <p class="group-group-title-name border-0 mb-0">
+                                        <span class="badge bg-blue">2) Lớp</span>
+                                    </p>
+                                </div>
+                                <!-- Row 2 - Que quan -->
+                                <div class="row aps-form-item">
+                                    <div class="col-sm-3 aps-form-input">
+                                        <select id="dropHeDaoTao" class="select-opt">
+                                            <option value="">--Chọn hệ--</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-3 aps-form-input pl15">
+                                        <select id="dropKhoaDaoTao" class="select-opt">
+                                            <option value="">--Chọn khóa đào tạo--</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-3 aps-form-input pl15">
+                                        <select id="dropChuongTrinhDaoTao" class="select-opt">
+                                            <option value="">--Chọn chương trình--</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-3 aps-form-input pl15">
+                                        <select id="dropLop" class="select-opt">
+                                            <option value="">--Chọn lớp--</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box-footer">
+                        <div style="text-align: center;">
+                            <div class="dropdown btn pd0" id="zonebtnHSSV_Import" style="padding: 0 !important;">
+                                <button class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown">
+                                    <i class="fa-light fa-upload"></i> Import <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu form-container">
+                                    <li><a class="btnImportWithProce" name="IMPORTWITHPROC_HSSV" title="hồ sơ" href="#">
+                                            1. Import hồ sơ sinh viên</a></li>
+                                    <li><a class="btnImportWithProce" name="IMPORTWITHPROC_HSDD" title="hồ sơ đầy đủ"
+                                            href="#"> 2. Import hồ sơ sinh viên đầy đủ</a></li>
+                                </ul>
+                            </div>
+                            <!--<a id="btnHSLL_Import" class="btn btn-success"><i class="fa fa-cloud-upload"></i><span class="lang" key=""> Import</span></a>-->
+                            <a id="btnHSLL_Add" class="btn btn-primary"><i class="fa fa-save"></i><span class="lang"
+                                    key=""> Lưu</span></a>
+                            <!-- Ẩn theo yêu cầu 2026-08-21: bỏ Làm mới; giữ Cập nhật + Thêm hồ sơ khác để phục vụ edit mode
+                            <a id="btnHSLL_Rewrite" class="btn btn-warning"><i class="fa fa-refresh"></i><span
+                                    class="lang" key=""> Làm mới</span></a>
+                            <a id="btnHSLL_Delete" class="btn btn-default"><i class="fa fa-trash"></i><span class="lang"
+                                    key=""> Xóa</span></a>
+                            -->
+                            <!-- Ẩn Cập nhật + Thêm hồ sơ khác (2026-08-21): flow edit đã chuyển sang modal #zoneEdit của ApisNhanSu
+                            <a id="btnHSLL_AddMode" class="btn btn-primary"><i class="fa fa-plus"></i><span class="lang"
+                                    key=""> Thêm hồ sơ khác</span></a>
+                            <a id="btnHSLL_Save" class="btn btn-warning"><i class="fal fa-edit"></i> <span class="lang"
+                                    key=""> Cập nhật</span></a>
+                            -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+
+    <!-- ============================================================
+         Modal "Chỉnh sửa - Hồ sơ đề xuất" — copy từ ApisNhanSu/Modules/kehoach/html/dexuathoso.html (2026-08-21)
+         Dùng bộ hàm main_doc.DeXuatHoSo (dexuathoso.js) để update person theo Id
+         ============================================================ -->
+    <div class="fake-modal zone-bus" id="zoneEdit" style="display: none; padding-top: 15px">
+        <div class="box-shadow register-wish pt-0 position-relative modal-aps-add">
+            <div class="d-flex justify-content-between pt-3 px-20 box-header">
+                <div class="nav-content-left">
+                    <p class="link">
+                        <a>
+                            <span class="zeIcon">
+                                <i class="fa-regular fa-file-circle-question fw-bold"></i>
+                            </span> Chỉnh sửa - Hồ sơ đề xuất
+                        </a>
+                    </p>
+                </div>
+                <div class="nav-content-right mt">
+                    <a class="d-block text-right fs-16 mt-5 color-fff btnClose"><i class="fal fa-times"></i></a>
+                </div>
+            </div>
+            <!-- Tab bar -->
+            <div class="zoneEdit-tabbar">
+                <div class="zoneEdit-tab active" data-zetab="tabInfo"><i class="fal fa-user"></i> Thông tin cơ bản</div>
+                <div class="zoneEdit-tab" data-zetab="tabDinhDanh"><i class="fal fa-id-card"></i> Định danh &amp; Liên hệ</div>
+                <div class="zoneEdit-tab" data-zetab="tabXHD"><i class="fal fa-file-invoice-dollar"></i> Xuất hoá đơn</div>
+            </div>
+            <!-- Tab: Thông tin cơ bản -->
+            <div class="zoneEdit-pane active" id="tabInfo">
+                <div id="zoneCaNhan" class="ze-form">
+                    <div class="aps-sv-section">
+                        <div class="aps-sv-section-title"><i class="fa-light fa-user"></i> Thông tin cá nhân</div>
+                        <div class="ze-canhan-layout">
+                            <div class="aps-sv-grid ze-canhan-grid">
+                                <div class="aps-sv-field"><label class="aps-sv-label">Họ</label><input class="aps-sv-input" id="txtHo"></div>
+                                <div class="aps-sv-field"><label class="aps-sv-label">Tên đệm</label><input class="aps-sv-input" id="txtTenDem"></div>
+                                <div class="aps-sv-field"><label class="aps-sv-label">Tên</label><input class="aps-sv-input" id="txtTen"></div>
+                                <div class="aps-sv-field"><label class="aps-sv-label">Tên đầy đủ</label><input class="aps-sv-input ze-readonly" id="txtHoVaTen" readonly="readonly"></div>
+                                <div class="aps-sv-field"><label class="aps-sv-label">Mức độ ngày sinh</label><div class="aps-sv-select"><i class="fa-light fa-chevron-down"></i><select class="aps-sv-input" id="dropMucDoNgaySinh"></select></div></div>
+                                <div class="aps-sv-field"><label class="aps-sv-label">Giới tính</label><div class="aps-sv-select"><i class="fa-light fa-chevron-down"></i><select class="aps-sv-input" id="dropGioiTinh"></select></div></div>
+                                <div class="aps-sv-field"><label class="aps-sv-label">Ngày sinh</label><input class="aps-sv-input" id="txtNgaySinh" placeholder="dd"></div>
+                                <div class="aps-sv-field"><label class="aps-sv-label">Tháng sinh</label><input class="aps-sv-input" id="txtThangSinh" placeholder="mm"></div>
+                                <div class="aps-sv-field"><label class="aps-sv-label">Năm sinh</label><input class="aps-sv-input" id="txtNamSinh" placeholder="yyyy"></div>
+                                <div class="aps-sv-field"><label class="aps-sv-label">Quốc tịch</label><div class="aps-sv-select"><i class="fa-light fa-chevron-down"></i><select class="aps-sv-input" id="dropQuocTich"><option value="">-- Chọn quốc tịch --</option></select></div></div>
+                                <div class="aps-sv-field"><label class="aps-sv-label">Dân tộc</label><div class="aps-sv-select"><i class="fa-light fa-chevron-down"></i><select class="aps-sv-input" id="dropDanToc"><option value="">-- Chọn dân tộc --</option></select></div></div>
+                                <div class="aps-sv-field"><label class="aps-sv-label">Tôn giáo</label><div class="aps-sv-select"><i class="fa-light fa-chevron-down"></i><select class="aps-sv-input" id="dropTonGiao"><option value="">-- Chọn tôn giáo --</option></select></div></div>
+                                <div class="aps-sv-field"><label class="aps-sv-label">Email</label><div class="aps-sv-input-icon"><i class="fa-light fa-envelope"></i><input class="aps-sv-input" id="txtEmailCaNhan" type="email" placeholder="email@..."></div></div>
+                                <div class="aps-sv-field"><label class="aps-sv-label">Điện thoại</label><div class="aps-sv-input-icon"><i class="fa-light fa-phone"></i><input class="aps-sv-input" id="txtDienThoai" placeholder="09xx xxx xxx"></div></div>
+                            </div>
+                            <div class="ze-canhan-avatar">
+                                <div class="avata-img">
+                                    <img src="assets/images/avata-form.jpg" id="uploadPicture_SV">
+                                    <a href="#" class="upload-avata"><i class="fal fa-camera color-dask-blue"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="aps-sv-section">
+                        <div class="aps-sv-section-title"><i class="fa-light fa-location-dot"></i> Nơi sinh</div>
+                        <div class="aps-sv-grid">
+                            <div class="aps-sv-field"><label class="aps-sv-label">Tỉnh / Thành phố</label><div class="aps-sv-select"><i class="fa-light fa-chevron-down"></i><select class="aps-sv-input" id="dropNS_Tinh"><option value="">Chọn tỉnh thành</option></select></div></div>
+                            <div class="aps-sv-field"><label class="aps-sv-label">Quận / Huyện</label><div class="aps-sv-select"><i class="fa-light fa-chevron-down"></i><select class="aps-sv-input" id="dropNS_Huyen"><option value="">Vui lòng chọn Tỉnh trước</option></select></div></div>
+                            <div class="aps-sv-field"><label class="aps-sv-label">Xã / Phường</label><div class="aps-sv-select"><i class="fa-light fa-chevron-down"></i><select class="aps-sv-input" id="dropNS_Xa"><option value="">Vui lòng chọn Quận/Huyện trước</option></select></div></div>
+                            <div class="aps-sv-field"><label class="aps-sv-label">Chi tiết (số nhà / thôn / xóm)</label><input class="aps-sv-input" id="txtNS_ChiTiet" placeholder="Số nhà, tên đường, thôn/xóm..."></div>
+                        </div>
+                    </div>
+                    <div class="aps-sv-section">
+                        <div class="aps-sv-section-title"><i class="fa-light fa-id-card"></i> Số CCCD / Định danh</div>
+                        <div class="aps-sv-grid">
+                            <div class="aps-sv-field"><label class="aps-sv-label">Số CCCD</label><div class="aps-sv-input-icon"><i class="fa-light fa-hashtag"></i><input class="aps-sv-input" id="txtCCCD_So" placeholder="12 chữ số"></div></div>
+                            <div class="aps-sv-field"><label class="aps-sv-label">Ngày cấp</label><input class="aps-sv-input" id="txtCCCD_NgayCap" type="date"></div>
+                            <div class="aps-sv-field aps-sv-col-full"><label class="aps-sv-label">Nơi cấp</label><input class="aps-sv-input" id="txtCCCD_NoiCap" placeholder="Ví dụ: Cục Cảnh sát QLHC..."></div>
+                        </div>
+                    </div>
+                    <div class="aps-sv-section">
+                        <div class="aps-sv-section-title"><i class="fa-light fa-house"></i> Hộ khẩu thường trú</div>
+                        <div class="aps-sv-grid">
+                            <div class="aps-sv-field"><label class="aps-sv-label">Tỉnh / Thành phố</label><div class="aps-sv-select"><i class="fa-light fa-chevron-down"></i><select class="aps-sv-input" id="dropHK_Tinh"><option value="">Chọn tỉnh thành</option></select></div></div>
+                            <div class="aps-sv-field"><label class="aps-sv-label">Quận / Huyện</label><div class="aps-sv-select"><i class="fa-light fa-chevron-down"></i><select class="aps-sv-input" id="dropHK_Huyen"><option value="">Vui lòng chọn Tỉnh trước</option></select></div></div>
+                            <div class="aps-sv-field"><label class="aps-sv-label">Xã / Phường</label><div class="aps-sv-select"><i class="fa-light fa-chevron-down"></i><select class="aps-sv-input" id="dropHK_Xa"><option value="">Vui lòng chọn Quận/Huyện trước</option></select></div></div>
+                            <div class="aps-sv-field"><label class="aps-sv-label">Số nhà / thôn / xóm</label><input class="aps-sv-input" id="txtHK_SoNha"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /Tab: Thông tin cơ bản -->
+
+            <!-- Tab: Định danh & Liên hệ -->
+            <div class="zoneEdit-pane" id="tabDinhDanh">
+            <div class="container-fluid px-20 mt-15">
+                <div class="row">
+                    <div class="col-12 col-lg-6 mt-6 pl0">
+                        <div class="d-flex align-items-center w-100 justify-content-between">
+                            <span class="fw-bold text-success pull-left">Thông tin định danh</span>
+                        </div>
+                        <div class="mt-10 aps-table-select">
+                            <table class="table transcrip-table tabs-scores tblDapAn_Mau mt-10 table-bordered table-noborder"
+                                   id="tblDinhDanh">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center w-50px" scope="col">STT</th>
+                                        <th scope="col">Loại định danh </th>
+                                        <th scope="col">Số định danh </th>
+                                        <th scope="col">Ngày cấp</th>
+                                        <th scope="col">Nơi cấp</th>
+                                        <th class="text-center" scope="col">Là thông tin chính</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6 mt-6">
+                        <div class="d-flex align-items-center w-100 justify-content-between">
+                            <span class="fw-bold text-success pull-left">Thông tin liên hệ</span>
+                        </div>
+                        <div class="mt-8 aps-table-select">
+                            <table class="table transcrip-table tabs-scores table-bordered table-noborder tblDapAn"
+                                   id="tblLienHe">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center w-50px" scope="col">STT</th>
+                                        <th scope="col">Loại liên hệ</th>
+                                        <th scope="col">Thông tin</th>
+                                        <th class="text-center" scope="col">Là thông tin chính</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            </div>
+            <!-- /Tab: Định danh & Liên hệ -->
+
+            <!-- Tab: Xuất hoá đơn (mirror kehoachtuyensinhnew.html:2295-2377 với style aps-sv-*, 2026-08-21) -->
+            <div class="zoneEdit-pane" id="tabXHD">
+            <div id="zoneXHD" class="ze-form">
+                <div class="aps-sv-section">
+                    <div class="aps-sv-section-title"><i class="fa-light fa-file-invoice-dollar"></i> Người mua / Xuất hoá đơn</div>
+                    <div class="aps-sv-grid">
+                        <div class="aps-sv-field">
+                            <label class="aps-sv-label">Đối tượng xuất hoá đơn</label>
+                            <div class="aps-sv-select">
+                                <i class="fa-light fa-chevron-down"></i>
+                                <select class="aps-sv-input" id="ddlKQ_HD_DoiTuong">
+                                    <option value="">-- Chọn đối tượng --</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="aps-sv-field">
+                            <label class="aps-sv-label">Họ tên người mua hàng</label>
+                            <input class="aps-sv-input" id="txtKQ_HD_NguoiMua" placeholder="Người nộp tiền / người mua">
+                        </div>
+                        <div class="aps-sv-field aps-sv-col-full">
+                            <label class="aps-sv-label">Tên đơn vị / Công ty <span style="font-weight:500;color:#94a3b8">(nếu xuất cho tổ chức)</span></label>
+                            <input class="aps-sv-input" id="txtKQ_HD_TenDonVi" placeholder="Tên đơn vị nhận hoá đơn">
+                        </div>
+                        <div class="aps-sv-field">
+                            <label class="aps-sv-label">Mã số thuế (MST)</label>
+                            <div class="aps-sv-input-icon">
+                                <i class="fa-light fa-hashtag"></i>
+                                <input class="aps-sv-input" id="txtKQ_HD_MST" placeholder="10 hoặc 13 chữ số">
+                            </div>
+                        </div>
+                        <div class="aps-sv-field">
+                            <label class="aps-sv-label">Mã quan hệ ngân sách</label>
+                            <div class="aps-sv-input-icon">
+                                <i class="fa-light fa-landmark"></i>
+                                <input class="aps-sv-input" id="txtKQ_HD_MaQHNS" placeholder="Mã QHNS (nếu là đơn vị NSNN)">
+                            </div>
+                        </div>
+                        <div class="aps-sv-field">
+                            <label class="aps-sv-label">Số điện thoại nhận</label>
+                            <div class="aps-sv-input-icon">
+                                <i class="fa-light fa-phone"></i>
+                                <input class="aps-sv-input" id="txtKQ_HD_SDT" placeholder="09xx xxx xxx">
+                            </div>
+                        </div>
+                        <div class="aps-sv-field aps-sv-col-full">
+                            <label class="aps-sv-label">Địa chỉ trên hoá đơn</label>
+                            <input class="aps-sv-input" id="txtKQ_HD_DiaChi" placeholder="Địa chỉ ghi trên hoá đơn">
+                        </div>
+                        <div class="aps-sv-field aps-sv-col-full">
+                            <label class="aps-sv-label">Email nhận hoá đơn điện tử</label>
+                            <div class="aps-sv-input-icon">
+                                <i class="fa-light fa-envelope"></i>
+                                <input type="email" class="aps-sv-input" id="txtKQ_HD_Email" placeholder="email nhận HĐĐT">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="aps-sv-section">
+                    <div class="aps-sv-section-title"><i class="fa-light fa-money-check-dollar"></i> Thông tin thanh toán</div>
+                    <div class="aps-sv-grid">
+                        <div class="aps-sv-field">
+                            <label class="aps-sv-label">Loại tài khoản ngân hàng</label>
+                            <div class="aps-sv-select">
+                                <i class="fa-light fa-chevron-down"></i>
+                                <select class="aps-sv-input" id="ddlKQ_HD_HinhThucTT">
+                                    <option value="">-- Chọn loại tài khoản --</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="aps-sv-field">
+                            <label class="aps-sv-label">Ngân hàng</label>
+                            <input class="aps-sv-input" id="txtKQ_HD_NganHang" placeholder="Tên ngân hàng">
+                        </div>
+                        <div class="aps-sv-field">
+                            <label class="aps-sv-label">Số tài khoản</label>
+                            <input class="aps-sv-input" id="txtKQ_HD_SoTK" placeholder="Số tài khoản ngân hàng">
+                        </div>
+                        <div class="aps-sv-field">
+                            <label class="aps-sv-label">Chủ tài khoản</label>
+                            <input class="aps-sv-input" id="txtKQ_HD_ChuTK" placeholder="Tên chủ tài khoản">
+                        </div>
+                        <div class="aps-sv-field aps-sv-col-full">
+                            <label class="aps-sv-label">Ghi chú</label>
+                            <input class="aps-sv-input" id="txtKQ_HD_GhiChu" placeholder="Ghi chú thêm cho hoá đơn (nếu có)">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+            <!-- /Tab: Xuất hoá đơn -->
+
+            <div class="container-fluid px-20">
+                <hr />
+                <div class="d-flex align-items-center mt-4 flex-wrap mb-4">
+                    <div class="ms-auto aps-gap-10">
+                        <div class="btn btn-outline-secondary btnClose">
+                            <i class="fal fa-times"></i> Đóng
+                        </div>
+                        <div class="btn btn-primary" id="btnSave_DeXuatHoSo"><i class="fal fa-save"></i> Lưu</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- page script -->
+<script src="Modules/hoso/script/dexuathoso.js?v=1.0.0.29"></script>
+<script src="Modules/hoso/script/hosotaomoi.js?v=1.0.0.139"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['HoSoTaoMoi'] = new HoSoTaoMoi();
+    main_doc['DeXuatHoSo'] = new DeXuatHoSo();
+    $(document).ready(function () {
+        main_doc.HoSoTaoMoi.init();
+        main_doc.DeXuatHoSo.init();
+    });
+</script>

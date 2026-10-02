@@ -1,0 +1,389 @@
+﻿<!-- Main content -->
+<style>
+    /* ============================================================
+       Redesign header + pagination cho container hẹp col-sm-3.
+       Layout mới:
+         [icon] Danh sách người dùng          [56688]     ← row 1: title + badge (gap)
+         Hiển thị  [10 ▼]  dữ liệu                        ← row 2: page size selector (compact)
+         [«] [1] [2] [3] ... [n-1] [n] [»]                ← row 3: pagination có scroll ngang mượt
+       Scope .aps-user-role — không đụng trang khác.
+       ============================================================ */
+
+    /* Header "Danh sách người dùng" — title + badge cùng dòng, có gap rõ */
+    .aps-user-role .aps-nguoidung-l .box-header,
+    .aps-user-role .aps-user-role-l .box-header {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 10px !important;
+        padding: 12px 14px !important;
+        border-bottom: 1px solid #e2e8f0 !important;
+    }
+    .aps-user-role .aps-nguoidung-l .box-header .box-title,
+    .aps-user-role .aps-user-role-l .box-header .box-title {
+        margin: 0 !important;
+        padding: 0 !important;
+        font-size: 14px !important;
+        font-weight: 700 !important;
+        color: #0f172a !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        line-height: 1 !important;
+        flex: 1;
+        min-width: 0;
+    }
+    .aps-user-role .aps-nguoidung-l .box-header .box-title i,
+    .aps-user-role .aps-user-role-l .box-header .box-title i {
+        color: #2563eb !important;
+        font-size: 15px !important;
+    }
+    /* Badge số tổng "56688" — pill xanh nhạt, không float, không dính title */
+    .aps-user-role .badge.bg-light-blue,
+    .aps-user-role .aps-nguoidung-l .box-header .pull-right,
+    .aps-user-role .aps-user-role-l .box-header .pull-right {
+        float: none !important;
+        margin: 0 !important;
+        flex-shrink: 0;
+    }
+    .aps-user-role .badge.bg-light-blue {
+        background: #dbeafe !important;
+        color: #1e40af !important;
+        font-weight: 700 !important;
+        font-size: 12px !important;
+        padding: 4px 10px !important;
+        border-radius: 12px !important;
+        line-height: 1.4 !important;
+    }
+
+    /* Row "Hiển thị / [10] / dữ liệu" — flex row, gap, không float */
+    .aps-user-role .aps-hienthi,
+    .aps-user-role .aps-dulieu {
+        float: none !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        line-height: 32px !important;
+        font-style: normal !important;
+        color: #64748b !important;
+        font-weight: 500 !important;
+        font-size: 12px !important;
+    }
+    .aps-user-role .aps-hienthi-input {
+        float: none !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        width: 72px !important;
+        min-width: 72px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    /* Ép wrapper flex-wrap 2 rows:
+       Row 1: [Hiển thị] [10 ▼] [dữ liệu]
+       Row 2: pagination buttons chiếm full width
+       Pagination có flex-basis 100% → tự wrap xuống dòng dưới. */
+    .aps-user-role [id^="light-pagination"],
+    .aps-user-role .aps-list-page-wrap {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        align-items: center !important;
+        gap: 8px !important;
+        padding: 10px 12px !important;
+        row-gap: 10px !important;
+    }
+    /* Row 1: 3 phần "Hiển thị / 10 / dữ liệu" nằm sát trái */
+    .aps-user-role [id^="light-pagination"] > .aps-hienthi,
+    .aps-user-role [id^="light-pagination"] > .aps-hienthi-input,
+    .aps-user-role [id^="light-pagination"] > .aps-dulieu {
+        flex: 0 0 auto !important;
+    }
+    /* Row 2: pagination chiếm full width, wrap xuống dòng dưới */
+    .aps-user-role [id^="light-pagination"] > .simple-pagination,
+    .aps-user-role [id^="light-pagination"] > .light-theme,
+    .aps-user-role [id^="light-pagination"] > .compact-theme {
+        flex: 1 0 100% !important;
+        width: 100% !important;
+        margin-top: 4px !important;
+    }
+    /* Select "10" — height 30, radius 6, border xám */
+    .aps-user-role .aps-hienthi-input .select2-container,
+    .aps-user-role .aps-hienthi-input select {
+        width: 100% !important;
+        min-width: 72px !important;
+    }
+    .aps-user-role .aps-hienthi-input .select2-selection--single {
+        height: 30px !important;
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 6px !important;
+        background: #ffffff !important;
+    }
+    .aps-user-role .aps-hienthi-input .select2-selection--single .select2-selection__rendered {
+        line-height: 28px !important;
+        padding: 0 22px 0 10px !important;
+        color: #0f172a !important;
+        font-weight: 600 !important;
+        font-size: 13px !important;
+    }
+    .aps-user-role .aps-hienthi-input .select2-selection--single .select2-selection__arrow {
+        height: 28px !important;
+        top: 0 !important;
+        right: 4px !important;
+    }
+
+    /* Pagination buttons — class đúng: .simple-pagination / .light-theme / .compact-theme
+       (không phải .simplePagination hay .light-pagination). Scope .aps-user-role, đè global
+       để nút compact cho container hẹp col-sm-3. */
+    .aps-user-role .simple-pagination,
+    .aps-user-role .simple-pagination ul,
+    .aps-user-role .light-theme,
+    .aps-user-role .light-theme ul,
+    .aps-user-role .compact-theme,
+    .aps-user-role .compact-theme ul {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        gap: 3px !important;
+        padding: 6px 0 !important;
+        margin: 0 !important;
+        list-style: none !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        scrollbar-width: thin;
+        scrollbar-color: #cbd5e1 transparent;
+    }
+    .aps-user-role .simple-pagination::-webkit-scrollbar,
+    .aps-user-role .light-theme::-webkit-scrollbar,
+    .aps-user-role .compact-theme::-webkit-scrollbar {
+        height: 4px;
+    }
+    .aps-user-role .simple-pagination::-webkit-scrollbar-thumb,
+    .aps-user-role .light-theme::-webkit-scrollbar-thumb,
+    .aps-user-role .compact-theme::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 2px;
+    }
+    .aps-user-role .simple-pagination li,
+    .aps-user-role .light-theme li,
+    .aps-user-role .compact-theme li {
+        margin: 0 !important;
+        padding: 0 !important;
+        display: inline-flex !important;
+        flex-shrink: 0 !important;
+    }
+    /* Nút: nhỏ gọn 26x26, radius 4, hover xanh nhạt */
+    .aps-user-role .simple-pagination a,
+    .aps-user-role .simple-pagination span,
+    .aps-user-role .light-theme a,
+    .aps-user-role .light-theme span,
+    .aps-user-role .compact-theme a,
+    .aps-user-role .compact-theme span {
+        min-width: 26px !important;
+        height: 26px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0 6px !important;
+        margin: 0 !important;
+        border-radius: 4px !important;
+        border: 1px solid #e2e8f0 !important;
+        background: #ffffff !important;
+        background-image: none !important;
+        color: #475569 !important;
+        font-weight: 600 !important;
+        font-size: 12px !important;
+        line-height: 24px !important;
+        text-decoration: none !important;
+        box-shadow: none !important;
+        cursor: pointer;
+        transition: all 0.15s;
+    }
+    .aps-user-role .simple-pagination a:hover,
+    .aps-user-role .light-theme a:hover,
+    .aps-user-role .compact-theme a:hover {
+        background: #eff6ff !important;
+        border-color: #2563eb !important;
+        color: #2563eb !important;
+    }
+    /* Trang hiện tại — xanh solid, chữ trắng */
+    .aps-user-role .simple-pagination .current,
+    .aps-user-role .light-theme .current,
+    .aps-user-role .compact-theme .current {
+        background: #2563eb !important;
+        background-image: none !important;
+        border-color: #2563eb !important;
+        color: #ffffff !important;
+        font-weight: 700 !important;
+    }
+    /* Ellipsis "..." — không có border */
+    .aps-user-role .simple-pagination .ellipse,
+    .aps-user-role .light-theme .ellipse,
+    .aps-user-role .compact-theme .ellipse,
+    .aps-user-role .simple-pagination .disabled,
+    .aps-user-role .light-theme .disabled,
+    .aps-user-role .compact-theme .disabled {
+        background: transparent !important;
+        border: none !important;
+        color: #94a3b8 !important;
+        cursor: default;
+    }
+    /* Icon prev/next (fa-backward/forward) — theo memory không có class .prev/.next */
+    .aps-user-role .simple-pagination a .fa,
+    .aps-user-role .light-theme a .fa,
+    .aps-user-role .compact-theme a .fa {
+        font-size: 10px !important;
+    }
+</style>
+<section class="content aps-cms">
+    <div class="row aps-nguoidung aps-user-role">
+        <!-- /.left-content -->
+        <div class="col-sm-3 aps-nguoidung-l aps-user-role-l pr0">
+            <div class="box box-shadow">
+                <div class="box box-solid box-search pd15 pb0" style="padding-bottom: 5px !important;">
+                    <div class="box-body mb-10 pd0">
+                        <!-- Bộ tìm kiếm -->
+                        <div class="bs-item input-group pd0">
+                            <input type="text" id="txtSearch_TuKhoa_NDVT" class="form-control"
+                                   placeholder="Nhập từ khóa tìm kiếm">
+                            <span class="input-group-addon poiter btnExtend_Search" title="Kéo xuống">
+                                <i class="fa fa-search"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="box box-solid box-nguoidung" style="padding-top:0 !important;">
+                    <div class="box-header with-border pt0">
+                        <h3 class="box-title" title="Danh sách người dùng" style="margin-top: 0 !important;">
+                            <i class="fa fa-users"></i> Danh sách người dùng
+                        </h3>
+                        <span class="pull-right badge bg-light-blue">
+                            <span id="tblNguoiDung_Tong"></span>
+                        </span>
+                    </div>
+                    <div class="box-body aps-nguoidung-table">
+                        <table id="tblNguoiDung_NDVT" class="table table-hover tblNguoiDung tblNguoiDung_NDVT">
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.right-content -->
+        <div class="col-sm-9 aps-nguoidung-r aps-user-role-r">
+            <div class="box box-solid box-shadow">
+                <div class="box-header with-border" style="padding-top: 6px !important;">
+                    <h3 class="box-title"  style="padding-top:12px !important;">
+                        <i class="fa-light fa-user"></i> Người dùng
+                        <span id="lblNguoiDung_NDVT" class="lightcoral"></span>
+                    </h3>
+                    <div class="pull-right">
+                        <a class="submit btn btn-danger btnDelete">
+                            <i class="fa fa-trash"></i> <span class="lang" key="">Xóa vài trò</span></a>
+                        <a class="submit btn btn-primary btnAddnew">
+                            <i class="fa fa-plus color-active"></i> <span class="lang" key="">Thêm vai trò</span></a>
+                        
+                    </div>
+                </div>
+                <div class="box-body box-body-role pd0" style="padding: 0 !important;">
+                    <div class="col-sm-3">
+                        <div class="box box-solid ">
+                            <div class="box-body pd20">
+                                <p><b><i class="fa-light fa-circle-user"></i> Danh sách vai trò </b>(<span
+                                        id="lblVaiTroNguoiDung_Tong_NDVT"></span>)</p>
+                                <div id="zone_nguoidungvaitro"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-9">
+                        <div class="box box-solid zone-bus-ndvt" id="zone_bus_list">
+                            <div class="box-body pd20">
+                                <b><i class="fa-light fa-user-gear"></i> Danh sách chức năng </b>(<span
+                                    id="lblChucNang_Tong_NDVT"></span>)
+                                <table class="table table-hover mt-10" id="tblVaiTroChucNang_NDVT">
+                                    <thead>
+                                    <tr>
+                                        <th>Mã</th>
+                                        <th>Tên</th>
+                                        <th>Ứng dụng</th>
+                                        <th>Tình trạng</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <!-- load from  js-->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="box box-solid form-container zone-bus-ndvt aps-user-role-add" id="zone_bus_input">
+                            <div class="box-header with-border bg-blue" style="border-radius: 0 !important;">
+                                <h3 class="box-title">
+                                    <i class="fa-light fa-user-pen"></i> Thêm mới vai trò (<span
+                                        id="lblVaiTro_Tong_NDVT"></span>)</h3>
+                                <div class="pull-right pull-right-absolute">
+                                    <a class="btn btn-default btnClose" href="#" title="Close"><i
+                                            class="fa fa-times"></i></a>
+                                </div>
+                            </div>
+                            <div class="row aps-user-role-radio mt-10">
+                                <input type="radio" class="rdLoaiNguoiDung_VaiTro" name="rdLoaiNguoiDung_VaiTro"
+                                       value=""/> Toàn bộ
+                                <input type="radio" class="rdLoaiNguoiDung_VaiTro ml-20" name="rdLoaiNguoiDung_VaiTro"
+                                       value="fa fa-plus" checked="checked"/> Chưa thêm
+                                <input type="radio" class="rdLoaiNguoiDung_VaiTro ml-20" name="rdLoaiNguoiDung_VaiTro"
+                                       value="fa fa-times-circle"/> Đã thêm
+                            </div>
+                            <div class="box-body aps-user-role-table">
+                                <table class="table table-hover" id="tableAdd_NDVT">
+                                    <thead>
+                                    <tr>
+                                        <th class="td-center">Stt</th>
+                                        <th>Tên vai trò</th>
+                                        <th class="td-center">Thêm</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <!-- load from  js-->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="box box-solid form-container zone-bus-ndvt" id="zone_bus_delete">
+                            <div class="box-header with-border">
+                                <h3 class="box-title"><i class="fa fa-trash"></i> Xóa vai trò người dùng </h3>
+                                <div class="pull-right">
+                                    <a class="btn btn-default btnClose" href="#" title="Close"><i
+                                            class="fa fa-times"></i></a>
+                                </div>
+                            </div>
+                            <div class="box-body">
+                                <table class="table table-hover" id="tableDelete_NDVT">
+                                    <thead>
+                                    <tr>
+                                        <th class="td-center">Stt</th>
+                                        <th>Tên vai trò</th>
+                                        <th class="td-center">Thêm</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <!-- load from  js-->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- page script -->
+<script src="modules/nguoidung/script/nguoidungvaitro.js?v=1.0.0.0"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['NguoiDungVaiTro'] = new NguoiDungVaiTro();
+    $(document).ready(function () {
+        main_doc.NguoiDungVaiTro.init();
+    });
+</script>

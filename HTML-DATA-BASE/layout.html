@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Layout - Hệ thống bố cục (Bootstrap Grid)</title>
+    <link rel="stylesheet" href="../assets/css/styles.css" />
+    <style>
+        /* Chip hiển thị tên class */
+        .cls {
+            display: inline-block;
+            background: #eef1f4;
+            color: #c7254e;
+            font-family: "Consolas", "Courier New", monospace;
+            font-size: 13px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+
+        /* Khối code để copy */
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            font-family: "Consolas", "Courier New", monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 14px 16px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 10px 0 0;
+            white-space: pre;
+        }
+
+        .bd-example {
+            padding: 16px;
+            border: 1px dashed #d0d5dd;
+            border-radius: 6px;
+            margin-bottom: 4px;
+        }
+
+        .demo-label-code {
+            font-size: 12px;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            margin: 14px 0 2px;
+            display: block;
+        }
+
+        /* Tiêu đề các box dùng cỡ chữ h3 */
+        .box-comment .box-title {
+            font-size: 18px;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        /* Chia 2 cột đều, khoảng cách giữa 2 cột = 20px */
+        .box-comment {
+            --bs-gutter-x: 20px;
+        }
+
+        .box-comment .box {
+            margin-bottom: 20px;
+        }
+
+        .box-comment .box-content.pd-20 {
+            padding: 20px;
+        }
+
+        /* Tô màu cột để minh hoạ grid */
+        .grid-demo .row {
+            margin-bottom: 10px;
+        }
+
+        .grid-demo [class^="col"],
+        .grid-demo [class*=" col"] {
+            background: #e7f1ff;
+            border: 1px solid #9ec5fe;
+            padding: 8px 4px;
+            text-align: center;
+            font-size: 13px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header fixed-top">
+        <div class="top-nav">
+            <div class="sidebar-bars">
+                <i class="fa-light fa-bars-sort"> </i>
+            </div>
+            <div class="head-logo">
+                <a href="../index.html">
+                    <img class="logo-icon" src="../assets/images/logo/logo-icon.png" />
+                    <img class="logo-text" src="../assets/images/logo/logo-text.png" />
+                </a>
+            </div>
+            <div class="head-search-form">
+                <div class="head-search-toggle">
+                    <i class="fal fa-search"></i>
+                </div>
+                <div class="head-search-box">
+                    <div class="form">
+                        <input type="text" class="search-imput" placeholder="Tìm kiếm thông tin" />
+                        <button class="search-btn">
+                            <i class="fal fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="main-menu">
+                <ul class="list-unstyled d-none">
+                    <li class="item">
+                        <a class="menu-link" href="../index.html">
+                            <i class="fal fa-home"></i>
+                            <span>Trang chủ</span>
+                        </a>
+                    </li>
+                    <li class="item">
+                        <a class="menu-link" href="../dashboard.html">
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="item">
+                        <a class="menu-link" href="../modul.html">
+                            <span>Modul</span>
+                        </a>
+                    </li>
+                    <li class="item">
+                        <a class="menu-link" href="../chucnang-cuaban.html">
+                            <span>Chức năng của bạn</span>
+                        </a>
+                    </li>
+                    <li class="item">
+                        <a class="menu-link" href="../tintuc.html">
+                            <span>Tin tức</span>
+                        </a>
+                    </li>
+                </ul>
+                <div class="menu-toggle">
+                    <i class="fal fa-bars"></i>
+                </div>
+            </div>
+            <div class="account-group">
+                <div class="dropdown">
+                    <div class="item" data-bs-toggle="dropdown">
+                        <img src="../assets/images/avatar.jpg" class="avatar" />
+                    </div>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#">Action</a></li>
+                        <li><a class="dropdown-item" href="#">Another action</a></li>
+                        <li><a class="dropdown-item" href="#">Something else here</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="main-wrap">
+        <div class="left-sidebar">
+            <div class="sidebar-menu">
+                <div class="accordion" id="sidebar-menu">
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" data-bs-toggle="collapse" data-bs-target="#sbComponents" href="javascrip:void(0)">
+                            <i class="fa-light fa-puzzle-piece item-icon"></i>
+                            <span>Components</span>
+                            <i class="fal fa-chevron-right item-arrow-icon"></i>
+                            <i class="fal fa-chevron-down item-arrow-icon down"></i>
+                        </a>
+                        <div class="sidebar-menu-sub collapse" id="sbComponents" data-bs-parent="#sidebar-menu">
+                            <div class="sidebar-menu-sub-content">
+                                <a href="components.html#accordion">Accordion</a>
+                                <a href="components.html#alerts">Alerts</a>
+                                <a href="components.html#badge">Badge</a>
+                                <a href="components.html#breadcrumb">Breadcrumb</a>
+                                <a href="components.html#buttons">Buttons</a>
+                                <a href="components.html#button-group">Button group</a>
+                                <a href="components.html#card">Card</a>
+                                <a href="components.html#carousel">Carousel</a>
+                                <a href="components.html#close">Close button</a>
+                                <a href="components.html#collapse">Collapse</a>
+                                <a href="components.html#dropdowns">Dropdowns</a>
+                                <a href="components.html#list-group">List group</a>
+                                <a href="components.html#modal">Modal</a>
+                                <a href="components.html#navs-tabs">Navs &amp; tabs</a>
+                                <a href="components.html#navbar">Navbar</a>
+                                <a href="components.html#offcanvas">Offcanvas</a>
+                                <a href="components.html#pagination">Pagination</a>
+                                <a href="components.html#popovers">Popovers</a>
+                                <a href="components.html#progress">Progress</a>
+                                <a href="components.html#spinners">Spinners</a>
+                                <a href="components.html#toasts">Toasts</a>
+                                <a href="components.html#tooltips">Tooltips</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" data-bs-toggle="collapse" data-bs-target="#sbUtilities" href="javascrip:void(0)">
+                            <i class="fa-light fa-screwdriver-wrench item-icon"></i>
+                            <span>Utilities</span>
+                            <i class="fal fa-chevron-right item-arrow-icon"></i>
+                            <i class="fal fa-chevron-down item-arrow-icon down"></i>
+                        </a>
+                        <div class="sidebar-menu-sub collapse" id="sbUtilities" data-bs-parent="#sidebar-menu">
+                            <div class="sidebar-menu-sub-content">
+                                <a href="utilities.html#background">Background</a>
+                                <a href="utilities.html#borders">Borders</a>
+                                <a href="utilities.html#colors">Colors</a>
+                                <a href="utilities.html#display">Display</a>
+                                <a href="utilities.html#flex">Flex</a>
+                                <a href="utilities.html#float">Float</a>
+                                <a href="utilities.html#interactions">Interactions</a>
+                                <a href="utilities.html#link">Link</a>
+                                <a href="utilities.html#object-fit">Object fit</a>
+                                <a href="utilities.html#opacity">Opacity</a>
+                                <a href="utilities.html#overflow">Overflow</a>
+                                <a href="utilities.html#position">Position</a>
+                                <a href="utilities.html#shadows">Shadows</a>
+                                <a href="utilities.html#sizing">Sizing</a>
+                                <a href="utilities.html#spacing">Spacing</a>
+                                <a href="utilities.html#text">Text</a>
+                                <a href="utilities.html#vertical-align">Vertical align</a>
+                                <a href="utilities.html#visibility">Visibility</a>
+                                <a href="utilities.html#zindex">Z-index</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" data-bs-toggle="collapse" data-bs-target="#sbHelpers" href="javascrip:void(0)">
+                            <i class="fa-light fa-wand-magic-sparkles item-icon"></i>
+                            <span>Helpers</span>
+                            <i class="fal fa-chevron-right item-arrow-icon"></i>
+                            <i class="fal fa-chevron-down item-arrow-icon down"></i>
+                        </a>
+                        <div class="sidebar-menu-sub collapse" id="sbHelpers" data-bs-parent="#sidebar-menu">
+                            <div class="sidebar-menu-sub-content">
+                                <a href="helpers.html#clearfix">Clearfix</a>
+                                <a href="helpers.html#colored-links">Colored links</a>
+                                <a href="helpers.html#ratio">Ratio</a>
+                                <a href="helpers.html#position">Position</a>
+                                <a href="helpers.html#visually-hidden">Visually hidden</a>
+                                <a href="helpers.html#stretched-link">Stretched link</a>
+                                <a href="helpers.html#text-truncation">Text truncation</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sidebar-menu-item active">
+                        <a class="sidebar-menu-header" data-bs-toggle="collapse" data-bs-target="#sbLayout" href="javascrip:void(0)" aria-expanded="true">
+                            <i class="fa-light fa-table-layout item-icon"></i>
+                            <span>Layout</span>
+                            <i class="fal fa-chevron-right item-arrow-icon"></i>
+                            <i class="fal fa-chevron-down item-arrow-icon down"></i>
+                        </a>
+                        <div class="sidebar-menu-sub collapse show" id="sbLayout" data-bs-parent="#sidebar-menu">
+                            <div class="sidebar-menu-sub-content">
+                                <a href="#breakpoints">Breakpoints</a>
+                                <a href="#containers">Containers</a>
+                                <a href="#grid">Grid</a>
+                                <a href="#columns">Columns</a>
+                                <a href="#gutters">Gutters</a>
+                                <a href="#utilities">Utilities</a>
+                                <a href="#zindex">Z-index</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" data-bs-toggle="collapse" data-bs-target="#sbForms" href="javascrip:void(0)">
+                            <i class="fa-light fa-file-user item-icon"></i>
+                            <span>Forms</span>
+                            <i class="fal fa-chevron-right item-arrow-icon"></i>
+                            <i class="fal fa-chevron-down item-arrow-icon down"></i>
+                        </a>
+                        <div class="sidebar-menu-sub collapse" id="sbForms" data-bs-parent="#sidebar-menu">
+                            <div class="sidebar-menu-sub-content">
+                                <a href="forms.html#overview">Overview</a>
+                                <a href="forms.html#form-control">Form control</a>
+                                <a href="forms.html#select">Select</a>
+                                <a href="forms.html#checks-radios">Checks &amp; radios</a>
+                                <a href="forms.html#input-group">Input group</a>
+                                <a href="forms.html#floating">Floating labels</a>
+                                <a href="forms.html#layout">Layout</a>
+                                <a href="forms.html#validation">Validation</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" data-bs-toggle="collapse" data-bs-target="#sbDatTen" href="javascrip:void(0)">
+                            <i class="fa-regular fa-tags item-icon"></i>
+                            <span>Đặt tên class</span>
+                            <i class="fal fa-chevron-right item-arrow-icon"></i>
+                            <i class="fal fa-chevron-down item-arrow-icon down"></i>
+                        </a>
+                        <div class="sidebar-menu-sub collapse" id="sbDatTen" data-bs-parent="#sidebar-menu">
+                            <div class="sidebar-menu-sub-content">
+                                <a href="dat-ten-class.htm#dtc-bocuc">Bố cục</a>
+                                <a href="dat-ten-class.htm#dtc-header">Header &amp; Footer</a>
+                                <a href="dat-ten-class.htm#dtc-dieuhuong">Điều hướng</a>
+                                <a href="dat-ten-class.htm#dtc-nut">Nút</a>
+                                <a href="dat-ten-class.htm#dtc-bieumau">Biểu mẫu</a>
+                                <a href="dat-ten-class.htm#dtc-the">Thẻ &amp; Hộp</a>
+                                <a href="dat-ten-class.htm#dtc-bang">Bảng</a>
+                                <a href="dat-ten-class.htm#dtc-vanban">Văn bản</a>
+                                <a href="dat-ten-class.htm#dtc-thanhphan">Thành phần</a>
+                                <a href="dat-ten-class.htm#dtc-trangthai">Trạng thái</a>
+                                <a href="dat-ten-class.htm#dtc-tienich">Tiện ích</a>
+                                <a href="dat-ten-class.htm#dtc-khoangcach">Khoảng cách</a>
+                                <a href="dat-ten-class.htm#dtc-hinhanh">Hình ảnh &amp; Media</a>
+                                <a href="dat-ten-class.htm#dtc-luoi">Lưới</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" href="color.html">
+                            <i class="fa-light fa-palette item-icon"></i>
+                            <span>Colors</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" href="button.html">
+                            <i class="fa-light fa-hand-pointer item-icon"></i>
+                            <span>Buttons</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" href="Modal.html">
+                            <i class="fa-light fa-window-restore item-icon"></i>
+                            <span>Modal</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" href="table.html">
+                            <i class="fa-light fa-table item-icon"></i>
+                            <span>Table</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" href="tabs.html">
+                            <i class="fa-light fa-folder-tree item-icon"></i>
+                            <span>Tabs</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" href="tree.html">
+                            <i class="fa-light fa-sitemap item-icon"></i>
+                            <span>Danh mục tree</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" href="icon.html">
+                            <i class="fa-light fa-icons item-icon"></i>
+                            <span>Icon</span>
+                        </a>
+                    </div>                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" href="Header - title.html">
+                            <i class="fa-light fa-font item-icon"></i>
+                            <span>Header - title</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" href="Search.html">
+                            <i class="fa-light fa-magnifying-glass item-icon"></i>
+                            <span>Search</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" href="HTML-Form-ChucNangHSo.html">
+                            <i class="fa-light fa-id-card item-icon"></i>
+                            <span>Hồ sơ sinh viên</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" href="thong-tin-sinh-vien.html">
+                            <i class="fa-light fa-address-card item-icon"></i>
+                            <span>Thông tin sinh viên</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="main-content">
+            <!-- content -->
+            <div class="overlay"></div>
+            <div class="content-tab no-tab">
+                <div class="d-flex justify-content-between">
+                    <div class="nav-content-left">
+                        <p class="link">
+                            <a href="#">Tài liệu</a>
+                            <i class="fal fa-angle-right"></i>
+                            <a href="#">Layout</a>
+                        </p>
+                    </div>
+                    <div class="nav-content-right">
+                        <a class="d-block text-right" href>
+                            <i class="fas fa-question-circle"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="pl-0">Layout - Hệ thống bố cục (Bootstrap Grid)</h2>
+
+            <div class="row box-comment">
+                <!-- ===================== CỘT TRÁI ===================== -->
+                <div class="col-6">
+
+                    <!-- ===== Breakpoints ===== -->
+                    <div class="box box-solid box-shadow pd0 mb-20" id="breakpoints">
+                        <div class="box-header with-border">
+                            <h3 class="box-title color-blue">
+                                <i class="fa-duotone fa-solid fa-display mr-5"></i> Breakpoints - Điểm ngắt màn hình
+                            </h3>
+                        </div>
+                        <div class="box-body column-1">
+                            <div class="box-content pd-20">
+                                <p>Bootstrap chia màn hình thành 6 mốc. Hậu tố (infix) gắn vào class để áp dụng theo từng
+                                    cỡ màn hình, ví dụ <code class="bold">col-md-6</code>.</p>
+                                <table class="table table-hover table-bordered table-noborder w-100">
+                                    <thead>
+                                        <tr class="bg-blue">
+                                            <th>Breakpoint</th>
+                                            <th>Hậu tố</th>
+                                            <th>Kích thước</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td>Extra small</td><td><code class="cls">—</code></td><td>&lt; 576px</td></tr>
+                                        <tr><td>Small</td><td><code class="cls">sm</code></td><td>&ge; 576px</td></tr>
+                                        <tr><td>Medium</td><td><code class="cls">md</code></td><td>&ge; 768px</td></tr>
+                                        <tr><td>Large</td><td><code class="cls">lg</code></td><td>&ge; 992px</td></tr>
+                                        <tr><td>Extra large</td><td><code class="cls">xl</code></td><td>&ge; 1200px</td></tr>
+                                        <tr><td>XX large</td><td><code class="cls">xxl</code></td><td>&ge; 1400px</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== Containers ===== -->
+                    <div class="box box-solid box-shadow pd0 mb-20" id="containers">
+                        <div class="box-header with-border">
+                            <h3 class="box-title color-blue">
+                                <i class="fa-duotone fa-solid fa-box mr-5"></i> Containers - Khung chứa
+                            </h3>
+                        </div>
+                        <div class="box-body column-1">
+                            <div class="box-content pd-20">
+                                <p>Khung chứa bọc nội dung và canh giữa. 3 loại chính:</p>
+                                <table class="table table-hover table-bordered table-noborder w-100">
+                                    <thead>
+                                        <tr class="bg-blue">
+                                            <th>Class</th>
+                                            <th>Chú thích</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td><code class="cls">container</code></td><td>Rộng cố định, đổi theo từng breakpoint</td></tr>
+                                        <tr><td><code class="cls">container-fluid</code></td><td>Rộng 100% mọi màn hình</td></tr>
+                                        <tr><td><code class="cls">container-md</code></td><td>100% đến md, sau đó cố định</td></tr>
+                                    </tbody>
+                                </table>
+                                <span class="demo-label-code">Code</span>
+                                <pre class="code-block">&lt;div class="container"&gt;
+    &lt;!-- nội dung canh giữa, rộng cố định --&gt;
+&lt;/div&gt;
+
+&lt;div class="container-fluid"&gt;
+    &lt;!-- rộng tràn 100% --&gt;
+&lt;/div&gt;</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== Grid ===== -->
+                    <div class="box box-solid box-shadow pd0 mb-20" id="grid">
+                        <div class="box-header with-border">
+                            <h3 class="box-title color-blue">
+                                <i class="fa-duotone fa-solid fa-table-cells mr-5"></i> Grid - Lưới 12 cột
+                            </h3>
+                        </div>
+                        <div class="box-body column-1">
+                            <div class="box-content pd-20">
+                                <p>Lưới gồm <code class="bold">.container</code> &gt; <code class="bold">.row</code> &gt;
+                                    <code class="bold">.col</code>. Mỗi hàng chia tối đa <b>12 cột</b>.</p>
+                                <span class="demo-label-code">Giao diện</span>
+                                <div class="bd-example grid-demo">
+                                    <div class="row">
+                                        <div class="col">.col</div>
+                                        <div class="col">.col</div>
+                                        <div class="col">.col</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-8">.col-8</div>
+                                        <div class="col-4">.col-4</div>
+                                    </div>
+                                </div>
+                                <span class="demo-label-code">Code</span>
+                                <pre class="code-block">&lt;div class="container"&gt;
+    &lt;div class="row"&gt;
+        &lt;div class="col"&gt;.col&lt;/div&gt;
+        &lt;div class="col"&gt;.col&lt;/div&gt;
+        &lt;div class="col"&gt;.col&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="row"&gt;
+        &lt;div class="col-8"&gt;.col-8&lt;/div&gt;
+        &lt;div class="col-4"&gt;.col-4&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== Columns ===== -->
+                    <div class="box box-solid box-shadow pd0 mb-20" id="columns">
+                        <div class="box-header with-border">
+                            <h3 class="box-title color-blue">
+                                <i class="fa-duotone fa-solid fa-table-columns mr-5"></i> Columns - Cột
+                            </h3>
+                        </div>
+                        <div class="box-body column-1">
+                            <div class="box-content pd-20">
+                                <span class="demo-label-code">Giao diện (cột responsive)</span>
+                                <div class="bd-example grid-demo">
+                                    <div class="row">
+                                        <div class="col-12 col-md-6 col-lg-3">col-lg-3</div>
+                                        <div class="col-12 col-md-6 col-lg-3">col-lg-3</div>
+                                        <div class="col-12 col-md-6 col-lg-3">col-lg-3</div>
+                                        <div class="col-12 col-md-6 col-lg-3">col-lg-3</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-auto">col-auto</div>
+                                        <div class="col">col (phần còn lại)</div>
+                                    </div>
+                                </div>
+                                <span class="demo-label-code">Code</span>
+                                <pre class="code-block">&lt;!-- Responsive: 1 cột (mobile) → 2 cột (md) → 4 cột (lg) --&gt;
+&lt;div class="row"&gt;
+    &lt;div class="col-12 col-md-6 col-lg-3"&gt;...&lt;/div&gt;
+    &lt;div class="col-12 col-md-6 col-lg-3"&gt;...&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- col-auto: rộng theo nội dung; col: chiếm phần còn lại --&gt;
+&lt;div class="row"&gt;
+    &lt;div class="col-auto"&gt;...&lt;/div&gt;
+    &lt;div class="col"&gt;...&lt;/div&gt;
+&lt;/div&gt;</pre>
+                                <p class="mt-10 mb-0"><b>Canh / lệch cột:</b> <code class="cls">offset-md-2</code> (đẩy
+                                    sang phải), <code class="cls">align-items-center</code>, <code
+                                        class="cls">justify-content-between</code>, <code class="cls">order-1</code>.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- ===================== CỘT PHẢI ===================== -->
+                <div class="col-6">
+
+                    <!-- ===== Gutters ===== -->
+                    <div class="box box-solid box-shadow pd0 mb-20" id="gutters">
+                        <div class="box-header with-border">
+                            <h3 class="box-title color-blue">
+                                <i class="fa-duotone fa-solid fa-arrows-left-right-to-line mr-5"></i> Gutters - Khoảng
+                                cách cột
+                            </h3>
+                        </div>
+                        <div class="box-body column-1">
+                            <div class="box-content pd-20">
+                                <p>Gutter là khoảng cách giữa các cột. Dùng class <code class="bold">g-*</code> (cả 2
+                                    chiều), <code class="bold">gx-*</code> (ngang), <code class="bold">gy-*</code> (dọc),
+                                    giá trị 0–5.</p>
+                                <span class="demo-label-code">Giao diện (g-3)</span>
+                                <div class="bd-example grid-demo">
+                                    <div class="row g-3">
+                                        <div class="col-6">col-6</div>
+                                        <div class="col-6">col-6</div>
+                                        <div class="col-6">col-6</div>
+                                        <div class="col-6">col-6</div>
+                                    </div>
+                                </div>
+                                <span class="demo-label-code">Code</span>
+                                <pre class="code-block">&lt;div class="row g-3"&gt;      &lt;!-- gutter 2 chiều --&gt;
+&lt;div class="row gx-5"&gt;     &lt;!-- chỉ khoảng cách ngang --&gt;
+&lt;div class="row gy-2"&gt;     &lt;!-- chỉ khoảng cách dọc --&gt;
+&lt;div class="row g-0"&gt;      &lt;!-- bỏ hết khoảng cách --&gt;
+
+&lt;!-- Tùy chỉnh trực tiếp --&gt;
+&lt;div class="row" style="--bs-gutter-x: 20px;"&gt;</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== Utilities (Flex) ===== -->
+                    <div class="box box-solid box-shadow pd0 mb-20" id="utilities">
+                        <div class="box-header with-border">
+                            <h3 class="box-title color-blue">
+                                <i class="fa-duotone fa-solid fa-screwdriver-wrench mr-5"></i> Utilities - Tiện ích bố
+                                cục (Flex)
+                            </h3>
+                        </div>
+                        <div class="box-body column-1">
+                            <div class="box-content pd-20">
+                                <span class="demo-label-code">Giao diện</span>
+                                <div class="bd-example">
+                                    <div class="d-flex justify-content-between align-items-center"
+                                        style="background:#eef1f4;padding:10px;border-radius:4px;">
+                                        <span>Trái</span>
+                                        <span>Giữa</span>
+                                        <span>Phải</span>
+                                    </div>
+                                </div>
+                                <table class="table table-hover table-bordered table-noborder w-100 mt-10">
+                                    <thead>
+                                        <tr class="bg-blue">
+                                            <th>Class</th>
+                                            <th>Chú thích</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td><code class="cls">d-flex</code></td><td>Bật flexbox</td></tr>
+                                        <tr><td><code class="cls">flex-row / flex-column</code></td><td>Hướng ngang / dọc</td></tr>
+                                        <tr><td><code class="cls">justify-content-center</code></td><td>Canh giữa theo trục chính</td></tr>
+                                        <tr><td><code class="cls">justify-content-between</code></td><td>Dàn đều hai đầu</td></tr>
+                                        <tr><td><code class="cls">align-items-center</code></td><td>Canh giữa theo trục phụ</td></tr>
+                                        <tr><td><code class="cls">flex-wrap</code></td><td>Cho phép xuống dòng</td></tr>
+                                        <tr><td><code class="cls">flex-grow-1</code></td><td>Giãn chiếm phần còn lại</td></tr>
+                                        <tr><td><code class="cls">gap-2</code></td><td>Khoảng cách giữa các phần tử</td></tr>
+                                    </tbody>
+                                </table>
+                                <span class="demo-label-code">Code</span>
+                                <pre class="code-block">&lt;div class="d-flex justify-content-between align-items-center"&gt;
+    &lt;span&gt;Trái&lt;/span&gt;
+    &lt;span&gt;Phải&lt;/span&gt;
+&lt;/div&gt;</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== Z-index ===== -->
+                    <div class="box box-solid box-shadow pd0 mb-20" id="zindex">
+                        <div class="box-header with-border">
+                            <h3 class="box-title color-blue">
+                                <i class="fa-duotone fa-solid fa-layer-group mr-5"></i> Z-index - Thứ tự lớp chồng
+                            </h3>
+                        </div>
+                        <div class="box-body column-1">
+                            <div class="box-content pd-20">
+                                <p>Quy định phần tử nào nằm <b>trên</b> khi chồng lên nhau. Bootstrap có sẵn class tiện
+                                    ích <code class="bold">z-*</code> và z-index cho component.</p>
+                                <table class="table table-hover table-bordered table-noborder w-100">
+                                    <thead>
+                                        <tr class="bg-blue">
+                                            <th>Class / Giá trị</th>
+                                            <th>Chú thích</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td><code class="cls">z-n1</code></td><td>z-index: -1 (nằm dưới)</td></tr>
+                                        <tr><td><code class="cls">z-0</code></td><td>z-index: 0</td></tr>
+                                        <tr><td><code class="cls">z-1 / z-2 / z-3</code></td><td>Tăng dần lớp chồng</td></tr>
+                                        <tr><td><code class="cls">dropdown</code> (1000)</td><td>z-index của menu xổ</td></tr>
+                                        <tr><td><code class="cls">fixed / sticky</code> (1030)</td><td>Thanh cố định</td></tr>
+                                        <tr><td><code class="cls">modal</code> (1055)</td><td>Hộp thoại</td></tr>
+                                        <tr><td><code class="cls">tooltip</code> (1080)</td><td>Chú thích nổi trên cùng</td></tr>
+                                    </tbody>
+                                </table>
+                                <span class="demo-label-code">Code</span>
+                                <pre class="code-block">&lt;div class="position-relative"&gt;
+    &lt;div class="position-absolute z-1"&gt;Lớp trên&lt;/div&gt;
+    &lt;div class="position-absolute z-0"&gt;Lớp dưới&lt;/div&gt;
+&lt;/div&gt;</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- -------------------------- -->
+        <!-- JS -->
+        <script src="../assets/bootstrap-5.3.2/js/bootstrap.bundle.js"></script>
+        <script src="../assets/js/jquery-3.7.1.min.js"></script>
+        <script src="../assets/js/customs.js"></script>
+</body>
+
+</html>

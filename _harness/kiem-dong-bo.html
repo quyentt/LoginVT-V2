@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>kiểm đồng bộ giao diện</title></head>
+<body>
+<pre id="out"></pre>
+<iframe id="f" src="../_v2/index.html" style="width:1440px;height:900px"></iframe>
+<script>
+/* Kiểm tra màn hình có theo đúng chuẩn ở _v2/BO-CUC.md không.
+   ?s=<module-ten,...>  chỉ kiểm vài màn; bỏ trống = kiểm hết.
+   ?vt=R02&tien=CCB     phân hệ khác Tài chính (mặc định R33 / TC) — lấy
+                        cây mẫu ums.demo.menus[vt], vd Cổng cán bộ.
+   ?coTep=1             bỏ qua màn "chưa chuyển đổi" (chưa có tệp trong _v2).
+   Mỗi dòng "!!" là một chỗ lệch chuẩn phải sửa.                        */
+var out = [];
+function log(s) { out.push(s); document.getElementById('out').textContent = out.join('\n'); }
+function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+var QS = new URLSearchParams(location.search);
+var ONLY = (QS.get('s') || '').split(',').filter(Boolean);
+var VT = QS.get('vt') || 'R33', TIEN = QS.get('tien') || 'TC', CO_TEP = QS.get('coTep') === '1';
+// Vai trò thủ vai (Cổng sinh viên - R04): chọn sẵn một người học để màn không bị hộp tìm chặn
+function ganTV(ss) { if (VT === 'R04') ss.setItem('ums.thuvai', JSON.stringify({ roleId: 'R04', userIdGoc: 'CANBO01', userIdVai: 'SV0001', info: { ten: 'Lăng Văn Huy - DCOT.16.2', ma: '25001029', email: '', tenVaiTro: 'Cổng sinh viên - thủ vai' } })); }
+ganTV(sessionStorage);
+
+document.getElementById('f').onload = async function () {
+    var w = this.contentWindow;
+    await wait(600);
+    var nguon = (w.ums.demo.menus && w.ums.demo.menus[VT]) || w.ums.demo.menu;
+    var menu = nguon.filter(function (m) { return m.ID.indexOf(TIEN + '-') === 0; });
+    if (ONLY.length) menu = menu.filter(function (m) { return ONLY.indexOf(m.ID.replace(TIEN + '-', '')) >= 0; });
+    var bad = 0, skip = 0;
+
+    for (var i = 0; i < menu.length; i++) {
+        var errs = [];
+        var onerr = function (e) { errs.push(e.message); };
+        w.addEventListener('error', onerr);
+        ganTV(w.sessionStorage);
+        w.location.hash = '#/r/' + VT + '/' + menu[i].ID;
+        await wait(1700);
+        var d = w.document, sc = d.getElementById('screen');
+        var loi = [];
+        if (!sc) { log('!! ' + menu[i].ID + ' — không dựng được'); bad++; continue; }
+        if (/chưa chuyển sang giao diện mới/.test(sc.textContent)) {
+            w.removeEventListener('error', onerr);
+            if (CO_TEP) { skip++; continue; }
+            log('-- ' + menu[i].ID.replace(TIEN + '-', '') + ' (chưa chuyển)'); skip++; continue;
+        }
+
+        // 1. ô chọn trần
+        var bare = Array.prototype.slice.call(sc.querySelectorAll('select')).filter(function (s) {
+            if (s.classList.contains('select2-hidden-accessible') || s.hasAttribute('data-no-s2')) return false;
+            // Ô chọn TRONG BẢNG cố ý không gắn select2 (nặng, khung xổ lạc chỗ
+            // khi bảng cuộn) — đã vẽ cho giống select2, không tính là lỗi.
+            if (s.closest('.ums-table')) return false;
+            return true;
+        });
+        if (bare.length) loi.push('ô chọn chưa gắn select2: ' + bare.length);
+
+        // 2. CSS nhúng trong màn
+        if (sc.querySelectorAll('style').length) loi.push('còn thẻ <style> trong màn');
+        // Quy ước: đóng khung chi tiết bằng nút "Đóng" (ui.btn('close')), không mũi tên ← quay lại
+        var muiTen = sc.querySelectorAll('.fa-arrow-left, .fa-arrow-left-long');
+        if (muiTen.length) loi.push('còn mũi tên ← quay lại (dùng nút "Đóng"): ' + muiTen.length);
+        // Quy ước: nút "Đóng" luôn ngoài cùng bên TRÁI của nhóm nút (đầu trang / đầu khung / chân khung).
+        // Chân hộp thoại không tính — nút Xoá ở đó dạt trái theo quyết định riêng (2026-09-22).
+        var dongLech = 0;
+        Array.prototype.forEach.call(sc.querySelectorAll('.ums-page__actions, .ums-panel__tools, .ums-panel__foot'), function (g) {
+            var con = Array.prototype.filter.call(g.children, function (x) { return x.offsetParent !== null && !x.hidden; });
+            var viTri = con.findIndex(function (x) {
+                var i = x.querySelector ? x.querySelector('i.fa-xmark') : null;
+                return x.matches && x.matches('button') && i && /^(Đóng|Quay lại)?$/.test((x.textContent || '').trim());
+            });
+            if (viTri > 0) dongLech++;
+        });
+        if (dongLech) loi.push('nút "Đóng" không ngoài cùng bên trái: ' + dongLech + ' nhóm nút');
+        // Luật 2026-09-29: mỗi lúc chỉ MỘT nút Đóng — hộp thoại không tính
+        var soDong = Array.prototype.filter.call(sc.querySelectorAll('button'), function (x) { return x.offsetParent !== null && !x.closest('dialog') && /^Đóng$/.test((x.textContent || '').trim()); }).length;
+        if (soDong > 1) loi.push(soDong + ' nút "Đóng" cùng hiện');
+        // Quy ước: xoá NHIỀU dòng (bảng có cột ô đánh dấu) = ums.ui.xoaChon (.ums-btn--delsel: mờ + khoá khi chưa
+        // chọn, viền đỏ khi đã chọn). Nút xoá đỏ thường bấm được ngay ở đầu khung / đầu trang có bảng ô đánh dấu → lệch.
+        var xoaDo = [];
+        Array.prototype.forEach.call(sc.querySelectorAll('.ums-panel'), function (p) {
+            if (p.offsetParent === null) return;
+            var coCk = p.querySelector('.ums-table tbody input[type="checkbox"]');
+            if (!coCk) return;
+            var vung = [].slice.call(p.querySelectorAll(':scope > .ums-panel__head .ums-panel__tools, :scope > .ums-panel__foot'));
+            var pg = p.closest('[data-z], section, #screen');
+            vung.forEach(function (v) {
+                Array.prototype.forEach.call(v.querySelectorAll('button'), function (b) {
+                    // data-khong-chon: nút xoá KHÔNG theo dòng chọn (vd "Xóa dữ liệu import" xoá toàn bộ) — đúng là nút đỏ thường
+                    if (b.classList.contains('ums-btn--delsel') || b.offsetParent === null || b.hasAttribute('data-khong-chon')) return;
+                    var t = (b.textContent || '').trim(), i = b.querySelector('i');
+                    var laXoa = /^(Xoá|Xóa|Hủy|Huỷ)/i.test(t) && !/lọc|tìm/i.test(t) || (i && /fa-trash/.test(i.className) && !t);
+                    if (laXoa && (b.classList.contains('ums-btn--danger') || b.classList.contains('ums-btn--out-danger') || (i && /fa-trash/.test(i.className)))) xoaDo.push(t || 'thùng rác');
+                });
+            });
+        });
+        if (xoaDo.length) loi.push('nút xoá nhiều dòng không dùng ui.xoaChon (đỏ sẵn): ' + xoaDo.join(', '));
+        // Vừa mở màn (chưa chọn dòng nào) mà nút "Xoá đã chọn" đã BẬT → đang đếm nhầm ô đánh dấu sẵn ở chỗ khác
+        if (w.ums.ui.demXoaChon) w.ums.ui.demXoaChon();
+        var batSan = Array.prototype.filter.call(sc.querySelectorAll('.ums-btn--delsel'), function (b) { return b.offsetParent !== null && !b.disabled; });
+        if (batSan.length) loi.push('nút "Xoá đã chọn" đỏ sẵn khi chưa chọn dòng nào: ' + batSan.map(function (b) { return b.textContent.trim(); }).join(', '));
+
+        // 3. dòng tổng tự dựng (không do ums.ui.table sinh)
+        var tf = Array.prototype.slice.call(sc.querySelectorAll('tfoot tr')).filter(function (r) {
+            return !r.classList.contains('ums-table__sum');
+        });
+        if (tf.length) loi.push('tfoot tự dựng: ' + tf.length);
+
+        // 4. bảng không qua ums.ui.table / ums.pat.*
+        var tbl = Array.prototype.slice.call(sc.querySelectorAll('table')).filter(function (t) {
+            return !t.classList.contains('ums-table');
+        });
+        if (tbl.length) loi.push('bảng không dùng lớp ums-table: ' + tbl.length);
+
+        // 5. biểu mẫu bị đẩy ra sẵn: có nút "Thêm" mà vùng nhiều ô nhập đã hiện
+        var addBtn = Array.prototype.slice.call(sc.querySelectorAll('.ums-btn'))
+            .filter(function (b) { return /Thêm|Tạo mới/i.test(b.textContent); })[0];
+        // ô của THANH LỌC không tính là biểu mẫu
+        var formShown = Array.prototype.slice.call(sc.querySelectorAll('.ums-panel')).filter(function (p) {
+            if (p.offsetParent === null) return false;
+            var fields = Array.prototype.slice.call(p.querySelectorAll('.ums-field'))
+                .filter(function (f) { return !f.closest('.ums-filter, .ums-master__adv'); });   // khung "Bộ lọc nâng cao" của cột trái cũng là ô lọc
+            return fields.length >= 4;
+        }).length;
+        if (addBtn && formShown) loi.push('biểu mẫu hiện sẵn dù có nút "' + addBtn.textContent.trim() + '"');
+
+        // 6. lỗi JS
+        if (errs.length) loi.push('lỗi JS: ' + errs.slice(0, 2).join(' ;; '));
+
+        if (loi.length) { bad++; log('!! ' + menu[i].ID.replace(TIEN + '-', '') + '\n     - ' + loi.join('\n     - ')); }
+        else log('ok ' + menu[i].ID.replace(TIEN + '-', ''));
+        w.removeEventListener('error', onerr);
+    }
+    log('TONG: ' + (menu.length - skip - bad) + '/' + (menu.length - skip) + ' man dat chuan' + (skip ? ' (bo qua ' + skip + ' man chua chuyen)' : ''));
+    log('DONE');
+};
+</script>
+</body></html>

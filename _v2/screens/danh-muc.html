@@ -1,0 +1,176 @@
+<!--
+    Màn hình mẫu — DANH MỤC (tab + bảng)
+    Đại diện nhóm màn hình danh mục. Trong dự án hiện tại có 21 bản
+    danhmucdulieu.js gần giống nhau; đây là mẫu để gộp về một.
+-->
+<div class="ums-page__head">
+    <h1 class="ums-page__title ums-u-mb-0">Khai báo loại khoản</h1>
+    <div class="ums-page__actions" id="dmActions"></div>
+</div>
+
+<!-- Vùng 1: danh sách -->
+<div id="dmZoneList">
+    <div class="ums-panel">
+        <nav class="ums-tabs" id="dmTabs">
+            <a class="ums-tabs__item is-active" href="javascript:void(0)" data-tab="kt">Khoản thu</a>
+            <a class="ums-tabs__item" href="javascript:void(0)" data-tab="nhom">Nhóm khoản thu</a>
+            <a class="ums-tabs__item" href="javascript:void(0)" data-tab="dvt">Đơn vị tính</a>
+        </nav>
+
+        <div class="ums-panel__head">
+            <div style="max-width:320px;width:100%">
+                <input class="ums-input" id="dmKey" placeholder="Nhập mã hoặc tên danh mục">
+            </div>
+            <div class="ums-panel__tools" id="dmTools"></div>
+        </div>
+
+        <div class="ums-panel__body ums-panel__body--flush" id="dmTable"></div>
+    </div>
+</div>
+
+<!-- Vùng 2: biểu mẫu -->
+<div id="dmZoneForm" hidden>
+    <div class="ums-panel">
+        <div class="ums-panel__head">
+            <div class="ums-panel__title"><i class="fa-light fa-pen-to-square"></i>
+                <span id="dmFormTitle">Thêm danh mục</span></div>
+            <div class="ums-panel__tools" id="dmFormTools"></div>
+        </div>
+        <div class="ums-panel__body">
+            <div class="ums-grid ums-grid--2">
+                <div id="dmFormLeft"></div>
+                <div id="dmFormRight"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    'use strict';
+    var ui = ums.ui;
+
+    var SETS = {
+        kt: [
+            { ID: '1', MA: 'BHYT', TEN: 'Bảo hiểm y tế', NHOM: 'Bảo hiểm', DVT: 'Cái', GIA: 680000, HL: 1 },
+            { ID: '2', MA: 'DPHUC', TEN: 'Đồng phục sinh viên', NHOM: 'Đồng phục', DVT: 'Bộ', GIA: 250000, HL: 1 },
+            { ID: '3', MA: 'GTRINH', TEN: 'Giáo trình học kỳ', NHOM: 'Học liệu', DVT: 'Quyển', GIA: 150000, HL: 1 },
+            { ID: '4', MA: 'THETHAO', TEN: 'Đồng phục thể chất', NHOM: 'Đồng phục', DVT: 'Bộ', GIA: 200000, HL: 0 },
+            { ID: '5', MA: 'THESV', TEN: 'Thẻ sinh viên', NHOM: 'Học liệu', DVT: 'Cái', GIA: 30000, HL: 1 }
+        ],
+        nhom: [
+            { ID: '1', MA: 'BH', TEN: 'Bảo hiểm', HL: 1 },
+            { ID: '2', MA: 'DP', TEN: 'Đồng phục', HL: 1 },
+            { ID: '3', MA: 'HL', TEN: 'Học liệu', HL: 1 }
+        ],
+        dvt: [
+            { ID: '1', MA: 'CAI', TEN: 'Cái', HL: 1 },
+            { ID: '2', MA: 'BO', TEN: 'Bộ', HL: 1 },
+            { ID: '3', MA: 'QUYEN', TEN: 'Quyển', HL: 0 }
+        ]
+    };
+
+    var tab = 'kt';
+
+    document.getElementById('dmActions').innerHTML =
+        ui.btn('add', { text: 'Thêm danh mục', attr: { 'data-do': 'add' } });
+    document.getElementById('dmTools').innerHTML = ui.btn('excel', { mod: 'ghost' });
+
+    function draw() {
+        var key = (document.getElementById('dmKey').value || '').trim().toLowerCase();
+        var rows = SETS[tab].filter(function (r) {
+            return !key || (r.MA + ' ' + r.TEN).toLowerCase().indexOf(key) >= 0;
+        });
+
+        var cols = [
+            { title: 'Mã', prop: 'MA', cls: 'is-nowrap', width: '130px' },
+            { title: 'Tên danh mục', prop: 'TEN' }
+        ];
+
+        if (tab === 'kt') {
+            cols.push({ title: 'Nhóm', prop: 'NHOM', cls: 'is-nowrap' });
+            cols.push({ title: 'Đơn vị tính', prop: 'DVT', cls: 'is-center is-nowrap' });
+            cols.push({ title: 'Đơn giá', cls: 'is-right is-nowrap', render: function (r) { return ui.money(r.GIA); } });
+        }
+
+        cols.push({ title: 'Hiệu lực', cls: 'is-center', width: '130px', render: function (r) {
+            return r.HL ? ui.badge('Đang dùng', 'ok') : ui.badge('Ngừng', 'bad');
+        } });
+        cols.push({ title: 'Thao tác', cls: 'is-actions', width: '100px', render: function (r) {
+            return ui.actions(r.ID, ['edit', 'del']);
+        } });
+
+        ui.table({ el: '#dmTable', rows: rows, columns: cols, empty: 'Không tìm thấy danh mục nào' });
+    }
+    draw();
+
+    document.getElementById('dmTabs').addEventListener('click', function (e) {
+        var a = e.target.closest('[data-tab]');
+        if (!a) return;
+        this.querySelectorAll('.ums-tabs__item').forEach(function (x) { x.classList.remove('is-active'); });
+        a.classList.add('is-active');
+        tab = a.getAttribute('data-tab');
+        draw();
+    });
+
+    document.getElementById('dmKey').addEventListener('input', draw);
+
+    /* ---------- Biểu mẫu thêm / sửa ------------------------------------- */
+    var NHOM = [{ ID: 'BH', TEN: 'Bảo hiểm' }, { ID: 'DP', TEN: 'Đồng phục' }, { ID: 'HL', TEN: 'Học liệu' }];
+    var DVT = [{ ID: 'CAI', TEN: 'Cái' }, { ID: 'BO', TEN: 'Bộ' }, { ID: 'QUYEN', TEN: 'Quyển' }];
+
+    function buildForm(r) {
+        r = r || {};
+
+        document.getElementById('dmFormLeft').innerHTML =
+            '<div class="ums-legend">Thông tin danh mục</div>' +
+            ui.field('Mã danh mục', '<input class="ums-input" value="' + ui.esc(r.MA || '') + '">', { required: true }) +
+            ui.field('Tên danh mục', '<input class="ums-input" value="' + ui.esc(r.TEN || '') + '">', { required: true }) +
+            ui.field('Nhóm khoản thu',
+                '<select class="ums-select" id="dmfNhom">' + ui.options(NHOM, { title: '-- Chọn --' }) + '</select>');
+
+        document.getElementById('dmFormRight').innerHTML =
+            '<div class="ums-legend">Đơn giá và hiệu lực</div>' +
+            ui.field('Đơn vị tính',
+                '<select class="ums-select" id="dmfDvt">' + ui.options(DVT, { title: '-- Chọn --' }) + '</select>') +
+            ui.field('Đơn giá', '<input class="ums-input" value="' + ui.esc(r.GIA || '') + '">') +
+            ui.field('Hiệu lực',
+                '<div class="ums-checklist">' +
+                '<label class="ums-check"><input type="checkbox"' + (r.HL === 0 ? '' : ' checked') +
+                '> Đang dùng</label></div>');
+
+        document.getElementById('dmFormTools').innerHTML =
+            ui.btn('close', { attr: { 'data-do': 'back' } }) + ui.btn('save', { attr: { 'data-do': 'save' } });
+
+        ui.select2('#dmfNhom');
+        ui.select2('#dmfDvt');
+    }
+
+    function show(which) {
+        // Ẩn nút của màn hình trước, để điều kiện dính đỉnh tính lại cho đúng
+        document.getElementById('dmActions').hidden = which !== 'list';
+        if (which === 'form') ui.swap('#dmZoneList', '#dmZoneForm');
+        else ui.swap('#dmZoneForm', '#dmZoneList');
+    }
+
+    document.getElementById('screen').addEventListener('click', function (e) {
+        var b = e.target.closest('[data-do]');
+        if (b) {
+            var act = b.getAttribute('data-do');
+            if (act === 'add') {
+                document.getElementById('dmFormTitle').textContent = 'Thêm danh mục';
+                buildForm(); show('form');
+            }
+            if (act === 'back' || act === 'save') show('list');
+            return;
+        }
+        var ib = e.target.closest('.ums-iconbtn[data-act="edit"]');
+        if (ib) {
+            var id = ib.getAttribute('data-id');
+            var row = SETS[tab].find(function (x) { return x.ID === id; });
+            document.getElementById('dmFormTitle').textContent = 'Sửa danh mục';
+            buildForm(row); show('form');
+        }
+    });
+})();
+</script>

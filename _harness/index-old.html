@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="vi">
+<!--
+    Vỏ CŨ (indexi.aspx) chạy trên máy để kiểm giao diện — không IIS, không API, không dữ liệu.
+
+    Chạy:  powershell -ExecutionPolicy Bypass -File _harness\serve.ps1
+    Mở:    http://localhost:8787/index-old.html
+
+    Trang này KHÔNG chép markup của indexi.aspx: lúc chạy nó tải chính indexi.aspx, gỡ thẻ máy chủ
+    (<%@ %>, <%= %>, asp:…, runat) rồi ghi ra làm tài liệu. Vì vậy CSS nội tuyến, khung header / menu
+    trái và các đoạn script của vỏ luôn đúng bản đang có trong kho — sửa indexi.aspx hay CSS là thấy ngay.
+    Thêm vào chỉ có ba tệp: fixtures.js (dữ liệu mẫu, tuỳ chọn), old-data.js (vai trò + cây chức năng),
+    old-mock.js (chặn lời gọi mạng, dựng phiên giả, trang danh sách vai trò).
+
+    Phải chạy ở GỐC web (/index-old.html) như indexi.aspx thì đường dẫn tương đối và liên kết "#…" của
+    Corei mới đúng; serve.ps1 tự tìm tệp này trong _harness. Mở qua /_harness/index-old.html sẽ tự chuyển.
+-->
+<head>
+    <meta charset="utf-8">
+    <title>UMS bản cũ (indexi) — harness</title>
+    <style>
+        body { font: 14px/1.6 "Segoe UI", Arial, sans-serif; color: #223; padding: 40px; }
+        code { background: #eef1f7; padding: 1px 6px; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <p id="hn-trangthai">Đang dựng vỏ indexi…</p>
+    <script>
+        (function () {
+            var TEP = 'index-old.html';
+            function bao(html) { document.getElementById('hn-trangthai').innerHTML = html; }
+            function canServe(vi) {
+                bao('<b>Không chạy được:</b> ' + vi + '<br>Chạy từ gốc dự án: <code>powershell -ExecutionPolicy Bypass -File _harness\\serve.ps1</code> ' +
+                    'rồi mở <code>http://localhost:8787/' + TEP + '</code>.');
+            }
+            if (location.protocol === 'file:') return canServe('trang phải mở qua máy chủ, không mở bằng file://.');
+
+            // Đang ở /_harness/… → chuyển về gốc web (serve.ps1 phục vụ tệp này ở cả hai đường dẫn)
+            if (location.pathname !== '/' + TEP) {
+                return fetch('/' + TEP, { cache: 'no-store' }).then(function (r) { return r.ok ? r.text() : ''; }).then(function (t) {
+                    if (t.indexOf('hn-trangthai') < 0) return canServe('máy chủ đang dùng không phục vụ <code>/' + TEP + '</code> ở gốc web (cần <code>serve.ps1</code> của thư mục này).');
+                    location.replace('/' + TEP + location.search + location.hash);
+                }).catch(function () { canServe('không tải được <code>/' + TEP + '</code>.'); });
+            }
+
+            // Script của indexi.aspx không có trong kho hoặc phải ra mạng → bỏ, khỏi chờ và khỏi 404
+            var BO = /^https?:|^\/\/|^Scripts\/|^\/?Core\/upload|^Config\.js/i;
+
+            var DAU =
+                '<title>UMS bản cũ (indexi) — harness</title>' +
+                '<script>window.__harnessErrors = [];' +
+                'window.addEventListener("error", function (e) { var c = (e.message || "lỗi tải tệp") + (e.filename ? " @ " + e.filename.replace(location.origin, "") + ":" + e.lineno : (e.target && (e.target.src || e.target.href) ? " @ " + (e.target.src || e.target.href).replace(location.origin, "") : "")); window.__harnessErrors.push(c); if (window.__harnessBaoLoi) window.__harnessBaoLoi(c); }, true);' +
+                /* Lưới an toàn: Corei có ba chỗ gán location.href = "./index.aspx" (mục 5 CLAUDE.md). old-mock.js đã chặn từng chỗ,
+                   nhưng trạng thái còn sót trong trình duyệt (localStorage / sessionStorage của localhost:8787 dùng chung với _v2) vẫn
+                   có thể đẩy vào một nhánh chưa lường → huỷ MỌI lần chuyển sang index.aspx, về danh sách vai trò. */
+                'if (window.navigation && navigation.addEventListener) navigation.addEventListener("navigate", function (e) {' +
+                ' var u; try { u = new URL(e.destination.url); } catch (x) { return; }' +
+                ' if (u.origin !== location.origin || !/\\/index\\.aspx$/i.test(u.pathname) || !e.cancelable) return;' +
+                ' e.preventDefault(); console.warn("[harness] Corei định chuyển sang index.aspx — đã chặn, về danh sách vai trò"); console.trace();' +
+                ' sessionStorage.removeItem("strChucNang"); sessionStorage.removeItem("strChucNang_Id"); sessionStorage.setItem("hn.chan", "1");' +
+                ' setTimeout(function () { location.replace("/index-old.html"); }, 0);' +
+                '});' +
+                '<\/script>' +
+                '<style id="hn-style">' +
+                /* trang danh sách vai trò */
+                '.hn-home{max-width:1180px}.hn-home__dau{display:flex;align-items:center;gap:16px;margin-bottom:6px}.hn-home__dau h3{margin:0;flex:1;font-size:20px;font-weight:600}.hn-home__dau input{max-width:280px}' +
+                '.hn-home__ghi{color:#6b7280;font-size:12px;margin:0 0 8px}.hn-home__nhom{margin:18px 0 8px;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:#223771}.hn-home__nhom small{color:#8a93a8;font-weight:400}' +
+                '.hn-home__luoi{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}' +
+                '.hn-home__the{display:block;padding:10px 12px;background:#fff;border:1px solid #dfe3ec;border-radius:6px;color:#1f2937;text-decoration:none}.hn-home__the:hover,.hn-home__the:focus{border-color:#223771;box-shadow:0 2px 8px rgba(34,55,113,.15);color:#223771;text-decoration:none}' +
+                '.hn-home__the b{display:block;font-weight:600}.hn-home__the span{display:block;font-size:11px;color:#8a93a8}' +
+                /* đánh dấu trên menu trái */
+                '#menu_vertical li.hn-index>a>span:first-of-type::after{content:" ↗ index";font-size:10px;opacity:.65}' +
+                '#menu_vertical li.hn-thieu>a>span:first-of-type::after{content:" ✕ thiếu tệp";font-size:10px;opacity:.65}' +
+                /* bảng harness góc dưới phải */
+                '#hn-panel{position:fixed;right:8px;bottom:8px;z-index:200000;max-width:460px;background:#10182c;color:#d7e0f5;border-radius:5px;font:11px/1.45 Consolas,"Courier New",monospace;box-shadow:0 4px 16px rgba(0,0,0,.35);opacity:.92}' +
+                '#hn-panel.hn-co-loi{outline:2px solid #ff7a7a}.hn-panel__head{padding:4px 8px;display:flex;gap:8px;align-items:center}.hn-panel__head b{color:#f8843d}.hn-panel__stat{flex:1;color:#8fa2c9}.hn-panel__head a{color:#9dc0ff}' +
+                '.hn-panel__body{max-height:220px;overflow:auto;border-top:1px solid #263150}.hn-panel__body table{width:100%;border-collapse:collapse}.hn-panel__body td{padding:2px 8px;border-bottom:1px solid #1a2440;vertical-align:top;word-break:break-all;cursor:pointer}' +
+                '.hn-panel__body td:first-child{white-space:nowrap;word-break:normal}.hn-ok td:first-child{color:#4ec98c}.hn-thieu td:first-child{color:#e0b341}.hn-loi td{color:#ffb4b4}' +
+                '</style>';
+
+            var CUOI =
+                '<script src="_harness/fixtures.js"><\/script>' +
+                '<script src="_harness/old-data.js"><\/script>' +
+                '<script src="_harness/old-mock.js"><\/script>';
+
+            fetch('/indexi.aspx', { cache: 'no-store' }).then(function (r) {
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                return r.text();
+            }).then(function (t) {
+                t = t.replace(/<%@[\s\S]*?%>/g, '')
+                    .replace(/<%--[\s\S]*?--%>/g, '')
+                    .replace(/<%=\s*fullname\s*%>/g, 'Người dùng thử')
+                    .replace(/<%=\s*Guid\.NewGuid\(\)\.ToString\(\)\s*%>/g, String(Date.now()))
+                    .replace(/<%=[\s\S]*?%>/g, '')
+                    .replace(/<asp:Label\b[^>]*\bID="([^"]+)"[^>]*>\s*<\/asp:Label>/gi, '<span id="$1"></span>')
+                    .replace(/<asp:HiddenField\b[^>]*\bID="([^"]+)"[^>]*>\s*<\/asp:HiddenField>/gi, '<input type="hidden" id="$1">')
+                    .replace(/\s+runat="server"/gi, '')
+                    .replace(/<script\b[^>]*\bsrc="([^"]*)"[^>]*>\s*<\/script>/gi, function (m, src) {
+                        // Bỏ hẳn, không thay bằng chú thích: thẻ có thể đang nằm sẵn trong một chú thích HTML
+                        return BO.test(src) ? '' : m;
+                    })
+                    .replace(/<title>[\s\S]*?<\/title>/i, '');
+                if (/<%|<asp:/i.test(t)) console.warn('[harness] indexi.aspx còn thẻ máy chủ chưa gỡ — xem lại bộ lọc trong index-old.html');
+                if (!/<\/head>/i.test(t) || !/<\/body>/i.test(t)) throw new Error('indexi.aspx không có </head> hoặc </body>');
+                t = t.replace(/<\/head>/i, function () { return DAU + '</head>'; })
+                    .replace(/<\/body>(?![\s\S]*<\/body>)/i, function () { return CUOI + '</body>'; });
+                document.open();
+                document.write(t);
+                document.close();
+            }).catch(function (e) {
+                canServe('không tải được <code>/indexi.aspx</code> (' + e.message + '). Thư mục <code>_harness</code> phải nằm ngay dưới gốc dự án, ngang hàng <code>indexi.aspx</code>, <code>Corei/</code>, <code>App_Themes/</code>.');
+            });
+        })();
+    </script>
+</body>
+</html>

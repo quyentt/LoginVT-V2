@@ -1,0 +1,678 @@
+﻿<style>
+    /**/
+    .btn-sms {
+        width: 90px;
+        height: 90px;
+        background: #4e8d42;
+        border-radius: 50%;
+        text-align: center;
+        padding-top: 8px;
+        color: white !important;
+        cursor: pointer;
+    }
+
+        .btn-sms:hover {
+            background: #447a3a;
+            color: white;
+        }
+
+    .btn-sms-fixed {
+        position: fixed;
+        bottom: 50px;
+        right: 20px;
+    }
+
+    .title-sms {
+        font-weight: normal;
+        text-decoration: underline;
+        font-style: italic;
+        margin-bottom: 7px;
+    }
+
+    .nav-tabs > .pull-right > .btn-default {
+        background: #f1f1f1 !important;
+        padding-top: 3px !important;
+        padding-bottom: 3px !important;
+    }
+
+    .ul-li-btn:hover {
+        background: #eae9e9 !important;
+    }
+
+    .zone-print {
+        background: #fff;
+    }
+
+    #zoneList_PhieuDaThu {
+        width: 100%;
+        border: 1px solid #f1f1f1;
+        box-shadow: 0px 0px 10px 2px grey;
+    }
+
+    .lbsymbolHD {
+        font-size: 13px;
+        font-family: 'Times New Roman', Times, serif;
+        cursor: pointer;
+    }
+
+    .activeLien {
+        background: rgba(0, 0, 0, 0) -moz-linear-gradient(center top, #bbbbbb 0%, #efefef 100%) repeat scroll 0 0 !important;
+    }
+
+    /* ============ Reskin block "Hồ sơ" — thay <table>+<blockquote> cũ ============ */
+    .chk-profile-box {
+        margin-bottom: 15px;
+    }
+    .chk-profile-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 14px;
+        background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+        border-bottom: 2px solid #cbd5e1;
+        border-radius: 6px 6px 0 0;
+    }
+    .chk-profile-title {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+        color: #1a56db;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .chk-profile-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        color: #92400e;
+        background: #fef3c7;
+        border: 1px solid #fde68a;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-weight: 500;
+    }
+    .chk-profile-badge .bold {
+        color: #78350f;
+        font-weight: 700;
+    }
+    .chk-profile-body {
+        display: grid;
+        grid-template-columns: 7fr 5fr;
+        gap: 12px 32px;
+        padding: 16px 18px;
+        background: #ffffff;
+    }
+    .chk-profile-grid {
+        display: grid;
+        grid-template-columns: 140px 1fr;
+        row-gap: 10px;
+        column-gap: 12px;
+        align-items: start;
+    }
+    .chk-profile-label {
+        font-size: 13px;
+        color: #64748b;
+        font-weight: 500;
+        line-height: 1.5;
+    }
+    .chk-profile-value {
+        font-size: 13px;
+        color: #0f172a;
+        font-weight: 500;
+        line-height: 1.5;
+        word-break: break-word;
+        min-height: 20px;
+    }
+    /* Value rỗng → '—' xám nhạt thay vì blank khó chịu */
+    .chk-profile-value:empty::before {
+        content: '—';
+        color: #cbd5e1;
+        font-weight: 400;
+    }
+    /* Field quan trọng (họ tên, SBD, mã tiếp nhận, thời gian) — xanh bold */
+    .chk-profile-value.chk-accent {
+        color: #059669;
+        font-weight: 600;
+    }
+    .chk-profile-footer {
+        display: flex;
+        justify-content: flex-end;
+        padding: 12px 18px;
+        background: #f8fafc;
+        border-top: 1px solid #e2e8f0;
+        border-radius: 0 0 6px 6px;
+    }
+    /* Responsive: dưới 992px xếp dọc 1 cột */
+    @media (max-width: 991px) {
+        .chk-profile-body {
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+    }
+
+    /* ============ Reskin panel Filter bên trái ============ */
+    .chk-filter-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 14px;
+        margin-bottom: 12px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .chk-filter-section {
+        margin-bottom: 12px;
+    }
+    .chk-filter-section:last-child {
+        margin-bottom: 0;
+    }
+    .chk-filter-label {
+        display: block;
+        font-size: 11px;
+        font-weight: 600;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+    }
+    /* Radio segmented control (pill) — thay <p> + input radio default xấu */
+    .chk-filter-radios {
+        display: flex;
+        gap: 3px;
+        background: #f1f5f9;
+        padding: 3px;
+        border-radius: 6px;
+    }
+    .chk-radio-pill {
+        flex: 1;
+        margin: 0;
+        cursor: pointer;
+        position: relative;
+        font-weight: normal;
+    }
+    .chk-radio-pill input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+    }
+    .chk-radio-pill > span {
+        display: block;
+        padding: 6px 4px;
+        text-align: center;
+        font-size: 12px;
+        font-weight: 500;
+        color: #64748b;
+        border-radius: 4px;
+        transition: all 0.15s;
+        user-select: none;
+    }
+    .chk-radio-pill input[type="radio"]:checked + span {
+        background: #ffffff;
+        color: #1a56db;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        font-weight: 600;
+    }
+    .chk-radio-pill:hover input[type="radio"]:not(:checked) + span {
+        color: #0f172a;
+    }
+    /* Nút action (Xuất báo cáo / Import) */
+    .chk-filter-actions {
+        display: flex;
+        gap: 8px;
+        align-items: stretch;
+    }
+    .chk-filter-actions > .dropdown {
+        flex: 1;
+    }
+    .chk-filter-actions > .dropdown:empty {
+        display: none;
+    }
+    .chk-filter-actions > .dropdown .btn {
+        width: 100%;
+    }
+    /* Search input hiện đại — thay input-group Bootstrap 3 cũ */
+    .chk-search-box {
+        display: flex;
+        align-items: center;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        overflow: hidden;
+        background: #fff;
+        transition: all 0.15s;
+    }
+    .chk-search-box:focus-within {
+        border-color: #1a56db;
+        box-shadow: 0 0 0 3px rgba(26,86,219,0.1);
+    }
+    .chk-search-box .chk-search-input {
+        flex: 1;
+        border: none;
+        outline: none;
+        padding: 8px 12px;
+        font-size: 13px;
+        background: transparent;
+        min-width: 0;
+    }
+    .chk-search-box .chk-search-clear {
+        padding: 6px 8px;
+        color: #94a3b8;
+        cursor: pointer;
+        transition: color 0.15s;
+        text-decoration: none;
+    }
+    .chk-search-box .chk-search-clear:hover {
+        color: #ef4444;
+    }
+    .chk-search-box .chk-search-btn {
+        padding: 8px 14px;
+        background: #1a56db;
+        color: #fff !important;
+        cursor: pointer;
+        transition: background 0.15s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+    }
+    .chk-search-box .chk-search-btn:hover {
+        background: #1e40af;
+    }
+    /* Card danh sách kết quả */
+    .chk-result-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .chk-result-card .table {
+        margin: 0;
+    }
+</style>
+<!-- Main content -->
+<section class="content">
+    <div class="row bg-default beforeActive" id="zoneTimKiemSinhVien">
+        <div class="col-sm-3">
+            <div class="chk-filter-card">
+                <div class="chk-filter-section">
+                    <label class="chk-filter-label"><i class="fa-solid fa-clipboard-list"></i>&nbsp;Kế hoạch nhập học</label>
+                    <select id="dropKeHoachNhapHoc_ThuTien" class="select-opt">
+                        <!-- load from taichinh.js -->
+                    </select>
+                </div>
+                <div class="chk-filter-section">
+                    <label class="chk-filter-label"><i class="fa-solid fa-filter"></i>&nbsp;Điều kiện</label>
+                    <div class="chk-filter-radios">
+                        <label class="chk-radio-pill">
+                            <input type="radio" class="rdThuTien" name="rdThuTien" value="1" checked="checked" />
+                            <span>Đã nhập</span>
+                        </label>
+                        <label class="chk-radio-pill">
+                            <input type="radio" class="rdThuTien" name="rdThuTien" value="0" />
+                            <span>Chưa nhập</span>
+                        </label>
+                        <label class="chk-radio-pill">
+                            <input type="radio" class="rdThuTien" name="rdThuTien" value="-1" />
+                            <span>Toàn bộ</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="chk-filter-section chk-filter-actions">
+                    <div class="dropdown" id="zonebtnTT"></div>
+                    <div class="dropdown" id="zonebtnTT_Import"></div>
+                </div>
+                <div class="chk-filter-section">
+                    <div class="chk-search-box">
+                        <input id="txtTimKiem_ThuTien" class="chk-search-input" type="text"
+                            placeholder="Tìm theo tên, số báo danh..." />
+                        <a id="btnDel_Keyword_ThuTien" class="chk-search-clear" href="#" title="Xóa nội dung tìm kiếm">
+                            <i class="fa fa-times"></i>
+                        </a>
+                        <a id="btnSearch_NguoiHoc_ThuTien" class="chk-search-btn" href="#" title="Tìm kiếm">
+                            <i class="fa fa-search"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="chk-result-card">
+                <table id="tblThuTien" class="table">
+                    <tbody>
+                        <tr class="tr-pointer detail-hs">
+                            <td class="td-left td-img"><img src="" class="table-img" /></td>
+                            <td class="td-middle">
+                                <!-- load from taichinh.js -->
+                            </td>
+                            <td class="td-middle"><span class="detail_tc"><a href="#">Chọn</a></span></td>
+                        </tr>
+                        <!-- load from taichinh.js -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-sm-9">
+            <div id="zoneDetail_TTTS">
+                <div class="box box-solid chk-profile-box">
+                    <div class="chk-profile-header">
+                        <p class="chk-profile-title">
+                            <i class="fa-solid fa-address-card"></i>
+                            <span>Hồ sơ</span>
+                        </p>
+                        <span class="chk-profile-badge">
+                            <i class="fa fa-money"></i>
+                            Tổng đã thu:
+                            <span class="bold" id="lblTongDaThuTien_ThuTien"></span>
+                        </span>
+                    </div>
+                    <div class="chk-profile-body">
+                        <!-- Cột trái: thông tin cá nhân + nhập học -->
+                        <div class="chk-profile-grid">
+                            <div class="chk-profile-label">Họ tên</div>
+                            <div class="chk-profile-value chk-accent" id="lblHoTen_ThuTien"></div>
+
+                            <div class="chk-profile-label">Mã số SV</div>
+                            <div class="chk-profile-value" id="lblMaSoSV_ThuTien"></div>
+
+                            <div class="chk-profile-label">Ngày sinh</div>
+                            <div class="chk-profile-value" id="lblNgaySinh_ThuTien"></div>
+
+                            <div class="chk-profile-label">Điện thoại</div>
+                            <div class="chk-profile-value" id="lblSoDienThoai_ThuTien"></div>
+
+                            <div class="chk-profile-label">Quê quán</div>
+                            <div class="chk-profile-value" id="lblQueQuan_ThuTien"></div>
+
+                            <div class="chk-profile-label">Ngành nhập học</div>
+                            <div class="chk-profile-value" id="lblNganhNhapHoc_ThuTien"></div>
+
+                            <div class="chk-profile-label">Lớp</div>
+                            <div class="chk-profile-value" id="lblNganhLop_ThuTien"></div>
+
+                            <div class="chk-profile-label">CMND/CCCD</div>
+                            <div class="chk-profile-value" id="lblCMT"></div>
+
+                            <div class="chk-profile-label">Mã tiếp nhận</div>
+                            <div class="chk-profile-value chk-accent" id="lblMaTiepNHap"></div>
+                        </div>
+
+                        <!-- Cột phải: thông tin tuyển sinh + tiếp nhận -->
+                        <div class="chk-profile-grid">
+                            <div class="chk-profile-label">SBD</div>
+                            <div class="chk-profile-value chk-accent" id="lblSoBaoDanh_ThuTien"></div>
+
+                            <div class="chk-profile-label">Tổng điểm</div>
+                            <div class="chk-profile-value" id="lblTongDiem_ThuTien"></div>
+
+                            <div class="chk-profile-label">Đối tượng</div>
+                            <div class="chk-profile-value" id="lblDoiTuong_ThuTien"></div>
+
+                            <div class="chk-profile-label">% Miễn/Giảm</div>
+                            <div class="chk-profile-value" id="lblPhanTramMienGiam_ThuTien"></div>
+
+                            <div class="chk-profile-label">Khu vực</div>
+                            <div class="chk-profile-value" id="lblKhuVuc_ThuTien"></div>
+
+                            <div class="chk-profile-label">Ngành trúng tuyển</div>
+                            <div class="chk-profile-value" id="lblNganhTrungTuyen_ThuTien"></div>
+
+                            <div class="chk-profile-label">Thời gian</div>
+                            <div class="chk-profile-value chk-accent" id="lblThoiGianTiepNhap"></div>
+                        </div>
+                    </div>
+                    <div class="chk-profile-footer">
+                        <a class="btn btn-primary" id="btnCheckInNhapHoc">
+                            <i class="fa fa-paper-plane"></i>&nbsp;Tiếp nhận
+                        </a>
+                    </div>
+                </div>
+                <div class="box box-solid" style="display: none">
+                    <div class="box-header with-border">
+                        <h3 class="box-title" style="float: left"><i class="fa fa-money"></i> Tài chính</h3>
+                        <!--<div class="col-sm-3 item-search">
+                            <select id="dropHinhThucThu" class="select-opt"></select>
+                        </div>
+                        <div class="col-sm-3 item-search">
+                            <input id="txtNgayThu" class="form-control input-datepicker" placeholder="Ngày thu" />
+                        </div>-->
+                        <div class="pull-right" id="zoneSign_DaThuTien">
+
+                        </div>
+                    </div>
+                    <!-- zoneInput_ThuTien -->
+                    <div class="box-body zone-bus" id="zoneInput_ThuTien">
+                        <div class="zoneList-PhieuThu">
+                            <div class="pull-left">
+                                <span class="italic">- Số phiếu đã thu:</span> <span id="listPhieuThu_ThuTien"></span>
+                            </div>
+                            <div class="pull-right">
+                                <span class="italic">- Số phiếu đã hủy:</span> <span id="listPhieuThu_Huy_ThuTien"></span>
+                            </div>
+                            <div class="clear"></div>
+                        </div>
+                        <table id="tblKhoanNhapHoc_ThuTien" class="table table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="td-center td-fixed" rowspan="2">#</th>
+                                    <th class="td-left" rowspan="2">Tên phí</th>
+                                    <th class="td-center" colspan="4">Số tiền</th>
+                                    <th class="td-center" rowspan="2">Đơn vị</th>
+                                </tr>
+                                <tr>
+                                    <th class="td-right">Định mức</th>
+                                    <th class="td-right">Thực thu</th>
+                                    <th class="td-right">Đã thu</th>
+                                    <th class="td-right">Cần nộp</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!--Load from taichinh.js-->
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th class="td-right italic" colspan="2">Tổng</th>
+                                    <th class="td-right italic"><span id="lblTongDinhMuc_Chung_ThuTien"></span></th>
+                                    <th class="td-right italic"><span id="lblTongDinhMuc_ThuTien"></span></th>
+                                    <th class="td-right italic"><span id="lblTongDaThuThu_ThuTien"></span></th>
+                                    <th class="td-right italic"><span id="lblTongCanThu_ThuTien"></span></th>
+                                    <th class="td-center italic">vnđ</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <div class="box-header with-border">
+                        <h3 class="box-title" style="float: left"><i class="fa fa-money"></i> Tài chính</h3>
+                        <div class="col-sm-3 item-search">
+                            <select id="dropHinhThucThu" class="select-opt"></select>
+                        </div>
+                        <div class="col-sm-3 item-search">
+                            <input id="txtNgayThu" class="form-control input-datepicker" placeholder="Ngày thu" />
+                        </div>
+                        <!--<div class="pull-right" id="zoneSign_DaThuTien">
+
+                        </div>-->
+                    </div>
+                    <!-- zoneEdit_PhieuPhu -->
+                    <div class="box-body zone-bus" id="zoneEdit_PhieuDaThu">
+                        <div class="form-container">
+                            <div class="pull-left">
+                                <h3 class="color-active fc-title"><i class="fa fa-pencil"></i> Sửa số phiếu thu: <span class="color-warning" id="lblEdit_PhieuDaThu"></span></h3>
+                            </div>
+                            <div class="pull-right">
+                                <a class="btn btn-default btnClose" href="#"><i class="fa fa-times"></i></a>
+                            </div>
+                            <div class="clear"></div>
+                            <div class="col-sm-12">
+                                <table id="tblEdit_PhieuDaThu" class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th class="td-center td-fixed">#</th>
+                                            <th class="td-left">Tên phí</th>
+                                            <th class="td-right">Số tiền đã thu</th>
+                                            <th class="td-right">Số tiền điều chỉnh</th>
+                                            <th class="td-right">Đơn vị</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- /.from ruttien.js -->
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th class="td-center td-fixed"></th>
+                                            <th class="td-center">Hình thức</th>
+                                            <th class="td-right"><select id="dropHinhThucThu_Edit" class="select-opt"></select></th>
+                                            <th class="td-right">Ngày tạo</th>
+                                            <th class="td-right"><input id="txtNgayTao" class="form-control input-datepicker" /></th>
+                                        </tr>
+                                        <tr>
+                                            <th class="td-center" colspan="2">Tổng</th>
+                                            <th class="td-right"><span id="lblTongDaThu_ThuTien"></span></th>
+                                            <th class="td-right"><span id="lblTongSua_ThuTien"></span></th>
+                                            <th class="td-right">vnđ</th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- zoneEdit_PhieuPhu -->
+                    <div class="box-body zone-bus" id="zoneEdit_PhieuXuatHoaDon">
+                        <div class="form-container">
+                            <div class="pull-left">
+                                <h3 class="color-active fc-title"><i class="fa fa-pencil"></i> Chọn khoản cần xuất hóa đơn</h3>
+                            </div>
+                            <div class="pull-right">
+                                <a class="btn btn-default btnClose" href="#"><i class="fa fa-times"></i></a>
+                            </div>
+                            <div class="clear"></div>
+                            <div class="col-sm-12">
+                                <div class="pull-right" style="padding-bottom: 5px">
+                                    <a class="btn btn-primary" id="btnAddnewHoaDon" href="#"><i class="fa fa-paper-plane"></i> Xuất</a>
+                                </div>
+                                <div class="clear"></div>
+                                <table id="tblEdit_PhieuXuatHoaDon" class="table table-hover table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th class="td-center td-fixed">#</th>
+                                            <th class="td-center">Tên phí</th>
+                                            <th class="td-center">Nội dung</th>
+                                            <th class="td-center" style="width: 50px">Số lượng</th>
+                                            <th class="td-center" style="width: 150px">Số tiền</th>
+                                            <th class="td-center td-fixed"><input type="checkbox" id="chkSelectAll_PhieuXuatHoaDon"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- /.from ruttien.js -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="clear"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="zone-box" id="zoneList_PhieuDaThu" style="background:#fff; display: none">
+                    <div id="print_hoadon">
+                        <!--/Upload/Files/print_template/bienlaithuhocphi.html-->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row zone-action" id="zoneAction_Edit_PhieuDaThu">
+            <div class="pull-right">
+                <div class="btn-sms btn-sms-fixed" id="btnSave_Edit_PhieuDaThu">
+                    <a href="#" style="color:white">
+                        <i class="fa fa-pencil"></i> <br />
+                        <span>Lưu</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="row zone-action" id="zoneAction_Phieu" style="display: none">
+            <div class="pull-right">
+                <div class="btn-sms-fixed">
+                    <a class="btn btn-danger" id="btnCancle_HoaDon" style="font-size:17px; margin-right: 300px"><i class="fa fa-times fa-lg"></i> Hủy</a>
+                    <a class="btn btn-default" id="btnClose_HoaDon" style="font-size:17px; margin-right: 300px"><i class="fa fa-times-circle fa-lg"></i> Đóng</a>
+                    <a class="btn btn-primary" id="btnSave_HoaDon" style="font-size:27px"><i class="fa fa-paper-plane fa-lg"></i> Xuất hóa đơn</a>
+                    <a class="btn btn-primary" id="btnPrint_HoaDon" style="font-size:27px"><i class="fa fa-print fa-lg"></i> In</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="zoneThongTinHoaDon" class="col-sm-9 beforeActive" style="display: none; width: 100%">
+        <div id="zoneActionXuatHoaDon" style="float:left; margin-right: 3px;">
+        </div>
+        <div style="float:left; margin-right: 3px;">
+            <div id="btnHuyHoaDon" style="width:85px; text-align:center; background-color: #fff">
+                <a title="Hủy Hóa đơn" class="btn"><i class="fa fa-trash-o fa-4x color-red"></i></a>
+                <a class="color-active bold lbsymbolHD">Hủy Hóa đơn</a>
+            </div>
+        </div>
+        <div style="float: left; background: #fff !important">
+            <div id="MauInHoaDon"></div>
+        </div>
+        <div id="zoneActionHoaDon" style="float:left; margin-left: 3px">
+            <div id="btnInHoaDon" style="width:85px; text-align:center; background-color: #fff; border-bottom: 1px solid #f1f1f1">
+                <a title="In Hóa đơn" class="btn"><i style="color: #00a65a" class="fa fa-print fa-4x"></i></a>
+                <a class="color-active bold lbsymbolHD">In Hóa đơn</a>
+            </div>
+            <div id="btnCloseHoaDon" style="width:85px; text-align:center; background-color: #fff; border-bottom: 1px solid #f1f1f1">
+                <a title="Đóng Hóa đơn" class="btn"><i style="color: #337ab7" class="fa fa-angle-double-down fa-4x"></i></a>
+                <a class="color-active bold lbsymbolHD">Đóng Hóa đơn</a>
+            </div>
+            <div id="btnLienHoaDon" style="width:85px; text-align:center; background-color: #fff; border-bottom: 1px solid #f1f1f1">
+                <a title="Liên Hóa đơn" class="btn"><i style="color: #00a65a" class="fa fa fa-copy fa-4x"></i></a>
+                <div id="zoneLienHoaDon"></div>
+                <div class="clear"></div>
+                <a class="color-active bold lbsymbolHD">Liên hóa đơn</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="modal fade" id="myModalThanhToan" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 1000px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h3 class="box-title"><span class="myModalLabel"> <i class="fa fa-pencil"></i></span> Thanh toán </h3>
+            </div>
+            <div class="modal-body" id="modal_body">
+                <link href="https://fonts.googleapis.com/css2?family=Libre+Barcode+39+Extended+Text&display=swap" rel="stylesheet">
+                <span>Tiếp nhận thành công<br /><span class="italic" style="color: green; font-size: 40px" id="lblTiepNhapTT"></span></span>
+                <div id="tblQRNhapHoc" style="margin-top: 30px; margin-left: 30px">
+                    <table class="table table-hover table-bordered" style="font-size: 10px !important;margin-top: -30px; margin-left: -30px">
+                        <tbody style="margin-top: 10px">
+                            <tr>
+                                <td style="text-align: center; width: 100px; font-weight: bold; font-size: 13px" id="lblThuTuTT"> </td>
+                                <td style="text-align: center; font-weight: bold; text-transform: uppercase;" colspan="2" id="lblHoTenTT"></td>
+                            </tr>
+                            <tr>
+                                <td rowspan="2" id="lblQRTT"></td>
+                                <td style="text-align: center;" colspan="2" id="lblMaSVTT"></td>
+                            </tr>
+                            <tr>
+                                <td style="width: 60px; text-align: center; font-size: 15px" id="lblSoTienTT"></td>
+                                <td id="lblKetQuaTT"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+            </div>
+            <div class="clear"></div>
+            <div id="notify"></div>
+            <div class="modal-footer">
+                <a class="btn btn-primary" id="btnPrint_TT" style="font-size:27px"><i class="fa fa-print fa-lg"></i> In</a>
+                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times-circle-o"></i> <span class="lang" key="">Đóng</span></button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- page script -->
+<script src="/modules/taichinh/scripts/checkinnhaphoc.js?v=1.0.8.3"></script>
+<script src="/modules/taichinh/scripts/n2vi.min.js"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['CheckInNhapHoc'] = new CheckInNhapHoc();
+    $(document).ready(function () {
+        main_doc.CheckInNhapHoc.init();
+    });
+</script>

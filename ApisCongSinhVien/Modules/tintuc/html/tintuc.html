@@ -1,0 +1,588 @@
+<style>
+    #btntindaluu {
+        background-color: var(--orange);
+        color: white;
+    }
+
+    .file-data span {
+        max-width: unset;
+        align-items: center;
+        display: flex
+    }
+
+    /* ====== Filter/search bar polish ====== */
+    #zoneFilter {
+        background: #fff;
+        border: 1px solid #e6ebf5;
+        border-radius: 14px;
+        box-shadow: 0 2px 12px rgba(30, 60, 130, 0.06);
+        padding: 18px 22px 4px;
+        margin-bottom: 18px;
+    }
+
+    #zoneFilter .nav-content-left .link {
+        margin: 0 0 14px 0;
+        font-size: 15px;
+        font-weight: 600;
+        color: #1a3b8b;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    #zoneFilter .nav-content-left .link::before {
+        content: '\f1ea';
+        font-family: 'Font Awesome 5 Pro', 'Font Awesome 6 Pro', 'FontAwesome';
+        font-weight: 300;
+        color: #2563eb;
+        font-size: 18px;
+    }
+
+    #zoneFilter .nav-content-left .link a {
+        color: #1a3b8b;
+        text-decoration: none;
+    }
+
+    #zoneFilter .nav-content-left .link i {
+        font-size: 11px;
+        color: #94a3b8;
+        margin: 0 4px;
+    }
+
+    #zoneFilter .nav-content-right a {
+        color: #94a3b8;
+        font-size: 18px;
+        transition: color 0.2s ease;
+    }
+
+    #zoneFilter .nav-content-right a:hover {
+        color: #2563eb;
+    }
+
+    #zoneFilter .news-search-form {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        margin-bottom: 14px;
+    }
+
+    #zoneFilter .news-search-form .form-group {
+        margin-bottom: 0;
+        position: relative;
+    }
+
+    #zoneFilter .news-search-form .search-input {
+        flex: 1;
+        min-width: 240px;
+    }
+
+    #zoneFilter .news-search-form .date-input {
+        width: 170px;
+    }
+
+    #zoneFilter .news-search-form .form-control {
+        height: 42px;
+        padding-left: 40px;
+        border: 1px solid #e0e6f0;
+        border-radius: 10px;
+        background: #f8faff;
+        font-size: 14px;
+        transition: all 0.2s ease;
+    }
+
+    #zoneFilter .news-search-form .form-control:hover {
+        border-color: #c7d8f7;
+        background: #fff;
+    }
+
+    #zoneFilter .news-search-form .form-control:focus {
+        border-color: #2563eb;
+        background: #fff;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        outline: none;
+    }
+
+    #zoneFilter .news-search-form .form-label {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #8a94a8;
+        font-size: 14px;
+        margin: 0;
+        pointer-events: none;
+        z-index: 2;
+    }
+
+    #zoneFilter .news-search-form .btnSearchIcon {
+        pointer-events: auto;
+        cursor: pointer;
+    }
+
+    #zoneFilter .news-search-form .btnSearchIcon:hover {
+        color: #2563eb;
+    }
+
+    #zoneFilter .news-search-form .btn.btnSearch {
+        height: 42px !important;
+        width: auto !important;
+        min-width: 120px;
+        padding: 0 22px !important;
+        border-radius: 10px !important;
+        background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+        color: #fff !important;
+        font-weight: 500;
+        font-size: 14px;
+        border: none !important;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        line-height: 1;
+        margin: 0;
+    }
+
+    #zoneFilter .news-search-form .btn.btnSearch::before {
+        display: none !important;
+    }
+
+    #zoneFilter .news-search-form .btn.btnSearch:hover {
+        background: linear-gradient(135deg, #1d4ed8, #1e40af) !important;
+        border: none !important;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35) !important;
+    }
+
+    #zoneFilter .nav-news {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin: 0;
+        border-top: 1px dashed #eef1f7;
+        padding: 12px 0;
+    }
+
+    #zoneFilter .nav-news a {
+        margin: 0;
+        color: #4a5568;
+        background: #f4f6fb;
+        padding: 7px 16px;
+        border-radius: 20px;
+        font-size: 13.5px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+    }
+
+    #zoneFilter .nav-news a::before,
+    #zoneFilter .nav-news a::after {
+        display: none !important;
+        content: none !important;
+    }
+
+    #zoneFilter .nav-news a:hover {
+        background: #e8efff;
+        color: #2563eb;
+    }
+
+    #zoneFilter .nav-news a.active {
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        color: #fff !important;
+        font-weight: 600;
+        box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+    }
+
+    /* ====== Layout 2 cot: Tin dao tao (chinh) + Nha truong/Hoat dong SV (phu) ====== */
+    #zonetintuc .tintuc-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 18px;
+        align-items: start;
+    }
+    #zonetintuc .tintuc-side {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+    }
+    #zonetintuc .tintuc-main .news-group,
+    #zonetintuc .tintuc-side .news-group { margin-bottom: 0; }
+    #zonetintuc .tintuc-side .news-group-title { font-size: 13.5px; }
+    #zonetintuc .tintuc-side .news-group-header { padding: 10px 16px; }
+    #zonetintuc .tintuc-side .news-group-body { padding: 2px 16px; }
+    #zonetintuc .tintuc-side .news-group-item { padding: 8px 0; gap: 10px; }
+    #zonetintuc .tintuc-side .news-group-item-title { font-size: 13.5px; }
+    #zonetintuc .tintuc-side .news-group-item-meta { font-size: 11.5px; }
+    @media (max-width: 992px) {
+        #zonetintuc .tintuc-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ====== News grouped by don vi ====== */
+    .news-group {
+        background: #fff;
+        border: 1px solid #e6ebf5;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(30, 60, 130, 0.05);
+        margin-bottom: 18px;
+        overflow: hidden;
+    }
+
+    .news-group-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 20px;
+        background: linear-gradient(90deg, #eff4ff, #f8faff);
+        border-bottom: 2px solid #2563eb;
+    }
+
+    .news-group-title {
+        font-size: 15px;
+        font-weight: 700;
+        color: #1a3b8b;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .news-group-title::before {
+        content: '';
+        display: inline-block;
+        width: 4px;
+        height: 18px;
+        background: #2563eb;
+        border-radius: 2px;
+    }
+
+    .news-group-more {
+        font-size: 12.5px;
+        font-weight: 500;
+        color: #2563eb;
+        padding: 4px 14px;
+        border: 1px solid #c7d8f7;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        background: #fff;
+    }
+
+    .news-group-more:hover {
+        background: #2563eb;
+        color: #fff;
+        border-color: #2563eb;
+    }
+
+    .news-group-body {
+        padding: 4px 20px;
+    }
+
+    .news-group-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 10px 0;
+        border-bottom: 1px dashed #eef1f7;
+        cursor: pointer;
+        transition: padding-left 0.2s ease;
+    }
+
+    .news-group-item:last-child {
+        border-bottom: none;
+    }
+
+    .news-group-item:hover {
+        padding-left: 4px;
+    }
+
+    .news-group-item:hover .news-group-item-title {
+        color: #2563eb;
+    }
+
+    .news-group-item-icon {
+        flex-shrink: 0;
+        width: 20px;
+        color: #2563eb;
+        font-size: 14px;
+        padding-top: 2px;
+        text-align: center;
+    }
+
+    .news-group-item-content {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .news-group-item-title {
+        font-size: 14.5px;
+        font-weight: 500;
+        color: #212529;
+        line-height: 1.5;
+        margin-bottom: 3px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        transition: color 0.15s ease;
+    }
+
+    .news-group-item-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        font-size: 12.5px;
+        color: #8a94a8;
+    }
+
+    .news-group-item-meta i {
+        margin-right: 4px;
+        color: #94a3b8;
+    }
+
+    .news-group-empty {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 26px 0;
+        color: #a5adbf;
+        font-size: 13.5px;
+        font-style: italic;
+    }
+
+    .news-group-empty i {
+        font-size: 22px;
+        color: #cbd3e0;
+    }
+
+    /* ====== News detail polish ====== */
+    #newsdetail.news-detail {
+        padding: 32px 40px;
+        border-radius: 12px;
+        border: 1px solid #e6ebf5;
+        background: #fff;
+        animation: newsFadeIn 0.25s ease;
+    }
+
+    @keyframes newsFadeIn {
+        from { opacity: 0; transform: translateY(6px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    #newsdetail .title {
+        font-size: 22px;
+        font-weight: 700;
+        color: #1a3b8b;
+        line-height: 1.4;
+        padding-bottom: 14px;
+        border-bottom: 2px solid #eef2f8;
+        margin-bottom: 16px;
+    }
+
+    #newsdetail .meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        padding: 10px 14px;
+        background: #f8faff;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        font-size: 13px;
+    }
+
+    #newsdetail .meta .cate-link {
+        color: #2563eb;
+        font-weight: 500;
+    }
+
+    #newsdetail .meta i {
+        color: #2563eb;
+    }
+
+    #newsdetail .news-content {
+        font-size: 14.5px;
+        line-height: 1.75;
+        color: #2d3748;
+    }
+
+    #newsdetail .news-content p {
+        margin-bottom: 10px;
+    }
+
+    #newsdetail .txtFileDinhKem {
+        margin-top: 18px;
+    }
+
+    #newsdetail .line {
+        border-top: 1px dashed #e6ebf5;
+        margin: 22px 0 18px;
+    }
+
+    #newsdetail .group-btn {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    #newsdetail .group-btn .btnClose {
+        padding: 8px 18px;
+        border: 1px solid #d9deeb;
+        border-radius: 22px;
+        color: #4a5568;
+        font-size: 13.5px;
+        transition: all 0.2s ease;
+        background: #fff;
+    }
+
+    #newsdetail .group-btn .btnClose:hover {
+        border-color: #2563eb;
+        color: #2563eb;
+    }
+
+    #newsdetail .group-btn #btnLuuDanhDau,
+    #newsdetail .group-btn #btntindaluu {
+        padding: 8px 18px;
+        border-radius: 22px;
+        font-size: 13.5px;
+        border: 1px solid var(--orange, #f97316);
+        color: var(--orange, #f97316);
+        transition: all 0.2s ease;
+        background: #fff;
+    }
+
+    #newsdetail .group-btn #btnLuuDanhDau:hover {
+        background: var(--orange, #f97316);
+        color: #fff;
+    }
+
+    #newsdetail .group-btn #btntindaluu {
+        background: var(--orange, #f97316);
+        color: #fff;
+    }
+
+    #newsdetail .comments {
+        margin-top: 30px;
+        padding-top: 22px;
+        border-top: 2px solid #eef2f8;
+    }
+</style>
+<div class="one-door study-space">
+    <div class="content-tab no-tab content-search" id="zoneFilter">
+        <div class="d-flex justify-content-between">
+            <div class="nav-content-left">
+                <p class="link"><a href="#">Tin tức</a><i class="fal fa-angle-right"></i><a href="#">Toàn bộ</a></p>
+            </div>
+
+            <div class="nav-content-right">
+                <a class="d-block text-right" href=""><i class="fas fa-question-circle"></i></a>
+            </div>
+        </div>
+        <div class="news-search-form">
+            <div class="form-group search-input">
+                <label for="search_input" class="form-label btnSearchIcon"><i class="fal fa-search"></i></label>
+                <input class="form-control" id="txtSearch_TuKhoa" placeholder="Tìm kiếm thông tin">
+
+            </div>
+            <div class="form-group date-input">
+                <label for="txtSearch_TuNgay" class="form-label"><i class="fal fa-calendar-alt"></i></label>
+                <input class="form-control input-datepicker" id="txtSearch_TuNgay" placeholder="Từ ngày" value="">
+
+            </div>
+            <div class="form-group date-input">
+                <label for="txtSearch_DenNgay" class="form-label"><i class="fal fa-calendar-alt"></i></label>
+                <input class="form-control input-datepicker" id="txtSearch_DenNgay" placeholder="Đến ngày" value="">
+
+            </div>
+            <button class="btn btnSearch" id="">Tìm kiếm</button>
+        </div>
+        <div class="nav-news" id="zoneDonVi">
+            <a class="active nav-new-item" href="#">Toàn bộ</a>
+        </div>
+    </div>
+
+    <div class="news-page container-fluid">
+        <div class="row">
+            <div class="col-12 col-lg-9" id="zoneMainNews">
+                <div class="zone-bus" id="zonetintuc">
+
+                </div>
+                <div class="box-shadow news-detail zone-bus" id="newsdetail" style="display: none">
+                    <h4 class="title" id="newstitle"></h4>
+
+                    <div class="meta">
+                        <a class="cate-link" href=""><i class="fas fa-caret-right me-1"></i><span
+                                id="newscoso"></span></a>
+                        <p class="mb-0 ms4"><i class="fal fa-calendar-alt me-1"></i><span id="newsngay"></span></p>
+                    </div>
+                    <div class="news-content" id="newscontent">
+                    </div>
+
+                    <div class="news-content txtFileDinhKem" id="txtFileDinhKem">
+                    </div>
+                    <div class="line"></div>
+                    <div class="group-btn">
+                        <a href="#" class="btnClose"><i class="fal fa-chevron-left me-1"></i> Quay lại</a>
+                        <a class="color-orange" id="btnLuuDanhDau" href="#">Lưu đánh dấu<i
+                                class="fal fa-bookmark ms-2"></i></a>
+                        <a id="btntindaluu" href="#" style="display: none">Đã lưu<i
+                                class="fal fa-bookmark ms-2"></i></a>
+                    </div>
+                    <div class="comments mt-3">
+                        <p class="fs-18 fst-italic fw-bold text-decoration-underline mb-5">Ý kiến cá nhân</p>
+                        <div class="news-search-form">
+                            <div class="form-group date-input" style="max-width: unset">
+
+                                <textarea class="form-control txtNoiDungTinNhan" rows="3" id="txtNoiDungTinNhan"
+                                    placeholder="Bạn nghĩ gì về tin này?"></textarea>
+                                <label for="start_date_input" id="btnGuiTin" class="form-label"
+                                    style="top:20px; right: 15px; cursor: pointer;">Gửi</label>
+
+                            </div>
+                        </div>
+                        <div class="commented">
+                            <div class="com-label  position-relative">
+                                <div class="group d-flex align-items-center bg-white pe-4">
+                                    <img src="assets/images/comment-icon.png">
+                                    <span class="fs-18 fw-bold ms-2" id="lblTongBinhLuan">Bình luận (0)</span>
+                                </div>
+                            </div>
+                            <div id="commented">
+
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+            <div class="col-12 col-lg-3 block-news" id="zonetindadanhdau" style="display: none">
+                <div class="box-shadow">
+                    <div class="dashboad-cate-title">
+                        <span class="icon"></span>
+                        <span>Tin đã đánh dấu</span>
+                    </div>
+                    <div class="row news-list" id="tindanhdau">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="modules/tintuc/script/tintuc.js?v=1.0.2.7"></script>
+<script src="modules/tintuc/script/crypto-js.js"></script>
+<script type="text/javascript">
+    //var main_doc = {};
+    if (!main_doc) var main_doc = {};
+    main_doc['TinTuc'] = new TinTuc();
+    $(document).ready(function () {
+        main_doc.TinTuc.init();
+    });
+</script>

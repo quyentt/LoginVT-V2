@@ -1,0 +1,939 @@
+﻿<style>
+    .table-hoadon {
+        text-align: center;
+    }
+
+        .table-hoadon td {
+            font-size: 11pt;
+            font-family: 'Times New Roman';
+            border: 1px solid black;
+        }
+
+        .table-hoadon th {
+            font-size: 11pt;
+            font-family: 'Times New Roman';
+            text-align: center;
+        }
+
+    .table-hoadon {
+        width: 100%;
+        border: 1px solid black;
+    }
+
+    .row_add {
+        max-height: 25px;
+        height: 25px;
+        text-align: left;
+    }
+
+    .dropdown-menu {
+        border-radius: 0px;
+        margin: 1px 0 0;
+    }
+
+    table label {
+        margin-bottom: 0px !important
+    }
+
+    table input {
+        border: none;
+    }
+
+    .ns-title {
+        font-size: 16px !important;
+    }
+
+    .ns-value {
+        font-size: 16px !important;
+    }
+
+    .activeOnSearch, .activeSelect {
+        background-color: #f1f1f1;
+    }
+
+    #zoneMainContent fieldset {
+        border: 1px solid #cfd4d8;
+        margin: 0;
+        min-width: 0;
+        padding: 10px;
+    }
+
+    #zoneMainContent legend {
+        color: black;
+        border: none !important;
+        /*border-bottom: 1px solid #cfd4d8 !important;*/
+        opacity: 0.8;
+        margin-bottom: 0px !important;
+    }
+
+
+    .fieldset {
+        border: 1px solid #cfd4d8;
+        margin: 0;
+        min-width: 0;
+        padding: 10px;
+    }
+
+    .legend {
+        color: black;
+        border: none !important;
+        /*border-bottom: 1px solid #cfd4d8 !important;*/
+        opacity: 0.8;
+        margin-bottom: 0px !important;
+    }
+
+    #zoneBienLaiHoaDon {
+        padding-left: 20%
+    }
+
+    .btnChiTietKhoanThu, .btnChiTietKhoanThu, .actionThuTien_PhieuThu, .actionKhoiDongHoaDon, .anouChuaHoTro_PhieuThu {
+        cursor: pointer;
+    }
+
+    .table-hoadon input {
+        width: 100%;
+        text-align: center;
+    }
+
+    .trangthaiHS {
+        width: 100px;
+        border-radius: 0px;
+        margin-top: -1px
+    }
+
+    .progress {
+        margin-bottom: 5px;
+    }
+
+    #zoneSinhVien {
+        font-size: 24px
+    }
+
+    .inputsotien {
+        text-align: right;
+        font-size: 20px;
+        padding-right: 10px;
+        border: 1px #f1f1f1 solid;
+    }
+
+    .inputnoidung {
+        text-align: left;
+        border: 1px #f1f1f1 solid;
+        height: 32px;
+        width: 100%;
+    }
+
+    @media only screen and (max-width: 1600px) {
+        #lblNangCao {
+            display: none;
+        }
+    }
+
+    .lbsymbolHD {
+        font-size: 13px;
+        font-family: 'Times New Roman', Times, serif;
+        cursor: pointer;
+    }
+
+    .activeLien {
+        background: rgba(0, 0, 0, 0) -moz-linear-gradient(center top, #bbbbbb 0%, #efefef 100%) repeat scroll 0 0 !important;
+    }
+
+    /* ═══════════ Màn hình HÓA ĐƠN — phôi in ở giữa + action bar cố định đáy ═══════════ */
+    #zoneThongTinHoaDon .aps-hd-phoi {
+        background: #fff;
+        margin: 0 auto 120px auto;
+        padding: 24px 28px;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        box-shadow: 0 2px 14px rgba(0, 0, 0, 0.08);
+        width: fit-content;
+        min-width: 720px;
+        max-width: 100%;
+        overflow-x: auto;
+    }
+
+    /* Action bar chia HẲN 2 BÊN: trái = Hủy + phương thức xuất | phải = In/Liên/Đổi mẫu + Đóng */
+    #zoneThongTinHoaDon .aps-hd-actionbar {
+        position: fixed;
+        bottom: 0;
+        left: 300px;
+        right: 0;
+        z-index: 999;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        background: #fff;
+        padding: 14px 28px;
+        border-top: 2px solid #e2e8f0;
+        box-shadow: 0 -4px 16px rgba(15, 23, 42, 0.10);
+    }
+
+    body.sidebar-collapse #zoneThongTinHoaDon .aps-hd-actionbar {
+        left: 50px;
+    }
+
+    #zoneThongTinHoaDon .aps-hd-left,
+    #zoneThongTinHoaDon .aps-hd-right,
+    #zoneThongTinHoaDon .aps-hd-group {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    /* Nhóm phải LUÔN dính lề phải, kể cả khi bên trái đang bị ẩn hết */
+    #zoneThongTinHoaDon .aps-hd-right {
+        margin-left: auto;
+    }
+
+    /* Kích thước chuẩn: TO, dễ bấm. Thẻ BỌC NGOÀI làm nút, 2 thẻ <a> con là thành phần bên trong */
+    #zoneThongTinHoaDon .btnXuat_HDDT,
+    #zoneThongTinHoaDon #btnSaveHD,
+    #zoneThongTinHoaDon #btnHuyHoaDon,
+    #zoneThongTinHoaDon #btnInHoaDon,
+    #zoneThongTinHoaDon #btnCloseHoaDon,
+    #zoneThongTinHoaDon #btnLienHoaDon,
+    #zoneThongTinHoaDon #btnChuyenMauIn {
+        display: inline-flex !important;
+        align-items: center;
+        gap: 10px;
+        width: auto !important;
+        height: 48px;
+        padding: 0 22px !important;
+        margin: 0 !important;
+        font-size: 15px !important;
+        font-weight: 600;
+        line-height: 1;
+        white-space: nowrap;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all .15s ease;
+        text-align: left !important;
+    }
+
+    #zoneThongTinHoaDon .aps-hd-actionbar .btn,
+    #zoneThongTinHoaDon .aps-hd-actionbar .lbsymbolHD {
+        height: auto !important;
+        width: auto !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        background: transparent !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        color: inherit !important;
+        font-family: inherit !important;
+        font-size: 15px !important;
+        font-weight: 600 !important;
+        line-height: 1 !important;
+        display: inline-flex !important;
+        align-items: center;
+        float: none !important;
+    }
+
+    /* Icon fa-4x của phôi cũ -> về cỡ thường, ăn màu của nút cha */
+    #zoneThongTinHoaDon .aps-hd-actionbar .btn i,
+    #zoneThongTinHoaDon .aps-hd-actionbar .fa-4x {
+        font-size: 18px !important;
+        color: inherit !important;
+        margin-right: 10px;
+    }
+
+    /* PHƯƠNG THỨC XUẤT (HĐĐT / nháp) — CTA chính, filled navy */
+    #zoneThongTinHoaDon .btnXuat_HDDT,
+    #zoneThongTinHoaDon #btnSaveHD {
+        background: #223771 !important;
+        color: #fff !important;
+        border: 2px solid #223771 !important;
+        box-shadow: 0 3px 10px rgba(34, 55, 113, 0.28);
+    }
+
+    #zoneThongTinHoaDon .btnXuat_HDDT:hover,
+    #zoneThongTinHoaDon #btnSaveHD:hover {
+        background: #162550 !important;
+        border-color: #162550 !important;
+        box-shadow: 0 5px 16px rgba(34, 55, 113, 0.40);
+    }
+
+    /* In / Liên / Đổi mẫu in — outline cùng tone navy */
+    #zoneThongTinHoaDon #btnInHoaDon,
+    #zoneThongTinHoaDon #btnLienHoaDon,
+    #zoneThongTinHoaDon #btnChuyenMauIn {
+        background: #fff !important;
+        color: #223771 !important;
+        border: 2px solid #223771 !important;
+    }
+
+    #zoneThongTinHoaDon #btnInHoaDon:hover,
+    #zoneThongTinHoaDon #btnLienHoaDon:hover,
+    #zoneThongTinHoaDon #btnChuyenMauIn:hover {
+        background: #223771 !important;
+        color: #fff !important;
+    }
+
+    /* Đóng — grey outline, nhẹ nhất */
+    #zoneThongTinHoaDon #btnCloseHoaDon {
+        background: #fff !important;
+        color: #475569 !important;
+        border: 2px solid #cbd5e1 !important;
+    }
+
+    #zoneThongTinHoaDon #btnCloseHoaDon:hover {
+        background: #f1f5f9 !important;
+        border-color: #94a3b8 !important;
+        color: #0f172a !important;
+    }
+
+    /* Hủy — destructive, filled đỏ, ngoài cùng bên trái */
+    #zoneThongTinHoaDon #btnHuyHoaDon {
+        background: #dc2626 !important;
+        color: #fff !important;
+        border: 2px solid #dc2626 !important;
+        box-shadow: 0 3px 10px rgba(220, 38, 38, 0.28);
+    }
+
+    #zoneThongTinHoaDon #btnHuyHoaDon:hover {
+        background: #b91c1c !important;
+        border-color: #b91c1c !important;
+    }
+
+    #zoneThongTinHoaDon #btnHuyHoaDon .color-red {
+        color: #fff !important;
+    }
+
+    /* Danh sách liên / menu đổi mẫu in bung LÊN TRÊN vì bar nằm sát đáy */
+    #zoneThongTinHoaDon #btnLienHoaDon,
+    #zoneThongTinHoaDon #btnChuyenMauIn {
+        position: relative;
+    }
+
+    #zoneThongTinHoaDon #zoneLienHoaDon:not(:empty) {
+        position: absolute;
+        bottom: 58px;
+        right: 0;
+        min-width: 180px;
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        box-shadow: 0 -4px 14px rgba(0, 0, 0, 0.12);
+        padding: 6px;
+        z-index: 1000;
+    }
+
+    #zoneThongTinHoaDon #btnChuyenMauIn .dropdown-menu {
+        bottom: 58px;
+        top: auto;
+        right: 0;
+        left: auto;
+        border-radius: 8px;
+    }
+
+    #zoneThongTinHoaDon .aps-hd-notify {
+        text-align: center;
+    }
+
+    @media (max-width: 1200px) {
+        #zoneThongTinHoaDon .aps-hd-actionbar {
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+    }
+</style>
+<div id="MainContent">
+    <!-- Main content -->
+    <section class="content">
+        <div class="row" style="background-color: #f1f1f1 !important">
+            <!-- /.left-content -->
+            <div class="col-sm-3" id="zoneTimKiemSinhVien">
+                <div class="box box-solid">
+                    <div class="box-body">
+                        <!-- /.search -->
+                        <div class="dropdown">
+                            <!-- /.search-header -->
+                            <input id="txtTuKhoa_Search" class="form-control" placeholder="Nhập Mã HS, Họ tên" />
+                            <button id="btnSeachSinhVien" type="submit" name="search" class="btn btn-link"><i class="fa fa-search"></i></button>
+                            <a id="advancedSearch" data-toggle="dropdown" class="btn btn-default dropdown-toggle form-control"> <i id="search_down" class="fa fa-chevron-down"></i></a>
+                            <!-- /.search-body -->
+                            <div class="dropdown-menu">
+                                <div class="drop-sel">
+                                    <select id="dropSearch_HeDaoTao_HD" class="select-opt" style="width: 100% !important">
+                                        <option value="">--Chọn hệ đào tạo-- </option>
+                                    </select>
+                                </div>
+                                <div class="drop-sel">
+                                    <select id="dropSearch_KhoaDaoTao_HD" class="select-opt" style="width: 100% !important">
+                                        <option value="">--Chọn khóa đào tạo-- </option>
+                                    </select>
+                                </div>
+                                <div class="drop-sel">
+                                    <select id="dropSearch_ChuongTrinh_HD" class="select-opt" style="width: 100% !important">
+                                        <option value="">--Chọn chương trình-- </option>
+                                    </select>
+                                </div>
+                                <div class="drop-sel">
+                                    <select id="dropSearch_Lop_HD" class="select-opt" style="width: 100% !important">
+                                        <option value="">--Chọn lớp-- </option>
+                                    </select>
+                                </div>
+                                <div class="drop-sel">
+                                    <div class="group-title">
+                                        <p class="titleSearchContent" data-toggle="collapse" data-target="#DSTrangThaiSV">
+                                            <i class="fa fa-window-restore">
+                                            </i> <span class="lang" key="">Trạng thái sinh viên</span>
+                                        </p>
+                                    </div>
+                                    <div class="area-search">
+                                        <div style="padding-left: 25px" id="DSTrangThaiSV" class="inputSearch collapse in">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="pull-right" style="padding: 10px">
+                                    <a id="btnSearch" class="btn btn-primary"><i class="fa fa-search"></i><span class="lang" key="">Tìm kiếm</span></a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- /.rerult search -->
+                        <div class="zoneInfomation_MainContent">
+                            <div class="box">
+                                <!-- /.box-body -->
+                                <div class="box-footer">
+                                    <table id="tbldata_HSSV" class="table" style="text-align: left">
+                                        <tbody class="poiter"></tbody>
+                                    </table>
+                                </div>
+                                <!-- /.box-footer-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="zoneThongTinDoiTuong" class="col-sm-9 beforeActive" style="display: none">
+                <!-- /.right-content -UP -->
+                <div class="box box-solid">
+                     <div class="box-body">
+                        <div id="zoneSinhVien" class="header pull-left">
+                            <span class="label label-success" id="txtTinhTrang">[TinhTrang SinhVien]</span>
+                            <span id="txtTen_Ma_NS_SDT">[HOTEN-MASO-SDT]</span>
+                            <span id="lbSoTienDaChon" style="color: red"></span>
+                        </div>
+                            
+                        <div class="pull-right" style="margin-top: 10px; padding-right: 10px">
+                            <a class="btn" id="btnClose_DoiTuong" style="border: 1px solid #0099cc;"><i class="fa fa-angle-double-up"></i> <span class="lang" key=""> Đóng</span></a>
+                        </div>
+                        <div class="clear"></div>
+                        <div class="nav-tabs-custom">
+                            <ul class="nav nav-tabs" style="font-weight: bold">
+                                <li class="tablinks active"><a href="#tab_1" data-toggle="tab" aria-expanded="true">Các khoản đã nộp</a></li>
+                                <li class="tablinks"><a href="#tab_1_2" data-toggle="tab" aria-expanded="false">Các khoản đã xuất hóa đơn</a></li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="tab_1">
+                                    <div class="row row-tab row-align">
+                                        <div class="pull-right">
+                                            <a id="btnAddnewHoaDon" class="btn btn-primary btnVietPhieu"><i class="fa fa-inbox"></i> <span class="lang" key="">Xuất hóa đơn</span></a>
+                                        </div>
+                                        <div class="clear"></div>
+                                        <div class="zone-content scroll-table-x">
+                                            <table id="tbldata_HoaDon" class="table table-hover table-bordered tablecenter">
+                                                <thead>
+                                                    <tr>
+                                                        <th style="width:40px">Stt</th>
+                                                        <th style="width: 100px"><span class="lang" key="">Học kỳ</span></th>
+                                                        <th style="width: 30px"><span class="lang" key="">Đợt</span></th>
+                                                        <th><span class="lang" key="">Khoản thu</span></th>
+                                                        <th><span class="lang" key="">Nội dung</span></th>
+                                                        <th class="td-right" style="width: 70px"><span class="lang" key="">Số tiền</span></th>
+                                                        <th class="td-center" style="width: 80px"><span class="lang" key="">Ngày tạo</span></th>
+                                                        <th class="td-right" style="width: 95px"><span class="lang" key="">Tách khoản</span></th>
+                                                        <th style="width:40px; text-align:center">
+                                                            <input type="checkbox" name="chkSelectAll_HoaDon" id='chkSelectAll_HoaDon' />
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                </tbody>
+                                                <tfoot></tfoot>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane" id="tab_2">
+                                    <div class="row row-tab row-align">
+                                        <div class="pull-right">
+                                            <a id="btnAddnewHoaDonQuaBank" class="btn btn-primary btnVietPhieu"><i class="fa fa-inbox"></i> <span class="lang" key="">Xuất hóa đơn</span></a>
+                                        </div>
+                                        <div class="clear"></div>
+                                        <div class="zone-content scroll-table-x">
+                                            <table id="tbldata_HoaDon_QuaBank" class="table table-hover table-bordered tablecenter">
+                                                <thead>
+                                                    <tr>
+                                                        <th style="width:40px">Stt</th>
+                                                        <th style="width: 100px"><span class="lang" key="">Học kỳ</span></th>
+                                                        <th style="width: 30px"><span class="lang" key="">Đợt</span></th>
+                                                        <th><span class="lang" key="">Khoản thu</span></th>
+                                                        <th><span class="lang" key="">Nội dung</span></th>
+                                                        <th class="td-right" style="width: 70px"><span class="lang" key="">Số tiền</span></th>
+                                                        <th class="td-right" style="width: 95px"><span class="lang" key="">Tách khoản</span></th>
+                                                        <th style="width:40px; text-align:center">
+                                                            <input type="checkbox" name="chkSelectAll_HoaDon_QuaBank" id='chkSelectAll_HoaDon_QuaBank' />
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                </tbody>
+                                                <tfoot></tfoot>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane" id="tab_1_2">
+                                    <div class="row row-tab row-align">
+                                        <div class="zone-content scroll-table-x">
+                                            <table id="tbldata_HDDaXuat" class="table table-hover table-bordered tablecenter">
+                                                <thead>
+                                                    <tr>
+                                                        <th style="width:40px">Stt</th>
+                                                        <th style="width: 70px"><span class="lang" key="">Số hóa đơn</span></th>
+                                                        <th style="width: 100px"><span class="lang" key="">Học kỳ</span></th>
+                                                        <th style="width: 30px"><span class="lang" key="">Đợt</span></th>
+                                                        <th><span class="lang" key="">Khoản thu</span></th>
+                                                        <th><span class="lang" key="">Nội dung</span></th>
+                                                        <th style="width: 70px" class="td-right"><span class="lang" key="">Số tiền</span></th>
+                                                        <th style="width: 100px"><span class="lang" key="">Người tạo</span></th>
+                                                        <th style="width: 80px"><span class="lang" key="">Ngày tạo</span></th>
+                                                        <th class="td-center" style="width: 40px">Chi tiết</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                </tbody>
+                                                <tfoot></tfoot>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> 
+                    </div>
+                </div>
+
+                <div class="box box-solid">
+                     <div class="box-header with-border">
+                        <h1 class="box-title"><i class="fa fa-balance-scale color-default"></i> Tình trạng học phí</h1>
+                         <div class="box-tools pull-right">
+                            <div class="clearfix noco-hoadon">
+                            </div>
+                         </div>
+                     </div>
+                     <div class="box-body">
+                        <div class="row-align zoneThongTinBoSung">
+                            <div class="col-lg-3 btnChiTietKhoanThu" href="#zoneChiTietDuocMien">
+                                <!-- small box -->
+                                <div class="small-box bg-aqua" style="background-color: #00c0ef !important">
+                                    <div class="inner">
+                                        <h4><span id="txtSoHienThi_DuocMien">0</span><sup style="font-size: 20px"></sup></h4>
+                                        <p>Khoản được miễn</p>
+                                    </div>
+                                    <div class="icon">
+                                        <i class="ion ion-bag"></i>
+                                    </div>
+                                    <a class="small-box-footer">Chi tiết <i class="fa fa-arrow-circle-right"></i></a>
+                                </div>
+                            </div>
+                            <!-- ./col -->
+
+                            <div class="col-lg-3">
+                                <!-- small box -->
+                                <div class="small-box bg-green btnChiTietKhoanThu" href="#zoneChiTietDaNop">
+                                    <div class="inner">
+                                        <h4><span id="txtSoHienThi_DaNop">0</span><sup style="font-size: 20px"></sup></h4>
+                                        <p>Khoản đã nộp</p>
+                                    </div>
+                                    <div class="icon">
+                                        <i class="fa fa-credit-card"></i>
+                                    </div>
+                                    <a class="small-box-footer">Chi tiết <i class="fa fa-arrow-circle-right"></i></a>
+                                </div>
+                            </div>
+                            <!-- ./col -->
+                            
+                            <div class="col-lg-3">
+                                <!-- small box -->
+                                <div class="small-box bg-yellow btnChiTietKhoanThu" href="#zonePhieuDaThu">
+                                    <div class="inner">
+                                        <h4><span id="txtSoHienThi_PhieuDaThu">0</span></h4>
+                                        <p>Danh sách các phiếu đã thu</p>
+                                    </div>
+                                    <div class="icon">
+                                        <i class="fa fa-indent"></i>
+                                    </div>
+                                    <a class="small-box-footer">Chi tiết <i class="fa fa-arrow-circle-right"></i></a>
+                                </div>
+                            </div>
+                            <!-- ./col -->
+
+                            <div class="col-lg-3">
+                                <!-- small box -->
+                                <div class="small-box bg-red btnChiTietKhoanThu" href="#zoneTongNoChung">
+                                    <div class="inner">
+                                        <h4><span id="txtSoHienThi_NoChungCacKhoan">0</span><sup style="font-size: 20px"></sup></h4>
+                                        <p>Tổng hợp nợ chung các khoản</p>
+                                    </div>
+                                    <div class="icon">
+                                        <i class="fa fa-meh-o"></i>
+                                    </div>
+                                    <a class="small-box-footer">Chi tiết <i class="fa fa-arrow-circle-right"></i></a>
+                                </div>
+                            </div>
+                            <!-- ./col -->
+                        </div>
+                        <div class="row-align chitietkhoanthu" id="zoneChiTietDuocMien" style="display: none">
+                            <div class="pull-left" style="padding-left: 10px">
+                                <div class="group-title">
+                                    <p class="titleSearchContent"><i class="fa fa-window-restore">
+                                        </i> <span class="lang" key="">Danh sách khoản được miễn</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="pull-right" style="padding-right: 15px">
+                                <a class="btn btn-default refreshKhoanKhu" href="#zoneChiTietDuocMien"><i class="fa fa-refresh"></i> <span class="lang" key="">Tải lại</span></a>
+                                <a class="btn btn-default btnCloseKhoanThu"><i class="fa fa-close"></i> <span class="lang" key="">Đóng</span></a>
+                            </div>
+                            <div class="clear"></div>
+                            <div class="table-responsive">
+                                <div class="scroll-table-x">
+                                    <table id="tblChiTietDuocMien" class="table no-margin">
+                                        <thead>
+                                            <tr>
+                                                <th class="td-center td-fixed">Stt</th>
+                                                <th class="td-center">Học kỳ</th>
+                                                <th class="td-center">Đợt</th>
+                                                <th class="td-left">Loại khoản</th>
+                                                <th class="td-left">Nội dung</th>
+                                                <th class="td-right">Số tiền được miễn</th>
+                                                <th class="td-center" style="width: 120px">Ngày tạo</th>
+                                                <th class="td-center">Người tạo</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!--Load from js-->
+                                        </tbody>
+                                        <tfoot>
+                                            <!--Load from js-->
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                            <!-- /.table-responsive -->
+                        </div>
+
+                        <div class="row-align chitietkhoanthu" id="zoneChiTietDaNop" style="padding-top: 5px; display: none">
+                            <div class="pull-left" style="padding-left: 10px">
+                                <div class="group-title">
+                                    <p class="titleSearchContent"><i class="fa fa-window-restore">
+                                        </i> <span class="lang" key="">Danh sách khoản đã nộp</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="pull-right" style="padding-right: 15px">
+                                <a class="btn btn-default refreshKhoanKhu" href="#zoneChiTietDaNop"><i class="fa fa-refresh"></i> <span class="lang" key="">Tải lại</span></a>
+                                <a class="btn btn-default btnCloseKhoanThu"><i class="fa fa-close"></i> <span class="lang" key="">Đóng</span></a>
+                            </div>
+                            <div class="clear"></div>
+                            <div class="table-responsive">
+                                <div class="scroll-table-x">
+                                    <table id="tblChiTietDaNop" class="table no-margin">
+                                        <thead>
+                                            <tr>
+                                                <th class="td-center td-fixed">Stt</th>
+                                                <th class="td-center">Học kỳ</th>
+                                                <th class="td-center">Đợt</th>
+                                                <th class="td-left">Loại khoản</th>
+                                                <th class="td-left">Nội dung</th>
+                                                <th class="td-right">Số tiền</th>
+                                                <th class="td-center" style="width: 120px">Ngày tạo</th>
+                                                <th class="td-center">Người tạo</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!--Load from js-->
+                                        </tbody>
+                                        <tfoot>
+                                            <!--Load from js-->
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                            <!-- /.table-responsive -->
+                        </div>
+
+                        <div class="row-align chitietkhoanthu" id="zoneTongNoRieng" style="padding-top: 5px; display: none">
+                            <div class="pull-left" style="padding-left: 10px">
+                                <div class="group-title">
+                                    <p class="titleSearchContent"><i class="fa fa-window-restore">
+                                        </i> <span class="lang" key="">Danh sách nợ riêng theo từng khoản <span id="txtSoLuongTongNoRieng"></span></span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="pull-right" style="padding-right: 15px">
+                                <a class="btn btn-default refreshKhoanKhu" href="#zoneTongNoRieng"><i class="fa fa-refresh"></i> <span class="lang" key="">Tải lại</span></a>
+                                <a class="btn btn-default btnCloseKhoanThu"><i class="fa fa-close"></i> <span class="lang" key="">Đóng</span></a>
+                            </div>
+                            <div class="clear"></div>
+                            <div class="table-responsive">
+                                <div class="scroll-table-x">
+                                    <table id="tblTongNoRieng" class="table no-margin">
+                                        <thead>
+                                            <tr>
+                                                <th class="td-center td-fixed">Stt</th>
+                                                <th class="td-center">Học kỳ</th>
+                                                <th class="td-center">Đợt</th>
+                                                <th class="td-left">Loại khoản</th>
+                                                <th class="td-left">Nội dung</th>
+                                                <th class="td-right">Số tiền</th> 
+                                                <th class="td-center">Ngày tạo</th>
+                                                <th class="td-center">Người tạo</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!--Load from js-->
+                                        </tbody>
+                                        <tfoot>
+                                            <!--Load from js-->
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                            <!-- /.table-responsive -->
+                        </div>
+
+                        <div class="row-align chitietkhoanthu" id="zoneTongNoChung" style="padding-top: 5px; display: none">
+                            <div class="pull-left" style="padding-left: 10px">
+                                <div class="group-title">
+                                    <p class="titleSearchContent"><i class="fa fa-window-restore">
+                                        </i> <span class="lang" key="">Danh sách nợ chung theo các khoản</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="pull-right" style="padding-right: 15px">
+                                <a class="btn btn-default refreshKhoanKhu" href="#zoneTongNoChung"><i class="fa fa-refresh"></i> <span class="lang" key="">Tải lại</span></a>
+                                <a class="btn btn-default btnCloseKhoanThu"><i class="fa fa-close"></i> <span class="lang" key="">Đóng</span></a>
+                            </div>
+                            <div class="clear"></div>
+                            <div class="table-responsive">
+                                <div class="scroll-table-x">
+                                    <table id="tblTongNoChung" class="table no-margin">
+                                        <thead>
+                                            <tr>
+                                                <th class="td-center td-fixed">Stt</th>
+                                                <th class="td-center">Học kỳ</th>
+                                                <th class="td-center">Đợt</th>
+                                                <th class="td-left">Loại khoản</th>
+                                                <th class="td-left">Nội dung</th>
+                                                <th class="td-right">Số tiền</th> 
+                                                <th class="td-center">Ngày tạo</th>
+                                                <th class="td-center">Người tạo</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!--Load from js-->
+                                        </tbody>
+                                        <tfoot>
+                                            <!--Load from js-->
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                            <!-- /.table-responsive -->
+                        </div>
+
+                        <div class="row-align chitietkhoanthu" id="zonePhieuDaThu" style="padding-top: 5px; display: none">
+                            <div class="pull-left" style="padding-left: 10px">
+                                <div class="group-title">
+                                    <p class="titleSearchContent"><i class="fa fa-window-restore">
+                                        </i> <span class="lang" key="">Danh sách các phiếu đã thu<span id="txtSoLuongPhieuDaThu"></span></span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="pull-right" style="padding-right: 15px">
+                                <a class="btn btn-default refreshKhoanKhu" href="#zonePhieuDaThu"><i class="fa fa-refresh"></i> <span class="lang" key="">Tải lại</span></a>
+                                <a class="btn btn-default btnCloseKhoanThu"><i class="fa fa-close"></i> <span class="lang" key="">Đóng</span></a>
+                            </div>
+                            <div class="clear"></div>
+                            <div class="table-responsive">
+                                <div class="scroll-table-x">
+                                    <table id="tblPhieuDaThu" class="table no-margin">
+                                        <thead>
+                                            <tr>
+                                                <th class="td-center td-fixed">Stt</th>
+                                                <th class="td-center">Số phiếu</th>
+                                                <th class="td-right"><span class="lang" key="">Tổng tiền</span></th>
+                                                <th class="td-center">Ngày thu</th>
+                                                <th class="td-center">Người thu</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!--Load from js-->
+                                        </tbody>
+                                        <tfoot>
+                                            <!--Load from js-->
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                            <!-- /.table-responsive -->
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div id="zoneThongTinTachKhoan" class="col-sm-9 beforeActive" style="display: none">
+                <div class="box box-solid">
+                    <div class="box-content">
+                        <div class="form-container">
+                            <div class="form-container-header">
+                                <div class="pull-left">
+                                    <h4 class="color-active" style="padding:15px"><i class="fa fa-info-circle"></i> Tách khoản</h4>
+                                </div>
+                                <div class="pull-right">
+                                    <a class="btn btn-default pointer btnCloseKhoanCanTach"><i class="fa fa-times-circle"></i></a>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+                            
+                            <div class="form-container-body">
+                                <div class="table-responsive">
+                                    <div class="scroll-table-x">
+                                        <table id="tblChiTietKhoan_TachKhoan" class="table table-hover table-bordered tablecenter">
+                                            <thead>
+                                                <tr>
+                                                    <th style="width:40px">Stt</th>
+                                                    <th style="width: 100px"><span class="lang" key="">Học kỳ</span></th>
+                                                    <th style="width: 30px"><span class="lang" key="">Đợt</span></th>
+                                                    <th><span class="lang" key="">Khoản thu</span></th>
+                                                    <th><span class="lang" key="">Nội dung</span></th>
+                                                    <th style="width: 100px"><span class="lang" key="">Số tiền trước</span></th>
+                                                    <th style="width: 100px"><span class="lang" key="">Số tiền sau</span></th>
+                                                    <th style="width:40px; text-align:center">
+                                                        Xóa
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                            <tfoot></tfoot>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="clear"></div>
+                                <div>
+                                    <div class="group-title">
+                                        <p class="titleSearchContent" data-toggle="collapse" data-target="#DSKhoanThu"><i class="fa fa-window-restore">
+                                            </i><span class="lang" key=""> Chọn khoản cần tách</span>
+                                        </p>
+                                    </div>
+                                    <div class="clear"></div>
+                                    <div class="area-search">
+                                        <div id="DSKhoanThu" style="padding-left: 25px" class="inputSearch collapse in">
+                                            <div id="zoneLoaiKhoanCanTach"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+                            <div class="form-container-footer">
+                                <div class="col-sm-12">
+                                    <div class="pull-right">
+                                        <a class="btn btn-success pointer" id="btnThucHienTachKhoan"><i class="fa fa-times-circle"></i> Tách khoản</a>
+                                        <a class="btn btn-default pointer btnCloseKhoanCanTach"><i class="fa fa-times-circle"></i> Đóng</a>
+                                    </div>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="zoneThongTinHoaDon" class="col-sm-9 beforeActive" style="display: none; width: 100%">
+                <div class="row">
+                    <div class="nH" style="">
+                        <div class="b8 UC" aria-live="assertive" aria-atomic="true" style="text-align: left; padding-left: 70px" role="alert">
+                            <div class="J-J5-Ji">
+                            <div class="UD"></div>
+                            <div class="vh" id="top_notifications_HoaDon" style="font-size: 300%;height: 74px;">
+                                <span><span id="link_enable_notifications_HoaDon" class="lang" key="">Đang gửi</span> ...</span>
+                            </div>
+                            <div class="UB"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- OLD: các nút float quanh phôi in, khối dọc 85px + icon fa-4x -> chữ đè icon.
+                <div style="float:left; margin-right: 3px;">
+                    <div id="btnHuyHoaDon" style="width:85px; text-align:center; background-color: #fff">
+                        <a title="Hủy Hóa đơn" class="btn"><i class="fa fa-trash-o fa-4x color-red"></i></a>
+                        <a class="color-active bold lbsymbolHD">Hủy Hóa đơn</a>
+                    </div>
+                </div>
+                <div style="float: left; background: #fff !important">
+                    <div id="MauInHoaDon"></div>
+                </div>
+                <div id="zoneActionHoaDon" style="float:left; margin-left: 3px">
+                    <div id="btnInHoaDon" style="width:85px; ...">...</div>
+                    <div id="btnCloseHoaDon" style="width:85px; ...">...</div>
+                    <div id="btnLienHoaDon" style="width:85px; ...">...</div>
+                    <div id="btnChuyenMauIn" class="btnMauInChungTu" style="display: none">...</div>
+                </div>
+                -->
+                <div id="MauInHoaDon" class="aps-hd-phoi"></div>
+
+                <div class="aps-hd-actionbar">
+                    <!-- trái: hành động phá hủy -->
+                    <div class="aps-hd-left">
+                        <div id="btnHuyHoaDon">
+                            <a title="Hủy Hóa đơn" class="btn"><i class="fa fa-trash-o color-red"></i></a>
+                            <a class="lbsymbolHD">Hủy hóa đơn</a>
+                        </div>
+                    </div>
+                    <!-- phải: thao tác trên chứng từ + đóng -->
+                    <div class="aps-hd-right">
+                        <div id="zoneActionHoaDon" class="aps-hd-group">
+                            <div id="btnLienHoaDon">
+                                <a title="Liên Hóa đơn" class="btn"><i class="fa fa-copy"></i></a>
+                                <a class="lbsymbolHD">Liên hóa đơn</a>
+                                <div id="zoneLienHoaDon"></div>
+                            </div>
+                            <div id="btnChuyenMauIn" class="btnMauInChungTu" style="display: none">
+                                <a class="btn"><i class="fa fa-exchange"></i></a>
+                                <a class="lbsymbolHD dropdown-toggle" data-toggle="dropdown">Đổi mẫu in <span class="caret"></span></a>
+                                <ul class="dropdown-menu" id="zoneMauInChungTu"></ul>
+                            </div>
+                            <div id="btnInHoaDon">
+                                <a title="In Hóa đơn" class="btn"><i class="fa fa-print"></i></a>
+                                <a class="lbsymbolHD">In hóa đơn</a>
+                            </div>
+                            <div id="btnCloseHoaDon">
+                                <a title="Đóng Hóa đơn" class="btn"><i class="fa fa-times-circle"></i></a>
+                                <a class="lbsymbolHD">Đóng</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<!-- page script -->
+<script src="modules/hoadon/scripts/xuathoadon.js?v=1.0.1.0"></script>
+<script src="modules/hoadon/scripts/n2vi.min.js"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['HoaDon'] = new HoaDon();
+    $(document).ready(function () {
+        main_doc.HoaDon.init();
+    });
+</script>

@@ -1,0 +1,13 @@
+/* Dữ liệu mẫu cho Hệ số áp dụng — chỉ dùng ở chế độ dựng thử. */
+ums.demo.add({
+    'RL_TrongSoDiem_AD/LayDSDRL_TrongSoDiem_AD_Ky': [
+        { ID: 'HSK1', DAOTAO_THOIGIANDAOTAO_KY: 'Học kỳ 1 năm 2025-2026', TRONGSO: 1, MOTA: 'Học kỳ chính', DOITUONGAPDUNG_ID: 'DT-SV',
+          PHAMVIAPDUNG_ID: 'K67', DAOTAO_THOIGIANDAOTAO_NAM_ID: 'NH2025', DAOTAO_THOIGIANDAOTAO_KY_ID: 'HK1-2526' },
+        { ID: 'HSK2', DAOTAO_THOIGIANDAOTAO_KY: 'Học kỳ 2 năm 2025-2026', TRONGSO: 1, MOTA: 'Học kỳ chính', DOITUONGAPDUNG_ID: 'DT-SV',
+          PHAMVIAPDUNG_ID: 'K67', DAOTAO_THOIGIANDAOTAO_NAM_ID: 'NH2025', DAOTAO_THOIGIANDAOTAO_KY_ID: 'HK2-2526' }
+    ],
+    'RL_TrongSoDiem_AD/LayDanhSach': [
+        { ID: 'HSN1', DAOTAO_THOIGIANDAOTAO_KY: '2025-2026', TRONGSO: 0.5, MOTA: 'Năm thứ nhất', DOITUONGAPDUNG_ID: 'DT-SV',
+          PHAMVIAPDUNG_ID: 'K68', DAOTAO_THOIGIANDAOTAO_NAM_ID: 'NH2025', DAOTAO_THOIGIANDAOTAO_KY_ID: '' }
+    ]
+});

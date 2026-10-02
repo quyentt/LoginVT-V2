@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Mọi đường dẫn tương đối tính từ gốc project, giống hệt indexi.aspx -->
+    <base href="/">
+    <title>LoginVT — Harness</title>
+
+    <script>
+        // Bắt lỗi JS sớm nhất có thể và hiển thị ngay trên trang.
+        // Code cũ nuốt lỗi khá nhiều (try/catch rỗng), không có cái này thì
+        // màn hình trắng mà không biết vì sao.
+        window.__harnessErrors = [];
+        (function () {
+            function render() {
+                var box = document.getElementById('harness-errors');
+                if (!box || !window.__harnessErrors.length) return;
+                box.style.display = 'block';
+                box.innerHTML = '<b>LỖI JS (' + window.__harnessErrors.length + ')</b><br>' +
+                    window.__harnessErrors.map(function (e) {
+                        return '<div class="he-item">' + e + '</div>';
+                    }).join('');
+            }
+            window.__harnessRenderErrors = render;
+            window.addEventListener('error', function (e) {
+                var at = e.filename ? (' @ ' + e.filename.replace(location.origin, '') + ':' + e.lineno) : '';
+                var stack = (e.error && e.error.stack) ? ('<br><small>' + String(e.error.stack).replace(/</g, '&lt;').split('\n').slice(0, 6).join('<br>') + '</small>') : '';
+                window.__harnessErrors.push((e.message || 'lỗi không rõ') + at + stack);
+                render();
+            }, true);
+            window.addEventListener('unhandledrejection', function (e) {
+                window.__harnessErrors.push('Promise: ' + (e.reason && e.reason.message ? e.reason.message : e.reason));
+                render();
+            });
+            document.addEventListener('DOMContentLoaded', render);
+        })();
+    </script>
+
+    <link href="App_Themes/Plugins/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <link href="App_Themes/Plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="App_Themes/Plugins/ionicons/css/ionicons.min.css" rel="stylesheet">
+    <link href="App_Themes/Cms/adminlte/css/AdminLTE.min.css" rel="stylesheet">
+    <link href="App_Themes/Cms/adminlte/css/_all-skins.min.css" rel="stylesheet">
+    <link href="App_Themes/Plugins/select2/css/select2.min.css" rel="stylesheet">
+    <link href="App_Themes/Plugins/pagination/simplePagination.min.css" rel="stylesheet">
+    <link href="App_Themes/Plugins/jstree/dist/themes/default/style.min.css" rel="stylesheet">
+    <link href="App_Themes/Plugins/datepicker/datepicker3.min.css" rel="stylesheet">
+    <link href="App_Themes/Cms/css/index.css" rel="stylesheet">
+    <link href="App_Themes/Cms/css/index.min.css" rel="stylesheet">
+    <link href="App_Themes/Cms/Custom_V1/styles.css" rel="stylesheet">
+
+    <style>
+        body { padding: 0 0 46px 0; background: #f4f6f9; }
+        #harness-bar {
+            background: #223771; color: #fff; padding: 8px 14px;
+            font: 13px/1.5 "Segoe UI", Arial, sans-serif;
+            display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+        }
+        #harness-bar b { color: #f8843d; letter-spacing: .5px; }
+        #harness-bar code { background: rgba(255,255,255,.14); color: #dbe6ff; padding: 1px 6px; border-radius: 3px; }
+        #harness-bar a { color: #9dc0ff; }
+        #main-content-wrapper { padding: 12px; }
+        #harness-errors {
+            background: #4a1113; color: #ffd7d7; padding: 10px 14px; margin: 0;
+            font: 12px/1.5 Consolas, "Courier New", monospace; border-bottom: 2px solid #ff7a7a;
+        }
+        #harness-errors .he-item { padding: 2px 0; word-break: break-all; }
+
+        #harness-panel {
+            position: fixed; right: 10px; bottom: 10px; width: 470px; max-width: 94vw;
+            background: #10182c; color: #d7e0f5; border-radius: 6px; z-index: 200000;
+            font: 12px/1.45 Consolas, "Courier New", monospace;
+            box-shadow: 0 8px 28px rgba(0,0,0,.45);
+        }
+        #harness-panel .hp-head {
+            padding: 7px 10px; border-bottom: 1px solid #263150;
+            display: flex; align-items: center; gap: 8px;
+        }
+        #harness-panel .hp-head b { color: #f8843d; }
+        #harness-panel .hp-stat { color: #8fa2c9; flex: 1; }
+        #harness-panel .hp-toggle { color: #9dc0ff; text-decoration: underline; font-size: 11px; }
+        #harness-panel .hp-body { max-height: 240px; overflow: auto; }
+        #harness-panel table { width: 100%; border-collapse: collapse; }
+        #harness-panel td { padding: 3px 8px; vertical-align: top; border-bottom: 1px solid #1a2440; }
+        #harness-panel .hp-badge { width: 48px; font-weight: bold; }
+        #harness-panel .hp-ok .hp-badge { color: #4ec98c; }
+        #harness-panel .hp-miss .hp-badge { color: #ff7a7a; }
+        #harness-panel .hp-miss .hp-key { color: #ffc9c9; }
+        #harness-panel .hp-key { cursor: pointer; word-break: break-all; }
+        #harness-panel .hp-key:hover { text-decoration: underline; }
+    </style>
+</head>
+<body class="hold-transition skin-blue">
+
+    <div id="harness-bar">
+        <b>HARNESS</b>
+        <span>Core: <code id="hb-core"></code></span>
+        <span>Màn hình: <code id="hb-page"></code></span>
+        <span style="flex:1"></span>
+        <span>Không có server &middot; không có Oracle &middot; dữ liệu từ <code>_harness/fixtures.js</code></span>
+    </div>
+
+    <!-- Các phần tử mà Core/*.js trông đợi shell cung cấp -->
+    <div id="harness-errors" style="display:none"></div>
+
+    <div id="overlay" style="display: none;"></div>
+    <div id="alert"></div>
+    <div class="content-tab"><span class="link"></span></div>
+
+    <section id="main-content-wrapper"></section>
+
+    <script src="App_Themes/Plugins/jquery/jquery.min.js"></script>
+    <script src="App_Themes/Plugins/jquery-iu/jquery-ui.min.js"></script>
+    <script src="App_Themes/Plugins/bootstrap/js/bootstrap.min.js"></script>
+    <script src="App_Themes/Plugins/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+    <script src="App_Themes/Plugins/fastclick/lib/fastclick.min.js"></script>
+    <script src="App_Themes/Cms/adminlte/js/adminlte.min.js"></script>
+    <script src="App_Themes/Plugins/select2/js/select2.min.js"></script>
+    <script src="App_Themes/Plugins/currency/ax5core.min.js"></script>
+    <script src="App_Themes/Plugins/currency/ax5formatter.min.js"></script>
+    <script src="App_Themes/Plugins/chartjs/Chart.min.js"></script>
+    <script src="App_Themes/Plugins/pagination/jquery.simplePagination.min.js"></script>
+    <script src="App_Themes/Plugins/pagination/crypto-js.js"></script>
+    <script src="App_Themes/Plugins/jstree/dist/jstree.min.js"></script>
+    <script src="App_Themes/Plugins/datepicker/bootstrap-datepicker.min.js"></script>
+    <script src="App_Themes/Plugins/cleave.js/dist/cleave.min.js"></script>
+
+    <script>
+        // Cho phép đổi màn hình và đổi bản Core ngay trên URL:
+        //   ?core=Core                       -> nạp Core/  (mặc định Corei/, giống indexi.aspx)
+        //   ?app=ApisTaiChinh&page=/Modules/danhmuc/html/danhmucdulieu.html
+        (function () {
+            var q = {};
+            location.search.replace(/^\?/, '').split('&').forEach(function (kv) {
+                if (!kv) return;
+                var p = kv.split('=');
+                q[decodeURIComponent(p[0])] = decodeURIComponent(p.slice(1).join('=') || '');
+            });
+
+            var core = q.core === 'Core' ? 'Core' : 'Corei';
+            window.HARNESS_CONFIG = {
+                module: {
+                    appCode: q.app || 'ApisDangKyHoc',
+                    url: q.page || '/Modules/kehoachdangkymuabaohiem/html/kehoachmua.html'
+                },
+                // ?autorun=main_doc.KeHoachMua.getList_KeHoachMua()
+                autorun: q.autorun || ''
+            };
+            document.getElementById('hb-core').textContent = core + '/';
+            document.getElementById('hb-page').textContent =
+                window.HARNESS_CONFIG.module.appCode + window.HARNESS_CONFIG.module.url;
+
+            ['constant', 'systemroot', 'util', 'systemextend'].forEach(function (f) {
+                document.write('<scr' + 'ipt src="' + core + '/' + f + '.js"></scr' + 'ipt>');
+            });
+        })();
+
+        // Shell thật lấy 30 base URL từ Web.config; harness không gọi mạng nên trả rỗng.
+        function Init_API() { return {}; }
+    </script>
+
+    <script src="_harness/fixtures.js"></script>
+    <script src="_harness/mock.js"></script>
+</body>
+</html>

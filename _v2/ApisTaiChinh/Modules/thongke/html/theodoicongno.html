@@ -1,0 +1,70 @@
+<!--
+    Theo dõi công nợ
+    Bản gốc: ApisTaiChinh/Modules/thongke/html/theodoicongno.html + scripts/theodoicongno.js
+    Bốn tab Nợ chung / Nợ riêng / Dư chung / Dư riêng, cột phải là tổng
+    theo loại khoản và thời điểm tính công nợ.
+-->
+<link rel="stylesheet" href="../css/theodoicongno.css">
+
+<div id="theodoicongno">
+    <div class="ums-page__head">
+        <h1 class="ums-page__title ums-u-mb-0">Theo dõi công nợ</h1>
+        <div class="ums-page__actions">
+            <!-- Bản gốc có nút này (id btnDelete) nhưng không .js nào gắn xử lý:
+                 giữ nút, để mờ — xem BO-CUC.md "Chữ trên nút". -->
+            <button type="button" class="ums-btn ums-btn--ghost" disabled
+                    title="Bản gốc chưa có xử lý cho nút này">
+                <i class="fa-light fa-file-excel"></i><span>Tải excle</span></button>
+        </div>
+    </div>
+
+    <div class="ums-panel ums-u-mb-4">
+        <div class="ums-panel__body">
+            <div class="ums-filter">
+                <div class="ums-field"><input class="ums-input" data-f="tuKhoa" placeholder="Nhập từ khoá tìm kiếm" autocomplete="off"></div>
+                <div class="ums-field"><select class="ums-select" data-f="he"><option value="">Chọn hệ đào tạo</option></select></div>
+                <div class="ums-field"><select class="ums-select" data-f="khoa"><option value="">Chọn khoá đào tạo</option></select></div>
+                <div class="ums-field"><select class="ums-select" data-f="ct"><option value="">Chọn chương trình đào tạo</option></select></div>
+                <div class="ums-field ums-field--fit" data-z="searchBtn"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tdcn-layout">
+        <div>
+            <div class="ums-panel" data-z="list">
+                <nav class="ums-tabs" data-z="tabs"></nav>
+                <div class="ums-panel__body ums-panel__body--flush" data-z="table"></div>
+            </div>
+            <div class="ums-panel" data-z="detail" hidden>
+                <div class="ums-panel__head">
+                    <div class="ums-panel__title"><i class="fa-light fa-circle-info"></i> <span data-z="detailTitle">Chi tiết theo khoản</span></div>
+                    <div class="ums-panel__tools"><button type="button" class="ums-btn ums-btn--ghost" data-act="back"><i class="fa-light fa-xmark"></i><span>Đóng</span></button></div>
+                </div>
+                <div class="ums-panel__body ums-panel__body--flush" data-z="detailTable"></div>
+            </div>
+        </div>
+
+        <div class="ums-stack">
+            <div class="ums-panel">
+                <div class="ums-panel__body">
+                    <div class="tdcn-total"><span>Tổng</span><span data-z="tong">0</span></div>
+                    <div class="ums-meter ums-u-mt-2 ums-u-mb-2"><div class="ums-meter__track"><div class="ums-meter__fill" style="width:100%"></div></div></div>
+                    <div data-z="loaiKhoan"></div>
+                </div>
+            </div>
+            <div class="ums-panel">
+                <div class="ums-panel__head">
+                    <div class="ums-panel__title"><i class="fa-light fa-calculator"></i> Tính công nợ</div>
+                </div>
+                <div class="ums-panel__body">
+                    <div class="tdcn-kv"><span>Ngày chốt</span><b data-z="ngayChot">__/__/____</b></div>
+                    <div class="tdcn-kv"><span>Ngày thay đổi</span><b data-z="ngayThayDoi">__/__/____</b></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="../scripts/_chung.js"></script>
+<script src="../scripts/theodoicongno.js"></script>

@@ -1,0 +1,129 @@
+/* =========================================================================
+   6. COMPONENTS — hộp xác nhận (ums.ui.confirm)
+   Dùng thẻ <dialog> gốc của trình duyệt: tự bẫy tiêu điểm, tự đóng bằng
+   Esc, tự có lớp nền — không cần thư viện modal nào.
+   ========================================================================= */
+
+.ums-dialog {
+    width: min(440px, calc(100vw - 32px));
+    padding: 0;
+    margin: auto;
+    background: var(--ums-surface);
+    border: 1px solid var(--ums-line);
+    border-radius: var(--ums-r-3);
+    box-shadow: var(--ums-sh-3);
+    color: var(--ums-ink);
+    animation: ums-dialog-in .16s ease;
+    /* <dialog> của trình duyệt mặc định overflow:auto → danh sách xổ select2 (gắn TRONG hộp để
+       không bị lớp phủ che) bị CẮT ở mép dưới hộp: hộp ngắn chỉ thấy 1 mục, không kéo được
+       (người dùng gặp 2026-09-25, "Vi phạm điều kiện thi"). Hộp nội dung đã tự cuộn ở
+       .ums-dialog__content nên cho hộp thò ra ngoài được. */
+    overflow: visible;
+}
+
+.ums-dialog::backdrop { background: rgba(15, 23, 42, .38); }
+
+@keyframes ums-dialog-in {
+    from { opacity: 0; transform: translateY(8px) scale(.98); }
+    to   { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ums-dialog { animation: none; }
+}
+
+.ums-dialog__body {
+    display: flex;
+    gap: var(--ums-sp-4);
+    padding: var(--ums-sp-6) var(--ums-sp-6) var(--ums-sp-5);
+}
+
+.ums-dialog__icon {
+    flex: 0 0 auto;
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--ums-blue-l);
+    color: var(--ums-blue);
+    font-size: var(--ums-fz-18);
+}
+
+.ums-dialog--bad .ums-dialog__icon { background: var(--ums-bad-bg); color: var(--ums-bad); }
+
+.ums-dialog__title {
+    margin-bottom: var(--ums-sp-1);
+    color: var(--ums-navy);
+    font-size: var(--ums-fz-16);
+    font-weight: var(--ums-fw-bold);
+}
+
+.ums-dialog__msg { color: var(--ums-ink-2); font-size: var(--ums-fz-14); line-height: var(--ums-lh); }
+
+.ums-dialog__foot {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--ums-sp-2);
+    padding: var(--ums-sp-3) var(--ums-sp-6) var(--ums-sp-5);
+}
+/* Nút XOÁ ở chân hộp — luôn dạt trái, xa các nút Đóng / Lưu để không bấm nhầm:
+   cả "Xoá đã chọn" (ums.ui.dialog { xoa }) lẫn nút Xoá thường của biểu mẫu. */
+.ums-dialog__foot > .ums-btn--delsel,
+.ums-dialog__foot > .ums-btn--del,
+.ums-dialog__foot > .ums-btn--danger,
+.ums-dialog__foot > .ums-btn--out-danger { order: -1; margin-right: auto; }
+/* Nút xoá thứ hai trở đi thì đứng liền nút trước, không đẩy tiếp */
+.ums-dialog__foot > .ums-btn--delsel ~ .ums-btn--del,
+.ums-dialog__foot > .ums-btn--delsel ~ .ums-btn--danger { margin-right: 0; }
+/* Ô thêm ở chân hộp (pickNhanSu footExtra) — dạt trái, nút giữ bên phải */
+.ums-dialog__extra { margin-right: auto; display: flex; align-items: center; gap: var(--ums-sp-2); }
+.ums-dialog__extra .ums-input { width: 240px; }
+
+/* ---------- Hộp thoại nội dung (ums.ui.dialog) --------------------------- */
+.ums-dialog--content {
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 48px);
+}
+.ums-dialog--content:not([open]) { display: none; }
+
+.ums-dialog--sm { width: min(420px, calc(100vw - 32px)); }
+.ums-dialog--md { width: min(640px, calc(100vw - 32px)); }
+.ums-dialog--lg { width: min(960px, calc(100vw - 32px)); }
+.ums-dialog--xl { width: min(1280px, calc(100vw - 32px)); }
+
+.ums-dialog__head {
+    display: flex;
+    align-items: center;
+    gap: var(--ums-sp-3);
+    /* Đệm dọc 10px — không dùng --ums-sp-3 (12px) vì đầu hộp thoại chỉ có một
+       dòng chữ, 16px như trước làm thanh tiêu đề cao quá so với phần thân. */
+    padding: 10px var(--ums-sp-5);
+    /* Cùng màu với đầu bảng (.ums-table > thead > tr > th) để hai thứ "đầu
+       khối" trong hệ trông là một nhà: cùng nền, cùng màu viền dưới. */
+    background: var(--ums-surface-3);
+    border-bottom: 1px solid var(--ums-line-2);
+    border-radius: var(--ums-r-3) var(--ums-r-3) 0 0;
+}
+
+.ums-dialog__head .ums-dialog__title {
+    flex: 1;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--ums-sp-2);
+}
+
+/* Chữ tiêu đề cùng màu với biểu tượng (người dùng yêu cầu 2026-09-22) */
+.ums-dialog__head .ums-dialog__title,
+.ums-dialog__head .ums-dialog__title > i { color: var(--ums-blue); }
+
+.ums-dialog__content {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    padding: var(--ums-sp-5);
+}
+
+.ums-dialog--content .ums-dialog__foot { border-top: 1px solid var(--ums-line); padding-top: var(--ums-sp-3); padding-bottom: var(--ums-sp-3); }

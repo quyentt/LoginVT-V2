@@ -1,0 +1,472 @@
+﻿
+<style>
+    #zoneEdit table {
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .btnSelectKeHoach {
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .btn-white {
+        background-color: #fff;
+        -webkit-box-shadow: 1px 1px 1px 1px #ccc;
+        -moz-box-shadow: 1px 1px 1px 1px #ccc; /* Firefox 3.5 - 3.6 */
+        box-shadow: 1px 1px 1px 1px #ccc;
+    }
+
+    .zone-box .btn-primary {
+        background-color: #fff;
+        -webkit-box-shadow: 1px 1px 1px 1px #ccc;
+        -moz-box-shadow: 1px 1px 1px 1px #ccc; /* Firefox 3.5 - 3.6 */
+        box-shadow: 1px 1px 1px 1px #ccc;
+    }
+    /* The container */
+    .container {
+        display: block;
+        position: relative;
+        padding-left: 35px;
+        margin-bottom: 12px;
+        cursor: pointer;
+        font-size: 22px;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+
+        /* Hide the browser's default radio button */
+        .container input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+
+    /* Create a custom radio button */
+    .checkmark {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 10px;
+        width: 10px;
+        background-color: #007f00;
+        border-radius: 50%;
+    }
+
+    /* On mouse-over, add a grey background color */
+    .container:hover input ~ .checkmark {
+        background-color: #ccc;
+    }
+
+    /* When the radio button is checked, add a blue background */
+    .container input:checked ~ .checkmark {
+        background-color: #2196F3;
+    }
+
+    /* Create the indicator (the dot/circle - hidden when not checked) */
+    .checkmark:after {
+        content: "";
+        position: absolute;
+        display: none;
+    }
+
+    /* Show the indicator (dot/circle) when checked */
+    .container input:checked ~ .checkmark:after {
+        display: block;
+    }
+
+    /* Style the indicator (dot/circle) */
+    .container .checkmark:after {
+        left: 9px;
+        top: 5px;
+        width: 5px;
+        height: 10px;
+        border: solid white;
+        border-width: 0 3px 3px 0;
+        -webkit-transform: rotate(45deg);
+        -ms-transform: rotate(45deg);
+        transform: rotate(45deg);
+    }
+
+    .checkbox input[type="checkbox"], .checkbox-inline input[type="checkbox"], .radio input[type="radio"], .radio-inline input[type="radio"] {
+        margin-left: 0px;
+    }
+</style>
+<!-- Main content -->
+<section class="content">
+    <div class="row ">
+        <!-- /.left-content -->
+        <div class="zone-content" id="zonebatdau">
+            <div class="box box-solid">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><i class="fa fa-window-restore"></i> Tìm kiếm</h3>
+                </div>
+                <div class="box-body">
+                    <!-- Bộ tìm kiếm -->
+                    <!--<div class="col-sm-3 item-search">
+                        <select id="dropSearch_ThoiGian" class="select-opt"></select>
+                    </div>-->
+                    <div class="col-sm-3 item-search">
+                        <input id="txtSearch_TuKhoa" class="form-control" placeholder="Nhập từ khóa tìm kiếm" />
+                    </div>
+                    <div class="col-sm-3 item-search">
+                        <a class="btn btn-default btnSearch_KHDK"><i class="fa fa-search"></i> <span class="lang" key="">Tìm kiếm</span></a>
+                    </div>
+                </div>
+            </div>
+            <div class="box box-solid">
+                <div class="box-header with-border">
+                    <h3 class="box-title">
+                        <i class="fa fa-window-restore"></i> Danh sách kế hoạch đăng ký
+                        <span class="pull-right badge bg-light-blue">
+                            <span id="lblKHDK"></span>
+                        </span>
+                    </h3>
+                    <div class="box-tools pull-right">
+                        <a id="btnAddnew" class="btn btn-primary"><i class="fa fa-plus"></i> Thêm mới</a>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div>
+                        <table id="tblKHDK" class="table table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="td-fixed td-center">Stt</th>
+                                    <th class="td-center">Tên kế hoạch</th>
+                                    <th class="td-center">Từ ngày</th>
+                                    <th class="td-center">Đến ngày</th>
+                                    <th class="td-center">Ngày vào</th>
+                                    <th class="td-center">Ngày ra</th>
+                                    <th class="td-center">Loại kế hoạch</th>
+                                    <th class="td-center">Hiệu lực</th>
+                                    <th class="td-center">Danh sách phòng được đăng ký</th>
+                                    <th class="td-center">Danh sách sinh viên được phép</th>
+                                    <th class="td-fixed td-center">Xem</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- load from js -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 2. Add/Edit CoCauToChuc -->
+    <div class="zone-content" id="zoneEdit" style="display: none">
+        <div class="box box-solid form-container">
+            <div class="box-header with-border">
+                <span class="myModalLabel"><i class="fa fa-plus"></i> Thêm mới - </span> Kế hoạch đăng ký
+
+                <div class="pull-right title-note">
+                    <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times"></i></a>
+                </div>
+            </div>
+            <div class="box-body">
+                <div class="col-sm-12 box-view">
+
+                    <div class="box box-solid">
+                        <div class="box-header with-border">
+                            <!--Thong tin co ban-->
+                            <div class="row zone-box">
+                                <div class="row">
+                                    <p class="group-group-title-name">
+                                        <span class="badge bg-blue">Thông tin cơ bản</span>
+                                    </p>
+                                </div>
+                                <div class="col-sm-12 box-view">
+                                    <div class="row">
+                                        <div class="col-sm-2">
+                                            Tên kế hoạch:<span class="title-colon"></span>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <input id="txtTenKeHoach" class="form-control" placeholder="Nhập tên kế hoạch" />
+                                        </div>
+                                        <div class="col-sm-2">
+                                            Loại kế hoạch:<span class="title-colon"></span>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <select id="dropLoaiKeHoach" class="select-opt"></select>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            Hiệu lực:<span class="title-colon"></span>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <select id="dropHieuLuc" class="select-opt">
+                                                <option value="1"> Hiệu lực</option>
+                                                <option value="0"> Hết hiệu lực</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-2">
+                                            Ngày bắt đầu:<span class="title-colon"></span>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <input id="txtNgayBatDau" class="form-control input-datepicker" />
+                                        </div>
+                                        <div class="col-sm-2">
+                                            Ngày kết thúc:<span class="title-colon"></span>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <input id="txtNgayKetThuc" class="form-control input-datepicker" />
+                                        </div>
+                                        <div class="col-sm-2">
+                                            Số ngày giữ chỗ:<span class="title-colon"></span>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <input id="txtSoNgayGiuCho" class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-2">
+                                            Ngày vào:<span class="title-colon"></span>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <input id="txtNgayVao" class="form-control input-datepicker" />
+                                        </div>
+                                        <div class="col-sm-2">
+                                            Ngày ra:<span class="title-colon"></span>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <input id="txtNgayRa" class="form-control input-datepicker" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box-footer">
+                        <div class="pull-left">
+                            <a class="submit btn btn-danger btnOpenDelete" id="btnDelete_KeHoachDangKy" style="display: none"><i class="fa fa-trash"></i> <span class="lang" key="">Xóa</span></a>
+                        </div>
+                        <div class="pull-right">
+                            <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times-circle"></i> Đóng</a>
+                            <a id="btnSave" class="btn btn-primary"><i class="fa fa-check"></i> Lưu</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="box box-solid zone-content form-container" id="zoneSinhVien" style="display: none">
+        <div class="box-header with-border">
+            <h3 class="box-title"><span class="myModalLabel1"><i class="fa fa-plus"></i> Danh sách sinh viên - </span> <span class="lblTenDanhSach"></span></h3>
+            <div class="pull-right">
+                <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times"></i></a>
+            </div>
+        </div>
+
+        <div class="box-body">
+            <div class="col-sm-12 box-view">
+                <!-- 1. Noi dung bai bao -->
+
+                <div class="row">
+                    <div class="row">
+                        <p class="group-title-name">
+                            <span class="badge bg-blue">Danh sách sinh viên đã thêm</span>
+                        </p>
+                    </div>
+                    <div class="row">
+                        <table id="tblSinhVien" class="table table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="td-fixed td-center">Stt</th>
+                                    <th class="td-center" style="width: 200px">Mã số</th>
+                                    <th class="td-center">Họ tên</th>
+                                    <th class="td-center td-fixed "><input type="checkbox" id="chkSelectAll_SinhVien_View"></th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div class="row">
+                        <div class="pull-left">
+                            <a id="btnXoaSinhVien" class="btn btn-warning"><i class="fa fa-trash"></i> Xóa</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="box-body">
+            <div class="col-sm-12 box-view">
+                <div class="row">
+
+                    <div class="col-sm-3 item-search">
+                        <select id="dropSearch_LoaiDoiTuong" class="select-opt" style="width:100% !important">
+                            <option id="" value=""> --Chọn loại đối tượng-- </option>
+                        </select>
+                    </div>
+                    <div class="col-sm-3 item-search">
+                        <select id="dropSearch_KhoaDaoTao" class="select-opt" style="width:100% !important">
+                            <option id="" value=""> --Chọn khóa đào tạo-- </option>
+                        </select>
+                    </div>
+
+                    <div class="col-sm-3 item-search">
+                        <a id="btnSearchSinhVien" class="btn btn-default"><i class="fa fa-search"></i> <span class="lang" key="">Tìm kiếm</span></a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="row">
+                        <p class="group-title-name pull-left">
+                            <span class="badge bg-blue">Danh sách sinh viên chưa thêm</span>
+                        </p>
+                    </div>
+                    <div class="row">
+                        <table id="tblInput_SinhVien" class="table table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="td-fixed td-center">Stt</th>
+                                    <th class="td-center" style="width: 200px">Mã số</th>
+                                    <th class="td-center">Họ tên</th>
+                                    <th class="td-center">Lớp</th>
+                                    <th class="td-center">Khóa</th>
+                                    <th class="td-center">Phân loại</th>
+                                    <th class="td-fixed td-center"><input type="checkbox" id="chkSelectAll_SinhVien"></th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+
+                    <div class="row">
+
+                        <!--<div class="pull-left">
+                            <div class="col-sm-3 item-search">
+                                <div class="dropdown" id="zonebtnKeHoachDangKy_Import">
+                                </div>
+                            </div>
+                        </div>-->
+                        <div class="pull-right">
+                            <a id="btnSave_SinhVien" class="btn btn-primary"><i class="fa fa-paper-plane"></i> Thêm</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="box-footer">
+            <div class="pull-right">
+                <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times-circle"></i> Đóng</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="box box-solid zone-content form-container" id="zonePhong" style="display: none">
+        <div class="box-header with-border">
+            <h3 class="box-title"><span class="myModalLabel1"><i class="fa fa-plus"></i> Danh sách phòng - </span> <span class="lblTenDanhSach"></span></h3>
+            <div class="pull-right">
+                <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times"></i></a>
+            </div>
+        </div>
+
+        <div class="box-body">
+            <div class="col-sm-12 box-view">
+                <!-- 1. Noi dung bai bao -->
+
+                <div class="row">
+                    <div class="row">
+                        <p class="group-title-name">
+                            <span class="badge bg-blue">Danh sách phòng đã thêm</span>
+                        </p>
+                    </div>
+                    <div class="row">
+                        <table id="tblPhong" class="table table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="td-fixed td-center">Stt</th>
+                                    <th class="td-center">Mã phòng</th>
+                                    <th class="td-center">Tên Phòng</th>
+                                    <th class="td-center">Tòa nhà</th>
+                                    <th class="td-center">Ngày vào</th>
+                                    <th class="td-center">Ngày ra</th>
+                                    <th class="td-center"><input type="checkbox" id="chkSelectAll_Phong_View"></th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div class="row">
+                        <div class="pull-left">
+                            <a id="btnXoaPhong" class="btn btn-warning"><i class="fa fa-trash"></i> Xóa</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="box-body">
+            <div class="col-sm-12 box-view">
+                <div class="row">
+
+                    <div class="col-sm-3 item-search">
+                        <select id="dropSearch_ToaNha" class="select-opt" style="width:100% !important">
+                            <option id="" value=""> --Chọn loại đối tượng-- </option>
+                        </select>
+                    </div>
+
+                    <div class="col-sm-3 item-search">
+                        <a id="btnSearchPhong" class="btn btn-default"><i class="fa fa-search"></i> <span class="lang" key="">Tìm kiếm</span></a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="row">
+                        <p class="group-title-name pull-left">
+                            <span class="badge bg-blue">Danh sách phòng chưa thêm</span>
+                        </p>
+                    </div>
+                    <div class="row">
+                        <table id="tblInput_Phong" class="table table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="td-fixed td-center">Stt</th>
+                                    <th class="td-center">Mã phòng</th>
+                                    <th class="td-center">Tên Phòng</th>
+                                    <th class="td-center">Tòa nhà</th>
+                                    <th class="td-center"><input type="checkbox" id="chkSelectAll_Phong"></th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+
+                    <div class="row">
+
+                        <div class="pull-left">
+
+                            <div class="col-sm-6 item-search">
+                                <input id="txtNgayVaoPhong" class="form-control" placeholder="Ngày vào" />
+                            </div>
+                            <div class="col-sm-6 item-search">
+                                <input id="txtNgayRaPhong" class="form-control" placeholder="Ngày ra" />
+                            </div>
+                        </div>
+                        <div class="pull-right">
+                            <a id="btnSave_Phong" class="btn btn-primary"><i class="fa fa-paper-plane"></i> Thêm</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="box-footer">
+            <div class="pull-right">
+                <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times-circle"></i> Đóng</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- page script -->
+<script src="modules/kehoach/script/kehoachdangky.js?v=1.0.0.1"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['KeHoachDangKy'] = new KeHoachDangKy();
+    $(document).ready(function () {
+        main_doc.KeHoachDangKy.init();
+    });
+</script>

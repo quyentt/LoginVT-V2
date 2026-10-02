@@ -1,0 +1,801 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quản trị Form động — Hệ Quản trị Đại học</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0f1729; --ink2:#1c2740; --line:#e4e8f1; --line2:#eef1f7;
+  --bg:#f4f6fb; --card:#ffffff; --muted:#65718c; --muted2:#909bb4;
+  --brand:#3b4ee0; --brand-d:#2c3bb8; --brand-soft:#eef0ff;
+  --teal:#0d9488; --teal-soft:#e6f7f4;
+  --amber:#c2820a; --amber-soft:#fdf4e1;
+  --rose:#d8456b; --rose-soft:#fdeef2;
+  --green:#1f9d6b; --green-soft:#e6f6ee;
+  --sh1:0 1px 2px rgba(16,23,41,.06),0 1px 3px rgba(16,23,41,.05);
+  --sh2:0 6px 22px rgba(16,23,41,.10);
+  --sh3:0 24px 60px rgba(16,23,41,.28);
+  --r:14px; --r2:10px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font-family:Arial, Helvetica, sans-serif !important;background:var(--bg);color:var(--ink);
+  -webkit-font-smoothing:antialiased;font-size:14px;line-height:1.5}
+button{font-family:inherit;cursor:pointer;border:0;background:none}
+input,select,textarea{font-family:inherit;font-size:14px}
+.app{display:grid;grid-template-columns:268px 1fr;height:100vh;overflow:hidden}
+
+/* ============ SIDEBAR ============ */
+.side{background:linear-gradient(185deg,#121a30 0%,#0d1426 60%,#0b1020 100%);color:#cdd5e6;
+  display:flex;flex-direction:column;position:relative;overflow:hidden}
+.side::before{content:"";position:absolute;inset:0;
+  background:radial-gradient(620px 260px at 30% -8%,rgba(59,78,224,.30),transparent 70%),
+             radial-gradient(420px 220px at 110% 18%,rgba(13,148,136,.22),transparent 70%);pointer-events:none}
+.brand{padding:22px 22px 18px;display:flex;gap:12px;align-items:center;position:relative;z-index:1}
+.logo{width:42px;height:42px;border-radius:12px;flex:none;display:grid;place-items:center;
+  background:linear-gradient(150deg,#4f5ef0,#0d9488);box-shadow:0 8px 22px rgba(59,78,224,.45);color:#fff}
+.brand h1{font-size:15px;font-weight:700;margin:0;color:#fff;letter-spacing:.2px}
+.brand p{margin:1px 0 0;font-size:11.5px;color:#8b97b6}
+.navlbl{padding:16px 24px 8px;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:#717ea6;position:relative;z-index:1}
+.nav{padding:0 14px;display:flex;flex-direction:column;gap:3px;position:relative;z-index:1;overflow-y:auto}
+.nav button{display:flex;align-items:center;gap:12px;width:100%;text-align:left;color:#aeb8d2;
+  padding:10px 12px;border-radius:10px;font-size:13.3px;font-weight:500;transition:.16s;position:relative}
+.nav button .ix{width:34px;height:24px;flex:none;display:grid;place-items:center;font-size:11px;font-weight:700;
+  color:#8893b4;background:rgba(255,255,255,.05);border-radius:7px}
+.nav button:hover{background:rgba(255,255,255,.06);color:#fff}
+.nav button.active{background:linear-gradient(95deg,rgba(59,78,224,.35),rgba(59,78,224,.10));color:#fff;
+  box-shadow:inset 0 0 0 1px rgba(120,140,255,.25)}
+.nav button.active .ix{background:linear-gradient(150deg,#5664f2,#0d9488);color:#fff}
+.nav button.active::before{content:"";position:absolute;left:-14px;top:8px;bottom:8px;width:3px;border-radius:3px;background:#7c8bff}
+.side .foot{margin-top:auto;padding:16px 22px;font-size:11px;color:#6b769a;position:relative;z-index:1;border-top:1px solid rgba(255,255,255,.06)}
+
+/* ============ MAIN ============ */
+.main{display:flex;flex-direction:column;overflow:hidden}
+.topbar{height:64px;flex:none;background:rgba(255,255,255,.85);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line);display:flex;align-items:center;gap:18px;padding:0 28px}
+.crumb{font-size:12.5px;color:var(--muted)}
+.crumb b{color:var(--ink);font-weight:600}
+.topbar .grow{flex:1}
+.topsearch{display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--line);
+  border-radius:10px;padding:8px 12px;width:300px;color:var(--muted)}
+.topsearch input{border:0;background:none;outline:none;width:100%;color:var(--ink)}
+.avatar{width:38px;height:38px;border-radius:11px;background:linear-gradient(150deg,#3b4ee0,#0d9488);
+  color:#fff;display:grid;place-items:center;font-weight:700;font-size:13px}
+
+.content{flex:1;overflow-y:auto;padding:26px 28px 60px}
+.page-head{display:flex;align-items:flex-start;gap:16px;margin-bottom:18px}
+.page-head .ic{width:52px;height:52px;border-radius:14px;flex:none;display:grid;place-items:center;
+  background:var(--brand-soft);color:var(--brand);box-shadow:var(--sh1)}
+.page-head h2{margin:0;font-size:22px;font-weight:700;letter-spacing:-.01em}
+.page-head p{margin:3px 0 0;color:var(--muted);font-size:13.5px;max-width:760px}
+
+.seg{display:inline-flex;background:#eceffa;border-radius:11px;padding:4px;gap:4px;margin:6px 0 16px}
+.seg button{padding:7px 16px;border-radius:8px;font-size:13px;font-weight:600;color:var(--muted)}
+.seg button.on{background:#fff;color:var(--brand);box-shadow:var(--sh1)}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh1);overflow:hidden}
+.toolbar{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line2)}
+.search{display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--line);
+  border-radius:10px;padding:8px 12px;width:280px;color:var(--muted)}
+.search input{border:0;background:none;outline:none;width:100%;color:var(--ink)}
+.count{font-size:12.5px;color:var(--muted)}
+.toolbar .grow{flex:1}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:9px 15px;border-radius:10px;font-size:13px;
+  font-weight:600;transition:.15s;white-space:nowrap}
+.btn svg{width:16px;height:16px}
+.btn-primary{background:var(--brand);color:#fff;box-shadow:0 8px 18px rgba(59,78,224,.28)}
+.btn-primary:hover{background:var(--brand-d)}
+.btn-ghost{background:#fff;color:var(--ink2);border:1px solid var(--line)}
+.btn-ghost:hover{background:var(--bg)}
+.btn-rose{background:var(--rose);color:#fff}
+.btn-rose:hover{filter:brightness(.94)}
+
+table{width:100%;border-collapse:collapse}
+thead th{text-align:left;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted2);
+  font-weight:700;padding:12px 16px;background:#fafbfe;border-bottom:1px solid var(--line)}
+tbody td{padding:13px 16px;border-bottom:1px solid var(--line2);font-size:13.3px;vertical-align:middle}
+tbody tr{transition:.12s}
+tbody tr:hover{background:#fafbff}
+tbody tr:last-child td{border-bottom:0}
+td .mono{font-family:Arial, Helvetica, sans-serif !important;font-size:12px;color:var(--ink2)}
+td .sub{color:var(--muted);font-size:12px;margin-top:2px}
+.cellname b{font-weight:600}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;font-size:11.5px;font-weight:600;white-space:nowrap}
+.b-brand{background:var(--brand-soft);color:var(--brand-d)}
+.b-teal{background:var(--teal-soft);color:var(--teal)}
+.b-amber{background:var(--amber-soft);color:var(--amber)}
+.b-green{background:var(--green-soft);color:var(--green)}
+.b-rose{background:var(--rose-soft);color:var(--rose)}
+.b-gray{background:#eef1f7;color:#5b6781}
+.b-dot::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.tags{display:flex;gap:5px;flex-wrap:wrap}
+.dash{color:var(--muted2)}
+.rowact{display:flex;gap:6px;justify-content:flex-end}
+.iconbtn{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;color:var(--muted);
+  background:#fff;border:1px solid var(--line);transition:.14s}
+.iconbtn svg{width:15px;height:15px}
+.iconbtn:hover{background:var(--bg);color:var(--ink)}
+.iconbtn.view:hover{color:var(--teal);border-color:var(--teal)}
+.iconbtn.edit:hover{color:var(--brand);border-color:var(--brand)}
+.iconbtn.del:hover{color:var(--rose);border-color:var(--rose)}
+.tfoot{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;color:var(--muted);font-size:12.5px}
+.pager{display:flex;gap:6px}
+.pager button{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--muted);font-weight:600;font-size:12px}
+.pager button.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+.empty{padding:46px;text-align:center;color:var(--muted)}
+.empty svg{width:54px;height:54px;color:var(--line);margin-bottom:10px}
+
+/* ============ DRAWER ============ */
+.overlay{position:fixed;inset:0;background:rgba(15,23,41,.42);backdrop-filter:blur(2px);opacity:0;pointer-events:none;transition:.22s;z-index:40}
+.overlay.show{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;height:100%;width:560px;max-width:94vw;background:var(--card);
+  box-shadow:var(--sh3);transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);z-index:50;display:flex;flex-direction:column}
+.drawer.show{transform:translateX(0)}
+.dh{padding:20px 24px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;gap:14px}
+.dh .ic{width:44px;height:44px;border-radius:12px;flex:none;display:grid;place-items:center;background:var(--brand-soft);color:var(--brand)}
+.dh.view .ic{background:var(--teal-soft);color:var(--teal)}
+.dh h3{margin:0;font-size:17px;font-weight:700}
+.dh p{margin:2px 0 0;font-size:12.5px;color:var(--muted)}
+.dh .x{margin-left:auto;width:34px;height:34px;border-radius:9px;display:grid;place-items:center;color:var(--muted);background:var(--bg)}
+.dh .x:hover{background:#e7eaf3;color:var(--ink)}
+.dbody{flex:1;overflow-y:auto;padding:22px 24px}
+.grp{margin-bottom:8px}
+.grp-h{display:flex;align-items:center;gap:9px;font-size:12px;font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--brand-d);margin:18px 0 12px}
+.grp-h:first-child{margin-top:0}
+.grp-h::after{content:"";flex:1;height:1px;background:var(--line)}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px 16px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field.full{grid-column:1/-1}
+.field label{font-size:12.5px;font-weight:600;color:var(--ink2)}
+.field label .req{color:var(--rose);margin-left:3px}
+.field .help{font-size:11.5px;color:var(--muted);line-height:1.45}
+.ctrl{padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);
+  outline:none;transition:.14s;width:100%}
+.ctrl:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(59,78,224,.14)}
+textarea.ctrl{resize:vertical;min-height:64px}
+.ctrl.mono{font-family:"JetBrains Mono",monospace;font-size:12.5px}
+select.ctrl{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2365718c' stroke-width='2.2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;padding-right:34px}
+.switch{display:inline-flex;align-items:center;gap:10px}
+.tog{width:42px;height:24px;border-radius:999px;background:#cfd6e6;position:relative;transition:.18s;flex:none}
+.tog::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.18s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.tog.on{background:var(--brand)}
+.tog.on::after{left:21px}
+.tog .lbl{font-size:12.5px;color:var(--muted)}
+.pills{display:flex;flex-wrap:wrap;gap:8px}
+.pill{padding:7px 13px;border-radius:999px;border:1px solid var(--line);font-size:12.5px;font-weight:600;color:var(--muted);background:#fff;transition:.14s}
+.pill.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+.note-in{background:var(--amber-soft);border:1px solid #f3e3b8;color:#8a6a13;border-radius:10px;padding:11px 13px;font-size:12.3px;line-height:1.5}
+.dl{display:flex;flex-direction:column;gap:0}
+.dl .row{display:grid;grid-template-columns:160px 1fr;gap:14px;padding:11px 0;border-bottom:1px solid var(--line2)}
+.dl .row:last-child{border-bottom:0}
+.dl dt{font-size:12.5px;color:var(--muted);font-weight:600}
+.dl dd{margin:0;font-size:13.3px;color:var(--ink)}
+.df{padding:16px 24px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end;background:#fafbfe}
+
+/* confirm modal */
+.modal{position:fixed;inset:0;display:grid;place-items:center;z-index:60;opacity:0;pointer-events:none;transition:.18s}
+.modal.show{opacity:1;pointer-events:auto}
+.modal .box{background:#fff;border-radius:16px;box-shadow:var(--sh3);width:420px;max-width:92vw;padding:26px;transform:scale(.96);transition:.2s}
+.modal.show .box{transform:scale(1)}
+.modal .ic{width:52px;height:52px;border-radius:14px;background:var(--rose-soft);color:var(--rose);display:grid;place-items:center;margin-bottom:14px}
+.modal h3{margin:0 0 6px;font-size:18px}
+.modal p{margin:0 0 20px;color:var(--muted);font-size:13.5px;line-height:1.55}
+.modal .acts{display:flex;gap:10px;justify-content:flex-end}
+
+/* toast */
+.toast{position:fixed;right:24px;bottom:24px;display:flex;flex-direction:column;gap:10px;z-index:80}
+.toast .t{display:flex;align-items:center;gap:11px;background:#0f1729;color:#fff;padding:12px 16px;border-radius:12px;
+  box-shadow:var(--sh2);font-size:13px;font-weight:500;transform:translateY(12px);opacity:0;animation:tin .26s forwards}
+.toast .t .d{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;flex:none}
+.toast .t.ok .d{background:var(--green)}
+.toast .t.del .d{background:var(--rose)}
+@keyframes tin{to{transform:translateY(0);opacity:1}}
+/* console PL/SQL */
+.console{position:fixed;left:286px;bottom:18px;width:480px;max-width:calc(100vw - 320px);z-index:45;
+  background:#0c1322;color:#d7e0f4;border:1px solid #233155;border-radius:14px;box-shadow:var(--sh3);overflow:hidden;
+  transition:transform .26s cubic-bezier(.4,0,.2,1)}
+.console.min{transform:translateY(calc(100% - 46px))}
+.console .ch{display:flex;align-items:center;gap:10px;padding:11px 14px;background:linear-gradient(90deg,#16203a,#0e1730);
+  border-bottom:1px solid #233155;cursor:pointer;user-select:none}
+.console .ch .dot{width:9px;height:9px;border-radius:50%;background:#2fd07a;box-shadow:0 0 8px #2fd07a}
+.console .ch b{font-size:12.5px;color:#fff;font-weight:600;letter-spacing:.01em}
+.console .ch .pk{font-family:Arial, Helvetica, sans-serif !important;font-size:11px;color:#7e8db5}
+.console .ch .tg{margin-left:auto;color:#7e8db5;font-size:11px;display:flex;align-items:center;gap:8px}
+.console .ch .clr{color:#7e8db5;background:#1b2542;border:1px solid #2c3a60;border-radius:6px;padding:3px 8px;font-size:10.5px}
+.console .ch .clr:hover{color:#fff}
+.clog{max-height:260px;overflow-y:auto;padding:12px 14px;font-family:Arial, Helvetica, sans-serif !important;font-size:11.6px;line-height:1.65}
+.clog .e{margin-bottom:12px;padding-bottom:11px;border-bottom:1px solid #1a2440}
+.clog .e:last-child{border-bottom:0;margin-bottom:0}
+.clog .meta{color:#6f7ea6;font-size:10.5px;margin-bottom:4px;display:flex;gap:8px;align-items:center}
+.clog .tag{padding:1px 7px;border-radius:5px;font-weight:600;font-size:10px;letter-spacing:.02em}
+.tag-list{background:#13325a;color:#7cc0ff}.tag-detail{background:#0f4040;color:#5fe0d0}
+.tag-create{background:#1c3a1f;color:#86e08a}.tag-update{background:#3a2f12;color:#e9c46a}.tag-delete{background:#3a1622;color:#ff8aa6}
+.clog .call{color:#e7edff;white-space:pre-wrap;word-break:break-word}
+.clog .fn{color:#8fb4ff;font-weight:600}
+.clog .pm{color:#9aa6c8}.clog .st{color:#a8e6b0}.clog .nm{color:#e9c46a}
+.drawer .callinfo{margin:0 0 16px;background:#0c1322;border-radius:11px;padding:12px 14px;border:1px solid #233155}
+.drawer .callinfo .lb{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:#7e8db5;margin-bottom:6px;font-weight:700}
+.drawer .callinfo code{font-family:Arial, Helvetica, sans-serif !important;font-size:12px;color:#9fc2ff;display:block;white-space:pre-wrap;word-break:break-word}
+@media(max-width:1080px){.app{grid-template-columns:76px 1fr}.brand h1,.brand p,.navlbl,.nav button span.tx,.side .foot{display:none}
+ .console{left:88px;width:auto;right:14px;max-width:none}
+ .nav button{justify-content:center;padding:11px 0}.fgrid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand">
+      <div class="logo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></div>
+      <div><h1>Form động</h1><p>Hệ Quản trị Đại học</p></div>
+    </div>
+    <div class="navlbl">Khai báo metadata</div>
+    <nav class="nav" id="nav"></nav>
+    <div class="foot">Oracle 19c · person-centric<br>Phiên bản demo giao diện</div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="crumb">Quản trị · <b id="crumb">Định nghĩa Trường</b></div>
+      <div class="grow"></div>
+      <div class="topsearch"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg><input placeholder="Tìm nhanh toàn hệ thống…"></div>
+      <div class="avatar">QT</div>
+    </header>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay" onclick="closeDrawer()"></div>
+<aside class="drawer" id="drawer"></aside>
+
+<div class="modal" id="modal">
+  <div class="box">
+    <div class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m1 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6"/><path d="M10 11v6M14 11v6"/></svg></div>
+    <h3>Xác nhận xóa</h3>
+    <p id="modal-text">Bạn có chắc muốn xóa bản ghi này? Hành động không thể hoàn tác.</p>
+    <div class="acts"><button class="btn btn-ghost" onclick="closeModal()">Hủy</button><button class="btn btn-rose" id="modal-ok">Xóa bản ghi</button></div>
+  </div>
+</div>
+
+<div class="console" id="console">
+  <div class="ch" onclick="if(!event.target.classList.contains('clr'))document.getElementById('console').classList.toggle('min')">
+    <span class="dot"></span><b>Console PL/SQL</b><span class="pk">PKG_CORE_GIAODIEN</span>
+    <span class="tg"><button class="clr" onclick="event.stopPropagation();document.getElementById('clog').innerHTML=''">Xóa log</button><span id="cmin">▾ thu gọn</span></span>
+  </div>
+  <div class="clog" id="clog"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============ ICONS ============ */
+const I={
+ eye:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>',
+ edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>',
+ del:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m1 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6"/><path d="M10 11v6M14 11v6"/></svg>',
+ plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+ close:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>',
+ save:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>',
+ inbox:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5h13l3.5 7v7a1 1 0 01-1 1H3a1 1 0 01-1-1v-7z"/></svg>'
+};
+const pageIcon='<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M3 9h18"/></svg>';
+
+/* ============ OPTION LISTS ============ */
+const O={
+ linhvuc:["Nhân thân","Liên hệ / Địa chỉ","Học tập","Nguyện vọng","Tài chính / Lương"],
+ phamvi:["Dùng chung","Theo module"],
+ kieudl:["TEXT","NUMBER","DECIMAL","DATE","DATETIME","BOOLEAN","FILE"],
+ control:["TEXTBOX","TEXTAREA","NUMBER","DATEPICKER","CHECKBOX","SELECT","RADIO","MULTISELECT","FILE","LABEL"],
+ nguon:["NONE","STATIC","TABLE","SQL","CASCADE"],
+ modules:["TUYENSINH","NHANSU","DAOTAO","KHENTHUONG"],
+ owner:["PERSON","HOPDONG","DETAI","DONVI"],
+ ttmau:["DRAFT","PUBLISHED","ARCHIVED"],
+ kct:["BANG_1","BANG_N","KEYVALUE"],
+ lienket:["OWNER","INSTANCE","PARENT"],
+ cachghi:["INSERT","UPDATE","UPSERT"],
+ hanhdong:["DIEN","XEM","SUA","DUYET","XOA"]
+};
+const badgeClass=(v)=>{
+ const m={'Dùng chung':'b-teal','Theo module':'b-brand','PUBLISHED':'b-green','DRAFT':'b-amber','ARCHIVED':'b-gray',
+  'TEXT':'b-brand','NUMBER':'b-teal','DECIMAL':'b-teal','DATE':'b-amber','DATETIME':'b-amber','BOOLEAN':'b-gray','FILE':'b-rose',
+  'BANG_1':'b-brand','BANG_N':'b-teal','KEYVALUE':'b-amber','UPSERT':'b-green','INSERT':'b-brand','UPDATE':'b-amber',
+  'OWNER':'b-brand','INSTANCE':'b-teal','PARENT':'b-amber'};
+ return m[v]||'b-gray';
+};
+
+/* ============ SCHEMA ============ */
+const F=(key,label,type,opt={})=>({key,label,type,...opt});
+const SCHEMA=[
+{ id:"truong", pkg:"Truong", nav:"1", title:"Định nghĩa Trường", icon:"Tr",
+  subtitle:"Khai từng trường thông tin vào thư viện dùng chung (dm_form_truong) — tái sử dụng cho nhiều mẫu.",
+  newTitle:"Khai trường mới", unit:"trường",
+  columns:[
+   {key:"ma_truong",label:"Mã trường",render:r=>`<div class="cellname"><span class="mono">${r.ma_truong||''}</span><div class="sub">${r.ten_truong||''}</div></div>`},
+   {key:"nhom",label:"Lĩnh vực"},
+   {key:"pham_vi",label:"Phạm vi",badge:1},
+   {key:"kieudl",label:"Kiểu",badge:1},
+   {key:"control",label:"Control"},
+   {key:"batbuoc",label:"Bắt buộc",render:r=>r.batbuoc?'<span class="badge b-rose b-dot">Bắt buộc</span>':'<span class="dash">—</span>'}
+  ],
+  groups:[
+   {title:"Thông tin cơ bản",fields:[
+     F("ma_truong","Mã trường (KEY logic)","text",{req:1,mono:1,ph:"NV_TOHOP",help:"Mã định danh logic duy nhất, viết HOA_GACH_DUOI. Dùng làm KEY khi lưu EAV và tham chiếu cascade. Không đổi sau khi đã dùng."}),
+     F("ten_truong","Tên hiển thị","text",{req:1,ph:"Tổ hợp môn",help:"Nhãn mặc định trên form; mẫu có thể đổi nhãn riêng."}),
+     F("nhom","Lĩnh vực","select",{opts:O.linhvuc,help:"Chủ đề để gom/tìm trong thư viện. KHÔNG phải module, không quyết định nơi lưu."}),
+     F("pham_vi","Phạm vi dùng","select",{req:1,opts:O.phamvi,help:"Dùng chung mọi module, hoặc Theo module (phải khai ở form Phân loại)."})
+   ]},
+   {title:"Kiểu & hiển thị",fields:[
+     F("kieudl","Kiểu dữ liệu","select",{req:1,opts:O.kieudl,help:"Kiểu logic; quyết định cột EAV lưu giá trị."}),
+     F("control","Loại control","select",{req:1,opts:O.control,help:"Widget hiển thị. SELECT/RADIO/MULTISELECT cần nguồn giá trị."}),
+     F("chonnhieu","Cho chọn nhiều","switch",{help:"Bật nếu trường nhận nhiều giá trị (chọn nhiều)."}),
+     F("batbuoc","Bắt buộc mặc định","switch",{help:"Bắt buộc khi đặt vào mẫu; mẫu có thể override."})
+   ]},
+   {title:"Nguồn giá trị & ràng buộc",fields:[
+     F("nguon","Nguồn giá trị","select",{req:1,opts:O.nguon,help:"NONE nhập tự do · STATIC option tĩnh · TABLE bảng danh mục · SQL truy vấn · CASCADE danh mục phân cấp."}),
+     F("dinhdang","Định dạng / Mask","text",{ph:"dd/MM/yyyy",help:"Mask hiển thị: ngày dd/MM/yyyy, số #,##0.00."}),
+     F("cauhinh","Cấu hình nguồn (JSON)","json",{full:1,ph:'{"table":"dm_tohop","valueCol":"id","labelCol":"ten"}',help:"JSON trỏ NƠI lấy option (không chứa dữ liệu). Theo loại nguồn: TABLE/SQL/CASCADE."}),
+     F("regex","Regex kiểm tra","text",{full:1,mono:1,ph:"^[0-9]{12}$",help:"Biểu thức kiểm tra mặc định ở cấp thư viện (vd CCCD)."}),
+     F("ghichu","Ghi chú","textarea",{full:1,help:"Mô tả nội bộ cho người quản trị."})
+   ]}
+  ],
+  rows:[
+   {ma_truong:"HO_TEN",ten_truong:"Họ và tên",nhom:"Nhân thân",pham_vi:"Dùng chung",kieudl:"TEXT",control:"TEXTBOX",nguon:"NONE",batbuoc:1,chonnhieu:0},
+   {ma_truong:"NGAY_SINH",ten_truong:"Ngày sinh",nhom:"Nhân thân",pham_vi:"Dùng chung",kieudl:"DATE",control:"DATEPICKER",nguon:"NONE",dinhdang:"dd/MM/yyyy",batbuoc:1,chonnhieu:0},
+   {ma_truong:"CCCD",ten_truong:"Số CCCD",nhom:"Nhân thân",pham_vi:"Dùng chung",kieudl:"TEXT",control:"TEXTBOX",nguon:"NONE",regex:"^[0-9]{12}$",batbuoc:1,chonnhieu:0},
+   {ma_truong:"NV_TOHOP",ten_truong:"Tổ hợp môn",nhom:"Nguyện vọng",pham_vi:"Theo module",kieudl:"TEXT",control:"MULTISELECT",nguon:"TABLE",cauhinh:'{"table":"dm_tohop","valueCol":"id","labelCol":"ten"}',batbuoc:0,chonnhieu:1},
+   {ma_truong:"LUONG_COBAN",ten_truong:"Lương cơ bản",nhom:"Tài chính / Lương",pham_vi:"Theo module",kieudl:"DECIMAL",control:"NUMBER",nguon:"NONE",batbuoc:0,chonnhieu:0}
+  ]
+},
+{ id:"phanloai", pkg:"TruongModule", special:"phanloai", nav:"2", title:"Phân loại Trường – Module", icon:"PL",
+  subtitle:"Gắn trường 'Theo module' vào các module được phép dùng. Trường 'Dùng chung' áp dụng mọi module — không cần gắn.",
+  newTitle:"Gán trường vào module", unit:"phân loại",
+  columns:[
+   {key:"ma_truong",label:"Mã trường",render:r=>`<span class="mono">${r.ma_truong||''}</span>`},
+   {key:"pham_vi",label:"Phạm vi",badge:1},
+   {key:"modules",label:"Module áp dụng",render:r=>{
+     if(r.pham_vi==="Dùng chung") return '<span class="badge b-teal">Tất cả module</span>';
+     const a=(r.modules||[]); return a.length?`<div class="tags">${a.map(m=>`<span class="badge b-brand">${m}</span>`).join('')}</div>`:'<span class="dash">— chưa gán —</span>';
+   }}
+  ],
+  groups:[{title:"Phân loại",fields:[
+     F("ma_truong","Trường","text",{req:1,mono:1,ph:"NV_TOHOP",help:"Mã trường đã khai ở form Định nghĩa Trường."}),
+     F("pham_vi","Phạm vi","select",{req:1,opts:O.phamvi,help:"Chỉ trường 'Theo module' mới cần chọn module bên dưới."}),
+     F("modules","Module áp dụng","modules",{full:1,opts:O.modules,help:"Chọn các module được dùng trường. Bỏ qua nếu phạm vi là 'Dùng chung'."})
+  ]}],
+  rows:[
+   {ma_truong:"HO_TEN",pham_vi:"Dùng chung",modules:[]},
+   {ma_truong:"NV_TOHOP",pham_vi:"Theo module",modules:["TUYENSINH"]},
+   {ma_truong:"LUONG_COBAN",pham_vi:"Theo module",modules:["NHANSU"]},
+   {ma_truong:"HE_SO_PHUCAP",pham_vi:"Theo module",modules:["NHANSU","DAOTAO"]}
+  ]
+},
+{ id:"danhmuc", nav:"3", title:"Định nghĩa Danh mục", icon:"DM",
+  subtitle:"Khai loại danh mục và cây danh mục phân cấp (dm_loai_danhmuc + dm_danhmuc) — phục vụ nguồn CASCADE / TABLE.",
+  subviews:[
+   { key:"loai", pkg:"LoaiDanhMuc", label:"Loại danh mục", newTitle:"Khai loại danh mục", unit:"loại",
+     columns:[
+      {key:"ma_loai",label:"Mã loại",render:r=>`<span class="mono">${r.ma_loai||''}</span>`},
+      {key:"ten_loai",label:"Tên loại"},
+      {key:"so_cap",label:"Số cấp",render:r=>`<span class="badge b-brand">${r.so_cap} cấp</span>`},
+      {key:"ten_cac_cap",label:"Tên các cấp"}
+     ],
+     groups:[{title:"Loại danh mục",fields:[
+       F("ma_loai","Mã loại","text",{req:1,mono:1,ph:"DIABAN",help:"Mã loại duy nhất (DIABAN, NGANH, DONVI...). Trường CASCADE trỏ tới mã này."}),
+       F("ten_loai","Tên loại","text",{req:1,ph:"Địa bàn hành chính",help:"Tên hiển thị của loại danh mục."}),
+       F("so_cap","Số cấp","number",{req:1,ph:"3",help:"Số cấp phân cấp của cây (vd 3 = Tỉnh/Quận/Phường)."}),
+       F("ten_cac_cap","Tên các cấp (JSON)","json",{full:1,ph:'["Tỉnh/Thành","Quận/Huyện","Phường/Xã"]',help:"Nhãn từng cấp, dùng để hiển thị tiêu đề khi chọn cascade."})
+     ]}],
+     rows:[
+      {ma_loai:"DIABAN",ten_loai:"Địa bàn hành chính",so_cap:3,ten_cac_cap:'["Tỉnh/Thành","Quận/Huyện","Phường/Xã"]'},
+      {ma_loai:"NGANH",ten_loai:"Ngành đào tạo",so_cap:2,ten_cac_cap:'["Khối ngành","Ngành"]'}
+     ]
+   },
+   { key:"cay", pkg:"DanhMuc", label:"Cây danh mục", newTitle:"Khai nút danh mục", unit:"nút",
+     columns:[
+      {key:"ma",label:"Mã",render:r=>`<span class="mono">${'&nbsp;'.repeat(((r.cap||1)-1)*3)}${r.ma||''}</span>`},
+      {key:"ten",label:"Tên"},
+      {key:"loai",label:"Loại"},
+      {key:"cap",label:"Cấp",render:r=>`<span class="badge b-amber">Cấp ${r.cap}</span>`},
+      {key:"parent",label:"Cha",render:r=>r.parent?`<span class="mono">${r.parent}</span>`:'<span class="dash">(gốc)</span>'}
+     ],
+     groups:[{title:"Nút danh mục",fields:[
+       F("ma","Mã (ma)","text",{req:1,mono:1,ph:"HN_CG",help:"Mã nút, duy nhất trong loại."}),
+       F("ten","Tên (ten)","text",{req:1,ph:"Cầu Giấy",help:"Tên hiển thị của nút."}),
+       F("loai","Thuộc loại","select",{req:1,opts:["DIABAN","NGANH","DONVI"],help:"Loại danh mục mà nút này thuộc về."}),
+       F("cap","Cấp","number",{req:1,ph:"2",help:"Số cấp của nút (1 = gốc)."}),
+       F("parent","Mã cha (parent)","text",{mono:1,ph:"HN",help:"Mã nút cha (adjacency list). Để trống nếu là cấp 1."})
+     ]}],
+     rows:[
+      {ma:"HN",ten:"Hà Nội",loai:"DIABAN",cap:1,parent:""},
+      {ma:"HN_CG",ten:"Cầu Giấy",loai:"DIABAN",cap:2,parent:"HN"},
+      {ma:"HN_CG_DV",ten:"Dịch Vọng",loai:"DIABAN",cap:3,parent:"HN_CG"}
+     ]
+   }
+  ]
+},
+{ id:"mau", pkg:"Mau", nav:"4", title:"Định nghĩa Mẫu khai", icon:"Mẫu",
+  subtitle:"Khai đầu mẫu form (tbl_form_mau). Thay đổi mẫu = tạo mẫu mới; mẫu cũ chuyển ARCHIVED, hồ sơ cũ vẫn render đúng.",
+  newTitle:"Khai mẫu mới", unit:"mẫu",
+  columns:[
+   {key:"ma_mau",label:"Mã mẫu",render:r=>`<div class="cellname"><span class="mono">${r.ma_mau||''}</span><div class="sub">${r.ten_mau||''}</div></div>`},
+   {key:"owner",label:"Thực thể"},
+   {key:"module",label:"Module",render:r=>`<span class="badge b-brand">${r.module||'—'}</span>`},
+   {key:"trangthai",label:"Trạng thái",badge:1},
+   {key:"hieuluc",label:"Hiệu lực",render:r=>`<span class="sub" style="color:var(--ink)">${r.hieuluc_tu||'—'} → ${r.hieuluc_den||'—'}</span>`}
+  ],
+  groups:[
+   {title:"Thông tin mẫu",fields:[
+     F("ma_mau","Mã mẫu","text",{req:1,mono:1,ph:"NHAPHOC_2027",help:"Mã mẫu duy nhất; mỗi lần đổi mẫu là một mã mới."}),
+     F("ten_mau","Tên mẫu","text",{req:1,ph:"Hồ sơ nhập học 2027",help:"Tên hiển thị của mẫu."}),
+     F("owner","Loại thực thể","select",{opts:O.owner,help:"Mẫu phục vụ thực thể nào. Person-centric thường để PERSON."}),
+     F("module","Module","select",{opts:O.modules,help:"Mảng nghiệp vụ mẫu thuộc về."}),
+     F("mota","Mô tả","textarea",{full:1,help:"Mô tả ngắn về mẫu."})
+   ]},
+   {title:"Vòng đời & quy trình",fields:[
+     F("trangthai","Trạng thái","select",{req:1,opts:O.ttmau,help:"DRAFT đang soạn · PUBLISHED đang dùng · ARCHIVED lưu trữ."}),
+     F("wf","Quy trình duyệt","text",{mono:1,ph:"WF_XETHOSO",help:"Mã quy trình duyệt khi nộp; để trống nếu không cần duyệt."}),
+     F("socot","Số cột lưới","number",{ph:"12",help:"Số cột lưới gốc làm khung layout."}),
+     F("kichhoat","Kích hoạt","switch",{help:"Bật = đang dùng; tắt = ẩn mềm."}),
+     F("hieuluc_tu","Hiệu lực từ","text",{ph:"2027-01-01",help:"Ngày bắt đầu hiệu lực (ISO)."}),
+     F("hieuluc_den","Hiệu lực đến","text",{ph:"2027-08-31",help:"Ngày kết thúc hiệu lực (ISO)."})
+   ]}
+  ],
+  rows:[
+   {ma_mau:"NHAPHOC_2027",ten_mau:"Hồ sơ nhập học 2027",owner:"PERSON",module:"TUYENSINH",trangthai:"PUBLISHED",wf:"WF_XETHOSO",socot:12,kichhoat:1,hieuluc_tu:"2027-01-01",hieuluc_den:"2027-08-31",mota:"Khai hồ sơ nhập học đợt 2027"},
+   {ma_mau:"NHAPHOC_2026",ten_mau:"Hồ sơ nhập học 2026",owner:"PERSON",module:"TUYENSINH",trangthai:"ARCHIVED",socot:12,kichhoat:0,hieuluc_tu:"2026-01-01",hieuluc_den:"2026-08-31"},
+   {ma_mau:"LYLICH_CB",ten_mau:"Lý lịch cán bộ",owner:"PERSON",module:"NHANSU",trangthai:"DRAFT",socot:12,kichhoat:1}
+  ]
+},
+{ id:"cauhinh", nav:"5", title:"Cấu hình Trường trong Mẫu", icon:"CH",
+  subtitle:"Chọn mẫu gồm những nhóm/section và trường nào, bố cục và override (tbl_form_lay_nhom + tbl_form_lay_truong).",
+  context:"Mẫu: NHAPHOC_2027",
+  subviews:[
+   { key:"nhom", pkg:"LayNhom", label:"Nhóm / Section", newTitle:"Khai nhóm/section", unit:"nhóm",
+     columns:[
+      {key:"ten",label:"Tên nhóm",render:r=>`<div class="cellname"><b>${r.ten||''}</b><div class="sub mono">${r.ma||''}</div></div>`},
+      {key:"buoc",label:"Bước",render:r=>`<span class="badge b-gray">Bước ${r.buoc}</span>`},
+      {key:"socot",label:"Số cột"},
+      {key:"laplai",label:"Lặp lại",render:r=>r.laplai?`<span class="badge b-teal">Lặp ${r.min||1}–${r.max||''}</span>`:'<span class="dash">—</span>'},
+      {key:"nguon",label:"Nguồn lưu",render:r=>r.nguon?`<span class="mono">${r.nguon}</span>`:'<span class="dash">EAV</span>'}
+     ],
+     groups:[{title:"Nhóm / section",fields:[
+       F("ma","Mã nhóm","text",{req:1,mono:1,ph:"G_NV",help:"Mã section trong mẫu."}),
+       F("ten","Tên nhóm","text",{req:1,ph:"Nguyện vọng",help:"Tiêu đề section hiển thị."}),
+       F("buoc","Bước (wizard)","number",{ph:"1",help:"Trang/bước trong wizard; cùng bước = cùng trang."}),
+       F("socot","Số cột","number",{ph:"12",help:"Số cột lưới riêng của nhóm."}),
+       F("nhomcha","Nhóm cha","text",{mono:1,help:"Mã nhóm cha nếu lồng nhau; để trống nếu cấp 1."}),
+       F("laplai","Nhóm lặp lại","switch",{help:"Bật nếu là danh sách nhiều dòng (bảng con)."}),
+       F("min","Số dòng tối thiểu","number",{help:"Áp dụng khi nhóm lặp."}),
+       F("max","Số dòng tối đa","number",{help:"Áp dụng khi nhóm lặp."}),
+       F("nguon","Nguồn (nếu lặp)","text",{full:1,mono:1,ph:"NGUYENVONG",help:"Mã nguồn BANG_N để đổ dữ liệu nhóm lặp; để trống = EAV."})
+     ]}],
+     rows:[
+      {ma:"G_CANHAN",ten:"Thông tin cá nhân",buoc:1,socot:12,laplai:0,nguon:""},
+      {ma:"G_DIACHI",ten:"Địa chỉ thường trú",buoc:1,socot:12,laplai:0,nguon:""},
+      {ma:"G_NV",ten:"Nguyện vọng",buoc:2,socot:12,laplai:1,min:1,max:10,nguon:"NGUYENVONG"}
+     ]
+   },
+   { key:"truong", pkg:"LayTruong", label:"Trường trong mẫu", newTitle:"Đặt trường vào mẫu", unit:"trường",
+     columns:[
+      {key:"truong",label:"Trường",render:r=>`<div class="cellname"><span class="mono">${r.truong||''}</span><div class="sub">${r.nhan||''}</div></div>`},
+      {key:"nhom",label:"Nhóm",render:r=>`<span class="mono">${r.nhom||''}</span>`},
+      {key:"socot",label:"Cột chiếm"},
+      {key:"batbuoc",label:"Bắt buộc",render:r=>r.batbuoc?'<span class="badge b-rose b-dot">Bắt buộc</span>':'<span class="dash">—</span>'},
+      {key:"luu",label:"Nơi lưu",render:r=>r.nguon?`<span class="mono">${r.nguon}.${r.cotdich||''}</span>`:'<span class="badge b-amber">EAV</span>'}
+     ],
+     groups:[
+      {title:"Đặt trường & bố cục",fields:[
+        F("nhom","Nhóm","text",{req:1,mono:1,ph:"G_CANHAN",help:"Mã nhóm chứa trường."}),
+        F("truong","Trường (ma_truong)","text",{req:1,mono:1,ph:"HO_TEN",help:"Mã trường từ thư viện."}),
+        F("thutu","Thứ tự","number",{ph:"1",help:"Thứ tự trong nhóm."}),
+        F("socot","Số cột chiếm","number",{ph:"6",help:"Colspan trên lưới (1–12)."}),
+        F("nhan","Nhãn override","text",{help:"Đổi nhãn so với thư viện; trống = kế thừa."}),
+        F("control","Control override","select",{opts:["(kế thừa)",...O.control],help:"Đổi control; '(kế thừa)' = theo thư viện."}),
+        F("batbuoc","Bắt buộc","switch",{help:"Override bắt buộc; tắt = theo thư viện."}),
+        F("chidoc","Chỉ đọc","switch",{help:"Hiển thị nhưng không cho sửa."})
+      ]},
+      {title:"Định tuyến nơi lưu (mapping)",fields:[
+        F("nguon","Nguồn lưu","text",{mono:1,ph:"PERSON",help:"Mã nguồn (ở form Mapping). Trống = ghi vào EAV."}),
+        F("cotdich","Cột đích","text",{mono:1,ph:"ho_ten",help:"Cột trong bảng thật của nguồn."}),
+        F("dieukien","Điều kiện hiện (JSON)","json",{full:1,ph:'{"truong":"CO_UU_TIEN","op":"=","giaTri":"1"}',help:"Ẩn/hiện theo giá trị trường khác."})
+      ]}
+     ],
+     rows:[
+      {nhom:"G_CANHAN",truong:"HO_TEN",thutu:1,socot:6,batbuoc:1,nguon:"PERSON",cotdich:"ho_ten",nhan:"Họ tên thí sinh"},
+      {nhom:"G_CANHAN",truong:"NGAY_SINH",thutu:2,socot:3,batbuoc:1,nguon:"PERSON",cotdich:"ngay_sinh"},
+      {nhom:"G_CANHAN",truong:"CCCD",thutu:3,socot:3,batbuoc:1,nguon:"PERSON",cotdich:"cccd"},
+      {nhom:"G_NV",truong:"NV_NGANH",thutu:1,socot:8,batbuoc:1,nguon:"NGUYENVONG",cotdich:"nganh_id"},
+      {nhom:"G_NV",truong:"NV_TOHOP",thutu:2,socot:4,batbuoc:0,nguon:"",cotdich:""}
+     ]
+   }
+  ]
+},
+{ id:"apdung", pkg:"MauApDung", nav:"6", title:"Áp dụng cho Đợt", icon:"ĐĐ",
+  subtitle:"Xác định mẫu áp dụng cho kế hoạch/đợt nào (tbl_form_mau_apdung). Nhiều dòng cùng mẫu = AND.",
+  newTitle:"Khai phạm vi áp dụng", unit:"điều kiện",
+  columns:[
+   {key:"ma_mau",label:"Mã mẫu",render:r=>`<span class="mono">${r.ma_mau||''}</span>`},
+   {key:"context",label:"Giá trị ngữ cảnh (id)",render:r=>`<span class="badge b-brand">${r.context||''}</span>`},
+   {key:"kichhoat",label:"Kích hoạt",render:r=>r.kichhoat?'<span class="badge b-green b-dot">Đang áp dụng</span>':'<span class="badge b-gray">Tắt</span>'},
+   {key:"ghichu",label:"Ghi chú",render:r=>`<span class="sub" style="color:var(--ink)">${r.ghichu||''}</span>`}
+  ],
+  note:"Mẫu khớp khi MỌI giá trị ngữ cảnh của nó đều nằm trong tập ngữ cảnh chạy thực tế. Mẫu không có dòng nào = áp dụng mọi ngữ cảnh. Giá trị phải là id duy nhất (KH2027, DOT2027_01), không dùng số trần.",
+  groups:[{title:"Phạm vi áp dụng",fields:[
+     F("ma_mau","Mã mẫu","text",{req:1,mono:1,ph:"NHAPHOC_2027",help:"Mẫu cần gắn phạm vi."}),
+     F("context","Giá trị ngữ cảnh (id)","text",{req:1,mono:1,ph:"DOT2027_01",help:"id duy nhất của kế hoạch/đợt/phương thức mà mẫu áp dụng."}),
+     F("kichhoat","Kích hoạt","switch",{help:"Bật = điều kiện đang áp dụng."}),
+     F("ghichu","Ghi chú","textarea",{full:1,help:"Diễn giải điều kiện này."})
+  ]}],
+  rows:[
+   {ma_mau:"NHAPHOC_2027",context:"KH2027",kichhoat:1,ghichu:"Áp dụng cho kế hoạch tuyển sinh 2027"},
+   {ma_mau:"NHAPHOC_2027",context:"DOT2027_01",kichhoat:1,ghichu:"... VÀ riêng đợt 1 (AND)"},
+   {ma_mau:"NHAPHOC_BOSUNG",context:"DOT2027_BS",kichhoat:1,ghichu:"Mẫu bổ sung chỉ cho đợt bổ sung"}
+  ]
+},
+{ id:"mapping", pkg:"MapNguon", nav:"7", title:"Cấu hình Mapping", icon:"MP",
+  subtitle:"Khai mỗi nguồn lưu của mẫu: ghi về bảng nào, cột nào (tbl_form_map_nguon).",
+  context:"Mẫu: NHAPHOC_2027",
+  newTitle:"Khai nguồn lưu", unit:"nguồn",
+  columns:[
+   {key:"ma_nguon",label:"Mã nguồn",render:r=>`<span class="mono">${r.ma_nguon||''}</span>`},
+   {key:"kct",label:"Kiểu cấu trúc",badge:1},
+   {key:"bang",label:"Bảng đích",render:r=>`<span class="mono">${r.bang||''}</span>`},
+   {key:"lienket",label:"Liên kết",render:r=>`<span class="mono">${r.cot_lienket||''}</span> <span class="badge ${badgeClass(r.lienket)}">${r.lienket||''}</span>`},
+   {key:"cachghi",label:"Cách ghi",badge:1},
+   {key:"thutughi",label:"T.tự",render:r=>`<span class="badge b-gray">#${r.thutughi}</span>`}
+  ],
+  groups:[
+   {title:"Nguồn lưu",fields:[
+     F("ma_nguon","Mã nguồn","text",{req:1,mono:1,ph:"PERSON",help:"Mã nguồn trong mẫu; trường/nhóm trỏ tới mã này."}),
+     F("kct","Kiểu cấu trúc","select",{req:1,opts:O.kct,help:"BANG_1 ngang 1 dòng · BANG_N ngang nhiều dòng · KEYVALUE bảng dọc (EAV)."}),
+     F("bang","Bảng đích","text",{req:1,mono:1,ph:"CORE_PERSON",help:"Tên bảng nghiệp vụ (kể cả bảng EAV)."}),
+     F("cot_khoa","Cột khóa","text",{mono:1,ph:"id",help:"Khóa chính của bảng đích."})
+   ]},
+   {title:"Liên kết & cách ghi",fields:[
+     F("cot_lienket","Cột liên kết","text",{req:1,mono:1,ph:"person_id",help:"Cột FK gắn dòng về đối tượng/hồ sơ."}),
+     F("lienket","Liên kết với","select",{req:1,opts:O.lienket,help:"OWNER theo người · INSTANCE theo hồ sơ · PARENT theo dòng cha."}),
+     F("cot_thuoctinh","Cột thuộc tính (KEYVALUE)","text",{mono:1,ph:"ma_truong",help:"Chỉ với KEYVALUE: cột chứa tên thuộc tính."}),
+     F("cot_dinhdanh","Cột định danh","text",{mono:1,ph:"cccd",help:"Cột dò trùng khi UPSERT, tránh tạo trùng."}),
+     F("cachghi","Cách ghi","select",{req:1,opts:O.cachghi,help:"INSERT/UPDATE/UPSERT."}),
+     F("thutughi","Thứ tự ghi","number",{ph:"1",help:"Thứ tự fan-out: bảng người trước, con sau, EAV cuối."})
+   ]}
+  ],
+  rows:[
+   {ma_nguon:"PERSON",kct:"BANG_1",bang:"CORE_PERSON",cot_khoa:"id",cot_lienket:"id",lienket:"OWNER",cot_dinhdanh:"cccd",cachghi:"UPSERT",thutughi:1},
+   {ma_nguon:"DIACHI",kct:"BANG_N",bang:"CORE_DIACHI",cot_khoa:"id",cot_lienket:"person_id",lienket:"OWNER",cachghi:"UPSERT",thutughi:2},
+   {ma_nguon:"NGUYENVONG",kct:"BANG_N",bang:"TS_NGUYENVONG",cot_khoa:"id",cot_lienket:"hoso_id",lienket:"INSTANCE",cachghi:"UPSERT",thutughi:3},
+   {ma_nguon:"EAV",kct:"KEYVALUE",bang:"tbl_form_instance_giatri",cot_khoa:"id",cot_lienket:"instance_Id",cot_thuoctinh:"ma_truong",lienket:"INSTANCE",cachghi:"INSERT",thutughi:9}
+  ]
+}
+];
+
+/* ============ STATE / DB ============ */
+let DB={}, SEARCH={}, ACTIVE=SCHEMA[0].id, SUBVIEW={};
+SCHEMA.forEach(m=>{
+  if(m.subviews){ SUBVIEW[m.id]=m.subviews[0].key; m.subviews.forEach(sv=>{DB[m.id+":"+sv.key]=sv.rows.map((r,i)=>({_id:m.id+sv.key+i,...r}));}); }
+  else DB[m.id]=m.rows.map((r,i)=>({_id:m.id+i,...r}));
+});
+let uid=1000;
+const mod=id=>SCHEMA.find(m=>m.id===id);
+function activeView(){const m=mod(ACTIVE); if(m.subviews){const sv=m.subviews.find(s=>s.key===SUBVIEW[m.id]); return {m,view:sv,dsk:m.id+":"+sv.key};} return {m,view:m,dsk:m.id};}
+
+/* ============ NAV ============ */
+const nav=document.getElementById('nav');
+SCHEMA.forEach(m=>{
+  const b=document.createElement('button');
+  b.innerHTML=`<span class="ix">${m.nav}</span><span class="tx">${m.title}</span>`;
+  b.onclick=()=>{ACTIVE=m.id;render();};
+  b.dataset.id=m.id; nav.appendChild(b);
+});
+
+/* ============ CONSOLE PL/SQL ============ */
+const ACTMETA={list:['tag-list','LẤY DANH SÁCH'],detail:['tag-detail','XEM CHI TIẾT'],
+  create:['tag-create','THÊM MỚI'],update:['tag-update','SỬA'],delete:['tag-delete','XÓA']};
+const HD={list:'XEM_DS',detail:'XEM_CT',create:'THEM',update:'SUA',delete:'XOA'};
+const q1=v=>`'${(v==null?'':String(v)).replace(/'/g,"''")}'`;
+const pascal=k=>k.split('_').map(p=>p?p[0].toUpperCase()+p.slice(1):p).join('');
+function pkgOf(){const{m,view}=activeView();return m.special==='phanloai'?'TruongModule':(view.pkg||m.pkg||'Core');}
+function funcCode(){return 'CN_'+pkgOf();}
+function fieldKeys(){const{view}=activeView();const ks=[];(view.groups||[]).forEach(g=>g.fields.forEach(f=>{if(f.key!=='modules')ks.push(f.key);}));return ks;}
+function stdBlock(action){return [
+  `ParamNguoiThucHien_Id   => 'U001'`,
+  `ParamVaiTroDangNhap_Id  => 'ROLE_ADMIN'`,
+  `ParamChucNangHeThong_Id => '${funcCode()}'`,
+  `ParamHanhDong_Code      => '${HD[action]}'`];}
+function buildCall(action,rec){
+  const P=pkgOf(), pre='PKG_CORE_GIAODIEN.', r=rec||{}, dsk=activeView().dsk;
+  const J=arr=>arr.join(',\n    ');
+  if(activeView().m.special==='phanloai'){
+    if(action==='list')   return `${pre}TruongModule_LayDanhSach(\n    ${J([`ParamTuKhoa => ${q1(SEARCH[dsk]||'')}`,...stdBlock(action),`rs       => :rs`,`ParamErr => :err`])});`;
+    if(action==='detail') return `${pre}TruongModule_LayChiTiet(\n    ${J([`ParamId  => ${q1(r.ma_truong)}`,...stdBlock(action),`rs       => :rs`,`ParamErr => :err`])});`;
+    if(action==='create'||action==='update')
+      return `${pre}TruongModule_Luu(\n    ${J([`ParamTruong_Id => ${q1(r.ma_truong)}`,`ParamDsModule  => ${q1((r.modules||[]).join(','))}`,...stdBlock(action),`ParamErr       => :err`])});`;
+    if(action==='delete') return `${pre}TruongModule_Xoa(\n    ${J([`ParamId  => ${q1(r.ma_truong)}`,...stdBlock(action),`ParamErr => :err`])});`;
+  }
+  if(action==='list')
+    return `${pre}${P}_LayDanhSach(\n    ${J([`ParamTuKhoa => ${q1(SEARCH[dsk]||'')}`,`ParamTrang  => 1`,`ParamSoDong => 20`,...stdBlock(action),`rs            => :rs`,`ParamTong_Out => :tong`,`ParamErr      => :err`])});`;
+  if(action==='detail')
+    return `${pre}${P}_LayChiTiet(\n    ${J([`ParamId  => ${q1(r._id)}`,...stdBlock(action),`rs       => :rs`,`ParamErr => :err`])});`;
+  if(action==='delete')
+    return `${pre}${P}_Xoa(\n    ${J([`ParamId  => ${q1(r._id)}`,...stdBlock(action),`ParamErr => :err`])});`;
+  const ks=fieldKeys();
+  if(action==='create'){
+    const dom=ks.map(k=>`Param${pascal(k)} => ${q1(r[k])}`);
+    return `${pre}${P}_Them(\n    ${J([...dom,...stdBlock(action),`ParamId_Out => :id`,`ParamErr    => :err`])});`;
+  }else{
+    const dom=[`ParamId => ${q1(r._id)}`].concat(ks.filter(k=>!['ma_truong','ma_mau','ma_loai'].includes(k)).map(k=>`Param${pascal(k)} => ${q1(r[k])}`));
+    return `${pre}${P}_Sua(\n    ${J([...dom,...stdBlock(action),`ParamErr => :err`])});`;
+  }
+}
+function colorize(call){
+  return call
+    .replace(/PKG_CORE_GIAODIEN\.([A-Za-z0-9_]+)/g,'PKG_CORE_GIAODIEN.<span class="fn">$1</span>')
+    .replace(/\b(Param[A-Za-z0-9_]*|:rs|:tong|:id|:err|rs)\b/g,'<span class="pm">$1</span>')
+    .replace(/('[^']*')/g,'<span class="st">$1</span>');
+}
+function logCall(action,rec){
+  const [cls,lbl]=ACTMETA[action]; const call=buildCall(action,rec);
+  const t=new Date().toLocaleTimeString('vi-VN');
+  const log=document.getElementById('clog');
+  const e=document.createElement('div'); e.className='e';
+  e.innerHTML=`<div class="meta"><span class="tag ${cls}">${lbl}</span><span>${activeView().m.title}</span><span>·</span><span>${t}</span></div><div class="call">${colorize(call)}</div>`;
+  log.insertBefore(e,log.firstChild);
+  document.getElementById('console').classList.remove('min');
+}
+
+function render(){
+  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.id===ACTIVE));
+  const {m,view,dsk}=activeView();
+  document.getElementById('crumb').textContent=m.title;
+  let rows=DB[dsk]||[];
+  const q=(SEARCH[dsk]||'').toLowerCase().trim();
+  if(q) rows=rows.filter(r=>JSON.stringify(Object.values(r)).toLowerCase().includes(q));
+
+  let html=`<div class="page-head"><div class="ic">${pageIcon}</div><div><h2>${m.title}</h2><p>${m.subtitle}</p></div></div>`;
+
+  if(m.subviews){
+    html+=`<div class="seg">${m.subviews.map(sv=>`<button class="${sv.key===SUBVIEW[m.id]?'on':''}" onclick="setSub('${m.id}','${sv.key}')">${sv.label}</button>`).join('')}</div>`;
+  }
+  if(m.context){html+=`<div style="display:inline-flex;gap:8px;align-items:center;margin:0 0 14px;font-size:13px;color:var(--muted)">Đang cấu hình cho <span class="badge b-brand">${m.context}</span></div>`;}
+
+  html+=`<div class="card">
+    <div class="toolbar">
+      <div class="search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+        <input placeholder="Tìm ${view.unit}…" value="${SEARCH[dsk]||''}" oninput="doSearch('${dsk}',this.value)"></div>
+      <span class="count">${rows.length} ${view.unit}</span>
+      <div class="grow"></div>
+      <button class="btn btn-primary" onclick="openForm('create')">${I.plus} Thêm mới</button>
+    </div>`;
+
+  if(rows.length===0){
+    html+=`<div class="empty">${I.inbox}<div style="font-weight:600;color:var(--ink);margin-bottom:4px">Chưa có ${view.unit} nào</div><div>Bấm “Thêm mới” để khai bản ghi đầu tiên.</div></div>`;
+  }else{
+    html+=`<table><thead><tr>${view.columns.map(c=>`<th>${c.label}</th>`).join('')}<th style="text-align:right">Thao tác</th></tr></thead><tbody>`;
+    rows.forEach(r=>{
+      html+=`<tr>`;
+      view.columns.forEach(c=>{
+        let cell;
+        if(c.render) cell=c.render(r);
+        else if(c.badge){const v=r[c.key]; cell=v!=null&&v!==''?`<span class="badge ${badgeClass(v)}">${v}</span>`:'<span class="dash">—</span>';}
+        else {const v=r[c.key]; cell=(v!=null&&v!=='')?v:'<span class="dash">—</span>';}
+        html+=`<td>${cell}</td>`;
+      });
+      html+=`<td><div class="rowact">
+        <button class="iconbtn view" title="Xem" onclick="openForm('view','${r._id}')">${I.eye}</button>
+        <button class="iconbtn edit" title="Sửa" onclick="openForm('edit','${r._id}')">${I.edit}</button>
+        <button class="iconbtn del" title="Xóa" onclick="askDelete('${r._id}')">${I.del}</button>
+      </div></td></tr>`;
+    });
+    html+=`</tbody></table>
+      <div class="tfoot"><span>Hiển thị <b>${rows.length}</b> / ${ (DB[dsk]||[]).length } bản ghi</span>
+        <div class="pager"><button>‹</button><button class="on">1</button><button>›</button></div></div>`;
+  }
+  html+=`</div>`;
+  document.getElementById('content').innerHTML=html;
+  logCall('list');
+}
+function setSub(mid,sv){SUBVIEW[mid]=sv;render();}
+function doSearch(dsk,v){SEARCH[dsk]=v;render();}
+
+/* ============ DRAWER FORM ============ */
+let CUR={mode:null,id:null};
+function fieldCtrl(f,val,readonly){
+  const v=val==null?'':val;
+  if(readonly){
+    let disp=v;
+    if(f.type==='switch') disp=v?'Bật / Có':'Tắt / Không';
+    if(f.type==='modules') disp=(Array.isArray(v)&&v.length)?v.join(', '):'(không gán — dùng mọi module)';
+    if(disp===''||disp==null) disp='<span class="dash">—</span>';
+    return `<dd>${f.mono||f.type==='json'?`<span class="mono">${disp}</span>`:disp}</dd>`;
+  }
+  if(f.type==='textarea') return `<textarea class="ctrl" data-k="${f.key}" placeholder="${f.ph||''}">${v}</textarea>`;
+  if(f.type==='json') return `<textarea class="ctrl mono" data-k="${f.key}" placeholder="${f.ph||''}">${v}</textarea>`;
+  if(f.type==='number') return `<input class="ctrl" type="number" data-k="${f.key}" value="${v}" placeholder="${f.ph||''}">`;
+  if(f.type==='select') return `<select class="ctrl" data-k="${f.key}"><option value="">— chọn —</option>${f.opts.map(o=>`<option ${o===v?'selected':''}>${o}</option>`).join('')}</select>`;
+  if(f.type==='switch') return `<div class="switch"><div class="tog ${v?'on':''}" data-k="${f.key}" data-v="${v?1:0}" onclick="this.classList.toggle('on');this.dataset.v=this.classList.contains('on')?1:0;this.nextElementSibling.textContent=this.classList.contains('on')?'Có':'Không'"></div><span class="lbl">${v?'Có':'Không'}</span></div>`;
+  if(f.type==='modules'){const arr=Array.isArray(v)?v:[]; return `<div class="pills" data-k="${f.key}">${f.opts.map(o=>`<button type="button" class="pill ${arr.includes(o)?'on':''}" onclick="this.classList.toggle('on')" data-v="${o}">${o}</button>`).join('')}</div>`;}
+  return `<input class="ctrl ${f.mono?'mono':''}" data-k="${f.key}" value="${v}" placeholder="${f.ph||''}">`;
+}
+function openForm(mode,id){
+  CUR={mode,id};
+  const {view}=activeView();
+  const rec=id?(DB[activeView().dsk].find(r=>r._id===id)||{}):{};
+  const readonly=mode==='view';
+  const dh=document.getElementById('drawer');
+  const titleMap={create:view.newTitle||'Thêm mới',edit:'Chỉnh sửa bản ghi',view:'Xem chi tiết'};
+  const subMap={create:'Điền các trường bên dưới rồi bấm Lưu.',edit:'Cập nhật thông tin và bấm Lưu thay đổi.',view:'Chế độ chỉ đọc.'};
+  let body='';
+  // badge: hàm sẽ gọi
+  const callAct = mode==='view'?'detail':(mode==='create'?'create':'update');
+  const callPrev = buildCall(callAct, mode==='create'?{}:rec);
+  body+=`<div class="callinfo"><div class="lb">${mode==='view'?'Đang gọi':'Khi lưu sẽ gọi'} · PKG_CORE_GIAODIEN</div><code>${colorize(callPrev)}</code></div>`;
+  if(mod(ACTIVE).note && mode!=='view') body+=`<div class="note-in" style="margin-bottom:16px">${mod(ACTIVE).note}</div>`;
+  view.groups.forEach(g=>{
+    body+=`<div class="grp-h">${g.title}</div>`;
+    if(readonly){
+      body+=`<dl class="dl">`;
+      g.fields.forEach(f=>{ body+=`<div class="row"><dt>${f.label}</dt>${fieldCtrl(f,rec[f.key],true)}</div>`; });
+      body+=`</dl>`;
+    }else{
+      body+=`<div class="fgrid">`;
+      g.fields.forEach(f=>{
+        body+=`<div class="field ${f.full?'full':''}"><label>${f.label}${f.req?'<span class="req">*</span>':''}</label>${fieldCtrl(f,rec[f.key],false)}${f.help?`<span class="help">${f.help}</span>`:''}</div>`;
+      });
+      body+=`</div>`;
+    }
+  });
+  dh.innerHTML=`
+    <div class="dh ${readonly?'view':''}">
+      <div class="ic">${readonly?I.eye:(mode==='create'?I.plus:I.edit)}</div>
+      <div><h3>${titleMap[mode]}</h3><p>${mod(ACTIVE).title} · ${subMap[mode]}</p></div>
+      <button class="x" onclick="closeDrawer()">${I.close}</button>
+    </div>
+    <div class="dbody">${body}</div>
+    <div class="df">
+      <button class="btn btn-ghost" onclick="closeDrawer()">${readonly?'Đóng':'Hủy'}</button>
+      ${readonly?`<button class="btn btn-primary" onclick="openForm('edit','${id}')">${I.edit} Chuyển sang sửa</button>`
+                :`<button class="btn btn-primary" onclick="saveForm()">${I.save} ${mode==='create'?'Lưu bản ghi':'Lưu thay đổi'}</button>`}
+    </div>`;
+  document.getElementById('overlay').classList.add('show');
+  dh.classList.add('show');
+  if(mode==='edit'||mode==='view') logCall('detail',rec);
+}
+function closeDrawer(){document.getElementById('drawer').classList.remove('show');document.getElementById('overlay').classList.remove('show');}
+function saveForm(){
+  const dsk=activeView().dsk, body=document.querySelector('#drawer .dbody');
+  const rec={};
+  body.querySelectorAll('[data-k]').forEach(el=>{
+    const k=el.dataset.k;
+    if(el.classList.contains('tog')) rec[k]=+el.dataset.v;
+    else if(el.classList.contains('pills')) rec[k]=[...el.querySelectorAll('.pill.on')].map(p=>p.dataset.v);
+    else rec[k]=el.value;
+  });
+  if(CUR.mode==='create'){ rec._id='n'+(uid++); logCall('create',rec); DB[dsk].unshift(rec); toast('ok','Đã thêm bản ghi mới'); }
+  else { const i=DB[dsk].findIndex(r=>r._id===CUR.id); if(i>=0){ rec._id=CUR.id; DB[dsk][i]={...DB[dsk][i],...rec}; logCall('update',DB[dsk][i]);} toast('ok','Đã lưu thay đổi'); }
+  closeDrawer(); render();
+}
+
+/* ============ DELETE ============ */
+let DELID=null;
+function askDelete(id){DELID=id;const m=document.getElementById('modal');document.getElementById('modal-text').textContent='Bạn có chắc muốn xóa bản ghi này? Hành động không thể hoàn tác.';m.classList.add('show');document.getElementById('modal-ok').onclick=doDelete;}
+function closeModal(){document.getElementById('modal').classList.remove('show');}
+function doDelete(){const dsk=activeView().dsk;const rec=DB[dsk].find(r=>r._id===DELID);logCall('delete',rec);DB[dsk]=DB[dsk].filter(r=>r._id!==DELID);closeModal();render();toast('del','Đã xóa bản ghi');}
+
+/* ============ TOAST ============ */
+function toast(type,msg){
+  const wrap=document.getElementById('toast');
+  const t=document.createElement('div');t.className='t '+type;
+  const ic=type==='del'?I.del:'<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
+  t.innerHTML=`<span class="d">${ic.replace(/currentColor/g,'white')}</span>${msg}`;
+  wrap.appendChild(t);setTimeout(()=>{t.style.transition='.25s';t.style.opacity='0';t.style.transform='translateY(8px)';setTimeout(()=>t.remove(),250);},2200);
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDrawer();closeModal();}});
+render();
+</script>
+</body>
+</html>

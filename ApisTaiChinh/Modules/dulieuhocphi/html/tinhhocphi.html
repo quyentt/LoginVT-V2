@@ -1,0 +1,403 @@
+﻿<!-- Main content -->
+<section class="content aps-danhmuccheso">
+    <div class="row row-align mb-20 aps-tinhhocphi">
+        <div class="col-lg-6 pr10 aps-quytrinh">
+            <div class="box box-shadow">
+                <div class="box-header with-border pd20 bg-header">
+                    <h3 class="box-title mt-5"><i class="fa-light fa-arrow-progress"></i> Quy trình 2: Tính học phí</h3>
+                </div>
+                <div class="box-body pd20 pb5" style="padding-top: 17px !important;">
+                    <table class="table table-noborder aps-table-tinhhocphi table-noborder aps-form"
+                        id="tblTaskBar_TinhHocPhi">
+                        <thead>
+                            <tr>
+                                <td class="aps-form-lable" style="border-left: 0 !important; width: 200px;">Hệ đào tạo
+                                </td>
+                                <td class="td-right">
+                                    <select id="dropHeDaoTao_TP" class="select-opt">
+                                        <option value="">-- Chọn hệ đào tạo --</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="aps-form-lable" style="border-left: 0 !important;">Khóa đào tạo</td>
+                                <td class="td-right">
+                                    <select id="dropKhoaDaoTao_TP" class="select-opt">
+                                        <option value="">-- Chọn khóa đào tạo --</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="aps-form-lable" style="border-left: 0 !important;">Lớp đào tạo</td>
+                                <td class="td-right">
+                                    <select class="select-opt" id="dropLopQuanLy_TP" multiple="multiple">
+                                        <!-- gen genCombo_LopQuanLy() in mientoanphan.js -->
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="aps-form-lable" style="border-left: 0 !important;">Sinh viên</td>
+                                <td class="td-right">
+                                    <div id="key_sinhvien" class="box-header with-border btnGetData pt0">
+                                        <h3 class="box-title mt-0">
+                                            <a data-toggle="collapse" data-parent="#key_sinhvien" href="#qt_sinhvien"
+                                                aria-expanded="false" class="collapsed">
+                                                <span class="lang" key="" style="font-size: 14px"> Chọn theo từng sinh
+                                                    viên</span>
+                                            </a>
+                                        </h3>
+                                    </div>
+                                    <div id="qt_sinhvien" class="panel-collapse collapse qt_sinhvien"
+                                        aria-expanded="false">
+                                        <div class="box-body pl0 pr0 pb0">
+                                            <div class="scroll-table-x bg-none">
+                                                <table id="tblSinhVien" class="table table-hover table-bordered">
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="td-fixed td-center">Stt</th>
+                                                            <th class="td-center">Mã số</th>
+                                                            <th class="td-center">Họ tên</th>
+                                                            <th class="td-fixed td-center"><input type="checkbox"
+                                                                    id="chkSelectAll"></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody></tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="aps-form-lable" style="border-left: 0 !important;">Thời gian đào tạo</td>
+                                <td class="td-right">
+                                    <select id="dropThoiGianDaoTao_TP" class="select-opt" multiple="multiple">
+                                        <option value="">-- Chọn thời gian đào tạo --</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="aps-form-lable" style="border-left: 0 !important;">Kế hoạch đăng ký</td>
+                                <td class="td-right">
+                                    <select id="dropKeHoachDangKy_TP" class="select-opt" multiple="multiple">
+                                        <option value="">-- Chọn kế hoạch đăng ký --</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="aps-form-lable" style="border-left: 0 !important;">Nghiệp vụ áp dụng</td>
+                                <td class="td-right">
+                                    <select id="dropNghiepVu_TP" class="select-opt">
+                                        <option value="">-- Chọn nghiệp vụ --</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="aps-form-lable" style="border-left: 0 !important;padding-top: 0 !important;">Khoản thu</td>
+                                <td class="td-right" style="padding-top: 0 !important;">
+                                    <select id="dropKhoanThu_TP" class="select-opt">
+                                        <option value="">-- Chọn khoản thu --</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- load taskbar -->
+                        </tbody>
+                    </table>
+                    <div class="pull-right mb-20 aps-btn-list-right">
+                        <div class="dropdown" id="zonebtnBaoCao_THP" style="float: left">
+                            <button class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown">
+                                <i class="fa fa fa-file-excel-o"></i> Xuất báo cáo <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu form-container"></ul>
+                        </div>
+                        <a class="btn btn-danger" id="btnDeleteKetQua"><i class="fa fa-trash"></i> Xóa kết quả</a>
+                        <a class="btn btn-primary ml-5" id="btnXemDanhSach"><i class="fa fa-list"></i> Xem danh sách</a>
+                        <a class="btn btn-success ml-5" id="btnTinhHocPhi"><i class="fa fa-calculator"></i> Tính phí</a>
+                    </div>
+                </div>
+                <div class="box-footer">
+                    <div class="group-title pl0 pt10">
+                        <p class="titleSearchContent">
+                            <i class="fa-light fa-user-graduate"></i>
+                            </i> <span class="lang" key="">Chọn trạng thái sinh viên</span>
+                        </p>
+                    </div>
+                    <div class="area-search mt-10">
+                        <div style="padding-left: 20px" id="DSTrangThaiSV_THP" class="inputSearch">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 pl10 aps-lichsu">
+            <div class="box box-shadow">
+                <div class="box-header with-border pd20 bg-header">
+                    <h3 class="box-title color-red"><i class="fa fa-history"></i> Lịch sử: Tính học phí</h3>
+                </div>
+                <div class="box-body pd20">
+                    <div class="scroll-table-x bg-none" style="height: 200px">
+                        <table class="table tblHistory_TinhHocPhi table table-noborder table-bordered"
+                            id="tblHistory_TinhHocPhi">
+                            <thead>
+                                <tr>
+                                    <th class="td-center td-fixed">#</th>
+                                    <th>Người thực hiện</th>
+                                    <th>Ngày thực hiện</th>
+                                    <th class="td-center">Tổng thực hiện</th>
+                                    <th class="td-center">Tổng hoàn thành</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="5" class="td-center">Không có dữ liệu tìm thấy!</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row row-align aps-tinhhocphi-tab">
+        <div class="box box-solid box-shadow pd0">
+            <div class="box-body pd0">
+                <div id="zone_main" class="zone-tinhhocphi-tab pd0">
+                    <div class="nav-tabs-custom">
+                        <ul class="nav nav-tabs">
+                            <li class="active">
+                                <a href="#tab_1" data-toggle="tab" aria-expanded="true">
+                                    <span class="lang" key="">
+                                        1) Theo tín chỉ
+                                        <span class="pull-right badge bg-light-blue">
+                                            <span id="tblTinChi_Tong"></span>
+                                        </span>
+                                    </span>
+                                </a>
+                            </li>
+                            <li class="aps-form-lable">
+                                <a href="#tab_2" data-toggle="tab" aria-expanded="true">
+                                    <span class="lang" key="">
+                                        2) Theo niên chế
+                                        <span class="pull-right badge bg-light-blue">
+                                            <span id="tblNienChe_Tong"></span>
+                                        </span>
+                                    </span>
+                                </a>
+                            </li>
+                            <li class="aps-form-lable">
+                                <a href="#tab_3" data-toggle="tab" aria-expanded="true">
+                                    <span class="lang" key="">
+                                        3) Danh sách không tính phí
+                                        <!--<span class="pull-right badge bg-light-blue">
+                                            <span id="tblNienChe_Tong"></span>
+                                        </span>-->
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <!-- Tab_1: Thong tin ly lich -->
+                            <div class="tab-pane active" id="tab_1">
+                                <div class="pull-right">
+                                    <a id="btnRefresh" class="btn btn-warning pull-right" style="margin-right: 5px"><i
+                                            class="fa fa-refresh"></i> <span class="lang" key="">Tải lại</span></a>
+                                </div>
+                                <div class="aps-table-select">
+                                    <table id="tblTinChi"
+                                        class="table table-hover table-bordered tblTinChi table-noborder">
+                                        <thead>
+                                            <tr>
+                                                <th rowspan="2" class="td-fixed td-center">Stt</th>
+                                                <th rowspan="2" class="td-center">Mã số</th>
+                                                <th rowspan="2" class="td-center">Họ tên</th>
+                                                <th rowspan="2" class="td-center">Ngày sinh</th>
+                                                <th rowspan="2" class="td-center">Tình trạng</th>
+                                                <th rowspan="2" class="td-center">Lớp</th>
+                                                <th rowspan="2" class="td-center">Chương trình</th>
+                                                <th rowspan="2" class="td-center">Khóa</th>
+                                                <th colspan="8" class="td-center"
+                                                    style="border-left: 1px solid #e1e1e1 !important;">Học phí/ Kinh phí
+                                                </th>
+                                            </tr>
+                                            <tr>
+                                                <th class="td-center"
+                                                    style="border-left: 1px solid #e1e1e1 !important;">Số học phần</th>
+                                                <th class="td-center">Số tín chỉ</th>
+                                                <th class="td-center">Học đi</th>
+                                                <th class="td-center">Học lại</th>
+                                                <th class="td-center">Học nâng điểm</th>
+                                                <th class="td-center">Phần trăm miễn</th>
+                                                <th class="td-center">Số tiền miễn</th>
+                                                <th class="td-center">Số phải nộp</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- load from js -->
+                                        </tbody>
+                                        <tfoot></tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                            <!-- Tab_2: Thong tin ly lich -->
+                            <div class="tab-pane" id="tab_2">
+                                <div class="pull-right">
+                                    <a id="btnRefreshNienChe" class="btn btn-warning pull-right"
+                                        style="margin-right: 5px"><i class="fa fa-refresh"></i> <span class="lang"
+                                            key="">Tải lại</span></a>
+                                </div>
+                                <div class="aps-table-select">
+                                    <table id="tblNienChe"
+                                        class="table table-hover table-bordered tblNienChe table-noborder">
+                                        <thead>
+                                            <tr>
+                                                <th rowspan="2" class="td-fixed td-center">Stt</th>
+                                                <th rowspan="2" class="td-center">Mã số</th>
+                                                <th rowspan="2" class="td-center">Họ tên</th>
+                                                <th rowspan="2" class="td-center">Ngày sinh</th>
+                                                <th rowspan="2" class="td-center">Tình trạng</th>
+                                                <th rowspan="2" class="td-center">Lớp</th>
+                                                <th rowspan="2" class="td-center">Chương trình</th>
+                                                <th rowspan="2" class="td-center">Khóa</th>
+                                                <th colspan="5" class="td-center"
+                                                    style="border-left: 1px solid #e1e1e1 !important;">Học phí/ Kinh phí
+                                                </th>
+                                            </tr>
+                                            <tr>
+                                                <th class="td-center"
+                                                    style="border-left: 1px solid #e1e1e1 !important;">Số tiền</th>
+                                                <th class="td-center">Phần trăm miễn</th>
+                                                <th class="td-center">Số tiền miễn %</th>
+                                                <th class="td-center">Số tiền miễn cố định</th>
+                                                <th class="td-center">Số phải nộp</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- load from js -->
+                                        </tbody>
+                                        <tfoot></tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                            <!-- Tab_3: Thong tin ly lich -->
+                            <div class="tab-pane" id="tab_3">
+                                <div class="pull-right mt-10 mr-10">
+                                    <a id="btnRefresh_KhongTinhPhi" class="btn btn-warning">
+                                        <i class="fa fa-refresh"></i> <span class="lang" key="">Tải lại</span></a>
+                                    <div class="dropdown" id="zonebtnBaoCao_KBN_Import" style="float: left;">
+                                        <button class="btn btn-primary dropdown-toggle" type="button"
+                                            data-toggle="dropdown">
+                                            <i class="fa fa-cloud-upload"></i> Import <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu form-container">
+                                            <li><a class="btnImportWithProce" name="IMPORTWITHPROC_NVCHOTPHI"
+                                                    title="Chốt phí" href="#"> 1. Import chốt phí</a></li>
+                                        </ul>
+                                    </div>
+                                    <a class="btn btn-primary btnAdd" id="btnAdd_KhongTinhPhi" href="#">
+                                        <i class="fa fa-plus"></i> Thêm mới</a>
+                                </div>
+
+                                <div class="aps-table-select row">
+                                    <table id="tblKhongTinhPhi"
+                                        class="table table-hover table-bordered tblKhongTinhPhi table-noborder mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th class="td-fixed td-center">Stt</th>
+                                                <th class="td-center">Mã số</th>
+                                                <th class="td-center">Họ tên</th>
+                                                <th class="td-center">Chương trình</th>
+                                                <th class="td-center">Nghiệp vụ</th>
+                                                <th class="td-center">Khoản</th>
+                                                <th class="td-center">Thời gian</th>
+                                                <th class="td-center">Phần trăm không tính</th>
+                                                <th class="td-center td-fixed"><input type="checkbox"
+                                                        class="chkSystemSelectAll"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- load from js -->
+                                        </tbody>
+                                        <tfoot></tfoot>
+                                    </table>
+                                </div>
+                                <div class="aps-all-btn row text-right mt-10 justify-content-end">
+                                    <a id="btnDelete_KhongTinhPhi" class="btn btn-danger"><i class="fa fa-trash"></i>
+                                        Xóa</a>
+                                    <a class="submit btn btn-primary" id="btnSave_KhongTinhPhi"><i
+                                            class="fa fa-save"></i><span class="lang" key=""> Lưu</span></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="zone_input" class="box-body zone-bus" style="display: none">
+                <div class="form-container">
+                    <div class="form-container-header">
+                        <div class="pull-left">
+                            <h3 class="color-active" style="padding:15px"><i class="fa fa-pencil"></i> Chi tiết học
+                                phí</h3>
+                        </div>
+                        <div class="pull-right">
+                            <a class="btn btn-default btnClose" href="#"><i class="fa fa-times-circle"></i></a>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="form-container-body">
+                        <table id="tblChiTiet" class="table table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th rowspan="2" class="td-fixed td-center">Stt</th>
+                                    <th rowspan="2" class="td-center">Mã học phần</th>
+                                    <th rowspan="2" class="td-center">Tên học phần</th>
+                                    <th rowspan="2" class="td-center">Số tín chỉ</th>
+                                    <th colspan="4" class="td-center">Học phí/ Kinh phí</th>
+                                </tr>
+                                <tr>
+                                    <th class="td-center">Số tiền</th>
+                                    <th class="td-center">Kiểu học</th>
+                                    <th class="td-center">Phần trăm miễn</th>
+                                    <th class="td-center">Số tiền miễn</th>
+                                    <th class="td-center">Số phải nộp</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- load from js -->
+                            </tbody>
+                            <tfoot></tfoot>
+                        </table>
+                    </div>
+                    <div class="form-container-footer">
+                        <div class="col-sm-12">
+                            <div class="pull-right">
+                                <a class="btn btn-default btnClose" href="#"><i class="fa fa-times-circle"></i>
+                                    Đóng</a>
+                            </div>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</section>
+
+<div class="modal fade" id="modal_sinhvien" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <!-- load from js -->
+</div>
+
+<div class="modal fade" id="modal_nhansu" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <!-- load from js -->
+</div>
+<!-- page script -->
+<script src="modules/dulieuhocphi/scripts/tinhhocphi.js?v=1.0.0.3"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['TinhHocPhi'] = new TinhHocPhi();
+    $(document).ready(function () {
+        main_doc.TinhHocPhi.init();
+    });
+</script>

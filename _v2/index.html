@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>UMS</title>
+
+    <!-- Tệp này CHỈ để xem trên máy bằng dữ liệu dựng thử.
+         IIS xếp index.html trước index.aspx trong danh sách trang mặc định,
+         nên mở <ứng dụng>/_v2/ trên máy chủ sẽ rơi vào đây và chạy dữ
+         liệu mẫu. Chạy trên máy chủ thật thì chuyển sang vỏ ASPX; muốn cố ý
+         xem dữ liệu mẫu trên máy chủ thì thêm ?demo vào địa chỉ. -->
+    <script>
+        (function () {
+            var h = location.hostname;
+            var local = location.protocol === 'file:' || h === 'localhost' || h === '127.0.0.1' || h === '[::1]';
+            if (!local && !/[?&]demo\b/.test(location.search)) {
+                location.replace(location.pathname.replace(/[^\/]*$/, '') + 'index.aspx' + location.hash);
+            }
+        })();
+    </script>
+
+    <!-- Bộ giao diện. Một dòng duy nhất: main.css đã @import Font Awesome,
+         select2, flatpickr và toàn bộ tầng CSS. Không dùng Bootstrap. -->
+    <link rel="stylesheet" href="assets/css/main.css">
+
+    <!-- Cấu hình website. Nạp trong <head> để màu và kích thước được áp
+         trước khi trang vẽ, tránh nháy màu mặc định.
+         Muốn đổi màu / logo / phông chữ: chỉ sửa site.config.js -->
+    <script src="assets/config/site.config.js"></script>
+    <script src="assets/config/apply-config.js"></script>
+</head>
+
+<body>
+    <div class="ums-app" id="app">
+
+        <!-- ====== Thanh trên ====== -->
+        <header class="ums-topbar">
+            <!-- Nút Menu + logo: rộng tối thiểu bằng cột trái để ô tìm bắt đầu thẳng mép cột trái -->
+            <div class="ums-topbar__left">
+                <button type="button" class="ums-topbar__toggle" id="navToggle">
+                    <i class="fa-light fa-bars-sort"></i><span>Menu</span>
+                </button>
+
+                <a class="ums-topbar__brand" href="#/">
+                    <span class="ums-topbar__logo" data-ums-brand="logo"></span>
+                    <span data-ums-brand="name"></span>
+                </a>
+            </div>
+            <!-- Tìm MÀN HÌNH (app.js timMan) — vai trò đang dùng trước, rồi mọi vai trò; tên màn + dòng nhỏ tên vai trò -->
+            <div class="ums-gsearch" id="gSearch">
+                <i class="fa-light fa-magnifying-glass ums-gsearch__icon"></i>
+                <input class="ums-gsearch__input" id="gSearchInput" type="text" autocomplete="off" spellcheck="false"
+                       placeholder="Tìm màn hình trong mọi vai trò…" aria-label="Tìm màn hình">
+                <kbd class="ums-gsearch__kbd">Ctrl K</kbd>
+                <div class="ums-gsearch__list" id="gSearchList" role="listbox" hidden></div>
+            </div>
+
+            <span class="ums-topbar__spacer"></span>
+
+            <div class="ums-topbar__tools">
+                <span class="ums-topbar__divider"></span>
+                <button type="button" class="ums-topbar__icon" title="Thông báo">
+                    <i class="fa-light fa-bell"></i>
+                    <span class="ums-topbar__dot"></span>
+                </button>
+                <button type="button" class="ums-topbar__user" id="btnUser">
+                    <span class="ums-topbar__avatar"><i class="fa-light fa-user"></i></span>
+                    <span class="ums-u-hide-sm" id="userName">admin</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- ====== Cột trái: cây chức năng ====== -->
+        <aside class="ums-sidebar">
+            <!-- Ngoài vùng cuộn: luôn hiện -->
+            <div class="ums-sidebar__top">
+                <div class="ums-rolebar" id="roleBar" title="Vai trò đang dùng">
+                    <span class="ums-rolebar__icon"><i class="fa-light fa-user-shield" id="roleBarIcon"></i></span>
+                    <span class="ums-rolebar__txt"><small>Vai trò</small><b id="roleBarName">Chưa chọn vai trò</b></span>
+                    <a class="ums-rolebar__doi" href="#/" title="Đổi vai trò"><i class="fa-light fa-arrow-right-arrow-left"></i></a>
+                </div>
+            </div>
+
+            <!-- Vùng cuộn: thanh trượt do JS vẽ, đè lên nội dung, không chiếm chỗ -->
+            <div class="ums-scroll ums-sidebar__body" id="navScroll">
+                <div class="ums-scroll__view">
+                    <nav id="nav"></nav>
+                </div>
+                <div class="ums-scroll__bar"><div class="ums-scroll__thumb"></div></div>
+            </div>
+
+            <div class="ums-sidebar__foot" data-ums-brand="footer"></div>
+        </aside>
+
+        <div class="ums-veil" id="veil"></div>
+
+        <!-- ====== Nội dung ====== -->
+        <main class="ums-main">
+            <div id="content"></div>
+        </main>
+    </div>
+
+    <!-- Thư viện, tất cả nằm trong assets/vendor của chính thư mục này -->
+    <script src="assets/vendor/jquery/jquery-3.7.1.min.js"></script>
+    <script src="assets/vendor/select2/select2.min.js"></script>
+    <script src="assets/vendor/select2/i18n-vi.js"></script>
+    <script src="assets/vendor/flatpickr/flatpickr.min.js"></script>
+    <script src="assets/vendor/flatpickr/l10n/vn.js"></script>
+    <script src="assets/vendor/chart/chart.umd.js"></script>
+    <script src="assets/vendor/chart/chartjs-plugin-datalabels.min.js"></script>
+    <script src="assets/vendor/n2vi/n2vi.min.js"></script>
+
+    <!-- Bộ giao diện -->
+    <script src="assets/js/scroll.js"></script>
+    <script src="assets/js/chrome.js"></script>
+    <script src="assets/js/ui.js"></script>
+    <script src="assets/js/session.js"></script>
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/crud.js"></script>
+    <script src="assets/js/patterns.js"></script>
+    <script src="assets/js/ref.js"></script>
+    <script src="assets/js/report.js"></script>
+    <script src="assets/js/phieu.js"></script>
+    <script src="assets/js/lich.js"></script>
+    <script src="assets/js/diemhoc.js"></script>
+    <script src="assets/js/demo-data.js"></script>
+    <script src="assets/js/icon-fa4.js"></script>
+    <script src="assets/js/can-quyet.js"></script>
+    <script src="assets/js/thuvai.js"></script>
+    <script src="assets/js/app.js"></script>
+</body>
+
+</html>

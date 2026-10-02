@@ -1,0 +1,102 @@
+/* Tạo mới hồ sơ (bản cũ) — kiểu riêng của màn (hosotaomoi_cu.js).
+   Thanh bước (progressbar gốc) + thẻ chọn chương trình / lớp / trạng thái (info-box gốc:
+   ô biểu tượng màu cam / đỏ / xanh lơ) + khối xem thông tin. */
+
+/* ---- Dòng danh sách trái: nút bước nằm dưới tên khi cột hẹp ---- */
+.hstm-item { flex-wrap: wrap; }
+.hstm-item .ums-master__item__main { flex: 1 1 120px; }
+.hstm-item .ums-master__item__act { flex: 0 0 auto; }
+
+/* ---- Thanh ba bước ---- */
+.hstm-steps {
+    --hstm-c: var(--ums-blue);
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin: 0 0 var(--ums-sp-4);
+    padding: 0;
+    list-style: none;
+    counter-reset: hstm;
+}
+.hstm-steps--ct { --hstm-c: var(--ums-g-amber); }
+.hstm-steps--lop { --hstm-c: var(--ums-g-red); }
+.hstm-steps--tt, .hstm-steps--xong { --hstm-c: var(--ums-blue); }
+.hstm-steps > li {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--ums-sp-2);
+    color: var(--ums-ink-2);
+    font-size: var(--ums-fz-13);
+    text-align: center;
+    counter-increment: hstm;
+}
+.hstm-steps > li::before {
+    content: counter(hstm);
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--ums-line);
+    color: #fff;
+    font-weight: var(--ums-fw-bold);
+}
+.hstm-steps > li + li::after {
+    content: "";
+    position: absolute;
+    top: 17px;
+    right: 50%;
+    width: 100%;
+    height: 3px;
+    background: var(--ums-line);
+}
+.hstm-steps > li.is-done::before,
+.hstm-steps > li.is-active::before,
+.hstm-steps > li.is-done + li::after,
+.hstm-steps > li.is-active + li::after { background: var(--hstm-c); }
+.hstm-steps > li.is-active { color: var(--hstm-c); font-weight: var(--ums-fw-semibold); }
+
+/* ---- Thẻ chọn (dựng trên ums.pat.cards — bỏ nền "cuống biên lai" của thẻ chứng từ) ---- */
+.hstm-the { padding: var(--ums-sp-3) 0; }
+.hstm-the .ums-card {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--ums-sp-3);
+    padding: var(--ums-sp-2) var(--ums-sp-3);
+    border: 1px solid var(--ums-line);
+    background: var(--ums-surface);
+    background-image: none;
+}
+.hstm-the .ums-card:hover { background: var(--ums-surface-2, #f4f6fb); }
+.hstm-the .ums-card.is-active { border-color: var(--hstm-c, var(--ums-blue)); box-shadow: var(--ums-ring); background: var(--ums-blue-l); }
+.hstm-the__ic {
+    flex: 0 0 44px;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 6px;
+    background: var(--hstm-c, var(--ums-blue));
+    color: #fff;
+    font-size: 20px;
+    font-weight: var(--ums-fw-bold);
+}
+.hstm-the__ic--ma { font-size: var(--ums-fz-13); }
+.hstm-the__ten { min-width: 0; overflow-wrap: anywhere; }
+.hstm-the--zoneChuongTrinh { --hstm-c: var(--ums-g-amber); }
+.hstm-the--zoneGanLop { --hstm-c: var(--ums-g-red); }
+.hstm-the--zoneLuuTrangThai { --hstm-c: var(--ums-blue); }
+.hstm-chon:empty { display: none; }
+.hstm-chon { margin-top: var(--ums-sp-2); font-size: var(--ums-fz-15, 15px); }
+
+/* ---- Khối xem thông tin sinh viên ---- */
+.hstm-xem { display: flex; gap: var(--ums-sp-4); align-items: flex-start; }
+.hstm-xem > .ums-ava { flex: 0 0 96px; width: 96px; height: 120px; border-radius: 6px; font-size: 40px; }
+.hstm-xem > .hstm-kv { flex: 1 1 auto; min-width: 0; }
+@media (max-width: 767px) {
+    .hstm-xem { flex-direction: column; }
+    .hstm-kv.ums-grid--2 { grid-template-columns: minmax(0, 1fr); }
+}

@@ -1,0 +1,3782 @@
+﻿<!-- Version 3.4.0.0 - Fixed 2-Column Layout: Search Bar Left + Calendar Right -->
+<style>
+    /* Reduce padding/margin for more space */
+    .one-door.study-space {
+        padding: 0;
+        margin: 0;
+    }
+
+    .register-school.my-calendar>[class*="col-"] {
+        padding-left: 2px;
+        padding-right: 2px;
+    }
+
+    .box-shadow {
+        padding: 3px 2px;
+        margin-bottom: 2px;
+    }
+
+    .news-search-form {
+        margin-bottom: 5px;
+    }
+
+    .news-search-form .header-row {
+        margin-bottom: 5px;
+        gap: 8px;
+    }
+
+    .news-search-form .title-text {
+        font-size: 15px;
+    }
+
+    /* Search Bar Section - Vertical Layout */
+    .search-bar-section {
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .search-bar-content {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .search-bar-header {
+        margin-bottom: 4px;
+    }
+
+    .search-bar-header .title-text {
+        font-size: 14px;
+        font-weight: 600;
+        color: #222;
+        margin-bottom: 2px;
+    }
+
+    .search-bar-subtitle {
+        font-size: 10px;
+        color: #666;
+        margin: 0;
+        font-style: italic;
+    }
+
+    .search-bar-info {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        padding: 10px 12px;
+        background: #f0f3fd;
+        border-radius: 6px;
+        border-left: 3px solid #223771;
+    }
+
+    .search-bar-info .info-item {
+        color: #222 !important;
+        font-size: 13px;
+    }
+
+    .search-bar-info .info-item i {
+        color: #222 !important;
+    }
+
+    /* ═══ SPA-NATIVE add-on: card-header buttons (btnPrevMonth/Next, btnPrevWeek/Next)
+       nằm bên phải trong card-header dask-blue → viền trắng mỏng, chữ trắng ═══ */
+    .card.today-card>.card-header .card-header-btn.btn,
+    .card.today-card>.card-header .btn.btn-outline-light {
+        background: transparent !important;
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        color: #ffffff !important;
+        padding: 6px 10px 3px 10px !important;
+        font-size: 12px !important;
+        border-radius: 4px !important;
+        line-height: 1.4 !important;
+        height: 34px;
+    }
+
+    .card.today-card>.card-header .card-header-btn.btn i {
+        padding-right: 0 !important;
+    }
+
+    .card.today-card>.card-header .card-header-btn.btn:hover,
+    .card.today-card>.card-header .btn.btn-outline-light:hover {
+        background: rgba(255, 255, 255, 0.15) !important;
+        border-color: #ffffff !important;
+        color: #ffffff !important;
+    }
+
+    .card.today-card>.card-header .card-header-btn.btn i {
+        color: #ffffff !important;
+    }
+
+    /* Week-info trong schedule card-header (chữ trắng đậm) */
+    .card.today-card>.card-header .week-info {
+        color: #ffffff !important;
+        padding: 9px 10px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+        height: 34px;
+    }
+
+    .info-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #000;
+        font-size: 11px;
+    }
+
+    .info-item i {
+        font-size: 13px;
+        width: 18px;
+        text-align: center;
+        color: #223771;
+    }
+
+    .search-bar-controls {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .search-bar-controls .form-select {
+        width: 100%;
+        font-size: 14px;
+        height: 32px;
+        padding: 4px 8px;
+    }
+
+    .search-bar-controls-buttons {
+        display: flex;
+        gap: 6px;
+        width: 100%;
+    }
+
+    .search-bar-controls .btn {
+        flex: 1;
+        white-space: nowrap;
+        height: 38px;
+        padding: 6px 12px;
+        font-size: 14px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 500;
+    }
+
+    .search-bar-controls .btn i {
+        margin-right: 5px !important;
+        font-size: 14px;
+        margin-top: 0px !important;
+    }
+
+    /* Make search bar same height as calendar */
+    .row.mb-1>[class*="col-"] {
+        display: flex;
+    }
+
+    .row.mb-1>[class*="col-"]>.box-shadow {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .search-bar-section,
+    .calendar-compact {
+        height: 100%;
+        min-height: 280px;
+    }
+
+    /* Header section spacing */
+    .row.mb-3 {
+        margin-bottom: 1rem !important;
+    }
+
+    .row.mb-3 .box-shadow {
+        margin-bottom: 0;
+    }
+
+    .week-navigation {
+        margin-bottom: 5px;
+        gap: 6px;
+    }
+
+    .week-navigation button {
+        padding: 4px 8px;
+        font-size: 11px;
+    }
+
+    .week-info {
+        font-size: 15px;
+        font-weight: 600;
+        color: #223771;
+        text-align: center;
+    }
+
+    .filter-controls {
+        gap: 5px;
+    }
+
+    .filter-controls .btn {
+        padding: 4px 8px;
+        font-size: 11px;
+        min-height: 28px;
+    }
+
+    .filter-controls .form-select {
+        width: 220px;
+        font-size: 11px;
+        min-height: 28px;
+    }
+
+    .filter-controls #btnSearch {
+        min-width: 110px;
+    }
+
+    .filter-controls #btnViewAll {
+        min-width: 150px;
+    }
+
+    .filter-controls #btnExportExcel {
+        min-width: 100px;
+    }
+
+    /* Calendar Compact - Full Width */
+    .calendar-compact {
+        background: white;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        border-radius: 12px !important;
+    }
+
+    .calendar-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 12px;
+        background: linear-gradient(135deg, #223771 0%, #3c5398 100%);
+        color: white;
+        border-top-left-radius: 12px;
+        border-top-right-radius: 12px;
+    }
+
+    .calendar-title {
+        font-size: 14px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+    }
+
+    .calendar-title span {
+        padding: 2px 5px !important;
+        margin-top: 3px;
+    }
+
+    .calendar-header .btn {
+        color: white;
+        border-color: rgba(255, 255, 255, 0.3);
+        padding: 3px 8px;
+        font-size: 12px;
+    }
+
+    .calendar-header .btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: white;
+        color: white;
+    }
+
+    .calendar-body {
+        padding: 8px 10px 10px;
+        flex: 1;
+    }
+
+    .weekdays-compact {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        list-style: none;
+        padding: 0;
+        margin: 0 0 6px 0;
+        gap: 3px;
+    }
+
+    .weekdays-compact li {
+        text-align: center;
+        font-weight: 600;
+        font-size: 14px;
+        padding: 3px 1px;
+        color: #666;
+        background: #f8f9fa;
+        border-radius: 4px;
+    }
+
+    .calendar-body .days {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        gap: 2px;
+    }
+
+    .calendar-body .days li {
+        text-align: center;
+        padding: 5px 2px;
+        font-size: 14px;
+        font-weight: 400;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: all 0.2s;
+        background: #f8f9fa;
+        border: 1px solid transparent;
+    }
+
+    .calendar-body .days li.poiter {
+        background: white;
+        border-color: #e1e1e1;
+    }
+
+    .calendar-body .days li.poiter:hover {
+        background: #e3f2fd;
+        border-color: #2196f3;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 6px rgba(33, 150, 243, 0.3);
+    }
+
+    .calendar-body .days li.active {
+        background: var(--orange, #ff6b35) !important;
+        color: white !important;
+        font-weight: bold;
+        border-color: var(--orange, #ff6b35) !important;
+        box-shadow: 0 3px 8px rgba(255, 107, 53, 0.4);
+    }
+
+    .calendar-body .days li.day-of-other-month {
+        color: #ccc;
+        cursor: default;
+        background: transparent;
+    }
+
+    /* Schedule Grid - Full Width Optimized */
+    .schedule-grid-container {
+        overflow-x: auto;
+        overflow-y: auto;
+        max-height: calc(100vh - 280px);
+        position: relative;
+        -webkit-overflow-scrolling: touch;
+        width: 100%;
+    }
+
+    .schedule-grid {
+        display: grid;
+        /* Mỗi ngày 3 cột buổi (Sáng | Chiều | Tối). 2 cột đầu cố định bề rộng để sticky left khớp nhau */
+        --col-phong: 140px;
+        --col-hieusuat: 96px;
+        --col-ngay: minmax(60px, 1fr) minmax(60px, 1fr) minmax(48px, 0.8fr);
+        grid-template-columns: var(--col-phong) var(--col-hieusuat) repeat(7, var(--col-ngay));
+        border-left: 1px solid #d1d1d1;
+        border-right: 1px solid #d1d1d1;
+        border-bottom: 1px solid #d1d1d1;
+        background: white;
+        min-width: 100%;
+        gap: 0;
+    }
+
+    .schedule-header {
+        background-color: #f8f9fa;
+        border: 1px solid #ddd;
+        padding: 12px 8px;
+        font-weight: bold;
+        text-align: center;
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        white-space: normal;
+        word-wrap: break-word;
+        font-size: 14px;
+        min-height: 60px;
+        margin-left: -1px !important;
+    }
+
+    .schedule-header[style*="grid-column: 1"] {
+        left: 0;
+        z-index: 25;
+        /* border-right: 1px solid #999; */
+        margin-left: -1px !important;
+    }
+
+    .schedule-subheader {
+        background-color: #ffffff;
+        border: 1px solid #ddd;
+        padding: 0;
+        font-weight: 700;
+        text-align: center;
+        position: sticky;
+        top: 60px;
+        z-index: 19;
+        font-size: 13px;
+        min-height: 55px;
+    }
+
+    .schedule-subheader>div {
+        display: flex;
+        height: 100%;
+    }
+
+    .schedule-subheader .session-label {
+        flex: 1;
+        padding: 8px 4px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 3px;
+    }
+
+    .schedule-subheader .session-name {
+        font-weight: 700;
+        font-size: 14px;
+        line-height: 1.2;
+    }
+
+    .schedule-subheader .session-time {
+        font-size: 11px;
+        color: #555;
+        font-weight: 600;
+    }
+
+    .schedule-cell {
+        border-bottom: 1px solid #e0e0e0;
+        border-right: 1px solid #e0e0e0 !important;
+        min-height: 120px;
+        position: relative;
+        background: white;
+        padding: 4px;
+        overflow: hidden;
+    }
+
+    .schedule-cell.room-name {
+        position: sticky;
+        left: 0;
+        background: #f8f9fa;
+        z-index: 15;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        padding: 8px;
+        white-space: normal;
+        word-wrap: break-word;
+        font-size: 13px;
+        border-right: 1px solid #e0e0e0 !important;
+    }
+
+    .schedule-cell.efficiency {
+        position: sticky;
+        left: 140px;
+        background: white;
+        z-index: 15;
+        font-weight: 600;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 8px;
+        font-size: 14px;
+        border-right: 1px solid #fff;
+        text-align: center;
+    }
+
+    .efficiency-percent {
+        font-size: 20px;
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+
+    .efficiency-label {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        opacity: 0.8;
+    }
+
+    .efficiency-bar {
+        width: 100%;
+        height: 6px;
+        background: #fff;
+        border-radius: 3px;
+        overflow: hidden;
+        margin-top: 6px;
+    }
+
+    .efficiency-bar-fill {
+        height: 100%;
+        transition: width 0.3s ease;
+        border-radius: 3px;
+    }
+
+    /* Efficiency colors */
+    .efficiency.low {
+        background: linear-gradient(135deg, #198754 0%, #198754 100%);
+        color: #fff;
+    }
+
+    .efficiency.low .efficiency-bar-fill {
+        background: linear-gradient(90deg, #ef5350 0%, #e53935 100%);
+    }
+
+    .efficiency.medium {
+        background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+        color: #f57c00;
+    }
+
+    .efficiency.medium .efficiency-bar-fill {
+        background: linear-gradient(90deg, #ffa726 0%, #fb8c00 100%);
+    }
+
+    .efficiency.high {
+        background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+        color: #2e7d32;
+    }
+
+    .efficiency.high .efficiency-bar-fill {
+        background: linear-gradient(90deg, #66bb6a 0%, #43a047 100%);
+    }
+
+    .schedule-event {
+        padding: 8px 10px;
+        margin: 2px 0;
+        border-radius: 4px;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.2s;
+        position: relative;
+        overflow: hidden;
+        word-wrap: break-word;
+        white-space: normal;
+        line-height: 1.4;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .schedule-event:hover {
+        transform: scale(1.03);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+        z-index: 100;
+        filter: brightness(1.1);
+    }
+
+    .schedule-event:active {
+        transform: scale(0.98);
+    }
+
+    /* Thẻ lịch kiểu trang Thời khóa biểu cá nhân: ĐẦU THẺ đổ màu + chữ trắng (giờ, học phần), THÂN THẺ trắng (giảng viên).
+       Bảng màu = arrMau của lichgiang.js để 2 trang đồng bộ.
+       Các phương án đã dùng trước (để đổi lại nhanh):
+       - Pastel cả thẻ + viền trái: #e8efff/#3b6fd8, #fff0e6/#f08a4b, #f2ecff/#8b6fd6, #fdebf3/#e0679a, #e3f4f8/#3aa0bd
+       - Đậm cả thẻ chữ trắng: var(--color-link), #ff6b35, #ec4c00, #5a7adb, #3c5398 */
+    .schedule-event.color-1 .event-head {
+        background-color: #223771;
+    }
+
+    .schedule-event.color-2 .event-head {
+        background-color: #d49f3a;
+    }
+
+    .schedule-event.color-3 .event-head {
+        background-color: #ec4c00;
+    }
+
+    .schedule-event.color-4 .event-head {
+        background-color: #5a7adb;
+    }
+
+    .schedule-event.color-5 .event-head {
+        background-color: #3c5398;
+    }
+
+    .schedule-event .event-head {
+        color: #ffffff;
+    }
+
+    .event-time {
+        font-size: 12px;
+        opacity: 0.95;
+        font-weight: 600;
+        margin-bottom: 3px;
+    }
+
+    .event-subject {
+        font-weight: 600;
+        margin: 3px 0;
+        font-size: 13px;
+        line-height: 1.4;
+    }
+
+    .event-teacher {
+        font-size: 12px;
+        opacity: 0.85;
+        margin-top: 3px;
+        line-height: 1.3;
+    }
+
+    .block-calendar ul li.active span {
+        background-color: var(--orange) !important;
+    }
+
+    .week-navigation {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+        margin-top: 20px;
+    }
+
+    .week-navigation button {
+        padding: 8px 16px;
+        white-space: nowrap;
+        font-size: 14px;
+    }
+
+    .week-info {
+        font-size: 16px;
+        font-weight: 600;
+        color: #223771;
+        text-align: center;
+    }
+
+    .news-search-form {
+        margin-bottom: 20px;
+    }
+
+    .box-shadow .news-search-form {
+        margin-left: -15px;
+        margin-right: -15px;
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    .news-search-form p {
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .filter-controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: nowrap;
+    }
+
+    .filter-controls .form-select {
+        min-height: 38px;
+        flex-shrink: 0;
+        width: 350px;
+    }
+
+    .filter-controls .btn {
+        white-space: nowrap;
+        min-height: 38px;
+        padding: 8px 20px;
+        flex-shrink: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: fit-content;
+        overflow: visible;
+    }
+
+    .filter-controls .btn i {
+        margin-right: 8px;
+        flex-shrink: 0;
+        display: inline-block;
+    }
+
+    .filter-controls #btnSearch {
+        min-width: 150px;
+    }
+
+    .filter-controls #btnViewAll {
+        min-width: 200px;
+    }
+
+    .filter-controls #btnExportExcel {
+        min-width: 140px;
+    }
+
+    .btnExportExcel i {
+        color: #fff !important;
+    }
+
+    .news-search-form .header-row {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        margin-bottom: 20px;
+        gap: 20px;
+        flex-wrap: nowrap;
+    }
+
+    .news-search-form .title-text {
+        font-size: 20px;
+        font-weight: 600;
+        order: 1;
+        margin-right: auto;
+    }
+
+    .news-search-form .filter-controls {
+        order: 2;
+    }
+
+    /* Fix Select2 height */
+    .select2-container .select2-selection--single {
+        height: 28px !important;
+        display: flex !important;
+        align-items: center !important;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 28px !important;
+        text-align: center !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        font-size: 11px !important;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 28px !important;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__placeholder {
+        text-align: center !important;
+        line-height: 28px !important;
+        font-size: 14px !important;
+    }
+
+    /* Fix Select2 dropdown z-index to not block scrolling */
+    .select2-container--open {
+        z-index: 9999 !important;
+    }
+
+    .select2-dropdown {
+        z-index: 9999 !important;
+    }
+
+    /* Đồng bộ Select2 đơn trong khu tìm kiếm — cùng kích thước & style với multi */
+    .search-bar-controls .select2-container .select2-selection--single,
+    .search-bar-controls .form-select {
+        height: 38px !important;
+        min-height: 38px !important;
+        border: 1px solid #ced4da !important;
+        border-radius: 6px !important;
+        background: #fff !important;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .search-bar-controls .select2-container--focus .select2-selection--single,
+    .search-bar-controls .select2-container--open .select2-selection--single {
+        border-color: #223771 !important;
+        box-shadow: 0 0 0 0.15rem rgba(34, 55, 113, 0.15) !important;
+    }
+
+    .search-bar-controls .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 36px !important;
+        text-align: left !important;
+        padding: 0 28px 0 12px !important;
+        font-size: 13px !important;
+        color: #223771 !important;
+        font-weight: 500;
+    }
+
+    .search-bar-controls .select2-container--default .select2-selection--single .select2-selection__placeholder {
+        text-align: left !important;
+        line-height: 36px !important;
+        font-size: 13px !important;
+        color: #6c757d !important;
+        font-style: italic;
+        font-weight: 400;
+    }
+
+    .search-bar-controls .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 36px !important;
+        right: 6px !important;
+    }
+
+    .search-bar-controls .select2-container--default .select2-selection--single .select2-selection__clear {
+        margin-right: 22px !important;
+        color: #888 !important;
+        font-size: 16px !important;
+        font-weight: 600;
+    }
+
+    .search-bar-controls .select2-container--default .select2-selection--single .select2-selection__clear:hover {
+        color: #dc3545 !important;
+    }
+
+    /* Multi-select chọn nhiều phòng — đẹp hơn */
+    #dropSearch_PhongHocMulti+.select2-container .select2-selection--multiple {
+        min-height: 38px !important;
+        max-height: 110px;
+        overflow-y: auto;
+        border: 1px solid #ced4da !important;
+        border-radius: 8px !important;
+        padding: 3px 6px !important;
+        background: #fff;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    #dropSearch_PhongHocMulti+.select2-container--focus .select2-selection--multiple,
+    #dropSearch_PhongHocMulti+.select2-container--open .select2-selection--multiple {
+        border-color: #223771 !important;
+        box-shadow: 0 0 0 0.15rem rgba(34, 55, 113, 0.15) !important;
+    }
+
+    #dropSearch_PhongHocMulti+.select2-container .select2-selection__rendered {
+        padding: 0 !important;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        align-items: center;
+    }
+
+    #dropSearch_PhongHocMulti+.select2-container .select2-selection__choice {
+        background: linear-gradient(135deg, #223771 0%, #3c5398 100%) !important;
+        color: #fff !important;
+        border: none !important;
+        border-radius: 14px !important;
+        padding: 3px 10px 3px 8px !important;
+        margin: 2px !important;
+        font-size: 11px !important;
+        font-weight: 500;
+        line-height: 1.4;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+        transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    #dropSearch_PhongHocMulti+.select2-container .select2-selection__choice:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 5px rgba(34, 55, 113, 0.3);
+    }
+
+    #dropSearch_PhongHocMulti+.select2-container .select2-selection__choice__remove {
+        color: #fff !important;
+        font-weight: 700 !important;
+        margin-right: 2px !important;
+        opacity: 0.8;
+        font-size: 13px !important;
+        order: 2;
+        margin-left: 4px;
+    }
+
+    #dropSearch_PhongHocMulti+.select2-container .select2-selection__choice__remove:hover {
+        opacity: 1;
+        color: #ffd1d1 !important;
+        background: transparent !important;
+    }
+
+    #dropSearch_PhongHocMulti+.select2-container .select2-selection__clear {
+        color: #888 !important;
+        margin-right: 6px !important;
+        font-size: 16px;
+        line-height: 1;
+        align-self: center;
+    }
+
+    #dropSearch_PhongHocMulti+.select2-container .select2-search--inline {
+        flex: 1;
+        min-width: 120px;
+    }
+
+    #dropSearch_PhongHocMulti+.select2-container .select2-search--inline .select2-search__field {
+        margin-top: 4px !important;
+        font-size: 12px !important;
+        min-height: 24px;
+    }
+
+    #dropSearch_PhongHocMulti+.select2-container .select2-selection__placeholder {
+        color: #6c757d;
+        font-size: 12px;
+        font-style: italic;
+    }
+
+    /* Select2 trong modal xuất Excel */
+    #modal_export_excel .select2-container {
+        width: 100% !important;
+    }
+
+    #modal_export_excel .select2-container .select2-selection--single {
+        height: 38px !important;
+        display: flex !important;
+        align-items: center !important;
+        border: 1px solid #ced4da !important;
+        border-radius: 4px !important;
+    }
+
+    #modal_export_excel .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 38px !important;
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+        font-size: 14px !important;
+        color: #495057 !important;
+    }
+
+    #modal_export_excel .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 38px !important;
+        right: 8px !important;
+    }
+
+    #modal_export_excel .select2-container--default .select2-selection--single .select2-selection__placeholder {
+        color: #6c757d !important;
+        font-size: 14px !important;
+    }
+
+    /* Select2 dropdown trong modal */
+    .select2-container--default .select2-results__option {
+        padding: 8px 12px !important;
+        font-size: 14px !important;
+    }
+
+    .select2-container--default .select2-results__option--highlighted[aria-selected] {
+        background-color: #667eea !important;
+    }
+
+    .select2-container--default .select2-search--dropdown .select2-search__field {
+        border: 1px solid #ced4da !important;
+        border-radius: 4px !important;
+        padding: 8px 12px !important;
+        font-size: 14px !important;
+    }
+
+    .select2-container--default .select2-search--dropdown .select2-search__field:focus {
+        border-color: #667eea !important;
+        outline: none !important;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25) !important;
+    }
+
+    /* Select2 trong modal xuất Excel */
+    #modal_export_excel .select2-container {
+        width: 100% !important;
+    }
+
+    #modal_export_excel .select2-container .select2-selection--single {
+        height: 38px !important;
+        display: flex !important;
+        align-items: center !important;
+        border: 1px solid #ced4da !important;
+        border-radius: 4px !important;
+    }
+
+    #modal_export_excel .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 38px !important;
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+        font-size: 14px !important;
+        color: #495057 !important;
+    }
+
+    #modal_export_excel .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 38px !important;
+        right: 8px !important;
+    }
+
+    #modal_export_excel .select2-container--default .select2-selection--single .select2-selection__placeholder {
+        color: #6c757d !important;
+        font-size: 14px !important;
+    }
+
+    /* Select2 dropdown trong modal */
+    .select2-container--default .select2-results__option {
+        padding: 8px 12px !important;
+        font-size: 14px !important;
+    }
+
+    .select2-container--default .select2-results__option--highlighted[aria-selected] {
+        background-color: #667eea !important;
+    }
+
+    .select2-container--default .select2-search--dropdown .select2-search__field {
+        border: 1px solid #ced4da !important;
+        border-radius: 4px !important;
+        padding: 8px 12px !important;
+        font-size: 14px !important;
+    }
+
+    .select2-container--default .select2-search--dropdown .select2-search__field:focus {
+        border-color: #667eea !important;
+        outline: none !important;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25) !important;
+    }
+
+    .scroll-notice {
+        grid-column: 1/-1;
+        padding: 20px;
+        text-align: center;
+        background: #f8f9fa;
+        color: #666;
+        font-size: 14px;
+    }
+
+    /* Responsive styles - scale down proportionally */
+    @media (max-width: 1400px) {
+        .schedule-grid {
+            --col-phong: 130px;
+            --col-hieusuat: 100px;
+        }
+
+        .schedule-header {
+            font-size: 13px;
+            padding: 8px 6px;
+        }
+
+        .schedule-cell.room-name {
+            font-size: 12px;
+            padding: 6px;
+        }
+
+        .schedule-cell.efficiency {
+            left: 130px;
+            font-size: 13px;
+        }
+
+        .efficiency-percent {
+            font-size: 18px;
+        }
+
+        .schedule-event {
+            font-size: 12px;
+            padding: 6px 8px;
+        }
+
+        .event-subject {
+            font-size: 12px;
+        }
+
+        .event-time {
+            font-size: 11px;
+        }
+
+        .event-teacher {
+            font-size: 11px;
+        }
+
+        .calendar-body .days li {
+            font-size: 14px;
+            padding: 6px 3px;
+        }
+
+        .weekdays-compact li {
+            font-size: 14px;
+            padding: 6px 3px;
+        }
+    }
+
+    @media (max-width: 1200px) {
+        .schedule-grid {
+            --col-phong: 110px;
+            --col-hieusuat: 90px;
+        }
+
+        .schedule-header {
+            font-size: 12px;
+            padding: 6px 4px;
+        }
+
+        .schedule-cell {
+            min-height: 80px;
+        }
+
+        .schedule-cell.room-name {
+            font-size: 11px;
+            padding: 5px;
+        }
+
+        .schedule-cell.efficiency {
+            left: 110px;
+            font-size: 12px;
+            padding: 6px;
+        }
+
+        .efficiency-percent {
+            font-size: 16px;
+        }
+
+        .efficiency-label {
+            font-size: 9px;
+        }
+
+        .schedule-event {
+            font-size: 11px;
+            padding: 5px 6px;
+        }
+
+        .event-time {
+            font-size: 10px;
+        }
+
+        .event-subject {
+            font-size: 11px;
+        }
+
+        .event-teacher {
+            font-size: 10px;
+        }
+
+        .calendar-header {
+            padding: 10px 15px;
+        }
+
+        .calendar-title {
+            font-size: 14px;
+        }
+
+        .calendar-body {
+            padding: 8px 12px 12px;
+        }
+
+        .calendar-body .days li {
+            padding: 6px 3px;
+        }
+
+        .weekdays-compact li {
+            font-size: 14px;
+            padding: 6px 2px;
+        }
+    }
+
+    @media (min-width:768px) and (max-width: 992px) {
+
+        .search-bar-controls .form-select,
+        .search-bar-controls .btn {
+            flex-direction: row !important;
+        }
+    }
+
+    @media (max-width: 992px) {
+        .aps-lichgiangduong-left {
+            margin-bottom: 20px !important;
+            padding-right: 0;
+        }
+
+        .aps-lichgiangduong-right {
+            padding-right: 0;
+            padding-left: 0;
+        }
+
+        .aps-calender .col-12 {
+            padding-right: 0;
+        }
+
+        .schedule-grid {
+            --col-phong: 100px;
+            --col-hieusuat: 84px;
+            --col-ngay: minmax(56px, 1fr) minmax(56px, 1fr) minmax(46px, 0.8fr);
+        }
+
+        .schedule-grid-container {
+            max-height: calc(100vh - 450px);
+        }
+
+        .schedule-header {
+            font-size: 11px;
+            padding: 5px 3px;
+        }
+
+        .schedule-cell {
+            min-height: 70px;
+            padding: 2px;
+        }
+
+        .schedule-cell.room-name {
+            font-size: 10px;
+            padding: 4px;
+        }
+
+        .schedule-cell.efficiency {
+            left: 100px;
+            font-size: 11px;
+            padding: 5px;
+        }
+
+        .efficiency-percent {
+            font-size: 14px;
+        }
+
+        .efficiency-label {
+            font-size: 8px;
+        }
+
+        .efficiency-bar {
+            height: 5px;
+        }
+
+        .schedule-event {
+            font-size: 10px;
+            padding: 4px 5px;
+            margin: 1px 0;
+        }
+
+        .event-time {
+            font-size: 10px;
+        }
+
+        .event-subject {
+            font-size: 10px;
+        }
+
+        .event-teacher {
+            font-size: 9px;
+        }
+
+        .week-navigation {
+            gap: 10px;
+        }
+
+        .week-navigation button {
+            padding: 6px 12px;
+            font-size: 14px;
+        }
+
+        .week-info {
+            font-size: 14px;
+        }
+
+        .news-search-form p {
+            font-size: 16px;
+        }
+
+        .news-search-form .header-row {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .search-bar-controls .form-select {
+            font-size: 13px;
+            height: 38px;
+        }
+
+        .search-bar-controls-buttons {
+            display: flex;
+            gap: 6px;
+        }
+
+        .search-bar-controls-buttons .btn {
+            flex: 1;
+            font-size: 12px;
+            height: 38px;
+            padding: 8px 10px;
+        }
+
+        .search-bar-controls-buttons .btn i {
+            font-size: 12px;
+        }
+
+        .filter-controls .form-select {
+            width: 100%;
+        }
+
+        .search-bar-header .title-text {
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .search-bar-subtitle {
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .search-bar-info {
+            padding: 12px;
+            gap: 10px;
+        }
+
+        .info-item {
+            font-size: 12px;
+            gap: 10px;
+        }
+
+        .info-item i {
+            font-size: 14px;
+        }
+
+        .calendar-header {
+            padding: 10px 12px;
+        }
+
+        .calendar-title {
+            font-size: 14px;
+        }
+
+        .calendar-body {
+            padding: 8px 10px 10px;
+        }
+
+        .calendar-body .days li {
+            font-size: 14px;
+            font-size: 13px;
+            padding: 5px 2px;
+        }
+
+        .weekdays-compact li {
+            font-size: 14px;
+            padding: 5px 2px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .aps-lichgiangduong-right {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+
+        .schedule-grid {
+            --col-phong: 90px;
+            --col-hieusuat: 76px;
+        }
+
+        .schedule-header {
+            font-size: 11px;
+            padding: 6px 3px;
+        }
+
+        .schedule-cell {
+            min-height: 70px;
+            padding: 3px;
+        }
+
+        .schedule-cell.room-name {
+            font-size: 11px;
+            padding: 5px;
+        }
+
+        .schedule-cell.efficiency {
+            left: 90px;
+            font-size: 11px;
+            padding: 5px;
+        }
+
+        .efficiency-percent {
+            font-size: 14px;
+        }
+
+        .efficiency-label {
+            font-size: 9px;
+        }
+
+        .efficiency-bar {
+            height: 5px;
+            margin-top: 4px;
+        }
+
+        .schedule-event {
+            font-size: 11px;
+            padding: 5px 6px;
+            margin: 2px 0;
+        }
+
+        .event-time {
+            font-size: 10px;
+        }
+
+        .event-subject {
+            font-size: 11px;
+        }
+
+        .event-teacher {
+            font-size: 10px;
+        }
+
+        .week-info {
+            font-size: 14px;
+        }
+
+        .search-bar-controls .btn i {
+            margin-right: 5px !important;
+        }
+
+        .search-bar-controls-buttons {
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .search-bar-controls-buttons .btn {
+            width: 100%;
+            height: 42px;
+            font-size: 14px;
+            padding: 10px 14px;
+        }
+
+        .search-bar-controls-buttons .btn i {
+            font-size: 14px;
+            margin-right: 6px;
+        }
+
+        .search-bar-header .title-text {
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .search-bar-section {
+            padding: 12px 10px;
+        }
+
+        .search-bar-info {
+            padding: 10px;
+        }
+
+        .info-item {
+            font-size: 13px;
+        }
+
+        .info-item i {
+            font-size: 15px;
+        }
+
+        .search-bar-controls .form-select {
+            font-size: 13px;
+            height: 38px;
+            padding: 6px 10px;
+        }
+
+        .news-search-form .header-row {
+            flex-direction: column;
+            align-items: stretch !important;
+        }
+
+        .filter-controls {
+            width: 100%;
+            flex-direction: column;
+        }
+
+        .filter-controls .form-select {
+            width: 100%;
+        }
+
+        .filter-controls .btn {
+            width: 100%;
+        }
+
+        .news-search-form .title-text {
+            text-align: center;
+            width: 100%;
+        }
+
+        .calendar-header {
+            padding: 10px 12px;
+        }
+
+        .calendar-title {
+            font-size: 15px;
+        }
+
+        .calendar-body {
+            padding: 10px 12px 12px;
+        }
+
+        .calendar-body .days li {
+            font-size: 14px;
+            padding: 8px 3px;
+        }
+
+        .weekdays-compact li {
+            font-size: 14px;
+            padding: 6px 2px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .schedule-grid {
+            --col-phong: 70px;
+            --col-hieusuat: 60px;
+            --col-ngay: minmax(44px, 1fr) minmax(44px, 1fr) minmax(36px, 0.8fr);
+        }
+
+        .schedule-grid-container {
+            max-height: calc(100vh - 300px);
+        }
+
+        .schedule-header {
+            font-size: 9px;
+            padding: 3px 1px;
+        }
+
+        .schedule-cell {
+            min-height: 50px;
+        }
+
+        .schedule-cell.room-name {
+            font-size: 8px;
+            padding: 2px;
+        }
+
+        .schedule-cell.efficiency {
+            left: 70px;
+            font-size: 9px;
+            padding: 3px;
+        }
+
+        .efficiency-percent {
+            font-size: 11px;
+        }
+
+        .efficiency-label {
+            font-size: 6px;
+        }
+
+        .efficiency-bar {
+            height: 3px;
+            margin-top: 3px;
+        }
+
+        .schedule-event {
+            font-size: 8px;
+            padding: 2px;
+        }
+
+        .event-time,
+        .event-subject,
+        .event-teacher {
+            font-size: 8px;
+        }
+
+        .week-navigation {
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .week-navigation button {
+            width: 100%;
+            max-width: 200px;
+        }
+
+        .week-info {
+            font-size: 11px;
+            width: 100%;
+        }
+
+        .news-search-form p {
+            font-size: 13px;
+        }
+    }
+
+    @media (min-width: 992px) {
+
+        #modal_detail .modal-lg,
+        #modal_detail .modal-xl {
+            max-width: 1140px;
+        }
+    }
+
+    /* Calendar responsive styles */
+    .block-calendar {
+        width: 100%;
+    }
+
+    .calendar-block-cover {
+        padding: 10px;
+    }
+
+    .block-calendar .weekdays {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        list-style: none;
+        padding: 0;
+        margin: 0 0 5px 0;
+        gap: 2px;
+    }
+
+    .block-calendar .weekdays li {
+        text-align: center;
+        font-weight: 600;
+        font-size: 13px;
+        padding: 8px 2px;
+        color: #666;
+    }
+
+    .block-calendar .days {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        gap: 3px;
+    }
+
+    .block-calendar .days li {
+        text-align: center;
+        padding: 10px 5px;
+        font-size: 14px;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: all 0.2s;
+        position: relative;
+        aspect-ratio: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .block-calendar .days li.poiter {
+        background: #f0f0f0;
+    }
+
+    .block-calendar .days li.poiter:hover {
+        background: #e0e0e0;
+        transform: scale(1.05);
+    }
+
+    .block-calendar .days li.active {
+        background: var(--orange, #ff6b35) !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+    .block-calendar .days li.day-of-other-month {
+        color: #ccc;
+        cursor: default;
+    }
+
+    .block-label {
+        padding: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .next-prev-month {
+        display: flex;
+        gap: 10px;
+    }
+
+    .next-prev-month a {
+        cursor: pointer;
+        padding: 5px 10px;
+        transition: all 0.2s;
+    }
+
+    .next-prev-month a:hover {
+        opacity: 0.8;
+    }
+
+    @media (max-width: 1200px) {
+        .block-calendar .weekdays li {
+            font-size: 12px;
+            padding: 6px 2px;
+        }
+
+        .block-calendar .days li {
+            font-size: 13px;
+            padding: 8px 4px;
+        }
+
+        .block-label {
+            font-size: 15px;
+            padding: 12px;
+        }
+    }
+
+    @media (max-width: 992px) {
+        .block-calendar .weekdays li {
+            font-size: 11px;
+            padding: 5px 1px;
+        }
+
+        .block-calendar .days li {
+            font-size: 12px;
+            padding: 6px 3px;
+        }
+
+        .block-label {
+            font-size: 14px;
+            padding: 10px;
+        }
+
+        .calendar-block-cover {
+            padding: 8px;
+        }
+
+        .news-search-form .header-row {
+            flex-direction: column;
+            align-items: stretch !important;
+        }
+
+        .news-search-form .title-text {
+            text-align: center;
+            width: 100%;
+            margin-bottom: 10px !important;
+        }
+
+        .filter-controls {
+            width: 100%;
+            flex-direction: column;
+        }
+
+        .filter-controls .form-select,
+        .filter-controls .btn {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .calendar-body {
+            padding: 15px;
+        }
+
+        .aps-calender .box-shadow {
+            padding: 15px !important;
+        }
+
+        .week-navigation {
+            margin-top: 0 !important;
+        }
+
+        .aps-calender .col-12 {
+            padding-right: 0 !important;
+        }
+
+        .aps-lichgiangduong-left {
+            margin-bottom: 20px !important;
+            padding-right: 0 !important;
+        }
+
+        .block-calendar .weekdays li {
+            font-size: 10px;
+            padding: 4px 1px;
+        }
+
+        .block-calendar .days li {
+            font-size: 11px;
+            padding: 5px 2px;
+        }
+
+        .block-label {
+            font-size: 13px;
+            padding: 8px;
+            flex-wrap: wrap;
+        }
+
+        .next-prev-month {
+            gap: 5px;
+        }
+
+        .calendar-block-cover {
+            padding: 5px;
+        }
+
+        .block-calendar .days {
+            gap: 2px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .block-calendar .weekdays li {
+            font-size: 9px;
+            padding: 3px 0;
+        }
+
+        .block-calendar .days li {
+            font-size: 10px;
+            padding: 4px 1px;
+        }
+
+        .block-label {
+            font-size: 12px;
+            padding: 6px;
+        }
+
+        .block-label i {
+            font-size: 12px;
+        }
+
+        .next-prev-month a {
+            padding: 3px 6px;
+        }
+
+        .calendar-block-cover {
+            padding: 3px;
+        }
+
+        .block-calendar .days {
+            gap: 1px;
+        }
+    }
+
+    /* Ensure calendar stays in viewport on mobile */
+    @media (max-width: 767px) {
+        .register-school.my-calendar {
+            margin-left: 0;
+            margin-right: 0;
+        }
+
+        .register-school.my-calendar>[class*="col-"] {
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        .box-shadow {
+            margin-left: 0;
+            margin-right: 0;
+            padding: 10px;
+        }
+    }
+
+    /* Fix modal on mobile */
+    @media (max-width: 576px) {
+        #modal_detail .modal-dialog {
+            margin: 10px;
+        }
+
+        #modal_detail .modal-body {
+            padding: 15px;
+        }
+
+        #modal_detail .form-item {
+            padding: 10px !important;
+        }
+
+        #modal_detail label {
+            font-size: 13px;
+        }
+
+        #modal_detail input,
+        #modal_detail textarea {
+            font-size: 13px !important;
+        }
+
+        #modal_export_excel .modal-dialog {
+            margin: 10px;
+        }
+
+        #modal_export_excel .modal-body {
+            padding: 15px;
+        }
+    }
+
+    @media (max-width:440px) {
+        .week-navigation {
+            flex-direction: inherit !important;
+        }
+
+        .week-navigation {
+            flex-wrap: nowrap !important;
+        }
+
+        .aps-calender #btnNextWeek,
+        .aps-calender #btnPrevWeek {
+            padding: 9px 10px 7.6px 10px !important;
+        }
+
+        .aps-calender #btnNextWeek.btn i,
+        .aps-calender #btnPrevWeek.btn i {
+            padding-right: 0px;
+        }
+    }
+
+    /* ═══ Góp ý Phenikaa 28/09/2026: bộ lọc gọn + popup chọn tuần + lưới module 3 tiết ═══ */
+
+    /* Bộ lọc 1 hàng (5 ô) trên màn rộng, tự xuống dòng khi hẹp; nút thao tác nằm trên thanh tiêu đề */
+    .search-bar-controls.lgnp-filter {
+        display: grid;
+        grid-template-columns: minmax(110px, 1fr) minmax(140px, 1.2fr) minmax(120px, 0.9fr) minmax(120px, 0.6fr) minmax(440px, 2.3fr) minmax(140px, 0.9fr);
+        gap: 10px 12px;
+        align-items: end;
+        margin-top: 0;
+    }
+
+    .lgnp-filter-item {
+        min-width: 0;
+    }
+
+    .lgnp-filter-item label {
+        display: block;
+        margin: 0 0 4px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #475569;
+    }
+
+    .lgnp-filter .select2-container {
+        width: 100% !important;
+    }
+
+    .lgnp-succhua {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .lgnp-succhua .form-control {
+        height: 38px;
+        min-width: 0;
+    }
+
+    /* Nút trên thanh tiêu đề: Xem lịch phòng = CTA filled; Xem tất cả = outline cùng tone; Xuất Excel = xanh lá */
+    .lgnp-filter-card>.card-header .lgnp-filter-actions {
+        padding: 6px 0;
+    }
+
+    .lgnp-filter-card>.card-header .lgnp-filter-actions .btn {
+        display: inline-flex;
+        align-items: center;
+        height: 34px;
+        padding: 0 12px;
+        font-size: 13px;
+        font-weight: 600;
+        border-radius: 6px;
+        white-space: nowrap;
+    }
+
+    .lgnp-filter-card #btnSearch {
+        background: #ffffff !important;
+        border: 1px solid #ffffff !important;
+        color: #223771 !important;
+    }
+
+    .lgnp-filter-card #btnSearch i {
+        color: #223771 !important;
+    }
+
+    .lgnp-filter-card #btnSearch:hover {
+        background: #e8edf9 !important;
+    }
+
+    .lgnp-filter-card #btnViewAll {
+        background: transparent !important;
+        border: 1px solid rgba(255, 255, 255, 0.6) !important;
+        color: #ffffff !important;
+    }
+
+    .lgnp-filter-card #btnViewAll i {
+        color: #ffffff !important;
+    }
+
+    .lgnp-filter-card #btnViewAll:hover {
+        background: rgba(255, 255, 255, 0.15) !important;
+        border-color: #ffffff !important;
+    }
+
+    .lgnp-filter-card #btnExportExcel {
+        background: #198754 !important;
+        border: 1px solid #198754 !important;
+        color: #ffffff !important;
+    }
+
+    .lgnp-filter-card #btnExportExcel i {
+        color: #ffffff !important;
+    }
+
+    @media (max-width: 1500px) {
+        .search-bar-controls.lgnp-filter {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+    }
+
+    .lgnp-succhua .form-select {
+        height: 38px;
+        min-width: 0;
+        font-size: 13px;
+    }
+
+    /* "Phòng trống": Từ ngày - Đến ngày + khung tiết trên 1 hàng */
+    .lgnp-succhua>.select2-container {
+        min-width: 0;
+    }
+
+    .lgnp-loc-trong input[type="date"] {
+        flex: 1.3 1 0;
+        padding: 6px 8px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #0f172a;
+    }
+
+    .lgnp-loc-trong>.select2-container {
+        flex: 1 1 0;
+        margin-left: 4px;
+    }
+
+    /* Màn 3 cột: ô "Phòng trống" chiếm 2 cột cho đủ chỗ 3 ô nhập */
+    @media (max-width: 1500px) and (min-width: 769px) {
+        .lgnp-filter-item:has(.lgnp-loc-trong) {
+            grid-column: span 2;
+        }
+    }
+
+    /* Bảng phòng trống theo khoảng ngày (JS genTable_KhoangNgay): mỗi phòng 1 dòng, mỗi ngày 1 cột */
+    .schedule-grid.lgnp-khoang {
+        grid-template-columns: minmax(170px, 1.6fr) 96px repeat(var(--so-ngay), minmax(62px, 1fr));
+    }
+
+    .lgnp-khoang .kn-head,
+    .lgnp-khoang .kn-phong,
+    .lgnp-khoang .kn-dem,
+    .lgnp-khoang .kn-o {
+        border-right: 1px solid #e3e7ee;
+        border-bottom: 1px solid #d6dce6;
+        min-width: 0;
+    }
+
+    .lgnp-khoang .kn-head {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        background: #f8f9fa;
+        padding: 8px 4px;
+        text-align: center;
+        font-weight: 700;
+        font-size: 13px;
+        color: #0f172a;
+    }
+
+    .lgnp-khoang .kn-head small {
+        display: block;
+        font-weight: 500;
+        font-size: 12px;
+        color: #475569;
+    }
+
+    .lgnp-khoang .kn-head.kn-cn {
+        background: #fff1e8;
+    }
+
+    .lgnp-khoang .kn-phong {
+        position: sticky;
+        left: 0;
+        z-index: 10;
+        background: #fff;
+        padding: 6px 10px;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 2px 8px;
+        font-weight: 700;
+        font-size: 13px;
+        color: #0f172a;
+    }
+
+    .lgnp-khoang .kn-head.kn-goc {
+        left: 0;
+        z-index: 30;
+    }
+
+    .lgnp-khoang .kn-phong small {
+        font-weight: 600;
+        font-size: 11px;
+        color: #64748b;
+    }
+
+    .lgnp-khoang .kn-dem {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 13px;
+        color: #b45309;
+        background: #fffbeb;
+    }
+
+    .lgnp-khoang .kn-dem.du {
+        color: #1e7a45;
+        background: #ecf9f1;
+    }
+
+    .lgnp-khoang .kn-o {
+        min-height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .lgnp-khoang .kn-o.is-free {
+        background: #ecf9f1;
+        color: #1e7a45;
+        cursor: pointer;
+    }
+
+    .lgnp-khoang .kn-o.is-free:hover,
+    .lgnp-khoang .kn-o.is-free.o-dang-chon {
+        background: #22a35a;
+        color: #fff;
+    }
+
+    .lgnp-khoang .kn-o.is-busy {
+        background: #f1f5f9;
+        color: #94a3b8;
+        font-weight: 500;
+    }
+
+    /* Ô trống đúng khung đang lọc "Phòng trống lúc" → viền xanh cho dễ thấy */
+    .schedule-module.is-free.o-loc {
+        box-shadow: inset 0 0 0 2px #22a35a;
+    }
+
+    .schedule-module.is-free.o-loc .module-free {
+        color: #1e7a45;
+    }
+
+    /* Đang lọc "Phòng trống lúc": lưới chỉ vẽ 1 ngày đã chọn (3 cột buổi giãn hết bề ngang), dòng thấp hơn để thấy nhiều phòng */
+    .schedule-grid.lgnp-1ngay {
+        grid-template-columns: var(--col-phong) var(--col-hieusuat) var(--col-ngay);
+    }
+
+    .schedule-grid.lgnp-1ngay .schedule-module {
+        min-height: 46px;
+    }
+
+    .schedule-grid.lgnp-1ngay .schedule-module.is-free.o-loc {
+        background: #ecf9f1;
+    }
+
+    .lgnp-thanh-loc {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 10px 18px;
+        background: #ecf9f1;
+        border-bottom: 1px solid #cfe9d9;
+        color: #0f172a;
+        font-size: 14px;
+    }
+
+    .lgnp-thanh-loc>i {
+        color: #1e8449;
+        font-size: 16px;
+    }
+
+    .lgnp-thanh-loc b {
+        color: #1e7a45;
+    }
+
+    .lgnp-thanh-loc .lgnp-thanh-loc-nut {
+        margin-left: auto;
+        display: flex;
+        gap: 10px;
+    }
+
+    .lgnp-thanh-loc .btn {
+        font-size: 13px;
+        font-weight: 600;
+        padding: 4px 12px;
+        border-radius: 6px;
+        background: #fff;
+    }
+
+    .lgnp-thanh-loc .btn-xem {
+        border: 1px solid #1e8449;
+        color: #1e7a45;
+    }
+
+    .lgnp-thanh-loc .btn-bo {
+        border: 1px solid #cbd5e1;
+        color: #475569;
+    }
+
+    @media (max-width: 768px) {
+        .search-bar-controls.lgnp-filter {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 576px) {
+        .search-bar-controls.lgnp-filter {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Card lưới thẳng mép với card bộ lọc: styles-content.css (file dùng chung) đặt
+       .aps-lichgiang .aps-calender { margin-left: 18px } cho layout 2 cột cũ → đè lại tại trang */
+    .aps-lichgiang .aps-calender {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    /* Icon buổi (Font Awesome Pro duotone) trên hàng tiêu đề Sáng / Chiều / Tối — màu khớp nền từng buổi */
+    .schedule-subheader .session-icon {
+        align-self: center;
+        font-size: 17px;
+        line-height: 1;
+        margin-bottom: 1px;
+        --fa-secondary-opacity: 1;
+    }
+
+    .schedule-subheader .session-icon.buoi-sang {
+        --fa-primary-color: #f59e0b;
+        --fa-secondary-color: #fcd34d;
+    }
+
+    .schedule-subheader .session-icon.buoi-chieu {
+        --fa-primary-color: #60a5fa;
+        --fa-secondary-color: #f59e0b;
+    }
+
+    .schedule-subheader .session-icon.buoi-toi {
+        --fa-primary-color: #7c3aed;
+        --fa-secondary-color: #c4b5fd;
+    }
+
+    /* Chú thích màu trên thanh tiêu đề lưới */
+    .lgnp-legend {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-left: 16px;
+        font-size: 12px;
+        color: #ffffff;
+        white-space: nowrap;
+    }
+
+    .lgnp-legend span {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .lgnp-legend i {
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        border-radius: 3px;
+        border: 1px solid rgba(255, 255, 255, 0.7);
+    }
+
+    .lgnp-legend .lgnp-legend-free {
+        background: #ffffff;
+    }
+
+    .lgnp-legend .lgnp-legend-busy {
+        background: linear-gradient(to bottom, #5a7adb 0 50%, #ffffff 50% 100%);
+    }
+
+    /* Nút tuần + popup lịch tháng để chọn tuần */
+    .lgnp-chon-tuan {
+        position: relative;
+    }
+
+    .card.today-card>.card-header .lgnp-btn-chon-tuan {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 250px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        font-size: 13px;
+        font-weight: 700;
+        line-height: 1;
+        cursor: pointer;
+    }
+
+    .card.today-card>.card-header .lgnp-btn-chon-tuan:hover {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: #ffffff;
+    }
+
+    .lgnp-btn-chon-tuan>i:first-child {
+        margin-right: 7px !important;
+    }
+
+    .lgnp-btn-chon-tuan>i:last-child {
+        margin-left: 7px !important;
+    }
+
+    .lgnp-popup-lich {
+        position: absolute;
+        top: calc(100% + 6px);
+        left: 50%;
+        transform: translateX(-50%);
+        width: 330px;
+        z-index: 1060;
+        padding: 8px;
+        background: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 12px 32px rgba(15, 23, 42, 0.28);
+        color: #0f172a;
+    }
+
+    .lgnp-popup-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 2px 4px 8px;
+    }
+
+    .lgnp-popup-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: #223771;
+    }
+
+    .lgnp-popup-header .btn {
+        padding: 3px 9px;
+        border: 1px solid #e2e8f0;
+        color: #223771;
+    }
+
+    .lgnp-popup-header .btn:hover {
+        background: #eef2fb;
+    }
+
+    .lgnp-popup-lich .calendar-compact {
+        height: auto;
+        min-height: 0;
+    }
+
+    .lgnp-popup-lich .calendar-body {
+        padding: 0;
+    }
+
+    .calendar-body .days li.poiter.week-selected:not(.active) {
+        background: #fff1e8;
+        border-color: #ffc9a8;
+    }
+
+    .calendar-body .days li.day-of-other-month.week-selected {
+        background: #fff7f2;
+    }
+
+    /* Lưới vừa bề ngang: bung hết chiều cao, cuộn theo trang thay vì khung cuộn riêng (JS capNhatCheDoLuoi bật class).
+       Màn hẹp không vừa thì giữ khung cuộn riêng (thanh cuộn ngang + tiêu đề dính). */
+    .schedule-grid-container.lgnp-full {
+        max-height: none !important;
+        overflow: visible !important;
+    }
+
+    /* Màn hẹp (khung cuộn riêng): cho khung cao gần hết màn hình thay vì 100vh - 280px */
+    .schedule-grid-container:not(.lgnp-full) {
+        max-height: calc(100vh - 130px);
+    }
+
+    /* Lưới: mỗi phòng 2 dòng — Sáng = T1-3 / T4-6, Chiều = T7-9 / T10-12, Tối = T13-15 (chiếm 2 dòng).
+       Lịch dài hơn 3 tiết tràn qua 2 ô; module trống tô xanh nhạt → nhìn là biết còn trống 3 tiết hay không. */
+    .schedule-module {
+        min-width: 0;
+        min-height: 64px;
+        padding: 3px;
+        border-right: 1px solid #e3e7ee;
+        border-bottom: 1px solid #cfd6e2;
+        overflow: hidden;
+    }
+
+    .schedule-module.module-top {
+        border-bottom: 1px dashed #c3cad6;
+    }
+
+    .schedule-module.buoi-sang.is-busy {
+        background: #FFFEF5;
+    }
+
+    .schedule-module.buoi-chieu.is-busy {
+        background: #F5F9FF;
+    }
+
+    .schedule-module.buoi-toi.is-busy {
+        background: #F9F5FF;
+    }
+
+    /* Ô trống để nền trắng, không đổ màu (sếp góp ý) — trước là nền xanh lá nhạt #f0faf3, chữ xanh #2f8a4c */
+    .schedule-module.is-free {
+        background: #ffffff;
+    }
+
+    .module-free {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1px;
+        height: 100%;
+        min-height: 56px;
+        color: #64748b;
+        font-size: 11px;
+        font-weight: 600;
+        line-height: 1.2;
+    }
+
+    .module-free span {
+        color: #a0aec0;
+        font-size: 10px;
+        font-weight: 500;
+    }
+
+    /* Thẻ lịch trong ô hẹp: chữ nhỏ lại + cắt dòng (xem đủ ở tooltip / bấm mở chi tiết) để hàng không bị kéo quá cao */
+    .schedule-module .schedule-event {
+        padding: 0;
+        line-height: 1.3;
+        background: #ffffff;
+        border: 1px solid #dfe5ef;
+        color: #334155;
+    }
+
+    .schedule-module .schedule-event .event-head {
+        padding: 4px 5px 3px;
+    }
+
+    /* Thẻ màu nhạt: bỏ brightness khi rê chuột (làm nhạt thêm), chỉ nhấc nhẹ + bóng */
+    .schedule-module .schedule-event:hover {
+        filter: none;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+    }
+
+    .schedule-module .event-time {
+        font-size: 11px;
+        margin-bottom: 1px;
+    }
+
+    .schedule-module .event-subject,
+    .schedule-module .event-teacher {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .schedule-module .event-subject {
+        font-size: 12px;
+        margin: 1px 0;
+        -webkit-line-clamp: 3;
+        line-clamp: 3;
+    }
+
+    .schedule-module .event-teacher {
+        /* Đệm dưới đặt bằng margin: padding nằm trong vùng cắt dòng sẽ lộ mép dòng thứ 3 */
+        margin: 0 0 4px;
+        padding: 3px 5px 0;
+        font-size: 10.5px;
+        color: #475569;
+        opacity: 1;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+    }
+
+    .schedule-header.day-end,
+    .schedule-subheader.day-end,
+    .schedule-module.day-end {
+        border-right: 2px solid #b9c3d6 !important;
+    }
+
+    .schedule-empty {
+        grid-column: 1 / -1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        padding: 48px 20px;
+        color: #64748b;
+        font-size: 14px;
+        text-align: center;
+    }
+
+    .schedule-empty i {
+        font-size: 30px;
+        color: #94a3b8;
+    }
+
+    .scroll-notice {
+        cursor: pointer;
+    }
+
+    .scroll-notice:hover {
+        background: #eef2fb !important;
+        color: #223771 !important;
+    }
+
+    /* ═══ Modal xuất Excel: thẻ lựa chọn thay dropdown (header dask-blue do index.aspx reskin toàn cục) ═══ */
+    #modal_export_excel .modal-dialog {
+        max-width: 720px;
+    }
+
+    #modal_export_excel .lgnp-xuat-sub {
+        display: block;
+        margin-top: 3px;
+        font-size: 12px;
+        font-weight: 400;
+        color: rgba(255, 255, 255, 0.75);
+    }
+
+    #modal_export_excel .lgnp-xuat-nhom {
+        margin-bottom: 16px;
+    }
+
+    #modal_export_excel .lgnp-xuat-tieude {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+        font-size: 13px;
+        font-weight: 700;
+        color: #223771;
+    }
+
+    #modal_export_excel .lgnp-xuat-tieude .so {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: #223771;
+        color: #ffffff;
+        font-size: 12px;
+    }
+
+    #modal_export_excel .lgnp-opt-list {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+    }
+
+    #modal_export_excel .lgnp-opt-list.cot-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    #modal_export_excel .lgnp-opt {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        padding: 10px 26px 10px 12px;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 10px;
+        background: #ffffff;
+        text-align: left;
+        cursor: pointer;
+        transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+    }
+
+    #modal_export_excel .lgnp-opt:hover {
+        border-color: #a9b8de;
+        background: #f8faff;
+    }
+
+    #modal_export_excel .lgnp-opt.active {
+        border-color: #223771;
+        background: #eef2fb;
+        box-shadow: 0 0 0 3px rgba(34, 55, 113, 0.12);
+    }
+
+    #modal_export_excel .lgnp-opt-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        background: #eef2fb;
+        color: #223771;
+        font-size: 15px;
+    }
+
+    #modal_export_excel .lgnp-opt.active .lgnp-opt-icon {
+        background: #223771;
+        color: #ffffff;
+    }
+
+    /* Màu icon cố định (CSS chung tô màu riêng cho fa-file-excel/fa-file-csv → chìm trên nền xanh đậm khi đang chọn) */
+    #modal_export_excel .lgnp-opt-icon i {
+        color: #223771 !important;
+    }
+
+    #modal_export_excel .lgnp-opt.active .lgnp-opt-icon i {
+        color: #ffffff !important;
+    }
+
+    #modal_export_excel .lgnp-opt-text {
+        min-width: 0;
+    }
+
+    #modal_export_excel .lgnp-opt-ten {
+        display: block;
+        font-size: 13px;
+        font-weight: 700;
+        line-height: 1.3;
+        color: #0f172a;
+    }
+
+    #modal_export_excel .lgnp-opt-mota {
+        display: block;
+        margin-top: 2px;
+        font-size: 11.5px;
+        line-height: 1.35;
+        color: #64748b;
+    }
+
+    #modal_export_excel .lgnp-opt-check {
+        position: absolute;
+        top: 7px;
+        right: 8px;
+        font-size: 13px;
+        color: #223771;
+        opacity: 0;
+        transition: opacity 0.15s;
+    }
+
+    #modal_export_excel .lgnp-opt.active .lgnp-opt-check {
+        opacity: 1;
+    }
+
+    /* Khung phụ: chọn ngày / chọn phòng */
+    #modal_export_excel .lgnp-xuat-phu {
+        margin-top: 8px;
+        padding: 10px 12px;
+        border: 1px dashed #cbd5e1;
+        border-radius: 10px;
+        background: #f8fafc;
+    }
+
+    #modal_export_excel .lgnp-xuat-phu label {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #475569;
+    }
+
+    #modal_export_excel .lgnp-xuat-phu .form-control {
+        height: 38px;
+    }
+
+    /* Xem trước nhỏ của kiểu mẫu (ô xanh = có lịch / ô vàng = bận) */
+    #modal_export_excel .lgnp-mau {
+        display: inline-grid;
+        grid-template-columns: repeat(3, 8px);
+        grid-auto-rows: 8px;
+        gap: 2px;
+        flex-shrink: 0;
+        padding: 6px;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        background: #ffffff;
+    }
+
+    #modal_export_excel .lgnp-mau i {
+        display: block;
+        border-radius: 2px;
+        background: #f1f5f9;
+    }
+
+    #modal_export_excel .lgnp-mau i.co {
+        background: #9dbbe8;
+    }
+
+    #modal_export_excel .lgnp-mau.vang i.co {
+        background: #ffe14d;
+    }
+
+    #modal_export_excel .lgnp-xuat-note {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 10px 12px;
+        border-radius: 10px;
+        background: #eef6ff;
+        color: #1e3a5f;
+        font-size: 12.5px;
+        line-height: 1.45;
+    }
+
+    #modal_export_excel .lgnp-xuat-note i {
+        margin-top: 2px;
+        color: #2563eb;
+    }
+
+    /* Footer: Đóng (viền xám) + Xuất file (CTA xanh lá) nhóm bên phải */
+    #modal_export_excel .modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
+    #modal_export_excel .modal-footer .btn {
+        display: inline-flex;
+        align-items: center;
+        height: 38px;
+        margin: 0;
+        border-radius: 8px;
+        font-weight: 600;
+    }
+
+    #modal_export_excel .lgnp-btn-dong {
+        padding: 0 16px;
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: #334155;
+    }
+
+    #modal_export_excel .lgnp-btn-dong:hover {
+        background: #f1f5f9;
+    }
+
+    #modal_export_excel #btnConfirmExport {
+        padding: 0 18px;
+        border: 1px solid #198754;
+        background: #198754;
+        color: #ffffff;
+    }
+
+    #modal_export_excel #btnConfirmExport:hover {
+        background: #157347;
+    }
+
+    @media (max-width: 576px) {
+
+        #modal_export_excel .lgnp-opt-list,
+        #modal_export_excel .lgnp-opt-list.cot-2 {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* ═══ Đổi lịch ngay trên trang (giảng viên): bấm ô Trống → chọn buổi dạy → modal yêu cầu đổi lịch ═══ */
+    .schedule-module.is-free {
+        cursor: pointer;
+        transition: background 0.15s, box-shadow 0.15s;
+    }
+
+    /* Rê chuột ô trống: chỉ viền nhẹ tông dask-blue + chữ "+ Đổi lịch" (ô vẫn gần như trắng) */
+    .schedule-module.is-free:hover {
+        background: #f5f8ff;
+        box-shadow: inset 0 0 0 2px #9fb5e8;
+    }
+
+    .module-free .nhan {
+        font-weight: inherit;
+    }
+
+    .module-free .goi-y {
+        display: none;
+        font-style: normal;
+        font-size: 10.5px;
+        font-weight: 700;
+        color: #223771;
+    }
+
+    .schedule-module.is-free:hover .module-free .nhan {
+        display: none;
+    }
+
+    .schedule-module.is-free:hover .module-free .goi-y {
+        display: block;
+    }
+
+    .schedule-module.o-dang-chon,
+    .schedule-module.o-dang-chon:hover {
+        background: #fff1e5;
+        box-shadow: inset 0 0 0 2px #ff8a3d;
+    }
+
+    /* Nút dùng chung cho modal đổi lịch + modal chi tiết */
+    .modal-footer .lgnp-btn-dong,
+    .modal-footer .lgnp-btn-kiemtra,
+    .modal-footer .lgnp-btn-gui {
+        display: inline-flex;
+        align-items: center;
+        height: 38px;
+        margin: 0;
+        padding: 0 16px;
+        border-radius: 8px;
+        font-weight: 600;
+    }
+
+    .modal-footer .lgnp-btn-dong {
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: #334155;
+    }
+
+    .modal-footer .lgnp-btn-dong:hover {
+        background: #f1f5f9;
+    }
+
+    .modal-footer .lgnp-btn-kiemtra {
+        border: 1px solid #223771;
+        background: #ffffff;
+        color: #223771;
+    }
+
+    .modal-footer .lgnp-btn-kiemtra:hover {
+        background: #eef2fb;
+    }
+
+    .modal-footer .lgnp-btn-gui {
+        border: 1px solid #223771;
+        background: #223771;
+        color: #ffffff;
+    }
+
+    .modal-footer .lgnp-btn-gui:hover {
+        background: #1a2b5a;
+        color: #ffffff;
+    }
+
+    .modal-footer .lgnp-btn-gui i,
+    .modal-footer .lgnp-btn-gui:hover i {
+        color: #ffffff !important;
+    }
+
+    #modal_chon_lop_doi .modal-footer,
+    #modal_doilich .modal-footer,
+    #modal_detail .modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
+    /* Modal chọn buổi dạy */
+    #modal_chon_lop_doi .lgnp-dich {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 14px;
+        padding: 12px 14px;
+        border: 1px solid #bfe6cc;
+        border-radius: 10px;
+        background: #effaf3;
+    }
+
+    #modal_chon_lop_doi .lgnp-dich .icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        background: #2f8a4c;
+        color: #ffffff;
+        font-size: 16px;
+    }
+
+    #modal_chon_lop_doi .lgnp-dich .ten {
+        font-size: 14px;
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    #modal_chon_lop_doi .lgnp-dich .mota {
+        margin-top: 2px;
+        font-size: 12.5px;
+        color: #475569;
+    }
+
+    #modal_chon_lop_doi .lgnp-dl-tieude {
+        margin-bottom: 8px;
+        font-size: 13px;
+        font-weight: 700;
+        color: #223771;
+    }
+
+    #modal_chon_lop_doi .lgnp-ds-lop {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    #modal_chon_lop_doi .lgnp-lop-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        padding: 10px 12px;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 10px;
+        background: #ffffff;
+        text-align: left;
+        cursor: pointer;
+        transition: border-color 0.15s, background 0.15s;
+    }
+
+    #modal_chon_lop_doi .lgnp-lop-item:hover {
+        border-color: #223771;
+        background: #f8faff;
+    }
+
+    #modal_chon_lop_doi .lgnp-lop-item .ngay {
+        flex-shrink: 0;
+        width: 54px;
+        padding: 6px 0;
+        border-radius: 8px;
+        background: #eef2fb;
+        color: #223771;
+        text-align: center;
+        line-height: 1.15;
+    }
+
+    #modal_chon_lop_doi .lgnp-lop-item .ngay b {
+        display: block;
+        font-size: 13px;
+    }
+
+    #modal_chon_lop_doi .lgnp-lop-item .ngay span {
+        font-size: 11px;
+    }
+
+    #modal_chon_lop_doi .lgnp-lop-item .noidung {
+        flex: 1;
+        min-width: 0;
+    }
+
+    #modal_chon_lop_doi .lgnp-lop-item .ten {
+        display: block;
+        font-size: 13px;
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    #modal_chon_lop_doi .lgnp-lop-item .mota {
+        display: block;
+        margin-top: 2px;
+        font-size: 12px;
+        color: #64748b;
+    }
+
+    #modal_chon_lop_doi .lgnp-lop-item .chon {
+        flex-shrink: 0;
+        font-size: 12px;
+        font-weight: 700;
+        color: #223771;
+    }
+
+    #modal_chon_lop_doi .lgnp-tag {
+        display: inline-block;
+        margin-top: 4px;
+        padding: 1px 8px;
+        border-radius: 10px;
+        font-size: 10.5px;
+        font-weight: 600;
+    }
+
+    #modal_chon_lop_doi .lgnp-tag.cung-gio {
+        background: #e3f6e9;
+        color: #2f8a4c;
+    }
+
+    #modal_chon_lop_doi .lgnp-tag.dai {
+        background: #fff4e5;
+        color: #c2410c;
+    }
+
+    /* Buổi học ở phòng khác loại với ô trống (TH ↔ LT) → khóa, không chọn được */
+    #modal_chon_lop_doi .lgnp-lop-item.khoa,
+    #modal_chon_lop_doi .lgnp-lop-item.khoa:hover {
+        border-color: #e2e8f0;
+        background: #f8fafc;
+        cursor: not-allowed;
+        opacity: 0.65;
+    }
+
+    #modal_chon_lop_doi .lgnp-lop-item.khoa .chon {
+        color: #94a3b8;
+    }
+
+    #modal_chon_lop_doi .lgnp-tag.sai-loai {
+        background: #fdecec;
+        color: #b42318;
+    }
+
+    #modal_chon_lop_doi .lgnp-ds-trong {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        padding: 24px 12px;
+        color: #64748b;
+        font-size: 13px;
+        text-align: center;
+    }
+
+    #modal_chon_lop_doi .lgnp-ds-trong i {
+        font-size: 24px;
+        color: #94a3b8;
+    }
+
+    /* Tiêu đề modal căn trái (CSS chung đặt text-align:center → dòng tiêu đề bị lệch khi dòng phụ dài hơn) */
+    #modal_export_excel .modal-title,
+    #modal_chon_lop_doi .modal-title,
+    #modal_doilich .modal-title {
+        text-align: left;
+    }
+
+    /* Modal yêu cầu đổi lịch */
+    #modal_doilich .lgnp-xuat-sub {
+        display: block;
+        margin-top: 3px;
+        font-size: 12px;
+        font-weight: 400;
+        color: rgba(255, 255, 255, 0.75);
+    }
+
+    #modal_doilich .lgnp-dl-dangtai {
+        padding: 30px 12px;
+        color: #64748b;
+        text-align: center;
+    }
+
+    #modal_doilich .lgnp-dl-cu {
+        padding: 10px 14px;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        background: #f8fafc;
+    }
+
+    #modal_doilich .lgnp-dl-cu .nhan {
+        font-size: 11.5px;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+        color: #64748b;
+    }
+
+    #modal_doilich .lgnp-dl-cu .gt {
+        margin-top: 3px;
+        font-size: 13.5px;
+        font-weight: 600;
+        color: #0f172a;
+    }
+
+    #modal_doilich .lgnp-dl-mui {
+        margin: 8px 0;
+        font-size: 12px;
+        font-weight: 700;
+        color: #223771;
+        text-align: center;
+    }
+
+    #modal_doilich .lgnp-dl-moi {
+        padding: 12px 14px;
+        border: 1.5px solid #223771;
+        border-radius: 10px;
+        background: #f5f8ff;
+    }
+
+    #modal_doilich label {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #475569;
+    }
+
+    #modal_doilich input.form-control,
+    #modal_doilich select.form-select {
+        height: 38px;
+    }
+
+    #modal_doilich .select2-container {
+        width: 100% !important;
+    }
+
+    #modal_doilich .select2-container .select2-selection--single {
+        display: flex !important;
+        align-items: center !important;
+        height: 38px !important;
+        border: 1px solid #ced4da !important;
+        border-radius: 6px !important;
+        background: #ffffff !important;
+    }
+
+    #modal_doilich .select2-container--default .select2-selection--single .select2-selection__rendered {
+        padding-left: 10px !important;
+        font-size: 13.5px !important;
+        line-height: 36px !important;
+        text-align: left !important;
+        color: #0f172a !important;
+    }
+
+    #modal_doilich .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 36px !important;
+    }
+
+    #modal_doilich .lgnp-dl-goiy {
+        font-weight: 500;
+        color: #64748b;
+    }
+
+    #modal_doilich .lgnp-dl-gv {
+        margin-top: 10px;
+    }
+
+    #modal_doilich .lgnp-dl-gv-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1.2fr);
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 6px;
+    }
+
+    #modal_doilich .lgnp-dl-gv-row .cu {
+        overflow: hidden;
+        padding: 8px 10px;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        background: #ffffff;
+        font-size: 13px;
+        color: #334155;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    #modal_doilich .lgnp-dl-gv-row>i {
+        color: #223771;
+    }
+
+    #modal_doilich .lgnp-dl-canhbao {
+        margin-top: 10px;
+        padding: 8px 12px;
+        border-radius: 8px;
+        background: #fff4e5;
+        color: #9a3412;
+        font-size: 12.5px;
+    }
+
+    #modal_doilich .lgnp-dl-ketqua {
+        margin-top: 10px;
+        padding: 10px 12px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    #modal_doilich .lgnp-dl-ketqua.ok {
+        background: #e3f6e9;
+        color: #1e6b3a;
+    }
+
+    #modal_doilich .lgnp-dl-ketqua.loi {
+        background: #fdecec;
+        color: #b42318;
+    }
+
+    #modal_doilich .lgnp-dl-ketqua.dang {
+        background: #eef2fb;
+        color: #223771;
+    }
+</style>
+
+<!-- ═══ SPA-NATIVE REWRITE (C-full) — bọc 3 sections trong .card.today-card
+     structure như dukienhocphan.html. Giữ 100% ID + class hook JS:
+     - Filter: dropSearch_ToaNha, dropSearch_PhongHocMulti, dropRoomType,
+       dropEfficiencyMode, btnSearch, btnViewAll, btnExportExcel
+     - Calendar: btnPrevMonth, btnNextMonth, #thang, #nam, .days, .weekdays-compact
+       (nằm trong popup #zoneChonTuan, mở bằng nút tuần #btnChonTuan)
+     - Schedule: btnPrevWeek, btnNextWeek, #weekInfo, #scheduleGrid, .schedule-grid-container
+     - Keep .calendar-compact + .calendar-body + .schedule-grid classes cho inline CSS. -->
+<div class="one-door mt-0 study-space aps-lichgiang">
+    <div class="overlay"></div>
+    <!-- Breadcrumb -->
+    <div class="content-tab no-tab">
+        <div class="d-flex justify-content-between">
+            <div class="nav-content-left">
+                <p class="link">
+                    <a href="#">Lịch giảng</a>
+                    <i class="fal fa-angle-right"></i>
+                    <a href="#">Lịch giảng đường</a>
+                </p>
+            </div>
+            <div class="nav-content-right">
+                <a class="d-block text-right" href="javascript:void(0)"><i class="fas fa-question-circle"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="function-content w-100">
+        <!-- Bộ lọc gọn trong 1 khối (góp ý Phenikaa 28/09/2026: thu gọn phần trên, ưu tiên lưới phía dưới).
+             Lịch tháng chuyển vào popup #zoneChonTuan trên thanh tuần của lưới. -->
+        <div class="card today-card today-card-1 mb-3 lgnp-filter-card">
+            <div class="card-header">
+                <div class="myTab-header">
+                    <div class="myTab-header-item">
+                        <a href="javascript:void(0)" class="myTab-header-link active">
+                            <i class="fa-solid fa-calendar-users mr-5"></i>Lịch giảng đường
+                        </a>
+                    </div>
+                </div>
+                <!-- Nút thao tác đặt trên thanh tiêu đề để bộ lọc chỉ còn 1 hàng -->
+                <div class="ms-auto d-flex align-items-center gap-2 flex-wrap lgnp-filter-actions">
+                    <button class="btn btn-soft-primary" id="btnSearch">
+                        <i class="fa-solid fa-search me-1"></i>Xem lịch phòng
+                    </button>
+                    <button class="btn btn-soft-info" id="btnViewAll">
+                        <i class="fa-solid fa-th-list me-1"></i>Xem tất cả lịch phòng
+                    </button>
+                    <button class="btn btn-success" id="btnExportExcel">
+                        <i class="fa-solid fa-file-excel me-1"></i>Xuất Excel
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- Khung hướng dẫn 3 dòng — ẩn cho gọn, bỏ comment để hiện lại
+                <div class="search-bar-info mb-15">
+                    <div class="info-item">
+                        <i class="fa-solid fa-building"></i>
+                        <span>Chọn phòng học để xem lịch chi tiết</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fa-solid fa-calendar-week"></i>
+                        <span>Hiển thị lịch theo tuần (T2 - CN)</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fa-solid fa-file-export"></i>
+                        <span>Xuất báo cáo Excel theo nhu cầu</span>
+                    </div>
+                </div>
+                -->
+                <div class="search-bar-controls lgnp-filter">
+                    <div class="lgnp-filter-item">
+                        <label>Tòa nhà</label>
+                        <div class="custom-select">
+                            <select class="form-select select-opt" id="dropSearch_ToaNha">
+                                <option value="">Tất cả tòa nhà</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="lgnp-filter-item">
+                        <label>Phòng học</label>
+                        <div class="custom-select">
+                            <select class="form-select select-opt" id="dropSearch_PhongHocMulti"
+                                multiple="multiple"></select>
+                        </div>
+                    </div>
+                    <div class="lgnp-filter-item">
+                        <label>Loại phòng</label>
+                        <div class="custom-select">
+                            <select class="form-select select-opt" id="dropRoomType">
+                                <option value="all">Tất cả loại phòng</option>
+                                <option value="LT">Phòng lý thuyết (LT)</option>
+                                <option value="TH">Phòng thực hành (TH)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="lgnp-filter-item">
+                        <label>Sức chứa (chỗ)</label>
+                        <div class="lgnp-succhua">
+                            <input type="number" min="0" class="form-control" id="txtSucChua_Tu" placeholder="Từ">
+                            <span>-</span>
+                            <input type="number" min="0" class="form-control" id="txtSucChua_Den" placeholder="Đến">
+                        </div>
+                    </div>
+                    <div class="lgnp-filter-item">
+                        <label>Phòng trống (từ ngày - đến ngày, thứ, tiết)</label>
+                        <div class="lgnp-succhua lgnp-loc-trong">
+                            <!-- Ô chọn 1 ngày trong tuần (bản cũ) — thay bằng Từ ngày / Đến ngày
+                            <select class="form-select select-opt" id="dropLoc_NgayTrong">
+                                <option value="">Không lọc</option>
+                            </select>
+                            -->
+                            <input type="date" class="form-control" id="txtLoc_TuNgay" title="Từ ngày (bỏ trống = không lọc)">
+                            <span>-</span>
+                            <input type="date" class="form-control" id="txtLoc_DenNgay" title="Đến ngày (bỏ trống = chỉ 1 ngày)">
+                            <!-- Thứ: value = Date.getDay(). Không nhập ngày mà chọn thứ → thứ đó của tuần đang xem -->
+                            <select class="form-select select-opt" id="dropLoc_ThuTrong" title="Chỉ xét thứ này trong khoảng ngày">
+                                <option value="">Mọi thứ</option>
+                                <option value="1">Thứ 2</option>
+                                <option value="2">Thứ 3</option>
+                                <option value="3">Thứ 4</option>
+                                <option value="4">Thứ 5</option>
+                                <option value="5">Thứ 6</option>
+                                <option value="6">Thứ 7</option>
+                                <option value="0">CN</option>
+                            </select>
+                            <select class="form-select select-opt" id="dropLoc_TietTrong">
+                                <option value="1-3">T1-3</option>
+                                <option value="4-6">T4-6</option>
+                                <option value="7-9">T7-9</option>
+                                <option value="10-12">T10-12</option>
+                                <option value="13-15">T13-15</option>
+                                <option value="1-6">Sáng (T1-6)</option>
+                                <option value="7-12">Chiều (T7-12)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="lgnp-filter-item">
+                        <label>Cách tính hiệu suất</label>
+                        <div class="custom-select">
+                            <select class="form-select select-opt" id="dropEfficiencyMode">
+                                <option value="days">Tính theo ngày sử dụng (mặc định)</option>
+                                <option value="periods">Tính theo tiết học</option>
+                                <option value="morning">Tính theo buổi sáng (T1-6)</option>
+                                <option value="afternoon">Tính theo buổi chiều (T7-12)</option>
+                                <option value="evening">Tính theo buổi tối (T13-15)</option>
+                                <option value="morning-afternoon">Tính theo sáng + chiều (T1-12)
+                                </option>
+                                <option value="afternoon-evening">Tính theo chiều + tối (T7-15)</option>
+                                <option value="all-sessions">Tính theo cả 3 buổi (T1-15)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lưới lịch tuần theo phòng: mỗi phòng 2 dòng module 3 tiết -->
+        <div class="row aps-calender">
+            <div class="aps-lichTuan-phongHoc card today-card today-card-1 mb-40">
+                <div class="card-header bg-green">
+                    <div class="myTab-header">
+                        <div class="myTab-header-item">
+                            <a href="javascript:void(0)" class="myTab-header-link active">
+                                <i class="fa-solid fa-calendar-week mr-5"></i>Lịch tuần theo phòng học
+                            </a>
+                        </div>
+                    </div>
+                    <div class="lgnp-legend">
+                        <span><i class="lgnp-legend-free"></i>Trống 3 tiết (bấm để đổi lịch vào)</span>
+                        <span><i class="lgnp-legend-busy"></i>Có lịch</span>
+                    </div>
+                    <div class="ms-auto d-flex align-items-center gap-2 flex-wrap">
+                        <button class="btn btn-sm btn-outline-light card-header-btn" id="btnPrevWeek">
+                            <i class="fal fa-chevron-left me-1"></i>Tuần trước
+                        </button>
+                        <div class="lgnp-chon-tuan">
+                            <button type="button" class="week-info lgnp-btn-chon-tuan" id="btnChonTuan" title="Chọn tuần trên lịch">
+                                <i class="fa-solid fa-calendar-days me-1"></i><span id="weekInfo">Tuần</span><i class="fal fa-angle-down ms-1"></i>
+                            </button>
+                            <!-- Popup lịch tháng: bấm 1 ngày để chọn tuần chứa ngày đó -->
+                            <div class="lgnp-popup-lich" id="zoneChonTuan" style="display: none;">
+                                <div class="lgnp-popup-header">
+                                    <button type="button" class="btn btn-sm" id="btnPrevMonth" title="Tháng trước">
+                                        <i class="fal fa-chevron-left"></i>
+                                    </button>
+                                    <div class="lgnp-popup-title"><span id="thang"></span> - <span id="nam"></span></div>
+                                    <button type="button" class="btn btn-sm" id="btnNextMonth" title="Tháng sau">
+                                        <i class="fal fa-chevron-right"></i>
+                                    </button>
+                                </div>
+                                <div class="calendar-compact">
+                                    <div class="calendar-body">
+                                        <ul class="weekdays-compact">
+                                            <li>T2</li>
+                                            <li>T3</li>
+                                            <li>T4</li>
+                                            <li>T5</li>
+                                            <li>T6</li>
+                                            <li>T7</li>
+                                            <li>CN</li>
+                                        </ul>
+                                        <ul class="days"></ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-sm btn-outline-light card-header-btn" id="btnNextWeek">
+                            Tuần sau<i class="fal fa-chevron-right ms-1"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <!-- Dòng tóm tắt khi đang lọc "Phòng trống lúc" (JS capNhatThanhLocTrong) -->
+                    <div class="lgnp-thanh-loc" id="zoneLocTrong" style="display: none;"></div>
+                    <div class="schedule-grid-container">
+                        <div class="schedule-grid" id="scheduleGrid">
+                            <!-- Grid will be generated by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ---------- -->
+<div class="aps-all-button ml-20 aps-gap-10 btn-show" style="display: none !important;">
+    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modal_export_excel">
+        xuất Excel
+    </button>
+    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal_detail">
+        chi tiết lịch học
+    </button>
+
+</div>
+<!-- Modal xuất Excel — chọn bằng thẻ lựa chọn; giá trị vẫn nằm trong các select ẩn (id giữ nguyên, JS đọc như cũ) -->
+<div class="modal fade modal_export_excel" id="modal_export_excel" tabindex="-1" aria-labelledby="exportExcelLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-700">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exportExcelLabel">
+                    <i class="fa-solid fa-file-excel me-2"></i>Xuất Excel lịch phòng học
+                    <span class="lgnp-xuat-sub">Tuần đang xem: <span id="lblXuat_TuanTieuDe"></span></span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- 1. Thời gian -->
+                <div class="lgnp-xuat-nhom">
+                    <div class="lgnp-xuat-tieude"><span class="so">1</span>Khoảng thời gian</div>
+                    <select class="d-none" id="exportTimeRange">
+                        <option value="current_week">Tuần hiện tại đang xem</option>
+                        <option value="custom_date">Chọn ngày cụ thể</option>
+                        <option value="custom_range">Chọn khoảng thời gian</option>
+                    </select>
+                    <div class="lgnp-opt-list">
+                        <button type="button" class="lgnp-opt" data-for="exportTimeRange" data-value="current_week">
+                            <span class="lgnp-opt-icon"><i class="fa-solid fa-calendar-week"></i></span>
+                            <span class="lgnp-opt-text">
+                                <span class="lgnp-opt-ten">Tuần đang xem</span>
+                                <span class="lgnp-opt-mota" id="lblXuat_Tuan"></span>
+                            </span>
+                            <i class="fa-solid fa-circle-check lgnp-opt-check"></i>
+                        </button>
+                        <button type="button" class="lgnp-opt" data-for="exportTimeRange" data-value="custom_date">
+                            <span class="lgnp-opt-icon"><i class="fa-solid fa-calendar-day"></i></span>
+                            <span class="lgnp-opt-text">
+                                <span class="lgnp-opt-ten">Một ngày</span>
+                                <span class="lgnp-opt-mota">Chọn 1 ngày cụ thể</span>
+                            </span>
+                            <i class="fa-solid fa-circle-check lgnp-opt-check"></i>
+                        </button>
+                        <button type="button" class="lgnp-opt" data-for="exportTimeRange" data-value="custom_range">
+                            <span class="lgnp-opt-icon"><i class="fa-solid fa-calendar-range"></i></span>
+                            <span class="lgnp-opt-text">
+                                <span class="lgnp-opt-ten">Khoảng ngày</span>
+                                <span class="lgnp-opt-mota">Từ ngày → đến ngày</span>
+                            </span>
+                            <i class="fa-solid fa-circle-check lgnp-opt-check"></i>
+                        </button>
+                    </div>
+                    <div id="customDateSection" class="lgnp-xuat-phu" style="display: none;">
+                        <label>Chọn ngày</label>
+                        <input type="date" class="form-control" id="exportSingleDate">
+                    </div>
+                    <div id="customRangeSection" class="lgnp-xuat-phu" style="display: none;">
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <label>Từ ngày</label>
+                                <input type="date" class="form-control" id="exportStartDate">
+                            </div>
+                            <div class="col-6">
+                                <label>Đến ngày</label>
+                                <input type="date" class="form-control" id="exportEndDate">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Phòng học -->
+                <div class="lgnp-xuat-nhom">
+                    <div class="lgnp-xuat-tieude"><span class="so">2</span>Phòng học</div>
+                    <select class="d-none" id="exportRoomFilter">
+                        <option value="all">Tất cả phòng học</option>
+                        <option value="current">Phòng đang lọc hiện tại</option>
+                        <option value="custom">Chọn phòng cụ thể</option>
+                    </select>
+                    <div class="lgnp-opt-list">
+                        <button type="button" class="lgnp-opt" data-for="exportRoomFilter" data-value="all">
+                            <span class="lgnp-opt-icon"><i class="fa-solid fa-building"></i></span>
+                            <span class="lgnp-opt-text">
+                                <span class="lgnp-opt-ten">Tất cả phòng</span>
+                                <span class="lgnp-opt-mota" id="lblXuat_SoPhongTatCa"></span>
+                            </span>
+                            <i class="fa-solid fa-circle-check lgnp-opt-check"></i>
+                        </button>
+                        <button type="button" class="lgnp-opt" data-for="exportRoomFilter" data-value="current">
+                            <span class="lgnp-opt-icon"><i class="fa-solid fa-filter"></i></span>
+                            <span class="lgnp-opt-text">
+                                <span class="lgnp-opt-ten">Theo bộ lọc đang xem</span>
+                                <span class="lgnp-opt-mota" id="lblXuat_SoPhongLoc"></span>
+                            </span>
+                            <i class="fa-solid fa-circle-check lgnp-opt-check"></i>
+                        </button>
+                        <button type="button" class="lgnp-opt" data-for="exportRoomFilter" data-value="custom">
+                            <span class="lgnp-opt-icon"><i class="fa-solid fa-door-open"></i></span>
+                            <span class="lgnp-opt-text">
+                                <span class="lgnp-opt-ten">Chọn 1 phòng</span>
+                                <span class="lgnp-opt-mota">Tìm theo tên phòng</span>
+                            </span>
+                            <i class="fa-solid fa-circle-check lgnp-opt-check"></i>
+                        </button>
+                    </div>
+                    <div id="customRoomSection" class="lgnp-xuat-phu" style="display: none;">
+                        <label>Chọn phòng</label>
+                        <select class="form-select" id="exportCustomRoom"></select>
+                    </div>
+                </div>
+
+                <!-- 3. Định dạng file -->
+                <div class="lgnp-xuat-nhom">
+                    <div class="lgnp-xuat-tieude"><span class="so">3</span>Định dạng file</div>
+                    <select class="d-none" id="exportFileFormat">
+                        <option value="xlsx">Excel</option>
+                        <option value="csv">CSV</option>
+                    </select>
+                    <div class="lgnp-opt-list cot-2">
+                        <button type="button" class="lgnp-opt" data-for="exportFileFormat" data-value="xlsx">
+                            <span class="lgnp-opt-icon"><i class="fa-solid fa-file-excel"></i></span>
+                            <span class="lgnp-opt-text">
+                                <span class="lgnp-opt-ten">Excel (.xls)</span>
+                                <span class="lgnp-opt-mota">Gộp ô, tô màu theo module 3 tiết</span>
+                            </span>
+                            <i class="fa-solid fa-circle-check lgnp-opt-check"></i>
+                        </button>
+                        <button type="button" class="lgnp-opt" data-for="exportFileFormat" data-value="csv">
+                            <span class="lgnp-opt-icon"><i class="fa-solid fa-file-csv"></i></span>
+                            <span class="lgnp-opt-text">
+                                <span class="lgnp-opt-ten">CSV (.csv)</span>
+                                <span class="lgnp-opt-mota">Dữ liệu thô, mở được bằng mọi phần mềm</span>
+                            </span>
+                            <i class="fa-solid fa-circle-check lgnp-opt-check"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 4. Kiểu mẫu -->
+                <div class="lgnp-xuat-nhom">
+                    <div class="lgnp-xuat-tieude"><span class="so">4</span>Kiểu mẫu</div>
+                    <select class="d-none" id="exportTemplateMode">
+                        <option value="full">Đầy đủ thông tin</option>
+                        <option value="busy">Đánh dấu phòng bận</option>
+                    </select>
+                    <div class="lgnp-opt-list cot-2">
+                        <button type="button" class="lgnp-opt" data-for="exportTemplateMode" data-value="full">
+                            <span class="lgnp-mau"><i class="co"></i><i></i><i class="co"></i><i class="co"></i><i class="co"></i><i></i></span>
+                            <span class="lgnp-opt-text">
+                                <span class="lgnp-opt-ten">Đầy đủ thông tin</span>
+                                <span class="lgnp-opt-mota">Giờ, học phần, lớp, giảng viên</span>
+                            </span>
+                            <i class="fa-solid fa-circle-check lgnp-opt-check"></i>
+                        </button>
+                        <button type="button" class="lgnp-opt" data-for="exportTemplateMode" data-value="busy">
+                            <span class="lgnp-mau vang"><i class="co"></i><i></i><i class="co"></i><i class="co"></i><i class="co"></i><i></i></span>
+                            <span class="lgnp-opt-text">
+                                <span class="lgnp-opt-ten">Đánh dấu phòng bận</span>
+                                <span class="lgnp-opt-mota">Ô vàng = bận, ô trắng = trống</span>
+                            </span>
+                            <i class="fa-solid fa-circle-check lgnp-opt-check"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="lgnp-xuat-note">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <span>Mỗi phòng xuất 5 dòng theo module 3 tiết (T1-3, T4-6, T7-9, T10-12, T13-15).
+                        Lịch dài hơn 3 tiết được gộp ô, ô trắng là phòng trống.</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn lgnp-btn-dong" data-bs-dismiss="modal">
+                    <i class="fa-solid fa-xmark me-2"></i>Đóng
+                </button>
+                <button type="button" class="btn btn-success" id="btnConfirmExport">
+                    <i class="fa-solid fa-download me-2"></i>Xuất file
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal chi tiết lịch học -->
+<div class="modal fade finance-modal my-calendar modal-chiTietLichHoc" id="modal_detail" tabindex="-1" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg  modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header"
+                style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                <div class="finance-user-info in-modal" style="width: 100%;">
+                    <h5 style="margin: 0; color: white; font-weight: 600;">
+                        <i class="fa-solid fa-calendar-check me-2"></i>
+                        <span id="lblHocPhan"></span>
+                    </h5>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4" style="background: #f8f9fa;">
+                <div class="calendar-form-top mb-4 p-3"
+                    style="background: white; border-radius: 8px; border-left: 4px solid #667eea;">
+                    <h6 class="m-0" style="color: #667eea; font-weight: 600;">
+                        <i class="fa-solid fa-users me-2"></i>
+                        <span id="lblLopHocPhan"></span>
+                    </h6>
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="form-item"
+                            style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                            <label style="font-weight: 600; color: #555; margin-bottom: 8px; display: block;">
+                                <i class="fa-solid fa-door-open me-2" style="color: #667eea;"></i>Phòng học
+                            </label>
+                            <input type="text" class="form-control" id="txtPhongHoc_Detail" disabled
+                                style="background: #f8f9fa; border: none; font-size: 15px; font-weight: 500;">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-item"
+                            style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                            <label style="font-weight: 600; color: #555; margin-bottom: 8px; display: block;">
+                                <i class="fa-solid fa-calendar-alt me-2" style="color: #667eea;"></i>Ngày học
+                            </label>
+                            <input type="text" class="form-control" id="txtNgayHoc_Detail" disabled
+                                style="background: #f8f9fa; border: none; font-size: 15px; font-weight: 500;">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-item"
+                            style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                            <label style="font-weight: 600; color: #555; margin-bottom: 8px; display: block;">
+                                <i class="fa-solid fa-clock me-2" style="color: #667eea;"></i>Thời gian
+                            </label>
+                            <input type="text" class="form-control" id="txtThoiGian_Detail" disabled
+                                style="background: #f8f9fa; border: none; font-size: 15px; font-weight: 500;">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-item"
+                            style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                            <label style="font-weight: 600; color: #555; margin-bottom: 8px; display: block;">
+                                <i class="fa-solid fa-chalkboard-teacher me-2" style="color: #667eea;"></i>Tiết học
+                            </label>
+                            <input type="text" class="form-control" id="txtTietHoc_Detail" disabled
+                                style="background: #f8f9fa; border: none; font-size: 15px; font-weight: 500;">
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-item"
+                            style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                            <label style="font-weight: 600; color: #555; margin-bottom: 8px; display: block;">
+                                <i class="fa-solid fa-user-tie me-2" style="color: #667eea;"></i>Giảng viên
+                            </label>
+                            <textarea class="form-control" id="txtGiangVien_Detail" rows="2" disabled
+                                style="background: #f8f9fa; border: none; font-size: 15px; font-weight: 500; resize: none;"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="background: white; border-top: 2px solid #f0f0f0;">
+                <button type="button" class="btn btn-btn-default" data-bs-dismiss="modal">
+                    <i class="fa-solid fa-times me-2"></i>Đóng
+                </button>
+                <!-- Chỉ hiện khi buổi học là của giảng viên đang đăng nhập -->
+                <button type="button" class="btn lgnp-btn-gui" id="btnDetail_DoiLich" style="display: none;">
+                    <i class="fa-solid fa-calendar-lines-pen me-2"></i>Yêu cầu đổi lịch
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal chọn buổi dạy để chuyển vào ô trống (bấm ô "Trống" trên lưới) -->
+<div class="modal fade" id="modal_chon_lop_doi" tabindex="-1" aria-labelledby="lblChonLopDoi" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="lblChonLopDoi">
+                    <i class="fa-solid fa-right-left me-2"></i>Đổi lịch vào phòng trống
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="lgnp-dich" id="zoneDoi_Dich"></div>
+                <div class="lgnp-dl-tieude">Chọn buổi dạy của bạn cần chuyển vào đây</div>
+                <div class="lgnp-ds-lop" id="zoneDoi_DSLop"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn lgnp-btn-dong" data-bs-dismiss="modal">
+                    <i class="fa-solid fa-xmark me-2"></i>Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal yêu cầu đổi lịch — cùng API/tham số với trang Thời khóa biểu cá nhân (lichgiang.js) -->
+<div class="modal fade" id="modal_doilich" tabindex="-1" aria-labelledby="lblDoiLich" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="lblDoiLich">
+                    <i class="fa-solid fa-calendar-lines-pen me-2"></i>Yêu cầu đổi lịch
+                    <span class="lgnp-xuat-sub" id="lblDL_TieuDe"></span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="lgnp-dl-dangtai" id="zoneDL_DangTai"></div>
+                <div id="zoneDL_Form" style="display: none;">
+                    <div class="lgnp-dl-cu">
+                        <div class="nhan">Buổi học hiện tại</div>
+                        <div class="gt" id="lblDL_Cu"></div>
+                    </div>
+                    <div class="lgnp-dl-mui"><i class="fa-solid fa-arrow-down me-1"></i>Đổi sang</div>
+                    <div class="lgnp-dl-moi">
+                        <div class="row g-2">
+                            <div class="col-md-4">
+                                <label>Ngày học</label>
+                                <input type="date" class="form-control" id="txtDL_Ngay">
+                            </div>
+                            <div class="col-md-4 col-6">
+                                <label>Tiết bắt đầu</label>
+                                <input type="number" min="1" max="15" class="form-control" id="txtDL_TietBatDau">
+                            </div>
+                            <div class="col-md-4 col-6">
+                                <label>Tiết kết thúc</label>
+                                <input type="number" min="1" max="15" class="form-control" id="txtDL_TietKetThuc">
+                            </div>
+                            <div class="col-12">
+                                <label>Phòng học <span class="lgnp-dl-goiy" id="lblDL_GoiYPhong"></span></label>
+                                <select class="form-select" id="dropDL_PhongHoc"></select>
+                            </div>
+                        </div>
+                        <div class="lgnp-dl-gv" id="zoneDL_GiangVien"></div>
+                    </div>
+                    <div class="lgnp-dl-canhbao" id="zoneDL_CanhBao" style="display: none;"></div>
+                    <div class="mt-3">
+                        <label>Nội dung xin đổi lịch</label>
+                        <textarea class="form-control" rows="2" id="txtDL_NoiDung"
+                            placeholder="VD: Bận công tác, trùng lịch họp..."></textarea>
+                    </div>
+                    <div class="lgnp-dl-ketqua" id="zoneDL_KetQua" style="display: none;"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn lgnp-btn-dong" data-bs-dismiss="modal">
+                    <i class="fa-solid fa-xmark me-2"></i>Đóng
+                </button>
+                <button type="button" class="btn lgnp-btn-kiemtra" id="btnDL_KiemTra">
+                    <i class="fa-solid fa-list-check me-2"></i>Kiểm tra trùng lịch
+                </button>
+                <button type="button" class="btn lgnp-btn-gui" id="btnDL_Gui">
+                    <i class="fa-solid fa-paper-plane me-2"></i>Gửi yêu cầu
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CDN không hoạt động, bỏ qua và dùng XLSX fallback trực tiếp -->
+<script src="modules/lichgiang/script/lichgiangnhieuphonghoc.js?v=3.13.0.0"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        // Check if XLSX library is loaded
+        if (typeof XLSX === 'undefined') {
+            console.error('XLSX library is not loaded!');
+        } else {
+            console.log('XLSX library loaded');
+        }
+
+        // Check if ExcelJS library is loaded
+        if (typeof ExcelJS === 'undefined') {
+            console.error('ExcelJS library is not loaded!');
+        } else {
+            console.log('ExcelJS library loaded, version:', ExcelJS.version || 'unknown');
+        }
+
+        if (typeof LichGiangNhieuPhong === 'undefined') {
+            console.error('LichGiangNhieuPhong is not defined!');
+            return;
+        }
+        var main_doc = window.main_doc || {};
+        main_doc['LichGiangNhieuPhong'] = new LichGiangNhieuPhong();
+        main_doc.LichGiangNhieuPhong.init();
+        window.main_doc = main_doc;
+    });
+</script>

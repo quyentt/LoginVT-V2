@@ -1,0 +1,483 @@
+﻿<style>
+    .checkbox-inline+.checkbox-inline,
+    .radio-inline+.radio-inline {
+        margin-left: 0px;
+    }
+
+    /* FIX 2026-08-26: Chuan hoa header modal Danh sach dat / khong dat / da cong nhan
+       / hoan xet — TITLE chinh giua, nut X ve GOC PHAI (chuan Bootstrap). */
+    #myModalDat .modal-header,
+    #myModalKhongDat .modal-header,
+    #myModalDaCongNhan .modal-header,
+    #myModalHoanXet .modal-header,
+    #myModal .modal-header {
+        position: relative !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        padding: 12px 20px !important;
+        min-height: 52px !important;
+    }
+    #myModalDat .modal-header .modal-title,
+    #myModalKhongDat .modal-header .modal-title,
+    #myModalDaCongNhan .modal-header .modal-title,
+    #myModalHoanXet .modal-header .modal-title,
+    #myModal .modal-header .modal-title {
+        text-align: center !important;
+        margin: 0 !important;
+        color: #fff !important;
+        font-weight: 600 !important;
+        font-size: 16px !important;
+        flex: 1 1 auto !important;
+        line-height: 1.4 !important;
+    }
+    #myModalDat .modal-header .modal-title *,
+    #myModalKhongDat .modal-header .modal-title *,
+    #myModalDaCongNhan .modal-header .modal-title *,
+    #myModalHoanXet .modal-header .modal-title *,
+    #myModal .modal-header .modal-title * {
+        color: #fff !important;
+    }
+    #myModalDat .modal-header .close,
+    #myModalKhongDat .modal-header .close,
+    #myModalDaCongNhan .modal-header .close,
+    #myModalHoanXet .modal-header .close,
+    #myModal .modal-header .close {
+        position: absolute !important;
+        right: 15px !important;
+        display: inline-flex !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        left: auto !important;
+        float: none !important;
+        margin: 0 !important;
+        padding: 4px 10px !important;
+        opacity: 0.85 !important;
+        color: #fff !important;
+        text-shadow: none !important;
+        font-size: 22px !important;
+        line-height: 1 !important;
+        background: transparent !important;
+        border: none !important;
+    }
+    #myModalDat .modal-header .close:hover,
+    #myModalKhongDat .modal-header .close:hover,
+    #myModalDaCongNhan .modal-header .close:hover,
+    #myModalHoanXet .modal-header .close:hover,
+    #myModal .modal-header .close:hover {
+        opacity: 1 !important;
+        color: #ffdcdc !important;
+    }
+</style>
+<section class="content aps-TotNghiep">
+    <div class="row aps-thuchienxet">
+        <div class="zone-bus" id="zonebatdau">
+            <!--Tìm kiếm-->
+            <div class="box box-solid box-search pd20 pb10">
+                <div class="box-body pd0">
+                    <div class="group-title d-none">
+                        <p class="titleSearchContent">
+                            <i class="fa fa-window-restore">
+                            </i> <span class="lang" key="">Tìm kiếm</span>
+                        </p>
+                    </div>
+                    <div class="area-search">
+                        <div id="search" class="inputSearch">
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_PhanLoai" class="select-opt"></select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_ThoiGianDaoTao" class="select-opt"></select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <input id="txtSearch" class="form-control" placeholder="Nhập từ khóa tìm kiếm" />
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <a id="btnSearch" class="btn btn-default btn-search">
+                                    <i class="fa fa-search"></i> <span class="lang" key="">Tìm kiếm</span>
+                                </a>
+                            </div>
+                            <div class="col-sm-6 item-search">
+                                <select id="dropSearch_KhoaHoc" class="select-opt" multiple="multiple"></select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_LopQuanLy" class="select-opt" multiple="multiple"></select>
+                            </div>
+
+                            <div class="col-sm-3 item-search">
+                                <div class="dropdown" id="zonebtnTHX"> </div>
+                                <div class="dropdown" id="zonebtnTHX_Import"> </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--Quy trình: Thực hiện xét-->
+            <div class="box aps-table_ThucHienXet">
+                <!--<div class="box-header with-border">
+                    <h3 class="box-title"><i class="fa fa-chain"></i> Quy trình: Thực hiện xét</h3>
+                </div>-->
+                <div class="box-body">
+                    <table class="table table-noborder" id="tblTaskBar_ThucHienXet">
+                        <tbody>
+                            <!-- load taskbar -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="clear"></div>
+            <!--Danh sách kế hoạch-->
+            <div class="box box-solid aps-ds-kehoach">
+                <div class="box-header pl20 pr20">
+                    <h3 class="box-title">
+                        <i class="fal fa-file-certificate"></i> Danh sách kế hoạch
+                        <span class="pull-right badge bg-light-blue ml-10">
+                            <span id="lblThucHienXet_Tong"></span>
+                        </span>
+                    </h3>
+                    <div class="box-tools pull-right pr10">
+                        <a class="btn btn-primary" id="btnTaoHangDoi" href="#"><i class="fal fa-file-check"></i> Thực
+                            hiện xét</a>
+                        <a class="btn btn-success" id="btnThucHienCongNhan" href="#"><i
+                                class="fal fa-file-certificate"></i> Thực hiện công nhận kết quả chính thức</a>
+                    </div>
+                </div>
+                <div class="box-body pd20 pt0 pb10">
+                    <div class="aps-table-select mt-15">
+                        <table id="tblThucHienXet" class="table table-hover table-bordered mb-0 tblThucHienXet">
+                            <thead>
+                                <tr>
+                                    <th class="td-fixed td-center">Stt</th>
+                                    <!--<th class="td-center">Mã</th>-->
+                                    <th class="td-center">Tên</th>
+                                    <th class="td-center">Học kỳ</th>
+                                    <th class="td-center">Từ ngày</th>
+                                    <th class="td-center">Đến ngày</th>
+                                    <th class="td-center">Phân loại</th>
+                                    <th class="td-center">Nhân sự phân công xét</th>
+                                    <th class="td-center">Danh sách đối tượng xét</th>
+                                    <th class="td-center">Điều kiện xét</th>
+                                    <th class="td-center">Danh sách đạt</th>
+                                    <th class="td-center">Danh sách không đạt</th>
+                                    <th class="td-center">Số công nhận</th>
+                                    <th class="td-center">Danh sách đăng ký hoãn - xét sớm</th>
+                                    <th class="td-center">Kết quả chính thức</th>
+                                    <th class="td-center">Ngày tạo</th>
+                                    <th class="td-center">Người tạo</th>
+                                    <th class="td-center td-fixed">
+                                        <input type="checkbox" id="chkSelectAll">
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- load from js -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="box-footer with-border">
+                    <div class="box-tools pull-right">
+                        <a id="btnXoaThucHienXet" class="btn btn-danger"><i class="fa fa-trash"></i> Hủy kết quả
+                            xét</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!--Danh sách đối tượng xét-->
+<div class="modal fade myModal-doituong-xet" id="myModal" role="dialog" aria-labelledby="myModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" style="width: 95%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+                <h4 class="modal-title"><span class="myModalLabel1"><i class="fa-solid fa-user-gear"></i> Danh sách đối
+                        tượng xét</span></h4>
+            </div>
+
+            <div class="modal-body" id="modal_body">
+                <div class="box-search-dt mb-10 pb10">
+                    <!--<div class=" pull-left" style="min-width: 200px">
+                        <input id="txtTimSV" class="form-control" placeholder="Nhập từ khóa tìm kiếm" />
+                    </div>-->
+                    <div class="col-sm-6 item-search mb-10">
+                        <input id="txtSearch_SV" class="form-control" placeholder="Nhập từ khóa tìm kiếm" />
+                    </div>
+                    <div class="col-sm-3 item-search mb-10">
+                        <a id="btnSearch_SV" class="btn btn-default"><i class="fa fa-search"></i> <span class="lang"
+                                key="">Tìm kiếm</span></a>
+                    </div>
+                    <div class="box-tools pull-right mb-10">
+                        <a class="btn btn-primary" id="btnThuHienXet" href="#">
+                            <i class="fa-solid fa-user-check"></i> Thực hiện xét</a>
+                        <a id="btnSearch_DSChuaXet" class="btn btn-success"><i class="fa-solid fa-users-line"></i>
+                            <span class="lang" key="">Danh sách chưa xét</span></a>
+                    </div>
+                </div>
+                <div class="clear"></div>
+                <table id="tblQuanSoLop" class="table table-hover table-bordered tblQuanSoLop">
+                    <thead>
+                        <tr>
+                            <th class="td-fixed">Stt</th>
+                            <th class="td-center"><span class="lang" key="">Mã số</span></th>
+                            <th class="td-center"><span class="lang" key="">Họ tên</span></th>
+                            <th class="td-center"><span class="lang" key="">Ngày sinh</span></th>
+                            <th class="td-center"><span class="lang" key="">Tình trạng</span></th>
+                            <th class="td-center"><span class="lang" key="">Lớp học</span></th>
+                            <th class="td-center"><span class="lang" key="">Chương trình học</span></th>
+                            <th class="td-center"><span class="lang" key="">Khóa học</span></th>
+                            <th class="td-center"><span class="lang" key="">Khoa quản lý</span></th>
+                            <th class="td-center"><span class="lang" key="">Hệ đào tạo</span></th>
+                            <th class="td-center td-fixed">
+                                Thực hiện xét
+                                <input type="checkbox" id="chkSelectAll_QuanSoLop">
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div id="notify"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times-circle-o"></i>
+                    <span class="lang" key="">Đóng</span></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Danh sách đạt-->
+<div class="modal fade myModalDat" id="myModalDat" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 95%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+                <h4 class="modal-title"><span class="myModalLabel1">
+                        <i class="fa-solid fa-users-gear"></i>Danh sách đạt</span></h4>
+            </div>
+            <div class="modal-body" id="modal_body">
+                <div class="row">
+                    <div class="col-sm-12 box-search-SV-Dat mb-10">
+                        <div class="col-sm-6 item-search">
+                            <input id="txtSearch_SV_Dat" class="form-control" placeholder="Nhập từ khóa tìm kiếm" />
+                        </div>
+                        <div class="col-sm-3 item-search">
+                            <a id="btnSearch_SV_Dat" class="btn btn-default btn-search"><i class="fa fa-search"></i>
+                                <span class="lang" key="">Tìm kiếm</span></a>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 aps-table-select scroll-table-x">
+                        <table id="tblDat" class="table table-hover table-bordered tblDat">
+                            <thead>
+                                <tr>
+                                    <th class="td-fixed">Stt</th>
+                                    <th class="td-center"><span class="lang" key="">Mã số</span></th>
+                                    <th class="td-center"><span class="lang" key="">Họ tên</span></th>
+                                    <th class="td-center"><span class="lang" key="">Ngày sinh</span></th>
+                                    <th class="td-center"><span class="lang" key="">Tình trạng</span></th>
+                                    <th class="td-center"><span class="lang" key="">Lớp học</span></th>
+                                    <th class="td-center"><span class="lang" key="">Chương trình học</span></th>
+                                    <th class="td-center"><span class="lang" key="">Khóa học</span></th>
+                                    <th class="td-center"><span class="lang" key="">Khoa quản lý</span></th>
+                                    <th class="td-center"><span class="lang" key="">Hệ đào tạo</span></th>
+                                    <th class="td-center"><span class="lang" key="">Xếp loại tên</span></th>
+                                    <th class="td-center"><span class="lang" key="">Xếp loại - hạ bậc</span></th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div id="notify"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <i class="fa fa-times-circle-o"></i><span class="lang" key="">Đóng</span></button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="myModalDaCongNhan" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 95%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title"><span class="myModalLabel1">Danh đã công nhận</span> </h4>
+            </div>
+            <div class="box-header with-border" style="margin-bottom: 13px">
+                <div class="col-sm-3 item-search">
+                    <input id="txtSearch_SV_DaCongNhan" class="form-control" placeholder="Nhập từ khóa tìm kiếm" />
+                </div>
+                <div class="col-sm-3 item-search">
+                    <a id="btnSearch_SV_DaCongNhan" class="btn btn-default"><i class="fa fa-search"></i> <span class="lang" key="">Tìm kiếm</span></a>
+                </div>
+            </div>
+            <div class="clear"></div>
+            <div class="modal-body" id="modal_body">
+                <table id="tblDaCongNhan" class="table table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <th class="td-fixed">Stt</th>
+                            <th class="td-center"><span class="lang" key="">Mã số</span></th>
+                            <th class="td-center"><span class="lang" key="">Họ tên</span></th>
+                            <th class="td-center"><span class="lang" key="">Ngày sinh</span></th>
+                            <th class="td-center"><span class="lang" key="">Tình trạng</span></th>
+                            <th class="td-center"><span class="lang" key="">Lớp học</span></th>
+                            <th class="td-center"><span class="lang" key="">Chương trình học</span></th>
+                            <th class="td-center"><span class="lang" key="">Khóa học</span></th>
+                            <th class="td-center"><span class="lang" key="">Khoa quản lý</span></th>
+                            <th class="td-center"><span class="lang" key="">Hệ đào tạo</span></th>
+                            <th class="td-center"><span class="lang" key="">Xếp loại tên</span></th>
+                            <th class="td-center"><span class="lang" key="">Xếp loại - hạ bậc</span></th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <div id="notify"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times-circle-o"></i> <span class="lang" key="">Đóng</span></button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Danh sách không đạt-->
+<div class="modal fade myModalKhongDat" id="myModalKhongDat" role="dialog" aria-labelledby="myModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" style="width: 95%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+                <h4 class="modal-title"><span class="myModalLabel1">
+                        <i class="fa-solid fa-users"></i> Danh sách không đạt</span></h4>
+            </div>
+            <div class="modal-body" id="modal_body">
+                <div class="row">
+                    <div class="col-sm-12 box-search-SV-khong-Dat mb-10">
+                        <div class="col-sm-6 item-search">
+                            <input id="txtSearch_SV_KhongDat" class="form-control"
+                                placeholder="Nhập từ khóa tìm kiếm" />
+                        </div>
+                        <div class="col-sm-3 item-search">
+                            <a id="btnSearch_SV_KhongDat" class="btn btn-default btn-search"><i
+                                    class="fa fa-search"></i> <span class="lang" key="">Tìm kiếm</span></a>
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+                <div class="row aps-table-khongdat">
+                    <div class="col-sm-12 aps-table-select scroll-table-x">
+                        <table id="tblKhongDat" class="table table-hover table-bordered tblKhongDat">
+                            <thead>
+                                <tr>
+                                    <th class="td-fixed">Stt</th>
+                                    <th class="td-center"><span class="lang" key="">Mã số</span></th>
+                                    <th class="td-center"><span class="lang" key="">Họ tên</span></th>
+                                    <th class="td-center"><span class="lang" key="">Ngày sinh</span></th>
+                                    <th class="td-center"><span class="lang" key="">Tình trạng</span></th>
+                                    <th class="td-center"><span class="lang" key="">Lớp học</span></th>
+                                    <th class="td-center"><span class="lang" key="">Chương trình học</span></th>
+                                    <th class="td-center"><span class="lang" key="">Khóa học</span></th>
+                                    <th class="td-center"><span class="lang" key="">Khoa quản lý</span></th>
+                                    <th class="td-center"><span class="lang" key="">Hệ đào tạo</span></th>
+                                    <th class="td-center"><span class="lang" key="">Học phần chưa hoàn thành</span></th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div class="col-sm-12">
+                        <table id="tblHocPhan" class="table table-hover table-bordered" style="display: none">
+                            <thead>
+                                <tr>
+                                    <th id="nameHocPhan" colspan="5"></th>
+                                </tr>
+                                <tr>
+                                    <th class="td-fixed">Stt</th>
+                                    <th class="td-center"><span class="lang" key="">Học phần</span></th>
+                                    <th class="td-center"><span class="lang" key="">Điểm</span></th>
+                                    <th class="td-center"><span class="lang" key="">Đánh giá</span></th>
+                                    <th class="td-center"><span class="lang" key="">Mô tả</span></th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div id="notify"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <i class="fa fa-times-circle-o"></i>
+                    <span class="lang" key="">Đóng</span></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Danh sách sinh viên-->
+<div class="modal fade myModalHoanXet" id="myModalHoanXet" role="dialog" aria-labelledby="myModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" style="width: 1000px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+                <h4 class="modal-title"><span class="myModalLabel1"><i class="fa-solid fa-users pr10"></i>Danh sách sinh
+                        viên</span></h4>
+            </div>
+            <div class="modal-body" id="modal_body">
+                <div class="aps-table-select mt-15">
+                    <table id="tblHoanXet" class="table table-hover table-bordered tblHoanXet">
+                        <thead>
+                            <tr>
+                                <th class="td-fixed">Stt</th>
+                                <th class="td-center"><span class="lang" key="">Mã số</span></th>
+                                <th class="td-center"><span class="lang" key="">Họ tên</span></th>
+                                <th class="td-center"><span class="lang" key="">Lớp học</span></th>
+                                <th class="td-center"><span class="lang" key="">Tình trạng</span></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <div id="notify"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times-circle-o"></i>
+                    <span class="lang" key="">Đóng</span></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal xem chi tiết học tập sinh viên (chỉ nhúng /modules/hoctap/html/diemhoc.html — không cho phép thao tác toàn cổng SV vì bảo mật). Fullscreen để che modal Danh sách đối tượng xét đứng sau. -->
+<div class="modal fade" id="modalHTSinhVien" tabindex="-1" role="dialog" aria-labelledby="modalHTSinhVienLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 100vw; max-width: 100vw; height: 100vh; margin: 0; padding: 0">
+        <div class="modal-content" style="height: 100vh; border-radius: 0; border: 0">
+            <div class="modal-header" style="padding: 8px 16px; background: #2b6cb0; color: #fff">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="font-size: 32px; line-height: 1; opacity: .9; color: #fff; text-shadow: none"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="modalHTSinhVienLabel" style="margin: 0; color: #fff"><i class="fa-solid fa-user-graduate"></i> <span id="lblHTSinhVien">Thông tin sinh viên</span></h4>
+            </div>
+            <div class="modal-body" style="padding: 12px; height: calc(100vh - 50px); overflow: auto" id="zoneHTSinhVien">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- page script -->
+<script src="modules/kehoach/script/thuchienxet.js?v=1.0.0.0"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['ThucHienXet'] = new ThucHienXet();
+    $(document).ready(function () {
+        main_doc.ThucHienXet.init();
+    });
+</script>

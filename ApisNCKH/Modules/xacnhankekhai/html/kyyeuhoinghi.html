@@ -1,0 +1,526 @@
+﻿<style>
+    .btn-white {
+        background-color: #fff;
+        -webkit-box-shadow: 1px 1px 1px 1px #ccc;
+        -moz-box-shadow: 1px 1px 1px 1px #ccc;
+        /* Firefox 3.5 - 3.6 */
+        box-shadow: 1px 1px 1px 1px #ccc;
+        height: 26px;
+    }
+
+    #txtTenSanPham {
+        width: 550px;
+        overflow: hidden !important;
+        display: block;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        float: left;
+        color: #4e8d42;
+    }
+
+    .btn-large {
+        width: 85px;
+        text-align: center;
+        background-color: #fff;
+        border-bottom: 1px solid #f1f1f1;
+        float: left;
+        margin-left: 5px;
+    }
+
+    .btnxacnhan_small {
+        width: 35px;
+        -webkit-box-shadow: 1px 1px 1px 1px #ccc;
+        -moz-box-shadow: 1px 1px 1px 1px #ccc;
+        /* Firefox 3.5 - 3.6 */
+        box-shadow: 1px 1px 1px 1px #ccc;
+    }
+</style>
+<section class="content">
+    <div class="row">
+        <!-- /.left-content -->
+        <!-- /.right-content -->
+        <div class="col-lg-12">
+            <!-- box Notify_DeTai -->
+            <div class="box box-solid zone-bus" id="zone_notify_KYHN">
+                <div class="box box-solid">
+                    <div class="box-header with-border">
+                        <h3 class="box-title"><i class="fa fa-window-restore"></i> Tìm kiếm</h3>
+                    </div>
+                    <div class="box-body">
+                        <!-- Bộ tìm kiếm -->
+                        <div class="col-sm-3 item-search">
+                            <select id="dropSearch_DonViThanhVien_KYHN" class="select-opt">
+                                <option value="">--Tất cả đơn vị thành viên--</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-3 item-search">
+                            <select id="dropSearch_ThanhVien_KYHN" class="select-opt-img">
+                                <option value="">--Tất cả thành viên đăng ký--</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-3 item-search">
+                            <select id="dropSearch_TinhTrang_KYHN" class="select-opt">
+                                <option value="">--Tất cả tình trạng--</option>
+                            </select>
+                        </div>
+                        <div class="clear"></div>
+                        <div class="col-sm-3 item-search">
+                            <input id="txtSearch_TuKhoa" class="form-control" placeholder="Nhập từ khóa tìm kiếm" />
+                        </div>
+                        <div class="col-sm-3 item-search">
+                            <a class="btn btn-default btnExtend_Search"><i class="fa fa-search"></i> <span class="lang"
+                                    key="">Tìm kiếm</span></a>
+                        </div>
+                        <div class="col-sm-3 item-search">
+                            <div class="dropdown" id="zonebtnBaoCao_KYHN">
+                                <button class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown">
+                                    <i class="fa fa fa-file-excel-o"></i> Xuất báo cáo <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu form-container">
+                                    <li><a class="btnBaoCao_LHD" name="KyYeuTrongNuoc" href="#"> 1. Kỷ yếu trong
+                                            nước</a></li>
+                                    <li><a class="btnBaoCao_LHD" name="KyYeuTrongNuoc_Full" href="#"> 2. Kỷ yếu trong
+                                            nước - Đầy đủ</a></li>
+                                    <li><a class="btnBaoCao_LHD" name="KyYeuQuocTe" href="#"> 3. Kỷ yếu quốc tế</a></li>
+                                    <li><a class="btnBaoCao_LHD" name="KyYeuQuocTe_Full" href="#"> 4. Kỷ yếu quốc tế -
+                                            Đầy đủ</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="box box-solid">
+                    <div class="box-header with-border">
+                        <h3 class="box-title" title="Kỷ yếu/hội nghị">
+                            <i class="fa fa-list-alt"></i> Kỷ yếu/hội nghị
+                        </h3>
+                        <span class=" badge bg-light-blue">
+                            <i>Tổng:</i> <span id="lblKYHN_Tong"></span>
+                        </span>
+                    </div>
+                    <div class="box-body">
+                        <table id="tblKYHN" class="table table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="td-fixed td-center">Stt</th>
+                                    <th class="td-center">Tên bài báo</th>
+                                    <th class="td-center">Số ISBN</th>
+                                    <th class="td-center">Lĩnh vực</th>
+                                    <th class="td-center">Năm công bố</th>
+                                    <th class="td-center">File đính kèm</th>
+                                    <th class="td-center">Xác nhận</th>
+                                    <th class="td-center">Xác nhận cuối cùng</th>
+                                    <th class="td-center">Nội dung xác nhận</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!--Load from js -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- box - Edit_DeTai -->
+            <div class="box box-solid form-container zone-bus" id="zone_input_KYHN">
+                <div class="box-header with-border">
+                    <h3 class="box-title">.. <i class="fa fa-pencil"></i> Kê khai kỷ yếu/hội nghị</h3>
+                    <div class="pull-right">
+                        <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times"></i></a>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="col-sm-12 box-view">
+                        <!-- 1. Noi dung bai bao -->
+                        <div class="row zone-box">
+                            <div class="row">
+                                <p class="group-title-name">
+                                    <span class="badge bg-blue">Thông tin bài báo</span>
+                                </p>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Tên bài báo <span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-10">
+                                    <input id="txtKYHN_TenBaiBao" class="form-control form-border-bottom" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Tên kỷ yếu<span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <input id="txtKYHN_TenTapChi" class="form-control form-border-bottom" />
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Số ISBN <span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <input id="txtKYHN_ISSN" class="form-control form-border-bottom"
+                                        placeholder="1402-1934" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Lĩnh vực <span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <select id="dropKYHN_LinhVuc" class="select-opt">
+                                        <option value="">--- Chọn lĩnh vực --</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Loại kỷ yếu <span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <select id="dropKYHN_LoaiKyYeu" class="select-opt">
+                                        <option value="">--- Chọn Loại kỷ yếu --</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Mã sản phẩm <span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <input id="txtKYHN_Ma" class="form-control form-border-bottom" />
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Tổng số tác giả <span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <input id="txtKYHN_TongSoTacGia" class="form-control form-border-bottom"
+                                        placeholder="5" />
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Số tác giả trong trường <span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <input id="txtKYHN_SoTacGiaTrongTruong" class="form-control form-border-bottom"
+                                        placeholder="4" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Tập <span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <input id="txtKYHN_Tap" class="form-control form-border-bottom" placeholder="40" />
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Số <span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <input id="txtKYHN_So" class="form-control form-border-bottom" placeholder="3" />
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Trang <span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <input id="txtKYHN_Trang" class="form-control form-border-bottom"
+                                        placeholder="58–62" />
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Năm hoàn thành<span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <input id="txtKYHN_NamHoanThanh" class="form-control form-border-bottom"
+                                        placeholder="2019" />
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Năm công bố <span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <input id="txtKYHN_NamCongBo" class="form-control form-border-bottom"
+                                        placeholder="2019" />
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Tháng công bố <span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <input id="txtKYHN_ThangCongBo" class="form-control form-border-bottom"
+                                        placeholder="10" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <!--<div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Trích dẫn pubmed (Pubmed ID (PMID) hoặc PMCID)<span class="title-colon">:</span>
+                                    </div>
+                                </div>-->
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Trích dẫn<span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-10">
+                                    <textarea id="txtKYHN_TrichDanPubmed" class="form-control form-border-bottom">
+                            </textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2. Minh chung -->
+                        <div class="row zone-box">
+                            <div class="row">
+                                <p class="group-title-name">
+                                    <span class="badge bg-blue">Nội dung minh chứng</span>
+                                </p>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Nội dung <span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-10">
+                                    <!--<div id="txtKYHN_NoiDungMinhChung"></div>-->
+                                    <input id="txtKYHN_NoiDungMinhChung" class="form-control form-border-bottom" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        File đính kèm <span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-10">
+                                    <div id="txtKYHN_FileDinhKem">
+
+                                    </div>
+                                </div>
+                                <div class="clear"></div>
+                                <div style="font-style: italic; font-size: 12px">Chú ý: File đính kèm là pdf chứa các
+                                    hình ảnh (trang bìa, trang đầu, trang cuối, mục lục, số ISSN)</div>
+                            </div>
+                        </div>
+
+                        <!-- 3. Thanh vien tham gia -->
+                        <div class="row zone-box">
+                            <div class="row">
+                                <p class="group-title-name">
+                                    <span class="badge bg-blue">Thành viên trong trường tham gia</span>
+                                </p>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-10">
+                                    <div class="group-title-name">
+                                        Vui lòng chọn thành viên trong trường tham gia
+                                        <a class="btn btn-default btnSearchKYHN_NhanSu" id=""><i
+                                                class="fa fa-search color-active"></i></a>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2"></div>
+                            </div>
+                            <div class="row">
+                                <table id="tblInput_KYHN_ThanhVien"
+                                    class="table table-hover tblInput_KYHN_ThanhVien table-border">
+                                    <thead>
+                                        <tr>
+                                            <td class="td-fixed td-center">#</td>
+                                            <td class="td-center">Hình ảnh</td>
+                                            <td>Họ tên</td>
+                                            <td>Vai trò</td>
+                                            <td class="td-center">Xóa</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- load from js -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- 4. Thanh vien tham gia -->
+                        <div class="row zone-box">
+                            <div class="row">
+                                <p class="group-title-name">
+                                    <span class="badge bg-blue">TThành viên ngoài trường tham gia</span>
+                                </p>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-10">
+                                    <div class="group-title-name">
+                                        Vui lòng chọn thành viên ngoài trường tham gia
+                                        <a class="btn btn-default btnSearchKYHN_NhanSu_NgoaiTruong" id=""><i
+                                                class="fa fa-search color-active"></i></a>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2"></div>
+                            </div>
+                            <div class="row">
+                                <table id="tblInput_KYHN_ThanhVien_NgoaiTruong" class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <td class="td-fixed td-center">#</td>
+                                            <td>Họ tên</td>
+                                            <td>Vai trò</td>
+                                            <td class="td-center">Xóa</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- load from js -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- 5. Sản phẩm thuộc đề tài-->
+                        <div class="row zone-box">
+                            <div class="row">
+                                <p class="group-title-name">
+                                    <span class="badge bg-blue">Đề tài của sản phẩm</span>
+                                </p>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Thuộc đề tài<span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-10">
+                                    <select id="dropKYHN_DeTai" class="select-opt">
+                                        <option value="">--- Chọn đề tài--</option>
+                                    </select>
+                                </div>
+                                <div class="clear"></div>
+                                <div style="font-style: italic; font-size: 12px">Chú ý: Nếu sản phẩm không thuộc đề tài
+                                    nào thì bỏ qua mục này</div>
+                            </div>
+                        </div>
+                        <div class="box-footer">
+                            <div class="pull-right">
+                                <a class="btn btn-default btnClose" href="#" title="Close"><i
+                                        class="fa fa-times-circle"></i> Đóng</a>
+                                <a id="btnXacNhan_KYHN" class="btn btn-primary"><i class="fa fa-check"></i> Xác nhận sản
+                                    phẩm</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="modal fade" id="modal_nhansu" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <!-- load from js -->
+</div>
+<div class="modal fade" id="modal_XacNhan" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 800px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+                <h4 class="modal-title modal-name" id="myModalLabel"><span style="float: left"><i
+                            class="fa fa-wrench"></i> Xác nhận sản phẩm: </span><span id="txtTenSanPham"></span></h4>
+            </div>
+            <div class="modal-body">
+
+                <!-- 2. Minh chung -->
+                <div class="row zone-box">
+                    <div class="row">
+                        <p class="group-title-name">
+                            <span class="badge bg-blue">Nội dung xác nhận</span>
+                        </p>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <input id="txtNoiDungXacNhanSanPham" class="form-control form-border-bottom" />
+                        </div>
+                    </div>
+                </div>
+                <!-- 2. Minh chung -->
+                <div class="row zone-box">
+                    <div class="row">
+                        <p class="group-title-name">
+                            <span class="badge bg-blue">Chọn xác nhận</span>
+                        </p>
+                    </div>
+                    <div class="row" id="zoneBtnXacNhan">
+                        <div style="margin-left: auto; margin-right: auto; width: 270px">
+                            <div id="btnClose_HDBL" class="btn-large">
+                                <a class="btn"><i style="color: #337ab7" class="fa fa-angle-double-down fa-4x"></i></a>
+                                <a class="color-active bold lbsymbolHD">Đóng</a>
+                            </div>
+                            <div id="btnClose_HDBL" class="btn-large">
+                                <a class="btn"><i style="color: #337ab7" class="fa fa-angle-double-down fa-4x"></i></a>
+                                <a class="color-active bold lbsymbolHD">Đóng</a>
+                            </div>
+                            <div id="btnClose_HDBL" class="btn-large">
+                                <a class="btn"><i style="color: #337ab7" class="fa fa-angle-double-down fa-4x"></i></a>
+                                <a class="color-active bold lbsymbolHD">Đóng</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row zone-box">
+                    <div class="row">
+                        <p class="group-title-name">
+                            <span class="badge bg-blue">Lịch sử xác nhận</span>
+                        </p>
+                    </div>
+                    <div class="row">
+                        <table id="tblModal_XacNhan" class="table">
+                            <thead>
+                                <tr>
+                                    <th class="td-fixed td-center">Stt</th>
+                                    <th class="td-left">Xác nhận</th>
+                                    <th class="td-left">Nội dung</th>
+                                    <th class="td-left">Người xác nhận</th>
+                                    <th class="td-center" style="width: 100px">Ngày</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div id="notify"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" id="btnCancel"><i
+                        class="fa fa-times-circle"></i> Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- page script -->
+<script src="modules/xacnhankekhai/script/kyyeuhoinghi.js?v=1.0.3.1"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['KyYeuHoiNghi'] = new KyYeuHoiNghi();
+    $(document).ready(function () {
+        main_doc.KyYeuHoiNghi.init();
+    });
+</script>

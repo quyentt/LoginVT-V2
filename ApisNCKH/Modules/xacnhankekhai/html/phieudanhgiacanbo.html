@@ -1,0 +1,443 @@
+﻿<style>
+    .table {
+        text-align: center;
+    }
+    #txtTenSanPham {
+        width: 550px;
+        overflow: hidden !important;
+        display: block;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        float: left;
+        color: #4e8d42;
+    }
+    .btn-large {
+        width: 85px;
+        text-align: center;
+        background-color: #fff;
+        border-bottom: 1px solid #f1f1f1;
+        float: left;
+        margin-left: 5px;
+    }
+    .btnxacnhan_small {
+        width: 35px;
+        -webkit-box-shadow: 1px 1px 1px 1px #ccc;
+        -moz-box-shadow: 1px 1px 1px 1px #ccc; /* Firefox 3.5 - 3.6 */
+        box-shadow: 1px 1px 1px 1px #ccc;
+    }
+</style>
+<section class="content">
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- box Notify_PhieuDG -->
+            <div class="box box-solid zonePhieuDG" id="zone_notify_PhieuDG">
+                <div class="box box-solid">
+                    <div class="box-header with-border">
+                        <h3 class="box-title"><i class="fa fa-window-restore"></i> Tìm kiếm</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="col-sm-3 item-search">
+                            <select id="dropSearch_DonViThanhVien" class="select-opt">
+                                <option value="">--Tất cả đơn vị thành viên--</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-3 item-search">
+                            <select id="dropSearch_ThanhVienDangKy" class="select-opt-img">
+                                <option value="">--Tất cả thành viên đăng ký--</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-3 item-search">
+                            <input id="txtSearch_TuKhoa" class="form-control" placeholder="Nhập từ khóa tìm kiếm" />
+                        </div>
+                        <div class="col-sm-3 item-search">
+                            <a class="btn btn-default btnExtend_Search"><i class="fa fa-search"></i> <span class="lang" key="">Tìm kiếm</span></a>
+                        </div>
+                        <div class="clear"></div>
+                        <div class="col-sm-3 item-search">
+                            <div class="dropdown" id="zonebtnBaoCao_PDGCB">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="box box-solid">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">
+                            <i class="fa fa-building"></i> Danh sách cán bộ
+                            <span class="pull-right badge bg-light-blue">
+                                <span id="lblPhieuDanhGiaCanBo_Tong"></span>
+                            </span>
+                        </h3>
+                    </div>
+                    <div class="box-body">
+                        <div>
+                            <table id="tblPhieuDanhGiaCanBo_KeHoach" class="table table-hover table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th rowspan="2" class="td-fixed td-center">Stt</th>
+                                        <th rowspan="2" class="td-left">Tên cán bộ</th>
+                                        <th rowspan="2" class="td-left">Mã cán bộ</th>
+                                        <th rowspan="2" class="td-left">Nhóm thi xét thi đua</th>
+                                        <th rowspan="2" class="td-left">Nhóm NCKH</th>
+                                        <th rowspan="2" class="td-center" title="Điểm chuyên môn">Điểm chuyên môn</th>
+                                        <th rowspan="2" class="td-center" title="Viết sách">Viết sách</th>
+                                        <th colspan="2" class="td-center" title="Đề tài">Đề tài</th>
+                                        <th colspan="2" class="td-center" title="Tạp chí quốc gia">TCQG</th>
+                                        <th colspan="2" class="td-center" title="Tạp chí quốc tế">TCQT</th>
+                                        <th rowspan="2" class="td-center">Tổng giờ NCKH = (1) + (2) + (3)</th>
+                                        <th rowspan="2" class="td-center" title="Giải thưởng">Giải thưởng</th>
+                                        <th rowspan="2" class="td-center" title="Văn bằng sáng chế">VBSC</th>
+                                        <th colspan="3" class="td-center" title="Coi thi">Coi thi</th>
+                                        <th rowspan="2" class="td-center" title="Công đoàn">Điểm công đoàn</th>
+                                        <th rowspan="2" class="td-center" title="Điểm họp">Điểm họp</th>
+                                        <th rowspan="2" class="td-center">Tổng điểm</th>
+                                        <th rowspan="2" class="td-center">Xếp loại</th>
+                                        <th rowspan="2" class="td-center">Xác nhận</th>
+                                        <th rowspan="2" class="td-center">Xác nhận cuối cùng</th>
+                                        <th rowspan="2" class="td-center">Nội dung xác nhận</th>
+                                    </tr>
+                                    <tr>
+                                        <th class="td-center" title="Điểm tài">Giờ thi đua (1)</th>
+                                        <th class="td-center" title="Điểm tài">Điểm</th>
+                                        <th class="td-center" title="Điểm tài">Giờ thi đua (2)</th>
+                                        <th class="td-center" title="Điểm tài">Điểm</th>
+                                        <th class="td-center" title="Điểm tài">Giờ thi đua (3)</th>
+                                        <th class="td-center" title="Điểm tài">Điểm</th>
+                                        <th class="td-center" title="Điểm tài">Số phút</th>
+                                        <th class="td-center" title="Điểm tài">Giờ thi đua</th>
+                                        <th class="td-center" title="Điểm tài">Điểm</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- load from js -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- box PhieuDG -->
+            <div class="box box-solid form-container zonePhieuDG" id="zone_PhieuDG">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><i class="fa fa-file-text-o"></i> Phiếu đánh giá </h3>
+                    <div class="pull-right title-note">
+                        <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times"></i></a>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="col-sm-12">
+                        <div class="row">
+                        </div>
+                        <div class="row">
+                            <table id="tblPhieuDG_TieuChi" class="table table-hover table-bordered table-center">
+                                <tbody>
+                                    <tr>
+                                        <td class="">1</td>
+                                        <td colspan="6" class="bold td-left">Điểm chuyên môn</td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td colspan="4">
+
+                                            <table id="tblPhieuDG_TieuChi" class="table table-hover table-bordered table-center">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Stt</th>
+                                                        <th>Nội dung</th>
+                                                        <th style="width: 92px">Kế hoạch</th>
+                                                        <th style="width: 94px">Thực tế</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td class="">1</td>
+                                                        <td style="text-align: left">Thực hiện tốt các công việc theo bản mô tả công việc, đúng thời hạn cho cấp đơn vị hoặc cấp Viện tùy theo công việc.</td>
+                                                        <td>50</td>
+                                                        <td><input class="form-control" id="txtThucTe1" /></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="">2</td>
+                                                        <td style="text-align: left">Đi làm đúng giờ, đầy đủ số ngày làm việc theo quy định</td>
+                                                        <td>10</td>
+                                                        <td><input class="form-control" id="txtThucTe2" /></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="">3</td>
+                                                        <td style="text-align: left">Thực hiện tốt ý kiến chỉ đạo của cấp trên (lãnh đạo đơn vị, lãnh đạo Viện, Trường)</td>
+                                                        <td>10</td>
+                                                        <td><input class="form-control" id="txtThucTe3" /></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="">4</td>
+                                                        <td style="text-align: left">Hàng năm, cán bộ có bản mô tả công việc cụ thể được lãnh đạo đơn vị phê duyệt</td>
+                                                        <td>5</td>
+                                                        <td><input class="form-control" id="txtThucTe4" /></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="">5</td>
+                                                        <td style="text-align: left">Thực hiện tốt nội quy cơ quan đơn vị</td>
+                                                        <td>5</td>
+                                                        <td><input class="form-control" id="txtThucTe5" /></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="">6</td>
+                                                        <td style="text-align: left">Báo cáo đầy đủ các công việc thực hiện trong báo cáo định kỳ</td>
+                                                        <td>5</td>
+                                                        <td><input class="form-control" id="txtThucTe6" /></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="">7</td>
+                                                        <td style="text-align: left">Báo cáo đầy đủ các công việc thực hiện trong báo cáo tổng kết cuối năm của cá nhân</td>
+                                                        <td>5</td>
+                                                        <td><input class="form-control" id="txtThucTe7" /></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="">2</td>
+                                        <td class="bold td-left">Đề tài</td>
+                                        <td class="bold" style="background: #f1f1f1" id="txtDeTai"></td>
+                                        <td class="" style="width: 90px"><btn class="btn btn-primary" onclick="edu.system.initMain('#thongtinsach','/modules/sanphamkhoahoc/html/detai.html')" href="#thongtinsach"><i class="fa fa-edit"></i> <span>Kê khai</span> </btn></td>
+                                        <td class="" style="width: 100px"><input class="form-control" readonly /></td>
+                                        <td style="width: 140px">Ý kiến phản hồi</td>
+                                        <td><input class="form-control" id="txtYK_DeTai" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="">3</td>
+                                        <td class="bold td-left">Tạp chí quốc gia</td>
+                                        <td class="bold" style="background: #f1f1f1" id="txtTapChiQuocGia"></td>
+                                        <td class="" style="width: 90px"><btn class="btn btn-primary" onclick="edu.system.initMain('#thongtinsach','/modules/sanphamkhoahoc/html/tapchiquocgia.html')" href="#thongtinsach"><i class="fa fa-edit"></i> <span>Kê khai</span> </btn></td>
+                                        <td class=""><input class="form-control" readonly /></td>
+                                        <td style="width: 140px">Ý kiến phản hồi</td>
+                                        <td><input class="form-control" id="txtYK_TapChiQuocGia" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="">4</td>
+                                        <td class="bold td-left">Tạp chí quốc tế</td>
+                                        <td class="bold" style="background: #f1f1f1" id="txtTapChiQuocTe"></td>
+                                        <td class="" style="width: 90px"><btn class="btn btn-primary" onclick="edu.system.initMain('#thongtinsach','/modules/sanphamkhoahoc/html/tapchiquocte.html')" href="#thongtinsach"><i class="fa fa-edit"></i> <span>Kê khai</span> </btn></td>
+                                        <td class=""><input class="form-control" readonly /></td>
+                                        <td style="width: 140px">Ý kiến phản hồi</td>
+                                        <td><input class="form-control" id="txtYK_TapChiQuocTe" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="">5</td>
+                                        <td class="bold td-left">Giải thưởng</td>
+                                        <td class="bold" style="background: #f1f1f1" id="txtGiaiThuong"></td>
+                                        <td class="" style="width: 90px"><btn class="btn btn-primary" onclick="edu.system.initMain('#thongtinsach','/modules/sanphamkhoahoc/html/giaithuong.html')" href="#thongtinsach"><i class="fa fa-edit"></i> <span>Kê khai</span> </btn></td>
+                                        <td class=""><input class="form-control" readonly /></td>
+                                        <td style="width: 140px">Ý kiến phản hồi</td>
+                                        <td><input class="form-control" id="txtYK_GiaiThuong" /></td>
+                                    </tr>
+
+                                    <tr>
+                                        <td class="">6</td>
+                                        <td class="bold td-left">Văn bằng sáng chế</td>
+                                        <td class="bold" style="background: #f1f1f1" id="txtVBSC"></td>
+                                        <td class="" style="width: 90px"><btn class="btn btn-primary" onclick="edu.system.initMain('#thongtinsach','/modules/sanphamkhoahoc/html/vanbangsangche.html')" href="#vanbangsangche"><i class="fa fa-edit"></i> <span>Kê khai</span> </btn></td>
+                                        <td class=""><input class="form-control" readonly /></td>
+                                        <td style="width: 140px">Ý kiến phản hồi</td>
+                                        <td><input class="form-control" id="txtYK_VBSC" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="">7</td>
+                                        <td class="bold td-left">Coi thi</td>
+                                        <td class="bold" style="background: #f1f1f1" id="txtCoiThi"></td>
+                                        <td class="" style="width: 90px">Giờ chuẩn</td>
+                                        <td class=""><input class="form-control" readonly /></td>
+                                        <td style="width: 140px">Ý kiến phản hồi</td>
+                                        <td><input class="form-control" id="txtYK_CoiThi" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="">8</td>
+                                        <td class="bold td-left">Điểm công đoàn</td>
+                                        <td class="bold" style="background: #f1f1f1" id="txtCongDoan"></td>
+                                        <td class="" style="width: 90px">Điểm</td>
+                                        <td class=""><input class="form-control" readonly /></td>
+                                        <td style="width: 140px">Ý kiến phản hồi</td>
+                                        <td><input class="form-control" id="txtYK_CongDoan" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="">9</td>
+                                        <td class="bold td-left">Điểm họp</td>
+                                        <td class="bold" style="background: #f1f1f1" id="txtDiemHop"></td>
+                                        <td class="" style="width: 90px">Điểm</td>
+                                        <td class=""><input class="form-control" readonly /></td>
+                                        <td style="width: 140px">Ý kiến phản hồi</td>
+                                        <td><input class="form-control" id="txtYK_DiemHop" /></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- box - Edit_SangKien -->
+                <div class="box-body">
+                    <div class="col-sm-12 box-view">
+                        <!-- 1. Noi dung bai bao -->
+                        <div class="row zone-box">
+                            <div class="row">
+                                <p class="group-title-name">
+                                    <span class="badge bg-blue">Thông tin sáng kiến</span>
+                                </p>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Tên sáng kiến<span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <input id="txtYK_Ten" class="form-control" placeholder="Nhập tên sáng kiến" />
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Ngày công nhận<span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <input id="txtYK_NgayCongNhan" class="form-control input-datepicker" placeholder="dd/mm/yyyy" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Số quyết định công nhận<span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <input id="txtYK_SoQuyetDinh" class="form-control" />
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Vai trò <span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <select id="dropYK_VaiTro" class="select-opt">
+                                        <option value="">--- Chọn vai trò --</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Điểm<span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <input id="txtYK_Diem" class="form-control " readonly />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="col-sm-3 col-xs-6" style="text-align: center">
+                        <div class="widget-user-image col-sm-12" id="txtSoNguoiDangO">
+                            <input type="text" class="knob" value="80%" data-width="100" data-height="100" data-fgColor="#3c8dbc">
+                        </div>
+                        <h2>Tổng điểm</h2>
+                    </div>
+                    <div class="col-sm-3 col-xs-6" style="text-align: center">
+                        <div style="height: 134px; font-size: 125px; margin-top: -30px;">
+                            <span id="txtXepLoai"></span>
+                        </div>
+                        <h2>Xếp loại</h2>
+                    </div>
+                </div>
+                <div class="box-footer">
+                    <div class="pull-right">
+                        <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times-circle"></i> Đóng</a>
+                        <a id="btnXacNhan_CanBo" class="btn btn-primary"><i class="fa fa-check"></i> Xác nhận</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<div class="modal fade" id="modal_XacNhan" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 800px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title modal-name" id="myModalLabel"><span style="float: left"><i class="fa fa-wrench"></i> Xác nhận sản phẩm: </span><span id="txtTenSanPham"></span></h4>
+            </div>
+            <div class="modal-body">
+                <!-- 2. Minh chung -->
+                <div class="row zone-box">
+                    <div class="row">
+                        <p class="group-title-name">
+                            <span class="badge bg-blue">Nội dung xác nhận</span>
+                        </p>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <input id="txtNoiDungXacNhanSanPham" class="form-control form-border-bottom" />
+                        </div>
+                    </div>
+                </div>
+                <!-- 2. Minh chung -->
+                <div class="row zone-box">
+                    <div class="row">
+                        <p class="group-title-name">
+                            <span class="badge bg-blue">Chọn xác nhận</span>
+                        </p>
+                    </div>
+                    <div class="row" id="zoneBtnXacNhan">
+                        <div style="margin-left: auto; margin-right: auto; width: 270px">
+                            <div id="btnClose_HDBL" class="btn-large">
+                                <a class="btn"><i style="color: #337ab7" class="fa fa-angle-double-down fa-4x"></i></a>
+                                <a class="color-active bold lbsymbolHD">Đóng</a>
+                            </div>
+                            <div id="btnClose_HDBL" class="btn-large">
+                                <a class="btn"><i style="color: #337ab7" class="fa fa-angle-double-down fa-4x"></i></a>
+                                <a class="color-active bold lbsymbolHD">Đóng</a>
+                            </div>
+                            <div id="btnClose_HDBL" class="btn-large">
+                                <a class="btn"><i style="color: #337ab7" class="fa fa-angle-double-down fa-4x"></i></a>
+                                <a class="color-active bold lbsymbolHD">Đóng</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row zone-box">
+                    <div class="row">
+                        <p class="group-title-name">
+                            <span class="badge bg-blue">Lịch sử xác nhận</span>
+                        </p>
+                    </div>
+                    <div class="row">
+                        <table id="tblModal_XacNhan" class="table">
+                            <thead>
+                                <tr>
+                                    <th class="td-fixed td-center">Stt</th>
+                                    <th class="td-left">Xác nhận</th>
+                                    <th class="td-left">Nội dung</th>
+                                    <th class="td-left">Người xác nhận</th>
+                                    <th class="td-center" style="width: 100px">Ngày</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div id="notify"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" id="btnCancel"><i class="fa fa-times-circle"></i> Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- page script -->
+<script src="modules/xacnhankekhai/script/phieudanhgiacanbo.js?v=1.0.0.0"></script>
+<script src="modules/xacnhankekhai/script/jquery.knob.min.js?v=1.0.0.0"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['PhieuDanhGiaCanBo'] = new PhieuDanhGiaCanBo();
+    $(document).ready(function () {
+        main_doc.PhieuDanhGiaCanBo.init();
+    });
+</script>

@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - Danh mục màn hình HTML</title>
+    <style>
+        :root {
+            --blue: #2f6fed;
+            --green: #22a652;
+            --orange: #f8843d;
+            --purple: #9f22d6;
+            --gray: #667085;
+            --bg: #f4f6fb;
+            --side: #ffffff;
+            --border: #e6e9f0;
+            --text: #1f2a44;
+            --muted: #8a93a6;
+            --sidew: 320px;
+        }
+
+        * { box-sizing: border-box; }
+
+        html, body { height: 100%; margin: 0; }
+
+        body {
+            font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            -webkit-font-smoothing: antialiased;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* ===== Top bar ===== */
+        .appbar {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 10px 16px;
+            background: linear-gradient(135deg, #2f6fed, #4f86f5);
+            color: #fff;
+        }
+        .appbar .burger {
+            display: none;
+            font-size: 20px; cursor: pointer;
+            background: rgba(255,255,255,.18); border: 0; color: #fff;
+            width: 36px; height: 36px; border-radius: 8px;
+        }
+        .appbar .brand { font-weight: 700; font-size: 16px; display: flex; align-items: center; gap: 8px; }
+        .appbar .brand b { background: rgba(255,255,255,.2); border-radius: 6px; padding: 2px 8px; font-size: 12px; }
+        .appbar .spacer { flex: 1; }
+        .appbar .cur { font-size: 13px; opacity: .92; max-width: 50vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .appbar a.newtab {
+            color: #fff; text-decoration: none; font-size: 13px;
+            border: 1px solid rgba(255,255,255,.5); border-radius: 8px; padding: 6px 12px;
+            white-space: nowrap;
+        }
+        .appbar a.newtab:hover { background: rgba(255,255,255,.15); }
+        .appbar .toggle {
+            display: flex; align-items: center; gap: 6px;
+            font-size: 13px; cursor: pointer; white-space: nowrap;
+            background: rgba(255,255,255,.15); padding: 6px 10px; border-radius: 8px;
+        }
+        .appbar .toggle input { accent-color: #fff; cursor: pointer; }
+
+        /* ===== Body split ===== */
+        .split { flex: 1 1 auto; display: flex; min-height: 0; }
+
+        /* ===== Sidebar ===== */
+        .side {
+            flex: 0 0 var(--sidew);
+            width: var(--sidew);
+            background: var(--side);
+            border-right: 1px solid var(--border);
+            display: flex; flex-direction: column;
+            min-height: 0;
+        }
+        .side .search { padding: 12px; border-bottom: 1px solid var(--border); }
+        .side .search input {
+            width: 100%;
+            padding: 10px 12px 10px 34px;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            font-size: 13px; outline: none;
+            background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='15' viewBox='0 0 24 24' fill='none' stroke='%238a93a6' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E") no-repeat 11px center;
+        }
+        .side .search input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(47,111,237,.12); }
+
+        .side .list { flex: 1 1 auto; overflow-y: auto; padding: 8px 8px 24px; }
+
+        .grp-title {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .03em;
+            color: var(--muted);
+            padding: 14px 8px 6px;
+        }
+        .grp-title .bar { width: 4px; height: 14px; border-radius: 3px; }
+        .grp-title .cnt { margin-left: auto; font-weight: 600; }
+
+        .item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 8px 10px; border-radius: 9px; cursor: pointer;
+            text-decoration: none; color: var(--text);
+            font-size: 13px; line-height: 1.3;
+        }
+        .item:hover { background: #f2f5fb; }
+        .item.active { background: var(--ac, var(--blue)); color: #fff; }
+        .item.active .code { background: rgba(255,255,255,.25); color: #fff; }
+        .item .code {
+            flex: 0 0 auto; min-width: 50px; text-align: center;
+            font-size: 10px; font-weight: 700; color: var(--ac, var(--blue));
+            background: var(--acbg, rgba(47,111,237,.10));
+            border-radius: 6px; padding: 4px 4px;
+        }
+        .item .lbl { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+        .grp.hidden { display: none; }
+
+        .noresult { display: none; text-align: center; color: var(--muted); padding: 30px 10px; font-size: 13px; }
+
+        /* ===== Content ===== */
+        .content { flex: 1 1 auto; min-width: 0; position: relative; background: #fff; }
+        iframe { width: 100%; height: 100%; border: 0; display: block; }
+        .welcome {
+            position: absolute; inset: 0; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 10px; text-align: center; color: var(--muted);
+            padding: 20px;
+        }
+        .welcome .big { font-size: 42px; }
+        .welcome h2 { margin: 0; color: var(--text); }
+
+        /* ===== Mobile ===== */
+        .backdrop { display: none; }
+        @media (max-width: 900px) {
+            .appbar .burger { display: inline-flex; align-items: center; justify-content: center; }
+            .appbar .cur { max-width: 36vw; }
+            .side {
+                position: fixed; top: 0; left: 0; bottom: 0; z-index: 50;
+                transform: translateX(-100%); transition: transform .2s ease;
+                box-shadow: 4px 0 24px rgba(0,0,0,.15);
+                padding-top: 0;
+            }
+            body.menu-open .side { transform: translateX(0); }
+            body.menu-open .backdrop {
+                display: block; position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 40;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="appbar">
+        <button class="burger" id="burger" aria-label="menu">&#9776;</button>
+        <span class="brand">APIS <b>Danh mục màn hình</b></span>
+        <span class="spacer"></span>
+        <label class="toggle" title="Ẩn header + menu trái của trang, chỉ hiện nội dung chính">
+            <input type="checkbox" id="cleanChk" checked> Chỉ nội dung chính
+        </label>
+        <span class="cur" id="curName">Chọn một màn hình bên trái</span>
+        <a class="newtab" id="newtab" href="#" target="_blank" style="display:none">Mở tab mới ↗</a>
+    </div>
+
+    <div class="split">
+        <aside class="side" id="side">
+            <div class="search">
+                <input id="search" type="text" placeholder="Tìm màn hình..." autocomplete="off" />
+            </div>
+            <nav class="list" id="list"></nav>
+            <div class="noresult" id="noresult">Không tìm thấy.</div>
+        </aside>
+
+        <main class="content">
+            <div class="welcome" id="welcome">
+                <div class="big">🗂️</div>
+                <h2>Danh mục màn hình HTML</h2>
+                <div>Bấm một màn hình ở danh sách bên trái để xem nội dung tại đây.</div>
+            </div>
+            <iframe id="frame" title="preview" style="display:none"></iframe>
+        </main>
+    </div>
+    <div class="backdrop" id="backdrop"></div>
+
+    <script>
+        const GROUPS = [
+            {
+                name: "Quản lý sinh viên", color: "#2f6fed", bg: "rgba(47,111,237,.10)",
+                items: [
+                    ["HTML-QLSV-01-tongquan-1.html", "QLSV-01", "Tổng quan toàn trường (360)"],
+                    ["HTML-QLSV-01-tongquan.html", "QLSV-01", "Tổng quan (bản gốc)"],
+                    ["HTML-QLSV-02-DanhSachSV-1.html", "QLSV-02", "Danh sách sinh viên"],
+                    ["HTML-QLSV-02-DanhSachSV.html", "QLSV-02", "Danh sách SV (bản gốc)"],
+                    ["HTML-QLSV-03-hoso360-1.html", "QLSV-03", "Hồ sơ sinh viên 360"],
+                    ["HTML-QLSV-03-hoso360.html", "QLSV-03", "Hồ sơ 360 (bản gốc)"],
+                    ["HTML-QLSV-04-DAQHHT-1.html", "QLSV-04", "Đa ngành / nhiều QHHT"],
+                    ["HTML-QLSV-04-DAQHHT.html", "QLSV-04", "Đa QHHT (bản gốc)"],
+                    ["HTML-QLSV-05-dangkyhoc-1.html", "QLSV-05", "Kết quả đăng ký học"],
+                    ["HTML-QLSV-05-dangkyhoc.html", "QLSV-05", "Đăng ký học (bản gốc)"],
+                    ["HTML-QLSV-06-chuyencan-1.html", "QLSV-06", "Kết quả chuyên cần"],
+                    ["HTML-QLSV-06-chuyencan.html", "QLSV-06", "Chuyên cần (bản gốc)"],
+                    ["HTML-QLSV-07-ketquahoctap-1.html", "QLSV-07", "Kết quả học tập / Bảng điểm"],
+                    ["HTML-QLSV-07-ketquahoctap.html", "QLSV-07", "Kết quả học tập (bản gốc)"],
+                    ["HTML-QLSV-08-XuLyHocVu-1.html", "QLSV-08", "Kết quả xử lý học vụ"],
+                    ["HTML-QLSV-08-XuLyHocVu.html", "QLSV-08", "Xử lý học vụ (bản gốc)"],
+                    ["HTML-QLSV-09-chungchi-1.html", "QLSV-09", "Chứng chỉ / điều kiện phụ"],
+                    ["HTML-QLSV-09-chungchi.html", "QLSV-09", "Chứng chỉ (bản gốc)"],
+                    ["HTML-QLSV-10-totnghiep-1.html", "QLSV-10", "Xét tốt nghiệp"],
+                    ["HTML-QLSV-10-totnghiep.html", "QLSV-10", "Tốt nghiệp (bản gốc)"],
+                    ["HTML-QLSV-11-taichinh-1.html", "QLSV-11", "Tài chính / học phí / công nợ"],
+                    ["HTML-QLSV-11-taichinh.html", "QLSV-11", "Tài chính (bản gốc)"],
+                    ["HTML-QLSV-12-TuongTacInbox-1.html", "QLSV-12", "Hộp thư / trao đổi SV"],
+                    ["HTML-QLSV-12-TuongTacInbox-2.html", "QLSV-12", "Hộp thư (biến thể 2)"],
+                    ["HTML-QLSV-12-TuongTacInbox.html", "QLSV-12", "Hộp thư (bản gốc)"],
+                    ["HTML-QLSV-13-CanhBaoCanThiep-1.html", "QLSV-13", "Cảnh báo sớm / Student Success"],
+                    ["HTML-QLSV-13-CanhBaoCanThiep.html", "QLSV-13", "Cảnh báo & can thiệp"],
+                    ["HTML-QLSV-14-BaoCaoThongKe-1.html", "QLSV-14", "Báo cáo & thống kê"],
+                    ["HTML-QLSV-14-BaoCaoThongKe.html", "QLSV-14", "Báo cáo thống kê (bản gốc)"],
+                ]
+            },
+            {
+                name: "Cố vấn học tập", color: "#22a652", bg: "rgba(34,166,82,.10)",
+                items: [
+                    ["HTML-COVAN-00-LuongChucNang.html", "COVAN-00", "Luồng chức năng"],
+                    ["HTML-COVAN-01-TongQuan.html", "COVAN-01", "Dashboard cố vấn"],
+                    ["HTML-COVAN-02-NhomSVNguyCo.html", "COVAN-02", "Nhóm SV nguy cơ"],
+                    ["HTML-COVAN-03-LichHenTuVan.html", "COVAN-03", "Lịch hẹn tư vấn"],
+                    ["HTML-COVAN-04-HoSoSVPhuTrach.html", "COVAN-04", "Hồ sơ SV phụ trách"],
+                    ["HTML-COVAN-05-DangKyHocTheoDoi.html", "COVAN-05", "Theo dõi đăng ký học"],
+                    ["HTML-COVAN-06-HocTapRenLuyen.html", "COVAN-06", "Học tập & rèn luyện"],
+                    ["HTML-COVAN-07-TuongTacSV.html", "COVAN-07", "Tương tác SV"],
+                    ["HTML-COVAN-08-BaoCaoCoVan.html", "COVAN-08", "Báo cáo cố vấn"],
+                ]
+            },
+            {
+                name: "Khoa / Viện", color: "#9f22d6", bg: "rgba(159,34,214,.10)",
+                items: [
+                    ["HTML-KHOA-00-LuongChucNang.html", "KHOA-00", "Luồng chức năng"],
+                    ["HTML-KHOA-00-LuongChucNang-1.html", "KHOA-00", "Luồng chức năng (bản 1)"],
+                    ["HTML-KHOA-01-TongQuan.html", "KHOA-01", "Dashboard Khoa/Viện"],
+                    ["HTML-KHOA-02-DanhSachTheoLop.html", "KHOA-02", "Danh sách theo lớp"],
+                    ["HTML-KHOA-03-HoSoSVTrongKhoa.html", "KHOA-03", "Hồ sơ SV trong Khoa"],
+                    ["HTML-KHOA-04-CanhBaoHocVu.html", "KHOA-04", "Cảnh báo học vụ"],
+                    ["HTML-KHOA-05-SapTotNghiep-01.html", "KHOA-05", "Sắp tốt nghiệp (theo dõi)"],
+                    ["HTML-KHOA-05-SapTotNghiep.html", "KHOA-05", "Sắp tốt nghiệp"],
+                    ["HTML-KHOA-06-TuongTacThongBao.html", "KHOA-06", "Tương tác / thông báo"],
+                    ["HTML-KHOA-07-BaoCaoKhoa.html", "KHOA-07", "Báo cáo Khoa/Viện"],
+                ]
+            },
+            {
+                name: "Sinh viên / Kế hoạch nhập học", color: "#f8843d", bg: "rgba(248,132,61,.12)",
+                items: [
+                    ["HTML-SV-TiepNhanDauVao.html", "SV", "Tiếp nhận đầu vào tuyển sinh"],
+                    ["HTML-SV-Ke-Hoach-Nhap-Hoc-01.html", "SV-KH", "Kế hoạch nhập học"],
+                    ["HTML-SV-Ke-Hoach-Nhap-Hoc-02-ThuPhi.html", "SV-KH", "Kế hoạch nhập học - Thu phí"],
+                    ["HTML-SV-Ke-Hoach-Nhap-Hoc-02-ThuPhi-old.html", "SV-KH", "Thu phí (bản cũ)"],
+                ]
+            },
+            {
+                name: "Khác", color: "#667085", bg: "rgba(102,112,133,.12)",
+                items: [
+                    ["HTML-99-GhiChuPhanQuyen.html", "99", "Ghi chú phân quyền & bộ lọc"],
+                ]
+            },
+        ];
+
+        const list = document.getElementById("list");
+        const frame = document.getElementById("frame");
+        const welcome = document.getElementById("welcome");
+        const curName = document.getElementById("curName");
+        const newtab = document.getElementById("newtab");
+        let activeEl = null;
+        let total = 0;
+
+        // ===== Chỉ hiện nội dung chính: ẩn header + menu trái của trang trong iframe (không sửa file gốc) =====
+        const cleanChk = document.getElementById("cleanChk");
+        const CLEAN_CSS =
+            ".header.fixed-top,.header{display:none !important;}" +
+            ".left-sidebar{display:none !important;}" +
+            ".main-wrap{padding-top:0 !important;margin-top:0 !important;}" +
+            ".main-content{margin-left:0 !important;width:100% !important;max-width:100% !important;padding-top:0 !important;}" +
+            "body{padding-top:0 !important;}";
+        function applyClean() {
+            try {
+                const doc = frame.contentDocument;
+                if (!doc || !doc.head) return;
+                let st = doc.getElementById("__cleanStyle__");
+                if (cleanChk.checked) {
+                    if (!st) { st = doc.createElement("style"); st.id = "__cleanStyle__"; doc.head.appendChild(st); }
+                    st.textContent = CLEAN_CSS;
+                } else if (st) { st.remove(); }
+            } catch (e) { /* iframe khác nguồn (mở bằng file://) trình duyệt chặn - bỏ qua */ }
+        }
+        frame.addEventListener("load", applyClean);
+        cleanChk.addEventListener("change", applyClean);
+
+        function open(file, label, el) {
+            frame.src = file;
+            frame.style.display = "block";
+            welcome.style.display = "none";
+            curName.textContent = label + "  ·  " + file;
+            newtab.href = file;
+            newtab.style.display = "inline-block";
+            if (activeEl) activeEl.classList.remove("active");
+            if (el) { el.classList.add("active"); activeEl = el; }
+            document.body.classList.remove("menu-open");
+            location.hash = encodeURIComponent(file);
+        }
+
+        GROUPS.forEach(g => {
+            total += g.items.length;
+            const t = document.createElement("div");
+            t.className = "grp";
+            const head = document.createElement("div");
+            head.className = "grp-title";
+            head.innerHTML = '<span class="bar" style="background:' + g.color + '"></span>' + g.name +
+                '<span class="cnt">' + g.items.length + '</span>';
+            t.appendChild(head);
+            g.items.forEach(([file, code, label]) => {
+                const a = document.createElement("a");
+                a.className = "item";
+                a.href = file;
+                a.style.setProperty("--ac", g.color);
+                a.style.setProperty("--acbg", g.bg);
+                a.dataset.file = file;
+                a.dataset.search = (code + " " + label + " " + file).toLowerCase();
+                a.innerHTML = '<span class="code">' + code + '</span><span class="lbl">' + label + '</span>';
+                a.addEventListener("click", e => { e.preventDefault(); open(file, label, a); });
+                t.appendChild(a);
+            });
+            list.appendChild(t);
+        });
+
+        // Tìm kiếm lọc
+        const search = document.getElementById("search");
+        const noresult = document.getElementById("noresult");
+        search.addEventListener("input", () => {
+            const q = search.value.trim().toLowerCase();
+            let visible = 0;
+            document.querySelectorAll(".grp").forEach(grp => {
+                let shown = 0;
+                grp.querySelectorAll(".item").forEach(it => {
+                    const ok = !q || it.dataset.search.includes(q);
+                    it.style.display = ok ? "" : "none";
+                    if (ok) shown++;
+                });
+                grp.classList.toggle("hidden", shown === 0);
+                visible += shown;
+            });
+            noresult.style.display = visible === 0 ? "block" : "none";
+        });
+
+        // Mobile menu
+        const burger = document.getElementById("burger");
+        const backdrop = document.getElementById("backdrop");
+        burger.addEventListener("click", () => document.body.classList.toggle("menu-open"));
+        backdrop.addEventListener("click", () => document.body.classList.remove("menu-open"));
+
+        // Mở theo hash nếu có (giữ trạng thái khi refresh)
+        if (location.hash) {
+            const f = decodeURIComponent(location.hash.slice(1));
+            const el = list.querySelector('.item[data-file="' + f.replace(/"/g, '\\"') + '"]');
+            if (el) el.click();
+        }
+    </script>
+</body>
+
+</html>

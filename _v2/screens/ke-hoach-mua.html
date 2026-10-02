@@ -1,0 +1,161 @@
+<!--
+    Màn hình mẫu — DANH SÁCH + TÌM KIẾM + BIỂU MẪU
+    Không có thẻ <table> nào trong tệp này: toàn bộ bảng do ums.ui.table()
+    sinh ra, kể cả phân trang.
+-->
+<div class="ums-page__head">
+    <h1 class="ums-page__title ums-u-mb-0">Kế hoạch tổ chức đăng ký mua</h1>
+    <div class="ums-page__actions" id="khActions"></div>
+</div>
+
+<!-- Vùng 1: danh sách -->
+<div id="zoneList">
+    <div class="ums-panel ums-u-mb-4">
+        <div class="ums-panel__body">
+            <div class="ums-filter" id="khFilter"></div>
+        </div>
+    </div>
+
+    <div class="ums-panel">
+        <div class="ums-panel__head">
+            <div class="ums-panel__title"><i class="fa-light fa-list-ul"></i> Danh sách kế hoạch</div>
+            <div class="ums-panel__tools" id="khTools"></div>
+        </div>
+        <div class="ums-panel__body ums-panel__body--flush" id="khTable"></div>
+    </div>
+</div>
+
+<!-- Vùng 2: biểu mẫu -->
+<div id="zoneForm" hidden>
+    <div class="ums-panel">
+        <div class="ums-panel__head">
+            <div class="ums-panel__title"><i class="fa-light fa-pen-to-square"></i> <span id="khFormTitle">Thêm kế hoạch</span></div>
+            <div class="ums-panel__tools" id="khFormTools"></div>
+        </div>
+        <div class="ums-panel__body">
+            <div class="ums-grid ums-grid--2">
+                <div id="khFormLeft"></div>
+                <div id="khFormRight"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    'use strict';
+    var ui = ums.ui;
+
+    var DATA = [
+        { ID: 'KHM01', MA: 'KH-BHYT-2526', TEN: 'Kế hoạch mua BHYT năm học 2025-2026', MOTA: 'Toàn bộ sinh viên chính quy', TU: '01/09/2026', DEN: '30/09/2026', LOAI: 'Bảo hiểm y tế', TT: 'ok', TTTEN: 'Đang mở đăng ký', SL: 8420, TIEN: 5725600000 },
+        { ID: 'KHM02', MA: 'KH-DPHUC-K19', TEN: 'Kế hoạch mua đồng phục khoá 19', MOTA: 'Sinh viên khoá 19 các ngành', TU: '15/08/2026', DEN: '15/09/2026', LOAI: 'Đồng phục', TT: 'bad', TTTEN: 'Đã đóng', SL: 2140, TIEN: 535000000 },
+        { ID: 'KHM03', MA: 'KH-GT-HK2', TEN: 'Kế hoạch mua giáo trình học kỳ 2', MOTA: '', TU: '02/01/2027', DEN: '31/01/2027', LOAI: 'Giáo trình', TT: 'mute', TTTEN: 'Đang soạn', SL: 0, TIEN: 0 },
+        { ID: 'KHM04', MA: 'KH-BHTN-2526', TEN: 'Bảo hiểm tai nạn 2025-2026', MOTA: 'Tự nguyện', TU: '01/09/2026', DEN: '20/10/2026', LOAI: 'Bảo hiểm y tế', TT: 'ok', TTTEN: 'Đang mở đăng ký', SL: 3190, TIEN: 319000000 },
+        { ID: 'KHM05', MA: 'KH-TL-K20', TEN: 'Tài liệu nhập học khoá 20', MOTA: 'Kèm thẻ sinh viên', TU: '05/08/2026', DEN: '30/08/2026', LOAI: 'Giáo trình', TT: 'warn', TTTEN: 'Sắp hết hạn', SL: 1875, TIEN: 281250000 },
+        { ID: 'KHM06', MA: 'KH-DP-K20', TEN: 'Đồng phục thể chất khoá 20', MOTA: '', TU: '10/09/2026', DEN: '10/10/2026', LOAI: 'Đồng phục', TT: 'ok', TTTEN: 'Đang mở đăng ký', SL: 940, TIEN: 188000000 }
+    ];
+
+    var LOAI = [{ ID: 'BH', TEN: 'Bảo hiểm y tế' }, { ID: 'DP', TEN: 'Đồng phục' }, { ID: 'GT', TEN: 'Giáo trình' }];
+    var TT = [{ ID: 'mute', TEN: 'Đang soạn' }, { ID: 'ok', TEN: 'Đang mở đăng ký' }, { ID: 'bad', TEN: 'Đã đóng' }];
+
+    var page = 1, SIZE = 5, rows = DATA.slice();
+
+    document.getElementById('khActions').innerHTML =
+        ui.btn('excel') + ui.btn('add', { text: 'Mở kế hoạch mới', attr: { 'data-do': 'add' } });
+
+    document.getElementById('khTools').innerHTML =
+        '<button type="button" class="ums-iconbtn" title="In"><i class="fa-light fa-print"></i></button>';
+
+    // Thanh lọc: nhãn nằm trong chính ô chọn / ô nhập, không có nhãn riêng
+    document.getElementById('khFilter').innerHTML =
+        ui.filterSelect('Chọn loại kế hoạch', LOAI, { id: 'fLoai' }) +
+        ui.filterSelect('Chọn tình trạng', TT, { id: 'fTT' }) +
+        ui.filterInput('Nhập mã hoặc tên kế hoạch', { id: 'fKey' }) +
+        '<div class="ums-field ums-field--fit">' + ui.btn('search', { attr: { 'data-do': 'search' } }) + '</div>';
+
+    function draw() {
+        var from = (page - 1) * SIZE;
+        ui.table({
+            el: '#khTable',
+            rows: rows.slice(from, from + SIZE),
+            page: { index: page, size: SIZE, total: rows.length, onChange: function (p) { page = p; draw(); } },
+            columns: [
+                { title: 'Mã kế hoạch', prop: 'MA', cls: 'is-nowrap' },
+                { title: 'Tên kế hoạch', render: function (r) { return ui.cell(r.TEN, r.MOTA); } },
+                { title: 'Loại', prop: 'LOAI', cls: 'is-nowrap' },
+                { title: 'Thời gian', cls: 'is-center is-nowrap', render: function (r) {
+                    return r.TU + ' <i class="fa-light fa-arrow-right ums-u-faint ums-u-fz12"></i> ' + r.DEN;
+                } },
+                { title: 'Tình trạng', cls: 'is-center', render: function (r) { return ui.badge(r.TTTEN, r.TT); } },
+                { title: 'Đã đăng ký', cls: 'is-right is-nowrap', render: function (r) { return ui.money(r.SL); } },
+                { title: 'Thành tiền', cls: 'is-right is-nowrap', render: function (r) { return '<b>' + ui.money(r.TIEN) + '</b>'; } },
+                { title: 'Thao tác', cls: 'is-actions', width: '120px', render: function (r) { return ui.actions(r.ID); } }
+            ]
+        });
+    }
+    draw();
+
+    function buildForm() {
+        document.getElementById('khFormLeft').innerHTML =
+            '<div class="ums-legend">Thông tin chung</div>' +
+            ui.field('Mã kế hoạch', '<input class="ums-input" value="KH-BHYT-2526">', { required: true }) +
+            ui.field('Tên kế hoạch', '<input class="ums-input" value="Kế hoạch mua BHYT năm học 2025-2026">', { required: true }) +
+            ui.field('Loại kế hoạch', '<select class="ums-select" id="fmLoai">' + ui.options(LOAI, { title: '-- Chọn --' }) + '</select>', { required: true }) +
+            ui.field('Mô tả', '<textarea class="ums-textarea">Toàn bộ sinh viên chính quy</textarea>');
+
+        document.getElementById('khFormRight').innerHTML =
+            '<div class="ums-legend">Thời gian và quy tắc</div>' +
+            ui.field('Từ ngày', '<div class="ums-inputwrap"><input class="ums-input" id="fmTu" value="01/09/2026" readonly><i class="fa-light fa-calendar"></i></div>', { required: true }) +
+            ui.field('Đến ngày', '<div class="ums-inputwrap"><input class="ums-input" id="fmDen" value="30/09/2026" readonly><i class="fa-light fa-calendar"></i></div>', { required: true }) +
+            ui.field('Quy tắc',
+                '<div class="ums-checklist">' +
+                '<label class="ums-check"><input type="checkbox" checked> Cho phép sửa số lượng</label>' +
+                '<label class="ums-check"><input type="checkbox" checked> Cho phép huỷ trước thanh toán</label>' +
+                '<label class="ums-check"><input type="checkbox"> Yêu cầu thanh toán ngay</label>' +
+                '</div>');
+
+        document.getElementById('khFormTools').innerHTML =
+            ui.btn('close', { attr: { 'data-do': 'back' } }) + ui.btn('save', { attr: { 'data-do': 'save' } });
+
+        ui.select2('#fmLoai');
+        ui.datepicker('#fmTu');
+        ui.datepicker('#fmDen');
+    }
+
+    function show(which) {
+        // Ẩn nút của màn hình trước, để điều kiện dính đỉnh tính lại cho đúng
+        document.getElementById('khActions').hidden = which !== 'list';
+        if (which === 'form') ui.swap('#zoneList', '#zoneForm');
+        else ui.swap('#zoneForm', '#zoneList');
+    }
+
+    document.getElementById('screen').addEventListener('click', function (e) {
+        var b = e.target.closest('[data-do]');
+        if (b) {
+            var act = b.getAttribute('data-do');
+            if (act === 'add') { document.getElementById('khFormTitle').textContent = 'Thêm kế hoạch'; buildForm(); show('form'); }
+            if (act === 'back' || act === 'save') show('list');
+            if (act === 'search') doSearch();
+            return;
+        }
+        var ib = e.target.closest('.ums-iconbtn[data-act="edit"]');
+        if (ib) { document.getElementById('khFormTitle').textContent = 'Sửa kế hoạch'; buildForm(); show('form'); }
+    });
+
+    function doSearch() {
+        var key = (document.getElementById('fKey').value || '').trim().toLowerCase();
+        var loai = document.getElementById('fLoai').value;
+        var tt = document.getElementById('fTT').value;
+        rows = DATA.filter(function (r) {
+            if (key && (r.MA + ' ' + r.TEN).toLowerCase().indexOf(key) < 0) return false;
+            if (loai && LOAI.find(function (l) { return l.ID === loai; }).TEN !== r.LOAI) return false;
+            if (tt && r.TT !== tt) return false;
+            return true;
+        });
+        page = 1;
+        draw();
+    }
+
+    document.getElementById('fKey').addEventListener('keypress', function (e) { if (e.which === 13) doSearch(); });
+})();
+</script>

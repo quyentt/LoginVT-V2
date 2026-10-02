@@ -1,0 +1,337 @@
+﻿<style>
+    .btn-white {
+        background-color: #fff;
+        -webkit-box-shadow: 1px 1px 1px 1px #ccc;
+        -moz-box-shadow: 1px 1px 1px 1px #ccc; /* Firefox 3.5 - 3.6 */
+        box-shadow: 1px 1px 1px 1px #ccc;
+        height: 26px;
+    }
+
+    .lbTinhTrang {
+        float: right;
+        font-weight: bold;
+        border: 4px solid;
+        opacity: 0.5;
+        color: red;
+        -ms-transform: rotate(10deg); /* IE 9 */
+        -webkit-transform: rotate(10deg); /* Safari 3-8 */
+        transform: rotate(10deg);
+    }
+</style>
+<section class="content aps-congcanbo">
+    <div class="row aps-spkh-detaisinhvien">
+        <!-- /.left-content -->
+        <div class="col-lg-3 box-shadow aps-box-l aps-spkh-detaisinhvien-l">
+            <div class="box box-solid box-search pd15">
+                <div class="box-body pd0">
+                    <!-- Bộ tìm kiếm -->
+                    <div class="bs-item input-group pd0">
+                        <input type="text" id="txtSearch_TuKhoa" class="form-control"
+                               placeholder="Nhập từ khóa tìm kiếm">
+                        <span class="input-group-addon poiter btnExtend_Search" title="Tìm kiếm">
+                            <i class="fa fa-search"></i>
+                        </span>
+                    </div>
+                    <div class="box-sub-search mt-10">
+                        <div class="bss-item pd0">
+                            <i>Chọn điều kiện tìm kiếm:</i>
+                        </div>
+                        <div class="bss-item pd0">
+                            <select id="dropSearch_DTSV_Loai" class="select-opt">
+                                <option value="">-- Tất cả xếp loại--</option>
+                                <!-- Load from js -->
+                            </select>
+                        </div>
+                        <div class="bss-item w-100">
+                            <a id="btnSearch_DTSV" class="btn btn-default w-100"><i class="fa fa-search"></i> <span
+                                    class="lang" key="">Tìm kiếm</span></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="box box-solid pd15 aps-spkh-detaisinhvien-list pt5">
+                <div class="box-header pd0">
+                    <h3 class="box-title mt-5" title="Đề tài sinh viên">
+                        <i class="fa-solid fa-rectangle-history-circle-plus"></i> Đề tài sinh viên
+                    </h3>
+                    <span class="pull-right badge bg-light-blue" style="margin-top:5px !important;">
+                        <i>Tổng:</i> <span id="lblDTSV_Tong"></span>
+                    </span>
+                </div>
+                <div class="box-body pd0 mt-5">
+                    <table id="tblDeTaiSinhVien" class="table table-hover">
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- /.right-content -->
+        <div class="col-lg-9 pl20 aps-box-r aps-spkh-detaisinhvien-r">
+            <!-- box Notify_DTSV -->
+            <div class="box box-solid zone-bus pd0" id="zone_notify_DTSV">
+                <div class="box-header with-border bg-blue">
+                    <h3 class="box-title color-white" style="color: #fff !important;">
+                        <i class="fa fa-info-circle"></i> Thông tin chung
+                    </h3>
+                </div>
+                <div class="box-body pd20">
+                    <div class="col-sm-12">
+                        <p>Hôm nay bạn có đề tài mới không?
+                            <a class="btn btnAdd btn-outline-primary ml-10" href="#"><i class="fa fa-plus"></i> Thêm mới</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- box - Edit_DTSV -->
+            <div class="box box-solid form-container zone-bus zone_input_DTSV" id="zone_input_DTSV">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><span class="myModalLabel"><i class="fa fa-plus"></i> Thêm mới - </span> Đề
+                        tài sinh viên</h3>
+                    <div class="pull-right">
+                        <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times"></i></a>
+                    </div>
+                </div>
+                <div class="box-body pd0">
+                    <div class="col-sm-12 box-view aps-add-new pd20 pt10">
+                        <div class="row aps-form">
+                            <!-- View - Thong tin bai bao -->
+                            <div class="row aps-lable-name">
+                                <p class="group-group-title-name border-0 mb-0">
+                                    <span class="badge bg-blue" style="color:#3380db !important">Thông tin đề tài</span>
+                                </p>
+                                <span class="pull-right lblDTSV_TinhTrang pull-right-absolute color-white"></span>
+                            </div>
+                            <!--row 2-->
+                            <div class="row aps-form-item">
+                                <div class="col-sm-2 aps-form-lable">Tên đề tài <span class="color-red">(*)</span></div>
+                                <div class="col-sm-10 aps-form-input">
+                                    <input id="txtDTSV_TenDetai" class="form-control"/>
+                                </div>
+                            </div>
+                            <!--row 3-->
+                            <div class="row aps-form-item">
+                                <div class="col-sm-2 aps-form-lable">Năm thực hiện</div>
+                                <div class="col-sm-4 aps-form-input">
+                                    <input id="txtDTSV_NamThucHien" class="form-control"/>
+                                </div>
+                                <div class="col-sm-2 aps-form-lable text-right pr15">Năm nghiệm thu</div>
+                                <div class="col-sm-4 aps-form-input">
+                                    <input id="txtDTSV_NghiemThu" class="form-control"/>
+                                </div>
+                            </div>
+                            <!--row 4-->
+                            <div class="row aps-form-item">
+                                <div class="col-sm-2 aps-form-lable">QĐ phê duyệt</div>
+                                <div class="col-sm-4 aps-form-input">
+                                    <input id="txtDTSV_QDPheDuyet" class="form-control"/>
+                                </div>
+                                <div class="col-sm-2 aps-form-lable text-right pr15">QĐ nghiệm thu</div>
+                                <div class="col-sm-4 aps-form-input">
+                                    <input id="txtDTSV_QDNghiemThu" class="form-control"/>
+                                </div>
+                            </div>
+                            <!--row 5-->
+                            <div class="row aps-form-item">
+                                <div class="col-sm-2 aps-form-lable">Điểm nghiệm thu</div>
+                                <div class="col-sm-4 aps-form-input">
+                                    <input id="txtDTSV_DiemNghiemThu" class="form-control"/>
+                                </div>
+                                <div class="col-sm-2 aps-form-lable text-right pr15 pl15"
+                                     style="line-height: 20px !important;">Tên sinh viên, nhóm sinh viên thực hiện
+                                </div>
+                                <div class="col-sm-4 aps-form-input">
+                                    <input id="txtDTSV_TenSinhVien" class="form-control"/>
+                                </div>
+                            </div>
+
+                            <!--row 6-->
+                            <div class="row aps-form-item">
+                                <div class="col-sm-2 aps-form-lable">Xếp loại</div>
+                                <div class="col-sm-4 aps-form-input">
+                                    <select id="dropXepLoai" class="select-opt">
+                                        <option value="">-- Chọn xếp loại--</option>
+                                        <!-- Load from js -->
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row aps-form-item" style="display:none ">
+                                <div class="col-sm-2 aps-form-lable">Mô tả</div>
+                                <div class="col-sm-10 aps-form-input">
+                                    <textarea id="txtDTSV_MoTa" class="form-control min-h-68"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2. Nguồn kinh phí-->
+                        <div class="row aps-form mt-25">
+                            <!--row aps-lable-name-->
+                            <div class="row">
+                                <p class="group-group-title-name border-0 mb-0">
+                                    <span class="badge bg-blue" style="color:#198754 !important">Nguồn kinh phí</span>
+                                </p>
+                            </div>
+                            <!--row 2-->
+                            <div class="row aps-form-table">
+                                <table id="tblInput_DTSV_KinhPhi" class="table mb-0 mr-0 tblInput_DTSV_KinhPhi">
+                                    <tbody></tbody>
+                                    <tfoot>
+                                    <tr>
+                                        <td class="aps-form-lable">Tên nguồn</td>
+                                        <td>
+                                            <select id="dropDTSV_KinhPhi_Nguon" class="select-opt">
+                                                <option>Chọn nguồn kinh phí</option>
+                                            </select>
+                                        </td>
+                                        <td class="aps-form-lable">Số tiền</td>
+                                        <td>
+                                            <input id="txtDTSV_KinhPhi_SoTien" class="form-control inputsotien" placeholder="Nhập số tiền"/>
+                                        </td>
+                                        <td class="aps-form-lable">Đơn vị</td>
+                                        <td class="td-fixed td-center">
+                                            <select id="dropDTSV_KinhPhi_DonViTienTe" class="select-opt">
+                                                <!-- Load from js -->
+                                            </select>
+                                        </td>
+                                        <td class="td-fixed td-center">
+                                            <a class="btn poiter" id="btnAdd_DTSV_KinhPhi">
+                                                <i class="fa fa-plus"></i> Thêm</a></td>
+                                    </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- 3. Nội dung minh chứng -->
+                        <div class="row aps-form mt-25">
+                            <!--row aps-lable-name-->
+                            <div class="row aps-lable-name">
+                                <p class="group-group-title-name border-0 mb-0">
+                                    <span class="badge bg-blue"
+                                          style="color:#FF0000 !important">Nội dung minh chứng</span>
+                                </p>
+                            </div>
+                            <!--row 2-->
+                            <div class="row aps-form-item">
+                                <div class="col-sm-2 aps-form-lable">File đính kèm</div>
+                                <div class="col-sm-10 aps-form-input pt5">
+                                    <div id="txtDTSV_FileDinhKem"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 4. Giảng viên hướng dẫn -->
+                        <div class="row aps-form mt-25">
+                            <!--row aps-lable-name-->
+                            <div class="row">
+                                <p class="group-group-title-name border-0 mb-0">
+                                    <span class="badge bg-blue"
+                                          style="color:#d54b07 !important">Giảng viên hướng dẫn</span>
+                                </p>
+                            </div>
+                            <!--row 2-->
+                            <div class="row aps-form-table">
+                                <table id="tblInput_DTSV_GiangVien" class="table mb-10 mr-0 tblInput_DTSV_GiangVien table-border">
+                                    <thead>
+                                    <tr>
+                                        <td class="td-fixed td-center">Stt</td>
+                                        <td class="td-center" style="width: 140px">Hình ảnh</td>
+                                        <td class="td-left">Họ tên</td>
+                                        <td class="td-center td-fixed">Xóa</td>
+                                    </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                            <!--row 3-->
+                            <div class="row aps-form-btn">
+                                <div class="pull-right">
+                                    <a class="btn btn-outline-primary btnSearchDTSV_GiangVien" id="">
+                                        <i class="fa fa-plus mr-0"></i>Thêm thành viên</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 5. Sinh viên thực hiện -->
+                        <div class="row aps-form">
+                            <!--row aps-lable-name-->
+                            <div class="row">
+                                <p class="group-group-title-name border-0 mb-0">
+                                    <span class="badge bg-blue" style="color:#ff0081 !important">Sinh viên thực hiện</span>
+                                </p>
+                            </div>
+                            <!--row 2-->
+                            <div class="row aps-form-table">
+                                <table id="tblInput_DTSV_SinhVien" class="table mb-10 mr-0 tblInput_DTSV_SinhVien table-border">
+                                    <thead>
+                                    <tr>
+                                        <td class="td-fixed td-center">Stt</td>
+                                        <td class="td-center" style="width: 140px">Hình ảnh</td>
+                                        <td class="td-left">Họ tên</td>
+                                        <td class="td-left">Vai trò</td>
+                                        <td class="td-center td-fixed">Xóa</td>
+                                    </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                            <!--row 3-->
+                            <div class="row aps-form-btn">
+                                <div class="pull-right">
+                                    <a class="btn btn-outline-primary btnSearchDTSV_SinhVien" id="">
+                                        <i class="fa fa-plus color-active mr-0"></i>Thêm thành viên</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 6. Sản phẩm thuộc đề tài-->
+                        <div class="row aps-form">
+                            <!--row aps-lable-name-->
+                            <div class="row aps-lable-name">
+                                <p class="group-group-title-name border-0 mb-0">
+                                    <span class="badge bg-blue" style="color:#e300ff !important">Sản phẩm thuộc đề tài</span>
+                                </p>
+                            </div>
+                            <!--row 2-->
+                            <div class="row aps-form-item">
+                                <div class="col-sm-2 aps-form-lable">Tên đề tài</div>
+                                <div class="col-sm-4 aps-form-input">
+                                    <select id="dropDTSV_QuanLyDeTai_Id" class="select-opt">
+                                        <option value="">--- Chọn đề tài--</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-6 aps-form-note line-38 pl15">
+                                    <b>Chú ý:</b> Nếu sản phẩm không thuộc đề tài nào thì bỏ qua mục này
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box-footer">
+                        <div class="pull-right d-flex">
+                            <!--<a class="btn btn-default btnReWrite" href="#" title="Xóa trắng toàn bộ thông tin nhập"><i class="fa fa fa-eraser"></i> Nhập tiếp</a>-->
+                            <a class="btn btn-default btnClose" href="#" title="Close">
+                                <i class="fa fa-times-circle"></i> Đóng</a>
+                            <a id="btnSave_DTSV" class="btn btn-primary"><i class="fa fa-save"></i> Lưu</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<div class="modal fade aps-modal-nhansu" id="modal_nhansu" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <!-- load from js -->
+</div>
+<div class="modal fade aps-modal-nhansu" id="modal_sinhvien" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <!-- load from js -->
+</div>
+<!-- page script -->
+<script src="modules/sanphamkhoahoc/script/detaisinhvien.js?v=1.0.3.1"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['DeTaiSinhVien'] = new DeTaiSinhVien();
+    $(document).ready(function () {
+        main_doc.DeTaiSinhVien.init();
+    });
+</script>

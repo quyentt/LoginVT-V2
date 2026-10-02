@@ -1,0 +1,195 @@
+/* =========================================================================
+   6. COMPONENTS — cây chức năng ở cột trái
+   =========================================================================
+   Dựng theo đúng giao diện đang chạy:
+     - thanh "Vai trò" đang dùng trên cùng (tìm chức năng: ô tìm ở thanh trên)
+     - mục cha: biểu tượng + nhãn + mũi tên; khi mở thì nền xanh, chữ trắng đậm
+     - mục con: nền sẫm hơn, nối bằng một đường dọc và gạch ngang nhỏ
+     - mục con đang chọn: chữ cam, có chấm tròn cam ở đầu
+   ========================================================================= */
+
+/* ---------- Vai trò đang dùng (thay ô tìm chức năng cũ — tìm nay ở ô trên thanh trên, người dùng 2026-09-26) ---------- */
+.ums-rolebar {
+    display: flex; align-items: center; gap: var(--ums-sp-3);
+    padding: 7px var(--ums-sp-2) 7px var(--ums-sp-3);
+    border-radius: var(--ums-r-1);
+    background: rgba(255, 255, 255, .08);
+    border: 1px solid rgba(255, 255, 255, .16);
+    color: var(--ums-on-dark);
+}
+.ums-rolebar__icon {
+    flex: 0 0 30px; width: 30px; height: 30px; display: grid; place-items: center;
+    border-radius: var(--ums-r-1); background: var(--ums-blue); color: #fff; font-size: var(--ums-fz-14);
+}
+.ums-rolebar__txt { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; line-height: 1.25; }
+.ums-rolebar__txt small { font-size: 11px; color: var(--ums-on-dark-2); text-transform: uppercase; letter-spacing: .4px; }
+.ums-rolebar__txt b { font-size: var(--ums-fz-14); font-weight: var(--ums-fw-semibold); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.ums-rolebar.is-trong .ums-rolebar__txt b { font-weight: 400; color: var(--ums-on-dark-2); }
+.ums-rolebar__doi {
+    flex: 0 0 30px; width: 30px; height: 30px; display: grid; place-items: center; border-radius: var(--ums-r-1);
+    color: var(--ums-on-dark-2); font-size: var(--ums-fz-14);
+}
+.ums-rolebar__doi:hover { background: rgba(255, 255, 255, .12); color: var(--ums-on-dark); }
+.ums-rolebar.is-trong .ums-rolebar__doi { display: none; }
+
+/* ---------- Mục cha -------------------------------------------------------- */
+.ums-nav__group + .ums-nav__group { margin-top: 1px; }
+
+.ums-nav__head {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: var(--ums-sp-3);
+    min-height: 44px;
+    padding: var(--ums-sp-2) var(--ums-sp-4);
+    color: var(--ums-on-dark);
+    font-size: var(--ums-fz-14);
+    text-align: left;
+    transition: background var(--ums-t);
+}
+
+.ums-nav__head:hover { background: rgba(255, 255, 255, .08); }
+
+.ums-nav__icon {
+    flex: 0 0 18px;
+    width: 18px;
+    text-align: center;
+    font-size: var(--ums-fz-15);
+    color: var(--ums-on-dark);
+}
+
+.ums-nav__label { flex: 1; min-width: 0; }
+
+.ums-nav__caret {
+    flex: 0 0 auto;
+    font-size: var(--ums-fz-12);
+    color: var(--ums-on-dark-2);
+    transition: transform var(--ums-t);
+}
+
+/* Nhóm đang mở — nền xanh, chữ đậm */
+.ums-nav__group.is-open > .ums-nav__head {
+    background: var(--ums-blue);
+    font-weight: var(--ums-fw-bold);
+}
+
+.ums-nav__group.is-open > .ums-nav__head:hover { background: var(--ums-blue-d); }
+.ums-nav__group.is-open > .ums-nav__head .ums-nav__caret { transform: rotate(90deg); color: #fff; }
+
+/* ---------- Mục con --------------------------------------------------------- */
+.ums-nav__sub {
+    display: none;
+    position: relative;
+    padding: var(--ums-sp-2) 0 var(--ums-sp-2) 34px;
+    background: var(--ums-navy-d);
+}
+
+.ums-nav__group.is-open > .ums-nav__sub { display: block; }
+
+/* ---------- Nhóm lồng (menu sâu từ 3 tầng) -------------------------------
+   Cây chức năng trong DB có thể sâu hơn hai tầng. Nhóm con dùng đầu mục
+   gọn hơn (không biểu tượng) và thụt vào ít hơn, để không đẩy chữ ra khỏi
+   cột trái khi sâu nhiều tầng. */
+.ums-nav__group--sub > .ums-nav__sub { padding-left: var(--ums-sp-4); background: none; }
+.ums-nav__group--sub > .ums-nav__sub::before { left: 6px; }
+
+.ums-nav__head--sub {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: var(--ums-sp-2);
+    padding: 7px var(--ums-sp-4) 7px 0;
+    border: 0;
+    background: none;
+    color: var(--ums-on-dark-2);
+    font: inherit;
+    font-size: var(--ums-fz-13);
+    text-align: left;
+    cursor: pointer;
+}
+
+.ums-nav__head--sub:hover { color: var(--ums-on-dark); }
+.ums-nav__head--sub .ums-nav__label { flex: 1; min-width: 0; }
+.ums-nav__group--sub.is-open > .ums-nav__head--sub { color: var(--ums-on-dark); font-weight: var(--ums-fw-semibold); }
+.ums-nav__group--sub.is-open > .ums-nav__head--sub .ums-nav__caret { transform: rotate(90deg); }
+
+/* Đường dọc nối các mục con */
+.ums-nav__sub::before {
+    content: "";
+    position: absolute;
+    left: 26px;
+    top: var(--ums-sp-2);
+    bottom: var(--ums-sp-2);
+    width: 1px;
+    background: rgba(255, 255, 255, .22);
+}
+
+.ums-nav__link {
+    position: relative;
+    display: block;
+    padding: 7px var(--ums-sp-4) 7px var(--ums-sp-3);
+    color: #a9c0ea;
+    font-size: var(--ums-fz-13);
+    line-height: 1.5;
+}
+
+/* Gạch ngang nhỏ nối từ đường dọc sang mục con */
+.ums-nav__link::before {
+    content: "";
+    position: absolute;
+    left: -8px;
+    top: 50%;
+    width: 8px;
+    height: 1px;
+    background: rgba(255, 255, 255, .22);
+}
+
+.ums-nav__link:hover { color: #fff; }
+
+/* Mục đang chọn — chữ cam, chấm tròn cam */
+.ums-nav__link.is-active {
+    color: var(--ums-nav-active, #f0913a);
+    font-weight: var(--ums-fw-semibold);
+}
+
+.ums-nav__link.is-active::before {
+    left: -11px;
+    top: calc(50% - 3px);
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--ums-nav-active, #f0913a);
+}
+
+.ums-nav__link.is-disabled {
+    color: #7285ab;
+    cursor: not-allowed;
+}
+
+.ums-nav__link.is-disabled:hover { color: #7285ab; }
+
+/* ---------- Mục đơn (không có mục con) -------------------------------------- */
+.ums-nav__single {
+    display: flex;
+    align-items: center;
+    gap: var(--ums-sp-3);
+    min-height: 44px;
+    padding: var(--ums-sp-2) var(--ums-sp-4);
+    color: var(--ums-on-dark);
+    font-size: var(--ums-fz-14);
+}
+
+.ums-nav__single:hover { background: rgba(255, 255, 255, .08); }
+
+.ums-nav__single.is-active {
+    background: var(--ums-blue);
+    font-weight: var(--ums-fw-bold);
+}
+
+/* ---------- Không tìm thấy -------------------------------------------------- */
+.ums-nav__empty {
+    padding: var(--ums-sp-5) var(--ums-sp-4);
+    color: var(--ums-on-dark-2);
+    font-size: var(--ums-fz-13);
+    text-align: center;
+}

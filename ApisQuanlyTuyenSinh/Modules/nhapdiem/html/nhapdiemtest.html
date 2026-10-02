@@ -1,0 +1,1473 @@
+﻿<style>
+    .tr-bg-diem {
+        background: #b3b3b3 !important;
+        /*khi chon*/
+    }
+
+    .mauthangbo {
+        background: #4e8d42 !important;
+        /*mau tieu de*/
+    }
+
+    .mauthangcon {
+        background: #f1f1f1 !important;
+        /*mau tieu de*/
+    }
+
+    .lbTinhTrang {
+        float: right;
+        font-weight: bold;
+        border: 4px solid;
+        opacity: 0.5;
+        color: red;
+        -ms-transform: rotate(10deg);
+        /* IE 9 */
+        -webkit-transform: rotate(10deg);
+        /* Safari 3-8 */
+        transform: rotate(10deg);
+    }
+
+    #txtTenSanPham {
+        width: 550px;
+        overflow: hidden !important;
+        display: block;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        float: left;
+        color: #4e8d42;
+    }
+
+    .btn-large {
+        width: 85px;
+        text-align: center;
+        background-color: #fff;
+        border-bottom: 1px solid #f1f1f1;
+        float: left;
+        margin-left: 5px;
+    }
+
+    .btnxacnhan_small {
+        width: 35px;
+        -webkit-box-shadow: 1px 1px 1px 1px #ccc;
+        -moz-box-shadow: 1px 1px 1px 1px #ccc;
+        /* Firefox 3.5 - 3.6 */
+        box-shadow: 1px 1px 1px 1px #ccc;
+    }
+
+    #tblNhapDiemclone>thead>tr>th,
+    #tblNhapDiemclone>thead>tr {
+        border-left: none;
+        border-right: none;
+    }
+
+    #clone>tbody>tr>td,
+    #clone>tbody>tr {
+        border-left: none;
+        border-right: none;
+    }
+</style>
+<link href="Modules/nhapdiem/css/bootstrap-colorselector.min.css" rel="stylesheet" /><!-- editor -->
+<section class="content">
+    <div class="row">
+        <!-- /.left-content -->
+        <div class="col-lg-12">
+            <!-- box Notify_VBSC -->
+            <div class="box box-solid zone-bus" id="zone_notify_nhapdiem">
+                <div class="box box-solid">
+                    <div class="box-header with-border">
+                        <h3 class="box-title"><i class="fa fa-window-restore"></i> Tìm kiếm</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="bss-item">
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_LoaiDanhSach" class="select-opt">
+                                    <option value="">--Chọn loại danh sách--</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_ThoiGian" class="select-opt">
+                                    <option value="">--Chọn thời gian--</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_LopQuanLy" class="select-opt">
+                                    <option value="">--Chọn lớp quản lý--</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_HocPhan" class="select-opt">
+                                    <option value="">--Chọn học phần--</option>
+                                </select>
+                            </div>
+                            <div class="clear"></div>
+                            <div class="col-sm-3 item-search">
+                                <input id="txtSearch_TuKhoa" class="form-control" placeholder="Nhập mã số hoặc tên" />
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <a class="btn btn-default" id="btnSearch"><i class="fa fa-search"></i> <span
+                                        class="lang" key="">Tìm kiếm</span></a>
+                            </div>
+                            <!--<div class="col-sm-3 item-search">
+                                <a class="btn btn-success" id="btnBaoCao">
+                                    <i class="fa fa-cloud-download"></i> Tải bảng điểm
+                                </a>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <a class="btn btn-success" id="btnCall_Import_Table">
+                                    <i class="fa fa-cloud-upload"></i> Nhập điểm qua file
+                                </a>
+                            </div>-->
+                        </div>
+                    </div>
+                </div>
+                <div class="box box-solid">
+                    <div class="box-header with-border">
+                        <h3 class="box-title" title="Tổng bài báo trong nước">
+                            <i class="fa fa-list-alt"></i> Danh sách bảng điểm
+                        </h3>
+                        <span class="badge bg-light-blue">
+                            <span id="lblDSDiem_Tong"></span>
+                        </span>
+                    </div>
+                    <div class="box-body">
+                        <div class="scroll-table-x">
+
+                            <table id="tblDSDiem" class="table table-hover table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th class="td-fixed td-center">Stt</th>
+                                        <th class="td-center">Loại danh sách</th>
+                                        <th class="td-center">Mã danh sách</th>
+                                        <th class="td-center">Tên danh sách</th>
+                                        <th class="td-center">Mã học phần</th>
+                                        <th class="td-center">Tên học phần</th>
+                                        <th class="td-center">Số lượng</th>
+                                        <th class="td-center">Thời gian</th>
+                                        <th class="td-center">Hiển thị</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Load from js -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- box Edit_VBSC -->
+            <div class="box box-solid form-container zone-bus" id="zone_input_nhapdiem" style="display: none">
+                <div class="box box-solid">
+                    <div class="box-header with-border">
+                        <h3 class="box-title"><span id="lblForm_KhoiTao_NO"><i class="fa fa-plus-square"></i> Nhập điểm:
+                            </span> <span id="lblHocPhan"></span> </h3>
+
+                        <div class="pull-right">
+                            <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times"></i></a>
+                        </div>
+                    </div>
+                    <div class="box-body">
+                        <div id="divprogessdiem"></div>
+                        <div class="clear"></div>
+                        <div class="pull-left" style="padding-bottom: 5px">
+                            <div style="width: 220px">
+                                <select id="dropSearch_LoaiSapXep" class="select-opt">
+                                    <option value="ABC">Xếp theo ABC</option>
+                                    <option value="LOPQUANLY">Xếp theo Lớp quản lý</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="pull-right" style="padding-bottom: 5px">
+
+                            <a class="btn btn-success" id="btnBaoCao_GiaoDien">
+                                <i class="fa fa-cloud-download"></i> Tải bảng điểm
+                            </a>
+                            <a class="btn btn-success" id="btnCall_Import_Table_GiaoDien">
+                                <i class="fa fa-cloud-upload"></i> Nhập điểm qua file
+                            </a>
+
+                            <a class="btn btn-primary btnCongBo" href="#" title="Close"><i class="fa fa-diamond"></i>
+                                Công bố</a>
+                            <a class="btn btn-primary btnXacNhan" href="#" title="Close"><i class="fa fa-legal"></i> Xác
+                                nhận</a>
+                            <a class="btn btn-primary btnTinhDiem" href="#" title="Tính lại điểm"><i
+                                    class="fa fa-keyboard-o"></i> Tính Lại</a>
+                            <a class="btn btn-primary btnSaveDSDiem" href="#" titletitle="Lưu danh sách điểm"><i
+                                    class="fa fa-paper-plane"></i> Lưu</a>
+                        </div>
+                        <div class="row zone-box">
+                            <div class="col-sm-12 box-view">
+                                <div id="table-container" class="scroll-table-x">
+                                    <!--<table id="tblNhapDiem" class="table table-hover table-bordered"></table>-->
+                                    <table id="tblNhapDiem" class="table table-hover table-bordered">
+                                        <thead class="mauthangbo" style="font-weight: bold">
+                                            <tr>
+                                                <th rowspan="8">Stt</th>
+                                                <th rowspan="8">Mã sinh viên</th>
+                                                <th rowspan="8">Họ đệm</th>
+                                                <th rowspan="8">Tên</th>
+                                                <th rowspan="8">Ngay sinh</th>
+                                                <th rowspan="8">Lop</th>
+                                                <th class="td-center" id="LANHOC" colspan="0" rowspan="8">Lần học</th>
+                                                <th class="td-center" id="LANTHI" colspan="0" rowspan="8">Lần thi</th>
+                                                <th class="td-center" id="TBDKTX*0.4 + KT*0.6" colspan="20">TBDKTX*0.4 +
+                                                    KT*0.6</th>
+                                                <th class="td-center" id="TKMH" colspan="0" rowspan="8">Tổng kết môn học
+                                                </th>
+                                                <th class="td-center" id="DANHGIAHETHOCPHAN" colspan="0" rowspan="8">
+                                                    Đánh giá</th>
+                                                <th class="td-center" id="DIEMCHUHE4" colspan="0" rowspan="8">Điểm chữ
+                                                </th>
+                                                <th class="td-center" id="DIEMSOHE4" colspan="0" rowspan="8">Điểm số
+                                                </th>
+                                                <th class="td-center" id="XEPLOAI" colspan="0" rowspan="8">Xep loai</th>
+                                                <th class="td-center" id="TAIKHOANCANBONHAP" colspan="0" rowspan="8">
+                                                    TAIKHOANCANBONHAP</th>
+                                                <th class="td-center" id="THOIGIANNHAP" colspan="0" rowspan="8">
+                                                    THOIGIANNHAP</th>
+                                            </tr>
+                                            <tr>
+                                                <th class="td-center"
+                                                    id="(TX + DK*2)/(SOTHANHPHAN_TX + SOTHANHPHAN_DK*2)" colspan="18">
+                                                    (TX + DK*2)/(SOTHANHPHAN_TX + SOTHANHPHAN_DK*2)</th>
+                                                <th class="td-center" id="TBDKTX" colspan="0" rowspan="7">Trung bình
+                                                    kiểm tra</th>
+                                                <th class="td-center" id="KT" colspan="0" rowspan="7">Kiểm tra</th>
+                                            </tr>
+                                            <tr>
+                                                <th class="td-center" id="TX1+TX2+TX3+TX4+TX5+TX6" colspan="6">
+                                                    TX1+TX2+TX3+TX4+TX5+TX6</th>
+                                                <th class="td-center" id="TX" colspan="0" rowspan="6">Thường xuyên</th>
+                                                <th class="td-center" id="DK1+DK2+DK3+DK4+DK5+DK6+DK7+DK8+DK9+DK10"
+                                                    colspan="10">DK1+DK2+DK3+DK4+DK5+DK6+DK7+DK8+DK9+DK10</th>
+                                                <th class="td-center" id="DK" colspan="0" rowspan="6">Định kỳ</th>
+                                            </tr>
+                                            <tr>
+                                                <th class="td-center" id="TX1" colspan="0" rowspan="5">Thường xuyên 1
+                                                </th>
+                                                <th class="td-center" id="TX2" colspan="0" rowspan="5">Thường xuyên 2
+                                                </th>
+                                                <th class="td-center" id="TX3" colspan="0" rowspan="5">Thường xuyên 3
+                                                </th>
+                                                <th class="td-center" id="TX4" colspan="0" rowspan="5">Thường xuyên 4
+                                                </th>
+                                                <th class="td-center" id="TX5" colspan="0" rowspan="5">Thường xuyên 5
+                                                </th>
+                                                <th class="td-center" id="TX6" colspan="0" rowspan="5">Thường xuyên 6
+                                                </th>
+                                                <th class="td-center" id="DK1" colspan="0" rowspan="5">Định kỳ 1</th>
+                                                <th class="td-center" id="DK2" colspan="0" rowspan="5">Định kỳ 2</th>
+                                                <th class="td-center" id="DK3" colspan="0" rowspan="5">Định kỳ 3</th>
+                                                <th class="td-center" id="DK4" colspan="0" rowspan="5">Định kỳ 4</th>
+                                                <th class="td-center" id="DK5" colspan="0" rowspan="5">Định kỳ 5</th>
+                                                <th class="td-center" id="DK6" colspan="0" rowspan="5">Định kỳ 6</th>
+                                                <th class="td-center" id="DK7" colspan="0" rowspan="5">Định kỳ 7</th>
+                                                <th class="td-center" id="DK8" colspan="0" rowspan="5">Định kỳ 8</th>
+                                                <th class="td-center" id="DK9" colspan="0" rowspan="5">Định kỳ 9</th>
+                                                <th class="td-center" id="DK10" colspan="0" rowspan="5">Định kỳ 10</th>
+                                            </tr>
+                                            <tr></tr>
+                                            <tr></tr>
+                                            <tr></tr>
+                                            <tr></tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr id="B2F5DBD376AE497185E437BF39A60271">
+                                                <td style="width: 40px;text-align: center;0;">1</td>
+                                                <td style="width: 50px;text-align: left;color: #000000;0;">20CDKTD0029
+                                                </td>
+                                                <td style="width: 300px;text-align: left;color: #000000;0;">Doãn Thị
+                                                    Quỳnh</td>
+                                                <td style="width: 30px;text-align: left;color: #000000;0;">Anh</td>
+                                                <td style="0;">30/08/2002</td>
+                                                <td style="width: 100px;text-align: left;1;">60CKT1</td>
+                                                <td id="A2B12704626949EABDE9F915206D37DC_LANHOC" style="width: 20px;0;">
+                                                    1</td>
+                                                <td id="A2B12704626949EABDE9F915206D37DC_LANTHI" style="width: 20px;0;">
+                                                    1</td>
+                                                <td id="A2B12704626949EABDE9F915206D37DC_TX1" style="0;"><input
+                                                        id="inputA2B12704626949EABDE9F915206D37DC_TX1" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="A2B12704626949EABDE9F915206D37DC_TX2" style="0;"><input
+                                                        id="inputA2B12704626949EABDE9F915206D37DC_TX2" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="A2B12704626949EABDE9F915206D37DC_TX3" style="0;"><input
+                                                        id="inputA2B12704626949EABDE9F915206D37DC_TX3" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="A2B12704626949EABDE9F915206D37DC_TX4" style="0;"><input
+                                                        id="inputA2B12704626949EABDE9F915206D37DC_TX4" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="A2B12704626949EABDE9F915206D37DC_TX5" style="0;"><input
+                                                        id="inputA2B12704626949EABDE9F915206D37DC_TX5" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="A2B12704626949EABDE9F915206D37DC_TX6" style="0;"><input
+                                                        id="inputA2B12704626949EABDE9F915206D37DC_TX6" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="A2B12704626949EABDE9F915206D37DC_TX" style="0;"></td>
+                                                <td id="A2B12704626949EABDE9F915206D37DC_DK1" style="0;"><input
+                                                        id="inputA2B12704626949EABDE9F915206D37DC_DK1" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="A2B12704626949EABDE9F915206D37DC_DK2" style="0;"><input
+                                                        id="inputA2B12704626949EABDE9F915206D37DC_DK2" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="A2B12704626949EABDE9F915206D37DC_DK3" style="0;"><input
+                                                        id="inputA2B12704626949EABDE9F915206D37DC_DK3" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="A2B12704626949EABDE9F915206D37DC_DK4" style="0;"><input
+                                                        id="inputA2B12704626949EABDE9F915206D37DC_DK4" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="A2B12704626949EABDE9F915206D37DC_DK5" style="0;"><input
+                                                        id="inputA2B12704626949EABDE9F915206D37DC_DK5" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="A2B12704626949EABDE9F915206D37DC_DK6" style="0;"><input
+                                                        id="inputA2B12704626949EABDE9F915206D37DC_DK6" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="A2B12704626949EABDE9F915206D37DC_DK7" style="0;"><input
+                                                        id="inputA2B12704626949EABDE9F915206D37DC_DK7" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="A2B12704626949EABDE9F915206D37DC_DK8" style="0;"><input
+                                                        id="inputA2B12704626949EABDE9F915206D37DC_DK8" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="A2B12704626949EABDE9F915206D37DC_DK9" style="0;"><input
+                                                        id="inputA2B12704626949EABDE9F915206D37DC_DK9" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="A2B12704626949EABDE9F915206D37DC_DK10" style="0;"><input
+                                                        id="inputA2B12704626949EABDE9F915206D37DC_DK10" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="A2B12704626949EABDE9F915206D37DC_DK" style="0;"></td>
+                                                <td id="A2B12704626949EABDE9F915206D37DC_TBDKTX" style="0;"></td>
+                                                <td id="A2B12704626949EABDE9F915206D37DC_KT" style="width: 20px;0;">
+                                                    <input id="inputA2B12704626949EABDE9F915206D37DC_KT" value=""
+                                                        name="" style="width: 40px">
+                                                </td>
+                                                <td id="A2B12704626949EABDE9F915206D37DC_TKMH" style="0;"></td>
+                                                <td id="A2B12704626949EABDE9F915206D37DC_DANHGIAHETHOCPHAN"
+                                                    style="width: 20px;0;"></td>
+                                                <td id="A2B12704626949EABDE9F915206D37DC_DIEMCHUHE4"
+                                                    style="width: 20px;0;"></td>
+                                                <td id="A2B12704626949EABDE9F915206D37DC_DIEMSOHE4"
+                                                    style="width: 20px;0;"></td>
+                                                <td id="A2B12704626949EABDE9F915206D37DC_XEPLOAI" style="0;"></td>
+                                                <td id="A2B12704626949EABDE9F915206D37DC_TAIKHOANCANBONHAP"
+                                                    style="width: 30px;0;"></td>
+                                                <td id="A2B12704626949EABDE9F915206D37DC_THOIGIANNHAP"
+                                                    style="width: 40px;0;"></td>
+                                            </tr>
+                                            <tr id="7FA09BA79E8044ECBD96729288D89D7C" height="61">
+                                                <td style="width: 40px;text-align: center;0;">2</td>
+                                                <td style="width: 50px;text-align: left;color: #000000;0;">20CDOTO0117
+                                                </td>
+                                                <td style="width: 300px;text-align: left;color: #000000;0;">Nguyễn Thị
+                                                    Lan</td>
+                                                <td style="width: 30px;text-align: left;color: #000000;0;">Anh</td>
+                                                <td style="0;">08/07/2002</td>
+                                                <td style="width: 100px;text-align: left;1;">60CKT1</td>
+                                                <td id="5EBF7787FC7B469C895DBF8639A0973C_LANHOC" style="width: 20px;0;">
+                                                    1</td>
+                                                <td id="5EBF7787FC7B469C895DBF8639A0973C_LANTHI" style="width: 20px;0;">
+                                                    1</td>
+                                                <td id="5EBF7787FC7B469C895DBF8639A0973C_TX1" style="0;"><input
+                                                        id="input5EBF7787FC7B469C895DBF8639A0973C_TX1" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="5EBF7787FC7B469C895DBF8639A0973C_TX2" style="0;"><input
+                                                        id="input5EBF7787FC7B469C895DBF8639A0973C_TX2" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="5EBF7787FC7B469C895DBF8639A0973C_TX3" style="0;"><input
+                                                        id="input5EBF7787FC7B469C895DBF8639A0973C_TX3" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="5EBF7787FC7B469C895DBF8639A0973C_TX4" style="0;"><input
+                                                        id="input5EBF7787FC7B469C895DBF8639A0973C_TX4" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="5EBF7787FC7B469C895DBF8639A0973C_TX5" style="0;"><input
+                                                        id="input5EBF7787FC7B469C895DBF8639A0973C_TX5" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="5EBF7787FC7B469C895DBF8639A0973C_TX6" style="0;"><input
+                                                        id="input5EBF7787FC7B469C895DBF8639A0973C_TX6" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="5EBF7787FC7B469C895DBF8639A0973C_TX" style="0;"></td>
+                                                <td id="5EBF7787FC7B469C895DBF8639A0973C_DK1" style="0;"><input
+                                                        id="input5EBF7787FC7B469C895DBF8639A0973C_DK1" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="5EBF7787FC7B469C895DBF8639A0973C_DK2" style="0;"><input
+                                                        id="input5EBF7787FC7B469C895DBF8639A0973C_DK2" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="5EBF7787FC7B469C895DBF8639A0973C_DK3" style="0;"><input
+                                                        id="input5EBF7787FC7B469C895DBF8639A0973C_DK3" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="5EBF7787FC7B469C895DBF8639A0973C_DK4" style="0;"><input
+                                                        id="input5EBF7787FC7B469C895DBF8639A0973C_DK4" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="5EBF7787FC7B469C895DBF8639A0973C_DK5" style="0;"><input
+                                                        id="input5EBF7787FC7B469C895DBF8639A0973C_DK5" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="5EBF7787FC7B469C895DBF8639A0973C_DK6" style="0;"><input
+                                                        id="input5EBF7787FC7B469C895DBF8639A0973C_DK6" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="5EBF7787FC7B469C895DBF8639A0973C_DK7" style="0;"><input
+                                                        id="input5EBF7787FC7B469C895DBF8639A0973C_DK7" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="5EBF7787FC7B469C895DBF8639A0973C_DK8" style="0;"><input
+                                                        id="input5EBF7787FC7B469C895DBF8639A0973C_DK8" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="5EBF7787FC7B469C895DBF8639A0973C_DK9" style="0;"><input
+                                                        id="input5EBF7787FC7B469C895DBF8639A0973C_DK9" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="5EBF7787FC7B469C895DBF8639A0973C_DK10" style="0;"><input
+                                                        id="input5EBF7787FC7B469C895DBF8639A0973C_DK10" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="5EBF7787FC7B469C895DBF8639A0973C_DK" style="0;"></td>
+                                                <td id="5EBF7787FC7B469C895DBF8639A0973C_TBDKTX" style="0;"></td>
+                                                <td id="5EBF7787FC7B469C895DBF8639A0973C_KT" style="width: 20px;0;">
+                                                    <input id="input5EBF7787FC7B469C895DBF8639A0973C_KT" value=""
+                                                        name="" style="width: 40px">
+                                                </td>
+                                                <td id="5EBF7787FC7B469C895DBF8639A0973C_TKMH" style="0;"></td>
+                                                <td id="5EBF7787FC7B469C895DBF8639A0973C_DANHGIAHETHOCPHAN"
+                                                    style="width: 20px;0;"></td>
+                                                <td id="5EBF7787FC7B469C895DBF8639A0973C_DIEMCHUHE4"
+                                                    style="width: 20px;0;"></td>
+                                                <td id="5EBF7787FC7B469C895DBF8639A0973C_DIEMSOHE4"
+                                                    style="width: 20px;0;"></td>
+                                                <td id="5EBF7787FC7B469C895DBF8639A0973C_XEPLOAI" style="0;"></td>
+                                                <td id="5EBF7787FC7B469C895DBF8639A0973C_TAIKHOANCANBONHAP"
+                                                    style="width: 30px;0;"></td>
+                                                <td id="5EBF7787FC7B469C895DBF8639A0973C_THOIGIANNHAP"
+                                                    style="width: 40px;0;"></td>
+                                            </tr>
+                                            <tr id="05474513692E4F8ABE22D553765EC240">
+                                                <td style="width: 40px;text-align: center;0;">3</td>
+                                                <td style="width: 50px;text-align: left;color: #000000;0;">20CDKTD0031
+                                                </td>
+                                                <td style="width: 300px;text-align: left;color: #000000;0;">Phạm Thị
+                                                    Ngọc</td>
+                                                <td style="width: 30px;text-align: left;color: #000000;0;">Anh</td>
+                                                <td style="0;">07/08/2002</td>
+                                                <td style="width: 100px;text-align: left;1;">60CKT1</td>
+                                                <td id="D5664C20D7D34041A35BB5ED85F4D417_LANHOC" style="width: 20px;0;">
+                                                    1</td>
+                                                <td id="D5664C20D7D34041A35BB5ED85F4D417_LANTHI" style="width: 20px;0;">
+                                                    1</td>
+                                                <td id="D5664C20D7D34041A35BB5ED85F4D417_TX1" style="0;"><input
+                                                        id="inputD5664C20D7D34041A35BB5ED85F4D417_TX1" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="D5664C20D7D34041A35BB5ED85F4D417_TX2" style="0;"><input
+                                                        id="inputD5664C20D7D34041A35BB5ED85F4D417_TX2" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="D5664C20D7D34041A35BB5ED85F4D417_TX3" style="0;"><input
+                                                        id="inputD5664C20D7D34041A35BB5ED85F4D417_TX3" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="D5664C20D7D34041A35BB5ED85F4D417_TX4" style="0;"><input
+                                                        id="inputD5664C20D7D34041A35BB5ED85F4D417_TX4" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="D5664C20D7D34041A35BB5ED85F4D417_TX5" style="0;"><input
+                                                        id="inputD5664C20D7D34041A35BB5ED85F4D417_TX5" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="D5664C20D7D34041A35BB5ED85F4D417_TX6" style="0;"><input
+                                                        id="inputD5664C20D7D34041A35BB5ED85F4D417_TX6" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="D5664C20D7D34041A35BB5ED85F4D417_TX" style="0;"></td>
+                                                <td id="D5664C20D7D34041A35BB5ED85F4D417_DK1" style="0;"><input
+                                                        id="inputD5664C20D7D34041A35BB5ED85F4D417_DK1" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="D5664C20D7D34041A35BB5ED85F4D417_DK2" style="0;"><input
+                                                        id="inputD5664C20D7D34041A35BB5ED85F4D417_DK2" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="D5664C20D7D34041A35BB5ED85F4D417_DK3" style="0;"><input
+                                                        id="inputD5664C20D7D34041A35BB5ED85F4D417_DK3" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="D5664C20D7D34041A35BB5ED85F4D417_DK4" style="0;"><input
+                                                        id="inputD5664C20D7D34041A35BB5ED85F4D417_DK4" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="D5664C20D7D34041A35BB5ED85F4D417_DK5" style="0;"><input
+                                                        id="inputD5664C20D7D34041A35BB5ED85F4D417_DK5" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="D5664C20D7D34041A35BB5ED85F4D417_DK6" style="0;"><input
+                                                        id="inputD5664C20D7D34041A35BB5ED85F4D417_DK6" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="D5664C20D7D34041A35BB5ED85F4D417_DK7" style="0;"><input
+                                                        id="inputD5664C20D7D34041A35BB5ED85F4D417_DK7" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="D5664C20D7D34041A35BB5ED85F4D417_DK8" style="0;"><input
+                                                        id="inputD5664C20D7D34041A35BB5ED85F4D417_DK8" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="D5664C20D7D34041A35BB5ED85F4D417_DK9" style="0;"><input
+                                                        id="inputD5664C20D7D34041A35BB5ED85F4D417_DK9" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="D5664C20D7D34041A35BB5ED85F4D417_DK10" style="0;"><input
+                                                        id="inputD5664C20D7D34041A35BB5ED85F4D417_DK10" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="D5664C20D7D34041A35BB5ED85F4D417_DK" style="0;"></td>
+                                                <td id="D5664C20D7D34041A35BB5ED85F4D417_TBDKTX" style="0;"></td>
+                                                <td id="D5664C20D7D34041A35BB5ED85F4D417_KT" style="width: 20px;0;">
+                                                    <input id="inputD5664C20D7D34041A35BB5ED85F4D417_KT" value=""
+                                                        name="" style="width: 40px">
+                                                </td>
+                                                <td id="D5664C20D7D34041A35BB5ED85F4D417_TKMH" style="0;"></td>
+                                                <td id="D5664C20D7D34041A35BB5ED85F4D417_DANHGIAHETHOCPHAN"
+                                                    style="width: 20px;0;"></td>
+                                                <td id="D5664C20D7D34041A35BB5ED85F4D417_DIEMCHUHE4"
+                                                    style="width: 20px;0;"></td>
+                                                <td id="D5664C20D7D34041A35BB5ED85F4D417_DIEMSOHE4"
+                                                    style="width: 20px;0;"></td>
+                                                <td id="D5664C20D7D34041A35BB5ED85F4D417_XEPLOAI" style="0;"></td>
+                                                <td id="D5664C20D7D34041A35BB5ED85F4D417_TAIKHOANCANBONHAP"
+                                                    style="width: 30px;0;"></td>
+                                                <td id="D5664C20D7D34041A35BB5ED85F4D417_THOIGIANNHAP"
+                                                    style="width: 40px;0;"></td>
+                                            </tr>
+                                            <tr id="98F35C60F8C746448EDF490E3BD21C84" height="61">
+                                                <td style="width: 40px;text-align: center;0;">4</td>
+                                                <td style="width: 50px;text-align: left;color: #000000;0;">20CDOTO0109
+                                                </td>
+                                                <td style="width: 300px;text-align: left;color: #000000;0;">Nguyễn Minh
+                                                </td>
+                                                <td style="width: 30px;text-align: left;color: #000000;0;">Đức</td>
+                                                <td style="0;">20/04/1996</td>
+                                                <td style="width: 100px;text-align: left;1;">60CKT1</td>
+                                                <td id="DF785D7A5E0F4F878EAA6DE4A7B135E4_LANHOC" style="width: 20px;0;">
+                                                    1</td>
+                                                <td id="DF785D7A5E0F4F878EAA6DE4A7B135E4_LANTHI" style="width: 20px;0;">
+                                                    1</td>
+                                                <td id="DF785D7A5E0F4F878EAA6DE4A7B135E4_TX1" style="0;"><input
+                                                        id="inputDF785D7A5E0F4F878EAA6DE4A7B135E4_TX1" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="DF785D7A5E0F4F878EAA6DE4A7B135E4_TX2" style="0;"><input
+                                                        id="inputDF785D7A5E0F4F878EAA6DE4A7B135E4_TX2" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="DF785D7A5E0F4F878EAA6DE4A7B135E4_TX3" style="0;"><input
+                                                        id="inputDF785D7A5E0F4F878EAA6DE4A7B135E4_TX3" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="DF785D7A5E0F4F878EAA6DE4A7B135E4_TX4" style="0;"><input
+                                                        id="inputDF785D7A5E0F4F878EAA6DE4A7B135E4_TX4" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="DF785D7A5E0F4F878EAA6DE4A7B135E4_TX5" style="0;"><input
+                                                        id="inputDF785D7A5E0F4F878EAA6DE4A7B135E4_TX5" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="DF785D7A5E0F4F878EAA6DE4A7B135E4_TX6" style="0;"><input
+                                                        id="inputDF785D7A5E0F4F878EAA6DE4A7B135E4_TX6" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="DF785D7A5E0F4F878EAA6DE4A7B135E4_TX" style="0;"></td>
+                                                <td id="DF785D7A5E0F4F878EAA6DE4A7B135E4_DK1" style="0;"><input
+                                                        id="inputDF785D7A5E0F4F878EAA6DE4A7B135E4_DK1" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="DF785D7A5E0F4F878EAA6DE4A7B135E4_DK2" style="0;"><input
+                                                        id="inputDF785D7A5E0F4F878EAA6DE4A7B135E4_DK2" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="DF785D7A5E0F4F878EAA6DE4A7B135E4_DK3" style="0;"><input
+                                                        id="inputDF785D7A5E0F4F878EAA6DE4A7B135E4_DK3" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="DF785D7A5E0F4F878EAA6DE4A7B135E4_DK4" style="0;"><input
+                                                        id="inputDF785D7A5E0F4F878EAA6DE4A7B135E4_DK4" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="DF785D7A5E0F4F878EAA6DE4A7B135E4_DK5" style="0;"><input
+                                                        id="inputDF785D7A5E0F4F878EAA6DE4A7B135E4_DK5" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="DF785D7A5E0F4F878EAA6DE4A7B135E4_DK6" style="0;"><input
+                                                        id="inputDF785D7A5E0F4F878EAA6DE4A7B135E4_DK6" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="DF785D7A5E0F4F878EAA6DE4A7B135E4_DK7" style="0;"><input
+                                                        id="inputDF785D7A5E0F4F878EAA6DE4A7B135E4_DK7" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="DF785D7A5E0F4F878EAA6DE4A7B135E4_DK8" style="0;"><input
+                                                        id="inputDF785D7A5E0F4F878EAA6DE4A7B135E4_DK8" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="DF785D7A5E0F4F878EAA6DE4A7B135E4_DK9" style="0;"><input
+                                                        id="inputDF785D7A5E0F4F878EAA6DE4A7B135E4_DK9" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="DF785D7A5E0F4F878EAA6DE4A7B135E4_DK10" style="0;"><input
+                                                        id="inputDF785D7A5E0F4F878EAA6DE4A7B135E4_DK10" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="DF785D7A5E0F4F878EAA6DE4A7B135E4_DK" style="0;"></td>
+                                                <td id="DF785D7A5E0F4F878EAA6DE4A7B135E4_TBDKTX" style="0;"></td>
+                                                <td id="DF785D7A5E0F4F878EAA6DE4A7B135E4_KT" style="width: 20px;0;">
+                                                    <input id="inputDF785D7A5E0F4F878EAA6DE4A7B135E4_KT" value=""
+                                                        name="" style="width: 40px">
+                                                </td>
+                                                <td id="DF785D7A5E0F4F878EAA6DE4A7B135E4_TKMH" style="0;"></td>
+                                                <td id="DF785D7A5E0F4F878EAA6DE4A7B135E4_DANHGIAHETHOCPHAN"
+                                                    style="width: 20px;0;"></td>
+                                                <td id="DF785D7A5E0F4F878EAA6DE4A7B135E4_DIEMCHUHE4"
+                                                    style="width: 20px;0;"></td>
+                                                <td id="DF785D7A5E0F4F878EAA6DE4A7B135E4_DIEMSOHE4"
+                                                    style="width: 20px;0;"></td>
+                                                <td id="DF785D7A5E0F4F878EAA6DE4A7B135E4_XEPLOAI" style="0;"></td>
+                                                <td id="DF785D7A5E0F4F878EAA6DE4A7B135E4_TAIKHOANCANBONHAP"
+                                                    style="width: 30px;0;"></td>
+                                                <td id="DF785D7A5E0F4F878EAA6DE4A7B135E4_THOIGIANNHAP"
+                                                    style="width: 40px;0;"></td>
+                                            </tr>
+                                            <tr id="245C43AE714F4BE2AD089F48E2438D11">
+                                                <td style="width: 40px;text-align: center;0;">5</td>
+                                                <td style="width: 50px;text-align: left;color: #000000;0;">20CDKTD0025
+                                                </td>
+                                                <td style="width: 300px;text-align: left;color: #000000;0;">Vũ Thị</td>
+                                                <td style="width: 30px;text-align: left;color: #000000;0;">Hiên</td>
+                                                <td style="0;">13/06/1982</td>
+                                                <td style="width: 100px;text-align: left;1;">60CKT1</td>
+                                                <td id="FB38641FA70E451A8C50766984AA9D8C_LANHOC" style="width: 20px;0;">
+                                                    1</td>
+                                                <td id="FB38641FA70E451A8C50766984AA9D8C_LANTHI" style="width: 20px;0;">
+                                                    1</td>
+                                                <td id="FB38641FA70E451A8C50766984AA9D8C_TX1" style="0;"><input
+                                                        id="inputFB38641FA70E451A8C50766984AA9D8C_TX1" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="FB38641FA70E451A8C50766984AA9D8C_TX2" style="0;"><input
+                                                        id="inputFB38641FA70E451A8C50766984AA9D8C_TX2" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="FB38641FA70E451A8C50766984AA9D8C_TX3" style="0;"><input
+                                                        id="inputFB38641FA70E451A8C50766984AA9D8C_TX3" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="FB38641FA70E451A8C50766984AA9D8C_TX4" style="0;"><input
+                                                        id="inputFB38641FA70E451A8C50766984AA9D8C_TX4" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="FB38641FA70E451A8C50766984AA9D8C_TX5" style="0;"><input
+                                                        id="inputFB38641FA70E451A8C50766984AA9D8C_TX5" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="FB38641FA70E451A8C50766984AA9D8C_TX6" style="0;"><input
+                                                        id="inputFB38641FA70E451A8C50766984AA9D8C_TX6" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="FB38641FA70E451A8C50766984AA9D8C_TX" style="0;"></td>
+                                                <td id="FB38641FA70E451A8C50766984AA9D8C_DK1" style="0;"><input
+                                                        id="inputFB38641FA70E451A8C50766984AA9D8C_DK1" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="FB38641FA70E451A8C50766984AA9D8C_DK2" style="0;"><input
+                                                        id="inputFB38641FA70E451A8C50766984AA9D8C_DK2" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="FB38641FA70E451A8C50766984AA9D8C_DK3" style="0;"><input
+                                                        id="inputFB38641FA70E451A8C50766984AA9D8C_DK3" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="FB38641FA70E451A8C50766984AA9D8C_DK4" style="0;"><input
+                                                        id="inputFB38641FA70E451A8C50766984AA9D8C_DK4" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="FB38641FA70E451A8C50766984AA9D8C_DK5" style="0;"><input
+                                                        id="inputFB38641FA70E451A8C50766984AA9D8C_DK5" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="FB38641FA70E451A8C50766984AA9D8C_DK6" style="0;"><input
+                                                        id="inputFB38641FA70E451A8C50766984AA9D8C_DK6" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="FB38641FA70E451A8C50766984AA9D8C_DK7" style="0;"><input
+                                                        id="inputFB38641FA70E451A8C50766984AA9D8C_DK7" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="FB38641FA70E451A8C50766984AA9D8C_DK8" style="0;"><input
+                                                        id="inputFB38641FA70E451A8C50766984AA9D8C_DK8" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="FB38641FA70E451A8C50766984AA9D8C_DK9" style="0;"><input
+                                                        id="inputFB38641FA70E451A8C50766984AA9D8C_DK9" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="FB38641FA70E451A8C50766984AA9D8C_DK10" style="0;"><input
+                                                        id="inputFB38641FA70E451A8C50766984AA9D8C_DK10" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="FB38641FA70E451A8C50766984AA9D8C_DK" style="0;"></td>
+                                                <td id="FB38641FA70E451A8C50766984AA9D8C_TBDKTX" style="0;"></td>
+                                                <td id="FB38641FA70E451A8C50766984AA9D8C_KT" style="width: 20px;0;">
+                                                    <input id="inputFB38641FA70E451A8C50766984AA9D8C_KT" value=""
+                                                        name="" style="width: 40px">
+                                                </td>
+                                                <td id="FB38641FA70E451A8C50766984AA9D8C_TKMH" style="0;"></td>
+                                                <td id="FB38641FA70E451A8C50766984AA9D8C_DANHGIAHETHOCPHAN"
+                                                    style="width: 20px;0;"></td>
+                                                <td id="FB38641FA70E451A8C50766984AA9D8C_DIEMCHUHE4"
+                                                    style="width: 20px;0;"></td>
+                                                <td id="FB38641FA70E451A8C50766984AA9D8C_DIEMSOHE4"
+                                                    style="width: 20px;0;"></td>
+                                                <td id="FB38641FA70E451A8C50766984AA9D8C_XEPLOAI" style="0;"></td>
+                                                <td id="FB38641FA70E451A8C50766984AA9D8C_TAIKHOANCANBONHAP"
+                                                    style="width: 30px;0;"></td>
+                                                <td id="FB38641FA70E451A8C50766984AA9D8C_THOIGIANNHAP"
+                                                    style="width: 40px;0;"></td>
+                                            </tr>
+                                            <tr id="6748CED35D0245758BA6D3ED3422A591" height="61">
+                                                <td style="width: 40px;text-align: center;0;">6</td>
+                                                <td style="width: 50px;text-align: left;color: #000000;0;">20CDKTD0030
+                                                </td>
+                                                <td style="width: 300px;text-align: left;color: #000000;0;">Nguyễn Thị
+                                                </td>
+                                                <td style="width: 30px;text-align: left;color: #000000;0;">Huyền</td>
+                                                <td style="0;">19/11/2002</td>
+                                                <td style="width: 100px;text-align: left;1;">60CKT1</td>
+                                                <td id="FD1C6775E3ED415AA2DE282B7D69EF93_LANHOC" style="width: 20px;0;">
+                                                    1</td>
+                                                <td id="FD1C6775E3ED415AA2DE282B7D69EF93_LANTHI" style="width: 20px;0;">
+                                                    1</td>
+                                                <td id="FD1C6775E3ED415AA2DE282B7D69EF93_TX1" style="0;"><input
+                                                        id="inputFD1C6775E3ED415AA2DE282B7D69EF93_TX1" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="FD1C6775E3ED415AA2DE282B7D69EF93_TX2" style="0;"><input
+                                                        id="inputFD1C6775E3ED415AA2DE282B7D69EF93_TX2" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="FD1C6775E3ED415AA2DE282B7D69EF93_TX3" style="0;"><input
+                                                        id="inputFD1C6775E3ED415AA2DE282B7D69EF93_TX3" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="FD1C6775E3ED415AA2DE282B7D69EF93_TX4" style="0;"><input
+                                                        id="inputFD1C6775E3ED415AA2DE282B7D69EF93_TX4" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="FD1C6775E3ED415AA2DE282B7D69EF93_TX5" style="0;"><input
+                                                        id="inputFD1C6775E3ED415AA2DE282B7D69EF93_TX5" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="FD1C6775E3ED415AA2DE282B7D69EF93_TX6" style="0;"><input
+                                                        id="inputFD1C6775E3ED415AA2DE282B7D69EF93_TX6" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="FD1C6775E3ED415AA2DE282B7D69EF93_TX" style="0;"></td>
+                                                <td id="FD1C6775E3ED415AA2DE282B7D69EF93_DK1" style="0;"><input
+                                                        id="inputFD1C6775E3ED415AA2DE282B7D69EF93_DK1" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="FD1C6775E3ED415AA2DE282B7D69EF93_DK2" style="0;"><input
+                                                        id="inputFD1C6775E3ED415AA2DE282B7D69EF93_DK2" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="FD1C6775E3ED415AA2DE282B7D69EF93_DK3" style="0;"><input
+                                                        id="inputFD1C6775E3ED415AA2DE282B7D69EF93_DK3" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="FD1C6775E3ED415AA2DE282B7D69EF93_DK4" style="0;"><input
+                                                        id="inputFD1C6775E3ED415AA2DE282B7D69EF93_DK4" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="FD1C6775E3ED415AA2DE282B7D69EF93_DK5" style="0;"><input
+                                                        id="inputFD1C6775E3ED415AA2DE282B7D69EF93_DK5" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="FD1C6775E3ED415AA2DE282B7D69EF93_DK6" style="0;"><input
+                                                        id="inputFD1C6775E3ED415AA2DE282B7D69EF93_DK6" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="FD1C6775E3ED415AA2DE282B7D69EF93_DK7" style="0;"><input
+                                                        id="inputFD1C6775E3ED415AA2DE282B7D69EF93_DK7" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="FD1C6775E3ED415AA2DE282B7D69EF93_DK8" style="0;"><input
+                                                        id="inputFD1C6775E3ED415AA2DE282B7D69EF93_DK8" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="FD1C6775E3ED415AA2DE282B7D69EF93_DK9" style="0;"><input
+                                                        id="inputFD1C6775E3ED415AA2DE282B7D69EF93_DK9" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="FD1C6775E3ED415AA2DE282B7D69EF93_DK10" style="0;"><input
+                                                        id="inputFD1C6775E3ED415AA2DE282B7D69EF93_DK10" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="FD1C6775E3ED415AA2DE282B7D69EF93_DK" style="0;"></td>
+                                                <td id="FD1C6775E3ED415AA2DE282B7D69EF93_TBDKTX" style="0;"></td>
+                                                <td id="FD1C6775E3ED415AA2DE282B7D69EF93_KT" style="width: 20px;0;">
+                                                    <input id="inputFD1C6775E3ED415AA2DE282B7D69EF93_KT" value=""
+                                                        name="" style="width: 40px">
+                                                </td>
+                                                <td id="FD1C6775E3ED415AA2DE282B7D69EF93_TKMH" style="0;"></td>
+                                                <td id="FD1C6775E3ED415AA2DE282B7D69EF93_DANHGIAHETHOCPHAN"
+                                                    style="width: 20px;0;"></td>
+                                                <td id="FD1C6775E3ED415AA2DE282B7D69EF93_DIEMCHUHE4"
+                                                    style="width: 20px;0;"></td>
+                                                <td id="FD1C6775E3ED415AA2DE282B7D69EF93_DIEMSOHE4"
+                                                    style="width: 20px;0;"></td>
+                                                <td id="FD1C6775E3ED415AA2DE282B7D69EF93_XEPLOAI" style="0;"></td>
+                                                <td id="FD1C6775E3ED415AA2DE282B7D69EF93_TAIKHOANCANBONHAP"
+                                                    style="width: 30px;0;"></td>
+                                                <td id="FD1C6775E3ED415AA2DE282B7D69EF93_THOIGIANNHAP"
+                                                    style="width: 40px;0;"></td>
+                                            </tr>
+                                            <tr id="8E9C3629598D4F2B830F24277A60F4F1" height="61">
+                                                <td style="width: 40px;text-align: center;0;">7</td>
+                                                <td style="width: 50px;text-align: left;color: #000000;0;">20CDKTD0022
+                                                </td>
+                                                <td style="width: 300px;text-align: left;color: #000000;0;">Nguyễn Thu
+                                                </td>
+                                                <td style="width: 30px;text-align: left;color: #000000;0;">Hương</td>
+                                                <td style="0;">06/10/1975</td>
+                                                <td style="width: 100px;text-align: left;1;">60CKT1</td>
+                                                <td id="F0CD908EE91E46E7BE797E962B39E3A8_LANHOC" style="width: 20px;0;">
+                                                    1</td>
+                                                <td id="F0CD908EE91E46E7BE797E962B39E3A8_LANTHI" style="width: 20px;0;">
+                                                    1</td>
+                                                <td id="F0CD908EE91E46E7BE797E962B39E3A8_TX1" style="0;"><input
+                                                        id="inputF0CD908EE91E46E7BE797E962B39E3A8_TX1" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="F0CD908EE91E46E7BE797E962B39E3A8_TX2" style="0;"><input
+                                                        id="inputF0CD908EE91E46E7BE797E962B39E3A8_TX2" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="F0CD908EE91E46E7BE797E962B39E3A8_TX3" style="0;"><input
+                                                        id="inputF0CD908EE91E46E7BE797E962B39E3A8_TX3" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="F0CD908EE91E46E7BE797E962B39E3A8_TX4" style="0;"><input
+                                                        id="inputF0CD908EE91E46E7BE797E962B39E3A8_TX4" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="F0CD908EE91E46E7BE797E962B39E3A8_TX5" style="0;"><input
+                                                        id="inputF0CD908EE91E46E7BE797E962B39E3A8_TX5" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="F0CD908EE91E46E7BE797E962B39E3A8_TX6" style="0;"><input
+                                                        id="inputF0CD908EE91E46E7BE797E962B39E3A8_TX6" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="F0CD908EE91E46E7BE797E962B39E3A8_TX" style="0;"></td>
+                                                <td id="F0CD908EE91E46E7BE797E962B39E3A8_DK1" style="0;"><input
+                                                        id="inputF0CD908EE91E46E7BE797E962B39E3A8_DK1" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="F0CD908EE91E46E7BE797E962B39E3A8_DK2" style="0;"><input
+                                                        id="inputF0CD908EE91E46E7BE797E962B39E3A8_DK2" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="F0CD908EE91E46E7BE797E962B39E3A8_DK3" style="0;"><input
+                                                        id="inputF0CD908EE91E46E7BE797E962B39E3A8_DK3" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="F0CD908EE91E46E7BE797E962B39E3A8_DK4" style="0;"><input
+                                                        id="inputF0CD908EE91E46E7BE797E962B39E3A8_DK4" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="F0CD908EE91E46E7BE797E962B39E3A8_DK5" style="0;"><input
+                                                        id="inputF0CD908EE91E46E7BE797E962B39E3A8_DK5" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="F0CD908EE91E46E7BE797E962B39E3A8_DK6" style="0;"><input
+                                                        id="inputF0CD908EE91E46E7BE797E962B39E3A8_DK6" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="F0CD908EE91E46E7BE797E962B39E3A8_DK7" style="0;"><input
+                                                        id="inputF0CD908EE91E46E7BE797E962B39E3A8_DK7" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="F0CD908EE91E46E7BE797E962B39E3A8_DK8" style="0;"><input
+                                                        id="inputF0CD908EE91E46E7BE797E962B39E3A8_DK8" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="F0CD908EE91E46E7BE797E962B39E3A8_DK9" style="0;"><input
+                                                        id="inputF0CD908EE91E46E7BE797E962B39E3A8_DK9" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="F0CD908EE91E46E7BE797E962B39E3A8_DK10" style="0;"><input
+                                                        id="inputF0CD908EE91E46E7BE797E962B39E3A8_DK10" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="F0CD908EE91E46E7BE797E962B39E3A8_DK" style="0;"></td>
+                                                <td id="F0CD908EE91E46E7BE797E962B39E3A8_TBDKTX" style="0;"></td>
+                                                <td id="F0CD908EE91E46E7BE797E962B39E3A8_KT" style="width: 20px;0;">
+                                                    <input id="inputF0CD908EE91E46E7BE797E962B39E3A8_KT" value=""
+                                                        name="" style="width: 40px">
+                                                </td>
+                                                <td id="F0CD908EE91E46E7BE797E962B39E3A8_TKMH" style="0;"></td>
+                                                <td id="F0CD908EE91E46E7BE797E962B39E3A8_DANHGIAHETHOCPHAN"
+                                                    style="width: 20px;0;"></td>
+                                                <td id="F0CD908EE91E46E7BE797E962B39E3A8_DIEMCHUHE4"
+                                                    style="width: 20px;0;"></td>
+                                                <td id="F0CD908EE91E46E7BE797E962B39E3A8_DIEMSOHE4"
+                                                    style="width: 20px;0;"></td>
+                                                <td id="F0CD908EE91E46E7BE797E962B39E3A8_XEPLOAI" style="0;"></td>
+                                                <td id="F0CD908EE91E46E7BE797E962B39E3A8_TAIKHOANCANBONHAP"
+                                                    style="width: 30px;0;"></td>
+                                                <td id="F0CD908EE91E46E7BE797E962B39E3A8_THOIGIANNHAP"
+                                                    style="width: 40px;0;"></td>
+                                            </tr>
+                                            <tr id="1A419AF463C14B009715732A2011E40F">
+                                                <td style="width: 40px;text-align: center;0;">8</td>
+                                                <td style="width: 50px;text-align: left;color: #000000;0;">20CDLGT0004
+                                                </td>
+                                                <td style="width: 300px;text-align: left;color: #000000;0;">Vàng Lở</td>
+                                                <td style="width: 30px;text-align: left;color: #000000;0;">Mẩy</td>
+                                                <td style="0;">01/01/2002</td>
+                                                <td style="width: 100px;text-align: left;1;">60CKT1</td>
+                                                <td id="6D8B5A090F634479B7BF0DF96C5D91CB_LANHOC" style="width: 20px;0;">
+                                                    1</td>
+                                                <td id="6D8B5A090F634479B7BF0DF96C5D91CB_LANTHI" style="width: 20px;0;">
+                                                    1</td>
+                                                <td id="6D8B5A090F634479B7BF0DF96C5D91CB_TX1" style="0;"><input
+                                                        id="input6D8B5A090F634479B7BF0DF96C5D91CB_TX1" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="6D8B5A090F634479B7BF0DF96C5D91CB_TX2" style="0;"><input
+                                                        id="input6D8B5A090F634479B7BF0DF96C5D91CB_TX2" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="6D8B5A090F634479B7BF0DF96C5D91CB_TX3" style="0;"><input
+                                                        id="input6D8B5A090F634479B7BF0DF96C5D91CB_TX3" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="6D8B5A090F634479B7BF0DF96C5D91CB_TX4" style="0;"><input
+                                                        id="input6D8B5A090F634479B7BF0DF96C5D91CB_TX4" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="6D8B5A090F634479B7BF0DF96C5D91CB_TX5" style="0;"><input
+                                                        id="input6D8B5A090F634479B7BF0DF96C5D91CB_TX5" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="6D8B5A090F634479B7BF0DF96C5D91CB_TX6" style="0;"><input
+                                                        id="input6D8B5A090F634479B7BF0DF96C5D91CB_TX6" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="6D8B5A090F634479B7BF0DF96C5D91CB_TX" style="0;"></td>
+                                                <td id="6D8B5A090F634479B7BF0DF96C5D91CB_DK1" style="0;"><input
+                                                        id="input6D8B5A090F634479B7BF0DF96C5D91CB_DK1" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="6D8B5A090F634479B7BF0DF96C5D91CB_DK2" style="0;"><input
+                                                        id="input6D8B5A090F634479B7BF0DF96C5D91CB_DK2" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="6D8B5A090F634479B7BF0DF96C5D91CB_DK3" style="0;"><input
+                                                        id="input6D8B5A090F634479B7BF0DF96C5D91CB_DK3" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="6D8B5A090F634479B7BF0DF96C5D91CB_DK4" style="0;"><input
+                                                        id="input6D8B5A090F634479B7BF0DF96C5D91CB_DK4" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="6D8B5A090F634479B7BF0DF96C5D91CB_DK5" style="0;"><input
+                                                        id="input6D8B5A090F634479B7BF0DF96C5D91CB_DK5" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="6D8B5A090F634479B7BF0DF96C5D91CB_DK6" style="0;"><input
+                                                        id="input6D8B5A090F634479B7BF0DF96C5D91CB_DK6" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="6D8B5A090F634479B7BF0DF96C5D91CB_DK7" style="0;"><input
+                                                        id="input6D8B5A090F634479B7BF0DF96C5D91CB_DK7" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="6D8B5A090F634479B7BF0DF96C5D91CB_DK8" style="0;"><input
+                                                        id="input6D8B5A090F634479B7BF0DF96C5D91CB_DK8" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="6D8B5A090F634479B7BF0DF96C5D91CB_DK9" style="0;"><input
+                                                        id="input6D8B5A090F634479B7BF0DF96C5D91CB_DK9" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="6D8B5A090F634479B7BF0DF96C5D91CB_DK10" style="0;"><input
+                                                        id="input6D8B5A090F634479B7BF0DF96C5D91CB_DK10" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="6D8B5A090F634479B7BF0DF96C5D91CB_DK" style="0;"></td>
+                                                <td id="6D8B5A090F634479B7BF0DF96C5D91CB_TBDKTX" style="0;"></td>
+                                                <td id="6D8B5A090F634479B7BF0DF96C5D91CB_KT" style="width: 20px;0;">
+                                                    <input id="input6D8B5A090F634479B7BF0DF96C5D91CB_KT" value=""
+                                                        name="" style="width: 40px">
+                                                </td>
+                                                <td id="6D8B5A090F634479B7BF0DF96C5D91CB_TKMH" style="0;"></td>
+                                                <td id="6D8B5A090F634479B7BF0DF96C5D91CB_DANHGIAHETHOCPHAN"
+                                                    style="width: 20px;0;"></td>
+                                                <td id="6D8B5A090F634479B7BF0DF96C5D91CB_DIEMCHUHE4"
+                                                    style="width: 20px;0;"></td>
+                                                <td id="6D8B5A090F634479B7BF0DF96C5D91CB_DIEMSOHE4"
+                                                    style="width: 20px;0;"></td>
+                                                <td id="6D8B5A090F634479B7BF0DF96C5D91CB_XEPLOAI" style="0;"></td>
+                                                <td id="6D8B5A090F634479B7BF0DF96C5D91CB_TAIKHOANCANBONHAP"
+                                                    style="width: 30px;0;"></td>
+                                                <td id="6D8B5A090F634479B7BF0DF96C5D91CB_THOIGIANNHAP"
+                                                    style="width: 40px;0;"></td>
+                                            </tr>
+                                            <tr id="C3D5EBB3C76C4569A006C4AE2F7D8776" height="86">
+                                                <td style="width: 40px;text-align: center;0;">9</td>
+                                                <td style="width: 50px;text-align: left;color: #000000;0;">20CDKTD0019
+                                                </td>
+                                                <td style="width: 300px;text-align: left;color: #000000;0;">Nguyễn Thị
+                                                    Phương</td>
+                                                <td style="width: 30px;text-align: left;color: #000000;0;">Thảo</td>
+                                                <td style="0;">19/06/2002</td>
+                                                <td style="width: 100px;text-align: left;1;">60CKT1</td>
+                                                <td id="4E9091BEDDE840058BB884CE9464CBFD_LANHOC" style="width: 20px;0;">
+                                                    1</td>
+                                                <td id="4E9091BEDDE840058BB884CE9464CBFD_LANTHI" style="width: 20px;0;">
+                                                    1</td>
+                                                <td id="4E9091BEDDE840058BB884CE9464CBFD_TX1" style="0;"><input
+                                                        id="input4E9091BEDDE840058BB884CE9464CBFD_TX1" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="4E9091BEDDE840058BB884CE9464CBFD_TX2" style="0;"><input
+                                                        id="input4E9091BEDDE840058BB884CE9464CBFD_TX2" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="4E9091BEDDE840058BB884CE9464CBFD_TX3" style="0;"><input
+                                                        id="input4E9091BEDDE840058BB884CE9464CBFD_TX3" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="4E9091BEDDE840058BB884CE9464CBFD_TX4" style="0;"><input
+                                                        id="input4E9091BEDDE840058BB884CE9464CBFD_TX4" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="4E9091BEDDE840058BB884CE9464CBFD_TX5" style="0;"><input
+                                                        id="input4E9091BEDDE840058BB884CE9464CBFD_TX5" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="4E9091BEDDE840058BB884CE9464CBFD_TX6" style="0;"><input
+                                                        id="input4E9091BEDDE840058BB884CE9464CBFD_TX6" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="4E9091BEDDE840058BB884CE9464CBFD_TX" style="0;"></td>
+                                                <td id="4E9091BEDDE840058BB884CE9464CBFD_DK1" style="0;"><input
+                                                        id="input4E9091BEDDE840058BB884CE9464CBFD_DK1" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="4E9091BEDDE840058BB884CE9464CBFD_DK2" style="0;"><input
+                                                        id="input4E9091BEDDE840058BB884CE9464CBFD_DK2" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="4E9091BEDDE840058BB884CE9464CBFD_DK3" style="0;"><input
+                                                        id="input4E9091BEDDE840058BB884CE9464CBFD_DK3" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="4E9091BEDDE840058BB884CE9464CBFD_DK4" style="0;"><input
+                                                        id="input4E9091BEDDE840058BB884CE9464CBFD_DK4" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="4E9091BEDDE840058BB884CE9464CBFD_DK5" style="0;"><input
+                                                        id="input4E9091BEDDE840058BB884CE9464CBFD_DK5" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="4E9091BEDDE840058BB884CE9464CBFD_DK6" style="0;"><input
+                                                        id="input4E9091BEDDE840058BB884CE9464CBFD_DK6" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="4E9091BEDDE840058BB884CE9464CBFD_DK7" style="0;"><input
+                                                        id="input4E9091BEDDE840058BB884CE9464CBFD_DK7" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="4E9091BEDDE840058BB884CE9464CBFD_DK8" style="0;"><input
+                                                        id="input4E9091BEDDE840058BB884CE9464CBFD_DK8" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="4E9091BEDDE840058BB884CE9464CBFD_DK9" style="0;"><input
+                                                        id="input4E9091BEDDE840058BB884CE9464CBFD_DK9" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="4E9091BEDDE840058BB884CE9464CBFD_DK10" style="0;"><input
+                                                        id="input4E9091BEDDE840058BB884CE9464CBFD_DK10" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="4E9091BEDDE840058BB884CE9464CBFD_DK" style="0;"></td>
+                                                <td id="4E9091BEDDE840058BB884CE9464CBFD_TBDKTX" style="0;"></td>
+                                                <td id="4E9091BEDDE840058BB884CE9464CBFD_KT" style="width: 20px;0;">
+                                                    <input id="input4E9091BEDDE840058BB884CE9464CBFD_KT" value=""
+                                                        name="" style="width: 40px">
+                                                </td>
+                                                <td id="4E9091BEDDE840058BB884CE9464CBFD_TKMH" style="0;"></td>
+                                                <td id="4E9091BEDDE840058BB884CE9464CBFD_DANHGIAHETHOCPHAN"
+                                                    style="width: 20px;0;"></td>
+                                                <td id="4E9091BEDDE840058BB884CE9464CBFD_DIEMCHUHE4"
+                                                    style="width: 20px;0;"></td>
+                                                <td id="4E9091BEDDE840058BB884CE9464CBFD_DIEMSOHE4"
+                                                    style="width: 20px;0;"></td>
+                                                <td id="4E9091BEDDE840058BB884CE9464CBFD_XEPLOAI" style="0;"></td>
+                                                <td id="4E9091BEDDE840058BB884CE9464CBFD_TAIKHOANCANBONHAP"
+                                                    style="width: 30px;0;"></td>
+                                                <td id="4E9091BEDDE840058BB884CE9464CBFD_THOIGIANNHAP"
+                                                    style="width: 40px;0;"></td>
+                                            </tr>
+                                            <tr id="B2CDF229A87543B499913E10A544D1C1" height="61">
+                                                <td style="width: 40px;text-align: center;0;">10</td>
+                                                <td style="width: 50px;text-align: left;color: #000000;0;">20CDKTD0034
+                                                </td>
+                                                <td style="width: 300px;text-align: left;color: #000000;0;">Khổng Thị
+                                                </td>
+                                                <td style="width: 30px;text-align: left;color: #000000;0;">Thùy</td>
+                                                <td style="0;">20/02/2002</td>
+                                                <td style="width: 100px;text-align: left;1;">60CKT1</td>
+                                                <td id="B965AB1F810E49ABA150C136BFD65EBF_LANHOC" style="width: 20px;0;">
+                                                    1</td>
+                                                <td id="B965AB1F810E49ABA150C136BFD65EBF_LANTHI" style="width: 20px;0;">
+                                                    1</td>
+                                                <td id="B965AB1F810E49ABA150C136BFD65EBF_TX1" style="0;"><input
+                                                        id="inputB965AB1F810E49ABA150C136BFD65EBF_TX1" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="B965AB1F810E49ABA150C136BFD65EBF_TX2" style="0;"><input
+                                                        id="inputB965AB1F810E49ABA150C136BFD65EBF_TX2" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="B965AB1F810E49ABA150C136BFD65EBF_TX3" style="0;"><input
+                                                        id="inputB965AB1F810E49ABA150C136BFD65EBF_TX3" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="B965AB1F810E49ABA150C136BFD65EBF_TX4" style="0;"><input
+                                                        id="inputB965AB1F810E49ABA150C136BFD65EBF_TX4" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="B965AB1F810E49ABA150C136BFD65EBF_TX5" style="0;"><input
+                                                        id="inputB965AB1F810E49ABA150C136BFD65EBF_TX5" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="B965AB1F810E49ABA150C136BFD65EBF_TX6" style="0;"><input
+                                                        id="inputB965AB1F810E49ABA150C136BFD65EBF_TX6" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="B965AB1F810E49ABA150C136BFD65EBF_TX" style="0;"></td>
+                                                <td id="B965AB1F810E49ABA150C136BFD65EBF_DK1" style="0;"><input
+                                                        id="inputB965AB1F810E49ABA150C136BFD65EBF_DK1" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="B965AB1F810E49ABA150C136BFD65EBF_DK2" style="0;"><input
+                                                        id="inputB965AB1F810E49ABA150C136BFD65EBF_DK2" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="B965AB1F810E49ABA150C136BFD65EBF_DK3" style="0;"><input
+                                                        id="inputB965AB1F810E49ABA150C136BFD65EBF_DK3" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="B965AB1F810E49ABA150C136BFD65EBF_DK4" style="0;"><input
+                                                        id="inputB965AB1F810E49ABA150C136BFD65EBF_DK4" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="B965AB1F810E49ABA150C136BFD65EBF_DK5" style="0;"><input
+                                                        id="inputB965AB1F810E49ABA150C136BFD65EBF_DK5" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="B965AB1F810E49ABA150C136BFD65EBF_DK6" style="0;"><input
+                                                        id="inputB965AB1F810E49ABA150C136BFD65EBF_DK6" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="B965AB1F810E49ABA150C136BFD65EBF_DK7" style="0;"><input
+                                                        id="inputB965AB1F810E49ABA150C136BFD65EBF_DK7" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="B965AB1F810E49ABA150C136BFD65EBF_DK8" style="0;"><input
+                                                        id="inputB965AB1F810E49ABA150C136BFD65EBF_DK8" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="B965AB1F810E49ABA150C136BFD65EBF_DK9" style="0;"><input
+                                                        id="inputB965AB1F810E49ABA150C136BFD65EBF_DK9" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="B965AB1F810E49ABA150C136BFD65EBF_DK10" style="0;"><input
+                                                        id="inputB965AB1F810E49ABA150C136BFD65EBF_DK10" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="B965AB1F810E49ABA150C136BFD65EBF_DK" style="0;"></td>
+                                                <td id="B965AB1F810E49ABA150C136BFD65EBF_TBDKTX" style="0;"></td>
+                                                <td id="B965AB1F810E49ABA150C136BFD65EBF_KT" style="width: 20px;0;">
+                                                    <input id="inputB965AB1F810E49ABA150C136BFD65EBF_KT" value=""
+                                                        name="" style="width: 40px">
+                                                </td>
+                                                <td id="B965AB1F810E49ABA150C136BFD65EBF_TKMH" style="0;"></td>
+                                                <td id="B965AB1F810E49ABA150C136BFD65EBF_DANHGIAHETHOCPHAN"
+                                                    style="width: 20px;0;"></td>
+                                                <td id="B965AB1F810E49ABA150C136BFD65EBF_DIEMCHUHE4"
+                                                    style="width: 20px;0;"></td>
+                                                <td id="B965AB1F810E49ABA150C136BFD65EBF_DIEMSOHE4"
+                                                    style="width: 20px;0;"></td>
+                                                <td id="B965AB1F810E49ABA150C136BFD65EBF_XEPLOAI" style="0;"></td>
+                                                <td id="B965AB1F810E49ABA150C136BFD65EBF_TAIKHOANCANBONHAP"
+                                                    style="width: 30px;0;"></td>
+                                                <td id="B965AB1F810E49ABA150C136BFD65EBF_THOIGIANNHAP"
+                                                    style="width: 40px;0;"></td>
+                                            </tr>
+                                            <tr id="9EE1F0A4E2664E9D818B0D182B3D70F0" height="61">
+                                                <td style="width: 40px;text-align: center;0;">11</td>
+                                                <td style="width: 50px;text-align: left;color: #000000;0;">20CDKTD0024
+                                                </td>
+                                                <td style="width: 300px;text-align: left;color: #000000;0;">Nguyễn Thị
+                                                </td>
+                                                <td style="width: 30px;text-align: left;color: #000000;0;">Xuân</td>
+                                                <td style="0;">18/04/1974</td>
+                                                <td style="width: 100px;text-align: left;1;">60CKT1</td>
+                                                <td id="48D349E0FE2A4659854454042A0F1D02_LANHOC" style="width: 20px;0;">
+                                                    1</td>
+                                                <td id="48D349E0FE2A4659854454042A0F1D02_LANTHI" style="width: 20px;0;">
+                                                    1</td>
+                                                <td id="48D349E0FE2A4659854454042A0F1D02_TX1" style="0;"><input
+                                                        id="input48D349E0FE2A4659854454042A0F1D02_TX1" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="48D349E0FE2A4659854454042A0F1D02_TX2" style="0;"><input
+                                                        id="input48D349E0FE2A4659854454042A0F1D02_TX2" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="48D349E0FE2A4659854454042A0F1D02_TX3" style="0;"><input
+                                                        id="input48D349E0FE2A4659854454042A0F1D02_TX3" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="48D349E0FE2A4659854454042A0F1D02_TX4" style="0;"><input
+                                                        id="input48D349E0FE2A4659854454042A0F1D02_TX4" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="48D349E0FE2A4659854454042A0F1D02_TX5" style="0;"><input
+                                                        id="input48D349E0FE2A4659854454042A0F1D02_TX5" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="48D349E0FE2A4659854454042A0F1D02_TX6" style="0;"><input
+                                                        id="input48D349E0FE2A4659854454042A0F1D02_TX6" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="48D349E0FE2A4659854454042A0F1D02_TX" style="0;"></td>
+                                                <td id="48D349E0FE2A4659854454042A0F1D02_DK1" style="0;"><input
+                                                        id="input48D349E0FE2A4659854454042A0F1D02_DK1" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="48D349E0FE2A4659854454042A0F1D02_DK2" style="0;"><input
+                                                        id="input48D349E0FE2A4659854454042A0F1D02_DK2" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="48D349E0FE2A4659854454042A0F1D02_DK3" style="0;"><input
+                                                        id="input48D349E0FE2A4659854454042A0F1D02_DK3" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="48D349E0FE2A4659854454042A0F1D02_DK4" style="0;"><input
+                                                        id="input48D349E0FE2A4659854454042A0F1D02_DK4" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="48D349E0FE2A4659854454042A0F1D02_DK5" style="0;"><input
+                                                        id="input48D349E0FE2A4659854454042A0F1D02_DK5" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="48D349E0FE2A4659854454042A0F1D02_DK6" style="0;"><input
+                                                        id="input48D349E0FE2A4659854454042A0F1D02_DK6" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="48D349E0FE2A4659854454042A0F1D02_DK7" style="0;"><input
+                                                        id="input48D349E0FE2A4659854454042A0F1D02_DK7" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="48D349E0FE2A4659854454042A0F1D02_DK8" style="0;"><input
+                                                        id="input48D349E0FE2A4659854454042A0F1D02_DK8" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="48D349E0FE2A4659854454042A0F1D02_DK9" style="0;"><input
+                                                        id="input48D349E0FE2A4659854454042A0F1D02_DK9" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="48D349E0FE2A4659854454042A0F1D02_DK10" style="0;"><input
+                                                        id="input48D349E0FE2A4659854454042A0F1D02_DK10" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="48D349E0FE2A4659854454042A0F1D02_DK" style="0;"></td>
+                                                <td id="48D349E0FE2A4659854454042A0F1D02_TBDKTX" style="0;"></td>
+                                                <td id="48D349E0FE2A4659854454042A0F1D02_KT" style="width: 20px;0;">
+                                                    <input id="input48D349E0FE2A4659854454042A0F1D02_KT" value=""
+                                                        name="" style="width: 40px">
+                                                </td>
+                                                <td id="48D349E0FE2A4659854454042A0F1D02_TKMH" style="0;"></td>
+                                                <td id="48D349E0FE2A4659854454042A0F1D02_DANHGIAHETHOCPHAN"
+                                                    style="width: 20px;0;"></td>
+                                                <td id="48D349E0FE2A4659854454042A0F1D02_DIEMCHUHE4"
+                                                    style="width: 20px;0;"></td>
+                                                <td id="48D349E0FE2A4659854454042A0F1D02_DIEMSOHE4"
+                                                    style="width: 20px;0;"></td>
+                                                <td id="48D349E0FE2A4659854454042A0F1D02_XEPLOAI" style="0;"></td>
+                                                <td id="48D349E0FE2A4659854454042A0F1D02_TAIKHOANCANBONHAP"
+                                                    style="width: 30px;0;"></td>
+                                                <td id="48D349E0FE2A4659854454042A0F1D02_THOIGIANNHAP"
+                                                    style="width: 40px;0;"></td>
+                                            </tr>
+                                            <tr id="DB2DACAE30B04174BEC872D0F7AC497F">
+                                                <td style="width: 40px;text-align: center;0;">12</td>
+                                                <td style="width: 50px;text-align: left;color: #000000;0;">20CDQTM0005
+                                                </td>
+                                                <td style="width: 300px;text-align: left;color: #000000;0;">Vàng Thị
+                                                </td>
+                                                <td style="width: 30px;text-align: left;color: #000000;0;">Xuân</td>
+                                                <td style="0;">09/08/2002</td>
+                                                <td style="width: 100px;text-align: left;1;">60CKT1</td>
+                                                <td id="11000B52A66D4F639225DD7E997FE07F_LANHOC" style="width: 20px;0;">
+                                                    1</td>
+                                                <td id="11000B52A66D4F639225DD7E997FE07F_LANTHI" style="width: 20px;0;">
+                                                    1</td>
+                                                <td id="11000B52A66D4F639225DD7E997FE07F_TX1" style="0;"><input
+                                                        id="input11000B52A66D4F639225DD7E997FE07F_TX1" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="11000B52A66D4F639225DD7E997FE07F_TX2" style="0;"><input
+                                                        id="input11000B52A66D4F639225DD7E997FE07F_TX2" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="11000B52A66D4F639225DD7E997FE07F_TX3" style="0;"><input
+                                                        id="input11000B52A66D4F639225DD7E997FE07F_TX3" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="11000B52A66D4F639225DD7E997FE07F_TX4" style="0;"><input
+                                                        id="input11000B52A66D4F639225DD7E997FE07F_TX4" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="11000B52A66D4F639225DD7E997FE07F_TX5" style="0;"><input
+                                                        id="input11000B52A66D4F639225DD7E997FE07F_TX5" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="11000B52A66D4F639225DD7E997FE07F_TX6" style="0;"><input
+                                                        id="input11000B52A66D4F639225DD7E997FE07F_TX6" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="11000B52A66D4F639225DD7E997FE07F_TX" style="0;"></td>
+                                                <td id="11000B52A66D4F639225DD7E997FE07F_DK1" style="0;"><input
+                                                        id="input11000B52A66D4F639225DD7E997FE07F_DK1" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="11000B52A66D4F639225DD7E997FE07F_DK2" style="0;"><input
+                                                        id="input11000B52A66D4F639225DD7E997FE07F_DK2" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="11000B52A66D4F639225DD7E997FE07F_DK3" style="0;"><input
+                                                        id="input11000B52A66D4F639225DD7E997FE07F_DK3" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="11000B52A66D4F639225DD7E997FE07F_DK4" style="0;"><input
+                                                        id="input11000B52A66D4F639225DD7E997FE07F_DK4" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="11000B52A66D4F639225DD7E997FE07F_DK5" style="0;"><input
+                                                        id="input11000B52A66D4F639225DD7E997FE07F_DK5" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="11000B52A66D4F639225DD7E997FE07F_DK6" style="0;"><input
+                                                        id="input11000B52A66D4F639225DD7E997FE07F_DK6" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="11000B52A66D4F639225DD7E997FE07F_DK7" style="0;"><input
+                                                        id="input11000B52A66D4F639225DD7E997FE07F_DK7" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="11000B52A66D4F639225DD7E997FE07F_DK8" style="0;"><input
+                                                        id="input11000B52A66D4F639225DD7E997FE07F_DK8" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="11000B52A66D4F639225DD7E997FE07F_DK9" style="0;"><input
+                                                        id="input11000B52A66D4F639225DD7E997FE07F_DK9" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="11000B52A66D4F639225DD7E997FE07F_DK10" style="0;"><input
+                                                        id="input11000B52A66D4F639225DD7E997FE07F_DK10" value="" name=""
+                                                        style="width: 40px"></td>
+                                                <td id="11000B52A66D4F639225DD7E997FE07F_DK" style="0;"></td>
+                                                <td id="11000B52A66D4F639225DD7E997FE07F_TBDKTX" style="0;"></td>
+                                                <td id="11000B52A66D4F639225DD7E997FE07F_KT" style="width: 20px;0;">
+                                                    <input id="input11000B52A66D4F639225DD7E997FE07F_KT" value=""
+                                                        name="" style="width: 40px">
+                                                </td>
+                                                <td id="11000B52A66D4F639225DD7E997FE07F_TKMH" style="0;"></td>
+                                                <td id="11000B52A66D4F639225DD7E997FE07F_DANHGIAHETHOCPHAN"
+                                                    style="width: 20px;0;"></td>
+                                                <td id="11000B52A66D4F639225DD7E997FE07F_DIEMCHUHE4"
+                                                    style="width: 20px;0;"></td>
+                                                <td id="11000B52A66D4F639225DD7E997FE07F_DIEMSOHE4"
+                                                    style="width: 20px;0;"></td>
+                                                <td id="11000B52A66D4F639225DD7E997FE07F_XEPLOAI" style="0;"></td>
+                                                <td id="11000B52A66D4F639225DD7E997FE07F_TAIKHOANCANBONHAP"
+                                                    style="width: 30px;0;"></td>
+                                                <td id="11000B52A66D4F639225DD7E997FE07F_THOIGIANNHAP"
+                                                    style="width: 40px;0;"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <div id="bottom_anchor"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="box-footer">
+                        <div class="pull-right" style="padding-bottom: 5px">
+                            <a class="btn btn-primary btnCongBo" href="#" title="Close"><i class="fa fa-diamond"></i>
+                                Công bố</a>
+                            <a class="btn btn-primary btnXacNhan" href="#" title="Close"><i class="fa fa-legal"></i> Xác
+                                nhận</a>
+                            <a class="btn btn-primary btnTinhDiem" href="#" title="Tính lại điểm"><i
+                                    class="fa fa-keyboard-o"></i> Tính Lại</a>
+                            <a class="btn btn-primary btnSaveDSDiem" href="#" title="Lưu danh sách điểm"><i
+                                    class="fa fa-paper-plane"></i> Lưu</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- box Edit_VBSC -->
+            <div class="box box-solid form-container zone-bus" id="zone_edithienthi" style="display: none">
+                <div class="box box-solid">
+                    <div class="box-header with-border">
+                        <div class="pull-left">
+                            <h3>Chỉnh sửa thông tin hiển thị bảng điểm</h3>
+                        </div>
+                        <div class="pull-right">
+                            <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times"></i></a>
+                        </div>
+                    </div>
+                    <div class="box-body">
+                        <select id="colorselector" style="display: none">
+                            <option value="000000" data-color="#000000"></option>
+                            <option value="ffffff" data-color="#ffffff"></option>
+                            <option value="44546a" data-color="#44546a"></option>
+                            <option value="4472c4" data-color="#4472c4"></option>
+                            <option value="ed7d31" data-color="#ed7d31"></option>
+                            <option value="a5a5a5" data-color="#a5a5a5"></option>
+                            <option value="ffc000" data-color="#ffc000"></option>
+                            <option value="5b9bd5" data-color="#5b9bd5"></option>
+                            <option value="70ad47" data-color="#70ad47"></option>
+                            <option value="ff0000" data-color="#ff0000"></option>
+                        </select>
+                        <div class="col-sm-12 box-view">
+                            <div class="row zone-box">
+                                <div class="col-sm-12 box-view">
+                                    <div class="row">
+                                        <table id="tblHienThi" class="table table-hover table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th class="td-center" style="width: 55px">Stt</th>
+                                                    <th class="td-center">Mã cột</th>
+                                                    <th class="td-center">Tên cột</th>
+                                                    <th class="td-center" style="width: 90px">Độ rộng</th>
+                                                    <th class="td-center" style="width: 140px">Kích thước chữ</th>
+                                                    <th class="td-center td-fixed">Màu</th>
+                                                    <th class="td-center" style="width: 125px">Căn lề</th>
+                                                    <th class="td-center" style="width: 114px">Kiểu chữ</th>
+                                                    <th class="td-center" style="width: 80px">Chỉ xem</th>
+                                                    <th class="td-center" style="width: 75px">Hiển thị</th>
+                                                    <th class="td-center" style="width: 85px">Hệ thống</th>
+                                                    <th class="td-center td-fixed">Xóa</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody></tbody>
+                                        </table>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="pull-right">
+                                            <a class="btn btn-default" id="btnThemDongMoi"><i class="fa fa-plus"></i>
+                                                Thêm dòng mới</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="box-footer">
+                        <div class="pull-right" style="padding-bottom: 5px">
+                            <a class="btn btn-primary" id="btnLuuEditHienThi" href="#"><i class="fa fa-times"></i>
+                                Lưu</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="modal fade myModal_Upload" id="myModal_Upload" role="dialog" aria-labelledby="myModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+                <h4 class="modal-title"><span class="lang" key=""> <i class="fa fa-file-excel-o"></i> Nhập điểm từ file
+                        excel</span></h4>
+            </div>
+            <div class="modal-body">
+                <div class="aps-add-new pd10">
+                    <div class="row aps-form">
+                        <div class="col-sm-4 aps-lable">
+                            Chọn file excel:
+                        </div>
+                        <div class="col-sm-6 aps-form-input">
+                            <div id="txtFile_Table"> </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="notify_import"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times-circle-o"></i>
+                    <span class="lang" key="">Đóng</span></button>
+                <a class="submit btn btn-primary" id="btnImport_DMIP"><i class="fa fa-cloud-upload"></i><span
+                        class="lang" key=""> Upload</span></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Xác nhận -->
+<div class="modal fade modal_XacNhan" id="modal_XacNhan" role="dialog" aria-labelledby="myModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" style="width: 800px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+                <h4 class="modal-title modal-name" id=""><span style="float: left"><i class="fa fa-wrench"></i> <span
+                            class="loaiXacNhan" title="">Xác nhận</span> </span><span id="txtTenSanPham"
+                        class="lblLichHoc_HP"></span></h4>
+            </div>
+            <div class="modal-body">
+                <div class="aps-add-new pd10">
+                    <!-- 1. Nội dung xác nhận -->
+                    <div class="row aps-form">
+                        <div class="row aps-lable text-left">
+                            <p class="group-group-title-name border-0 mb-0">
+                                <span class="badge bg-blue">Nội dung <span class="loaiXacNhan" title="">Xác
+                                        nhận</span></span>
+                            </p>
+                        </div>
+                        <div class="row aps-form-item">
+                            <div class="col-sm-12 aps-form-input">
+                                <input id="txtNoiDungXacNhanSanPham" class="form-control form-border-bottom" />
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 2. Chọn xác nhận -->
+                    <div class="row aps-form mt-20">
+                        <div class="row aps-lable text-left">
+                            <p class="group-group-title-name border-0 mb-0">
+                                <span class="badge bg-blue">Chọn <span class="loaiXacNhan" title="">Xác
+                                        nhận</span></span>
+                            </p>
+                        </div>
+                        <div class="row zoneBtnXacNhan" id="zoneBtnXacNhan">
+                            <div style="margin-left: auto; margin-right: auto; width: 270px">
+                                <div id="btnClose_HDBL" class="btn-large">
+                                    <a class="btn"><i style="color: #337ab7"
+                                            class="fa fa-angle-double-down fa-4x"></i></a>
+                                    <a class="color-active bold lbsymbolHD">Đóng</a>
+                                </div>
+                                <div id="btnClose_HDBL" class="btn-large">
+                                    <a class="btn"><i style="color: #337ab7"
+                                            class="fa fa-angle-double-down fa-4x"></i></a>
+                                    <a class="color-active bold lbsymbolHD">Đóng</a>
+                                </div>
+                                <div id="btnClose_HDBL" class="btn-large">
+                                    <a class="btn"><i style="color: #337ab7"
+                                            class="fa fa-angle-double-down fa-4x"></i></a>
+                                    <a class="color-active bold lbsymbolHD">Đóng</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. Lịch sử xác nhận -->
+                    <!-- <div class="row aps-form mt-20">
+                        <div class="row aps-lable text-left mb-0">
+                            <p class="group-group-title-name border-0 mb-0">
+                                <span class="badge bg-blue">Lịch sử <span class="loaiXacNhan" title="">Xác
+                                        nhận</span></span>
+                            </p>
+                        </div>
+                        <div class="row aps-form-table">
+                            <table id="tblModal_XacNhan" class="table tblModal_XacNhan mb-0 mr-0">
+                                <thead>
+                                    <tr>
+                                        <th class="td-fixed td-center">Stt</th>
+                                        <th class="td-left"><span class="loaiXacNhan" title="">Xác nhận</span></th>
+                                        <th class="td-left">Nội dung</th>
+                                        <th class="td-left">Người xác nhận</th>
+                                        <th class="td-center" style="width: 100px">Ngày</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div> -->
+
+
+                </div>
+            </div>
+            <div id="notify"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" id="btnCancel"><i
+                        class="fa fa-times-circle"></i> Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- page script -->
+<script src="modules/nhapdiem/script/nhapdiemtest.js?v=1.0.0.2"></script>
+<script src="modules/nhapdiem/script/bootstrap-colorselector.js"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['NhapDiem'] = new NhapDiem();
+    $(document).ready(function () {
+        main_doc.NhapDiem.init();
+    });
+</script>

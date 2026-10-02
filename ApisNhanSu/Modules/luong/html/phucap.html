@@ -1,0 +1,251 @@
+﻿
+<section class="content">
+    <div class="row">
+        <!-- /.left-content -->
+        <div class="col-lg-3">
+            <div class="box box-solid">
+                <div class="box-body">
+                    <!-- Bộ tìm kiếm -->
+                    <div class="bs-item input-group">
+                        <input type="text" id="txtSearch_PhuCap_TuKhoa" class="form-control" placeholder="Nhập từ khóa tìm kiếm">
+                        <span class="input-group-addon poiter btnExtend_Search" title="Kéo xuống">
+                            <i class="fa fa-angle-double-down"></i>
+                        </span>
+                    </div>
+                    <div class="bs-item pull-right">
+                        <a id="btnSearchKhoiTao_NhanSu" class="btn btn-default"><i class="fa fa-search"></i> <span class="lang" key="">Tìm kiếm</span></a>
+                    </div>
+                    <div class="box-sub-search" style="display: none">
+                        <div class="bss-item">
+                            <i>Chọn điều kiện tìm kiếm: </i>
+                        </div>
+                        <div class="bss-item">
+                            <select id="dropSearch_PhuCap_CCTC" class="select-opt">
+                                <option value="">--Chọn Khoa/Viện/Phòng ban--</option>
+                                <!-- Load from js -->
+                            </select>
+                        </div>
+                        <div class="bss-item">
+                            <select id="dropSearch_PhuCap_BoMon" class="select-opt">
+                                <option value="">-- Bộ môn --</option>
+                                <!-- Load from js -->
+                            </select>
+                        </div>
+                        <div class="bss-item">
+                            <select id="dropSearch_CapNhat_TinhTrangLamViec" class="select-opt">
+                                <option value="">-- Chọn tình trạng làm việc--</option>
+                                <!-- Load from js -->
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="box box-solid">
+                <div class="box-header with-border">
+                    <h3 class="box-title">
+                        <i class="fa fa-hdd-o"></i> Danh sách cán bộ
+                    </h3>
+                    <span class="pull-right badge bg-light-blue">
+                        <span id="lblPhuCap_Tong"></span>
+                    </span>
+                </div>
+                <div class="box-body">
+                    <table id="tblPhuCap" class="table table-hover">
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- /.right-content -->
+
+        <div class="col-sm-9">
+            <div class="box box-solid">
+                <div class="box-header with-border" style="text-align: center">
+                    <a style="font-weight: bold; font-size: 32px"> <span class="color-active" id="lblCanBo"></span> - Mã cán bộ: <span class="color-active" id="lblMaCanBo"></span></a>
+                </div>
+            </div>
+            <div class="col-lg-12" id="zoneEdit" style="display: none">
+                <div class="box box-solid zonecontent" id="zone_main">
+                    <div class="col-lg-6">
+                        <div class="box box-solid">
+                            <div class="box-header with-border">
+                                <h3 class="box-title"><i class="fa fa-file-text-o"></i> Chi tiết <span id="lblQuyDinhLuong" class="italic color-active"></span></h3>
+                                <div class="pull-right">
+                                    <a class="btn btn-default btnAdd">
+                                        <i class="fa fa-plus cl-active"></i>
+                                        Thêm mới
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="box-body">
+                                <table id="tblQuyDinhHeSoLuong" class="table table-hover table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th class="td-fixed td-center">Stt</th>
+                                            <th class="td-center" style="width: 60px">Hệ số</th>
+                                            <th class="td-center" style="width: 120px">Ngày áp dụng</th>
+                                            <th class="td-center">Ngày có hiệu lực</th>
+                                            <th class="td-center">Ngày hết hiệu lực</th>
+                                            <!--<th class="td-center">Quyết định</th>-->
+                                            <th class="td-fixed td-center">Sửa</th>
+                                            <th class="td-center td-fixed">
+                                                <input type="checkbox" id="chkSelectAll_PhuCap">
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Tab_1 Modal Tieu su ban than -->
+<div class="modal fade" id="myModal_PhuCap" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"  >
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only"></span></button>
+                <h4 class="modal-title"> <span class="myModalLabel"><i class="fa fa-plus"></i> Thêm mới - </span><span class="lang" key="">Phụ cấp</span></h4>
+            </div>
+            <div class="modal-body">
+                <div class="row zone-box">
+                    <p hidden>
+                        <div class="col-sm-12">
+                            <input type="hidden" id="txtQuyetDinh_ID" />
+                        </div>
+                    </p>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <span class="lang" key="">Hệ số</span>
+                        </div>
+                        <div class="col-sm-9">
+                            <input type="text" id="txtPC_HeSo" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <span class="lang" key="">Số quyết định</span>
+                        </div>
+                        <div class="col-sm-9">
+                            <input type="text" id="txtPC_SoQuyetDinh" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <span class="lang" key="">Ngày quyết định</span>
+                        </div>
+                        <div class="col-sm-9">
+                            <input type="text" id="txtPC_NgayQuyetDinh" class="form-control input-datepicker" placeholder="dd/mm/yyyy" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <span class="lang" key="">Ngày áp dụng</span>
+                        </div>
+                        <div class="col-sm-9">
+                            <input type="text" id="txtPC_NgayApDung" class="form-control input-datepicker" placeholder="dd/mm/yyyy" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <span class="lang" key="">Ngày có hiệu lực</span>
+                        </div>
+                        <div class="col-sm-9">
+                            <input type="text" id="txtPC_NgayHieuLuc" class="form-control input-datepicker" placeholder="dd/mm/yyyy" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <span class="lang" key="">Ngày hết hiệu lực</span>
+                        </div>
+                        <div class="col-sm-9">
+                            <input type="text" id="txtPC_NgayHetHan" class="form-control input-datepicker" placeholder="dd/mm/yyyy" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <span class="lang" key="">Hiệu lực</span>
+                        </div>
+                        <div class="col-sm-9">
+                            <select id="dropPC_HieuLuc" class="select-opt">
+                                <option value="1">Có hiệu lực</option>
+                                <option value="0">Hết hiệu lực</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <span class="lang" key="">Loại quyết định</span>
+                        </div>
+                        <div class="col-sm-9">
+                            <select id="dropPC_LoaiQuyetDinh" class="select-opt"></select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <span class="lang" key="">Đơn vị tính</span>
+                        </div>
+                        <div class="col-sm-9">
+                            <select id="dropPC_DVT" class="select-opt"></select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <span class="lang" key="">File đính kèm</span>
+                        </div>
+                        <div class="col-sm-9">
+                            <div id="txtThongTinDinhKem"></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="notify"></div>
+                <div class="modal-footer">
+                    <a class="submit btn btn-primary" id="btnSave_PC"><i class="fa fa-save"></i><span class="lang" key=""> Lưu</span></a>
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times-circle"></i><span class="lang" key=""> Đóng</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="modules/luong/script/phucap.js?v=1.0.0.1"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['PhuCap'] = new PhuCap();
+    $(document).ready(function () {
+        main_doc.PhuCap.init();
+    });
+</script>
+<!-- FIX 2026-08-26: Select2 trong modal — re-init voi dropdownParent = modal
+     de popup nam trong modal, khong lech / che noi dung. Universal handler,
+     an toan khi modal khong co select. -->
+<script>
+(function () {
+    if (typeof jQuery === 'undefined') return;
+    var $ = jQuery;
+    $(document).off('shown.bs.modal.__s2fix').on('shown.bs.modal.__s2fix', '.modal', function () {
+        var $modal = $(this);
+        $modal.find('select.select-opt, select[id^="drop"]').each(function () {
+            var $sel = $(this);
+            try {
+                if ($sel.hasClass('select2-hidden-accessible')) $sel.select2('destroy');
+            } catch (e) {}
+            $sel.select2({ dropdownParent: $modal, width: '100%' });
+        });
+    });
+})();
+</script>
+<style>
+    .modal .select2-container--open,
+    .modal .select2-container--open .select2-dropdown {
+        z-index: 100060 !important;
+    }
+    .modal .select2-results__options {
+        max-height: 220px !important;
+        overflow-y: auto !important;
+    }
+</style>

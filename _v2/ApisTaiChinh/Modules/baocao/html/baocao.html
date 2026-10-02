@@ -1,0 +1,83 @@
+<!--
+    Báo cáo tài chính
+    Bản gốc: ApisTaiChinh/Modules/baocao/html/baocao.html + scripts/baocao.js
+    Bộ lọc dùng chung cho mọi mẫu báo cáo, chọn khoản thu + trạng thái SV,
+    ba tab: tổng thu · kết quả phải nộp · kết nối kế toán, và các hộp thoại
+    năm tài chính / báo cáo đã thực hiện / mã khách hàng / lịch báo cáo.
+-->
+<link rel="stylesheet" href="../css/baocao.css">
+
+<div id="baocao">
+    <div class="ums-page__head">
+        <h1 class="ums-page__title ums-u-mb-0">Báo cáo tài chính</h1>
+        <div class="ums-page__actions" data-z="actions"></div>
+    </div>
+
+    <div class="ums-panel ums-u-mb-4">
+        <div class="ums-panel__body">
+            <div class="bc-filter" data-z="filter"></div>
+            <div class="ums-row ums-u-mt-4" data-z="filterBtns"></div>
+        </div>
+    </div>
+
+    <div class="bc-pick ums-u-mb-4">
+        <div class="ums-panel">
+            <div class="ums-panel__head"><div class="ums-panel__title"><i class="fa-light fa-money-check-pen"></i> Chọn khoản thu</div></div>
+            <div class="ums-panel__body"><div class="ums-checkgrid" data-z="khoanThu"></div></div>
+        </div>
+        <div class="ums-panel" style="margin-top:0">
+            <div class="ums-panel__head"><div class="ums-panel__title"><i class="fa-light fa-user-graduate"></i> Chọn trạng thái sinh viên</div></div>
+            <div class="ums-panel__body"><div class="ums-checklist" data-z="trangThai"></div></div>
+        </div>
+    </div>
+
+    <div class="ums-panel">
+        <nav class="ums-tabs" data-z="tabs">
+            <a class="ums-tabs__item is-active" href="javascript:void(0)" data-tab="tongthu">1. Tổng thu</a>
+            <a class="ums-tabs__item" href="javascript:void(0)" data-tab="phainop">2. Kết quả phải nộp</a>
+            <a class="ums-tabs__item" href="javascript:void(0)" data-tab="ketnoi">3. Kết nối kế toán</a>
+        </nav>
+        <div data-pane="tongthu">
+            <div data-z="tblTongThu"></div>
+            <div class="ums-tablefoot"><span>Bằng chữ: <i data-z="tongThuChu"></i></span><span class="ums-tablefoot__sum"><span>Tổng tiền: <b data-z="tongThu">0</b></span></span></div>
+        </div>
+        <div data-pane="phainop" hidden>
+            <div class="ums-panel__head">
+                <div class="ums-panel__title"><i class="fa-light fa-list"></i> Kết quả phải nộp</div>
+                <div class="ums-panel__tools">
+                    <button type="button" class="ums-btn ums-btn--quiet ums-btn--sm" data-act="delPhaiNop"><i class="fa-light fa-trash-can"></i><span>Xoá đã chọn</span></button>
+                </div>
+            </div>
+            <div data-z="tblPhaiNop"></div>
+            <div class="ums-tablefoot"><span>Bằng chữ: <i data-z="tongPhaiNopChu"></i></span><span class="ums-tablefoot__sum"><span>Tổng tiền: <b data-z="tongPhaiNop">0</b></span></span></div>
+        </div>
+        <div data-pane="ketnoi" hidden>
+            <div class="ums-panel__body">
+                <div class="ums-filter">
+                    <div class="ums-field"><select class="ums-select" data-f="bangKetNoi"><option value="">Chọn bảng dữ liệu</option></select></div>
+                    <div class="ums-field"><input class="ums-input" data-f="tenBang" placeholder="Đặt tên bảng dữ liệu" autocomplete="off"></div>
+                    <div class="ums-field ums-field--fit ums-row">
+                        <button type="button" class="ums-btn ums-btn--save" data-act="taoDuLieu"><i class="fa-light fa-database"></i><span>Tạo dữ liệu</span></button>
+                        <button type="button" class="ums-btn ums-btn--primary" data-act="maKH"><i class="fa-light fa-id-card"></i><span>Khai báo mã khách hàng</span></button>
+                    </div>
+                </div>
+                <div class="ums-filter ums-u-mt-4">
+                    <div class="ums-field"><select class="ums-select" data-f="bangDaTao"><option value="">Chọn bảng dữ liệu</option></select></div>
+                    <div class="ums-field ums-field--fit ums-row">
+                        <button type="button" class="ums-btn ums-btn--primary" data-act="xemBang"><i class="fa-light fa-magnifying-glass"></i><span>Tìm kiếm</span></button>
+                    </div>
+                </div>
+                <div class="ums-row ums-u-mt-4">
+                    <button type="button" class="ums-btn ums-btn--danger" data-act="xoaBang"><i class="fa-light fa-trash-can"></i><span>Xoá bảng dữ liệu</span></button>
+                    <button type="button" class="ums-btn ums-btn--ghost" data-act="taoChungTu"><i class="fa-light fa-file-circle-plus"></i><span>Tạo chứng từ</span></button>
+                    <button type="button" class="ums-btn ums-btn--ghost" data-act="xoaChungTu"><i class="fa-light fa-file-circle-minus"></i><span>Xoá dữ liệu chứng từ</span></button>
+                    <button type="button" class="ums-btn ums-btn--primary" data-act="tongHopCT"><i class="fa-light fa-layer-group"></i><span>Tổng hợp chứng từ</span></button>
+                    <button type="button" class="ums-btn ums-btn--navy" data-act="duyetKT"><i class="fa-light fa-paper-plane"></i><span>Duyệt sang kế toán</span></button>
+                </div>
+            </div>
+            <div data-z="tblKetNoi"></div>
+        </div>
+    </div>
+</div>
+
+<script src="../scripts/baocao.js"></script>

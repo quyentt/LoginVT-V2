@@ -1,0 +1,3339 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kế hoạch tuyển sinh</title>
+  <link rel="stylesheet" href="../assets/css/styles.css" />
+  <style>
+    /* Force light color scheme — bao hiem tren nhung browser bo qua meta color-scheme.
+         Ep form controls (input/select/scrollbar) render theo light theme + tat outline
+         mac dinh mau do/hong tren dark OS. */
+    html,
+    :root {
+      color-scheme: light only !important;
+      forced-color-adjust: none;
+    }
+
+    /* Ap dung forced-color-adjust cho MOI element de chan Windows High Contrast Mode +
+         Chrome dark theme adjustments tu do bien viet ve tren border/outline. */
+    *,
+    *::before,
+    *::after {
+      forced-color-adjust: none !important;
+    }
+
+    input,
+    select,
+    textarea,
+    button {
+      color-scheme: light !important;
+    }
+
+    *:focus,
+    *:focus-visible {
+      outline-color: #223771 !important;
+    }
+
+    /* Sidebar: bulletproof — chan MOI kha nang browser inject vien do (High Contrast
+         Mode, Chrome dark focus outline, extensions, autofill highlight...). Force outline
+         va box-shadow ve 0/tone chinh, khong cho browser tu quyet dinh mau focus. */
+    .left-sidebar,
+    .left-sidebar *,
+    .sidebar-menu,
+    .sidebar-menu *,
+    .sidebar-menu-sub,
+    .sidebar-menu-sub * {
+      forced-color-adjust: none !important;
+      -webkit-tap-highlight-color: transparent !important;
+    }
+
+    .left-sidebar *:focus,
+    .left-sidebar *:focus-visible,
+    .left-sidebar *:active,
+    .sidebar-menu *:focus,
+    .sidebar-menu *:focus-visible,
+    .sidebar-menu *:active,
+    .sidebar-menu-sub a:focus,
+    .sidebar-menu-sub a:focus-visible,
+    .sidebar-menu-sub a:active {
+      outline: none !important;
+      outline-color: transparent !important;
+      outline-width: 0 !important;
+      box-shadow: none !important;
+      border-color: transparent !important;
+    }
+
+    /* Focus visible: khong dung outline vien cam (xau) — chi doi mau chu */
+    .sidebar-menu-sub a:focus-visible {
+      outline: none !important;
+      color: #f8843d !important;
+    }
+
+    /* FCM header notifications: layout only (no new colors) */
+    #fcm-noti-button {
+      position: relative;
+    }
+
+    #fcm-noti-badge {
+      position: absolute;
+      top: -6px;
+      right: -10px;
+      line-height: 1;
+    }
+
+    #fcm-noti-menu {
+      min-width: 340px;
+      max-width: 420px;
+      max-height: 420px;
+      overflow: auto;
+    }
+
+    .fcm-noti-item-title {
+      font-weight: 600;
+    }
+
+    .head-search-box {
+      position: relative;
+    }
+
+    .search-suggestions {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: #fff;
+      border: 1px solid #e3e6ef;
+      border-radius: 6px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, .12);
+      margin-top: 4px;
+      max-height: 360px;
+      overflow-y: auto;
+      z-index: 2050;
+      display: none;
+      padding: 4px 0;
+      list-style: none;
+    }
+
+    .search-suggestions.show {
+      display: block;
+    }
+
+    .search-suggestions li {
+      padding: 8px 14px;
+      cursor: pointer;
+      color: #333;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .search-suggestions li:hover,
+    .search-suggestions li.active {
+      background: #f1f5ff;
+      color: #1967d2;
+    }
+
+    .search-suggestions li i {
+      color: #1967d2;
+      width: 16px;
+      text-align: center;
+    }
+
+    .search-suggestions li .parent {
+      margin-left: auto;
+      font-size: 12px;
+      color: #8a8f99;
+    }
+
+    .search-suggestions .empty {
+      padding: 10px 14px;
+      color: #8a8f99;
+      font-style: italic;
+      cursor: default;
+    }
+
+    /* ─── Role picker (giao diện chọn vai trò kiểu mới) ─── */
+    /* Reset background image + màu chữ của .quick-action cho gọn */
+    .dashboard-content .quick-action {
+      background: transparent !important;
+      margin-top: 0 !important;
+      padding: 20px 25px 25px;
+    }
+
+    .dashboard-content .quick-action .welcome {
+      color: #64748b;
+      font-style: italic;
+      font-size: 14px;
+      padding-top: 0;
+    }
+
+    .dashboard-content .quick-action .welcome strong {
+      font-weight: 700;
+      font-style: normal;
+      color: #223771;
+    }
+
+    .dashboard-content .quick-action .quick-acction-title {
+      color: #0f172a !important;
+      font-size: 22px;
+      font-weight: 700;
+      margin: 6px 0 18px;
+    }
+
+    .role-picker-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+
+    .role-picker-search {
+      position: relative;
+      flex: 1;
+      height: 42px;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      transition: border-color .2s ease, box-shadow .2s ease;
+    }
+
+    .role-picker-search:focus-within {
+      border-color: #cbd5e1;
+    }
+
+    /* Ghi đè global input:focus trong all.css/bootstrap để không vẽ viền màu quanh input */
+    .role-picker-search input,
+    .role-picker-search input:focus,
+    .role-picker-search input:focus-visible,
+    .role-picker-search input:active {
+      border: 0 !important;
+      outline: none !important;
+      box-shadow: none !important;
+      border-color: transparent !important;
+    }
+
+    .role-picker-search>.fa-search {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #64748b;
+      font-size: 14px;
+      pointer-events: none;
+    }
+
+    .role-picker-search input {
+      flex: 1;
+      height: 100%;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      padding: 0 40px 0 42px;
+      font-size: 14px;
+      color: #0f172a;
+    }
+
+    .role-picker-search input::placeholder {
+      color: #94a3b8;
+    }
+
+    .role-picker-clear {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 0;
+      background: #f1f5f9;
+      color: #64748b;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .role-picker-clear.show {
+      display: flex;
+    }
+
+    .role-picker-clear:hover {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+
+    .role-picker-counter {
+      font-size: 13px;
+      font-weight: 600;
+      color: #475569;
+      white-space: nowrap;
+    }
+
+    .role-picker-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .role-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 12px 5px 12px;
+      border: 1px solid #e2e8f0;
+      background: #fff;
+      color: #0f172a;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .15s ease;
+    }
+
+    .role-chip:hover {
+      border-color: var(--color-blue);
+      color: var(--color-blue);
+    }
+
+    .role-chip.active {
+      background: var(--color-blue);
+      border-color: var(--color-blue);
+      color: #fff;
+    }
+
+    .role-chip-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 20px;
+      padding: 0 6px;
+      height: 18px;
+      border-radius: 999px;
+      background: #f1f5f9;
+      color: #64748b;
+      font-size: 10px;
+      font-weight: 600;
+      line-height: 1;
+    }
+
+    .role-chip.active .role-chip-count {
+      background: rgba(255, 255, 255, .2);
+      color: #fff;
+    }
+
+    /* Ghi đè .action-group flex mặc định để dùng grouped layout */
+    #zonedashbroad.role-picker-grid {
+      display: block !important;
+      margin: 0 !important;
+      gap: 0;
+    }
+
+    /* Ẩn cho tới khi role picker render xong (tránh flash tile cũ) */
+    #zonedashbroad:not(.role-picker-ready) {
+      visibility: hidden;
+    }
+
+    .role-group+.role-group {
+      margin-top: 22px;
+    }
+
+    .role-group-title {
+      font-family: Arial, Helvetica, sans-serif !important;
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      margin: 0 0 12px;
+      font-size: 16px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .role-group-count {
+      font-weight: 600;
+      color: #64748b;
+      font-size: 13px;
+    }
+
+    .role-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    @media (min-width: 640px) {
+      .role-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .role-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+    }
+
+    @media (min-width: 1280px) {
+      .role-grid {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+      }
+    }
+
+    .role-card {
+      display: flex !important;
+      flex-direction: column;
+      gap: 12px;
+      padding: 14px;
+      border: 1px solid #e2e8f0;
+      background: #fff;
+      border-radius: 12px;
+      transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+      min-height: 90px;
+      width: auto !important;
+      height: auto !important;
+      cursor: pointer;
+    }
+
+    .role-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(15, 23, 42, .08);
+      border-color: #cbd5e1;
+    }
+
+    .role-card-head {
+      display: flex;
+      align-items: flex-start;
+      /* justify-content: space-between; */
+      gap: 10px;
+    }
+
+    .role-card-icon {
+      display: grid;
+      place-items: center;
+      width: 60px;
+      height: 60px;
+      border-radius: 12px;
+      font-size: 28px;
+      flex-shrink: 0;
+      font-weight: 700 !important;
+    }
+
+    .role-card-icon i {
+      font-size: 28px;
+      /* font-weight: 700 !important; */
+    }
+
+    .role-card-badge {
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .role-card-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: #0f172a;
+      line-height: 1.35;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin: 0;
+    }
+
+    .role-empty {
+      padding: 40px 20px;
+      text-align: center;
+      color: #64748b;
+      font-size: 14px;
+      font-style: italic;
+      border: 1px dashed #e2e8f0;
+      border-radius: 12px;
+      background: #fff;
+    }
+
+    /* ─── Reskin header + sidebar theo tone NewUI (dask-blue #223771 + orange #f8843d) ─── */
+    /* Header top nav dùng --color-link (#2563EB) mặc định → đổi sang dask-blue */
+    .top-nav {
+      background: #223771 !important;
+    }
+
+    /* Sidebar: nền dask-blue, chữ light-blue, active/hover accent orange */
+    .left-sidebar {
+      background: #223771 !important;
+      box-shadow: none !important;
+    }
+
+    .left-sidebar a:hover {
+      color: #ffffff !important;
+      background: rgba(255, 255, 255, 0.1) !important;
+    }
+
+    .left-sidebar a:hover .item-icon {
+      color: #ffffff !important;
+    }
+
+    .sidebar-menu-header {
+      color: #ffffff !important;
+      background: transparent !important;
+      font-weight: 500 !important;
+    }
+
+    .sidebar-menu-header .item-icon,
+    .sidebar-menu-item.sidebar-menu-home .sidebar-menu-header i {
+      color: #ffffff !important;
+    }
+
+    .sidebar-menu-item.sidebar-menu-home .sidebar-menu-header {
+      color: #ffffff !important;
+    }
+
+    .sidebar-menu-header:not(.collapsed):hover,
+    .sidebar-menu-item.sidebar-menu-home .sidebar-menu-header:hover {
+      color: #ffffff !important;
+      /* background: rgba(255, 255, 255, 0.1) !important; */
+      background-color: var(--color-blue);
+    }
+
+    .sidebar-menu-header:not(.collapsed):hover i,
+    .sidebar-menu-header:not(.collapsed):hover .item-icon {
+      color: #ffffff !important;
+    }
+
+    .sidebar-menu-item.active .sidebar-menu-header {
+      background-color: var(--color-blue);
+      color: #fff !important;
+      font-weight: 700 !important;
+    }
+
+    .sidebar-menu-item.active .sidebar-menu-header .item-icon,
+    .sidebar-menu-item.active .sidebar-menu-header i {
+      color: #fff !important;
+    }
+
+    /* Submenu (cấp con) — bullet + border-left theo tone dask-blue */
+    /* Container submenu: ep TRANSPARENT background de blend voi sidebar toi.
+         THU PHAM: App_Themes/Cms/Custom_V1/styles.css:2896 co rule
+         `.sidebar-menu-item .sidebar-menu-sub.collapse { background:#f4f4f4 !important }`
+         voi specificity cao hon. Can beat bang ID selector (#sidebar-menu) + full chain.
+         Ngoai ra Windows High Contrast / Chrome dark theme cung co the dao mau -> them
+         color-scheme + forced-color-adjust de khoa mau. */
+    html body #sidebar-menu,
+    html body #sidebar-menu * {
+      color-scheme: light only !important;
+      forced-color-adjust: none !important;
+    }
+
+    html body #sidebar-menu .sidebar-menu-item .sidebar-menu-sub,
+    html body #sidebar-menu .sidebar-menu-item .sidebar-menu-sub.collapse,
+    html body #sidebar-menu .sidebar-menu-item .sidebar-menu-sub.show,
+    html body #sidebar-menu .sidebar-menu-item .sidebar-menu-sub.collapsing,
+    #sidebar-menu .sidebar-menu-item .sidebar-menu-sub,
+    #sidebar-menu .sidebar-menu-item .sidebar-menu-sub.collapse,
+    #sidebar-menu .sidebar-menu-item .sidebar-menu-sub.show,
+    .sidebar-menu .sidebar-menu-item .sidebar-menu-sub,
+    .sidebar-menu .sidebar-menu-item .sidebar-menu-sub.collapse,
+    .sidebar-menu .sidebar-menu-item .sidebar-menu-sub.show,
+    html body .sidebar-menu-item .sidebar-menu-sub.collapse {
+      background: #1a2b5c !important;
+      background-color: #1a2b5c !important;
+      background-image: none !important;
+      border-radius: 0 0 12px 0 !important;
+      padding: 4px 0 8px 0 !important;
+      margin-top: 5px !important;
+      box-shadow: none !important;
+    }
+
+    html body #sidebar-menu .sidebar-menu-sub a,
+    html body #sidebar-menu .sidebar-menu-sub a:link,
+    html body #sidebar-menu .sidebar-menu-sub a:visited,
+    html body #sidebar-menu .sidebar-menu-sub a span,
+    .sidebar-menu-sub a {
+      color: #ffffff;
+      font-weight: 500 !important;
+      background: transparent !important;
+      background-color: transparent !important;
+      border-left-color: #5a7adb !important;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    .sidebar-menu-sub a:hover,
+    .sidebar-menu-sub a.active {
+      color: #f8843d !important;
+      background: transparent !important;
+      border-color: transparent;
+      outline: none !important;
+      box-shadow: none !important;
+    }
+
+    .sidebar-menu-sub a::before,
+    .sidebar-menu-sub a::after {
+      background-color: #5a7adb !important;
+    }
+
+    .sidebar-menu-sub a:hover::before,
+    .sidebar-menu-sub a:hover::after,
+    .sidebar-menu-sub a.active::before,
+    .sidebar-menu-sub a.active::after {
+      background-color: #f8843d !important;
+    }
+
+    /* Nền wrap = dask-blue để lộ được góc bo top-left của main-content
+         (nếu không sẽ trùng màu với main-content nên không thấy round) */
+    .main-wrap {
+      background-color: #223771 !important;
+    }
+
+    /* Main content: nền light-gray + bo góc trái trên tiếp giáp sidebar.
+         overflow-y auto để scroll dọc được (main-wrap = 100vh, content dài hơn thì scroll).
+         overflow-x hidden để nội dung không tràn ra ngoài góc bo top-left 16px. */
+    .main-content {
+      background: #f0f3fd;
+      border-top-left-radius: 16px;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    /* Header controls: chữ menu + bell trắng, tránh bị var(--color-*) đè */
+    .top-nav .sidebar-bars,
+    .top-nav .sidebar-bars span {
+      color: #ffffff !important;
+    }
+
+    /* ─── [SPA-MODULE-TONE] Đồng bộ tone module SPA-native (load trong index.aspx)
+         với reskin dask-blue + orange. Không đụng assets/css-new (file share). ─── */
+
+    /* Card wrapper: border-#f5f5f5 gần như vô hình (css-new/main.css:304) → làm
+         cho card trắng tinh trơ trên nền. Bump border rõ hơn + shadow rõ hơn. */
+    #main-content-wrapper .card.today-card,
+    #main-content-wrapper .today-card {
+      border: 1px solid #e2e8f0 !important;
+      border-radius: 10px !important;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06) !important;
+      background: #ffffff !important;
+    }
+
+    /* Bỏ hiệu ứng "double layer" ::before của .today-card (nhìn dơ trên UI mới) */
+    #main-content-wrapper .card.today-card::before,
+    #main-content-wrapper .today-card::before {
+      display: none !important;
+    }
+
+    /* Card body có padding rõ + tách khối với header */
+    #main-content-wrapper .card.today-card>.card-body,
+    #main-content-wrapper .today-card>.card-body {
+      padding: 16px 18px !important;
+      background: #ffffff !important;
+      border-bottom-right-radius: 12px;
+      border-bottom-left-radius: 12px;
+    }
+
+    /* Card header: css-new/main.css:329 set background: var(--color-link) = #2563EB xanh
+         Bootstrap. Override về dask-blue để khớp header shell + reskin indexi. */
+    #main-content-wrapper .card.today-card>.card-header,
+    #main-content-wrapper .today-card-1>.card-header,
+    #main-content-wrapper .today-card-2>.card-header,
+    #main-content-wrapper .today-card-3>.card-header {
+      background: #223771;
+      border: 0 !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 0 18px !important;
+      margin-bottom: -1px;
+    }
+
+    /* Card title (không phải tab) → trắng */
+    #main-content-wrapper .today-card>.card-header .title .feature-name {
+      color: #ffffff !important;
+    }
+
+    /* Tab inactive (chưa chọn): text trắng mờ trên nền dask-blue */
+    #main-content-wrapper .today-card>.card-header .myTab-header-link,
+    #main-content-wrapper .today-card>.card-header .myTab-header-link i {
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    #main-content-wrapper .today-card>.card-header .myTab-header-link:hover,
+    #main-content-wrapper .today-card>.card-header .myTab-header-link:hover i {
+      color: #ffffff;
+    }
+
+    /* Tab active: pill trắng bg (giữ design gốc css-new/main.css:1650) + text
+         dask-blue + icon cam accent */
+    #main-content-wrapper .today-card>.card-header .myTab-header-link.active {
+      background: #ffffff !important;
+      color: #223771;
+      font-weight: 700 !important;
+    }
+
+    #main-content-wrapper .today-card>.card-header .myTab-header-link.active i {
+      color: #223771;
+      font-weight: 700;
+    }
+
+    /* Icon frame trong card header (today-card-1 gradient xanh) → tone dask-blue */
+    #main-content-wrapper .today-card-1>.card-header .icon,
+    #main-content-wrapper .today-card>.card-header .title .icon {
+      background: rgba(255, 255, 255, 0.18) !important;
+      background-image: none !important;
+      color: #ffffff !important;
+    }
+
+    /* Section title .color-blue (dùng cho "Danh sách học phần dự kiến..." v.v.) */
+    #main-content-wrapper .color-blue,
+    #main-content-wrapper .text-blue {
+      color: var(--color-blue) !important;
+    }
+
+    /* Buttons SPA-native: .btn-view / .btn-link / .btn-save → dask-blue solid */
+    #main-content-wrapper .btn.btn-view,
+    #main-content-wrapper .btn.btn-link,
+    #main-content-wrapper .btn.btn-save,
+    #main-content-wrapper #btnSearch.btn.btn-view {
+      background: #223771 !important;
+      background-image: none !important;
+      border: 1px solid #223771 !important;
+      color: #ffffff !important;
+      font-weight: 500 !important;
+    }
+
+    #main-content-wrapper .btn.btn-view:hover,
+    #main-content-wrapper .btn.btn-link:hover,
+    #main-content-wrapper .btn.btn-save:hover,
+    #main-content-wrapper #btnSearch.btn.btn-view:hover {
+      background: #1c2e5f !important;
+      border-color: #1c2e5f !important;
+      color: #ffffff !important;
+    }
+
+    /* Outline buttons — giữ semantic màu (success/danger/warning) nhưng đồng bộ
+         .btn-outline-primary về dask-blue thay vì bright blue */
+    #main-content-wrapper .btn.btn-outline-primary {
+      color: #223771 !important;
+      border-color: #223771 !important;
+      background: transparent !important;
+    }
+
+    #main-content-wrapper .btn.btn-outline-primary:hover {
+      background: #223771 !important;
+      color: #ffffff !important;
+      border-color: #223771 !important;
+    }
+
+    /* Table header .bg-th trong SPA-native → nền tím nhạt khớp indexi reskin */
+    #main-content-wrapper .table>thead>tr>th.bg-th,
+    #main-content-wrapper .table .bg-th {
+      background: #f0f3fd !important;
+      color: #222 !important;
+      font-weight: 700 !important;
+    }
+
+    /* Breadcrumb SPA (.content-tab .nav-content-left .link) → tone xám khớp */
+    #main-content-wrapper .content-tab .nav-content-left .link,
+    #main-content-wrapper .content-tab .nav-content-left .link a {
+      color: #64748b !important;
+    }
+
+    #main-content-wrapper .content-tab .nav-content-left .link i {
+      color: #94a3b8 !important;
+      margin: 5px 0px;
+      font-size: 12px !important;
+    }
+
+    /* ═══ Select2 SPA — center dọc chuẩn + look xịn (border-radius + focus ring) ═══ */
+    #main-content-wrapper .select2-container .select2-selection--single {
+      height: 38px !important;
+      min-height: 38px !important;
+      border: 1px solid #c1c1c1 !important;
+      border-radius: 8px !important;
+      background: #ffffff !important;
+      display: flex !important;
+      align-items: center !important;
+      padding: 0 !important;
+      transition: border-color .15s ease, box-shadow .15s ease !important;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04) !important;
+    }
+
+    /* Focus state: viền dask-blue + shadow ring xanh nhạt */
+    #main-content-wrapper .select2-container--focus .select2-selection--single,
+    #main-content-wrapper .select2-container--open .select2-selection--single {
+      border-color: #d1d1d1 !important;
+      box-shadow: 0 0 0 3px rgba(34, 55, 113, 0.12) !important;
+    }
+
+    /* Hover state: viền đậm hơn 1 chút */
+    #main-content-wrapper .select2-container .select2-selection--single:hover {
+      border-color: #94a3b8 !important;
+    }
+
+    /* Text render — center dọc bằng flex, KHÔNG dùng line-height (gây lệch) */
+    #main-content-wrapper .select2-container--default .select2-selection--single .select2-selection__rendered {
+      line-height: 1 !important;
+      padding: 2px 32px 1px 12px !important;
+      color: #0f172a !important;
+      font-size: 14px !important;
+      font-weight: 400 !important;
+      width: 100% !important;
+      display: flex !important;
+      align-items: center !important;
+      height: 100% !important;
+      margin: 0 !important;
+    }
+
+    /* Placeholder select2 — đậm hơn cho dễ nhìn (user global request) */
+    #main-content-wrapper .select2-container--default .select2-selection--single .select2-selection__placeholder {
+      color: #64748b !important;
+      font-weight: 500 !important;
+      font-style: normal !important;
+      opacity: 1 !important;
+    }
+
+    /* Placeholder input/textarea — global đậm hơn */
+    #main-content-wrapper input.form-control::placeholder,
+    #main-content-wrapper input::placeholder,
+    #main-content-wrapper textarea::placeholder,
+    #main-content-wrapper textarea.form-control::placeholder {
+      color: #64748b !important;
+      opacity: 1 !important;
+    }
+
+    /* Text đã nhập trong input/select đậm hơn */
+    #main-content-wrapper input.form-control,
+    #main-content-wrapper select.form-control,
+    #main-content-wrapper textarea.form-control {
+      color: #0f172a !important;
+      font-weight: 500 !important;
+    }
+
+    /* Mũi tên: căn giữa dọc, cách viền phải 8px */
+    #main-content-wrapper .select2-container--default .select2-selection--single .select2-selection__arrow {
+      height: 100% !important;
+      top: 0px;
+      right: 8px !important;
+      width: 20px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+
+    #main-content-wrapper .select2-container--default .select2-selection--single .select2-selection__arrow b {
+      border-color: #d1d1d1 transparent transparent transparent !important;
+      border-width: 5px 5px 0 5px !important;
+      position: static !important;
+      margin: 0 !important;
+    }
+
+    #main-content-wrapper .select2-container--open .select2-selection__arrow b {
+      border-color: transparent transparent #d1d1d1 transparent !important;
+      border-width: 0 5px 6px 5px !important;
+    }
+
+    /* Dropdown khi mở — max spec + shadow to + border đậm để dropdown "nhảy ra"
+         hoàn toàn khỏi container. Bố cục shadow 3 lớp cho depth chuẩn. */
+    html body .select2-container,
+    html body>.select2-container,
+    html body .select2-container--default .select2-dropdown {
+      z-index: 99999 !important;
+    }
+
+    html body .select2-container--default .select2-dropdown {
+      border: 2px solid #223771 !important;
+      border-radius: 10px !important;
+      box-shadow:
+        0 0 0 1px rgba(34, 55, 113, 0.05),
+        0 4px 12px rgba(15, 23, 42, 0.12),
+        0 20px 40px rgba(15, 23, 42, 0.25) !important;
+      margin-top: 8px !important;
+      background: #ffffff !important;
+      padding: 6px 0 !important;
+      overflow: hidden !important;
+    }
+
+    html body .select2-container--default .select2-dropdown--above {
+      margin-top: 0 !important;
+      margin-bottom: 8px !important;
+      box-shadow:
+        0 0 0 1px rgba(34, 55, 113, 0.05),
+        0 -4px 12px rgba(15, 23, 42, 0.12),
+        0 -20px 40px rgba(15, 23, 42, 0.25) !important;
+    }
+
+    .select2-container--default .select2-search--dropdown {
+      padding: 6px 8px !important;
+    }
+
+    .select2-container--default .select2-search--dropdown .select2-search__field {
+      border: 1px solid #cbd5e1 !important;
+      border-radius: 6px !important;
+      padding: 6px 10px !important;
+      font-size: 13px !important;
+      outline: none !important;
+    }
+
+    .select2-container--default .select2-search--dropdown .select2-search__field:focus {
+      border-color: #223771 !important;
+      box-shadow: 0 0 0 2px rgba(34, 55, 113, 0.1) !important;
+    }
+
+    .select2-container--default .select2-results__options {
+      max-height: 250px !important;
+    }
+
+    .select2-container--default .select2-results__option {
+      padding: 8px 14px !important;
+      font-size: 14px !important;
+      color: #0f172a !important;
+      transition: background .1s ease;
+    }
+
+    .select2-container--default .select2-results__option--highlighted[aria-selected] {
+      background: #223771 !important;
+      color: #ffffff !important;
+    }
+
+    .select2-container--default .select2-results__option[aria-selected="true"] {
+      background: #f0f3fd !important;
+      color: #223771 !important;
+      font-weight: 600 !important;
+    }
+
+    /* Floating label trong .box-search-hocphan (css-new/main.css:4010): mặc định
+         12px + #888 → hơi bé + mờ. Bump lên 13px + color đậm hơn cho dễ đọc. */
+    #main-content-wrapper .box-search-hocphan .input-label-left label,
+    #main-content-wrapper .filter-4-item .input-label-left label {
+      font-size: 14px !important;
+      color: #888 !important;
+      font-weight: 400 !important;
+      padding: 0 8px !important;
+      line-height: 38px !important;
+      margin-top: 0 !important;
+    }
+
+    /* Filter row: button "Xem danh sách" / "Tìm kiếm" phải align cuối dòng với
+         input row (tránh nằm lệch trên khi input wrap 2 dòng) */
+    #main-content-wrapper .filter-4-item {
+      align-items: flex-end !important;
+    }
+
+    #main-content-wrapper .filter-4-item .flex-shrink-0 {
+      display: flex;
+      align-items: flex-end;
+      padding-bottom: 10px;
+    }
+
+    #main-content-wrapper .filter-4-item .flex-shrink-0 .btn {
+      height: 38px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      margin-top: 0 !important;
+    }
+
+    /* ─── [SPA-ALT] Pattern module SPA-native KHÔNG dùng .card.today-card
+         (vd phieu.html khảo sát) — dùng .box-shadow.zone-bus / .register-wish /
+         .group-title. Add card-like border + section title + button để đồng bộ. ─── */
+
+    /* Wrapper container thay .card.today-card — LOẠI TRỪ .modal (nếu áp vào modal
+         wrapper sẽ vỡ layout modal vì modal cần transparent frame ngoài) */
+    #main-content-wrapper .box-shadow.zone-bus:not(.modal),
+    #main-content-wrapper .register-wish:not(.modal),
+    #main-content-wrapper .zone-bus.box-shadow:not(.modal) {
+      background: #ffffff !important;
+      border: 1px solid #e2e8f0 !important;
+      border-radius: 10px !important;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06) !important;
+      padding: 0 !important;
+      margin-bottom: 16px !important;
+    }
+
+    /* Modal riêng — dùng cho .modal.register-wish, .modal.modaldangky, v.v...
+         Ép proper Bootstrap 5 modal style + backdrop */
+    #main-content-wrapper .modal,
+    body>.modal {
+      /* background: transparent !important; */
+      border: 0 !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+
+    #main-content-wrapper .modal .modal-content,
+    body>.modal .modal-content {
+      background: #ffffff !important;
+      border: 1px solid #e2e8f0 !important;
+      border-radius: 10px !important;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.2) !important;
+    }
+
+    #main-content-wrapper .modal .modal-header,
+    body>.modal .modal-header {
+      background: #223771 !important;
+      color: #ffffff !important;
+      border-bottom: 0 !important;
+      border-top-left-radius: 10px !important;
+      border-top-right-radius: 10px !important;
+      padding: 12px 18px !important;
+    }
+
+    #main-content-wrapper .modal .modal-header .modal-title,
+    #main-content-wrapper .modal .modal-header p,
+    #main-content-wrapper .modal .modal-header i,
+    body>.modal .modal-header .modal-title,
+    body>.modal .modal-header p,
+    body>.modal .modal-header i {
+      color: #ffffff !important;
+      font-weight: 500 !important;
+    }
+
+    #main-content-wrapper .modal .modal-header .btn-close,
+    body>.modal .modal-header .btn-close {
+      filter: invert(1) brightness(2) !important;
+      opacity: 0.8 !important;
+    }
+
+    #main-content-wrapper .modal .modal-header .btn-close:hover,
+    body>.modal .modal-header .btn-close:hover {
+      opacity: 1 !important;
+    }
+
+    #main-content-wrapper .modal .modal-body,
+    body>.modal .modal-body {
+      padding: 16px 18px;
+      background: #ffffff !important;
+    }
+
+    #main-content-wrapper .modal .modal-footer,
+    body>.modal .modal-footer {
+      padding: 15px 18px !important;
+      border-top: 1px solid #e2e8f0 !important;
+    }
+
+    /* Form top (filter row đầu module) — spacing */
+    #main-content-wrapper .form-top {
+      margin-bottom: 15px;
+    }
+
+    #main-content-wrapper .form-top .form-item .form-control,
+    #main-content-wrapper .form-top .input-group input.form-control {
+      height: 38px !important;
+      border: 1px solid #d1d1d1 !important;
+      border-radius: 8px !important;
+      font-size: 14px !important;
+    }
+
+    #main-content-wrapper .form-top .form-control:focus {
+      border-color: #cbd5e1 !important;
+      box-shadow: none !important;
+    }
+
+    /* Section title dùng .group-title (thay .color-blue) */
+    #main-content-wrapper .group-title,
+    #main-content-wrapper .group-title.pl0 {
+      margin-bottom: 8px;
+    }
+
+    #main-content-wrapper .group-title p,
+    #main-content-wrapper .group-title.pl0 p {
+      color: var(--color-blue) !important;
+      font-weight: 700 !important;
+      font-size: 15px !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+      margin: 0 !important;
+    }
+
+    #main-content-wrapper .group-title p i,
+    #main-content-wrapper .group-title.pl0 p i {
+      color: var(--color-blue-dark) !important;
+      font-size: 15px;
+      margin-right: 5px !important;
+    }
+
+    /* Button search combo — .btn-search + .btn-default → dask-blue solid */
+    #main-content-wrapper .btn.btn-search,
+    #main-content-wrapper .btn.btn-search.btn-default,
+    #main-content-wrapper div.btn.btn-search,
+    #main-content-wrapper div.btn.btn-search.btn-default {
+      background: #223771 !important;
+      background-image: none !important;
+      color: #ffffff !important;
+      border: 1px solid #223771 !important;
+      border-radius: 6px !important;
+      height: 38px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      padding: 0 14px !important;
+      cursor: pointer !important;
+      font-weight: 500 !important;
+    }
+
+    #main-content-wrapper .btn.btn-search:hover,
+    #main-content-wrapper .btn.btn-search.btn-default:hover {
+      background: #1c2e5f !important;
+      border-color: #1c2e5f !important;
+    }
+
+    #main-content-wrapper .btn.btn-search i,
+    #main-content-wrapper .btn.btn-search span,
+    #main-content-wrapper .btn.btn-search .lang,
+    #main-content-wrapper .btn.btn-search * {
+      color: #ffffff !important;
+    }
+
+    /* Table plain trong SPA-alt module (không có .table-responsive wrapper) */
+    #main-content-wrapper .table.tblPhieu,
+    #main-content-wrapper .table.transcrip-table {
+      /* margin-top: 4px !important; */
+      /* border: 1px solid #e2e8f0 !important; */
+      /* border-radius: 6px !important; */
+    }
+
+    /* Bump toàn bộ table header trong SPA scope — cover cả các bảng không có
+         class .bg-th (vd tblPhieu). Nền tím nhạt + chữ đậm + border dày dưới. */
+    #main-content-wrapper .table>thead>tr>th,
+    #main-content-wrapper table.table>thead>tr>th {
+      background: #f0f3fd !important;
+      color: #0f172a !important;
+      font-weight: 700 !important;
+      font-size: 13px !important;
+      padding: 10px 12px !important;
+      border-bottom: 1px solid #d1d1d1 !important;
+      vertical-align: middle !important;
+    }
+
+    /* Body row có border + hover nhẹ để tách khối */
+    #main-content-wrapper .table>tbody>tr>td {
+      padding: 10px !important;
+      color: #0f172a;
+      vertical-align: middle !important;
+    }
+
+    #main-content-wrapper .table-hover>tbody>tr:hover,
+    #main-content-wrapper .table-hover>tbody>tr:hover>td {
+      background: #f8fafc !important;
+      color: #0f172a !important;
+    }
+
+    /* Bảng có class .table-noborder — bo góc + shadow nhẹ để thấy khối */
+    #main-content-wrapper .table.table-noborder {
+      border-collapse: separate !important;
+      border-spacing: 0 !important;
+      overflow: hidden !important;
+      margin-bottom: 10px;
+    }
+
+    /* ─── [SPA-ADMINLTE-COMPAT] Cover module cu dung .box, .box-body, .box-header
+         nhung load trong SPA shell (vd phancongphamvi.html cua Dang ky hoc).
+         Add card-like style tuong tu compat trong indexi.aspx. ─── */
+    #main-content-wrapper .box {
+      position: relative;
+      background: #ffffff !important;
+      border: 1px solid #e2e8f0 !important;
+      border-top: 1px solid #e2e8f0 !important;
+      border-radius: 8px !important;
+      margin-bottom: 14px !important;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04) !important;
+    }
+
+    #main-content-wrapper .box.box-solid {
+      border-top: 1px solid #e2e8f0 !important;
+    }
+
+    #main-content-wrapper .box.box-shadow {
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06) !important;
+    }
+
+    #main-content-wrapper .box-header {
+      padding: 10px 15px 5px 15px;
+      /* border-bottom: 1px solid #e2e8f0 !important; */
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      flex-wrap: wrap !important;
+    }
+
+    #main-content-wrapper .box-body {
+      padding: 15px 0 !important;
+      overflow: visible !important;
+      max-height: none !important;
+    }
+
+    #main-content-wrapper .box-footer {
+      padding: 12px 16px !important;
+      border-top: 1px solid #e2e8f0 !important;
+    }
+
+    #main-content-wrapper .box-title {
+      font-weight: 700 !important;
+      /* font-size: 15px !important; */
+      color: var(--color-blue) !important;
+      margin: 0 !important;
+    }
+
+    #main-content-wrapper .box-title.color-blue {
+      color: #223771 !important;
+    }
+
+    /* Padding/margin helpers module AdminLTE */
+    #main-content-wrapper .pd0 {
+      padding: 0 !important;
+    }
+
+    #main-content-wrapper .pd10 {
+      padding: 10px !important;
+    }
+
+    #main-content-wrapper .pd15 {
+      padding: 15px !important;
+    }
+
+    #main-content-wrapper .pd20 {
+      padding: 20px;
+    }
+
+    #main-content-wrapper .pt10 {
+      padding-top: 10px !important;
+    }
+
+    #main-content-wrapper .pt15 {
+      padding-top: 15px !important;
+    }
+
+    #main-content-wrapper .pt20 {
+      padding-top: 20px !important;
+    }
+
+    #main-content-wrapper .pb10 {
+      padding-bottom: 10px !important;
+    }
+
+    #main-content-wrapper .pb15 {
+      padding-bottom: 15px !important;
+    }
+
+    #main-content-wrapper .pl0 {
+      padding-left: 0 !important;
+    }
+
+    #main-content-wrapper .pl15 {
+      padding-left: 15px !important;
+    }
+
+    #main-content-wrapper .pl20 {
+      padding-left: 20px !important;
+    }
+
+    #main-content-wrapper .pr10 {
+      padding-right: 10px !important;
+    }
+
+    #main-content-wrapper .pr20 {
+      padding-right: 20px !important;
+    }
+
+    #main-content-wrapper .mt-10 {
+      margin-top: 10px !important;
+    }
+
+    #main-content-wrapper .mt-20 {
+      margin-top: 20px !important;
+    }
+
+    #main-content-wrapper .ml-10 {
+      margin-left: 10px !important;
+    }
+
+    #main-content-wrapper .ml-20 {
+      margin-left: 20px !important;
+    }
+
+    #main-content-wrapper .mb-10 {
+      margin-bottom: 10px !important;
+    }
+
+    #main-content-wrapper .mb-20 {
+      margin-bottom: 20px !important;
+    }
+
+    #main-content-wrapper .item-search {
+      padding: 6px 10px;
+    }
+
+    #main-content-wrapper .table-noborder {
+      border: 0 !important;
+    }
+
+    #main-content-wrapper .pull-right {
+      float: right !important;
+    }
+
+    #main-content-wrapper .pull-left {
+      float: left !important;
+    }
+
+    /* Multi-table float layout (vd phancongphamvi.html: 6 table float:left width:300px)
+         → khi row counts khác nhau, table thấp/cao lệch. Align top + gap giữa các table. */
+    #main-content-wrapper .scroll-table-x {
+      display: flex !important;
+      flex-wrap: wrap !important;
+      /* gap: 12px !important; */
+      align-items: flex-start !important;
+      overflow-x: auto;
+    }
+
+    #main-content-wrapper .scroll-table-x>table {
+      float: none !important;
+      margin: 0 !important;
+      vertical-align: top !important;
+    }
+
+    #main-content-wrapper .scroll-table-x>table td,
+    #main-content-wrapper .scroll-table-x>table th {
+      vertical-align: middle !important;
+    }
+
+    /* Button trong table cell (vd "Chi tiết", "Xem" của module Khảo sát render
+         qua kehoach.js:1009 dùng .btn.btn-default) — .btn-default trong SPA shell
+         không có bg/color → hover row làm chữ trắng invisible. Ép dask-blue solid +
+         chữ trắng, kích thước nhỏ gọn khớp cell. */
+    #main-content-wrapper .table td .btn.btn-default,
+    #main-content-wrapper .table td a.btn.btn-default,
+    #main-content-wrapper .table td span>a.btn.btn-default,
+    #main-content-wrapper .table-hover>tbody>tr:hover>td .btn.btn-default,
+    #main-content-wrapper .table-hover>tbody>tr:hover>td a.btn.btn-default {
+      background: rgba(13, 110, 253, 0.1) !important;
+      background-image: none !important;
+      color: var(--color-blue) !important;
+      border: 1px solid rgba(13, 110, 253, 0.3) !important;
+      border-radius: 4px !important;
+      padding: 6px 10px !important;
+      font-size: 13px !important;
+      font-weight: 500 !important;
+      display: inline-block !important;
+      min-width: auto !important;
+      cursor: pointer !important;
+      text-decoration: none !important;
+      line-height: 18px !important;
+    }
+
+    #main-content-wrapper .table td .btn.btn-default:hover,
+    #main-content-wrapper .table td a.btn.btn-default:hover {
+      background: var(--color-blue) !important;
+      border-color: var(--color-blue) !important;
+      color: #ffffff !important;
+    }
+
+    /* Đảm bảo text/icon bên trong button trong cell luôn trắng — không bị inherit
+         từ row hover color rule */
+    #main-content-wrapper .table td .btn.btn-default *,
+    #main-content-wrapper .table-hover>tbody>tr:hover>td .btn.btn-default * {
+      color: var(--color-blue) !important;
+      font-weight: 700;
+    }
+
+    /* ═══ [DISABLED 2026-08-12] FIX MODAL BLEED-THROUGH — khi modal mo, an TOAN BO
+         #main-content-wrapper de khong container nao xuyen qua backdrop. ═══
+         User feedback: an het main-content khien khong biet modal thong bao xuat hien
+         tu form nao -> comment lai, giu backdrop opacity thap de van thay form phia sau. */
+    /*
+      body.modal-open #main-content-wrapper,
+      body:has(.modal.show) #main-content-wrapper,
+      body:has(.modal.in) #main-content-wrapper {
+        visibility: hidden !important;
+      }
+      */
+    /* Modal (o bat ky dau — body level via #alert hoac inline trong module) va backdrop
+         luon hien khi mo. Child visibility:visible override parent's visibility:hidden. */
+    body.modal-open .modal.show,
+    body.modal-open .modal.in,
+    body.modal-open .modal-backdrop,
+    body:has(.modal.show) .modal.show,
+    body:has(.modal.in) .modal.in,
+    body:has(.modal.show) .modal-backdrop,
+    body:has(.modal.in) .modal-backdrop {
+      visibility: visible !important;
+    }
+
+    /* Select2 dropdown khi open (append vao body) — z-index cao hon modal (BS default 1055) */
+    .select2-container--open {
+      z-index: 20000 !important;
+    }
+
+    /* Modal & backdrop z-index cao de dam bao che het */
+    .modal.show,
+    .modal.in {
+      z-index: 10055 !important;
+    }
+
+    .modal-backdrop.show,
+    .modal-backdrop.in {
+      z-index: 10050 !important;
+      opacity: 0.5 !important;
+      background-color: #0f172a !important;
+    }
+
+    /* ═══ [FIX 2026-08-12] Khi modal open, select2-container base (line 680) o
+         z-index 99999 cao hon backdrop (10050) -> user van chon duoc dropdown xuyen
+         qua modal. Reset ve auto khi modal open de backdrop chan pointer events. ═══ */
+    body.modal-open .select2-container,
+    body.modal-open>.select2-container,
+    body:has(.modal.show) .select2-container,
+    body:has(.modal.show)>.select2-container,
+    body:has(.modal.in) .select2-container,
+    body:has(.modal.in)>.select2-container,
+    body:has(.cke_dialog_container) .select2-container,
+    body:has(.cke_dialog_container)>.select2-container,
+    body:has(.cke_dialog_background_cover) .select2-container,
+    body:has(.cke_dialog_background_cover)>.select2-container {
+      z-index: auto !important;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="header fixed-top">
+    <div class="top-nav">
+      <div class="sidebar-bars">
+        <i class="fa-light fa-bars-sort"> </i>
+      </div>
+      <div class="head-logo">
+        <a href="../index.html">
+          <img class="logo-icon" src="../assets/images/logo/logo-icon.png" />
+          <img class="logo-text" src="../assets/images/logo/logo-text.png" />u ra
+        </a>
+      </div>
+      <div class="head-search-form">
+        <div class="head-search-toggle">
+          <i class="fal fa-search"></i>
+        </div>
+        <div class="head-search-box">
+          <div class="form">
+            <input type="text" class="search-imput" placeholder="Tìm kiếm thông tin" />
+            <button class="search-btn">
+              <i class="fal fa-search"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="main-menu">
+        <ul class="list-unstyled d-none">
+          <li class="item">
+            <a class="menu-link" href="../index.html">
+              <i class="fal fa-home"></i>
+              <span>Trang chủ</span>
+            </a>
+          </li>
+          <li class="item">
+            <a class="menu-link" href="../dashboard.html">
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="item">
+            <a class="menu-link" href="../modul.html">
+              <span>Modul</span>
+            </a>
+          </li>
+          <li class="item">
+            <a class="menu-link" href="../chucnang-cuaban.html">
+              <span>Chức năng của bạn</span>
+            </a>
+          </li>
+          <li class="item">
+            <a class="menu-link" href="../tintuc.html">
+              <span>Tin tức</span>
+            </a>
+          </li>
+        </ul>
+        <div class="menu-toggle">
+          <i class="fal fa-bars"></i>
+        </div>
+      </div>
+      <div class="account-group">
+        <div class="dropdown d-none">
+          <div class="item" data-bs-toggle="dropdown">
+            <i class="fal fa-circle-check"></i>
+            <span>3</span>
+          </div>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#">Action</a></li>
+            <li><a class="dropdown-item" href="#">Another action</a></li>
+            <li><a class="dropdown-item" href="#">Something else here</a></li>
+          </ul>
+        </div>
+        <div class="dropdown d-none">
+          <div class="item message" data-bs-toggle="dropdown">
+            <i class="fal fa-messages"></i>
+            <span>3</span>
+          </div>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#">Action</a></li>
+            <li><a class="dropdown-item" href="#">Another action</a></li>
+            <li><a class="dropdown-item" href="#">Something else here</a></li>
+          </ul>
+        </div>
+        <div class="dropdown d-none">
+          <div class="item noti" data-bs-toggle="dropdown">
+            <i class="fal fa-bell"></i>
+            <span>9+</span>
+          </div>
+          <ul class="dropdown-menu box-notify">
+            <li class="lable-notify d-flex justify-content-between">
+              <h3 class="d-flex">
+                <img src="./images/notification.svg" style="width: 26px; margin-right: 6px" />
+                Thông báo
+              </h3>
+              <i class="fa-regular fa-xmark" style="margin-top: 5px"></i>
+            </li>
+            <li class="list-notify">
+              <ul>
+                <li class="chuadoc">
+                  <a href="#">
+                    <div class="item-notify">
+                      <div class="icon-notify">
+                        <i class="fa-solid fa-circle-dollar-to-slot color-blue"></i>
+                      </div>
+                      <div class="content-notify">
+                        Thông báo thay đổi lịch dảng dậy lớp ABC Phương pháp
+                        tính và MAtLAB
+                        <p class="date-notify">
+                          <i class="fa-light fa-calendar-clock"></i>16:02
+                          <i class="fa-solid fa-circle fw-bold"></i> Thứ ba
+                          20/1/2026
+                        </p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+                <li class="dadoc">
+                  <a href="#">
+                    <div class="item-notify">
+                      <div class="icon-notify">
+                        <img src="./images/money-bag.png" class="img-notify" />
+                      </div>
+                      <div class="content-notify">
+                        Thông báo thay đổi lịch dảng dậy lớp ABC Phương pháp
+                        tính và MAtLAB
+                        <p class="date-notify">
+                          <i class="fa-light fa-calendar-clock"></i>16:02
+                          <i class="fa-solid fa-circle fw-bold"></i> Thứ ba
+                          20/1/2026
+                        </p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+                <li class="chuadoc">
+                  <a href="#">
+                    <div class="item-notify">
+                      <div class="icon-notify">
+                        <i class="fa-solid fa-circle-dollar-to-slot color-blue"></i>
+                      </div>
+                      <div class="content-notify">
+                        <b>Tín hiệu và hệ thống</b><br />
+                        Đã có điểm môn quá trình tín hiệu và hệ thống
+                        <p class="date-notify">
+                          <i class="fa-light fa-calendar-clock"></i>16:02
+                          <i class="fa-solid fa-circle fw-bold"></i> Thứ ba
+                          20/1/2026
+                        </p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+                <li class="dadoc">
+                  <a href="#">
+                    <div class="item-notify">
+                      <div class="icon-notify">
+                        <img src="./images/newspaper.svg" class="img-notify" />
+                      </div>
+                      <div class="content-notify">
+                        Thông báo thay đổi lịch dảng dậy lớp ABC Phương pháp
+                        tính và MAtLAB
+                        <p class="date-notify">
+                          <i class="fa-light fa-calendar-clock"></i>16:02
+                          <i class="fa-solid fa-circle fw-bold"></i> Thứ ba
+                          20/1/2026
+                        </p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+                <li class="dadoc">
+                  <a href="#">
+                    <div class="item-notify">
+                      <div class="icon-notify">
+                        <img src="./images/newspaper.svg" class="img-notify" />
+                      </div>
+                      <div class="content-notify">
+                        Thông báo thay đổi lịch dảng dậy lớp ABC Phương pháp
+                        tính và MAtLAB
+                        <p class="date-notify">
+                          <i class="fa-light fa-calendar-clock"></i>16:02
+                          <i class="fa-solid fa-circle fw-bold"></i> Thứ ba
+                          20/1/2026
+                        </p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+                <li class="dadoc">
+                  <a href="#">
+                    <div class="item-notify">
+                      <div class="icon-notify">
+                        <img src="./images/newspaper.svg" class="img-notify" />
+                      </div>
+                      <div class="content-notify">
+                        Thông báo thay đổi lịch dảng dậy lớp ABC Phương pháp
+                        tính và MAtLAB
+                        <p class="date-notify">
+                          <i class="fa-light fa-calendar-clock"></i>16:02
+                          <i class="fa-solid fa-circle fw-bold"></i> Thứ ba
+                          20/1/2026
+                        </p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+                <li class="dadoc">
+                  <a href="#">
+                    <div class="item-notify">
+                      <div class="icon-notify">
+                        <img src="./images/newspaper.svg" class="img-notify" />
+                      </div>
+                      <div class="content-notify">
+                        Thông báo thay đổi lịch dảng dậy lớp ABC Phương pháp
+                        tính và MAtLAB
+                        <p class="date-notify">
+                          <i class="fa-light fa-calendar-clock"></i>16:02
+                          <i class="fa-solid fa-circle fw-bold"></i> Thứ ba
+                          20/1/2026
+                        </p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+                <li class="dadoc">
+                  <a href="#">
+                    <div class="item-notify">
+                      <div class="icon-notify">
+                        <img src="./images/newspaper.svg" class="img-notify" />
+                      </div>
+                      <div class="content-notify">
+                        Thông báo thay đổi lịch dảng dậy lớp ABC Phương pháp
+                        tính và MAtLAB
+                        <p class="date-notify">
+                          <i class="fa-light fa-calendar-clock"></i>16:02
+                          <i class="fa-solid fa-circle fw-bold"></i> Thứ ba
+                          20/1/2026
+                        </p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+        <div class="dropdown">
+          <div class="item" data-bs-toggle="dropdown">
+            <img src="../assets/images/avatar.jpg" class="avatar" />
+          </div>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#">Action</a></li>
+            <li><a class="dropdown-item" href="#">Another action</a></li>
+            <li><a class="dropdown-item" href="#">Something else here</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="main-wrap">
+    <div class="left-sidebar">
+      <div class="sidebar-menu">
+        <div class="accordion" id="sidebar-menu">
+          <div class="sidebar-menu-item">
+            <a class="sidebar-menu-header collapsed" href="../index.html">
+              <i class="fa-light fa-house-window item-icon"></i>
+              <span>Dashboads</span>
+            </a>
+          </div>
+          <!-- siderbar menu  item -->
+          <div class="sidebar-menu-item">
+            <a class="sidebar-menu-header collapsed" data-bs-toggle="collapse" data-bs-target="#collapse1"
+              href="javascrip:void(0)" aria-expanded="true">
+              <i class="fa-light fa-chalkboard-user item-icon"></i>
+              <span>Giảng viên</span>
+              <i class="fal fa-chevron-right item-arrow-icon"></i>
+              <i class="fal fa-chevron-down item-arrow-icon down"></i>
+            </a>
+            <div class="sidebar-menu-sub collapse" id="collapse1" data-bs-parent="#sidebar-menu">
+              <div class="sidebar-menu-sub-content">
+                <a class href="#">Thông tin chung</a>
+                <a href="#">Nhập điểm theo lớp học phần</a>
+                <a href="#">Điểm danh theo lớp học phần</a>
+                <a href="#">Tra cứu hồ sơ sinh viên</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- siderbar menu  item -->
+          <div class="sidebar-menu-item">
+            <a class="sidebar-menu-header collapsed" data-bs-toggle="collapse" data-bs-target="#collapse2"
+              href="javascrip:void(0)">
+              <i class="fa-light fa-building-user item-icon"> </i>
+              <span>Trưởng khoa</span>
+              <i class="fal fa-chevron-right item-arrow-icon"></i>
+              <i class="fal fa-chevron-down item-arrow-icon down"></i>
+            </a>
+            <div class="sidebar-menu-sub collapse" id="collapse2" data-bs-parent="#sidebar-menu">
+              <div class="sidebar-menu-sub-content">
+                <a href="#">Profile demo 1</a>
+                <a href="#">Profile demo 2</a>
+                <a href="#">Profile demo 3</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- siderbar menu  item -->
+          <div class="sidebar-menu-item">
+            <a class="sidebar-menu-header collapsed" data-bs-toggle="collapse" data-bs-target="#collapse3"
+              href="javascrip:void(0)">
+              <i class="fa-solid fa-users item-icon"></i>
+              <span>Nhân sự</span>
+              <i class="fal fa-chevron-right item-arrow-icon"></i>
+              <i class="fal fa-chevron-down item-arrow-icon down"></i>
+            </a>
+            <div class="sidebar-menu-sub collapse" id="collapse3" data-bs-parent="#sidebar-menu">
+              <div class="sidebar-menu-sub-content">
+                <a class="" href="nhansu/nhansu-chitiet.html" data-position="0">Kế hoạch tuyển dụng</a>
+                <a href="nhansu/nhansu-chitiet.html" data-position="1">Đề xuất tuyển dụng</a>
+              </div>
+            </div>
+          </div>
+          <!-- siderbar menu  item -->
+          <div class="sidebar-menu-item">
+            <a class="sidebar-menu-header collapsed" data-bs-toggle="collapse" data-bs-target="#collapse4"
+              href="javascrip:void(0)">
+              <i class="fa-light fa-users-gear item-icon"></i>
+              <span>Thiết lập quản trị nhóm</span>
+              <i class="fal fa-chevron-right item-arrow-icon"></i>
+              <i class="fal fa-chevron-down item-arrow-icon down"></i>
+            </a>
+            <div class="sidebar-menu-sub collapse" id="collapse4" data-bs-parent="#sidebar-menu">
+              <div class="sidebar-menu-sub-content">
+                <a class="" href="#" data-position="0">Danh sách thiết lập quản trị nhóm</a>
+                <a href="QuanTriNhom.html" data-position="1">Quản trị nhóm</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- siderbar menu  item -->
+          <div class="sidebar-menu-item active">
+            <a class="sidebar-menu-header" data-bs-toggle="collapse" data-bs-target="#collapse5"
+              href="javascrip:void(0)">
+              <i class="far fa-user-graduate item-icon"></i>
+              <span>Sinh viên</span>
+              <i class="fal fa-chevron-right item-arrow-icon"></i>
+              <i class="fal fa-chevron-down item-arrow-icon down"></i>
+            </a>
+            <div class="sidebar-menu-sub collapse show" id="collapse5" data-bs-parent="#sidebar-menu">
+              <div class="sidebar-menu-sub-content">
+                <a class="active" href="HTML-SV-Dang-Ky-Mua-Dong-Phuc.html" data-position="1">Đăng ký mua đồng phục -
+                  bảo hiểm</a>
+                <a href="#" data-position="0">Quản lý dm nghề nghiệp</a>
+                <a href="QuanTriNhom.html" data-position="1">Quản lý vị trí công việc</a>
+                <a href="QuanTriNhom.html" data-position="1">Quan hệ lao động</a>
+                <a href="QuanTriNhom.html" data-position="1">Phân công lao động</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="main-content">
+      <!-- content -->
+      <div class="overlay"></div>
+      <div class="content-tab no-tab">
+        <div class="d-flex justify-content-between">
+          <div class="nav-content-left">
+            <p class="link">
+              <a href="#">Quản lý Tuyển Sinh</a>
+              <i class="fal fa-angle-right"></i>
+              <a href="#">Kế hoạch tuyển sinh</a>
+            </p>
+          </div>
+          <div class="nav-content-right">
+            <a class="d-block text-right" href>
+              <i class="fas fa-question-circle"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="box-content pt-0 pl20 pr20">
+        <!-- Danh sách kế hoạch tuyển sinh -->
+        <div class="box box-solid box-shadow pd0 aps-keHoach-tuyenSinh">
+          <div class="form-top box-search">
+            <div class="row">
+              <div class="col-lg-6 col-sm-6 item-search">
+                <input id="txtSearch_TuKhoa" class="form-control" placeholder="Nhập từ khóa tìm kiếm">
+              </div>
+              <div class="col-lg-3 col-md-3 col-ms-6 item-search">
+                <div class="form-item d-flex form-add-info flex-grow-1">
+                  <div class="input-group no-icon">
+                    <i class="fal fa-angle-down"></i>
+                    <select class="form-select" aria-label="Default select example">
+                      <option selected="">Loại nguồn tuyển sinh</option>
+                      <option value="1">Đợt 1</option>
+                      <option value="2">Đợt 2</option>
+                      <option value="3">Đợt 3</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-3 col-md-3 col-ms-6 item-search">
+                <div class="form-item d-flex form-add-info flex-grow-1">
+                  <div class="input-group no-icon">
+                    <i class="fal fa-angle-down"></i>
+                    <select class="form-select" aria-label="Default select example">
+                      <option selected="">Phương án tuyển sinh</option>
+                      <option value="1">Đợt 1</option>
+                      <option value="2">Đợt 2</option>
+                      <option value="3">Đợt 3</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <!--  -->
+              <div class="col-lg-2 col-sm-2 item-search">
+                <input id="txtSearch_TuKhoa" class="form-control" placeholder="Năm tuyển sinh">
+              </div>
+              <div class="col-lg-2 col-sm-2 item-search">
+                <input id="txtSearch_TuKhoa" class="form-control" placeholder="Năm học">
+              </div>
+              <div class="col-lg-2 col-sm-2 item-search">
+                <input id="txtSearch_TuKhoa" class="form-control" placeholder="Học kỳ">
+              </div>
+
+              <div class="col-lg-2 col-md-2 col-ms-6 item-search">
+                <div class="form-item d-flex form-add-info flex-grow-1">
+                  <div class="input-group no-icon">
+                    <i class="fal fa-angle-down"></i>
+                    <select class="form-select" aria-label="Default select example">
+                      <option selected="">Tình trạng kế hoạch</option>
+                      <option value="1">Đợt 1</option>
+                      <option value="2">Đợt 2</option>
+                      <option value="3">Đợt 3</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-2 col-md-2 col-ms-6 item-search">
+                <div class="form-item d-flex form-add-info flex-grow-1">
+                  <div class="input-group no-icon">
+                    <i class="fal fa-angle-down"></i>
+                    <select class="form-select" aria-label="Default select example">
+                      <option selected="">Còn hiệu lực không</option>
+                      <option value="1">1</option>
+                      <option value="2">0</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-2 col-md-2 col-ms-6 item-search pl0">
+                <div class="d-flex align-items-center">
+                  <a id="btnSearch" class="btn btn-default btn-search"><i class="fa fa-search"></i>
+                    <span class="lang" key="">Tìm kiếm</span></a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="box box-solid mt-15 aps-list-keHoach-tuyenSinh">
+            <div class="box-header d-flex pt20 pl20 pr20 pb0">
+              <h3 class="box-title line-38" style="padding: 0 !important">
+                <i class="fa-light fa-list-timeline line-38"></i> Danh sách kế hoạch tuyển sinh
+                <span class="pull-right badge bg-light-blue ml-15">
+                  <span id="lblVeThang_Tong"> 20</span>
+                </span>
+              </h3>
+              <div class="box-list-btn pull-right d-flex">
+                <a id="btnXoaVeThang" class="btn btn-danger d-none"><i class="fa fa-trash"></i>Xóa</a>
+                <a class="btn btn-primary" href="" data-bs-toggle="modal" data-bs-target="#them-moi">
+                  <i class="fa-regular fa-plus"></i> Thêm mới</a>
+              </div>
+            </div>
+            <div class="box-body pl20 pr20 pb10 mt-10">
+              <div class="aps-table-select scroll-table-x pb-0 mb-20">
+                <table id="tblKHtyensinh" class="table table-hover table-bordered table-noborder tblKHtyensinh">
+                  <thead>
+                    <tr>
+                      <th class=ed td-center w-50px">Stt</th>
+                      <th class="td-left">Mã</th>
+                      <th class="td-left">Tên</th>
+                      <th class="td-left">Loại nguồn tuyển sinh</th>
+                      <th class="td-left">Phương án tuyển sinh </th>
+                      <th class="td-center">Năm tuyển sinh</th>
+                      <th class="td-center">Năm học</th>
+                      <th class="td-center">Học kỳ</th>
+                      <th class="td-center">Các đợt tuyển sinh</th>
+                      <th class="td-center">Phân công nhân sự</th>
+                      <th class="td-center">Kế hoạch đầu ra</th>
+                      <th class="td-center">Quy định phí</th>
+                      <th class="td-center">Mẫu khai hồ sơ</th>
+
+                      <th class="td-center">Kết quả đăng ký</th>
+                      <th class="td-center">Tình trạng kế hoạch</th>
+                      <th class="td-center">Có public ko</th>
+                      <th class="td-center">Có khóa không</th>
+
+                      <th class="td-center">Hiệu lực </th>
+                      <th class="td-center">Người tạo</th>
+                      <th class="td-center">Ngày tạo</th>
+                      <th class="td-center">Chọn</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="td-center td-fix">1</td>
+                      <td class="td-left">MA-0001
+                      </td>
+                      <td class="td-left">Tuyển sinh 2026: công bố phương án xét tuyển</td>
+                      <td class="td-left">Loại nguồn tuyển sinh</td>
+                      <td class="td-left">Phương án tuyển sinh</td>
+                      <td class="td-center">2026</td>
+                      <td class="td-center">2026-2029</td>
+                      <td class="td-center">Kỳ 1</td>
+
+                      <td class="td-center">
+                        <a class="btn btn-default btnview" title="Các đợt tuyển sinh" data-bs-toggle="modal"
+                          data-bs-target="#dot-tuyen-sinh">Xem</a>
+                      </td>
+                      <td class="td-center">
+                        <a class="btn btn-default btnview" title="Phân công nhân sự" data-bs-toggle="modal"
+                          data-bs-target="#phan-cong-nhan-su" href="">Xem</a>
+                      </td>
+                      <td class="td-center">
+                        <a class="btn btn-default btnview" title="Kế hoạch đầu ra " data-bs-toggle="modal"
+                          data-bs-target="#ke-hoach-dau-ra">Xem</a>
+                      </td>
+                      <td class="td-center">
+                        <a class="btn btn-default btnview" title="Quy định phí" data-bs-toggle="modal"
+                          data-bs-target="#quy-dinh-phi" href="">Xem</a>
+                      </td>
+                      <td class="td-center">
+                        <a class="btn btn-default btnview" title="Mẫu khai hồ sơ" data-bs-toggle="modal"
+                          data-bs-target="#mau-khai-hs">Xem</a>
+                      </td>
+                      <td class="td-center">
+                        <a class="btn btn-default btnview" title="Kết quả đăng ký" data-bs-toggle="modal"
+                          data-bs-target="#ket-qua-dk" href="">Xem</a>
+                      </td>
+
+                      <td class="td-left">Tình trạng kế hoạch </td>
+                      <td class="td-center"><i class="fa-solid fa-check color-success font-weight fz18"></i></td>
+                      <td class="td-center"><i class="fa-solid fa-check color-success font-weight fz18"></i></td>
+                      <td class="td-center"><i class="fa-solid fa-xmark color-red font-weight fz18"></i></td>
+                      <td class="td-center">Nguyễn Thị Bích</td>
+                      <td class="td-center">1/5/2026</td>
+
+                      <td class="td-center">
+                        <a class="btn btn-default btnview" style="min-width: 68px !important;" title="Xem chi tiết"
+                          data-bs-toggle="modal" data-bs-target="#chi-tiet" href="">Chi tiết</a>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="td-center td-fix">1</td>
+                      <td class="td-left">MA-0001
+                      </td>
+                      <td class="td-left">Tuyển sinh 2026: công bố phương án xét tuyển</td>
+                      <td class="td-left">Loại nguồn tuyển sinh</td>
+                      <td class="td-left">Phương án tuyển sinh</td>
+                      <td class="td-center">2026</td>
+                      <td class="td-center">2026-2029</td>
+                      <td class="td-center">Kỳ 1</td>
+
+                      <td class="td-center">
+                        <a class="btn btn-default btnview" title="Các đợt tuyển sinh" data-bs-toggle="modal"
+                          data-bs-target="#dot-tuyen-sinh">Xem</a>
+                      </td>
+                      <td class="td-center">
+                        <a class="btn btn-default btnview" title="Phân công nhân sự" data-bs-toggle="modal"
+                          data-bs-target="#phan-cong-nhan-su" href="">Xem</a>
+                      </td>
+                      <td class="td-center">
+                        <a class="btn btn-default btnview" title="Kế hoạch đầu ra " data-bs-toggle="modal"
+                          data-bs-target="#ke-hoach-dau-ra">Xem</a>
+                      </td>
+                      <td class="td-center">
+                        <a class="btn btn-default btnview" title="Quy định phí" data-bs-toggle="modal"
+                          data-bs-target="#quy-dinh-phi" href="">Xem</a>
+                      </td>
+                      <td class="td-center">
+                        <a class="btn btn-default btnview" title="Mẫu khai hồ sơ" data-bs-toggle="modal"
+                          data-bs-target="#mau-khai-hs">Xem</a>
+                      </td>
+                      <td class="td-center">
+                        <a class="btn btn-default btnview" title="Kết quả đăng ký" data-bs-toggle="modal"
+                          data-bs-target="#ket-qua-dk" href="">Xem</a>
+                      </td>
+
+                      <td class="td-left">Tình trạng kế hoạch </td>
+                      <td class="td-center"><i class="fa-solid fa-check color-success font-weight fz18"></i></td>
+                      <td class="td-center"><i class="fa-solid fa-check color-success font-weight fz18"></i></td>
+                      <td class="td-center"><i class="fa-solid fa-xmark color-red font-weight fz18"></i></td>
+                      <td class="td-center">Nguyễn Thị Bích</td>
+                      <td class="td-center">1/5/2026</td>
+
+                      <td class="td-center">
+                        <a class="btn btn-default btnview" style="min-width: 68px !important;" title="Xem chi tiết"
+                          data-bs-toggle="modal" data-bs-target="#chi-tiet" href="">Chi tiết</a>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="td-center td-fix">1</td>
+                      <td class="td-left">MA-0001
+                      </td>
+                      <td class="td-left">Tuyển sinh 2026: công bố phương án xét tuyển</td>
+                      <td class="td-left">Loại nguồn tuyển sinh</td>
+                      <td class="td-left">Phương án tuyển sinh</td>
+                      <td class="td-center">2026</td>
+                      <td class="td-center">2026-2029</td>
+                      <td class="td-center">Kỳ 1</td>
+
+                      <td class="td-center">
+                        <a class="btn btn-default btnview" title="Các đợt tuyển sinh" data-bs-toggle="modal"
+                          data-bs-target="#dot-tuyen-sinh">Xem</a>
+                      </td>
+                      <td class="td-center">
+                        <a class="btn btn-default btnview" title="Phân công nhân sự" data-bs-toggle="modal"
+                          data-bs-target="#phan-cong-nhan-su" href="">Xem</a>
+                      </td>
+                      <td class="td-center">
+                        <a class="btn btn-default btnview" title="Kế hoạch đầu ra " data-bs-toggle="modal"
+                          data-bs-target="#ke-hoach-dau-ra">Xem</a>
+                      </td>
+                      <td class="td-center">
+                        <a class="btn btn-default btnview" title="Quy định phí" data-bs-toggle="modal"
+                          data-bs-target="#quy-dinh-phi" href="">Xem</a>
+                      </td>
+                      <td class="td-center">
+                        <a class="btn btn-default btnview" title="Mẫu khai hồ sơ" data-bs-toggle="modal"
+                          data-bs-target="#mau-khai-hs">Xem</a>
+                      </td>
+                      <td class="td-center">
+                        <a class="btn btn-default btnview" title="Kết quả đăng ký" data-bs-toggle="modal"
+                          data-bs-target="#ket-qua-dk" href="">Xem</a>
+                      </td>
+
+                      <td class="td-left">Tình trạng kế hoạch </td>
+                      <td class="td-center"><i class="fa-solid fa-check color-success font-weight fz18"></i></td>
+                      <td class="td-center"><i class="fa-solid fa-check color-success font-weight fz18"></i></td>
+                      <td class="td-center"><i class="fa-solid fa-xmark color-red font-weight fz18"></i></td>
+                      <td class="td-center">Nguyễn Thị Bích</td>
+                      <td class="td-center">1/5/2026</td>
+
+                      <td class="td-center">
+                        <a class="btn btn-default btnview" style="min-width: 68px !important;" title="Xem chi tiết"
+                          data-bs-toggle="modal" data-bs-target="#chi-tiet" href="">Chi tiết</a>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="td-center td-fix">1</td>
+                      <td class="td-left">MA-0001
+                      </td>
+                      <td class="td-left">Tuyển sinh 2026: công bố phương án xét tuyển</td>
+                      <td class="td-left">Loại nguồn tuyển sinh</td>
+                      <td class="td-left">Phương án tuyển sinh</td>
+                      <td class="td-center">2026</td>
+                      <td class="td-center">2026-2029</td>
+                      <td class="td-center">Kỳ 1</td>
+
+                      <td class="td-center">
+                        <a class="btn btn-default btnview" title="Các đợt tuyển sinh" data-bs-toggle="modal"
+                          data-bs-target="#dot-tuyen-sinh">Xem</a>
+                      </td>
+                      <td class="td-center">
+                        <a class="btn btn-default btnview" title="Phân công nhân sự" data-bs-toggle="modal"
+                          data-bs-target="#phan-cong-nhan-su" href="">Xem</a>
+                      </td>
+                      <td class="td-center">
+                        <a class="btn btn-default btnview" title="Kế hoạch đầu ra " data-bs-toggle="modal"
+                          data-bs-target="#ke-hoach-dau-ra">Xem</a>
+                      </td>
+                      <td class="td-center">
+                        <a class="btn btn-default btnview" title="Quy định phí" data-bs-toggle="modal"
+                          data-bs-target="#quy-dinh-phi" href="">Xem</a>
+                      </td>
+                      <td class="td-center">
+                        <a class="btn btn-default btnview" title="Mẫu khai hồ sơ" data-bs-toggle="modal"
+                          data-bs-target="#mau-khai-hs">Xem</a>
+                      </td>
+                      <td class="td-center">
+                        <a class="btn btn-default btnview" title="Kết quả đăng ký" data-bs-toggle="modal"
+                          data-bs-target="#ket-qua-dk" href="">Xem</a>
+                      </td>
+
+                      <td class="td-left">Tình trạng kế hoạch </td>
+                      <td class="td-center"><i class="fa-solid fa-check color-success font-weight fz18"></i></td>
+                      <td class="td-center"><i class="fa-solid fa-check color-success font-weight fz18"></i></td>
+                      <td class="td-center"><i class="fa-solid fa-xmark color-red font-weight fz18"></i></td>
+                      <td class="td-center">Nguyễn Thị Bích</td>
+                      <td class="td-center">1/5/2026</td>
+
+                      <td class="td-center">
+                        <a class="btn btn-default btnview" style="min-width: 68px !important;" title="Xem chi tiết"
+                          data-bs-toggle="modal" data-bs-target="#chi-tiet" href="">Chi tiết</a>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- ------------------ -->
+  <!-- modal Thêm mới kế hoạch tuyển sinh -->
+  <div class="modal fade modal_them_moi" id="them-moi">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-1200">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-header-wrap">
+            <div class="title">
+              <i class="fa-regular fa-plus"></i>Thêm mới kế hoạch tuyển sinh
+            </div>
+            <button type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+        </div>
+        <div class="modal-body aps-add-new">
+          <div class="aps-form mb-0">
+            <!-- Thông tin -->
+            <div class="row aps-form-tt">
+              <!-- mã -->
+              <div class="col-lg-8 pr20 pl0 form-tt-input ">
+                <!-- Row 1 -->
+                <div class="row aps-form-item">
+                  <div class="col-sm-3 aps-lable-name pl0">
+                    <div class="title-name">Mã kế hoạch</div>
+                  </div>
+                  <div class="col-sm-9 aps-form-input pr0">
+                    <input id="txtSearch_TuKhoa" class="form-control" placeholder="">
+                  </div>
+                </div>
+                <!-- Row 2 -->
+                <div class="row aps-form-item">
+                  <div class="col-sm-3 aps-lable-name pl0">
+                    <div class="title-name">Tên kế hoạch</div>
+                  </div>
+                  <div class="col-sm-9 aps-form-input pr0">
+                    <input id="txtSearch_TuKhoa" class="form-control" placeholder="">
+                  </div>
+                </div>
+                <!-- Row 3 -->
+                <div class="row aps-form-item pd0">
+                  <div class="col-sm-3 aps-lable-name pl0">
+                    <div class="title-name">Loại nguồn tuyển sinh</div>
+                  </div>
+                  <div class="col-sm-9 aps-form-input pr0">
+                    <div class="custom-select">
+                      <i class="fa-light fa-chevron-down"></i>
+                      <select name="" id="" class="form-select">
+                        <option value="">Chọn loại nguồn tuyển sinh</option>
+                        <option value="" selected="">
+                          Loại nguồn tuyển sinh
+                        </option>
+                        <option value="">
+                          Loại nguồn tuyển sinh
+                        </option>
+                        <option value="">
+                          Loại nguồn tuyển sinh
+                        </option>
+                        <option value="">
+                          Loại nguồn tuyển sinh
+                        </option>
+                        <option value="">
+                          Loại nguồn tuyển sinh
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <!-- Row 4 -->
+                <div class="row aps-form-item pd0">
+                  <div class="col-sm-3 aps-lable-name pl0">
+                    <div class="title-name">Phương án tuyển sinh</div>
+                  </div>
+                  <div class="col-sm-9 aps-form-input pr0">
+                    <div class="custom-select">
+                      <i class="fa-light fa-chevron-down"></i>
+                      <select name="" id="" class="form-select">
+                        <option value="">Chọn phương án tuyển sinh</option>
+                        <option value="" selected="">
+                          Phương án tuyển sinh
+                        </option>
+                        <option value="">
+                          Phương án tuyển sinh
+                        </option>
+                        <option value="">
+                          Phương án tuyển sinh
+                        </option>
+                        <option value="">
+                          Phương án tuyển sinh
+                        </option>
+                        <option value="">
+                          Phương án tuyển sinh
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Năm tuyển sinh -->
+              <div class="col-lg-4 aps-form-year pl20 pr0">
+                <div class="col-lg-12 d-flex mb-10">
+                  <div class="col-sm-4 aps-lable-name pl0">
+                    <div class="title-name">Năm tuyển sinh</div>
+                  </div>
+                  <div class="col-sm-8 aps-form-input pr0">
+                    <input id="txtSearch_TuKhoa" class="form-control" placeholder="">
+                  </div>
+                </div>
+                <div class="col-lg-12 d-flex mb-10">
+                  <div class="col-sm-4 aps-lable-name pl0">
+                    <div class="title-name">Năm học</div>
+                  </div>
+                  <div class="col-sm-8 aps-form-input pr0">
+                    <input id="txtSearch_TuKhoa" class="form-control" placeholder="">
+                  </div>
+                </div>
+                <div class="col-lg-12 d-flex mb-10">
+                  <div class="col-sm-4 aps-lable-name pl0">
+                    <div class="title-name">Học kỳ</div>
+                  </div>
+                  <div class="col-sm-8 aps-form-input pr0">
+                    <input id="txtSearch_TuKhoa" class="form-control" placeholder="">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="line" style="margin-top: 30px;margin-bottom: 25px;"></div>
+            <!-- List chọn -->
+            <div class="row aps-form-item pd0 list-chekbox">
+              <div class="col-sm-6 aps-lable-name d-flex pl0">
+                <input type="checkbox" id="chkSelectAll_VeThang" />
+                <div class="title-name ml-10">Tạo tài khoàn để đăng ký</div>
+              </div>
+              <div class="col-sm-6 aps-lable-name d-flex pl0">
+                <input type="checkbox" id="chkSelectAll_VeThang" class="mt-0" />
+                <div class="title-name ml-10">Cho thí sinh tự đăng ký trực tuyến</div>
+              </div>
+              <div class="col-sm-6 aps-lable-name d-flex pl0">
+                <input type="checkbox" id="chkSelectAll_VeThang" class="mt-0" />
+                <div class="title-name ml-10">Cho phép cán bộ nhập hồ sơ</div>
+              </div>
+              <div class="col-sm-6 aps-lable-name d-flex pl0">
+                <input type="checkbox" id="chkSelectAll_VeThang" class="mt-0" />
+                <div class="title-name ml-10">Cho phép Import nguồn từ ngoài</div>
+              </div>
+              <div class="col-sm-6 aps-lable-name d-flex pl0">
+                <input type="checkbox" id="chkSelectAll_VeThang" class="mt-0" />
+                <div class="title-name ml-10">Cho phép đọc từ API</div>
+              </div>
+              <div class="col-sm-6 aps-lable-name d-flex pl0">
+                <input type="checkbox" id="chkSelectAll_VeThang" class="mt-0" />
+                <div class="title-name ml-10">Yêu cầu cán bộ duyệt</div>
+              </div>
+              <div class="col-sm-6 aps-lable-name d-flex pl0">
+                <input type="checkbox" id="chkSelectAll_VeThang" class="mt-0" />
+                <div class="title-name ml-10">Yêu cầu kiểm tra hồ sơ</div>
+              </div>
+              <div class="col-sm-6 aps-lable-name d-flex pl0">
+                <input type="checkbox" id="chkSelectAll_VeThang" class="mt-0" />
+                <div class="title-name ml-10">Yêu cầu thanh toán trước khi hoàn tất</div>
+              </div>
+              <div class="col-sm-6 aps-lable-name d-flex pl0">
+                <input type="checkbox" id="chkSelectAll_VeThang" class="mt-0" />
+                <div class="title-name ml-10">Có được phép thay đổi đầu ra sau khi trúng tuyển không</div>
+              </div>
+            </div>
+            <div class="line" style="margin-top: 30px;margin-bottom: 30px;"></div>
+
+            <!-- Số hồ sơ tối đa được khai -->
+            <div class="row aps-form-tt">
+              <div class="col-lg-8 pr20 pl0 form-tt-input ">
+                <!-- Row 1 -->
+                <div class="row aps-form-item">
+                  <div class="col-sm-4 aps-lable-name pl0">
+                    <div class="title-name">Số hồ sơ tối đa được khai</div>
+                  </div>
+                  <div class="col-sm-8 aps-form-input pr0">
+                    <input id="txtSearch_TuKhoa" class="form-control" placeholder="">
+                  </div>
+                </div>
+                <!-- Row 2 -->
+                <div class="row aps-form-item">
+                  <div class="col-sm-4 aps-lable-name pl0">
+                    <div class="title-name">Mẫu hồ sơ </div>
+                  </div>
+                  <div class="col-sm-8 aps-form-input pr0">
+                    <input id="txtSearch_TuKhoa" class="form-control" placeholder="">
+                  </div>
+                </div>
+                <!-- Row 3 -->
+                <div class="row aps-form-item pd0">
+                  <div class="col-sm-4 aps-lable-name pl0">
+                    <div class="title-name">Đơn vị quản lý kế hoạch</div>
+                  </div>
+                  <div class="col-sm-8 aps-form-input pr0">
+                    <div class="custom-select">
+                      <i class="fa-light fa-chevron-down"></i>
+                      <select name="" id="" class="form-select">
+                        <option value="">Chọn đơn vị quản lý kế hoạch</option>
+                        <option value="" selected="">
+                          Đơn vị quản lý kế hoạch
+                        </option>
+                        <option value="">
+                          Đơn vị quản lý kế hoạch
+                        </option>
+                        <option value="">
+                          Đơn vị quản lý kế hoạch
+                        </option>
+                        <option value="">
+                          Đơn vị quản lý kế hoạch
+                        </option>
+                        <option value="">
+                          Đơn vị quản lý kế hoạch
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <!-- Row 4 -->
+                <div class="row aps-form-item pd0">
+                  <div class="col-sm-4 aps-lable-name pl0">
+                    <div class="title-name">Đơn vị quản lý hồ sơ</div>
+                  </div>
+                  <div class="col-sm-8 aps-form-input pr0">
+                    <div class="custom-select">
+                      <i class="fa-light fa-chevron-down"></i>
+                      <select name="" id="" class="form-select">
+                        <option value="">Chọn Đơn vị quản lý hồ sơ</option>
+                        <option value="" selected="">
+                          Đơn vị quản lý hồ sơ
+                        </option>
+                        <option value="">
+                          Đơn vị quản lý hồ sơ
+                        </option>
+
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <!-- Row 5 -->
+                <div class="row aps-form-item pd0">
+                  <div class="col-sm-4 aps-lable-name pl0">
+                    <div class="title-name">Đơn vị tiếp nhân hồ sơ</div>
+                  </div>
+                  <div class="col-sm-8 aps-form-input pr0">
+                    <div class="custom-select">
+                      <i class="fa-light fa-chevron-down"></i>
+                      <select name="" id="" class="form-select">
+                        <option value="">Chọn Đơn vị tiếp nhân hồ sơ</option>
+                        <option value="" selected="">
+                          Đơn vị tiếp nhân hồ sơ
+                        </option>
+                        <option value="">
+                          Đơn vị tiếp nhân hồ sơ
+                        </option>
+
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <!-- Row 6 -->
+                <div class="row aps-form-item">
+                  <div class="col-sm-4 aps-lable-name pl0">
+                    <div class="title-name">Chỉ tiêu</div>
+                  </div>
+                  <div class="col-sm-8 aps-form-input pr0">
+                    <input id="txtSearch_TuKhoa" class="form-control" placeholder="">
+                  </div>
+                </div>
+              </div>
+              <!-- Số đã đăng ký -->
+              <div class="col-lg-4 aps-form-number pl20 pr0">
+                <div class="col-lg-12 d-flex mb-10">
+                  <div class="col-sm-5 aps-lable-name pl0">
+                    <div class="title-name">Số đã đăng ký</div>
+                  </div>
+                  <div class="col-sm-7 aps-form-input pr0">
+                    <input id="txtSearch_TuKhoa" class="form-control" placeholder="">
+                  </div>
+                </div>
+                <div class="col-lg-12 d-flex mb-10">
+                  <div class="col-sm-5 aps-lable-name pl0">
+                    <div class="title-name">Số đã nộp hồ sơ</div>
+                  </div>
+                  <div class="col-sm-7 aps-form-input pr0">
+                    <input id="txtSearch_TuKhoa" class="form-control" placeholder="">
+                  </div>
+                </div>
+                <div class="col-lg-12 d-flex mb-10">
+                  <div class="col-sm-5 aps-lable-name pl0">
+                    <div class="title-name">Số đã trúng tuyển</div>
+                  </div>
+                  <div class="col-sm-7 aps-form-input pr0">
+                    <input id="txtSearch_TuKhoa" class="form-control" placeholder="">
+                  </div>
+                </div>
+                <div class="col-lg-12 d-flex mb-10">
+                  <div class="col-sm-5 aps-lable-name pl0">
+                    <div class="title-name">Số đã nhập học</div>
+                  </div>
+                  <div class="col-sm-7 aps-form-input pr0">
+                    <input id="txtSearch_TuKhoa" class="form-control" placeholder="">
+                  </div>
+                </div>
+                <div class="col-lg-12 d-flex mb-10">
+                  <div class="col-sm-5 aps-lable-name pl0">
+                    <div class="title-name">Tình trạng kế hoạch</div>
+                  </div>
+                  <div class="col-sm-7 aps-form-input pr0">
+                    <div class="custom-select">
+                      <i class="fa-light fa-chevron-down"></i>
+                      <select name="" id="" class="form-select">
+                        <option value="">Chọn tình trạng kế hoạch</option>
+                        <option value="" selected="">
+                          Tình trạng kế hoạch
+                        </option>
+                        <option value="">
+                          Tình trạng kế hoạch
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="line" style="margin-top: 30px;margin-bottom: 30px;"></div>
+            <!-- List chọn -->
+            <div class="row aps-form-item pd0 ">
+              <div class="col-sm-3 list-chekbox pl0">
+                <div class="col-sm-12 aps-lable-name d-flex pl0">
+                  <input type="checkbox" id="chkSelectAll_VeThang" />
+                  <div class="title-name ml-10">Có mở public không</div>
+                </div>
+                <div class="col-sm-12 aps-lable-name d-flex pl0">
+                  <input type="checkbox" id="chkSelectAll_VeThang" class="mt-0" />
+                  <div class="title-name ml-10">Có khóa không</div>
+                </div>
+                <div class="col-sm-12 aps-lable-name d-flex pl0">
+                  <input type="checkbox" id="chkSelectAll_VeThang" class="mt-0" />
+                  <div class="title-name ml-10">Còn hiệu lực không</div>
+                </div>
+              </div>
+              <div class="col-sm-9 ghi-chu pl0 d-flex pr0">
+                <div class="col-sm-2 aps-lable-name pl0">
+                  <div class="title-name">Ghi chú</div>
+                </div>
+                <div class="col-sm-10 aps-form-input pr0">
+                  <textarea class="min-h-86 form-control-textarea w100"></textarea>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <div class="modal-footer">
+          <div class="pull-right d-flex">
+            <button class="btn btn-default" data-bs-toggle="modal" data-bs-target="#giaoDeTai_chitiet">
+              <i class="fal fa-times"></i><span>Đóng</span>
+            </button>
+            <button class="btn btn-danger d-none">
+              <i class="fa fa-trash"></i><span>Xóa</span>
+            </button>
+            <button class="btn btn-primary">
+              <i class="fas fa-save"></i><span>Lưu</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- modal Các đợt tuyển sinh -->
+  <div class="modal fade modal_dot_tuyen_sinh" id="dot-tuyen-sinh">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-100">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-header-wrap">
+            <div class="title">
+              <i class="fa-regular fa-users"></i> Các đợt tuyển sinh
+            </div>
+            <button type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+        </div>
+        <div class="modal-body aps-add-new">
+          <div class="aps-table-select scroll-table-x pb-0 mb-20">
+            <table id="tbldottyensinh" class="table table-hover table-bordered table-noborder tbldottyensinh">
+              <thead>
+                <tr>
+                  <th class="td-fixed td-center w-50px">Stt</th>
+                  <th class="td-left">Mã</th>
+                  <th class="td-left">Tên</th>
+                  <th class="td-left">Kiểu đợt</th>
+                  <th class="td-left">Ngày bắt đầu đăng ký</th>
+                  <th class="td-center">Ngày kết thúc đăng ký</th>
+
+                  <th class="td-center">Phương thức tuyển</th>
+                  <th class="td-center">Kế hoạch đầu ra</th>
+                  <th class="td-center">Mẫu khai hồ sơ</th>
+                  <th class="td-center">Kết quả đăng ký</th>
+
+                  <th class="td-center">Tình trạng kế hoạch </th>
+                  <th class="td-center">Có public ko</th>
+                  <th class="td-center">Có khóa không </th>
+
+                  <th class="td-center">Kết quả đăng ký</th>
+                  <th class="td-center">Tình trạng kế hoạch</th>
+                  <th class="td-center">Có public ko</th>
+                  <th class="td-center">Có khóa không</th>
+
+                  <th class="td-center">Hiệu lực </th>
+                  <th class="td-center">Người tạo</th>
+                  <th class="td-center">Ngày tạo</th>
+                  <th class="td-center">Chọn</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="td-center td-fix">1</td>
+                  <td class="td-left">MA-0001
+                  </td>
+                  <td class="td-left">Tuyển sinh 2026: công bố phương án xét tuyển</td>
+                  <td class="td-left">Kiểu đợt</td>
+                  <td class="td-left">10/5/2026</td>
+                  <td class="td-center">10/8/2026</td>
+
+                  <td class="td-center">
+                    <a class="btn btn-default btnview" title="Các đợt tuyển sinh" data-bs-toggle="modal"
+                      data-bs-target="#dot-tuyen-sinh">Xem</a>
+                  </td>
+                  <td class="td-center">
+                    <a class="btn btn-default btnview" title="Phân công nhân sự" data-bs-toggle="modal"
+                      data-bs-target="#phan-cong-nhan-su" href="">Xem</a>
+                  </td>
+                  <td class="td-center">
+                    <a class="btn btn-default btnview" title="Kế hoạch đầu ra " data-bs-toggle="modal"
+                      data-bs-target="#ke-hoach-dau-ra">Xem</a>
+                  </td>
+                  <td class="td-center">
+                    <a class="btn btn-default btnview" title="Quy định phí" data-bs-toggle="modal"
+                      data-bs-target="#quy-dinh-phi" href="">Xem</a>
+                  </td>
+
+                  <td class="td-center">Tình trạng kế hoạch </td>
+                  <td class="td-center">Có public ko</td>
+                  <td class="td-center">Có khóa không</td>
+
+                  <td class="td-center">Kết quả đăng ký</td>
+                  <td class="td-center">Tình trạng kế hoạch</td>
+                  <td class="td-center">Có public ko</td>
+                  <td class="td-center">Có khóa không</td>
+
+                  <td class="td-center">Hiệu lực</td>
+                  <td class="td-center">Nguyễn Thị Bích</td>
+                  <td class="td-center">1/5/2026</td>
+
+                  <td class="td-center">
+                    <a class="btn btn-default btnview" style="min-width: 68px !important;" title="Xem chi tiết"
+                      data-bs-toggle="modal" data-bs-target="#chi-tiet" href="">Chi tiết</a>
+                  </td>
+                </tr>
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <div class="pull-right d-flex">
+            <button class="btn btn-default" data-bs-toggle="modal" data-bs-target="#giaoDeTai_chitiet">
+              <i class="fal fa-times"></i><span>Đóng</span>
+            </button>
+            <button class="btn btn-danger d-none">
+              <i class="fa fa-trash"></i><span>Xóa</span>
+            </button>
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#them-moi">
+              <i class="fa-regular fa-plus"></i> Thêm mới</a>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- modal Phân công nhân sự -->
+  <div class="modal fade modal_phan_cong_ns" id="phan-cong-nhan-su">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-100">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-header-wrap">
+            <div class="title">
+              <i class="fa-regular fa-screen-users"></i> Phân công nhân sự
+            </div>
+            <button type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+        </div>
+        <div class="modal-body">
+          <div class="aps-table-select scroll-table-x pb-0 mb-20">
+            <table id="tbldottyensinh" class="table table-hover table-bordered table-noborder tbldottyensinh">
+              <thead>
+                <tr>
+                  <th class="td-fixed td-center w-50px">Stt</th>
+                  <th class="td-left">Nhân sự</th>
+                  <th class="td-left">Kế hoạch </th>
+                  <th class="td-left">Đợt </th>
+                  <th class="td-left">Phương thức </th>
+                  <th class="td-center">Vai trò tham gia </th>
+
+                  <th class="td-center">Quyền tham gia </th>
+                  <th class="td-center">Phạm vi phân công</th>
+
+                  <th class="td-center">Ngày bắt đầu</th>
+                  <th class="td-center">Ngày kết thúc</th>
+
+                  <th class="td-center">Cho phép/Hạn chế</th>
+                  <th class="td-center">Hiệu lực</th>
+                  <th class="td-center">Người tạo</th>
+                  <th class="td-center">Ngày tạo</th>
+                  <th class="td-center">Chọn</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="td-center td-fix">1</td>
+                  <td class="td-left">NS-0001
+                  </td>
+                  <td class="td-left">Kế hoạch: công bố phương án xét tuyển</td>
+                  <td class="td-left">Đợt</td>
+                  <td class="td-left">Phương thức </td>
+                  <td class="td-center">Vai trò tham gia </td>
+
+                  <td class="td-center">Quyền tham gia </td>
+                  <td class="td-center">Phạm vi phân công</td>
+
+                  <td class="td-center">12/02/2026</td>
+                  <td class="td-center">12/04/2026</td>
+
+                  <td class="td-center">Cho phép/Hạn chế</td>
+                  <td class="td-center">Hiệu lực</td>
+                  <td class="td-center">Nguyễn Thị Bích</td>
+                  <td class="td-center">1/5/2026</td>
+
+                  <td class="td-center">
+                    <a class="btn btn-default btnview" style="min-width: 68px !important;" title="Xem chi tiết"
+                      data-bs-toggle="modal" data-bs-target="#chi-tiet" href="">Chi tiết</a>
+                  </td>
+                </tr>
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <div class="pull-right d-flex">
+            <button class="btn btn-default" data-bs-toggle="modal" data-bs-target="#them-moi-nhansu">
+              <i class="fal fa-times"></i><span>Đóng</span>
+            </button>
+            <button class="btn btn-danger d-none">
+              <i class="fa fa-trash"></i><span>Xóa</span>
+            </button>
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#them-moi-nhansu">
+              <i class="fa-regular fa-plus"></i> Thêm mới</a>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- modal Thêm mới nhân sự -->
+  <div class="modal fade modal_them_moi_nhan_su" id="them-moi-nhansu">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-100">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-header-wrap">
+            <div class="title">
+              <i class="fa-regular fa-user-plus"></i> Thêm mới nhân sự
+            </div>
+            <button type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+        </div>
+        <div class="modal-body aps-add-new">
+          <div class="aps-form mb-0">
+            <div class="row aps-form-item">
+              <div class="col-sm-12 aps-lable-name pl0 d-none">
+                <div class="title-name">Danh nhân sự chọn</div>
+              </div>
+              <div class="d-flex">
+
+              </div>
+              <div class="col-sm-12 aps-form-input pr0 pl0">
+                <div class="aps-table-select scroll-table-x pb-0 mb-20">
+                  <table id="tblnhansu" class="table table-hover table-bordered table-border tblnhansu">
+                    <thead>
+                      <tr>
+                        <th class="td-fixed td-center w-50px" rowspan="2">Stt</th>
+                        <th class="td-left" rowspan="2" style="width: 260px;"><span class="mt-10"
+                            style="float: left;">Nhân sự</span>
+                          <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#them-moi-nhansu-1"
+                            style="float: right;">
+                            <i class="fas fa-plus mr-5"></i><span>Chọn nhân sự</span>
+                          </button>
+                        </th>
+                        <th class="td-center" rowspan="2"><input type="checkbox" id="" /></th>
+                        <th class="td-center bg-f2" colspan="6">Khai thông tin cần gán cho nhân sự chọn </th>
+                      </tr>
+                      <tr>
+                        <th class="td-center bg-f2">Vai trò</th>
+                        <th class="td-center bg-f2" style="width: 120px;">Ngày bắt đầu</th>
+                        <th class="td-center bg-f2" style="width: 120px;">Ngày kết thúc</th>
+                        <th class="td-center bg-f2" style="width: 130px;">Cho phép/Chặn </th>
+                        <th class="td-center bg-f2" style="width: 120px;">Hiệu lực </th>
+                        <th class="td-center bg-f2">Ghi chú</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="td-center td-fix">1</td>
+                        <td class="td-left">Nguyễn Thị Bích</td>
+                        <td class="td-center"><input type="checkbox" id="" checked /></td>
+                        <td class="td-center td-fix">
+                          <div class="custom-select">
+                            <i class="fa-light fa-chevron-down"></i>
+                            <select name="" id="" class="form-select"
+                              style="line-height: 24px !important;padding-left: 10px !important;">
+                              <option value="">Chọn vai trò</option>
+                              <option value="" selected="">
+                                Vai trò
+                              </option>
+                              <option value="" selected="">
+                                Vai trò
+                              </option>
+                            </select>
+                          </div>
+                        </td>
+                        <td class="td-center td-fix"><input id="txtSearch_TuKhoa" class="form-control" placeholder="">
+                        </td>
+                        <td class="td-center td-fix"><input id="txtSearch_TuKhoa" class="form-control" placeholder="">
+                        </td>
+                        <td class="td-center td-fix"><input type="checkbox" id="chkSelectAll_ns" /></td>
+                        <td class="td-center td-fix"><input type="checkbox" id="chkSelectAll_ns" /></td>
+                        <td class="td-center td-fix"><input id="txtSearch_TuKhoa" class="form-control" placeholder="">
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="td-center td-fix">1</td>
+                        <td class="td-left">Nguyễn Thị Bích</td>
+                        <td class="td-center"><input type="checkbox" id="" checked /></td>
+                        <td class="td-center td-fix">
+                          <div class="custom-select">
+                            <i class="fa-light fa-chevron-down"></i>
+                            <select name="" id="" class="form-select"
+                              style="line-height: 24px !important;padding-left: 10px !important;">
+                              <option value="">Chọn vai trò</option>
+                              <option value="" selected="">
+                                Vai trò
+                              </option>
+                              <option value="" selected="">
+                                Vai trò
+                              </option>
+                            </select>
+                          </div>
+                        </td>
+                        <td class="td-center td-fix"><input id="txtSearch_TuKhoa" class="form-control" placeholder="">
+                        </td>
+                        <td class="td-center td-fix"><input id="txtSearch_TuKhoa" class="form-control" placeholder="">
+                        </td>
+                        <td class="td-center td-fix"><input type="checkbox" id="chkSelectAll_ns" /></td>
+                        <td class="td-center td-fix"><input type="checkbox" id="chkSelectAll_ns" /></td>
+                        <td class="td-center td-fix"><input id="txtSearch_TuKhoa" class="form-control" placeholder="">
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="td-center td-fix">1</td>
+                        <td class="td-left">Nguyễn Thị Bích</td>
+                        <td class="td-center"><input type="checkbox" id="" checked /></td>
+                        <td class="td-center td-fix">
+                          <div class="custom-select">
+                            <i class="fa-light fa-chevron-down"></i>
+                            <select name="" id="" class="form-select"
+                              style="line-height: 24px !important;padding-left: 10px !important;">
+                              <option value="">Chọn vai trò</option>
+                              <option value="" selected="">
+                                Vai trò
+                              </option>
+                              <option value="" selected="">
+                                Vai trò
+                              </option>
+                            </select>
+                          </div>
+                        </td>
+                        <td class="td-center td-fix"><input id="txtSearch_TuKhoa" class="form-control" placeholder="">
+                        </td>
+                        <td class="td-center td-fix"><input id="txtSearch_TuKhoa" class="form-control" placeholder="">
+                        </td>
+                        <td class="td-center td-fix"><input type="checkbox" id="chkSelectAll_ns" /></td>
+                        <td class="td-center td-fix"><input type="checkbox" id="chkSelectAll_ns" /></td>
+                        <td class="td-center td-fix"><input id="txtSearch_TuKhoa" class="form-control" placeholder="">
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="td-center td-fix">1</td>
+                        <td class="td-left">Nguyễn Thị Bích</td>
+                        <td class="td-center"><input type="checkbox" id="" /></td>
+                        <td class="td-center td-fix">
+
+                        </td>
+                        <td class="td-center"></td>
+                        <td class="td-center"></td>
+                        <td class="td-center"></td>
+                        <td class="td-center"></td>
+                        <td class="td-center"></td>
+                      </tr>
+                      <tr>
+                        <td class="td-center td-fix">1</td>
+                        <td class="td-left">Nguyễn Thị Bích</td>
+                        <td class="td-center"><input type="checkbox" id="" checked /></td>
+                        <td class="td-center td-fix">
+                          <div class="custom-select">
+                            <i class="fa-light fa-chevron-down"></i>
+                            <select name="" id="" class="form-select"
+                              style="line-height: 24px !important;padding-left: 10px !important;">
+                              <option value="">Chọn vai trò</option>
+                              <option value="" selected="">
+                                Vai trò
+                              </option>
+                              <option value="" selected="">
+                                Vai trò
+                              </option>
+                            </select>
+                          </div>
+                        </td>
+                        <td class="td-center td-fix"><input id="txtSearch_TuKhoa" class="form-control" placeholder="">
+                        </td>
+                        <td class="td-center td-fix"><input id="txtSearch_TuKhoa" class="form-control" placeholder="">
+                        </td>
+                        <td class="td-center td-fix"><input type="checkbox" id="chkSelectAll_ns" /></td>
+                        <td class="td-center td-fix"><input type="checkbox" id="chkSelectAll_ns" /></td>
+                        <td class="td-center td-fix"><input id="txtSearch_TuKhoa" class="form-control" placeholder="">
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="box-list-btn pull-right d-flex">
+                  <a class="btn btn-outline-primary d-none" href="" data-bs-toggle="modal"
+                    data-bs-target="#them-moi-nhansu">
+                    <i class="fa-regular fa-user-plus"></i> Chọn nhân sự</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="fz18 color-red">Nhân sự nào được chọn <input type="checkbox" id="" checked /> mới được hiện thông
+            tin cần nhập
+            bên phải</p>
+        </div>
+        <div class="modal-footer">
+          <div class="pull-right d-flex">
+            <button class="btn btn-default" data-bs-toggle="modal" data-bs-target="#giaoDeTai_chitiet">
+              <i class="fal fa-times"></i><span>Đóng</span>
+            </button>
+            <button class="btn btn-danger d-none">
+              <i class="fa fa-trash"></i><span>Xóa</span>
+            </button>
+            <button class="btn btn-primary">
+              <i class="fas fa-save"></i><span>Lưu</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- modal Thêm mới nhân sự -->
+  <div class="modal fade modal_them_moi_nhan_su" id="them-moi-nhansu-old">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-680">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-header-wrap">
+            <div class="title">
+              <i class="fa-regular fa-user-plus"></i> Thêm nhân sự
+            </div>
+            <button type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+        </div>
+        <div class="modal-body">
+          <div class="aps-table-select scroll-table-x pb-0 mb-20">
+            <table id="tblnhansu" class="table table-hover table-bordered table-noborder tblnhansu">
+              <thead>
+                <tr>
+                  <th class=ed td-center w-50px">Stt</th>
+                  <th class="td-left">Thông tin nhân sự đã chọn</th>
+                  <th class="td-center"> <input type="checkbox" id="chkSelectAll_ns" /></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="td-center">1</td>
+                  <td class="td-center">Nguyễn Thị Bích</td>
+                  <td class="td-center"> <input type="checkbox" id="chkSelect_ns" /></td>
+                </tr>
+                <tr>
+                  <td class="td-center">2</td>
+                  <td class="td-center">Nguyễn Thị Bích</td>
+                  <td class="td-center"> <input type="checkbox" id="chkSelect_ns" /></td>
+                </tr>
+                <tr>
+                  <td class="td-center">3</td>
+                  <td class="td-center">Nguyễn Thị Bích</td>
+                  <td class="td-center"> <input type="checkbox" id="chkSelect_ns" /></td>
+                </tr>
+                <tr>
+                  <td class="td-center">4</td>
+                  <td class="td-center">Nguyễn Thị Bích</td>
+                  <td class="td-center"> <input type="checkbox" id="chkSelect_ns" /></td>
+                </tr>
+                <tr>
+                  <td class="td-center">5</td>
+                  <td class="td-center">Nguyễn Thị Bích</td>
+                  <td class="td-center"> <input type="checkbox" id="chkSelect_ns" /></td>
+                </tr>
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <div class="pull-right d-flex">
+            <button class="btn btn-default" data-bs-toggle="modal" data-bs-target="#giaoDeTai_chitiet">
+              <i class="fal fa-times"></i><span>Đóng</span>
+            </button>
+            <button class="btn btn-danger d-none">
+              <i class="fa fa-trash"></i><span>Xóa</span>
+            </button>
+            <button class="btn btn-primary">
+              <i class="fas fa-check-circle"></i><span>Chọn</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- modal Kế hoạch đầu ra  -->
+  <div class="modal fade modal_ke_hoach_dau_ra" id="ke-hoach-dau-ra">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-100">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-header-wrap">
+            <div class="title">
+              <i class="fa-regular fa-file-pen"></i> Kế hoạch đầu ra
+            </div>
+            <button type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+        </div>
+        <div class="modal-body">
+          <div class="aps-table-select scroll-table-x pb-0 mb-20">
+            <table id="tbldottyensinh" class="table table-hover table-bordered table-noborder tbldottyensinh">
+              <thead>
+                <tr>
+                  <th class="td-center w-50px">Stt</th>
+                  <th class="td-left">Mã</th>
+                  <th class="td-left">Tên</th>
+                  <th class="td-left">Loại đầu ra </th>
+                  <th class="td-left">Loại đầu ra</th>
+                  <th class="td-center">Hệ mở</th>
+
+                  <th class="td-center">Khóa mở</th>
+                  <th class="td-center">Chương trình mở</th>
+
+                  <th class="td-center">Ngành tuyển sinh</th>
+                  <th class="td-center">Ngành đào tạo</th>
+
+                  <th class="td-center">Tên hiển thị</th>
+                  <th class="td-center">Mã hiển thị</th>
+                  <th class="td-center">Là ngành nổi bật cần hiện lên đầu</th>
+                  <th class="td-center">Thứ tự hiển thị</th>
+
+                  <th class="td-center">Chỉ tiêu</th>
+                  <th class="td-center">Chỉ tiêu tối đa</th>
+                  <th class="td-center">Chi tiêu tối thiểu</th>
+                  <th class="td-center">Hiệu lực</th>
+
+                  <th class="td-center">Người tạo</th>
+                  <th class="td-center">Ngày tạo</th>
+
+                  <th class="td-center">Chọn</th>
+                </tr>
+              </thead>
+              <tbody>
+
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <div class="pull-right d-flex">
+            <button class="btn btn-default" data-bs-toggle="modal" data-bs-target="#them-moi-nhansu">
+              <i class="fal fa-times"></i><span>Đóng</span>
+            </button>
+            <button class="btn btn-danger d-none">
+              <i class="fa fa-trash"></i><span>Xóa</span>
+            </button>
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#them-moi-ke-hoach-dau-ra">
+              <i class="fa-regular fa-plus"></i> Thêm mới</a>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- modal Chọn nhân sự-->
+  <div class="modal fade modal_them_moi_nhan_su" id="them-moi-nhansu-1">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-90">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-header-wrap">
+            <div class="title">
+              <i class="far fa-user-check"></i> Chọn nhân sự
+            </div>
+            <button type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+        </div>
+        <div class="modal-body pd0">
+          <div class="row aps-quanly-hs">
+            <div class="col-sm-6 aps-quanly-hs-l box-shadow pr0 pl0" style="border-radius: 0 !important;">
+              <!-- Search -->
+              <div class="form-top box-search">
+                <div class="row">
+                  <div class="col-12 col-lg-12 col-md-12 mb-10 item-search mr-0">
+                    <div class="form-item d-flex form-add-info flex-grow-1">
+                      <div class="input-group no-icon">
+                        <i class="fal fa-angle-down"></i>
+                        <select class="form-select" aria-label="Default select example">
+                          <option selected="">Chọn Đơn vị</option>
+                          <option value="1">Chọn Đơn vị 1</option>
+                          <option value="2">Chọn Đơn vị 2</option>
+                          <option value="3">Chọn Đơn vị 3</option>
+                        </select>
+                      </div>
+                    </div>
+
+                  </div>
+                  <div class="col-12 col-lg-12 col-md-12 mb-10 item-search mr-0 d-flex">
+                    <input id="txtSearch_DT" class="form-control" placeholder="Nhập thông tin">
+                    <div class="d-flex align-items-center pl10">
+                      <div class="btn btn-default" style="min-width: 124px;">
+                        <i class="fa fa-search"></i> Tìm kiếm
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="box box-solid box-list mt-5" style="padding: 20px !important;">
+                <div class="box-header pd0" style="padding-bottom: 0 !important;">
+                  <h3 class="box-title" style="padding-top: 0 !important;" title="Danh sách">
+                    <i class="fa-solid fa-file-user"></i> Danh sách
+                  </h3>
+                  <span class="badge bg-light-blue">
+                    <span id="lblKeHoach_Tong">12</span>
+                  </span>
+                </div>
+                <div class="box-body">
+                  <div class="box-table-select scroll-table-x w100">
+                    <table id="tblThongTin"
+                      class="table table-hover transcrip-table tabs-scores h-auto mb-0 table-responsive table-noborder">
+                      <thead>
+                        <tr>
+                          <th class="td-center text-center">Stt</th>
+                          <th class="td-left">Mã số</th>
+                          <th class="td-left">Họ đệm</th>
+                          <th class="td-left">Tên</th>
+                          <th class="td-left">Đơn vị</th>
+                          <th class="td-center"> <input type="checkbox" id="chkSelectAll_ns"></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <th class="text-center" scope="row">
+                            <em class="show-in-mobi">STT</em><span>1</span>
+                          </th>
+                          <td class="text-left">
+                            <em class="show-in-mobi">Mã số:</em><span>MaSo-KH-01</span>
+                          </td>
+                          <td class="text-left">
+                            <em class="show-in-mobi">Họ đệm:</em><span>Nguyễn Đại</span>
+                          </td>
+                          <td class="text-left">
+                            <em class="show-in-mobi">Tên:</em><span>Trường</span>
+                          </td>
+                          <td class="text-left">
+                            <em class="show-in-mobi">Đơn vị:</em><span>Trường Đại học Kiến
+                              trúc Hà Nội</span>
+                          </td>
+                          <td class="td-center"> <input type="checkbox" id="chkSelect_ns"></td>
+
+                        </tr>
+
+                      </tbody>
+                      <tfoot></tfoot>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6 aps-quanly-hs-r pl20">
+              <div class="aps-table-select pd-20 pb0 mt-10">
+                <table id="tblnhansu" class="table table-hover table-bordered table-noborder tblnhansu mb-0">
+                  <thead>
+                    <tr>
+                      <th class="td-center w-50px">Stt</th>
+                      <th class="td-left">Thông tin nhân sự đã chọn</th>
+                      <th class="td-center"> <input type="checkbox" id="chkSelectAll_ns" /></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="td-center">1</td>
+                      <td class="">Nguyễn Thị Bích</td>
+                      <td class="td-center"> <input type="checkbox" id="chkSelect_ns" /></td>
+                    </tr>
+                    <tr>
+                      <td class="td-center">2</td>
+                      <td class="">Nguyễn Thị Bích</td>
+                      <td class="td-center"> <input type="checkbox" id="chkSelect_ns" /></td>
+                    </tr>
+                    <tr>
+                      <td class="td-center">3</td>
+                      <td class="">Nguyễn Thị Bích</td>
+                      <td class="td-center"> <input type="checkbox" id="chkSelect_ns" /></td>
+                    </tr>
+                    <tr>
+                      <td class="td-center">4</td>
+                      <td class="">Nguyễn Thị Bích</td>
+                      <td class="td-center"> <input type="checkbox" id="chkSelect_ns" /></td>
+                    </tr>
+                    <tr>
+                      <td class="td-center">5</td>
+                      <td class="">Nguyễn Thị Bích</td>
+                      <td class="td-center"> <input type="checkbox" id="chkSelect_ns" /></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <div class="pull-right d-flex">
+            <button class="btn btn-default" data-bs-toggle="modal" data-bs-target="#giaoDeTai_chitiet">
+              <i class="fal fa-times"></i><span>Đóng</span>
+            </button>
+            <button class="btn btn-danger">
+              <i class="fa fa-trash"></i><span>Xóa</span>
+            </button>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#them-moi-nhansu">
+              <i class="fas fa-check-circle"></i><span>Chọn</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- modal Thêm mới Kế hoạch đầu ra   -->
+  <div class="modal fade modal_them_moi_ke_hoach_dau_ra" id="them-moi-ke-hoach-dau-ra">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-1200">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-header-wrap">
+            <div class="title">
+              <i class="fa-regular fa-file-export"></i> Thêm mới Kế hoạch đầu ra
+            </div>
+            <button type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+        </div>
+        <div class="modal-body aps-add-new">
+          <div class="aps-form mb-0">
+            <!-- Thông tin -->
+            <div class="row aps-form-daotao">
+              <!-- Row 1 -->
+              <div class="col-lg-6 aps-form-item pd0">
+                <div class="col-sm-3 aps-lable-name pl0">
+                  <div class="title-name">Hệ đào tạo</div>
+                </div>
+                <div class="col-sm-9 aps-form-input pr0">
+                  <div class="custom-select">
+                    <i class="fa-light fa-chevron-down"></i>
+                    <select name="" id="" class="form-select">
+                      <option value="">Chọn hệ đào tạo</option>
+                      <option value="" selected="">
+                        Hệ đào tạo
+                      </option>
+                      <option value="">
+                        Hệ đào tạo
+                      </option>
+                      <option value="">
+                        Hệ đào tạo
+                      </option>
+
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <!-- Row 2 -->
+              <div class="col-lg-6 aps-form-item pd0">
+                <div class="col-sm-3 aps-lable-name pl0">
+                  <div class="title-name text-right pr15">Khóa đào tạo</div>
+                </div>
+                <div class="col-sm-9 aps-form-input pr0">
+                  <div class="custom-select">
+                    <i class="fa-light fa-chevron-down"></i>
+                    <select name="" id="" class="form-select">
+                      <option value="">Chọn khóa đào tạo</option>
+                      <option value="" selected="">
+                        Khóa đào tạo
+                      </option>
+                      <option value="">
+                        Khóa đào tạo
+                      </option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Row lable -->
+            <div class="row aps-lable-name mb-10 d-none">
+              <p class="group-group-title-name mb-10 pl0 pr0">
+                <span class="badge color-blue fz18" style="font-size: 18px !important; font-weight: 600">
+                  Danh sách chương trình</span>
+              </p>
+            </div>
+            <div class="aps-table-select scroll-table-x pb-0 mb-20">
+              <table id="tbldottyensinh" class="table table-hover table-bordered table-noborder tbldottyensinh">
+                <thead>
+                  <tr>
+                    <th class="td-center w-50px">stt</th>
+                    <th class="td-left">Mã chương trình</th>
+                    <th class="td-left">Tên chương trình</th>
+                    <th class="td-left">Ngành TS</th>
+                    <th class="td-left">Ngành ĐT</th>
+                    <th class="td-center">Chỉ tiêu</th>
+                    <th class="td-center">Chỉ tiêu tối đa</th>
+                    <th class="td-center">Chỉ tiêu tối thiểu</th>
+                    <th class="td-center"><input type="checkbox" id="" /></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="td-center td-fix">1</td>
+                    <td class="td-left">MA-CT-01</td>
+                    <td class="td-left">Tên chương trình</td>
+                    <td class="td-center"></td>
+                    <td class="td-center"></td>
+                    <td class="td-center"></td>
+                    <td class="td-center"></td>
+                    <td class="td-center"></td>
+                    <td class="td-center"><input type="checkbox" id="" /></td>
+                  </tr>
+                  <tr>
+                    <td class="td-center td-fix">1</td>
+                    <td class="td-left">MA-CT-01</td>
+                    <td class="td-left">Tên chương trình</td>
+                    <td class="td-center"></td>
+                    <td class="td-center"></td>
+                    <td class="td-center"></td>
+                    <td class="td-center"></td>
+                    <td class="td-center"></td>
+                    <td class="td-center"><input type="checkbox" id="" /></td>
+                  </tr>
+                  <tr>
+                    <td class="td-center td-fix">1</td>
+                    <td class="td-left">MA-CT-01</td>
+                    <td class="td-left">Tên chương trình</td>
+                    <td class="td-center"></td>
+                    <td class="td-center"></td>
+                    <td class="td-center"></td>
+                    <td class="td-center"></td>
+                    <td class="td-center"></td>
+                    <td class="td-center"><input type="checkbox" id="" /></td>
+                  </tr>
+                  <tr>
+                    <td class="td-center td-fix">1</td>
+                    <td class="td-left">MA-CT-01</td>
+                    <td class="td-left">Tên chương trình</td>
+                    <td class="td-center"></td>
+                    <td class="td-center"></td>
+                    <td class="td-center"></td>
+                    <td class="td-center"></td>
+                    <td class="td-center"></td>
+                    <td class="td-center"><input type="checkbox" id="" /></td>
+                  </tr>
+
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+        </div>
+        <div class="modal-footer">
+          <div class="pull-right d-flex">
+            <button class="btn btn-default" data-bs-toggle="modal" data-bs-target="#giaoDeTai_chitiet">
+              <i class="fal fa-times"></i><span>Đóng</span>
+            </button>
+            <button class="btn btn-danger d-none">
+              <i class="fa fa-trash"></i><span>Xóa</span>
+            </button>
+            <button class="btn btn-primary">
+              <i class="fas fa-save"></i><span>Lưu</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- -------------------------- -->
+  <!-- JS -->
+  <script src="../assets/bootstrap-5.3.2/js/bootstrap.bundle.js"></script>
+  <script src="../assets/swiper-slide/swiper-bundle.min.js"></script>
+  <script src="../assets/js/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+    integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <script src="../assets/js/customs.js"></script>
+  <script>
+    $(window).on("load", function () {
+      $("#them-moi-nhansu-1").modal("show");
+    });
+
+  </script>
+</body>
+
+</html>

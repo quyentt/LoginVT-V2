@@ -1,0 +1,55 @@
+/* =========================================================================
+   2. GENERIC — chuyển động khi nội dung vào màn
+   =========================================================================
+   Bấm "Thêm danh mục" rồi biểu mẫu bật thẳng ra thì mắt không kịp nhận ra
+   cái gì vừa thay đổi — người dùng phải dừng lại đọc để biết mình còn ở
+   đâu. Cho nó trượt từ dưới lên một đoạn ngắn là đủ để mắt bám theo: hướng
+   chuyển động nói rằng "cái này vừa xuất hiện", không phải "trang vừa nhảy".
+
+   Đoạn trượt cố tình ngắn (14px). Trượt dài trông có vẻ mượt nhưng làm
+   người thao tác quen tay phải chờ.
+
+   Các lớp này do `ums.ui.swap()` / `ums.ui.reveal()` gắn vào rồi GỠ RA khi
+   chạy xong. Phải gỡ vì `transform` biến phần tử thành khối chứa của con
+   nó, làm hỏng `position: sticky` của đầu khung nằm bên trong.
+   ========================================================================= */
+
+@keyframes ums-in-up {
+    from { opacity: 0; transform: translateY(var(--ums-in-dy)); }
+    to   { opacity: 1; transform: none; }
+}
+
+@keyframes ums-in-fade {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* `backwards` chứ không phải `both`: giữ trạng thái ĐẦU trong lúc chờ độ trễ,
+   nhưng chạy xong thì KHÔNG giữ trạng thái cuối. Giữ lại thì phần tử đọng
+   `transform: matrix(1,0,0,1,0,0)` — một ma trận đơn vị vẫn là transform, vẫn
+   biến phần tử thành khối chứa và vẫn phá `position: sticky` của đầu khung bên
+   trong. Nhờ vậy dù lớp hiệu ứng không được gỡ kịp thì bố cục vẫn đúng. */
+.ums-in-up {
+    animation: ums-in-up var(--ums-t-in) var(--ums-ease-out) backwards;
+}
+
+.ums-in-fade {
+    animation: ums-in-fade var(--ums-t-in) var(--ums-ease-out) backwards;
+}
+
+/* Trượt so le — từng khối vào sau khối trước một nhịp rất ngắn, dùng cho
+   vùng có nhiều khung xếp dọc. Giới hạn 6 bậc, sâu hơn thì chờ quá lâu. */
+.ums-in-up--2 { animation-delay: 40ms; }
+.ums-in-up--3 { animation-delay: 80ms; }
+.ums-in-up--4 { animation-delay: 120ms; }
+.ums-in-up--5 { animation-delay: 160ms; }
+.ums-in-up--6 { animation-delay: 200ms; }
+
+/* Người dùng đã bật "giảm chuyển động" ở hệ điều hành thì tôn trọng: hiện
+   thẳng, không trượt, không mờ dần. */
+@media (prefers-reduced-motion: reduce) {
+    .ums-in-up,
+    .ums-in-fade {
+        animation: none;
+    }
+}

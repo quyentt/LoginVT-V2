@@ -1,0 +1,446 @@
+﻿<link rel="stylesheet" href="assets/css-new/styles.css">
+<div class="one-door mt-0 aps-duyetdexuat">
+    <div class="overlay"></div>
+    <div class="content-tab no-tab">
+        <div class="d-flex justify-content-between">
+            <div class="nav-content-left">
+                <p class="link"><a href="#">Luận văn - Luận án</a>
+                    <i class="fal fa-angle-right"></i><a href="#">Giao đề tài</a>
+                </p>
+            </div>
+            <div class="nav-content-right">
+                <a class="d-block text-right" href=""><i class="fas fa-question-circle"></i></a>
+            </div>
+        </div>
+    </div>
+    <div class="function-content w-100">
+        <div class="feature-content has-tabs">
+            <div class="card today-card today-card-1 mb-40">
+                <div class="card-header">
+                    <div class="myTab-header">
+                        <div class="myTab-header-item">
+                            <a href="#" class="myTab-header-link  active">
+                                <i class="fa-solid fa-list-timeline"></i> Danh sách
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="myTab-content">
+                        <div class="myTab-item show">
+                            <div class="filter-sm mb-20">
+                                <div class="filter-item w-lg-40 w-md-60">
+                                    <div class="input-label-left">
+                                        <label class="mt-5">Chọn kế hoạch thực hiện</label>
+                                        <div class="custom-select">
+                                            <select id="dropSearch_KeHoach" class="form-select select-opt"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="filter-item">
+                                    <div class="btn btn-view btn-default btn-search" id="btnSearch"><i
+                                            class="fa fa-search"></i>Xem danh sách</div>
+                                </div>
+                            </div>
+                            <!--Nhóm button xử lý tác vụ sẽ được inner sang trái -->
+                            <div class="feature-action-group d-none feature-action-group-first"></div>
+                            <div class="table-wrap">
+                                <div class="table-responsive fs-14 no-swiper">
+                                    <table class="table tblKhoaPhanBien table-bordered table-noborder"
+                                        id="tblKhoaPhanBien">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-center border-top-1 w-50px" scope="col">STT</th>
+                                                <th class="min-w-85p border-top-1" scope="col">Mã số</th>
+                                                <th class="min-w-100p border-top-1" scope="col">Họ đệm</th>
+                                                <th class="min-w-85p border-top-1" scope="col">Tên</th>
+                                                <th class="min-w-100p border-top-1 py-11" scope="col">Lớp</th>
+                                                <th class="min-w-110p border-top-1  py-11" scope="col">Chương trình</th>
+                                                <th class="min-w-110p border-top-1  py-11" scope="col">Khóa học </th>
+                                                <th class="min-w-100p border-top-1  py-11" scope="col">Hệ đào tạo </th>
+                                                <th class="min-w-185p border-top-1  py-11" scope="col">Để tài </th>
+                                                <th class="min-w-110p border-top-1  py-11" scope="col">Quyết định </th>
+                                                <th class="min-w-150p border-top-1  py-11" scope="col">Lý do điều chỉnh
+                                                </th>
+                                                <th class="border-top-1  py-11 text-center" scope="col">Tình trạng GVHD
+                                                </th>
+                                                <th class="text-center" scope="col">Chọn</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- ---------- -->
+<div class="aps-all-button ml-20 aps-gap-10" style="display: none !important;">
+    <button type="button" class="btn btn-soft-orange" data-bs-toggle="modal" data-bs-target="#khoadexuat_phanbien">Đề xuất phản biệt</button>
+    <button type="button" class="btn btn-soft-danger" data-bs-toggle="modal" data-bs-target="#modalQuyetDinh">Duyệt Giao đề tài Chi tiết Quyết định</button>
+    <button type="button" class="btn btn-soft-primary" data-bs-toggle="modal" data-bs-target="#modalDuyet"> Duyệt Giao đề tài Chi tiết</button>
+    <button type="button" class="btn btn-soft-success" data-bs-toggle="modal" data-bs-target="#modal_XacNhan">Xác nhận hoàn thành nhập điểm</button>
+</div>
+<!-- Đề xuất phản biện -->
+<div class="modal fade khoadexuat_phanbien" id="khoadexuat_phanbien">
+    <div class="modal-dialog modal-dialog-centered modal-1400">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-header-wrap">
+                    <div class="title"><i class="fa-solid fa-check-to-slot"></i> Đề xuất phản biện</div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex align-items-center fs-14 mb-15">
+                    <span class="text-gray me-10">
+                        Tình trạng:
+                    </span>
+                    <span class="text-success fw-bold" id="lblTinhTrang"></span>
+                </div>
+
+                <div class="line-1"></div>
+                <div class="-me-10 -ms-10 pb-8 mt-20">
+
+                    <div class="d-flex align-items-center fs-14 mb-8 px-10">
+                        <span class="text-gray me-10 flex-shrink-0 w-135p">Mã số:</span>
+                        <span class="fw-bold" id="lblMaSo"></span>
+                    </div>
+                    <div class="d-flex align-items-center flex-wrap">
+                        <div class="d-flex align-items-center fs-14 mb-8 px-10 flex-grow-1">
+                            <span class="text-gray me-10 flex-shrink-0 w-135p">Họ tên:</span>
+                            <span class="fw-bold" id="lblHoTen"></span>
+                        </div>
+                        <div class="d-flex align-items-center fs-14 mb-8 px-10 flex-grow-1">
+                            <span class="text-gray me-10 flex-shrink-0">Lớp:</span>
+                            <span class="fw-bold" id="lblLop"></span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-center fs-14  mb-8 px-10">
+                        <span class="text-gray me-10 flex-shrink-0 w-135p">Chương trình:</span>
+                        <span class="fw-bold" id="lblChuongTrinh"></span>
+                    </div>
+                    <div class="d-flex align-items-center fs-14  mb-8 px-10">
+                        <span class="text-gray me-10 flex-shrink-0 w-135p">Tên đề tài tiếng Việt</span>
+                        <span class="fw-bold" id="lblDeTaiTiengViet"></span>
+                    </div>
+                    <div class="d-flex align-items-center fs-14  mb-8 px-10">
+                        <span class="text-gray me-10 flex-shrink-0 w-135p">Tên đề tài tiếng Anh</span>
+                        <span class="fw-bold" id="lblDeTaiTiengAnh"></span>
+                    </div>
+                    <div class="d-flex align-items-center fs-14 mb-8 px-10">
+                        <span class="text-gray me-10 flex-shrink-0 w-135p">Quyết định:</span>
+                        <span class="fw-bold" id="lblSoQuyetDinh"></span>
+                    </div>
+                    <div class="d-flex align-items-center fs-14 mb-8 px-10">
+                        <span class="text-gray me-10 flex-shrink-0 w-135p">Lý do điều chỉnh:</span>
+                        <span class="fw-bold " id="lblNoiDung"></span>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-5">
+                    <div class="fw-bold mt-15 text-main">Phản biện đề xuất</div>
+                </div>
+                <div class="table-responsive fs-14 no-swiper">
+                    <table class="table tblNguoiHuongDan table-bordered table-noborder" id="tblNguoiHuongDan">
+                        <thead>
+                            <tr>
+                                <th class="text-center border-top-1 py-12 w-50px" scope="col">STT</th>
+                                <th class="min-w-130p border-top-1" scope="col">Người hướng dẫn</th>
+                                <th class="min-w-130p border-top-1" scope="col">Vai trò</th>
+                                <th class="border-top-1  py-11" scope="col">File</th>
+                                <th class="text-center border-top-1"></th>
+                            </tr>
+
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <!--<div class="d-flex justify-content-end ">
+                        <a class="btn btn-add btn-sm btnSearch_NguoiHuongDan">
+                            <i class="fal fa-plus "></i>
+                            <span>Thêm</span>
+                        </a>
+                    </div>-->
+                </div>
+                <div class="d-flex align-items-center justify-content-end mb-15">
+                    <button class="btn btn-add me-10 btnQuyetDinh  btn-soft-success">
+                        <i class="fal fa-plus"></i>
+                        <span>Tạo quyết định</span>
+                    </button>
+                    <button class="btn btn-edit btnDuyet btn-soft-primary">
+                        <i class="fal fa-check"></i>
+                        <span>Duyệt đề xuất PB</span>
+                    </button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="d-flex justify-content-end">
+                    <button class="btn btn-soft-orange" data-bs-toggle="modal" data-bs-dismiss="modal">
+                        <i class="fal fa-times"></i>
+                        <span>Hủy</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- modal Duyệt Giao đề tài Chi tiết Quyết định -->
+<div class="modal fade modalQuyetDinh" id="modalQuyetDinh">
+    <div class="modal-dialog modal-dialog-centered modal-800">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-header-wrap">
+                    <div class="title"><i class="fa-solid fa-file-circle-check"></i> Tạo quyết định</div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex align-items-center fs-14 mb-15">
+                    <span class="text-gray me-10">
+                        Tình trạng:
+                    </span>
+                    <span class="text-red fw-bold lblTinhTrang"></span>
+
+                </div>
+                <div class="line-1"></div>
+                <div class="-me-10 -ms-10 pb-8 mt-15">
+                    <div class="d-flex align-items-center fs-14 mb-8 px-10">
+                        <span class="text-gray me-10 flex-shrink-0 w-135p">Mã số:</span>
+                        <span class="fw-bold lblMaSo"></span>
+                    </div>
+                    <div class="d-flex align-items-center flex-wrap">
+                        <div class="d-flex align-items-center fs-14 mb-8 px-10 flex-grow-1">
+                            <span class="text-gray me-10 flex-shrink-0 w-135p">Họ tên:</span>
+                            <span class="fw-bold lblHoTen"></span>
+                        </div>
+                        <div class="d-flex align-items-center fs-14 mb-8 px-10 flex-grow-1">
+                            <span class="text-gray me-10 flex-shrink-0">Lớp:</span>
+                            <span class="fw-bold lblLop"></span>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center fs-14 mb-8 px-10">
+                        <span class="text-gray me-10 flex-shrink-0 w-135p">Chương trình:</span>
+                        <span class="fw-bold lblChuongTrinh"></span>
+                    </div>
+                    <div class="d-flex align-items-center fs-14  mb-8 px-10">
+                        <span class="text-gray me-10 flex-shrink-0 w-135p">Tên đề tài tiếng Việt</span>
+                        <span class="fw-bold lblDeTaiTiengViet"></span>
+                    </div>
+                    <div class="d-flex align-items-center fs-14  mb-8 px-10">
+                        <span class="text-gray me-10 flex-shrink-0 w-135p">Tên đề tài tiếng Anh</span>
+                        <span class="fw-bold lblDeTaiTiengAnh"></span>
+                    </div>
+                </div>
+                <div class="line-1"></div>
+                <div class="d-flex align-items-center flex-wrap justify-content-between py-20 fs-14">
+                    <div class="input-label-left mb-10">
+                        <label class="mt-7 w-100p">Số QĐ</label>
+                        <input type="text" class="form-control w-200p" id="txtSoQuyetDinh">
+                    </div>
+                    <div class="input-label-left mb-10">
+                        <label class="mt-7 w-100p text-right pr-10">Ngày QĐ</label>
+                        <div class="input input-icon-right">
+                            <input type="text" class="form-control max-w-200p" placeholder="--/--/--"
+                                id="txtNgayQuyetDinh">
+                        </div>
+                    </div>
+                    <div class="input-label-left w-100 mb-10">
+                        <label class="mt-7 w-100p">Files</label>
+                        <div class="d-flex flex-wrap flex-grow-1">
+                            <div class="file mt-7" id="txtFileDinhKem">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-label-left mb-10 w-100">
+                        <label class="w-100p">Nội dung</label>
+                        <div class="input input-icon-right">
+                            <textarea class="form-control min-h-86" rows="4" id="txtNoiDung"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="d-flex justify-content-end">
+                    <button class="btn btn-soft-orange" data-bs-dismiss="modal">
+                        <i class="fal fa-times"></i>
+                        <span>Hủy</span>
+                    </button>
+                    <button class="btn btn-save btn-primary" id="btnSave_QuyetDinh">
+                        <i class="fal fa-save"></i>
+                        <span>Lưu</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- modal Duyệt Giao đề tài Chi tiết Duyệt -->
+<div class="modal fade modalDuyet" id="modalDuyet">
+    <div class="modal-dialog modal-dialog-centered modal-800">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-header-wrap">
+                    <div class="title"><i class="fa-solid fa-file-circle-check"></i>Duyệt giao đề tài</div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex align-items-center fs-14 mb-15">
+                    <span class="text-gray me-10">
+                        Tình trạng:
+                    </span>
+                    <span class="text-red fw-bold lblTinhTrang"></span>
+
+                </div>
+                <div class="line-1"></div>
+                <div class="-me-10 -ms-10 pb-8 mt-20">
+                    <div class="d-flex align-items-center fs-14 mb-8 px-10">
+                        <span class="text-gray me-10 flex-shrink-0 w-135p">Mã số:</span>
+                        <span class="fw-bold lblMaSo"></span>
+                    </div>
+                    <div class="d-flex align-items-center flex-wrap">
+                        <div class="d-flex align-items-center fs-14 mb-8 px-10 flex-grow-1">
+                            <span class="text-gray me-10 flex-shrink-0 w-135p">Họ tên:</span>
+                            <span class="fw-bold lblHoTen"></span>
+                        </div>
+                        <div class="d-flex align-items-center fs-14 mb-8 px-10 flex-grow-1">
+                            <span class="text-gray me-10 flex-shrink-0">Lớp:</span>
+                            <span class="fw-bold lblLop">T5K6</span>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center fs-14 mb-8 px-10">
+                        <span class="text-gray me-10 flex-shrink-0 w-135p">Chương trình:</span>
+                        <span class="fw-bold lblChuongTrinh"></span>
+                    </div>
+                    <div class="d-flex align-items-center fs-14  mb-8 px-10">
+                        <span class="text-gray me-10 flex-shrink-0 w-135p">Tên đề tài tiếng Việt</span>
+                        <span class="fw-bold lblDeTaiTiengViet"></span>
+                    </div>
+                    <div class="d-flex align-items-center fs-14  mb-8 px-10">
+                        <span class="text-gray me-10 flex-shrink-0 w-135p">Tên đề tài tiếng Anh</span>
+                        <span class="fw-bold lblDeTaiTiengAnh"></span>
+                    </div>
+                </div>
+                <div class="line-1"></div>
+                <div class="d-flex align-items-center flex-wrap -me-10 -ms-10 mt-15">
+                    <div class="d-flex align-items-center fs-14 mb-8 px-10 flex-grow-1">
+                        <span class="text-gray me-10 flex-shrink-0 w-100p">Số QĐ</span>
+                        <span class="fw-bold lblSoQuyetDinh"></span>
+                    </div>
+                    <div class="d-flex align-items-center fs-14 mb-8 px-10 flex-grow-1">
+                        <span class="text-gray me-10 flex-shrink-0 w-100p">Ngày QĐ</span>
+                        <span class="fw-bold lblNgayQuyetDinh"></span>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center fs-14 mb-8">
+                    <span class="text-gray me-10 flex-shrink-0 w-100p">Files</span>
+                    <div class=" text-link" id="lblViewFileDinhKem">
+                        <!--<i class="fa-light fa-file-word"></i>
+                        <span>file-dinh-kem.docx</span>-->
+                    </div>
+                </div>
+                <div class="d-flex fs-14">
+                    <span class="text-gray me-10 flex-shrink-0 w-100p">Nội dung</span>
+                    <p class="lblNoiDung">
+                        Để có những bài viết khóa luận mẫu về đề tài “Cải tiến công tác đào tạo và phát triển nguồn nhân
+                        lực” chuẩn theo quy định bạn vui lòng để lại thông tin học tên, số điện thoại và địa chỉ mail
+                        tại mục bình luận hoặc gửi thông tin
+                        về địa chỉ mail: tuyensinh@leanhhr.com để được hỗ trợ gửi bài viết mẫu
+                    </p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="d-flex justify-content-end">
+                    <button class="btn btn-soft-orange" data-bs-dismiss="modal">
+                        <i class="fal fa-times"></i>
+                        <span>Hủy</span>
+                    </button>
+                    <button class="btn btn-save btnXacNhan btn-success">
+                        <i class="fal fa-check-circle"></i>
+                        <span>Duyệt</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- modal xác nhận hoàn thành nhập điểm -->
+<div class="modal fade modal_XacNhan" id="modal_XacNhan">
+    <div class="modal-dialog modal-dialog-centered modal-860">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-header-wrap">
+                    <div class="title"><i class="fa-light fa-check-circle me-10"></i>Xác nhận</div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="aps-add-new">
+                    <!-- 1. Trạng thái xác nhận -->
+                    <div class="aps-form d-flex align-items-end flex-wrap flex-md-nowrap col-12">
+                        <div class="flex-grow-1">
+                            <div class="input-label-left mb-15">
+                                <label class="mt-5 aps-lable">Trạng thái xác nhận</label>
+                                <div class="custom-select aps-form-input">
+                                    <select name="" id="dropTrangThaiXacNhan" class="form-select select-opt"></select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <div class="btn btn-save ms-10 mb-15 btnSave_XacNhan btn-success">
+                                <i class="fa-light fa-check pr-5"></i><span>Đồng ý</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. Lịch sử xác nhận -->
+                    <div class="aps-form mt-0">
+                        <div class="aps-lable text-left mb-0">
+                            <p class="group-group-title-name border-0 mb-0">
+                                <span class="badge bg-blue">Lịch sử xác nhận</span>
+                            </p>
+                        </div>
+                        <div class="aps-form-table">
+                            <div class="table-responsive fs-14 no-swiper">
+                                <table class="table tblModal_XacNhan table-bordered table-noborder"
+                                    id="tblModal_XacNhan">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center border-top-1 w-50px" scope="col">STT</th>
+                                            <th class=" border-top-1" scope="col">Trạng thái</th>
+                                            <th class=" border-top-1 py-11" scope="col">Người xác nhận</th>
+                                            <th class=" border-top-1  py-11" scope="col">Thời gian </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- page script -->
+<script src="modules/luanvan/script/khoaphanbien.js?v=1.0.0.0"></script>
+<!--<script src="modules/dashboard/script/customs.js?"></script>-->
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['KhoaPhanBien'] = new KhoaPhanBien();
+    $(document).ready(function () {
+        main_doc.KhoaPhanBien.init();
+    });
+</script>

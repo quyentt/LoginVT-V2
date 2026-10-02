@@ -1,0 +1,270 @@
+﻿<style>
+    /*.box-mini {*/
+    /*    background: #f7f7f7;*/
+    /*    padding: 5px;*/
+    /*    cursor: pointer;*/
+    /*    width: 99%*/
+    /*}*/
+
+    /*    .box-mini:hover {*/
+    /*        background: #eaeaea;*/
+    /*    }*/
+
+    /*.select2-container--default .select2-selection--multiple .select2-selection__choice {*/
+    /*    background-color: #f1f1f1 !important;*/
+    /*    color: black;*/
+    /*    margin-top: 12px;*/
+    /*}*/
+
+    /*.progress {*/
+    /*    margin-bottom: 5px;*/
+    /*}*/
+
+    /*.popover {*/
+    /*    max-width: 100%; !* Max Width of the popover (depending on the container!) *!*/
+    /*}*/
+
+    /*.pcard {*/
+    /*    font-size: 18px !important;*/
+    /*    line-height: 1.5 !important;*/
+    /*}*/
+
+    /*    .pcard i {*/
+    /*        width: 18px;*/
+    /*    }*/
+
+    /*.colorcard {*/
+    /*    color: #009688*/
+    /*}*/
+
+    /*.lbsymbolHD {*/
+    /*    font-size: 13px;*/
+    /*    font-family: 'Times New Roman', Times, serif*/
+    /*}*/
+
+    /*.btnMauInChungTu {
+        width: 85px;
+        text-align: center;
+        background-color: #fff;
+        border-bottom: 1px solid #f1f1f1;
+        cursor: pointer
+    }*/
+
+    /*.activeLien {*/
+    /*    background: rgba(0, 0, 0, 0) -moz-linear-gradient(center top, #bbbbbb 0%, #efefef 100%) repeat scroll 0 0 !important;*/
+    /*}*/
+    #MauInPhieuThu.print-preview {
+        width: 100%;
+        min-height: 100vh;
+        padding: 24px 16px;
+        background: #f5f5f5;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        box-sizing: border-box;
+    }
+
+    #MauInPhieuThu .receipt-paper {
+        width: 800px;
+        max-width: 100%;
+        background: #fff;
+        padding: 24px 36px;
+        box-sizing: border-box;
+        font-family: "Times New Roman", serif;
+        font-size: 14px;
+        color: #000;
+    }
+
+    #MauInPhieuThu .receipt-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 32px;
+        margin-bottom: 24px;
+    }
+
+    #MauInPhieuThu .left-info,
+    #MauInPhieuThu .right-info {
+        width: 50%;
+        line-height: 1.5;
+    }
+
+    #MauInPhieuThu .right-info {
+        text-align: center;
+    }
+
+    #MauInPhieuThu .receipt-title {
+        margin: 12px 0 20px;
+        text-align: center;
+        font-size: 22px;
+        font-weight: bold;
+    }
+</style>
+<!-- Main content -->
+<section class="content aps-tracuu-bienlai">
+    <div id="MainContent" class="aps-bienlai box-shadow row">
+        <div class="col-lg-12 aps-bienlai-search">
+            <div class="box box-solid box-search pd20" style="padding-bottom: 20px !important;">
+                <div class="box-body pd0">
+                    <div class="area-search row mb-0">
+                        <div id="search" class="inputSearch collapse in">
+                            <!-- Bộ tìm kiếm -->
+                            <div class="col-sm-5 aps-search-bienlai">
+                                <table class="table table-noborder table-form-add mb0">
+                                    <tbody>
+                                        <tr>
+                                            <td style="width: 168px" class="aps-form-lable-search">Chọn mẫu biên lai
+                                            </td>
+                                            <td class="aps-form-input-search">
+                                                <select class="select-opt" id="dropMau_BienLai"></select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="aps-form-lable-search">Nhập từ khoá</td>
+                                            <td class="aps-form-input-search">
+                                                <input id="txtKeyword_Search_BienLai" class="form-control"
+                                                    placeholder="Nhập từ khóa tìm kiếm: số phiếu, mã người thu..." />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="aps-form-lable-search">Loại phiếu</td>
+                                            <td class="aps-form-input-search">
+                                                <input type="radio" class="rdLoaiPhieu_BienLai"
+                                                    name="rdLoaiPhieu_BienLai" value="-1" checked="checked" />
+                                                Toàn bộ
+                                                <input type="radio" class="rdLoaiPhieu_BienLai ml-10"
+                                                    name="rdLoaiPhieu_BienLai" value="1" />
+                                                Phiếu thu
+                                                <input type="radio" class="rdLoaiPhieu_BienLai ml-10"
+                                                    name="rdLoaiPhieu_BienLai" value="2" />
+                                                Phiếu đã sửa
+                                                <input type="radio" class="rdLoaiPhieu_BienLai ml-10"
+                                                    name="rdLoaiPhieu_BienLai" value="0" />
+                                                Phiếu hủy
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td><a id="btnSearch_BienLai" class="btn btn-default btn-search"><i
+                                                        class="fa fa-search"></i><span class="lang" key="">Tìm
+                                                        kiếm</span></a></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-sm-7 aps-progress">
+                                <div class="row mb-0">
+                                    <div class="col-sm-1"></div>
+                                    <div class="col-sm-7">
+                                        <p class="text-center">
+                                            <strong>Tình trạng biên lai</strong>
+                                        </p>
+                                        <div class="progress-group mt-15">
+                                            <span class="progress-text color-green">Phiếu đã dùng</span>
+                                            <span class="progress-number" id="lbPhieuDaDung">
+                                            </span>
+                                            <div class="progress sm">
+                                                <div id="lbpPhieuDaDung" class="progress-bar progress-bar-green"
+                                                    style="width: 100%"></div>
+                                            </div>
+                                        </div>
+                                        <div class="progress-group mt-15">
+                                            <span class="progress-text color-yellow">Phiếu đã sửa</span>
+                                            <span class="progress-number" id="lbPhieuDaSua">
+                                            </span>
+                                            <div class="progress sm">
+                                                <div id="lbpPhieuDaSua" class="progress-bar progress-bar-yellow"
+                                                    style="width: 100%"></div>
+                                            </div>
+                                        </div>
+                                        <div class="progress-group mt-15">
+                                            <span class="progress-text color-red">Phiếu đã hủy</span>
+                                            <span class="progress-number" id="lbPhieuDaHuy">
+                                            </span>
+                                            <div class="progress sm">
+                                                <div id="lbpPhieuDaHuy" class="progress-bar progress-bar-red"
+                                                    style="width: 100%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-1"></div>
+                                    <div class="col-sm-3">
+                                        <div class="aps-img pt10 pb15"> <img src="Upload/images/bien-lai.png" /></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="clear"></div>
+        </div>
+        <div class="col-lg-12 aps-ds-bienlai">
+            <div class="box box-solid pr10">
+                <div class="box-body pr0">
+                    <div class="pull-left">
+                        <div class="group-title pl0 pt5">
+                            <p class="titleSearchContent">
+                                <i class="fal fa-receipt"></i> <span class="lang" key="">Danh sách số biên lai</span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="scroll-table-x zonePhieuThu_BienLai" id="zonePhieuThu_BienLai">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="zoneThongTinPhieuThu" class="col-sm-12 beforeActive zoneThongTinPhieuThu"
+            style="display: none; width: 100%;">
+            <div class="box-zoneThongTinPhieuThu box-footer">
+                <div id="zoneActionHoaDon" class="zoneActionHoaDon aps-all-btn" style="float:left; margin-left: 3px;">
+                    <div style="float:left; background-color: #fff">
+                        <div style="margin: 20px">
+                            <div id="MauInPhieuThu"></div>
+                        </div>
+                    </div>
+                    <!-- Hủy Phiếu -->
+                    <div id="btnHuyBienLai" class="btnMauInChungTu">
+                        <a title="Hủy biên lai" class="btn btn-danger"><i class="fa fa-trash-o"></i>Hủy Biên Lai</a>
+                    </div>
+                    <!-- In Biên Lai -->
+                    <div id="btnInBienLai" class="btnMauInChungTu btnInBienLai">
+                        <a title="In biên lai" class="btn btn-primary">
+                            <i class="fa fa-print"></i> In Biên Lai</a>
+                    </div>
+                    <!-- Đóng Biên Lai -->
+                    <div id="btnCloseBienLai" class="btnMauInChungTu btnCloseBienLai ">
+                        <a title="Đóng biên lai" class="btn btn-default">
+                            <i class="fa-solid fa-receipt"></i> Đóng Biên Lai</a>
+                    </div>
+                    <!-- Liên hóa đơn -->
+                    <div id="btnLienHoaDon" class="btnLienHoaDon btnMauInChungTu">
+                        <a title="Liên Hóa đơn" class="btn btn-danger"><i class="fa fa fa-copy"></i>Liên hóa đơn</a>
+                        <div id="zoneLienHoaDon"></div>
+                    </div>
+                    <!-- Đổi mẫu in -->
+                    <div id="btnChuyenMauIn" class="btnMauInChungTu btnChuyenMauIn" style="display: none">
+                        <div class="dropdown">
+                            <a title="Chuyển mẫu in" class="color-fff bold lbsymbolHD dropdown-toggle btn btn-info"
+                                data-toggle="dropdown">
+                                Đổi mẫu in <span class="caret"></span></a>
+                            <ul class="dropdown-menu" id="zoneMauInChungTu"></ul>
+                        </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+</section>
+<!-- page script -->
+<script src="modules/bienlai/scripts/tracuusobienlai.js?v=1.0.0.20"></script>
+<script src="modules/bienlai/scripts/n2vi.min.js"></script>
+<script src="modules/hoadon/scripts/qrcode.min.js"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['HeThongBienLai'] = new HeThongBienLai();
+    $(document).ready(function () {
+        main_doc.HeThongBienLai.init();
+    });
+</script>

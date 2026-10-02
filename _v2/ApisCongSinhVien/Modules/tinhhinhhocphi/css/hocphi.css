@@ -1,0 +1,65 @@
+/* Kiểu riêng của module tinhhinhhocphi (Cổng sinh viên)
+   — khối thông tin người học, thẻ số liệu tài chính, hộp mã QR.
+   Dùng chung cho tinhhinhhocphi / xuathoadon / thuhocphi. */
+
+/* ---------- Khối thông tin người học (bản gốc .finance-user-info) -------- */
+.hp-sv { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ums-sp-2) var(--ums-sp-4); }
+.hp-sv__ten {
+    font-size: var(--ums-fz-16);
+    font-weight: var(--ums-fw-bold);
+    color: var(--ums-navy);
+    text-transform: uppercase;
+}
+.hp-sv__dong { font-size: var(--ums-fz-13); color: var(--ums-ink-2); }
+.hp-sv__nhan { display: flex; gap: var(--ums-sp-2); }
+
+/* ---------- Lưới thẻ số liệu (bản gốc .finance-dashboard-item) ----------
+   Dùng lại ums.pat.cards; ở đây thẻ là một con số lớn + tên khoản, nên bỏ
+   mép răng cưa của thẻ chứng từ và cho nền trắng có viền. */
+.hp-the .ums-card {
+    gap: var(--ums-sp-1);
+    padding-left: var(--ums-sp-4);
+    border: 1px solid var(--ums-line);
+    background-color: var(--ums-surface);
+    background-image: none;
+}
+.hp-the .ums-card--acts .ums-card__body { padding: var(--ums-sp-3) var(--ums-sp-4); }
+.hp-the .ums-card:hover { background-color: var(--ums-surface-2); }
+/* Kéo gốc 30/9: bấm cả thẻ = bấm "Chi tiết" */
+.hp-the .ums-card[data-the] { cursor: pointer; }
+/* Số tiền và chữ "vnđ" luôn NẰM CÙNG MỘT DÒNG — thẻ hẹp mà để xuống dòng thì
+   nhìn như hai giá trị khác nhau. */
+.hp-the__so { display: block; white-space: nowrap; font-size: 22px; font-weight: var(--ums-fw-bold); color: var(--ums-navy); }
+.hp-the__so i { font-size: var(--ums-fz-13); font-style: normal; color: var(--ums-ink-3); }
+.hp-the__ten { display: block; margin-top: 2px; font-size: var(--ums-fz-13); color: var(--ums-ink-2); }
+.hp-the .ums-card--ok .hp-the__so { color: var(--ums-ok); }
+.hp-the .ums-card--bad .hp-the__so { color: var(--ums-bad); }
+.hp-the .ums-card--warn .hp-the__so { color: var(--ums-warn); }
+.hp-the .ums-card--info .hp-the__so { color: var(--ums-blue); }
+.hp-the .ums-card--mute .hp-the__so { color: var(--ums-ink-3); }
+
+/* ---------- Hộp mã QR --------------------------------------------------- */
+.hp-qrbox { text-align: center; }
+.hp-qrbox img { max-width: 100%; }
+
+/* ---------- Hàng nút xuất hoá đơn điện tử ------------------------------- */
+.hp-nut { display: flex; flex-wrap: wrap; gap: var(--ums-sp-2); justify-content: flex-end; }
+
+/* ---------- Thu học phí: khối thông tin cá nhân ------------------------- */
+.hp-canhan { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--ums-sp-2) var(--ums-sp-5); }
+@media (max-width: 991px) { .hp-canhan { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 575px) { .hp-canhan { grid-template-columns: minmax(0, 1fr); } }
+
+/* ---------- Đồng phục: dấu xác nhận trong bảng kết quả ------------------ */
+.hp-ok { color: var(--ums-ok); }
+.hp-bad { color: var(--ums-bad); }
+.hp-cam { color: var(--ums-warn); }
+
+/* Biểu tượng của bản gốc (assets/img/hocphi/*.png): chữ bên trái, ảnh bên phải,
+   xếp hàng ngang nên thẻ hẹp cũng không bao giờ đè lên chữ. */
+.hp-the .ums-card__body { display: flex; flex-direction: row; align-items: center; gap: var(--ums-sp-3); }
+.hp-the__noi { flex: 1 1 auto; min-width: 0; }
+.hp-the__anh { flex: 0 0 auto; width: 48px; height: auto; }
+/* Thẻ hẹp: số dài thì thu nhỏ chữ thay vì xuống dòng */
+@media (max-width: 1500px) { .hp-the__so { font-size: 19px; } }
+@media (max-width: 1200px) { .hp-the__so { font-size: 17px; } .hp-the__anh { width: 40px; } }

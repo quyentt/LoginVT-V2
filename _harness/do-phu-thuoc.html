@@ -1,0 +1,47 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>do-phu-thuoc</title></head>
+<body>
+<!-- Dò quan hệ CHA → CON giữa các ô chọn ở thanh lọc của 75 màn Tài chính.
+     Chọn lần lượt từng ô, ô nào bị nạp lại danh sách thì là con của ô vừa chọn.
+     Cột cuối: con có bị KHOÁ lúc mới mở màn không (ums.pat.chain).
+     Chạy: msedge --headless=new --virtual-time-budget=900000 --dump-dom
+           http://localhost:8787/_harness/do-phu-thuoc.html
+     Không phủ ô trong hộp thoại (<dialog>) và ô bị ẩn lúc mở màn. -->
+<pre id="out"></pre>
+<iframe id="f" src="../_v2/index.html" style="width:1500px;height:800px"></iframe>
+<script>
+function log(s){document.getElementById('out').textContent+=s+'\n';}
+function wait(ms){return new Promise(function(r){setTimeout(r,ms)})}
+function nhan(s){
+    var t=s.getAttribute('data-ph')||(s.options[0]&&!s.options[0].value?s.options[0].text:'');
+    if(!t){var f=s.closest('.ums-field'); var l=f&&f.querySelector('label,.ums-field__label'); if(l) t=l.textContent;}
+    return (t||s.getAttribute('data-f')||s.getAttribute('data-k')||s.id||'?').trim().replace(/\s+/g,' ').slice(0,40);
+}
+document.getElementById('f').onload = async function(){
+    var w=this.contentWindow, d=w.document; await wait(700);
+    var menu=w.ums.demo.menu.filter(function(m){return /^TC-/.test(m.ID);});
+    for (var i=0;i<menu.length;i++){ var m=menu[i].ID; try {
+        w.location.hash='#/r/R33/'+m; await wait(1800);
+        var sc=d.getElementById('screen'), $=w.jQuery; if(!sc) continue;
+        var sels=[].filter.call(sc.querySelectorAll('select'),function(s){return !s.closest('dialog') && !s.hasAttribute('data-size') && s.offsetParent!==null && !s.closest('table');});
+        if(sels.length<2) continue;
+        var dis0=sels.map(function(s){return s.disabled;});
+        var canh=[];
+        for (var a=0;a<sels.length;a++){
+            var A=sels[a]; if(A.disabled) { A.disabled=false; }
+            var o=[].filter.call(A.options,function(x){return x.value&&x.value!=='SELECTALL'})[0]; if(!o) continue;
+            var doi=[], obs=sels.map(function(B,bi){ if(B===A) return null;
+                var mo=new w.MutationObserver(function(){ if(doi.indexOf(bi)<0) doi.push(bi); }); mo.observe(B,{childList:true}); return mo; });
+            if(A.multiple) $(A).val([o.value]).trigger('change'); else $(A).val(o.value).trigger('change');
+            $(A).trigger({type:'select2:select',params:{data:{id:o.value}}});
+            await wait(900);
+            obs.forEach(function(x){x&&x.disconnect();});
+            doi.forEach(function(bi){ canh.push({a:a,b:bi}); });
+        }
+        if(!canh.length) continue;
+        canh.forEach(function(c){
+            log(m.replace('TC-','')+'\t'+nhan(sels[c.a])+'\t→\t'+nhan(sels[c.b])+'\t'+(dis0[c.b]?'KHOÁ':'MỞ'));
+        });
+    } catch(e){ log(m+'\t!! '+e.message); } }
+    log('XONG');
+};
+</script></body></html>

@@ -1,0 +1,71 @@
+/* =========================================================================
+   6. COMPONENTS — lịch tuần theo giờ + lịch tháng nhỏ (ums.lich)
+   1 phút = 1px (60px mỗi giờ) — đúng tỉ lệ của bản gốc (.hour-row 60px).
+   ========================================================================= */
+
+/* ---------- Lịch tháng nhỏ ------------------------------------------------ */
+.ums-lthang { border: 1px solid var(--ums-line); border-radius: var(--ums-r-2); background: var(--ums-surface); overflow: hidden; }
+.ums-lthang__head { display: flex; align-items: center; justify-content: space-between; gap: var(--ums-sp-2);
+    padding: var(--ums-sp-2) var(--ums-sp-3); background: var(--ums-blue); color: #fff; }   /* cùng màu xanh của nút chính (người dùng 2026-09-29) */
+.ums-lthang__head .ums-iconbtn { color: #fff; }
+.ums-lthang__head .ums-iconbtn:hover { background: rgba(255, 255, 255, .14); color: #fff; }
+.ums-lthang__thu, .ums-lthang__ngay { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
+.ums-lthang__thu { padding: var(--ums-sp-2) var(--ums-sp-2) 0; color: var(--ums-ink-3); font-size: var(--ums-fz-12); font-weight: var(--ums-fw-semibold); text-align: center; }
+.ums-lthang__ngay { gap: 2px; padding: var(--ums-sp-2); }
+/* Ô ngày luôn TRÒN: chặn cả rộng lẫn cao (chỉ chặn cao thì cột dãn là thành bầu dục) */
+.ums-lthang__o { display: grid; place-items: center; aspect-ratio: 1 / 1; max-height: 38px; max-width: 38px; margin: 0 auto; width: 100%;
+    border: 0; border-radius: 50%; background: none; color: var(--ums-ink); font-size: var(--ums-fz-13); cursor: pointer; }
+.ums-lthang__o.is-khac { color: var(--ums-ink-3); opacity: .5; cursor: default; }
+/* Tuần đang xem: chỉ NỀN xanh nhạt, hình tròn, KHÔNG viền. Viền xanh dành riêng cho ngày CÓ LỊCH (.has-lich) —
+   viền cả 7 ngày của tuần làm người dùng tưởng ngày nào cũng có lịch (người dùng 2026-09-29). */
+.ums-lthang__o.is-tuan { background: var(--ums-blue-l); }
+/* Rê chuột chỉ đổi nền ô THƯỜNG. Ô hôm nay / đang chọn giữ nguyên nền đặc — trước đây rê vào là nền thành trắng,
+   chữ trắng trên nền trắng nên mất số ngày (người dùng 2026-09-29). */
+.ums-lthang__o:not(.is-khac):not(.is-today):not(.is-active):hover { background: var(--ums-surface-2); }
+.ums-lthang__o.has-lich { box-shadow: inset 0 0 0 2px var(--ums-blue); }
+.ums-lthang__o.is-today { background: var(--ums-blue); color: #fff; box-shadow: none; }
+.ums-lthang__o.is-active { background: #f26522; color: #fff; box-shadow: none; font-weight: var(--ums-fw-bold); }
+/* Hôm nay / ngày đang chọn mà CÓ LỊCH: nền đặc che mất viền → vẽ vòng xanh bên trong, cách mép một vòng trắng */
+.ums-lthang__o.is-today.has-lich, .ums-lthang__o.is-active.has-lich { box-shadow: inset 0 0 0 2px var(--ums-blue), inset 0 0 0 4px #fff; }
+
+/* ---------- Lưới tuần ----------------------------------------------------- */
+.ums-ltuan { border: 1px solid var(--ums-line); border-radius: var(--ums-r-2); background: var(--ums-surface); overflow-x: auto; }
+.ums-ltuan__head, .ums-ltuan__body { display: grid; grid-template-columns: 64px repeat(7, minmax(110px, 1fr)); min-width: 840px; }
+.ums-ltuan__head { position: sticky; top: 0; z-index: 3; border-bottom: 1px solid var(--ums-line); background: var(--ums-surface-2); }
+.ums-ltuan__goc, .ums-ltuan__ngay { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: var(--ums-sp-2) 4px; }
+.ums-ltuan__goc { color: var(--ums-ink-3); font-size: var(--ums-fz-11); }
+.ums-ltuan__ngay { border-left: 1px solid var(--ums-line); }
+.ums-ltuan__ngay b { color: var(--ums-navy); font-size: var(--ums-fz-13); }
+.ums-ltuan__ngay span { color: var(--ums-ink-3); font-size: var(--ums-fz-12); }
+.ums-ltuan__ngay.is-today b { color: #f26522; }
+.ums-ltuan__cotgio .ums-ltuan__gio { height: 60px; padding: 2px 6px 0 0; border-bottom: 1px dashed var(--ums-line); color: var(--ums-ink-3); font-size: var(--ums-fz-11); text-align: right; }
+.ums-ltuan__cot { position: relative; border-left: 1px solid var(--ums-line); }
+.ums-ltuan__o { height: 60px; border-bottom: 1px dashed var(--ums-line); }
+.ums-ltuan__ev { position: absolute; z-index: 1; overflow: hidden; padding: 4px 6px; border-radius: var(--ums-r-1); color: #fff;
+    font-size: var(--ums-fz-12); line-height: 1.35; cursor: pointer; box-shadow: 0 1px 2px rgba(15, 23, 42, .18); transition: box-shadow var(--ums-t); }
+/* Ô bị cắt chữ: rê chuột thì nổi lên, cao theo nội dung (thay popover của bản gốc) */
+.ums-ltuan__ev:hover { z-index: 5; height: auto !important; min-height: 60px; overflow: visible; box-shadow: 0 6px 18px rgba(15, 23, 42, .28); }
+.ums-ltuan__ev b { display: block; font-size: var(--ums-fz-13); }
+.ums-ltuan__ev .ums-ltuan__tg { opacity: .9; }
+.ums-ltuan__ev .ums-ltuan__act { display: flex; gap: 4px; margin-top: 2px; }
+.ums-ltuan__ev .ums-ltuan__act button { display: inline-grid; place-items: center; width: 22px; height: 22px; padding: 0; border: 0; border-radius: 4px;
+    background: rgba(255, 255, 255, .92); cursor: pointer; font-size: 12px; }
+.ums-ltuan__ev .ums-ltuan__act .is-ok { color: #16a34a; }
+.ums-ltuan__ev .ums-ltuan__act .is-bad { color: #dc2626; }
+.ums-ltuan__ev .ums-ltuan__cx { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px; }
+.ums-ltuan__ev .ums-ltuan__cx img { width: 16px; height: 16px; vertical-align: middle; }
+.ums-ltuan__trong { padding: var(--ums-sp-2) 0 0; }
+
+/* ---------- Hộp điểm danh một buổi (ums.lich.diemDanh) -------------------- */
+.ums-lich-dd__sub { display: flex; flex-wrap: wrap; gap: var(--ums-sp-3); margin-bottom: var(--ums-sp-3); color: var(--ums-ink-2); }
+.ums-lich-dd__sub b { color: var(--ums-navy); }
+.ums-lich-dd__bar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ums-sp-2); margin-bottom: var(--ums-sp-2);
+    padding: var(--ums-sp-2) var(--ums-sp-3); border-radius: var(--ums-r-2); }
+.ums-lich-dd__bar > b { margin-right: auto; text-transform: uppercase; font-size: var(--ums-fz-13); }
+.ums-lich-dd__bar.is-tudong { background: var(--ums-blue-l); color: var(--ums-navy); }
+.ums-lich-dd__bar.is-thucong { background: #fff4e5; color: #9a5b00; }
+.ums-lich-dd__bar .ums-input { width: 180px; }
+.ums-lich-dd__bar [data-dd="siso"] { display: flex; flex-wrap: wrap; gap: var(--ums-sp-3); color: var(--ums-ink); font-size: var(--ums-fz-13); }
+.ums-lich-dd__bar select { width: 190px; }
+.ums-lich-dd__o { display: flex; align-items: center; gap: 4px; }
+.ums-lich-dd__o .ums-input { width: 52px; }

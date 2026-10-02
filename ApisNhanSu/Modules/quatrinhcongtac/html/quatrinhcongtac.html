@@ -1,0 +1,505 @@
+﻿<section class="content">
+    <div class="row">
+        <!-- /.left-content -->
+        <div class="col-lg-3">
+            <div class="box box-solid">
+                <div class="box-body">
+                    <!-- Bộ tìm kiếm -->
+                    <div class="bs-item input-group">
+                        <input type="text" id="txtSearch_CapNhat_TuKhoa" class="form-control" placeholder="Nhập từ khóa tìm kiếm">
+                        <span class="input-group-addon poiter btnExtend_Search" title="Kéo xuống">
+                            <i class="fa fa-angle-double-down"></i>
+                        </span>
+                    </div>
+                    <div class="bs-item pull-right">
+                        <div class="dropdown" id="zonebtnTCCB">
+                        </div>
+                        <div class="dropdown" id="zonebtnTCCB_Import" style="width: 102px; float: left">
+                            <button class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown">
+                                <i class="fa fa-cloud-upload"></i> Import <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu form-container">
+                                <li><a class="btnImportWithProce" name="IMPORTWITHPROC_TCCB" title="TCCB" href="#"> 1. Import thuyên chuyển cán bộ</a></li>
+                            </ul>
+                        </div>
+                        <a style="width: 102px; float: left" id="btnSearchCapNhat_NhanSu" class="btn btn-default"><i class="fa fa-search"></i> <span class="lang" key="">Tìm kiếm</span></a>
+
+                    </div>
+                    <div class="box-sub-search" style="display: none">
+                        <div class="bss-item">
+                            <i>Chọn điều kiện tìm kiếm:</i>
+                        </div>
+                        <div class="bss-item">
+                            <select id="dropSearch_CapNhat_CCTC" class="select-opt">
+                                <option value="">--Chọn Khoa/Viện/Phòng ban--</option>
+                                <!-- Load from js -->
+                            </select>
+                        </div>
+                        <div class="bss-item">
+                            <select id="dropSearch_CapNhat_BoMon" class="select-opt">
+                                <option value="">-- Bộ môn --</option>
+                                <!-- Load from js -->
+                            </select>
+                        </div>
+                        <div class="bss-item">
+                            <select id="dropSearch_CapNhat_TinhTrangLamViec" class="select-opt">
+                                <option value="">-- Chọn tình trạng làm việc--</option>
+                                <!-- Load from js -->
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="box box-solid">
+                <div class="box-header with-border">
+                    <h3 class="box-title" title="Tổng bài báo trong nước">
+                        <i class="fa fa-hdd-o"></i> Danh sách cán bộ
+                    </h3>
+                    <span class="pull-right badge bg-light-blue">
+                        <span id="lblHSLL_NhanSu_Tong"></span>
+                    </span>
+                </div>
+                <div class="box-body">
+                    <table id="tblCapNhat_NhanSu" class="table table-hover">
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- /.right-content -->
+        <div class="col-lg-9">
+            <div id="zoneEdit" style="display: none">
+                <div class="box box-solid zone-bus" id="zone_main">
+                    <div class="col-sm-12">
+                        <div class="box box-solid">
+                            <div class="box-header with-border" style="text-align: center">
+                                <a style="font-weight: bold; font-size: 32px"> <span class="color-active" id="lblCanBo"></span> - Mã cán bộ: <span class="color-active" id="lblMaCanBo"></span></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="nav-tabs-custom">
+                        <ul class="nav nav-tabs">
+                            <li class="active">
+                                <a href="#tab_1" data-toggle="tab" aria-expanded="true">
+                                    <span class="lang" key="">1) Quá trình công tác trước tuyển dụng</span>
+                                </a>
+                            </li>
+                            <li class="">
+                                <a href="#tab_2" data-toggle="tab" aria-expanded="true">
+                                    <!--Su Pham Thai Nguyen-->
+                                    <span class="lang" key="">2) Quá trình công tác trong trường</span>
+
+                                    <!--<span class="lang" key="">2) Quá trình điều chuyển nội bộ</span>-->
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="tab_1">
+                                <div class="row row-align">
+                                    <div class="box-group" id="tieusubanthan">
+                                        <div class="panel bg-default">
+                                            <div id="key_tieusubanthan" class="box-header with-border btnGetData">
+                                                <h3 class="box-title">
+                                                    <a data-toggle="collapse" data-parent="#key_tieusubanthan" href="#qt_tieusubanthan" aria-expanded="true" class="collapsed">
+                                                        <span class="lang" key=""> Tóm tắt quá trình công tác trước tuyển dụng</span>
+                                                    </a>
+                                                </h3>
+                                                <div class="pull-right">
+                                                    <a id="key_tieusubanthan" class="btn btn-default btnAdd">
+                                                        <i class="fa fa-plus cl-active"></i>
+                                                        Thêm mới
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            <div id="qt_tieusubanthan" class="panel-collapse collapse in" aria-expanded="true">
+                                                <div class="box-body">
+                                                    <div class="zone-content scroll-table-x bg-none">
+                                                        <table id="tbl_TieuSuBanThan" class="table table-hover table-bordered">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th class="td-fixed td-center">Stt</th>
+                                                                    <th class="td-center" style="width: 100px">Từ ngày</th>
+                                                                    <th class="td-center" style="width: 100px">Đến ngày</th>
+                                                                    <th class="td-center" style="width: 250px">Đơn vị công tác trong trường</th>
+                                                                    <th class="td-center" style="width: 250px">Đơn vị công tác ngoài trường</th>
+                                                                    <th class="td-center" style="width: 250px">Loại giảng viên</th>
+                                                                    <th class="td-center" style="width: 250px">Chức danh</th>
+                                                                    <th class="td-center" style="width: 250px">Chức vụ</th>
+                                                                    <th class="td-fixed td-center">Sửa</th>
+                                                                    <th class="td-fixed td-center">Xóa</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody></tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="tab_2">
+                                <div class="row row-align">
+                                    <div class="box-group" id="dieuchuyen">
+                                        <div class="panel bg-default">
+                                            <div class="box-header with-border">
+                                                <h3 class="box-title">
+                                                    <a data-toggle="collapse" data-parent="#key_thuyenchuyen" href="#qt_dieuchuyen" aria-expanded="true" class="collapsed">
+                                                        <!--<span class="lang" key="">Quá trình điều chuyển</span>-->
+                                                        <!--Su pham Thai Nguyen-->
+                                                        <span class="lang" key="">Quá trình công tác trong trường</span>
+                                                    </a>
+                                                </h3>
+                                                <div class="pull-right">
+                                                    <a id="key_thuyenchuyen" class="btn btn-default btnAdd">
+                                                        <i class="fa fa-plus cl-active"></i>
+                                                        Thêm mới
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            <div id="qt_dieuchuyen" class="panel-collapse collapse in" aria-expanded="true">
+                                                <div class="box-body">
+                                                    <div class="zone-content scroll-table-x bg-none">
+                                                        <table id="tblThuyenChuyen" class="table table-hover table-bordered">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th rowspan="2" class="td-fixed td-center">TT</th>
+                                                                    <th rowspan="2" class="td-center">Ngày chuyển</th>
+                                                                    <th colspan="2" class="td-center">Đơn vị cũ</th>
+                                                                    <th colspan="2" class="td-center">Đơn vị mới</th>
+                                                                    <th rowspan="2" class="td-center" style="width: 120px">Số quyết định</th>
+                                                                    <th rowspan="2" class="td-center" style="width: 120px">Ngày quyết định</th>
+                                                                    <th rowspan="2" class="td-center" style="width: 120px">Điều chuyển gần nhất</th>
+                                                                    <th rowspan="2" class="td-fixed td-center">Sửa</th>
+                                                                    <th rowspan="2" class="td-fixed td-center">Xóa</th>
+                                                                </tr>
+                                                                <tr>
+                                                                    <th class="td-center">Trong trường</th>
+                                                                    <th class="td-center">Ngoài trường</th>
+                                                                    <th class="td-center">Trong trường</th>
+                                                                    <th class="td-center">Ngoài trường</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <!-- load from js -->
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="box box-solid form-container zone-bus" id="zone_input" style="display: none">
+                    <div class="box-header with-border">
+                        <h3 class="box-title"><span class="myModalLabel"> <i class="fa fa-pencil"></i></span> Quá trình công tác</h3>
+                        <div class="pull-right title-note">
+                            <a class="btn btn-default btnCloseToggle" href="#" title="Close"><i class="fa fa-times"></i></a>
+                        </div>
+                    </div>
+                    <div class="box-body">
+                        <div class="col-sm-12 box-view">
+                            <div class="row zone-box">
+                                <div class="row">
+                                    <div class="col-sm-2">
+                                        <div class="group-title-name">
+                                            Ngày bắt đầu (*)<span class="title-colon">:</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <input id="txtTSBT_NgayBatDau" placeholder="dd/mm/yyyy" class="form-control input-datepicker" />
+                                    </div>
+
+                                    <div class="col-sm-2">
+                                        <div class="group-title-name">
+                                            Ngày kết thúc<span class="title-colon">:</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <input id="txtTSBT_NgayKetThuc" placeholder="dd/mm/yyyy" class="form-control input-datepicker" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-2">
+                                        <div class="group-title-name">
+                                            Chức danh<span class="title-colon">:</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <select id="dropTSBT_ChucDanh" class="select-opt">
+                                            <option value="">-- Chọn chức danh nghề nghiệp--</option>
+                                        </select>
+                                    </div> 
+                                    <div class="col-sm-2">
+                                        <div class="group-title-name">
+                                            Loại giảng viên<span class="title-colon">:</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <select id="dropTSBT_LoaiGiangVien" class="select-opt">
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-2">
+                                        <div class="group-title-name">
+                                            Chức vụ<span class="title-colon">:</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-10">
+                                        <select id="dropTSBT_ChucVu" class="select-opt">
+                                            <option value="">-- Chọn chức vụ--</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-2">
+                                        <div class="group-title-name">
+                                            Đơn vị công tác trong trường<span class="title-colon">:</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-10">
+                                        <select id="dropTSBT_DonViCongTac" class="select-opt">
+                                            <option value="">-- Chọn đơn vị công tác trong trường --</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-2">
+                                        <div class="group-title-name">
+                                            Đơn vị công tác ngoài trường<span class="title-colon">:</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-10">
+                                        <textarea type="text" id="txtTSBT_MoTa" class="form-control"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box-footer">
+                        <div class="pull-right">
+                            <a class="btn btn-default" id="btnSaveRe_TSBT"><i class="fa fa-save"></i><span class="lang" key=""> Lưu và nhập tiếp</span></a>
+                            <a class="btn btn-primary" id="btnSave_TSBT"><i class="fa fa-check"></i> <span class="lang" key="">Lưu</span></a>
+                            <a class="btn btn-default btnCloseToggle" id=""><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="box box-solid form-container zone-bus" id="zone_input_DieuChuyen" style="display: none">
+                    <div class="box-header with-border">
+                        <!--<h3 class="box-title"><span class="myModalLabel"> <i class="fa fa-pencil"></i></span> Quá trình điều chuyển</h3>-->
+                        <!--Su pham Thai Nguyen-->
+                        <h3 class="box-title"><span class="myModalLabel"> <i class="fa fa-pencil"></i></span> Quá trình công tác trong trường</h3>
+                        <div class="pull-right title-note">
+                            <a class="btn btn-default btnCloseToggle" href="#" title="Close"><i class="fa fa-times"></i></a>
+                        </div>
+                    </div>
+                    <div class="box-body">
+                        <div class="col-sm-12 box-view">
+                            <div class="row zone-box">
+                                <div class="row">
+                                    <p class="group-title-name">
+                                        <span class="badge bg-blue">Thông tin chung</span>
+                                    </p>
+                                </div>
+                                <div class="row">
+                                    <p hidden>
+                                        <div class="col-sm-12">
+                                            <input type="hidden" id="txtQuyetDinh_ID" />
+                                        </div>
+                                    </p>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-2">
+                                        <div class="group-title-name">
+                                            Loại quyết định (*)<span class="title-colon">:</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <select id="drop_LoaiQuyetDinh" class="select-opt">
+                                            <option value="">-- Chọn loại quyết định --</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="group-title-name">
+                                            Số quyết định (*)<span class="title-colon">:</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <input id="txtSoQuyetDinh" class="form-control form-border-bottom" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-2">
+                                        <div class="group-title-name">
+                                            Ngày quyết định<span class="title-colon">:</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <input id="txtNgayQuyetDinh" placeholder="dd/mm/yyyy" class="form-control form-border-bottom input-datepicker" />
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="group-title-name">
+                                            Ngày áp dụng (*)<span class="title-colon">:</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <input id="txtNgayApDung" placeholder="dd/mm/yyyy" class="form-control form-border-bottom input-datepicker" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-2">
+                                        <div class="group-title-name">
+                                            Ngày hiệu lực<span class="title-colon">:</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <input id="txtNgayHieuLuc" placeholder="dd/mm/yyyy" class="form-control form-border-bottom input-datepicker" />
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="group-title-name">
+                                            Ngày hết hiệu lực<span class="title-colon">:</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <input id="txtNgayHetHieuLuc" placeholder="dd/mm/yyyy" class="form-control form-border-bottom input-datepicker" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-2">
+                                        <div class="group-title-name">
+                                            Ngày chuyển<span class="title-colon">:</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <input id="txtNgayChuyen" placeholder="dd/mm/yyyy" class="form-control form-border-bottom input-datepicker" />
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-2">
+                                            <div class="group-title-name">
+                                                File đính kèm<span class="title-colon">:</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <div id="txtThongTinDinhKem"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6 box-view">
+                                <div class="row zone-box">
+                                    <div class="row">
+                                        <p class="group-title-name">
+                                            <span class="badge bg-blue">Đơn vị cũ</span>
+                                        </p>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                            <div class="group-title-name">
+                                                Trong trường<span class="title-colon">:</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-8">
+                                            <select id="dropDonViCu_TrongTruong" class="select-opt">
+                                                <option value="">-- Chọn đơn vị cũ trong trường--</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                            <div class="group-title-name">
+                                                Ngoài trường<span class="title-colon">:</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-8">
+                                            <input id="txtDonViCu_NgoaiTruong" class="form-control form-border-bottom" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                            <div class="group-title-name">
+                                                Chức vụ cũ<span class="title-colon">:</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-8">
+                                            <select id="dropChucVuCu" class="select-opt">
+                                                <option value="">-- Chọn chức vụ cũ--</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 box-view">
+                                <div class="row zone-box">
+                                    <div class="row">
+                                        <p class="group-title-name">
+                                            <span class="badge bg-blue">Đơn vị mới</span>
+                                        </p>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                            <div class="group-title-name">
+                                                Trong trường<span class="title-colon">:</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-8">
+                                            <select id="dropDonViMoi_TrongTruong" class="select-opt">
+                                                <option value="">-- Chọn đơn vị mới trong trường--</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                            <div class="group-title-name">
+                                                Ngoài trường<span class="title-colon">:</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-8">
+                                            <input id="txtDonViMoi_NgoaiTruong" class="form-control form-border-bottom" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                            <div class="group-title-name">
+                                                Chức vụ mới<span class="title-colon">:</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-8">
+                                            <select id="dropChucVuMoi" class="select-opt">
+                                                <option value="">-- Chọn chức vụ mới--</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="box-footer">
+                            <div class="pull-right">
+                                <a class="btn btn-default" id="btnSaveRe_ThuyenChuyen"><i class="fa fa-save"></i><span class="lang" key=""> Lưu và nhập tiếp</span></a>
+                                <a class="btn btn-primary" id="btnSave_ThuyenChuyen"><i class="fa fa-check"></i> <span class="lang" key="">Lưu</span></a>
+                                <a class="btn btn-default btnCloseToggle" id=""><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- page script -->
+<script src="modules/quatrinhcongtac/script/quatrinhcongtac.js?v=1.0.0.0"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['QuaTrinhCongTac'] = new QuaTrinhCongTac();
+    $(document).ready(function () {
+        main_doc.QuaTrinhCongTac.init();
+    });
+</script>
+
+

@@ -1,0 +1,154 @@
+/* =========================================================================
+   6b. VENDOR — flatpickr chỉnh cho khớp hệ thiết kế
+   -------------------------------------------------------------------------
+   Kiểu mặc định của flatpickr lệch hẳn với phần còn lại: ngày bo TRÒN hoàn
+   toàn, tên tháng 18.9px, tên thứ màu rgba(0,0,0,.54), khung không viền.
+   Ở đây kéo hết về token của hệ: cùng viền, cùng bo góc, cùng thang chữ,
+   cùng màu xanh thương hiệu.
+   ========================================================================= */
+
+.flatpickr-input[readonly] { background: var(--ums-surface); cursor: pointer; }
+
+/* Ở chế độ `static` (ô ngày trong <dialog>) flatpickr BỌC ô nhập bằng một
+   <div class="flatpickr-wrapper"> inline-block — ô co lại còn bằng nội dung
+   và biểu tượng lịch (đặt tuyệt đối theo .ums-inputwrap) văng ra ngoài ô
+   (đo được: ô 192px trong khung 285px). Cho lớp bọc trong suốt về bố cục. */
+.flatpickr-wrapper { display: block; width: 100%; }
+
+/* ---------- Khung lịch --------------------------------------------------- */
+.flatpickr-calendar {
+    width: auto;
+    padding: var(--ums-sp-2);
+    background: var(--ums-surface);
+    border: 1px solid var(--ums-line);
+    border-radius: var(--ums-r-2);
+    box-shadow: var(--ums-sh-3);
+    font-family: var(--ums-font);
+    font-size: var(--ums-fz-14);
+}
+
+.flatpickr-calendar.arrowTop::before,
+.flatpickr-calendar.arrowTop::after,
+.flatpickr-calendar.arrowBottom::before,
+.flatpickr-calendar.arrowBottom::after { display: none; }   /* bỏ mũi nhọn của flatpickr */
+
+.flatpickr-calendar.static { z-index: 20; }
+
+/* ---------- Đầu lịch: tháng, năm, hai mũi tên ---------------------------- */
+.flatpickr-months { padding-bottom: var(--ums-sp-2); }
+
+.flatpickr-months .flatpickr-month {
+    height: 34px;
+    color: var(--ums-navy);
+    background: none;
+}
+
+.flatpickr-current-month {
+    height: 34px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ums-sp-1);
+    font-size: var(--ums-fz-15);
+    font-weight: var(--ums-fw-semibold);
+}
+
+.flatpickr-current-month .flatpickr-monthDropdown-months {
+    height: 28px;
+    padding: 0 var(--ums-sp-2);
+    background: none;
+    border: 0;
+    border-radius: var(--ums-r-1);
+    color: var(--ums-navy);
+    font-size: var(--ums-fz-15);
+    font-weight: var(--ums-fw-semibold);
+}
+.flatpickr-current-month .flatpickr-monthDropdown-months:hover { background: var(--ums-surface-2); }
+.flatpickr-monthDropdown-month { background: var(--ums-surface); color: var(--ums-ink); }
+
+.flatpickr-current-month input.cur-year {
+    padding: 0 0 0 var(--ums-sp-1);
+    color: var(--ums-navy);
+    font-size: var(--ums-fz-15);
+    font-weight: var(--ums-fw-semibold);
+}
+
+.flatpickr-months .flatpickr-prev-month,
+.flatpickr-months .flatpickr-next-month {
+    top: 0;
+    height: 34px;
+    width: 34px;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    border-radius: var(--ums-r-1);
+    color: var(--ums-ink-2);
+}
+.flatpickr-months .flatpickr-prev-month:hover,
+.flatpickr-months .flatpickr-next-month:hover { background: var(--ums-surface-2); }
+.flatpickr-months .flatpickr-prev-month:hover svg,
+.flatpickr-months .flatpickr-next-month:hover svg { fill: var(--ums-blue); }
+.flatpickr-months .flatpickr-prev-month svg,
+.flatpickr-months .flatpickr-next-month svg { width: 12px; height: 12px; fill: var(--ums-ink-2); }
+
+/* ---------- Tên thứ ------------------------------------------------------ */
+.flatpickr-weekdays { height: 28px; background: none; }
+.flatpickr-weekdaycontainer { background: none; }
+span.flatpickr-weekday {
+    background: none;
+    color: var(--ums-ink-3);
+    font-size: var(--ums-fz-12);
+    font-weight: var(--ums-fw-semibold);
+}
+
+/* ---------- Ô ngày ------------------------------------------------------- */
+.flatpickr-days { border: 0; }
+.dayContainer { padding: 0; }
+
+.flatpickr-day {
+    height: 36px;
+    line-height: 36px;
+    max-width: 38px;
+    border: 1px solid transparent;
+    border-radius: var(--ums-r-1);
+    color: var(--ums-ink);
+    font-size: var(--ums-fz-14);
+}
+
+.flatpickr-day:hover { background: var(--ums-surface-2); border-color: var(--ums-surface-2); }
+
+.flatpickr-day.today {
+    border-color: var(--ums-blue);
+    color: var(--ums-blue);
+    font-weight: var(--ums-fw-semibold);
+}
+.flatpickr-day.today:hover { background: var(--ums-blue-l); border-color: var(--ums-blue); color: var(--ums-blue-d); }
+
+.flatpickr-day.selected,
+.flatpickr-day.selected:hover,
+.flatpickr-day.startRange,
+.flatpickr-day.endRange {
+    background: var(--ums-blue);
+    border-color: var(--ums-blue);
+    color: #fff;
+    font-weight: var(--ums-fw-semibold);
+}
+
+.flatpickr-day.inRange {
+    background: var(--ums-blue-l);
+    border-color: var(--ums-blue-l);
+    box-shadow: -5px 0 0 var(--ums-blue-l), 5px 0 0 var(--ums-blue-l);
+    color: var(--ums-navy);
+}
+
+.flatpickr-day.prevMonthDay,
+.flatpickr-day.nextMonthDay { color: var(--ums-ink-3); }
+
+.flatpickr-day.flatpickr-disabled,
+.flatpickr-day.flatpickr-disabled:hover { background: none; border-color: transparent; color: var(--ums-line-2); }
+
+/* ---------- Chọn giờ (nếu bật) ------------------------------------------- */
+.flatpickr-time input { color: var(--ums-ink); font-size: var(--ums-fz-14); }
+.flatpickr-time input:hover,
+.flatpickr-time .flatpickr-am-pm:hover { background: var(--ums-surface-2); }

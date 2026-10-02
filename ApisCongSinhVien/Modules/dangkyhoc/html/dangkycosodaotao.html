@@ -1,0 +1,1416 @@
+﻿<style>
+    /* ═══════════════════════════════════════════════════════════════════
+       ĐĂNG KÝ CƠ SỞ ĐÀO TẠO — giao diện theo bộ mockup HTML-DangKyCoSoDaoTao
+       Nguồn gốc design system: App_Themes/Cms/Custom_V1/style-new.css
+       Ở đây nhúng lại (scope .aps-dkcs / .modal-dkcs / .btn-dkcs) để module
+       chạy độc lập, không phụ thuộc việc máy khách đã copy style-new.css hay chưa.
+       Mọi selector đều có tiền tố → KHÔNG ảnh hưởng các màn hình khác.
+       ═══════════════════════════════════════════════════════════════════ */
+
+    /* Đẩy nội dung sát breadcrumb */
+    .one-door.aps-dkcs {
+        padding-top: 0 !important;
+        margin-top: 0 !important;
+    }
+
+    /* Chừa lề 2 bên như các module khác của cổng SV (.container-fluid.px-20) */
+    .one-door.aps-dkcs>.dkcs-card,
+    .one-door.aps-dkcs>.dkcs-cols,
+    .one-door.aps-dkcs>.dkcs-plan-picker {
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+
+    .aps-dkcs,
+    .modal-dkcs {
+        --dkcs-navy: #0f1d3d;
+        --dkcs-text: #1e293b;
+        --dkcs-muted: #64748b;
+        --dkcs-primary: #1f6feb;
+        --dkcs-primary-dark: #1a5fd0;
+        --dkcs-primary-bg: #eef4ff;
+        --dkcs-primary-bd: #cddcf6;
+        --dkcs-green: #15803d;
+        --dkcs-green-bg: #dcf5e4;
+        --dkcs-green-bd: #b5e5c4;
+        --dkcs-amber: #f59e0b;
+        --dkcs-warn-bg: #fff8e6;
+        --dkcs-warn-bd: #f7dd9c;
+        --dkcs-red: #dc2626;
+        --dkcs-red-bg: #fdeeee;
+        --dkcs-red-bd: #f6c6c6;
+        --dkcs-line: #e2e8f0;
+        --dkcs-gray-bg: #eef1f6;
+        color: var(--dkcs-text);
+    }
+
+    /* CSS nền (styles.css) ép mọi icon FA về font-weight 300 → trả lại đúng độ đậm */
+    .aps-dkcs .fas,
+    .modal-dkcs .fas {
+        font-weight: 900;
+    }
+
+    .aps-dkcs .far,
+    .modal-dkcs .far {
+        font-weight: 400;
+    }
+
+    /* ─── Tiêu đề ─── */
+    .aps-dkcs .dkcs-section-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--dkcs-navy);
+        margin: 0 0 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .aps-dkcs .dkcs-section-title i {
+        font-size: 20px;
+        color: var(--dkcs-primary);
+    }
+
+    /* ─── Card ─── */
+    .aps-dkcs .dkcs-card {
+        background: #fff;
+        border: 1px solid var(--dkcs-line);
+        border-radius: 10px;
+        padding: 18px 20px;
+        margin-bottom: 16px;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, .05);
+    }
+
+    .aps-dkcs .dkcs-card.mb0 {
+        margin-bottom: 0;
+    }
+
+    /* ─── Khối kế hoạch ─── */
+    .aps-dkcs .dkcs-plan {
+        background: var(--dkcs-primary-bg);
+        border-color: var(--dkcs-primary-bd);
+    }
+
+    .aps-dkcs .dkcs-plan .plan-head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px 12px;
+        margin-bottom: 8px;
+    }
+
+    .aps-dkcs .dkcs-plan .plan-head>i {
+        font-size: 22px;
+        color: var(--dkcs-primary);
+    }
+
+    .aps-dkcs .dkcs-plan .plan-name {
+        font-size: 17px;
+        font-weight: 600;
+        color: var(--dkcs-navy);
+    }
+
+    .aps-dkcs .dkcs-plan .plan-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #334155;
+        margin-bottom: 6px;
+    }
+
+    .aps-dkcs .dkcs-plan .plan-row:last-child {
+        margin-bottom: 0;
+    }
+
+    .aps-dkcs .dkcs-plan .plan-row>i {
+        width: 18px;
+        text-align: center;
+        font-size: 16px;
+        color: #475569;
+    }
+
+    .aps-dkcs .dkcs-plan .plan-row .dk-lbl {
+        min-width: 128px;
+    }
+
+    .aps-dkcs .dkcs-plan .plan-row b {
+        color: var(--dkcs-navy);
+    }
+
+    .aps-dkcs .dkcs-plan .plan-learner {
+        border-left: 1px solid var(--dkcs-primary-bd);
+        padding-left: 24px;
+        display: flex;
+        gap: 12px;
+        line-height: 1.75;
+    }
+
+    .aps-dkcs .dkcs-plan .plan-learner>i {
+        font-size: 22px;
+        color: var(--dkcs-primary);
+        margin-top: 4px;
+    }
+
+    .aps-dkcs .dkcs-plan .plan-learner .cap {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--dkcs-text);
+    }
+
+    .aps-dkcs .dkcs-plan .plan-learner .dk-name {
+        font-weight: 700;
+        color: var(--dkcs-navy);
+    }
+
+    .aps-dkcs .dkcs-plan .plan-learner .sep {
+        color: #94a3b8;
+        margin: 0 4px;
+    }
+
+    /* ─── Lưới 2 cột (CSS grid, không dùng .row để tránh CSS cũ) ─── */
+    .aps-dkcs .dkcs-cols {
+        display: grid;
+        grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+        gap: 16px;
+        align-items: start;
+    }
+
+    .aps-dkcs .dkcs-cols.dkcs-stretch {
+        align-items: stretch;
+    }
+
+    .aps-dkcs .dkcs-cols.dkcs-5050 {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+
+    .aps-dkcs .dkcs-cols>.min-w-0 {
+        min-width: 0;
+    }
+
+    @media (max-width: 1199px) {
+        .aps-dkcs .dkcs-cols {
+            grid-template-columns: minmax(0, 1fr);
+        }
+    }
+
+    /* ─── Pill trạng thái ─── */
+    .aps-dkcs .dkcs-pill,
+    .modal-dkcs .dkcs-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 4px 12px;
+        border-radius: 20px;
+        border: 1px solid transparent;
+        font-size: 13px;
+        font-weight: 500;
+        line-height: 1.4;
+        white-space: nowrap;
+    }
+
+    .aps-dkcs .dkcs-pill.lg {
+        padding: 7px 16px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .aps-dkcs .dkcs-pill.lg i {
+        font-size: 17px;
+    }
+
+    .aps-dkcs .dkcs-pill.green,
+    .modal-dkcs .dkcs-pill.green {
+        background: var(--dkcs-green-bg);
+        color: var(--dkcs-green);
+        border-color: var(--dkcs-green-bd);
+    }
+
+    .aps-dkcs .dkcs-pill.orange,
+    .modal-dkcs .dkcs-pill.orange {
+        background: #fdebc8;
+        color: #9a4f00;
+        border-color: #f8d99a;
+    }
+
+    .aps-dkcs .dkcs-pill.red,
+    .modal-dkcs .dkcs-pill.red {
+        background: var(--dkcs-red-bg);
+        color: var(--dkcs-red);
+        border-color: var(--dkcs-red-bd);
+    }
+
+    .aps-dkcs .dkcs-pill.blue,
+    .modal-dkcs .dkcs-pill.blue {
+        background: #dbe8fd;
+        color: #1d4ed8;
+        font-weight: 600;
+    }
+
+    .aps-dkcs .dkcs-pill.gray,
+    .modal-dkcs .dkcs-pill.gray {
+        background: #e8ecf2;
+        color: #334155;
+    }
+
+    .aps-dkcs .dkcs-pill.gray-strong,
+    .modal-dkcs .dkcs-pill.gray-strong {
+        background: #e3e8ef;
+        color: var(--dkcs-navy);
+        font-weight: 600;
+    }
+
+    /* ─── Thông tin người học (icon tròn + label + value) ─── */
+    .aps-dkcs .dkcs-info-item {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 14px;
+    }
+
+    .aps-dkcs .dkcs-info-item.mb0 {
+        margin-bottom: 0;
+    }
+
+    .aps-dkcs .dkcs-info-item .ic {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--dkcs-gray-bg);
+        color: var(--dkcs-primary);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 17px;
+        flex-shrink: 0;
+    }
+
+    .aps-dkcs .dkcs-info-item label {
+        display: block;
+        color: #475569;
+        font-size: 13px;
+        font-weight: 400;
+        margin: 0 0 2px;
+    }
+
+    .aps-dkcs .dkcs-info-item span {
+        color: var(--dkcs-navy);
+    }
+
+    .aps-dkcs .dkcs-info-item span.b {
+        font-weight: 700;
+    }
+
+    .aps-dkcs .dkcs-current-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 6px 0 12px;
+    }
+
+    .aps-dkcs .dkcs-current-head>i {
+        font-size: 20px;
+        color: var(--dkcs-primary);
+    }
+
+    .aps-dkcs .dkcs-current-head b {
+        color: var(--dkcs-navy);
+    }
+
+    /* ─── Key - value (dl 2 cột) ─── */
+    .aps-dkcs .dkcs-kv {
+        display: grid;
+        grid-template-columns: 42% 1fr;
+        row-gap: 14px;
+        margin: 0;
+    }
+
+    .aps-dkcs .dkcs-kv dt {
+        color: #475569;
+        font-weight: 400;
+    }
+
+    .aps-dkcs .dkcs-kv dd {
+        margin: 0;
+        color: var(--dkcs-navy);
+        font-weight: 600;
+    }
+
+    /* ─── Alert ─── */
+    .aps-dkcs .dkcs-alert {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        border-radius: 8px;
+        border: 1px solid;
+        margin-bottom: 16px;
+        color: var(--dkcs-text);
+    }
+
+    .aps-dkcs .dkcs-alert.al-top {
+        align-items: flex-start;
+    }
+
+    .aps-dkcs .dkcs-alert.al-full {
+        height: 100%;
+        margin-bottom: 0;
+    }
+
+    .aps-dkcs .dkcs-alert.mb0 {
+        margin-bottom: 0;
+    }
+
+    .aps-dkcs .dkcs-alert>i {
+        font-size: 20px;
+        flex-shrink: 0;
+    }
+
+    .aps-dkcs .dkcs-alert.al-top>i {
+        font-size: 24px;
+        margin-top: 2px;
+    }
+
+    .aps-dkcs .dkcs-alert p {
+        margin: 0;
+        line-height: 1.6;
+    }
+
+    .aps-dkcs .dkcs-alert p b.t {
+        color: var(--dkcs-navy);
+    }
+
+    .aps-dkcs .dkcs-alert p .s {
+        color: #475569;
+    }
+
+    .aps-dkcs .dkcs-alert .al-action {
+        margin-left: auto;
+        flex-shrink: 0;
+        align-self: center;
+    }
+
+    .aps-dkcs .dkcs-alert.al-info {
+        background: var(--dkcs-primary-bg);
+        border-color: var(--dkcs-primary-bd);
+    }
+
+    .aps-dkcs .dkcs-alert.al-info>i {
+        color: var(--dkcs-primary);
+    }
+
+    .aps-dkcs .dkcs-alert.al-warn {
+        background: var(--dkcs-warn-bg);
+        border-color: var(--dkcs-warn-bd);
+    }
+
+    .aps-dkcs .dkcs-alert.al-warn>i {
+        color: var(--dkcs-amber);
+    }
+
+    .aps-dkcs .dkcs-alert.al-danger {
+        background: var(--dkcs-red-bg);
+        border-color: var(--dkcs-red-bd);
+    }
+
+    .aps-dkcs .dkcs-alert.al-danger>i,
+    .aps-dkcs .dkcs-alert.al-danger b.t {
+        color: var(--dkcs-red);
+    }
+
+    .aps-dkcs .dkcs-alert.al-success {
+        background: var(--dkcs-green-bg);
+        border-color: var(--dkcs-green-bd);
+    }
+
+    .aps-dkcs .dkcs-alert.al-success>i {
+        color: var(--dkcs-green);
+    }
+
+    .aps-dkcs .dkcs-alert.al-plain {
+        background: #fff;
+        border-color: var(--dkcs-line);
+    }
+
+    .aps-dkcs .dkcs-alert.al-plain>i {
+        color: #334155;
+    }
+
+    /* ─── Thẻ cơ sở đào tạo ─── */
+    .aps-dkcs .dkcs-campus {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        padding: 10px 18px;
+        border: 1px solid var(--dkcs-line);
+        border-radius: 8px;
+        margin-bottom: 10px;
+        background: #fff;
+        cursor: pointer;
+        font-weight: 400;
+        transition: border-color .15s, background .15s;
+    }
+
+    .aps-dkcs .dkcs-campus:hover {
+        border-color: #a9c3f0;
+    }
+
+    .aps-dkcs .dkcs-campus.selected {
+        border-color: var(--dkcs-primary);
+        background: var(--dkcs-primary-bg);
+        box-shadow: 0 0 0 1px var(--dkcs-primary);
+    }
+
+    .aps-dkcs .dkcs-campus.disabled {
+        opacity: .6;
+        cursor: not-allowed;
+    }
+
+    .aps-dkcs .dkcs-campus input[type="radio"] {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 22px;
+        height: 22px;
+        margin: 0;
+        border: 1.5px solid #94a3b8;
+        border-radius: 50%;
+        background: #fff;
+        flex-shrink: 0;
+        cursor: pointer;
+        position: relative;
+    }
+
+    .aps-dkcs .dkcs-campus input[type="radio"]:checked {
+        border: 2px solid var(--dkcs-primary);
+    }
+
+    .aps-dkcs .dkcs-campus input[type="radio"]:checked::after {
+        content: "";
+        position: absolute;
+        inset: 3px;
+        border-radius: 50%;
+        background: var(--dkcs-primary);
+    }
+
+    .aps-dkcs .dkcs-campus img {
+        width: 128px;
+        height: 74px;
+        object-fit: cover;
+        border-radius: 4px;
+        flex-shrink: 0;
+        background: var(--dkcs-gray-bg);
+    }
+
+    .aps-dkcs .dkcs-campus .c-body {
+        flex: 1 1 300px;
+        min-width: 0;
+    }
+
+    .aps-dkcs .dkcs-campus .c-name {
+        font-size: 17px;
+        font-weight: 700;
+        color: var(--dkcs-navy);
+        margin: 0 0 3px;
+    }
+
+    .aps-dkcs .dkcs-campus .c-line {
+        color: #334155;
+        margin: 0 0 2px;
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+    }
+
+    .aps-dkcs .dkcs-campus .c-line>i {
+        width: 16px;
+        text-align: center;
+        color: #64748b;
+    }
+
+    .aps-dkcs .dkcs-campus .c-italic {
+        color: #475569;
+        font-style: italic;
+        margin: 0;
+    }
+
+    .aps-dkcs .dkcs-campus .c-tag {
+        margin-left: auto;
+        align-self: flex-start;
+        margin-top: 6px;
+    }
+
+    /* Grid tự co: 1 cột khi hẹp, nhiều cột khi rộng */
+    .aps-dkcs .dkcs-campus-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+        gap: 14px;
+        margin-bottom: 16px;
+    }
+
+    .aps-dkcs .dkcs-campus-grid .dkcs-campus {
+        margin: 0;
+        align-items: flex-start;
+        padding: 14px 16px;
+        gap: 14px;
+    }
+
+    .aps-dkcs .dkcs-campus-grid .dkcs-campus img {
+        width: 100px;
+        height: 110px;
+    }
+
+    .aps-dkcs .dkcs-campus-grid .dkcs-campus .c-body {
+        flex-basis: auto;
+    }
+
+    .aps-dkcs .dkcs-campus-grid .dkcs-campus .c-line {
+        margin: 6px 0 8px;
+    }
+
+    /* Trạng thái rỗng / đang tải */
+    .aps-dkcs .dkcs-empty {
+        padding: 28px 16px;
+        text-align: center;
+        color: var(--dkcs-muted);
+        border: 1px dashed var(--dkcs-line);
+        border-radius: 8px;
+        margin-bottom: 16px;
+    }
+
+    .aps-dkcs .dkcs-empty i {
+        display: block;
+        font-size: 28px;
+        margin-bottom: 8px;
+        color: #cbd5e1;
+    }
+
+    /* ─── Hàng nút ─── */
+    .aps-dkcs .dkcs-actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-top: 4px;
+    }
+
+    .aps-dkcs .dkcs-actions.dkcs-bar {
+        border-top: 1px solid var(--dkcs-line);
+        padding-top: 16px;
+        margin-top: 18px;
+    }
+
+    /* Nút destructive tách hẳn về trái, nhóm còn lại dồn phải */
+    .aps-dkcs .dkcs-actions .act-left {
+        margin-right: auto;
+        display: flex;
+        gap: 12px;
+    }
+
+    .aps-dkcs .dkcs-actions .act-right {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .aps-dkcs .btn-dkcs,
+    .modal-dkcs .btn-dkcs {
+        height: 42px;
+        min-width: 112px;
+        padding: 0 20px;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 14px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        border: 1px solid transparent;
+        transition: background .15s, border-color .15s;
+    }
+
+    .aps-dkcs .btn-dkcs i,
+    .modal-dkcs .btn-dkcs i {
+        font-size: 16px;
+    }
+
+    .aps-dkcs .btn-dkcs.sm,
+    .modal-dkcs .btn-dkcs.sm {
+        height: 36px;
+        padding: 0 14px;
+        min-width: 0;
+    }
+
+    .aps-dkcs .btn-dkcs.primary,
+    .modal-dkcs .btn-dkcs.primary {
+        background: var(--dkcs-primary) !important;
+        border-color: var(--dkcs-primary) !important;
+        color: #fff !important;
+    }
+
+    .aps-dkcs .btn-dkcs.primary:hover,
+    .modal-dkcs .btn-dkcs.primary:hover {
+        background: var(--dkcs-primary-dark) !important;
+    }
+
+    .aps-dkcs .btn-dkcs.outline,
+    .modal-dkcs .btn-dkcs.outline {
+        background: #fff !important;
+        border-color: #cbd5e1 !important;
+        color: var(--dkcs-navy) !important;
+    }
+
+    .aps-dkcs .btn-dkcs.outline:hover,
+    .modal-dkcs .btn-dkcs.outline:hover {
+        background: #f8fafc !important;
+    }
+
+    .aps-dkcs .btn-dkcs.danger,
+    .modal-dkcs .btn-dkcs.danger {
+        background: var(--dkcs-red) !important;
+        border-color: var(--dkcs-red) !important;
+        color: #fff !important;
+    }
+
+    .aps-dkcs .btn-dkcs.danger:hover,
+    .modal-dkcs .btn-dkcs.danger:hover {
+        background: #c21f1f !important;
+    }
+
+    .aps-dkcs .btn-dkcs.danger-outline,
+    .modal-dkcs .btn-dkcs.danger-outline {
+        background: #fff !important;
+        border-color: var(--dkcs-red-bd) !important;
+        color: var(--dkcs-red) !important;
+    }
+
+    .aps-dkcs .btn-dkcs.danger-outline:hover,
+    .modal-dkcs .btn-dkcs.danger-outline:hover {
+        background: var(--dkcs-red-bg) !important;
+    }
+
+    .aps-dkcs .btn-dkcs:disabled,
+    .aps-dkcs .btn-dkcs.disabled,
+    .modal-dkcs .btn-dkcs:disabled {
+        background: var(--dkcs-gray-bg) !important;
+        border-color: #e3e8ef !important;
+        color: #a3adbb !important;
+        opacity: 1 !important;
+        cursor: not-allowed;
+    }
+
+    /* ─── Panel "Thay đổi lựa chọn" ─── */
+    .aps-dkcs .dkcs-change-panel {
+        background: linear-gradient(180deg, #eef8f2 0%, #f6fbf8 100%);
+        border-color: #d5ecdc;
+    }
+
+    .aps-dkcs .dkcs-change-panel .dkcs-section-title i {
+        color: #16a34a;
+        font-size: 22px;
+    }
+
+    .aps-dkcs .dkcs-change-panel .row-from-to {
+        display: grid;
+        grid-template-columns: 42% 1fr;
+        align-items: center;
+        row-gap: 4px;
+        margin-top: 4px;
+    }
+
+    .aps-dkcs .dkcs-change-panel .row-from-to .dk-lbl {
+        color: #475569;
+    }
+
+    .aps-dkcs .dkcs-change-panel .row-from-to .dkcs-pill {
+        padding: 6px 18px;
+        font-size: 14px;
+    }
+
+    .aps-dkcs .dkcs-change-panel .dkcs-arrow {
+        grid-column: 2;
+        display: flex;
+        justify-content: flex-start;
+        padding: 2px 0;
+    }
+
+    .aps-dkcs .dkcs-change-panel .dkcs-arrow span {
+        display: inline-block;
+        text-align: center;
+        font-size: 16px;
+        color: #334155;
+    }
+
+    .aps-dkcs .dkcs-change-panel hr {
+        border: 0;
+        border-top: 1px solid #cfe3d6;
+        opacity: 1;
+        margin: 16px 0;
+    }
+
+    .aps-dkcs .dkcs-change-panel .last-time {
+        display: flex;
+        gap: 12px;
+    }
+
+    .aps-dkcs .dkcs-change-panel .last-time>i {
+        font-size: 20px;
+        color: #334155;
+        margin-top: 2px;
+    }
+
+    .aps-dkcs .dkcs-change-panel .last-time b {
+        color: var(--dkcs-navy);
+        font-size: 15px;
+    }
+
+    /* ─── Bảng lịch sử ─── */
+    .aps-dkcs .dkcs-history {
+        border: 1px solid var(--dkcs-line);
+        border-radius: 8px;
+        overflow-x: auto;
+        background: #fff;
+    }
+
+    .aps-dkcs .dkcs-history table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0;
+        min-width: 620px;
+    }
+
+    .aps-dkcs .dkcs-history th {
+        background: #f1f4f8;
+        font-weight: 600;
+        color: var(--dkcs-text);
+        padding: 10px 16px;
+        text-align: left;
+        border-right: 1px solid var(--dkcs-line);
+        white-space: nowrap;
+    }
+
+    .aps-dkcs .dkcs-history td {
+        padding: 9px 16px;
+        border-top: 1px solid var(--dkcs-line);
+        border-right: 1px solid var(--dkcs-line);
+        color: var(--dkcs-text);
+        white-space: nowrap;
+    }
+
+    .aps-dkcs .dkcs-history th:last-child,
+    .aps-dkcs .dkcs-history td:last-child {
+        border-right: 0;
+    }
+
+    .aps-dkcs .dkcs-history td.td-empty {
+        text-align: center;
+        color: var(--dkcs-muted);
+        font-style: italic;
+        padding: 20px;
+    }
+
+    .aps-dkcs .dkcs-history .dkcs-pill {
+        font-size: 12px;
+        padding: 2px 12px;
+    }
+
+    /* ─── Modal xác nhận ─── */
+    .modal-dkcs .modal-content {
+        border-radius: 10px;
+        border: 1px solid #e5e9f0;
+        box-shadow: 0 12px 32px rgba(15, 23, 42, .18);
+    }
+
+    /* Không dùng .modal-header nên phải tự dựng nút đóng góc phải */
+    .modal-dkcs .btn-close-x {
+        position: absolute;
+        top: 14px;
+        right: 16px;
+        width: 28px;
+        height: 28px;
+        border: 0;
+        background: none;
+        font-size: 20px;
+        color: #475569;
+        line-height: 1;
+        z-index: 1;
+        opacity: 1;
+    }
+
+    .modal-dkcs .btn-close-x:hover {
+        color: var(--dkcs-navy);
+    }
+
+    .modal-dkcs .m-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--dkcs-navy);
+        margin: 0;
+    }
+
+    .modal-dkcs .m-text {
+        color: var(--dkcs-text);
+        font-size: 15px;
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    .modal-dkcs .m-sub {
+        color: #64748b;
+        line-height: 1.6;
+        margin: 6px 0 0;
+    }
+
+    .modal-dkcs .m-footer {
+        display: flex;
+        gap: 12px;
+        margin-top: 20px;
+    }
+
+    .modal-dkcs .m-footer .btn-dkcs {
+        min-width: 0;
+    }
+
+    /* Kiểu 1: căn giữa (xác nhận đăng ký) */
+    .modal-dkcs .m-center {
+        padding: 26px 22px 20px;
+        text-align: center;
+    }
+
+    .modal-dkcs .m-center .m-icon {
+        width: 60px;
+        height: 60px;
+        margin: 0 auto 12px;
+        border-radius: 50%;
+        background: #e3edfd;
+        color: var(--dkcs-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+    }
+
+    .modal-dkcs .m-center .m-title {
+        margin-bottom: 10px;
+    }
+
+    .modal-dkcs .m-center .m-footer .btn-dkcs {
+        flex: 1 1 0;
+    }
+
+    /* Kiểu 2: icon trái + tiêu đề (xác nhận hủy) */
+    .modal-dkcs.m-side .modal-dialog {
+        max-width: 500px;
+    }
+
+    .modal-dkcs .m-side-body {
+        padding: 24px 26px 22px;
+    }
+
+    .modal-dkcs .m-side-head {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 18px;
+        padding-right: 24px;
+    }
+
+    .modal-dkcs .m-side-head .m-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: #fde4e4;
+        color: var(--dkcs-red);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        flex-shrink: 0;
+    }
+
+    .modal-dkcs .m-side-body .m-title {
+        font-size: 20px;
+    }
+
+    .modal-dkcs .m-side-body .m-footer {
+        justify-content: flex-end;
+    }
+
+    /* Kiểu 3: cảnh báo (xác nhận thay đổi) */
+    .modal-dkcs .m-warn-body {
+        padding: 18px 22px 20px;
+    }
+
+    .modal-dkcs .m-warn-head {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 16px;
+        padding-right: 28px;
+    }
+
+    .modal-dkcs .m-warn-head>i {
+        font-size: 28px;
+        color: #f97316;
+    }
+
+    .modal-dkcs .m-warn-body .m-text,
+    .modal-dkcs .m-warn-body .m-sub {
+        text-align: center;
+    }
+
+    .modal-dkcs .m-warn-body .m-sub {
+        font-style: italic;
+        font-size: 13px;
+    }
+
+    .modal-dkcs .m-warn-body .m-footer {
+        justify-content: flex-end;
+    }
+
+    .modal-dkcs .m-warn-body .m-footer .btn-dkcs.outline {
+        min-width: 110px;
+    }
+
+    .modal-dkcs .m-warn-body .m-footer .btn-dkcs.primary {
+        min-width: 180px;
+    }
+
+    /* Hộp xác nhận: bề ngang vừa phải, luôn nằm giữa màn hình */
+    .modal-dkcs .modal-dialog {
+        max-width: 440px;
+    }
+
+    /* Backdrop dịu hơn để vẫn nhìn thấy form phía sau (BS3 dùng .in, BS5 dùng .show) */
+    body:has(.modal-dkcs.show) .modal-backdrop,
+    body:has(.modal-dkcs.in) .modal-backdrop {
+        opacity: .35 !important;
+        background-color: #475569 !important;
+    }
+
+    /* Tiện ích riêng của module (không phụ thuộc bản Bootstrap đang nạp) */
+    .aps-dkcs .dkcs-hide,
+    .modal-dkcs .dkcs-hide,
+    .aps-dkcs.dkcs-hide,
+    .dkcs-plan-picker.dkcs-hide {
+        display: none !important;
+    }
+
+    /* Combo chọn kế hoạch (chỉ hiện khi có nhiều kế hoạch) */
+    .aps-dkcs .dkcs-plan-picker {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+
+    .aps-dkcs .dkcs-plan-picker label {
+        margin: 0;
+        font-weight: 600;
+        color: var(--dkcs-navy);
+        white-space: nowrap;
+    }
+
+    .aps-dkcs .dkcs-plan-picker select {
+        height: 40px;
+        min-width: 320px;
+        max-width: 100%;
+        padding: 0 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        background: #fff;
+        color: var(--dkcs-navy);
+        font-weight: 600;
+    }
+
+    .aps-dkcs .dkcs-plan-picker select:focus {
+        outline: 0;
+        border-color: var(--dkcs-primary);
+        box-shadow: 0 0 0 3px rgba(31, 111, 235, .12);
+    }
+
+    @media (max-width: 1199px) {
+        .aps-dkcs .dkcs-plan .plan-learner {
+            border-left: 0;
+            border-top: 1px solid var(--dkcs-primary-bd);
+            padding: 12px 0 0;
+        }
+    }
+
+    @media (max-width: 575px) {
+        .aps-dkcs .dkcs-campus {
+            flex-wrap: wrap;
+        }
+
+        .aps-dkcs .dkcs-campus img {
+            width: 96px;
+            height: 64px;
+        }
+
+        .aps-dkcs .dkcs-actions .btn-dkcs {
+            flex: 1 1 auto;
+        }
+
+        .aps-dkcs .dkcs-alert {
+            flex-wrap: wrap;
+        }
+
+        .modal-dkcs .modal-dialog {
+            margin-left: 16px;
+            margin-right: 16px;
+        }
+    }
+</style>
+
+<!-- Main content -->
+<div class="one-door aps-dkcs">
+    <div class="overlay"></div>
+    <div class="content-tab no-tab">
+        <div class="d-flex justify-content-between">
+            <div class="nav-content-left">
+                <p class="link">
+                    <a href="#">Đăng ký học</a>
+                    <i class="fal fa-angle-right"></i>
+                    <a href="#">Đăng ký cơ sở đào tạo</a>
+                </p>
+            </div>
+            <div class="nav-content-right">
+                <a class="d-block text-right" href=""><i class="fas fa-question-circle"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ 0. Chọn kế hoạch — chỉ hiện khi người học có từ 2 kế hoạch trở lên ═══ -->
+    <div class="dkcs-plan-picker dkcs-hide" id="zoneChonKeHoach_DKCS">
+        <label for="dropKeHoach_DKCS">Kế hoạch đăng ký</label>
+        <select id="dropKeHoach_DKCS"></select>
+    </div>
+
+    <!-- ═══ 1. Kế hoạch đăng ký + thông tin người học ═══ -->
+    <div class="dkcs-card dkcs-plan" id="zoneKeHoach_DKCS">
+        <div class="dkcs-cols">
+            <div class="min-w-0">
+                <div class="plan-head">
+                    <i class="fas fa-bullhorn"></i>
+                    <span class="plan-name" id="lblTenKeHoach_DKCS">Kế hoạch đăng ký cơ sở đào tạo</span>
+                    <span class="dkcs-pill green" id="lblHieuLuc_DKCS">Kế hoạch còn hiệu lực</span>
+                    <span class="dkcs-pill orange dkcs-hide" id="lblPhamVi_DKCS">Bạn thuộc phạm vi được đăng ký</span>
+                </div>
+                <div class="plan-row">
+                    <i class="far fa-calendar"></i>
+                    <span class="dk-lbl">Thời gian đăng ký:</span>
+                    <b id="lblThoiGianDangKy_DKCS">--/--/---- - --/--/----</b>
+                </div>
+                <div class="plan-row">
+                    <i class="far fa-info-circle"></i>
+                    <span class="dk-lbl">Đối tượng áp dụng:</span>
+                    <span id="lblDoiTuong_DKCS">-</span>
+                </div>
+            </div>
+            <div class="min-w-0">
+                <div class="plan-learner">
+                    <i class="far fa-user"></i>
+                    <div>
+                        <div class="cap">Thông tin người học</div>
+                        <div class="dk-name" id="lblHoTen_DKCS">-</div>
+                        <div>Mã hồ sơ / MSSV: <b id="lblMaSo_DKCS">-</b></div>
+                        <div>
+                            <span id="lblLop_DKCS">-</span>
+                            <span class="sep">|</span>
+                            <span id="lblKhoa_DKCS">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ 2. Trạng thái hiện tại ═══ -->
+    <div class="dkcs-cols dkcs-stretch" style="margin-bottom:16px">
+        <div class="min-w-0">
+            <!-- Chưa đăng ký -->
+            <div id="boxChuaDangKy_DKCS" class="dkcs-alert al-info al-top al-full">
+                <i class="fas fa-info-circle"></i>
+                <p>
+                    <b class="t">Bạn chưa đăng ký cơ sở đào tạo.</b><br />
+                    <span class="s">Vui lòng chọn một trong các cơ sở đào tạo bên dưới trước khi kết thúc thời gian
+                        đăng ký.</span>
+                </p>
+            </div>
+            <!-- Đã đăng ký -->
+            <div id="boxDaDangKy_DKCS" class="dkcs-alert al-warn al-top al-full dkcs-hide">
+                <i class="fas fa-info-circle"></i>
+                <p>
+                    <b class="t">Bạn đã đăng ký cơ sở đào tạo.</b><br />
+                    <span class="s">Hiện tại bạn đang đăng ký <b id="lblCoSoHienTai_DKCS">-</b>. Bạn có thể thay đổi
+                        hoặc hủy lựa chọn khi kế hoạch còn hạn.</span>
+                </p>
+                <button type="button" id="btnHuyDangKy_DKCS" class="btn-dkcs danger-outline sm al-action">
+                    <i class="far fa-trash-alt"></i><span>Hủy lựa chọn</span>
+                </button>
+            </div>
+            <!-- Đã hủy -->
+            <div id="boxDaHuy_DKCS" class="dkcs-alert al-danger al-top al-full dkcs-hide">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>
+                    <b class="t">Bạn đã hủy lựa chọn cơ sở đào tạo.</b><br />
+                    <span class="s">Lựa chọn trước đó đã được ghi lịch sử với hành động "Hủy". Vui lòng chọn lại cơ sở
+                        trước khi hết hạn đăng ký.</span>
+                </p>
+            </div>
+        </div>
+        <div class="min-w-0">
+            <div class="dkcs-alert al-plain al-top al-full">
+                <i class="far fa-clock"></i>
+                <p>
+                    Lần xác nhận gần nhất:<br />
+                    <b class="t" id="lblLanXacNhan_DKCS">Chưa có</b>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ 3. Chọn cơ sở + thông tin lựa chọn ═══ -->
+    <div class="dkcs-cols">
+
+        <!-- ── Cột trái ── -->
+        <div class="min-w-0">
+            <div class="dkcs-card">
+                <div class="dkcs-section-title">
+                    <i class="fas fa-university"></i>Lựa chọn cơ sở đào tạo
+                </div>
+
+                <div id="boxCanhBaoChuaChon_DKCS" class="dkcs-alert al-danger al-top dkcs-hide">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>
+                        <b class="t">Hiện tại bạn chưa chọn cơ sở đào tạo.</b><br />
+                        <span class="s">Nếu không chọn cơ sở nào trước khi hết hạn, hệ thống sẽ ghi nhận trạng thái
+                            chưa đăng ký cơ sở đào tạo.</span>
+                    </p>
+                </div>
+
+                <!-- Danh sách cơ sở: render bằng JS → genList_CoSo_DKCS() -->
+                <div id="zoneDSCoSo_DKCS" class="dkcs-campus-grid"></div>
+
+                <div class="dkcs-alert al-warn al-top mb0">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <p>
+                        <b class="t">Bạn chỉ được chọn 01 cơ sở đào tạo.</b><br />
+                        <span class="s">Lựa chọn có thể thay đổi nhiều lần trong thời hạn đăng ký; mỗi lần thay đổi
+                            đều được ghi lại lịch sử.</span>
+                    </p>
+                </div>
+
+                <!-- Hàng nút: destructive tách trái, nhóm còn lại dồn phải -->
+                <div class="dkcs-actions dkcs-bar">
+                    <div class="act-left">
+                        <button type="button" id="btnXoaLuaChon_DKCS" class="btn-dkcs outline" disabled>
+                            <i class="far fa-times"></i><span>Bỏ chọn</span>
+                        </button>
+                    </div>
+                    <div class="act-right">
+                        <button type="button" id="btnHoanTac_DKCS" class="btn-dkcs outline" disabled>
+                            <i class="far fa-undo"></i><span>Hoàn tác</span>
+                        </button>
+                        <button type="button" id="btnDong_DKCS" class="btn-dkcs outline">
+                            <span>Đóng</span>
+                        </button>
+                        <button type="button" id="btnXacNhan_DKCS" class="btn-dkcs primary" disabled>
+                            <i class="far fa-check"></i><span>Xác nhận lựa chọn</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ══════════════════════════════════════════════════════════════
+                 [CHỜ API] Lịch sử thay đổi lựa chọn.
+                 Cổng SV hiện chỉ có 4 hàm (kế hoạch / cơ sở / đăng ký / hủy),
+                 chưa có proc lấy lịch sử → tạm ẩn, KHÔNG xóa code.
+                 Mở lại: bỏ cặp comment này + bỏ comment hàm getList_LichSu()
+                 trong dangkycosodaotao.js và gọi nó trong chonKeHoach().
+            <div class="dkcs-card">
+                <div class="dkcs-section-title">
+                    <i class="fas fa-history"></i>Lịch sử thay đổi lựa chọn
+                </div>
+                <div class="dkcs-history">
+                    <table id="tblLichSu_DKCS">
+                        <thead>
+                            <tr>
+                                <th style="width:60px">STT</th>
+                                <th>Thời gian</th>
+                                <th>Từ cơ sở</th>
+                                <th>Đến cơ sở</th>
+                                <th>Trạng thái</th>
+                                <th>Người thực hiện</th>
+                                <th>Ghi chú</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="td-empty" colspan="7">Chưa có dữ liệu</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+                 ══════════════════════════════════════════════════════════════ -->
+        </div>
+
+        <!-- ── Cột phải ── -->
+        <div class="min-w-0">
+            <div class="dkcs-card">
+                <div class="dkcs-section-title">
+                    <i class="fas fa-user"></i>Thông tin lựa chọn của bạn
+                </div>
+                <dl class="dkcs-kv">
+                    <dt>Họ và tên</dt>
+                    <dd id="lblKV_HoTen_DKCS">-</dd>
+                    <dt>Mã hồ sơ / MSSV</dt>
+                    <dd id="lblKV_MaSo_DKCS">-</dd>
+                    <dt>Ngành / Chương trình</dt>
+                    <dd id="lblKV_ChuongTrinh_DKCS">-</dd>
+                    <dt>Khóa học</dt>
+                    <dd id="lblKV_Khoa_DKCS">-</dd>
+                    <dt>Lớp</dt>
+                    <dd id="lblKV_Lop_DKCS">-</dd>
+                </dl>
+                <div class="dkcs-current-head" style="margin-top:16px">
+                    <i class="fas fa-graduation-cap"></i>
+                    <b>Cơ sở hiện tại</b>
+                    <span id="lblPillCoSoHienTai_DKCS" class="dkcs-pill red">Chưa đăng ký</span>
+                </div>
+            </div>
+
+            <div class="dkcs-card dkcs-change-panel">
+                <div class="dkcs-section-title">
+                    <i class="fas fa-exchange-alt"></i>Thay đổi lựa chọn cơ sở
+                </div>
+                <div class="row-from-to">
+                    <span class="dk-lbl">Thay đổi từ</span>
+                    <span><span id="lblTu_DKCS" class="dkcs-pill gray-strong">Chưa đăng ký</span></span>
+                    <span class="dkcs-arrow"><span><i class="far fa-arrow-down"></i></span></span>
+                    <span class="dk-lbl">Sang</span>
+                    <span><span id="lblSang_DKCS" class="dkcs-pill blue">Chưa chọn</span></span>
+                </div>
+                <hr />
+                <div class="last-time">
+                    <i class="far fa-clock"></i>
+                    <div>
+                        <div>Thời gian xác nhận gần nhất</div>
+                        <b id="lblThoiGianXacNhan_DKCS">Chưa có</b>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!-- /.one-door — 3 modal đặt NGOÀI wrapper (giống dangky.html) để không bị
+     stacking context của container nhốt xuống dưới backdrop -->
+
+<!-- ═══════════════ MODAL ═══════════════ -->
+
+    <!-- Modal 1: Xác nhận đăng ký (popover góc trên phải, không che trang) -->
+    <div class="modal fade modal-dkcs" id="modal-XacNhanDangKy_DKCS" tabindex="-1" aria-hidden="true"
+         data-bs-focus="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <button type="button" class="btn-close-x" data-dismiss="modal" data-bs-dismiss="modal"
+                        aria-label="Đóng">
+                    <i class="fal fa-times"></i>
+                </button>
+                <div class="m-center">
+                    <div class="m-icon"><i class="fas fa-question"></i></div>
+                    <p class="m-title">Xác nhận đăng ký</p>
+                    <p class="m-text">
+                        Bạn có chắc chắn muốn đăng ký<br />
+                        <b class="text-primary" id="lblTenCoSo_XacNhanDangKy_DKCS">-</b> không?
+                    </p>
+                    <div class="m-footer">
+                        <button type="button" class="btn-dkcs outline" data-dismiss="modal" data-bs-dismiss="modal">
+                            <span>Hủy</span>
+                        </button>
+                        <button type="button" id="btnYes_DangKy_DKCS" class="btn-dkcs primary">
+                            <span>Xác nhận</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 2: Xác nhận hủy đăng ký -->
+    <div class="modal fade modal-dkcs m-side" id="modal-XacNhanHuy_DKCS" tabindex="-1" aria-hidden="true"
+         data-bs-focus="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <button type="button" class="btn-close-x" data-dismiss="modal" data-bs-dismiss="modal"
+                        aria-label="Đóng">
+                    <i class="fal fa-times"></i>
+                </button>
+                <div class="m-side-body">
+                    <div class="m-side-head">
+                        <div class="m-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                        <div>
+                            <p class="m-title">Xác nhận hủy lựa chọn</p>
+                            <p class="m-sub">Hành động này sẽ được ghi vào lịch sử đăng ký.</p>
+                        </div>
+                    </div>
+                    <p class="m-text">
+                        Bạn có chắc chắn muốn hủy lựa chọn
+                        <b id="lblTenCoSo_XacNhanHuy_DKCS">-</b>?<br />
+                        Sau khi hủy, bạn sẽ ở trạng thái <b>chưa đăng ký cơ sở đào tạo</b>.
+                    </p>
+                    <div class="m-footer">
+                        <button type="button" class="btn-dkcs outline" style="min-width:120px" data-dismiss="modal"
+                                data-bs-dismiss="modal">
+                            <span>Đóng</span>
+                        </button>
+                        <button type="button" id="btnYes_Huy_DKCS" class="btn-dkcs danger" style="min-width:180px">
+                            <i class="far fa-trash-alt"></i><span>Xác nhận hủy</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 3: Xác nhận thay đổi cơ sở (popover góc dưới phải) -->
+    <div class="modal fade modal-dkcs" id="modal-XacNhanThayDoi_DKCS" tabindex="-1" aria-hidden="true"
+         data-bs-focus="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <button type="button" class="btn-close-x" data-dismiss="modal" data-bs-dismiss="modal"
+                        aria-label="Đóng">
+                    <i class="fal fa-times"></i>
+                </button>
+                <div class="m-warn-body">
+                    <div class="m-warn-head">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <p class="m-title">Xác nhận thay đổi cơ sở</p>
+                    </div>
+                    <p class="m-text">
+                        Chuyển từ <b id="lblTu_XacNhanThayDoi_DKCS">-</b><br />
+                        sang <b class="text-primary" id="lblSang_XacNhanThayDoi_DKCS">-</b>?
+                    </p>
+                    <p class="m-sub">Lựa chọn mới sẽ thay thế lựa chọn hiện tại và được ghi lịch sử.</p>
+                    <div class="m-footer">
+                        <button type="button" class="btn-dkcs outline" data-dismiss="modal" data-bs-dismiss="modal">
+                            <span>Hủy</span>
+                        </button>
+                        <button type="button" id="btnYes_ThayDoi_DKCS" class="btn-dkcs primary">
+                            <span>Xác nhận thay đổi</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- page script -->
+<script src="modules/dangkyhoc/script/dangkycosodaotao.js?v=1.0.1.4"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['DangKyCoSoDaoTao'] = new DangKyCoSoDaoTao();
+    $(document).ready(function () {
+        main_doc.DangKyCoSoDaoTao.init();
+    });
+</script>

@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quản lý sinh viên 360 - Dashboard toàn trường</title>
+    <link rel="stylesheet" href="../assets/css/styles.css" />
+    <style>
+        /* Chip hiển thị tên class */
+        .cls {
+            display: inline-block;
+            background: #eef1f4;
+            color: #c7254e;
+            font-family: "Consolas", "Courier New", monospace;
+            font-size: 13px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+
+        /* Khối code để copy */
+        .code-block {
+            color: #1e293b;
+            background-color: #f8f9fa;
+            font-family: "Consolas", "Courier New", monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 14px 16px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 10px 0 0;
+            white-space: pre;
+        }
+
+        .bd-example {
+            padding: 16px;
+            border: 1px dashed #d0d5dd;
+            border-radius: 6px;
+            margin-bottom: 4px;
+        }
+
+        .demo-label-code {
+            font-size: 12px;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            margin: 14px 0 2px;
+            display: block;
+        }
+
+        .box-comment .box-title {
+            font-size: 18px;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        .box-comment {
+            --bs-gutter-x: 20px;
+        }
+
+        .box-comment .box {
+            margin-bottom: 20px;
+        }
+
+        .box-comment .box-content.pd-20 {
+            padding: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header fixed-top">
+        <div class="top-nav">
+            <div class="sidebar-bars">
+                <i class="fa-light fa-bars-sort"> </i>
+            </div>
+            <div class="head-logo">
+                <a href="../index.html">
+                    <img class="logo-icon" src="../assets/images/logo/logo-icon.png" />
+                    <img class="logo-text" src="../assets/images/logo/logo-text.png" />
+                </a>
+            </div>
+            <div class="head-search-form">
+                <div class="head-search-toggle">
+                    <i class="fal fa-search"></i>
+                </div>
+                <div class="head-search-box">
+                    <div class="form">
+                        <input type="text" class="search-imput" placeholder="Tìm kiếm thông tin" />
+                        <button class="search-btn">
+                            <i class="fal fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="main-menu">
+                <ul class="list-unstyled">
+                    <li class="item">
+                        <a class="menu-link" href="../index.html">
+                            <i class="fal fa-home"></i>
+                            <span>Trang chủ</span>
+                        </a>
+                    </li>
+                    <li class="item">
+                        <a class="menu-link" href="../dashboard.html">
+                            <i class="fa-solid fa-bars-sort mr-5"></i>
+                            <span>Danh mục</span>
+                        </a>
+                    </li>
+
+                </ul>
+                <div class="menu-toggle">
+                    <i class="fal fa-bars"></i>
+                </div>
+            </div>
+            <div class="account-group">
+                <div class="dropdown d-none">
+                    <div class="item" data-bs-toggle="dropdown">
+                        <i class="fal fa-circle-check"></i>
+                        <span>3</span>
+                    </div>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#">Action</a></li>
+                        <li><a class="dropdown-item" href="#">Another action</a></li>
+                        <li><a class="dropdown-item" href="#">Something else here</a></li>
+                    </ul>
+                </div>
+                <div class="dropdown d-none">
+                    <div class="item message" data-bs-toggle="dropdown">
+                        <i class="fal fa-messages"></i>
+                        <span>3</span>
+                    </div>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#">Action</a></li>
+                        <li><a class="dropdown-item" href="#">Another action</a></li>
+                        <li><a class="dropdown-item" href="#">Something else here</a></li>
+                    </ul>
+                </div>
+                <div class="dropdown d-none">
+                    <div class="item noti" data-bs-toggle="dropdown">
+                        <i class="fal fa-bell"></i>
+                        <span>9+</span>
+                    </div>
+                    <ul class="dropdown-menu box-notify">
+                        <li class="lable-notify d-flex justify-content-between">
+                            <h3 class="d-flex">
+                                <img src="./images/notification.svg" style="width: 26px; margin-right: 6px" />
+                                Thông báo
+                            </h3>
+                            <i class="fa-regular fa-xmark" style="margin-top: 5px"></i>
+                        </li>
+                        <li class="list-notify">
+                            <ul>
+                                <li class="chuadoc">
+                                    <a href="#">
+                                        <div class="item-notify">
+                                            <div class="icon-notify">
+                                                <i class="fa-solid fa-circle-dollar-to-slot color-blue"></i>
+                                            </div>
+                                            <div class="content-notify">
+                                                Thông báo thay đổi lịch dảng dậy lớp ABC Phương pháp
+                                                tính và MAtLAB
+                                                <p class="date-notify">
+                                                    <i class="fa-light fa-calendar-clock"></i>16:02
+                                                    <i class="fa-solid fa-circle fw-bold"></i> Thứ ba
+                                                    20/1/2026
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li class="dadoc">
+                                    <a href="#">
+                                        <div class="item-notify">
+                                            <div class="icon-notify">
+                                                <img src="./images/money-bag.png" class="img-notify" />
+                                            </div>
+                                            <div class="content-notify">
+                                                Thông báo thay đổi lịch dảng dậy lớp ABC Phương pháp
+                                                tính và MAtLAB
+                                                <p class="date-notify">
+                                                    <i class="fa-light fa-calendar-clock"></i>16:02
+                                                    <i class="fa-solid fa-circle fw-bold"></i> Thứ ba
+                                                    20/1/2026
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <div class="dropdown">
+                    <div class="item" data-bs-toggle="dropdown">
+                        <img src="../assets/images/avatar.jpg" class="avatar" />
+                    </div>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#">Action</a></li>
+                        <li><a class="dropdown-item" href="#">Another action</a></li>
+                        <li><a class="dropdown-item" href="#">Something else here</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="main-wrap">
+        <div class="left-sidebar">
+            <div class="sidebar-menu">
+                <div class="accordion" id="sidebar-menu">
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" data-bs-toggle="collapse"
+                            data-bs-target="#sbComponents" href="javascrip:void(0)">
+                            <i class="fa-light fa-puzzle-piece item-icon"></i>
+                            <span>Components</span>
+                            <i class="fal fa-chevron-right item-arrow-icon"></i>
+                            <i class="fal fa-chevron-down item-arrow-icon down"></i>
+                        </a>
+                        <div class="sidebar-menu-sub collapse" id="sbComponents" data-bs-parent="#sidebar-menu">
+                            <div class="sidebar-menu-sub-content">
+                                <a href="components.html#accordion">Accordion</a>
+                                <a href="components.html#alerts">Alerts</a>
+                                <a href="components.html#badge">Badge</a>
+                                <a href="components.html#breadcrumb">Breadcrumb</a>
+                                <a href="components.html#buttons">Buttons</a>
+                                <a href="components.html#button-group">Button group</a>
+                                <a href="components.html#card">Card</a>
+                                <a href="components.html#carousel">Carousel</a>
+                                <a href="components.html#close">Close button</a>
+                                <a href="components.html#collapse">Collapse</a>
+                                <a href="components.html#dropdowns">Dropdowns</a>
+                                <a href="components.html#list-group">List group</a>
+                                <a href="components.html#modal">Modal</a>
+                                <a href="components.html#navs-tabs">Navs &amp; tabs</a>
+                                <a href="components.html#navbar">Navbar</a>
+                                <a href="components.html#offcanvas">Offcanvas</a>
+                                <a href="components.html#pagination">Pagination</a>
+                                <a href="components.html#popovers">Popovers</a>
+                                <a href="components.html#progress">Progress</a>
+                                <a href="components.html#spinners">Spinners</a>
+                                <a href="components.html#toasts">Toasts</a>
+                                <a href="components.html#tooltips">Tooltips</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" data-bs-toggle="collapse" data-bs-target="#sbUtilities"
+                            href="javascrip:void(0)">
+                            <i class="fa-light fa-screwdriver-wrench item-icon"></i>
+                            <span>Utilities</span>
+                            <i class="fal fa-chevron-right item-arrow-icon"></i>
+                            <i class="fal fa-chevron-down item-arrow-icon down"></i>
+                        </a>
+                        <div class="sidebar-menu-sub collapse" id="sbUtilities" data-bs-parent="#sidebar-menu">
+                            <div class="sidebar-menu-sub-content">
+                                <a href="utilities.html#background">Background</a>
+                                <a href="utilities.html#borders">Borders</a>
+                                <a href="utilities.html#colors">Colors</a>
+                                <a href="utilities.html#display">Display</a>
+                                <a href="utilities.html#flex">Flex</a>
+                                <a href="utilities.html#float">Float</a>
+                                <a href="utilities.html#interactions">Interactions</a>
+                                <a href="utilities.html#link">Link</a>
+                                <a href="utilities.html#object-fit">Object fit</a>
+                                <a href="utilities.html#opacity">Opacity</a>
+                                <a href="utilities.html#overflow">Overflow</a>
+                                <a href="utilities.html#position">Position</a>
+                                <a href="utilities.html#shadows">Shadows</a>
+                                <a href="utilities.html#sizing">Sizing</a>
+                                <a href="utilities.html#spacing">Spacing</a>
+                                <a href="utilities.html#text">Text</a>
+                                <a href="utilities.html#vertical-align">Vertical align</a>
+                                <a href="utilities.html#visibility">Visibility</a>
+                                <a href="utilities.html#zindex">Z-index</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" data-bs-toggle="collapse" data-bs-target="#sbHelpers"
+                            href="javascrip:void(0)">
+                            <i class="fa-light fa-wand-magic-sparkles item-icon"></i>
+                            <span>Helpers</span>
+                            <i class="fal fa-chevron-right item-arrow-icon"></i>
+                            <i class="fal fa-chevron-down item-arrow-icon down"></i>
+                        </a>
+                        <div class="sidebar-menu-sub collapse" id="sbHelpers" data-bs-parent="#sidebar-menu">
+                            <div class="sidebar-menu-sub-content">
+                                <a href="helpers.html#clearfix">Clearfix</a>
+                                <a href="helpers.html#colored-links">Colored links</a>
+                                <a href="helpers.html#ratio">Ratio</a>
+                                <a href="helpers.html#position">Position</a>
+                                <a href="helpers.html#visually-hidden">Visually hidden</a>
+                                <a href="helpers.html#stretched-link">Stretched link</a>
+                                <a href="helpers.html#text-truncation">Text truncation</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" data-bs-toggle="collapse" data-bs-target="#sbLayout"
+                            href="javascrip:void(0)">
+                            <i class="fa-light fa-table-layout item-icon"></i>
+                            <span>Layout</span>
+                            <i class="fal fa-chevron-right item-arrow-icon"></i>
+                            <i class="fal fa-chevron-down item-arrow-icon down"></i>
+                        </a>
+                        <div class="sidebar-menu-sub collapse" id="sbLayout" data-bs-parent="#sidebar-menu">
+                            <div class="sidebar-menu-sub-content">
+                                <a href="layout.html#breakpoints">Breakpoints</a>
+                                <a href="layout.html#containers">Containers</a>
+                                <a href="layout.html#grid">Grid</a>
+                                <a href="layout.html#columns">Columns</a>
+                                <a href="layout.html#gutters">Gutters</a>
+                                <a href="layout.html#utilities">Utilities</a>
+                                <a href="layout.html#zindex">Z-index</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" data-bs-toggle="collapse" data-bs-target="#sbForms"
+                            href="javascrip:void(0)">
+                            <i class="fa-light fa-file-user item-icon"></i>
+                            <span>Forms</span>
+                            <i class="fal fa-chevron-right item-arrow-icon"></i>
+                            <i class="fal fa-chevron-down item-arrow-icon down"></i>
+                        </a>
+                        <div class="sidebar-menu-sub collapse" id="sbForms" data-bs-parent="#sidebar-menu">
+                            <div class="sidebar-menu-sub-content">
+                                <a href="forms.html#overview">Overview</a>
+                                <a href="forms.html#form-control">Form control</a>
+                                <a href="forms.html#select">Select</a>
+                                <a href="forms.html#checks-radios">Checks &amp; radios</a>
+                                <a href="forms.html#input-group">Input group</a>
+                                <a href="forms.html#floating">Floating labels</a>
+                                <a href="forms.html#layout">Layout</a>
+                                <a href="forms.html#validation">Validation</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" data-bs-toggle="collapse" data-bs-target="#sbDatTen"
+                            href="javascrip:void(0)">
+                            <i class="fa-regular fa-tags item-icon"></i>
+                            <span>Đặt tên class</span>
+                            <i class="fal fa-chevron-right item-arrow-icon"></i>
+                            <i class="fal fa-chevron-down item-arrow-icon down"></i>
+                        </a>
+                        <div class="sidebar-menu-sub collapse" id="sbDatTen" data-bs-parent="#sidebar-menu">
+                            <div class="sidebar-menu-sub-content">
+                                <a href="dat-ten-class.htm#dtc-bocuc">Bố cục</a>
+                                <a href="dat-ten-class.htm#dtc-header">Header &amp; Footer</a>
+                                <a href="dat-ten-class.htm#dtc-dieuhuong">Điều hướng</a>
+                                <a href="dat-ten-class.htm#dtc-nut">Nút</a>
+                                <a href="dat-ten-class.htm#dtc-bieumau">Biểu mẫu</a>
+                                <a href="dat-ten-class.htm#dtc-the">Thẻ &amp; Hộp</a>
+                                <a href="dat-ten-class.htm#dtc-bang">Bảng</a>
+                                <a href="dat-ten-class.htm#dtc-vanban">Văn bản</a>
+                                <a href="dat-ten-class.htm#dtc-thanhphan">Thành phần</a>
+                                <a href="dat-ten-class.htm#dtc-trangthai">Trạng thái</a>
+                                <a href="dat-ten-class.htm#dtc-tienich">Tiện ích</a>
+                                <a href="dat-ten-class.htm#dtc-khoangcach">Khoảng cách</a>
+                                <a href="dat-ten-class.htm#dtc-hinhanh">Hình ảnh &amp; Media</a>
+                                <a href="dat-ten-class.htm#dtc-luoi">Lưới</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" href="color.html">
+                            <i class="fa-light fa-palette item-icon"></i>
+                            <span>Colors</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" href="button.html">
+                            <i class="fa-light fa-hand-pointer item-icon"></i>
+                            <span>Buttons</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" href="Modal.html">
+                            <i class="fa-light fa-window-restore item-icon"></i>
+                            <span>Modal</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-menu-item active">
+                        <a class="sidebar-menu-header collapsed" href="table.html">
+                            <i class="fa-light fa-table item-icon"></i>
+                            <span>Table</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" href="tabs.html">
+                            <i class="fa-light fa-folder-tree item-icon"></i>
+                            <span>Tabs</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" href="tree.html">
+                            <i class="fa-light fa-sitemap item-icon"></i>
+                            <span>Danh mục tree</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" href="icon.html">
+                            <i class="fa-light fa-icons item-icon"></i>
+                            <span>Icon</span>
+                        </a>
+                    </div>                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" href="Header - title.html">
+                            <i class="fa-light fa-font item-icon"></i>
+                            <span>Header - title</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" href="Search.html">
+                            <i class="fa-light fa-magnifying-glass item-icon"></i>
+                            <span>Search</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" href="HTML-Form-ChucNangHSo.html">
+                            <i class="fa-light fa-id-card item-icon"></i>
+                            <span>Hồ sơ sinh viên</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" href="thong-tin-sinh-vien.html">
+                            <i class="fa-light fa-address-card item-icon"></i>
+                            <span>Thông tin sinh viên</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="main-content">
+            <!-- content -->
+            <div class="overlay"></div>
+            <div class="content-tab no-tab">
+                <div class="d-flex justify-content-between">
+                    <div class="nav-content-left">
+                        <p class="link">
+                            <a href="#">Table</a>
+                        </p>
+                    </div>
+                    <div class="nav-content-right">
+                        <a class="d-block text-right" href>
+                            <i class="fas fa-question-circle"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="row box-comment box-button-main">
+                <div class="col-7 pl-20">
+                    <!-- Header box -->
+                    <h3 class="pl-0">Bảng (Table) của hệ thống</h3>
+
+                    <!-- Bảng cơ bản -->
+                    <div class="box box-solid box-shadow pd0 mb-20" id="table-basic">
+                        <div class="box-header with-border">
+                            <h3 class="box-title color-blue"><i class="fa-duotone fa-solid fa-table mr-5"></i>
+                                Bảng cơ bản</h3>
+                        </div>
+                        <div class="box-body column-1">
+                            <div class="box-content pd-20">
+                                <span class="demo-label-code mt-0 mb-10">Giao diện</span>
+                                <div class="bd-example">
+                                    <div class="aps-table-select scroll-table-x">
+                                        <table class="table transcrip-table table-noborder table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th class="td-center w-50px">#</th>
+                                                    <th>Họ tên</th>
+                                                    <th class="td-center">Xem</th>
+                                                    <th class="td-center">Sửa</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td class="td-center">1</td>
+                                                    <td>Nguyễn Văn An</td>
+                                                    <td class="td-center"><span><a class="btn btn-default btnNoiDung"
+                                                                title="Chi tiết">Xem</a></span></td>
+                                                    <td class="td-center"><span><a class="btn btn-default btnEdit"
+                                                                title="Sửa">
+                                                                <i class="fa fa-edit color-active"></i></a></span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="td-center">2</td>
+                                                    <td>Trần Thị Bình</td>
+                                                    <td class="td-center"><span><a class="btn btn-default btnNoiDung"
+                                                                title="Chi tiết">Xem</a></span></td>
+                                                    <td class="td-center"><span><a class="btn btn-default btnEdit"
+                                                                title="Sửa">
+                                                                <i class="fa fa-edit color-active"></i></a></span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="td-center">3</td>
+                                                    <td>Lê Hoàng Cường</td>
+                                                    <td class="td-center"><span><a class="btn btn-default btnNoiDung"
+                                                                title="Chi tiết">Xem</a></span></td>
+                                                    <td class="td-center"><span><a class="btn btn-default btnEdit"
+                                                                title="Sửa">
+                                                                <i class="fa fa-edit color-active"></i></a></span></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <span class="demo-label-code mb10">Code</span>
+                                <pre class="code-block mt-0">&lt;table class="table"&gt;
+    &lt;thead&gt;
+        &lt;tr&gt;&lt;th&gt;#&lt;/th&gt;&lt;th&gt;Họ tên&lt;/th&gt;&lt;th&gt;Lớp&lt;/th&gt;&lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+        &lt;tr&gt;&lt;td&gt;1&lt;/td&gt;&lt;td&gt;Nguyễn Văn An&lt;/td&gt;&lt;td&gt;CNTT-K65&lt;/td&gt;&lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Kẻ sọc, viền, di chuột -->
+                    <div class="box box-solid box-shadow pd0 mb-20" id="table-variants">
+                        <div class="box-header with-border">
+                            <h3 class="box-title color-blue">Kẻ sọc, viền &amp; di chuột</h3>
+                        </div>
+                        <div class="box-body column-1 color-888">
+                            <div class="box-content pd-20">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Class</th>
+                                            <th>Tác dụng</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code>.table-striped</code></td>
+                                            <td>Tô màu xen kẽ các hàng (zebra-striping).</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>.table-striped-columns</code></td>
+                                            <td>Tô màu xen kẽ các cột.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>.table-bordered</code></td>
+                                            <td>Thêm đường viền cho mọi ô.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>.table-borderless</code></td>
+                                            <td>Bỏ toàn bộ đường viền.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>.table-hover</code></td>
+                                            <td>Đổi màu hàng khi di chuột qua.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>.table-sm</code></td>
+                                            <td>Giảm padding để bảng gọn hơn.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <span class="demo-label-code">Giao diện</span>
+                                <div class="bd-example">
+                                    <table class="table table-striped table-hover table-bordered table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Môn học</th>
+                                                <th>Tín chỉ</th>
+                                                <th>Trạng thái</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>1</td>
+                                                <td>Lập trình Web</td>
+                                                <td>3</td>
+                                                <td>Đã đăng ký</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2</td>
+                                                <td>Cơ sở dữ liệu</td>
+                                                <td>4</td>
+                                                <td>Chờ duyệt</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3</td>
+                                                <td>Mạng máy tính</td>
+                                                <td>3</td>
+                                                <td>Đã đăng ký</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <span class="demo-label-code">Code</span>
+                                <pre class="code-block">&lt;table class="table table-striped table-hover table-bordered table-sm"&gt;
+    ...
+&lt;/table&gt;</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Màu nền theo ngữ cảnh -->
+                    <div class="box box-solid box-shadow pd0 mb-20" id="table-colors">
+                        <div class="box-header with-border">
+                            <h3 class="box-title color-blue">Màu nền theo ngữ cảnh</h3>
+                        </div>
+                        <div class="box-body column-1">
+                            <div class="box-content pd-20">
+                                <p>Dùng các class <code>.table-*</code> để tô màu cho từng hàng
+                                    (<code>&lt;tr&gt;</code>) hoặc từng ô (<code>&lt;td&gt;</code>).</p>
+                                <div class="bd-example">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Class</th>
+                                                <th>Họ tên</th>
+                                                <th>Ghi chú</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr class="table-primary">
+                                                <td>Primary</td>
+                                                <td>Nguyễn Văn An</td>
+                                                <td>Mặc định nổi bật</td>
+                                            </tr>
+                                            <tr class="table-success">
+                                                <td>Success</td>
+                                                <td>Trần Thị Bình</td>
+                                                <td>Hoàn thành</td>
+                                            </tr>
+                                            <tr class="table-warning">
+                                                <td>Warning</td>
+                                                <td>Lê Hoàng Cường</td>
+                                                <td>Cần chú ý</td>
+                                            </tr>
+                                            <tr class="table-danger">
+                                                <td>Danger</td>
+                                                <td>Phạm Thu Dung</td>
+                                                <td>Nợ học phí</td>
+                                            </tr>
+                                            <tr class="table-info">
+                                                <td>Info</td>
+                                                <td>Vũ Minh Đức</td>
+                                                <td>Thông tin thêm</td>
+                                            </tr>
+                                            <tr class="table-active">
+                                                <td>Active</td>
+                                                <td>Đỗ Quỳnh Hoa</td>
+                                                <td>Đang chọn</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <span class="demo-label-code">Code</span>
+                                <pre class="code-block">&lt;tr class="table-primary"&gt;...&lt;/tr&gt;
+&lt;tr class="table-success"&gt;...&lt;/tr&gt;
+&lt;td class="table-warning"&gt;...&lt;/td&gt;</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Căn chỉnh ô -->
+                    <div class="box box-solid box-shadow pd0 mb-20" id="table-align">
+                        <div class="box-header with-border">
+                            <h3 class="box-title color-blue">Căn chỉnh ô</h3>
+                        </div>
+                        <div class="box-body column-1">
+                            <div class="box-content pd-20">
+                                <p>Dùng class căn lề chuẩn của Bootstrap cho ô (<code>&lt;th&gt;</code> /
+                                    <code>&lt;td&gt;</code>) thay cho class tùy biến cũ.
+                                </p>
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Mục đích</th>
+                                            <th>Thay vì</th>
+                                            <th>Nên dùng (Bootstrap)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Căn trái</td>
+                                            <td><code>.td-left</code></td>
+                                            <td><code>.text-start</code></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Căn giữa</td>
+                                            <td><code>.td-center</code></td>
+                                            <td><code>.text-center</code></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Căn phải</td>
+                                            <td><code>.td-right</code></td>
+                                            <td><code>.text-end</code></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <span class="demo-label-code">Giao diện</span>
+                                <div class="bd-example">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-start">Căn trái</th>
+                                                <th class="text-center">Căn giữa</th>
+                                                <th class="text-end">Căn phải</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="text-start">Nguyễn Văn An</td>
+                                                <td class="text-center">CNTT-K65</td>
+                                                <td class="text-end">8.2</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-start">Trần Thị Bình</td>
+                                                <td class="text-center">KT-K65</td>
+                                                <td class="text-end">7.9</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <span class="demo-label-code">Code</span>
+                                <pre class="code-block">&lt;th class="text-start"&gt;Căn trái&lt;/th&gt;
+&lt;th class="text-center"&gt;Căn giữa&lt;/th&gt;
+&lt;th class="text-end"&gt;Căn phải&lt;/th&gt;
+
+&lt;td class="text-start"&gt;Nguyễn Văn An&lt;/td&gt;
+&lt;td class="text-center"&gt;CNTT-K65&lt;/td&gt;
+&lt;td class="text-end"&gt;8.2&lt;/td&gt;</pre>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- Bảng responsive -->
+                    <div class="box box-solid box-shadow pd0" id="table-responsive">
+                        <div class="box-header with-border">
+                            <h3 class="box-title color-blue">Bảng nhập liệu</h3>
+                        </div>
+                        <div class="box-body pd-20 column-1">
+                            <div class="box-content">
+                                <div class="row">
+                                    <div class="col-12 col-lg-12 mt-10 pl0">
+                                        <div class="d-flex align-items-center">
+                                            <span class="fw-bold text-success fz16">Đối tượng được khảo sát</span>
+
+                                        </div>
+                                        <div class="mt-10">
+                                            <table
+                                                class="table transcrip-table tabs-scores tblPhamVi table-bordered table-noborder"
+                                                id="tblPhamVi">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="text-center w-50px" scope="col">STT</th>
+                                                        <th scope="col">Mã</th>
+                                                        <th scope="col">Tên</th>
+                                                        <th scope="col">Mô tả</th>
+                                                        <th scope="col">Loại đối tượng</th>
+                                                        <th class="text-center w-150px" scope="col">
+                                                            <input class="form-check-input" type="checkbox"
+                                                                id="chkSelectAll_PhamVi">
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody></tbody>
+                                            </table>
+                                        </div>
+                                        <div class="ApDungChoKhoa"></div>
+                                        <div class="ApDungChoChuongTrinh"></div>
+                                        <div class="ApDungChoLop"></div>
+                                        <div style="width: 100%; margin-top: 10px">
+                                            <button
+                                                class="btn-sm btn btn-outline-danger min-w-auto ms-auto btnDelete_PhamVi ml-10"
+                                                style="position: relative !important;">
+                                                <i class="fal fa-trash me-1"></i> Xóa</button>
+                                            <a class="btn-sm btn btn-outline-success"
+                                                style="float: right; margin-left: 10px !important" id="btnAdd_PhamVi"><i
+                                                    class="fa-solid fa-user-graduate"></i>Thêm người học</a>
+                                            <a class="btn-sm btn btn-outline-primary"
+                                                style="float: right; margin-left: 10px !important"
+                                                id="btnAdd_GV_PhamVi">
+                                                <i class="fa-solid fa-chalkboard-user"></i>Thêm Giảng viên</a>
+                                            <a class="btn-sm btn btn-outline-primary"
+                                                style="float: right; margin-left: 10px !important"
+                                                id="btnAdd_DTK_PhamVi">
+                                                <i class="fa-solid fa-plus"></i>Thêm dòng</a>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-5">
+                    <div class="box-content pt-0 pb-20 pr-10">
+                        <!-- Header box -->
+                        <h3 class="pl-0">Table của Bootstrap</h3>
+                        <!-- Class và ý nghĩa -->
+                        <div class="box box-solid box-shadow box-header pd0">
+                            <div class="box-header with-border">
+                                <h3 class="box-title color-blue">
+                                    <i class="fa-duotone fa-solid fa-toggle-large-on"></i> Class và ý nghĩa
+                                </h3>
+
+                            </div>
+                            <div class="box-body w-100">
+                                <div class="box-content pd-20 w-100">
+                                    <table class="table table-noborder table-hover w-100">
+                                        <thead>
+                                            <tr>
+                                                <th>Class</th>
+                                                <th>Ý nghĩa</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="2" class="color-blue fw-bold">1. Class cấu trúc (cơ
+                                                    bản)</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.table</code></td>
+                                                <td>Lớp gốc bắt buộc, kích hoạt toàn bộ kiểu dáng bảng của
+                                                    Bootstrap (khoảng cách, đường kẻ ngang, màu chữ).</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>&lt;thead&gt;</code></td>
+                                                <td>Nhóm phần đầu bảng, chứa các hàng tiêu đề cột.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>&lt;tbody&gt;</code></td>
+                                                <td>Nhóm phần thân bảng, chứa dữ liệu chính.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>&lt;tfoot&gt;</code></td>
+                                                <td>Nhóm phần chân bảng, thường để tổng kết hoặc ghi chú.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>&lt;tr&gt;</code></td>
+                                                <td>Một hàng trong bảng (table row).</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>&lt;th&gt;</code></td>
+                                                <td>Ô tiêu đề (in đậm, căn giữa), thường nằm trong
+                                                    <code>&lt;thead&gt;</code>.
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>&lt;td&gt;</code></td>
+                                                <td>Ô dữ liệu thông thường.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>&lt;caption&gt;</code></td>
+                                                <td>Dòng chú thích/mô tả cho bảng (mặc định nằm dưới bảng).</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td colspan="2" class="color-blue fw-bold">2. Kiểu hiển thị (tùy
+                                                    chọn)</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.table-striped</code></td>
+                                                <td>Tô màu nền xen kẽ giữa các hàng cho dễ đọc.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.table-striped-columns</code></td>
+                                                <td>Tô màu nền xen kẽ giữa các cột.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.table-bordered</code></td>
+                                                <td>Thêm đường viền bao quanh tất cả các ô.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.table-borderless</code></td>
+                                                <td>Loại bỏ mọi đường kẻ trong bảng.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.table-hover</code></td>
+                                                <td>Làm nổi bật (đổi màu) hàng khi rê chuột qua.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.table-sm</code></td>
+                                                <td>Thu nhỏ khoảng đệm (padding) để bảng gọn hơn.</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td colspan="2" class="color-blue fw-bold">3. Màu theo ngữ cảnh
+                                                    (đặt ở <code>tr</code> hoặc <code>td</code>)</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.table-primary</code></td>
+                                                <td>Nền xanh dương — nhấn mạnh chính.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.table-secondary</code></td>
+                                                <td>Nền xám — thông tin phụ.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.table-success</code></td>
+                                                <td>Nền xanh lá — thành công/hợp lệ.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.table-danger</code></td>
+                                                <td>Nền đỏ — lỗi/cảnh báo nghiêm trọng.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.table-warning</code></td>
+                                                <td>Nền vàng — cần chú ý.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.table-info</code></td>
+                                                <td>Nền xanh nhạt — thông tin bổ sung.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.table-light</code></td>
+                                                <td>Nền sáng nhạt.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.table-dark</code></td>
+                                                <td>Nền tối, chữ sáng (có thể đặt cho cả bảng).</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.table-active</code></td>
+                                                <td>Đánh dấu hàng/ô đang được chọn.</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td colspan="2" class="color-blue fw-bold">4. Đầu bảng &amp; căn
+                                                    chỉnh</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.table-light</code> / <code>.table-dark</code> (trên
+                                                    <code>thead</code>)
+                                                </td>
+                                                <td>Đổi màu riêng cho phần tiêu đề bảng.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.table-group-divider</code></td>
+                                                <td>Thêm đường kẻ đậm ngăn cách giữa các nhóm
+                                                    (<code>thead/tbody/tfoot</code>).</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.align-middle</code></td>
+                                                <td>Căn nội dung ô theo chiều dọc ra giữa.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.caption-top</code></td>
+                                                <td>Đưa <code>&lt;caption&gt;</code> lên phía trên bảng.</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td colspan="2" class="color-blue fw-bold">5. Responsive (cuộn
+                                                    ngang)</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.table-responsive</code></td>
+                                                <td>Bọc ngoài bảng để cho phép cuộn ngang ở mọi kích thước màn
+                                                    hình.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.table-responsive-{sm|md|lg|xl|xxl}</code></td>
+                                                <td>Chỉ bật cuộn ngang khi màn hình nhỏ hơn ngưỡng tương ứng
+                                                    (sm&lt;576, md&lt;768, lg&lt;992, xl&lt;1200, xxl&lt;1400px).</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- Bảng cơ bản -->
+                        <div class="box box-solid box-shadow pd0 mb-20" id="table-basic">
+                            <div class="box-header with-border">
+                                <h3 class="box-title color-blue"><i class="fa-duotone fa-solid fa-table mr-5"></i>
+                                    Bảng cơ bản</h3>
+                            </div>
+                            <div class="box-body column-1">
+                                <div class="box-content pd-20">
+                                    <span class="demo-label-code">Giao diện</span>
+                                    <div class="bd-example">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Họ tên</th>
+                                                    <th>Lớp</th>
+                                                    <th>Điểm TB</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>1</td>
+                                                    <td>Nguyễn Văn An</td>
+                                                    <td>CNTT-K65</td>
+                                                    <td>8.2</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>2</td>
+                                                    <td>Trần Thị Bình</td>
+                                                    <td>KT-K65</td>
+                                                    <td>7.9</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>3</td>
+                                                    <td>Lê Hoàng Cường</td>
+                                                    <td>CNTT-K66</td>
+                                                    <td>9.1</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <span class="demo-label-code">Code</span>
+                                    <pre class="code-block">&lt;table class="table"&gt;
+    &lt;thead&gt;
+        &lt;tr&gt;&lt;th&gt;#&lt;/th&gt;&lt;th&gt;Họ tên&lt;/th&gt;&lt;th&gt;Lớp&lt;/th&gt;&lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+        &lt;tr&gt;&lt;td&gt;1&lt;/td&gt;&lt;td&gt;Nguyễn Văn An&lt;/td&gt;&lt;td&gt;CNTT-K65&lt;/td&gt;&lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;</pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Kẻ sọc, viền, di chuột -->
+                        <div class="box box-solid box-shadow pd0 mb-20" id="table-variants">
+                            <div class="box-header with-border">
+                                <h3 class="box-title color-blue">Kẻ sọc, viền &amp; di chuột</h3>
+                            </div>
+                            <div class="box-body column-1 color-888">
+                                <div class="box-content pd-20">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Class</th>
+                                                <th>Tác dụng</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><code>.table-striped</code></td>
+                                                <td>Tô màu xen kẽ các hàng (zebra-striping).</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.table-striped-columns</code></td>
+                                                <td>Tô màu xen kẽ các cột.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.table-bordered</code></td>
+                                                <td>Thêm đường viền cho mọi ô.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.table-borderless</code></td>
+                                                <td>Bỏ toàn bộ đường viền.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.table-hover</code></td>
+                                                <td>Đổi màu hàng khi di chuột qua.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.table-sm</code></td>
+                                                <td>Giảm padding để bảng gọn hơn.</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <span class="demo-label-code">Giao diện</span>
+                                    <div class="bd-example">
+                                        <table class="table table-striped table-hover table-bordered table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Môn học</th>
+                                                    <th>Tín chỉ</th>
+                                                    <th>Trạng thái</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>1</td>
+                                                    <td>Lập trình Web</td>
+                                                    <td>3</td>
+                                                    <td>Đã đăng ký</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>2</td>
+                                                    <td>Cơ sở dữ liệu</td>
+                                                    <td>4</td>
+                                                    <td>Chờ duyệt</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>3</td>
+                                                    <td>Mạng máy tính</td>
+                                                    <td>3</td>
+                                                    <td>Đã đăng ký</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <span class="demo-label-code">Code</span>
+                                    <pre class="code-block">&lt;table class="table table-striped table-hover table-bordered table-sm"&gt;
+    ...
+&lt;/table&gt;</pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Màu nền theo ngữ cảnh -->
+                        <div class="box box-solid box-shadow pd0 mb-20" id="table-colors">
+                            <div class="box-header with-border">
+                                <h3 class="box-title color-blue">Màu nền theo ngữ cảnh</h3>
+                            </div>
+                            <div class="box-body column-1">
+                                <div class="box-content pd-20">
+                                    <p>Dùng các class <code>.table-*</code> để tô màu cho từng hàng
+                                        (<code>&lt;tr&gt;</code>) hoặc từng ô (<code>&lt;td&gt;</code>).</p>
+                                    <div class="bd-example">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Class</th>
+                                                    <th>Họ tên</th>
+                                                    <th>Ghi chú</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr class="table-primary">
+                                                    <td>Primary</td>
+                                                    <td>Nguyễn Văn An</td>
+                                                    <td>Mặc định nổi bật</td>
+                                                </tr>
+                                                <tr class="table-success">
+                                                    <td>Success</td>
+                                                    <td>Trần Thị Bình</td>
+                                                    <td>Hoàn thành</td>
+                                                </tr>
+                                                <tr class="table-warning">
+                                                    <td>Warning</td>
+                                                    <td>Lê Hoàng Cường</td>
+                                                    <td>Cần chú ý</td>
+                                                </tr>
+                                                <tr class="table-danger">
+                                                    <td>Danger</td>
+                                                    <td>Phạm Thu Dung</td>
+                                                    <td>Nợ học phí</td>
+                                                </tr>
+                                                <tr class="table-info">
+                                                    <td>Info</td>
+                                                    <td>Vũ Minh Đức</td>
+                                                    <td>Thông tin thêm</td>
+                                                </tr>
+                                                <tr class="table-active">
+                                                    <td>Active</td>
+                                                    <td>Đỗ Quỳnh Hoa</td>
+                                                    <td>Đang chọn</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <span class="demo-label-code">Code</span>
+                                    <pre class="code-block">&lt;tr class="table-primary"&gt;...&lt;/tr&gt;
+&lt;tr class="table-success"&gt;...&lt;/tr&gt;
+&lt;td class="table-warning"&gt;...&lt;/td&gt;</pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bảng responsive -->
+                        <div class="box box-solid box-shadow pd0" id="table-responsive">
+                            <div class="box-header with-border">
+                                <h3 class="box-title color-blue">Bảng responsive</h3>
+                            </div>
+                            <div class="box-body pd-20 column-1">
+                                <div class="box-content">
+                                    <p>Bọc bảng trong <code>.table-responsive</code> để bảng tự cuộn ngang trên màn
+                                        hình nhỏ.</p>
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Class</th>
+                                                <th>Áp dụng cuộn ngang khi</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><code>.table-responsive</code></td>
+                                                <td>Mọi kích thước màn hình</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.table-responsive-sm</code></td>
+                                                <td>Dưới <code>576px</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.table-responsive-md</code></td>
+                                                <td>Dưới <code>768px</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.table-responsive-lg</code></td>
+                                                <td>Dưới <code>992px</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.table-responsive-xl</code></td>
+                                                <td>Dưới <code>1200px</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.table-responsive-xxl</code></td>
+                                                <td>Dưới <code>1400px</code></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <div class="bd-example">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th>#</th>
+                                                        <th>Họ tên</th>
+                                                        <th>Lớp</th>
+                                                        <th>Email</th>
+                                                        <th>Số điện thoại</th>
+                                                        <th>Điểm TB</th>
+                                                        <th>Xếp loại</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>1</td>
+                                                        <td>Nguyễn Văn An</td>
+                                                        <td>CNTT-K65</td>
+                                                        <td>an.nv@school.edu.vn</td>
+                                                        <td>0901234567</td>
+                                                        <td>8.2</td>
+                                                        <td>Giỏi</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>2</td>
+                                                        <td>Trần Thị Bình</td>
+                                                        <td>KT-K65</td>
+                                                        <td>binh.tt@school.edu.vn</td>
+                                                        <td>0912345678</td>
+                                                        <td>7.9</td>
+                                                        <td>Khá</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="highlight">
+                                    <pre class="code-block">&lt;div class="table-responsive"&gt;
+    &lt;table class="table"&gt;...&lt;/table&gt;
+&lt;/div&gt;</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- -------------------------- -->
+        <!-- JS -->
+        <script src="../assets/bootstrap-5.3.2/js/bootstrap.bundle.js"></script>
+        <script src="../assets/swiper-slide/swiper-bundle.min.js"></script>
+        <script src="../assets/js/jquery-3.7.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+            integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+        <script src="../assets/js/customs.js"></script>
+        <script>
+            $(window).on("load", function () {
+                // $("#ketQua_nhapHoc").modal("show");
+            });
+        </script>
+</body>
+
+</html>

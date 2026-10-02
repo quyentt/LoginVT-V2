@@ -1,0 +1,354 @@
+﻿<!-- Main content -->
+<style>
+    .jstree-leaf:hover {
+        background: #f1f1f1 !important;
+    }
+    /* Tăng size + độ đậm cho cây vai trò và bảng chức năng */
+    .aps-vaitro-cn #treesjs_vaitro_vtcn .jstree-anchor {
+        font-size: 15px !important;
+        font-weight: 600 !important;
+        color: #0f172a !important;
+        line-height: 26px !important;
+    }
+    .aps-vaitro-cn #treesjs_vaitro_vtcn .jstree-icon.fa {
+        font-size: 15px !important;
+    }
+    .aps-vaitro-cn #txtSearch_VaiTro_VTCN {
+        font-size: 14px;
+        font-weight: 500;
+        height: 34px;
+    }
+    .aps-vaitro-cn #zone_vaitroungdung .jstree-anchor,
+    .aps-vaitro-cn #treesjs_ungdungchucnang_vtcn .jstree-anchor {
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        color: #0f172a !important;
+    }
+    .aps-vaitro-cn .table thead th {
+        font-size: 14px !important;
+        font-weight: 700 !important;
+        color: #0f172a !important;
+    }
+    .aps-vaitro-cn .table tbody td {
+        font-weight: 600 !important;
+        color: #0f172a !important;
+    }
+    .aps-vaitro-cn .box-title {
+        font-size: 15px !important;
+        font-weight: 700 !important;
+        color: #0f172a !important;
+    }
+    /* Modal Thêm Vai trò - Chức năng: form sát 2 bên lề */
+    .aps-vaitro-cn #zone_input_vtcn .box-body.pd20 {
+        padding: 10px 8px !important;
+    }
+    .aps-vaitro-cn #zone_input_vtcn .box-body.pd20 > .col-sm-12 {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        width: 100% !important;
+    }
+    .aps-vaitro-cn #zone_input_vtcn .aps-form-item {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        display: flex !important;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    .aps-vaitro-cn #zone_input_vtcn .aps-form-lable {
+        padding-left: 0 !important;
+        padding-right: 12px !important;
+        width: 180px !important;
+        max-width: 180px !important;
+        flex: 0 0 180px !important;
+    }
+    .aps-vaitro-cn #zone_input_vtcn .aps-form-input {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        flex: 1 1 auto !important;
+        width: auto !important;
+        max-width: none !important;
+    }
+    .aps-vaitro-cn #zone_input_vtcn .aps-form-input .select2-container,
+    .aps-vaitro-cn #zone_input_vtcn .aps-form-input .select2-container .select2-selection {
+        width: 100% !important;
+    }
+    /* Inner "Danh sách chức năng" box: sát mép */
+    .aps-vaitro-cn #zone_input_vtcn > .box-body > .box,
+    .aps-vaitro-cn #zone_input_vtcn .box-body > .box {
+        margin: 10px 0 0 0 !important;
+        width: 100% !important;
+    }
+    .aps-vaitro-cn #zone_input_vtcn .box-body > .box > .box-body {
+        padding: 10px 8px !important;
+    }
+    .aps-vaitro-cn #zone_input_vtcn #treesjs_ungdungchucnang_vtcn {
+        margin-left: 0 !important;
+        padding-left: 0 !important;
+    }
+    .aps-vaitro-cn #zone_input_vtcn #treesjs_ungdungchucnang_vtcn > ul {
+        padding-left: 0 !important;
+        margin-left: 0 !important;
+    }
+    .aps-vaitro-cn #zone_input_vtcn .pull-right.right-0 {
+        margin-right: 0 !important;
+    }
+    /* Cột phải chứa modal thêm — cho rộng thêm, cột trái ứng dụng thu lại */
+    .aps-vaitro-cn .aps-vaitro-cn-r > .box > .box-body.pd0 > .col-sm-3 {
+        width: 18% !important;
+        padding-left: 0 !important;
+        padding-right: 6px !important;
+    }
+    .aps-vaitro-cn .aps-vaitro-cn-r > .box > .box-body.pd0 > .col-sm-9 {
+        width: 82% !important;
+        padding-left: 6px !important;
+        padding-right: 0 !important;
+    }
+</style>
+<section class="content aps-cms">
+    <div class="row aps-vaitro-cn">
+        <!-- /.left-content -->
+        <div class="col-sm-3 aps-box-l aps-vaitro-cn-l">
+            <div class="box box-solid box-shadow">
+                <div class="box-header with-border box-search">
+                    <h3 class="box-title" title="Tổng bài báo trong nước">
+                        <i class="fa-light fa-users-gear"></i> Danh sách vai trò
+                    </h3>
+                    <span class="pull-right badge bg-light-blue">
+                        <span id="lblDanhMucTenBang_Tong"></span>
+                    </span>
+                </div>
+                <div class="box-body mt-5">
+                    <div style="padding:6px 8px 8px">
+                        <input id="txtSearch_VaiTro_VTCN" class="form-control input-sm" placeholder="Tìm tên vai trò..." />
+                    </div>
+                    <div id="treesjs_vaitro_vtcn">
+                        <!--Content of treejs-->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.right-content -->
+        <div class="col-sm-9 aps-box-r aps-vaitro-cn-r">
+            <div class="box box-solid">
+                <div class="box-header with-border">
+                    <h3 class="box-title">
+                        <i class="fa-light fa-rectangle-history-circle-user"></i> Danh sách chức năng theo vai trò
+                    </h3>
+                    <div class="pull-right">
+                        <a class="submit btn btn-danger btnAddnew">
+                            <i class="fa-light fa-user-pen"></i> <span class="lang" key="">Chỉnh sửa quyền</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="box-body pd0">
+                    <!-- Zone danh sach UngDung cua VaiTro -->
+                    <div class="col-sm-3">
+                        <div class="box box-solid">
+                            <div class="box-body">
+                                <p>
+                                    <b><i class="fa fa-hdd-o mr-5"></i> Danh sách ứng dụng </b>(<span id="lblVaiTroUngDung_Tong_VTCN"></span>)
+                                </p>
+                                <div id="zone_vaitroungdung">
+                                    <!-- Load from js -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-9">
+
+                        <div class="box box-solid zone-bus-vtcn1" id="zone_list_vtcnv4">
+                            <div class="box-body">
+                                <i class="fa-light fa-gear mr-10"></i><span style="font-weight: 700"> Danh sách chức năng</span>
+                                <table class="table table-hover table-bordered mt-10" id="tableVTCN">
+                                    <thead>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- 2. Zone them ChucNang cho VaiTro -->
+
+                        <div class="box box-solid form-container zone-bus-vtcn1" id="zone_input_vtcn" style="border-radius: 0; display: none">
+                            <div class="box-header with-border bg-blue"
+                                 style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px !important;line-height:24px !important;margin:0;">
+                                <h3 class="box-title" style="margin:0;padding:0;color:#fff;font-weight:700;">
+                                    <i class="fa fa-plus"></i> Thêm Vai trò - Chức năng (<span id="lblChucNang_Tong_NDCN"></span>)
+                                </h3>
+                                <a class="btn btn-danger btnClose" href="#" style="font-weight:600;margin:0;gap:6px;display:inline-flex;align-items:center;">
+                                    <i class="fa fa-times"></i>
+                                </a>
+                            </div>
+                            <div class="box-body pd20">
+                                <div class="col-sm-12 box-view aps-form">
+                                    <div class="row aps-form-item">
+                                        <div class="col-sm-2 aps-form-lable"> Ứng dụng</div>
+                                        <div class="col-sm-10 aps-form-input">
+                                            <select id="dropUngDung_VTCN" class="select-opt"></select>
+                                        </div>
+                                    </div>
+                                    <div class="row aps-form-item">
+                                        <div class="col-sm-2 aps-form-lable"> Quyền (chỉ tính khi thêm)</div>
+                                        <div class="col-sm-10 aps-form-input">
+                                            <select id="dropQuyen_VTCN" class="select-opt" multiple="multiple"></select>
+                                        </div>
+                                    </div>
+                                    <div class="row aps-form-item">
+                                        <div class="col-sm-2 aps-form-lable"></div>
+                                        <div class="col-sm-10 aps-form-input">
+                                            <input type="checkbox" id="chkSelectAll" /> Check All
+                                        </div>
+                                    </div>
+                                    <div class="row aps-form-item" style="display: block !important;">
+                                        <div class="pull-right right-0">
+                                            <a class="submit btn btn-primary" id="btnSave_VaiTro_ChucNang">
+                                                <i class="fa-solid fa-floppy-disk"></i> <span class="lang color-white"
+                                                                                              key="">Lưu</span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="clear"></div>
+                                <div class="box box-solid"  style="margin-top: 10px">
+                                    <div class="box-body">
+                                        <i class="fa-solid fa-folder-gear mr-5"></i> <b>Danh sách chức năng</b>
+                                        <div id="treesjs_ungdungchucnang_vtcn">
+                                            <!--Content of treejs-->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="box box-solid" style="display: none">
+
+                            <div class="box-body">
+                                <div class="row">
+                                    <div class="pull-left"><i class="fa fa-angle-right"></i> Quyền chức năng</div>
+                                    <div class="pull-right">
+                                        <a id="btnAdd_QuyenCN" class="btnAdd btn btn-primary"><i class="fa fa-plus"></i> <span class="lang" key="">Thêm quyền</span></a>
+                                        <a class="submit btn btn-danger" id="btnDelete_QuyenCN"><i class="fa fa-trash"></i> <span class="lang" key="">Xóa</span></a>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <table id="tblQuyenCN" class="table table-hover table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th class="td-fixed">Stt</th>
+                                                <th class="td-center"><span class="lang" key="">Mã chức năng</span></th>
+                                                <th class="td-center"><span class="lang" key="">Tên chức năng</span></th>
+                                                <th class="td-center"><span class="lang" key="">Quyền</span></th>
+                                                <th class="td-center"><span class="lang" key="">Đã phân rồi</span></th>
+                                                <th class="td-center"><span class="lang" key="">Mô tả</span></th>
+                                                <!--<th class="td-center"><span class="lang" key="">Người tạo</span></th>
+                    <th class="td-center"><span class="lang" key="">Sửa</span></th>-->
+                                                <th class="td-center td-fixed">
+                                                    <input type="checkbox" class="chkSystemSelectAll">
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                                
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Modal -->
+<div class="modal fade" id="myModalChucNang_VTCN" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title color-active">
+                    <span class="lang" key="lb_themmoichucnang">
+                        <i class="fa fa-plus"></i> Thêm mới chức năng cho vai trò
+                    </span>
+                </h4>
+            </div>
+            <div class="modal-body">
+                <table class="table table-hover" id="tableChucNang_VTCN">
+                    <thead>
+                        <tr>
+                            <th class="td-center">Stt</th>
+                            <th>Tên chức năng</th>
+                            <th class="td-center">Thêm</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div id="notify"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <span class="lang" key="lb_dong">
+                        <i class="fa fa-times-circle"></i> Đóng
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade modal_lichgiang" id="modalSuaQuyen" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title modal-name" id="myModalLabel1"><i class="fa-solid fa-server"></i> Các quyền chức năng</h4>
+            </div>
+
+            <div class="modal-body">
+                <div class="row">
+                    <div class="pull-right">
+                        <a id="btnAdd_SuaQuyen" class="btnAdd btn btn-primary"><i class="fa fa-plus"></i> <span class="lang" key="">Thêm quyền</span></a>
+                        <a class="submit btn btn-danger" id="btnDelete_SuaQuyen"><i class="fa fa-trash"></i> <span class="lang" key="">Xóa</span></a>
+                    </div>
+                </div>
+                <table class="table table-hover table-bordered tblModalLichGiang" id="tblSuaQuyen">
+                    <thead>
+                        <tr>
+                            <th class="td-fixed">Stt</th>
+                            <th class="td-center"><span class="lang" key="">Tên chức năng</span></th>
+                            <th class="td-center"><span class="lang" key="">Quyền</span></th>
+                            <th class="td-center td-fixed">
+                                <input type="checkbox" class="chkSystemSelectAll">
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div id="notify"></div>
+            <div class="modal-footer">
+                <div class="pull-left">
+                    <a class="submit btn btn-danger" id="btnDelete_VTCN"><i class="fa fa-trash"></i> <span class="lang" key="">Xóa vai trò chức năng</span></a>
+                </div>
+                <!--<a id="btnSave_KhoaDuLieu" class="btn btn-primary btnSave_KhoaDuLieu"><i class="fa fa-check"></i> Lưu</a>-->
+                <button type="button" class="btn btn-default" data-dismiss="modal" id="btnCancel">
+                    <i class="fa fa-times-circle"></i> Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- page script -->
+<script src="modules/vaitro/script/vaitrochucnang.js?v=1.0.0.0"></script>
+<script type="text/javascript">
+    //init
+    var main_doc = {};
+    main_doc['VaiTroChucNang'] = new VaiTroChucNang();
+    $(document).ready(function () {
+        main_doc.VaiTroChucNang.init();
+    });
+</script>

@@ -1,0 +1,264 @@
+﻿<style>
+    .modal-1360 {
+        max-width: 1360px;
+    }
+</style>
+<div class="one-door">
+    <div class="overlay"></div>
+    <div class="content-tab no-tab">
+        <div class="d-flex justify-content-between">
+            <div class="nav-content-left">
+
+                <p class="link"><a href="#">Quản lý điểm</a><i class="fal fa-angle-right"></i><a href="#">Nhập điểm theo danh sách thi</a></p>
+
+            </div>
+
+            <div class="nav-content-right">
+                <a class="d-block text-right" href=""><i class="fas fa-question-circle"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- đăng ký nguyện vọng -->
+    <div class="box-shadow register-wish pt-0">
+        <div class="form-top">
+            <div class="row">
+
+                <div class="col-12 col-lg-3 col-md-6 mb-15">
+
+                    <div class="form-item d-flex  form-add-info">
+                        <div class="input-group no-icon">
+                            <select class="form-select select-opt" aria-label="Default select example" id="dropSearch_ThoiGian"></select>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-12 col-lg-3 col-md-6 mb-15"  id="zoneSearch_LoaiDiem">
+
+                    <div class="form-item d-flex  form-add-info">
+                        <div class="input-group no-icon">
+
+                            <select class="form-select select-opt" aria-label="Default select example" id="dropSearch_LoaiDiem"></select>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-12 col-lg-3 col-md-6 mb-15"  id="zoneSearch_HinhThuc">
+
+                    <div class="form-item d-flex  form-add-info">
+                        <div class="input-group no-icon">
+
+                            <select class="form-select select-opt" aria-label="Default select example" id="dropSearch_HinhThuc"></select>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-12 col-lg-3 col-md-6 mb-15">
+
+                    <div class="form-item d-flex  form-add-info">
+                        <div class="input-group no-icon">
+
+                            <select class="form-select select-opt" aria-label="Default select example" id="dropSearch_DotThi"></select>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-12 col-lg-3 col-md-6 mb-15">
+
+                    <div class="form-item d-flex  form-add-info">
+                        <div class="input-group no-icon">
+
+                            <select class="form-select select-opt" aria-label="Default select example" id="dropSearch_MonThi"></select>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-12 col-lg-3 col-md-6 mb-15">
+                    <div class="form-item d-flex form-add-info">
+                        <div class="input-group no-icon">
+
+                            <input id="txtSearch" type="text" class="form-control" placeholder="Nhập từ khóa tìm kiếm">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 col-12 col-lg-6 ">
+                    <div class="btn btn-dask-blue" id="btnSearch"><i class="fal fa-search me-2"></i> Tìm kiếm</div>
+                    <!--<div class="btn btn-dask-blue min-w-auto ml-10" style="margin-left: 10px" id="btnCongBo"><i class="fal fa-save me-2"></i><span>Xác nhận hoàn thành</span></div>-->
+                    <div class="dropdown" id="zonebtnBaoCao_NhapDiem" style="float: right"></div>
+                    <div class="dropdown" id="zonebtnBaoCao_NhapDiem_Import" style="float: right"></div>
+                </div>
+            </div>
+        </div>
+        <div class="container-fluid px-20">
+
+
+            <div class="title-is-paging">
+                <p class="color-dask-blue fw-bold mt-3">Danh sách bảng điểm</p>
+            </div>
+            <table class="table transcrip-table tabs-scores " id="tblNhapDiem">
+                <thead>
+                    <tr>
+                        <th class="text-center" scope="col">STT</th>
+                        <th scope="col">Mã danh sách</th>
+                        <th scope="col">Lớp học phần</th>
+                        <th scope="col">Ngày thi</th>
+                        <th scope="col">Ca thi</th>
+                        <th scope="col">Phòng thi</th>
+                        <th scope="col">Xác nhận hoàn thành</th>
+                        <th scope="col"><input type="checkbox" id="chkSelectAll_NhapDiem"></th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+
+        </div>
+    </div>
+    <!-- end đăng ký nguyện vọng -->
+</div>
+
+<div class="modal fade" id="nhapdiem" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-1360 modal-dialog-scrollable" style="width: 100%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="finance-user-info in-modal ">
+                    <p><b>Thông tin danh sách thi <span id="lblTenDot"></span></b></p>
+
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div>
+                        <a class="btn btn-primary" onclick="edu.system.reportAllTable_User('tblTuiThi')"><i class="fas fa-file-download me-2"></i><span>Tải bảng điểm</span></a>
+                        <a class="btn btn-primary" onclick="edu.system.showReportAndImportTable_User(true)"><i class="fas fa-file-upload me-2"></i><span>Nhập điểm qua file</span></a>
+                        <button class="btn btn-sm btn-outline-danger min-w-auto ms-3 btnCongBo"><i class="fas fa-bullhorn me-2"></i><span>Công bố</span></button>
+                    </div>
+                </div>
+                <div class="col-sm-12 scroll-table-x">
+                    <table class="table transcrip-table tabs-scores fs-14 content-middle" id="tblTuiThi"  colreport="1">
+                        <thead>
+                            <tr>
+                                <th class="text-center" scope="col">STT</th>
+                                <th scope="col">Mã số</th>
+                                <th scope="col">Họ đệm</th>
+                                <th scope="col">Tên</th>
+                                <th scope="col">Lớp quản lý</th>
+                                <th scope="col">Điểm thành phần</th>
+                                <th class="text-center" scope="col">Lần học</th>
+                                <th class="text-center" scope="col">Lần thi</th>
+                                <th class="text-center" scope="col">Số báo danh</th>
+                                <th class="text-center" scope="col">Điểm</th>
+                                <th scope="col">Lớp đăng ký học</th>
+                                <th scope="col">Tình trạng</th>
+                                <th scope="col"><input type="checkbox" id="chkSelectAll_TuiThi"></th>
+
+
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+
+                <div class="d-flex justify-content-end my-3">
+                    <button class="btn btn-dask-blue" id="btnXacNhanTuiThi" style="margin-right: 5px"><i class="fas fa-save me-2"></i> <span>Xử lý vi phạm</span></button>
+                    <button class="btn btn-success" id="btnSave_TuiThi"><i class="fas fa-check me-2"></i> <span>Lưu</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- modal xác nhận-->
+<div class="modal fade finance-modal my-calendar confirm_scores" id="modal_XacNhan" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-700 ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="finance-user-info in-modal "><p><b>Xác nhận hoàn thành</b></p></div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-3">
+                <div class="action-group">
+                    <div class="select-group">
+                        <div class="label">Trạng thái</div>
+                        <div class="form-item d-flex  form-add-info">
+                            <div class="input-group no-icon">
+
+                                <select class="form-select select-opt" aria-label="Default select example" id="dropLoaiXacNhan"></select>
+                            </div>
+
+                        </div>
+                    </div>
+                    <a class="btn btn-success" id="btnDongYXacNhan"><i class="fal fa-check me-2"></i> <span>Đồng ý</span></a>
+                </div>
+                <p class="fw-bold mb-2">Lịch sử</p>
+                <table class="table transcrip-table tabs-scores fs-14" id="tblModal_XacNhan">
+                    <thead>
+                        <tr>
+                            <th class="text-center" scope="col">STT</th>
+                            <th scope="col">Trạng thái</th>
+                            <th scope="col">Người thực hiện</th>
+                            <th class="text-center" scope="col">Thời gian</th>
+
+
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- modal xác nhận-->
+<div class="modal fade finance-modal my-calendar confirm_scores" id="modal_XacNhanTinhTrang" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-700 ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="finance-user-info in-modal "><p><b>Xác nhận vi phạm quy chế</b></p></div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-3">
+                <div class="action-group">
+                    <div class="select-group">
+                        <div class="label">Trạng thái</div>
+                        <div class="form-item d-flex  form-add-info">
+                            <div class="input-group no-icon">
+
+                                <select class="form-select select-opt" aria-label="Default select example" id="dropLoaiXacNhanTinhTrang"></select>
+                            </div>
+
+                        </div>
+                    </div>
+                    <a class="btn btn-success" id="btnDongYXacNhanTinhTrang"><i class="fal fa-check me-2"></i> <span>Đồng ý</span></a>
+                </div>
+                <p class="fw-bold mb-2">Lịch sử</p>
+                <table class="table transcrip-table tabs-scores fs-14" id="tblModal_XacNhanTinhTrang">
+                    <thead>
+                        <tr>
+                            <th class="text-center" scope="col">STT</th>
+                            <th scope="col">Trạng thái</th>
+                            <th scope="col">Người thực hiện</th>
+                            <th class="text-center" scope="col">Thời gian</th>
+
+
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script src="modules/nhapdiem/script/nhapdiemdst.js?v=1.0.0.0"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['NhapDiem'] = new NhapDiem();
+    $(document).ready(function () {
+        main_doc.NhapDiem.init();
+    });
+</script>

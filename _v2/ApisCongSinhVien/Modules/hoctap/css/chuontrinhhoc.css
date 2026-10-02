@@ -1,0 +1,47 @@
+/* Kiểu riêng của màn "Chương trình học" (Cổng sinh viên › Học tập) */
+
+/* Hai cột đúng tỉ lệ col-md-9 / col-md-3 của bản gốc:
+   trái = nội dung học phần, phải = các khối lựa chọn */
+.ctrh-layout {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 1fr);
+    align-items: start;
+}
+
+@media (max-width: 991px) {
+    .ctrh-layout { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Ô chọn chương trình nằm ở đầu khung (bản gốc đặt nổi bên phải dòng tiêu đề) */
+.ctrh-ct { min-width: 320px; }
+/* Ô tìm học phần cạnh ô chương trình (kéo gốc 30/9: #txtSearch_HocPhan, col-md-4 cạnh col-md-5) */
+.ctrh-tim { min-width: 240px; }
+
+/* Danh sách khối kiến thức ở cột phải */
+.ctrh-khoi { margin: 0; padding: 0; list-style: none; }
+
+.ctrh-khoi__item {
+    display: flex;
+    gap: var(--ums-sp-2);
+    width: 100%;
+    /* Khung để flush (dòng tô nền hết chiều ngang khi rê chuột) nên lề ngang
+       đặt ở chính dòng, bằng lề thân khung — không để chữ dính sát mép. */
+    padding: var(--ums-sp-3) var(--ums-sp-5);
+    background: none;
+    border: 0;
+    border-top: 1px solid var(--ums-line);
+    text-align: left;
+    cursor: pointer;
+}
+
+.ctrh-khoi li:first-child .ctrh-khoi__item { border-top: 0; }
+.ctrh-khoi__item:hover { background: var(--ums-surface-2); }
+.ctrh-khoi__item > i { margin-top: 2px; color: var(--ums-blue); }
+.ctrh-khoi__name { display: block; color: var(--ums-ink); }
+.ctrh-khoi__sub { display: block; margin-top: 2px; color: var(--ums-blue); font-size: var(--ums-fz-13); }
+
+/* Mỗi bản ghi quan hệ / bài học là một khối hai cột, ngăn nhau bằng một vạch */
+.ctrh-rel + .ctrh-rel {
+    margin-top: var(--ums-sp-3);
+    padding-top: var(--ums-sp-3);
+    border-top: 1px dashed var(--ums-line);
+}

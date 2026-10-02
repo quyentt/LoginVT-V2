@@ -1,0 +1,582 @@
+﻿<style>
+    .lbTinhTrang {
+        float: right;
+        font-weight: bold;
+        border: 4px solid;
+        opacity: 0.5;
+        color: red;
+        -ms-transform: rotate(10deg);
+        /* IE 9 */
+        -webkit-transform: rotate(10deg);
+        /* Safari 3-8 */
+        transform: rotate(10deg);
+    }
+
+    #txtTenSanPham {
+        width: 550px;
+        overflow: hidden !important;
+        display: block;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        float: left;
+        color: #4e8d42;
+    }
+
+    .btn-large {
+        width: 85px;
+        text-align: center;
+        background-color: #fff;
+        border-bottom: 1px solid #f1f1f1;
+        float: left;
+        margin-left: 5px;
+    }
+
+    .btnxacnhan_small {
+        width: 35px;
+        -webkit-box-shadow: 1px 1px 1px 1px #ccc;
+        -moz-box-shadow: 1px 1px 1px 1px #ccc;
+        /* Firefox 3.5 - 3.6 */
+        box-shadow: 1px 1px 1px 1px #ccc;
+    }
+</style>
+<section class="content aps-congcanbo">
+    <div class="row aps-phanlichgiang">
+        <div class="col-lg-12 zonecontent" id="zone_TimKiem">
+            <!-- /.left-content -->
+            <div class="col-lg-3 box-shadow aps-box-l aps-phanlichgiang-l">
+                <div class="box box-solid box-search pd15">
+                    <div class="box-body pd0">
+                        <div class="bss-item mb-10">
+                            <input id="txtSearch_TuKhoa" class="form-control" placeholder="Nhập từ khóa tìm kiếm" />
+                        </div>
+                        <div class="bss-item">
+                            <select id="dropSearch_ThoiGianDaoTao" class="select-opt">
+                                <option value="">--Chọn thời gian đào tạo--</option>
+                            </select>
+                        </div>
+
+                        <div class="bss-item">
+                            <select id="dropSearch_HeDaoTao" class="select-opt">
+                                <option value="">--Chọn hệ đào tạo--</option>
+                            </select>
+                        </div>
+                        <div class="bss-item">
+                            <select id="dropSearch_CoCauToChuc" class="select-opt">
+                                <option value="">--Chọn bộ môn--</option>
+                            </select>
+                        </div>
+                        <div class="bss-item">
+                            <select id="dropSearch_HocPhan" class="select-opt">
+                                <option value="">--Chọn học phần--</option>
+                            </select>
+                        </div>
+                        <div class="bs-item bs-item-btn">
+                            <a class="dropdown" id="zonebtnBaoCao_PLG"></a>
+                            <a class="btn btn-default btnExtend_Search w-100 btn-search">
+                                <i class="fa fa-search"></i><span class="lang" key="">Tìm kiếm</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="box box-solid aps-phanlichgiang-list pd0">
+                    <div class="box-header pd0 pl15 pr15">
+                        <h3 class="box-title" title="Danh sách lớp học phần">
+                            <i class="fa-solid fa-screen-users"></i> Danh sách lớp học phần
+                        </h3>
+                        <span class="badge bg-light-blue pull-right" style="margin-top:5px !important;">
+                            <span id="lblLopHocPhan_Tong"></span>
+                        </span>
+                    </div>
+                    <div class="box-body pd0" id="zoneLopHocPhan">
+                        <table id="tblLopHocPhan" class="table table-hover tblLopHocPhan mt-10 table-no-boder-l-r">
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div div class="col-lg-9 pl20 aps-box-r aps-phanlichgiang-r">
+                <div class="col-lg-12 pd0 aps-phanlichgiang-detail" id="">
+                    <div class="box box-solid pd0">
+                        <div class="box-header with-border">
+                            <div class="pull-left">
+                                <div class="col-sm-3 item-search">
+                                    <a class="btn btn-primary" id="btnTinhToan">
+                                        <i class="fa-solid fa-address-book"></i>
+                                        <span class="lang" key="">Tổng hợp</span>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="pull-right">
+                                <div class="col-sm-4 item-search mb-0">
+                                    <select id="dropSearch_DonViThanhVien" class="select-opt">
+                                        <option value="">--Tất cả đơn vị thành viên--</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-4 item-search  mb-0">
+                                    <select id="dropSearch_ThanhVien" class="select-opt-img">
+                                        <option value="">--Tất cả thành viên đăng ký--</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-2 item-search  mb-0">
+                                    <input id="txtSearch_TuNgay" class="form-control input-datepicker"
+                                           placeholder="Từ ngày" />
+                                </div>
+                                <div class="col-sm-2 item-search  mb-0" style="padding-right: 0 !important;">
+                                    <input id="txtSearch_DenNgay" class="form-control input-datepicker"
+                                           placeholder="Đến ngày" />
+                                </div>
+                            </div>
+                            <div class="clear"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Lịch học học phần: -->
+                <div class="col-lg-12 zone-bus zoneLichGiangChiTiet" id="zoneLichGiangChiTiet"
+                     style="display: block">
+                    <div class="box box-solid">
+                        <div class="box-header with-border bg-blue" style="text-align: center">
+                            <a class="fz18 hover-yellow mt-5">
+                                <i class="fa-solid fa-calendar-circle-user fw-bold"></i> Lịch học học phần:
+                                <span class="color-active lblLichHoc_HP fw-bold"></span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                    <div class="box-body pd20" style="padding-top: 0 !important;">
+                        <div class="box-header" style="padding-left: 0 !important; padding-right: 0 !important;">
+                            <h3 class="box-title">
+                                <i class="fa-solid fa-list-timeline"></i> Danh sách lịch học
+                                <span class="pull-right badge bg-light-blue">
+                                    <span id="lblHP_LichHoc_Tong"></span>
+                                </span>
+                            </h3>
+                            <div class="clear"></div>
+                        </div>
+                        <div class="box-btn-lichhoc mb-15 aps-gap-10 d-flex">
+                            <!--<div class="col-sm-3 item-search">
+                    <select id="dropSearch_DonViThanhVien" class="select-opt">
+                        <option value="">--Tất cả đơn vị thành viên--</option>
+                    </select>
+                </div>
+                <div class="col-sm-3 item-search">
+                    <select id="dropSearch_ThanhVien" class="select-opt-img">
+                        <option value="">--Tất cả thành viên đăng ký--</option>
+                    </select>
+                </div>
+                <div class="col-sm-3 item-search">
+                    <input id="txtSearch_TuNgay" class="form-control input-datepicker" placeholder="Từ ngày" />
+                </div>
+                <div class="col-sm-3 item-search">
+                    <input id="txtSearch_DenNgay" class="form-control input-datepicker" placeholder="Đến ngày" />
+                </div>
+                <div class="clear"></div>
+                <a class="dropdown" id="zonebtnBaoCao_PLG"></a>-->
+                            <a id="btnXacNhan_PG" class="btn btn-soft-primary"><i class="fa fa-check"></i>Xác nhận</a>
+                            <a id="btnImport_PG" class="btn btn-soft-info">
+                                <i class="fa-solid fa-file-import"></i>Import
+                            </a>
+                            <a id="btnNhanSuNgoaiTruong" class="btn btn-soft-primary">
+                                <i class="fa-regular fa-chalkboard-user"></i>Danh sách mời giảng
+                            </a>
+                            <a id="btnKeThua" class="btn btn-soft-danger"><i class="fa-solid fa-copy"></i>Kế thừa</a>
+                            <a id="btnAdd_BaiHoc" class="btn btn-soft-success">
+                                <i class="fa-regular fa-file-plus"></i>Thêm bài học
+                            </a>
+                            <a id="btnSearch_DSLichGiang" class="btn btn-soft-puple">
+                                <i class="fa-solid fa-calendar-users"></i>Danh sách lịch phân giảng
+                            </a>
+                            <a id="btnPhanGiangLich" class="btn btn-soft-primary">
+                                <i class="fa-solid fa-laptop-file"></i>Xem lịch Phân giảng
+                            </a>
+                        </div>
+                        <div class="aps-table-select">
+                            <table id="tblLichHoc" class="table table-hover table-bordered table-noborder tblLichHoc">
+                                <thead>
+                                    <tr>
+                                        <th class="td-fixed td-center w-50px">Stt</th>
+                                        <th class="td-center">Từ ngày</th>
+                                        <th class="td-center">Đến ngày</th>
+                                        <th class="td-center">Ngày</th>
+                                        <th class="td-center">Thứ</th>
+                                        <th class="td-center">Phân giảng</th>
+                                        <th class="td-center td-fixed">
+                                            <input type="checkbox" id="chkSelectAll_Lich">
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lịch phân giảng: -->
+                <div class="col-lg-12 zone-bus mt-20" id="zoneKeThua" style="display: none">
+                    <div class="box box-solid">
+                        <div class="box box-solid pd0">
+                            <div class="box-header with-border bg-blue"
+                                 style="text-align: center;padding-right: 5px !important;">
+                                <a class="fz20 hover-yellow mt-5">
+                                    <i class="fa-solid fa-calendar-users fw-bold"></i> Lịch phân giảng:
+                                    <span class="color-active lblLichHoc_HP font-bold"></span>
+                                </a>
+                                <div class="pull-right">
+                                    <a class="btn btn-default btnClose_KeThua btnClose_none mt-5" href="#"
+                                       title="Close"><i class="fa fa-times"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="clear"></div>
+                        <div class="box-header pl20 pr20 mt-15">
+                            <h3 class="box-title line-38">
+                                <i class="fa-solid fa-list-timeline" style="margin-top: 10px !important;"></i> Danh sách
+                                lịch phân giảng
+                            </h3>
+                            <div class="pull-right">
+                                <a id="btnSaveKeThua" class="btn btn-outline-danger">
+                                    <i class="fa-solid fa-copy"></i>Kế thừa sang học phần đã chọn
+                                </a>
+                            </div>
+                        </div>
+                        <div class="box-body pd20 pt10">
+                            <div class="aps-table-select">
+                                <table id="tblKeThuaLopHocPhan"
+                                       class="table table-hover table-bordered table-noborder tblKeThuaLopHocPhan">
+                                    <thead>
+                                        <tr>
+                                            <th class="td-fixed td-center w-50px">Stt</th>
+                                            <th class="td-left">Lớp</th>
+                                            <th class="td-left">Mã học phần</th>
+                                            <th class="td-left">Học phần</th>
+                                            <th class="td-center">Tính chỉ</th>
+                                            <th class="td-center">Số sinh viên</th>
+                                            <th class="td-center td-fixed w-50px">
+                                                <input type="checkbox" id="chkSelectAll_KeThua">
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+
+        <!-- Lịch phân giảng cho học phần -->
+        <div class="col-lg-12 zonecontent zoneEdit" id="zoneEdit" style="display: none">
+            <div class="box box-solid pd0" id="zone_main">
+                <div class="box-header with-border bg-blue" style="text-align: center">
+                    <a class="fz20 hover-yellow mt-5">
+                        <i class="fa-solid fa-calendar-users fw-bold"></i> Lịch phân giảng cho học phần:
+                        <span class="color-active lblLichHoc_HP font-bold" id="lblChiTietHocPhan"></span>
+                    </a>
+                    <div class="pull-right">
+                        <a class="btn btn-default btnClose_PhanGiang btnClose_none mt-5" href="#" title="Close">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="clear"></div>
+                <!--class="zone-content scroll-table-x bg-none"-->
+                <div class="box-body pd20">
+                    <!--class="zone-content scroll-table-x bg-none"-->
+                    <div class="pull-right ">
+
+                    </div>
+                    <div class="clear"></div>
+                    <div class="aps-table-select scroll-table-x" id="table-container">
+                        <table id="tblLichPhanGiang"
+                               class="table table-hover table-bordered table-border tblLichPhanGiang"
+                               style="min-width: 2000px;">
+                            <thead>
+                                <tr>
+                                    <th rowspan="2" class="td-fixed td-center w-50px">Stt</th>
+                                    <th rowspan="2" class="td-center" style="width: 50px">Ngày</th>
+                                    <th colspan="3" class="td-center" style="width: 80px">Lịch học</th>
+                                    <th colspan="4" class="td-center" style="width: 80px">Phân giảng</th>
+                                    <th rowspan="2" class="td-center">Bài học</th>
+                                    <th rowspan="2" class="td-center" style="width: 5px">
+                                        Hoạt động (lý
+                                        thuyết/thực hành)
+                                    </th>
+                                    <th colspan="2" class="td-center" style="width: 100px">Giảng viên</th>
+                                    <th rowspan="2" class="td-center" style="width: 300px">Địa điểm</th>
+                                    <th rowspan="2" class="td-center" style="width: 100px">Ghi chú</th>
+                                    <th rowspan="2" class="td-fixed td-center" style="width: 100px">Xóa</th>
+                                </tr>
+                                <tr>
+                                    <th class="td-center" style="width: 50px">Số tiết</th>
+                                    <th class="td-center" style="width: 50px">Tiết bắt đầu</th>
+                                    <th class="td-center" style="width: 50px">Tiết kết thúc</th>
+                                    <th class="td-center" style="width: 100px">Sĩ số</th>
+                                    <th class="td-center" style="width: 100px">Số tiết</th>
+                                    <th class="td-center" style="width: 100px">Tiết bắt đầu</th>
+                                    <th class="td-center" style="width: 100px">Tiết kết thúc</th>
+                                    <th class="td-center" style="width: 100px">Trong trường</th>
+                                    <th class="td-center" style="width: 100px">Mời giảng</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div id="bottom_anchor"></div>
+                    <div class="box-tools pull-right mt-10">
+                        <a id="btnAdd_LichPhanGiang" class="btn btn-outline-primary">
+                            <i class="fa fa-plus"></i> Thêm dòng
+                        </a>
+                        <a id="btnSave_LichPhanGiang" class="btn btn-primary"><i class="fa fa-save"></i>Lưu</a>
+                        <!--<a id="btn_BaoCao" class="btn btn-primary"><i class="fa fa-save"></i>Báo cáo</a>-->
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Thông tin bài học -->
+        <div class="box box-solid zonecontent pd0" id="zone_BaiHoc"
+             style="display: none; position: absolute;width: 99%;">
+            <div class="box box-solid pd0">
+                <div class="box-header with-border bg-blue"
+                     style="text-align: center;padding-right: 10px !important;">
+                    <a class="fz20 hover-yellow mt-5">
+                        <i class="fa-regular fa-book-open-reader fw-bold mr-10"></i>Học Phần
+                        <span class="color-active lblLichHoc_HP font-bold"></span>
+                    </a>
+                    <div class="pull-right">
+                        <a class="btn btn-default btnClose_BaiHoc btnClose_none mt-10" href="#" title="Close">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="box-header mt-15 pl20 pr20"
+                     style="padding-right: 20px !important; padding-left: 20px !important;">
+                    <h3 class="box-title pt10 pl5 line-38">
+                        <i class="fa-solid fa-list-timeline" style="padding-top: 6px !important;"></i> Danh sách
+                        bài học
+                        <span class="pull-right badge bg-light-blue" style="margin-top: 7px !important;">
+                            <span id="lblHP_BaiHoc_Tong"></span>
+                        </span>
+                    </h3>
+                    <div class="box-tools pull-right mr-10 d-flex">
+                        <a id="btnXoaBaiHoc" class="btn btn-danger"><i class="fa fa-trash"></i> Xóa</a>
+                        <a class="btn btnAddnew_BaiHoc btn-success" href="#">
+                            <i class="fa fa-plus"></i>Thêm mới
+                        </a>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+                <div class="box-body pd20 pt-0 pt5">
+                    <div class="aps-table-select">
+                        <table id="tblBaiHoc"
+                               class="table table-hover table-bordered table-noborder tblBaiHoc mr-0 pr0">
+                            <thead>
+                                <tr>
+                                    <th class="td-fixed td-center w-50px">Stt</th>
+                                    <th class="td-left">Tên bài</th>
+                                    <th class="td-center">Số tiết</th>
+                                    <th class="td-left">Nội dung</th>
+                                    <th class="td-fixed td-center">Sửa</th>
+                                    <th class="td-center td-fixed w-50px">
+                                        <input type="checkbox" id="chkSelectAll_BaiHoc">
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- load from js -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+            </div>
+            <div class="form-container" id="zone_input_BaiHoc" style="display: none;">
+                <!-- box- Input HoSo -->
+                <div class="box box-solid pd0">
+                    <div class="box-header with-border bg-blue">
+                        <a class="fz20 hover-yellow">
+                            <h3 class="box-title">
+                                <i class="fa-regular fa-book-open-reader fw-bold mr-10"></i>Học Phần: <span class="color-active lblLichHoc_HP"></span>
+                            </h3>
+                        </a>
+                        <div class="pull-right" style="position: absolute; top: 0px;right: 8px;">
+                            <a class="btn btn-default btnClose_Input_BaiHoc bg-none border-0" href="#"
+                               title="Close"><i class="fa fa-times"></i></a>
+                        </div>
+                    </div>
+                    <div class="box-body">
+                        <div class="col-sm-8">
+                            <div class="col-sm-12 box-view pd20">
+                                <!-- 1. Thong tin Mon hoc  -->
+                                <div class="row aps-form">
+                                    <div class="row aps-lable-name d-none">
+                                        <p class="group-title-name">
+                                            <span class="badge bg-blue">Thông tin bài học</span>
+                                        </p>
+                                    </div>
+                                    <div class="row aps-form-item">
+                                        <div class="col-sm-3 aps-form-lable">
+                                            Tên bài <span class="title-colon">:</span>
+                                        </div>
+                                        <div class="col-sm-9 aps-form-input">
+                                            <input id="txtTen" class="form-control form-border" />
+                                        </div>
+                                    </div>
+                                    <div class="row aps-form-item">
+                                        <div class="col-sm-3 aps-form-lable">
+                                            Số tiết <span class="title-colon">:</span>
+                                        </div>
+                                        <div class="col-sm-9 aps-form-input">
+                                            <input id="txtCT_SoTiet" class="form-control form-border" />
+                                        </div>
+                                    </div>
+                                    <div class="row aps-form-item">
+                                        <div class="col-sm-3 aps-form-lable">
+                                            Nội dung <span class="title-colon">:</span>
+                                        </div>
+                                        <div class="col-sm-9 aps-form-input">
+                                            <textarea id="txtCT_NoiDung"
+                                                      class="form-control min-h-168"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="pull-right">
+                                    <a class="btn btn-default btnClose_Input_BaiHoc" href="#" title="Close">
+                                        <i class="fa fa-times-circle"></i> Đóng
+                                    </a>
+                                    <a class="btn btn-outline-primary btnReWrite" href="#"
+                                       title="Lưu và Nhập tiếp">
+                                        <i class="fa-solid fa-floppy-disk-circle-arrow-right"></i>Lưu và Nhập
+                                        tiếp
+                                    </a>
+                                    <a id="btnSave" class="btn btn-primary">
+                                        <i class="fa-solid fa-floppy-disk"></i>
+                                        Lưu
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="aps-img pt10 pb15"> <img src="Upload/images/img-edu-34.png"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- ---------- -->
+<div class="aps-all-button ml-20 aps-gap-10 btn-show" style="display: none !important;">
+    <button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#modal_XacNhan">
+        Xác nhận</button>
+</div>
+<!-- ---------- -->
+
+<div class="modal fade aps-modal-nhansu" id="modal_nhansu" role="dialog" aria-labelledby="myModalLabel"
+    aria-hidden="true">
+    <!-- load from js -->
+</div>
+<!-- Xác nhận: -->
+<div class="modal fade modal_XacNhan" id="modal_XacNhan" role="dialog" aria-labelledby="myModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-860">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title modal-name" id="myModalLabel"><span style="float: left">
+                        <i class="fa-solid fa-circle-check"></i>Xác nhận: </span><span id="txtTenSanPham"
+                        class="lblLichHoc_HP"></span></h4>
+            </div>
+            <div class="modal-body">
+                <div class="col-sm-12 box-view aps-add-new d-block">
+                    <!-- 1. Nội dung xác nhận -->
+                    <div class="row aps-form">
+                        <!--row aps-lable-name-->
+                        <div class="row aps-lable-name">
+                            <p class="group-group-title-name border-0 mb-0">
+                                <span class="badge bg-blue" style="color:#3380db !important">Nội dung xác nhận</span>
+                            </p>
+                        </div>
+                        <!--row 2-->
+                        <div class="row aps-form-item">
+                            <div class="col-sm-12 aps-form-input">
+                                <input id="txtNoiDungXacNhanSanPham" class="form-control" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. Chọn xác nhận -->
+                    <div class="row aps-form mt-20">
+                        <!--row aps-lable-name-->
+                        <div class="row aps-lable-name">
+                            <p class="group-group-title-name border-0 mb-0">
+                                <span class="badge bg-blue" style="color:#198754 !important">Chọn xác nhận</span>
+                            </p>
+                        </div>
+                        <div class="row aps-BtnXacNhan d-flex" id="zoneBtnXacNhan">
+                            <div id="btnClose_HDBL" class="btn-large">
+                                <a class="btn"><i style="color: #337ab7" class="fa fa-angle-double-down fa-4x"></i></a>
+                                <a class="color-active bold lbsymbolHD">Đóng</a>
+                            </div>
+                            <div id="btnClose_HDBL" class="btn-large">
+                                <a class="btn"><i style="color: #337ab7" class="fa fa-angle-double-down fa-4x"></i></a>
+                                <a class="color-active bold lbsymbolHD">Đóng</a>
+                            </div>
+                            <div id="btnClose_HDBL" class="btn-large">
+                                <a class="btn"><i style="color: #337ab7" class="fa fa-angle-double-down fa-4x"></i></a>
+                                <a class="color-active bold lbsymbolHD">Đóng</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3.Lịch sử xác nhận -->
+                    <div class="row aps-form mt-20">
+                        <!--row aps-lable-name-->
+                        <div class="row aps-form-item mb-0">
+                            <p class="group-group-title-name border-0 mb-0">
+                                <span class="badge bg-blue mb-0" style="color:#FF0000 !important">Lịch sử xác nhận</span>
+                            </p>
+                        </div>
+                        <div class="row aps-form-item">
+                            <table id="tblModal_XacNhan"
+                                class="table mb-0 mr-0 tblModal_XacNhan table-bordered table-noborder">
+                                <thead>
+                                    <tr>
+                                        <th class="td-fixed td-center w-50px">Stt</th>
+                                        <th class="td-left">Xác nhận</th>
+                                        <th class="td-left">Nội dung</th>
+                                        <th class="td-left">Người xác nhận</th>
+                                        <th class="td-center" style="width: 100px">Ngày</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div id="notify"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" id="btnCancel"><i
+                        class="fa fa-times-circle"></i> Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- page script -->
+<script src="modules/phanlichgiang/script/phanlichgiang.js?v=1.0.0.1"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['PhanLichGiang'] = new PhanLichGiang();
+    $(document).ready(function () {
+        main_doc.PhanLichGiang.init();
+    });
+</script>

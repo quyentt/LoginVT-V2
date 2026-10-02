@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>thử thao tác crud</title></head>
+<body>
+<pre id="out"></pre>
+<iframe id="f" src="../_v2/index.html" style="width:1440px;height:900px"></iframe>
+<script>
+/* Thử THAO TÁC cho các màn dựng bằng ums.crud / ums.pat.sections (dữ liệu mẫu).
+   Với mỗi khung danh sách đang hiện (mọi tab):
+     1. bấm "Thêm mới" → tự điền ô bắt buộc (chọn mục đầu / 01/01/2025 / "x")
+        → bấm Lưu → phải có lời gọi …/ThemMoi, biểu mẫu phải đóng
+     2. bấm "Sửa" dòng đầu → phải có ít nhất một ô được đổ giá trị
+        → bấm Lưu → phải có lời gọi …/CapNhat
+   Mọi lỗi JS trong lúc thử đều in ra.
+     ?vt=R02&tien=CCB&s=<module-tệp,...>   (mặc định R33 / TC / mọi màn đã chuyển)
+   Mỗi dòng "!!" là một chỗ hỏng.                                           */
+var out = [];
+function log(s) { out.push(s); document.getElementById('out').textContent = out.join('\n'); }
+function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+var QS = new URLSearchParams(location.search);
+var ONLY = (QS.get('s') || '').split(',').filter(Boolean);
+var VT = QS.get('vt') || 'R33', TIEN = QS.get('tien') || 'TC';
+// Vai trò thủ vai (Cổng sinh viên - R04): chọn sẵn một người học để màn không bị hộp tìm chặn
+function ganTV(ss) { if (VT === 'R04') ss.setItem('ums.thuvai', JSON.stringify({ roleId: 'R04', userIdGoc: 'CANBO01', userIdVai: 'SV0001', info: { ten: 'Lăng Văn Huy - DCOT.16.2', ma: '25001029', email: '', tenVaiTro: 'Cổng sinh viên - thủ vai' } })); }
+ganTV(sessionStorage);
+
+document.getElementById('f').onload = async function () {
+    var w = this.contentWindow, d = w.document;
+    await wait(600);
+    var errs = [];
+    w.addEventListener('error', function (e) { errs.push(e.message + ' @' + (e.filename || '').split('/').pop() + ':' + e.lineno); });
+    var calls = [];
+    var goc = w.ums.api.call;
+    w.ums.api.call = function (o) { calls.push((o.func ? o.func + ' ' : '') + (o.action || '')); return goc.apply(this, arguments); };
+    w.ums.ui.confirm = function () { return Promise.resolve(true); };
+
+    var nguon = (w.ums.demo.menus && w.ums.demo.menus[VT]) || w.ums.demo.menu;
+    var menu = nguon.filter(function (m) { return m.ID.indexOf(TIEN + '-') === 0; });
+    if (ONLY.length) menu = menu.filter(function (m) { return ONLY.indexOf(m.ID.replace(TIEN + '-', '')) >= 0; });
+    var bad = 0, done = 0;
+
+    function vis(e) { return !!e && e.offsetParent !== null; }
+    function btn(scope, re) {
+        return [].filter.call(scope.querySelectorAll('button'), function (b) { return vis(b) && !b.disabled && re.test(b.textContent.trim()); })[0];
+    }
+    function dien(form) {
+        [].forEach.call(form.querySelectorAll('[data-scope="form"]'), function (el) {
+            if (el.disabled || el.type === 'hidden' || el.getAttribute('data-type') === 'static') return;
+            var req = el.closest('.ums-field') && el.closest('.ums-field').querySelector('.ums-field__req, .is-required, abbr, .ums-req');
+            var lab = el.closest('.ums-field') && el.closest('.ums-field').querySelector('label');
+            var must = req || (lab && /\*/.test(lab.textContent));
+            if (!must || el.value) return;
+            if (el.tagName === 'SELECT') {
+                var o = [].filter.call(el.options, function (x) { return x.value && x.value !== 'SELECTALL'; })[0];
+                if (o) { el.value = o.value; if (w.jQuery) w.jQuery(el).trigger('change.select2'); }
+            } else if (el.getAttribute('data-type') === 'date') el.value = '01/01/2025';
+            else if (el.getAttribute('data-type') === 'number') el.value = '1';
+            else el.value = 'x';
+        });
+    }
+
+    for (var i = 0; i < menu.length; i++) {
+        var id = menu[i].ID, ten = id.replace(TIEN + '-', '');
+        errs.length = 0;
+        ganTV(w.sessionStorage);
+        w.location.hash = '#/r/' + VT + '/' + id;
+        await wait(1800);
+        var sc = d.getElementById('screen');
+        if (!sc || /chưa chuyển sang giao diện mới/.test(sc.textContent)) continue;
+        done++;
+        var loi = [], ghi = [];
+        var tabs = [].slice.call(sc.querySelectorAll('[data-stab]'));
+        var luot = tabs.length ? tabs : [null];
+        for (var t = 0; t < luot.length; t++) {
+            if (luot[t]) { luot[t].click(); await wait(900); }
+            var secs = [].filter.call(sc.querySelectorAll('.ums-sections__sec'), vis);
+            if (!secs.length) secs = [sc];
+            for (var k = 0; k < secs.length; k++) {
+                var sec = secs[k];
+                var tieuDe = (sec.querySelector('.ums-panel__title') || {}).textContent || ten;
+                tieuDe = tieuDe.replace(/\(\d+\)/, '').trim().slice(0, 30);
+                // 1. Thêm mới
+                var add = btn(sec === sc ? sc : sec, /^Thêm mới$/);
+                if (add) {
+                    add.click(); await wait(1200);
+                    var form = [].filter.call(sec.querySelectorAll('[data-z$="form"], .ums-formtrang'), vis)[0];
+                    if (!form) loi.push(tieuDe + ': bấm Thêm mới không mở biểu mẫu');
+                    else {
+                        // Luật 2026-09-29: mỗi lúc chỉ MỘT nút Đóng (nút của tầng ngoài tự ẩn khi biểu mẫu mở) — hộp thoại không tính
+                        var soDong = [].filter.call(sc.querySelectorAll('button'), function (x) { return vis(x) && !x.closest('dialog') && /^Đóng$/.test((x.textContent || '').trim()); }).length;
+                        if (soDong > 1) loi.push(tieuDe + ': ' + soDong + ' nút Đóng cùng hiện khi mở biểu mẫu');
+                        dien(form); calls = [];
+                        var sv = btn(form, /^Lưu$/); if (sv) sv.click(); await wait(1500);
+                        if (!calls.some(function (c) { return /ThemMoi|Them_|\.Them|_Create|_Ins\b/i.test(c); })) loi.push(tieuDe + ': Lưu không gọi ThemMoi (' + calls.join(',') + ')');
+                        else if (vis(form)) loi.push(tieuDe + ': lưu xong biểu mẫu không đóng');
+                        else ghi.push(tieuDe + ' +');
+                        if (vis(form)) { var dg = btn(form, /^Đóng$/); if (dg) dg.click(); await wait(500); }
+                    }
+                }
+                // 2. Sửa dòng đầu
+                var ed = [].filter.call(sec.querySelectorAll('tbody [data-c$=":edit"]'), vis)[0];
+                if (ed) {
+                    ed.click(); await wait(1500);
+                    var f2 = [].filter.call(sec.querySelectorAll('[data-z$="form"], .ums-formtrang'), vis)[0];
+                    if (!f2) loi.push(tieuDe + ': bấm Sửa không mở biểu mẫu');
+                    else {
+                        var co = [].some.call(f2.querySelectorAll('[data-scope="form"]'), function (el) { return el.value && el.type !== 'hidden'; });
+                        if (!co) loi.push(tieuDe + ': mở Sửa mà không ô nào có giá trị');
+                        calls = [];
+                        var sv2 = btn(f2, /^Lưu$/); if (sv2) sv2.click(); await wait(1500);
+                        if (!calls.some(function (c) { return /CapNhat|Sua|Capnhat|_Update|_Upd\b/i.test(c); })) loi.push(tieuDe + ': Lưu (sửa) không gọi CapNhat (' + calls.join(',') + ')');
+                        else ghi.push(tieuDe + ' ~');
+                        if (vis(f2)) { var dg2 = btn(f2, /^Đóng$/); if (dg2) dg2.click(); await wait(500); }
+                    }
+                }
+            }
+        }
+        if (errs.length) loi.push('lỗi JS: ' + errs.slice(0, 3).join(' ;; '));
+        if (loi.length) { bad++; log('!! ' + ten + '\n     - ' + loi.join('\n     - ')); }
+        else log('ok ' + ten + '   [' + ghi.join(' | ') + ']');
+    }
+    log('TONG: ' + (done - bad) + '/' + done + ' man chay dung');
+    log('DONE');
+};
+</script>
+</body></html>

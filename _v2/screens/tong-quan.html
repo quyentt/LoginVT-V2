@@ -1,0 +1,115 @@
+<!--
+    Màn hình mẫu — BÁO CÁO
+    Thẻ số liệu, biểu đồ Chart.js kèm nhãn số, bảng xếp hạng có thanh tỉ lệ.
+-->
+<div class="ums-page__head">
+    <h1 class="ums-page__title ums-u-mb-0">Tổng quan thu học phí</h1>
+    <div class="ums-page__actions" id="tqActions"></div>
+</div>
+
+<div class="ums-grid ums-grid--4 ums-u-mb-4" id="tqStats"></div>
+
+<div class="ums-grid ums-grid--main-aside">
+    <div class="ums-panel">
+        <div class="ums-panel__head">
+            <div class="ums-panel__title"><i class="fa-light fa-chart-column"></i> Thu theo tháng</div>
+            <div class="ums-panel__tools ums-u-faint ums-u-fz12">Đơn vị: triệu đồng</div>
+        </div>
+        <div class="ums-panel__body"><canvas id="tqChart" height="240"></canvas></div>
+    </div>
+
+    <div class="ums-panel">
+        <div class="ums-panel__head">
+            <div class="ums-panel__title"><i class="fa-light fa-ranking-star"></i> Công nợ theo khoa</div>
+        </div>
+        <div class="ums-panel__body ums-panel__body--flush" id="tqTable"></div>
+    </div>
+</div>
+
+<script>
+(function () {
+    'use strict';
+    var ui = ums.ui;
+
+    document.getElementById('tqActions').innerHTML = ui.btn('excel') + ui.btn('print');
+
+    var STATS = [
+        { v: '48.230', l: 'Triệu đồng đã thu', i: 'fa-light fa-sack-dollar', m: 'green' },
+        { v: '7.560', l: 'Triệu đồng còn nợ', i: 'fa-light fa-hourglass-half', m: 'amber' },
+        { v: '86,4%', l: 'Tỷ lệ hoàn thành', i: 'fa-light fa-chart-pie', m: '' },
+        { v: '317', l: 'Sinh viên còn nợ', i: 'fa-light fa-user-clock', m: 'red' }
+    ];
+
+    document.getElementById('tqStats').innerHTML = STATS.map(function (s) {
+        return '<div class="ums-stat' + (s.m ? ' ums-stat--' + s.m : '') + '">' +
+            '<div class="ums-stat__icon"><i class="' + s.i + '"></i></div>' +
+            '<div><div class="ums-stat__value">' + s.v + '</div>' +
+            '<div class="ums-stat__label">' + s.l + '</div></div></div>';
+    }).join('');
+
+    var CHART = [
+        { m: 'T1', v: 2100 }, { m: 'T2', v: 1450 }, { m: 'T3', v: 3200 },
+        { m: 'T4', v: 2800 }, { m: 'T5', v: 3900 }, { m: 'T6', v: 1700 },
+        { m: 'T7', v: 900 }, { m: 'T8', v: 5200 }, { m: 'T9', v: 8600 },
+        { m: 'T10', v: 6400 }, { m: 'T11', v: 3100 }, { m: 'T12', v: 2280 }
+    ];
+
+    ui.chart('#tqChart', {
+        type: 'bar',
+        data: {
+            labels: CHART.map(function (c) { return c.m; }),
+            datasets: [{
+                data: CHART.map(function (c) { return c.v; }),
+                backgroundColor: '#5b96ff',
+                hoverBackgroundColor: '#0d6efd',
+                borderRadius: 5,
+                maxBarThickness: 44
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            layout: { padding: { top: 22 } },
+            plugins: {
+                legend: { display: false },
+                tooltip: { callbacks: { label: function (c) { return ui.money(c.raw) + ' triệu đồng'; } } },
+                datalabels: {
+                    anchor: 'end', align: 'end', offset: 2,
+                    color: '#5a6679', font: { size: 11, weight: '600' },
+                    formatter: function (v) { return ui.money(v); }
+                }
+            },
+            scales: {
+                x: { grid: { display: false }, ticks: { color: '#8d97a8', font: { size: 11 } } },
+                y: {
+                    beginAtZero: true,
+                    border: { display: false },
+                    grid: { color: '#eef2f7' },
+                    ticks: { color: '#8d97a8', font: { size: 11 }, callback: function (v) { return ui.money(v); } }
+                }
+            }
+        }
+    });
+
+    var KHOA = [
+        { ID: '1', TEN: 'Công nghệ thông tin', SV: 96, NO: 1420 },
+        { ID: '2', TEN: 'Quản trị kinh doanh', SV: 71, NO: 1180 },
+        { ID: '3', TEN: 'Ngôn ngữ Anh', SV: 58, NO: 940 },
+        { ID: '4', TEN: 'Kế toán', SV: 44, NO: 760 },
+        { ID: '5', TEN: 'Luật kinh tế', SV: 30, NO: 520 },
+        { ID: '6', TEN: 'Du lịch', SV: 18, NO: 310 }
+    ];
+    var max = KHOA[0].NO;
+
+    ui.table({
+        el: '#tqTable',
+        rows: KHOA,
+        tableCls: '',
+        columns: [
+            { title: 'Khoa', prop: 'TEN' },
+            { title: 'SV nợ', cls: 'is-center is-nowrap', render: function (r) { return ui.money(r.SV); } },
+            { title: 'Số tiền (tr)', cls: 'is-nowrap', width: '160px', render: function (r) { return ui.meter(r.NO, max); } }
+        ]
+    });
+})();
+</script>

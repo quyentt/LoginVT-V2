@@ -1,0 +1,1055 @@
+/* TỆP SINH TỰ ĐỘNG — đừng sửa tay.
+   Nguồn: login-page.css · Sinh bằng: python _harness\gop-css.py */
+/* =========================================================================
+   BỘ KIỂU RIÊNG CHO TRANG ĐĂNG NHẬP
+   =========================================================================
+   Vì sao không dùng main.css: main.css kéo theo 38 tệp @import (trong đó có
+   fontawesome.min.css 155 KB) cộng bốn tệp phông biểu tượng — trang đăng
+   nhập chỉ có hai ô nhập và mấy cái nút, không cần chừng ấy.
+
+   Ở đây chỉ nạp đúng phần dùng tới. Biểu tượng trong trang đăng nhập vẽ
+   bằng SVG nội tuyến nên KHÔNG nạp Font Awesome (bớt ~650 KB).
+
+   Sửa màu / cỡ vẫn ở settings/tokens.css như mọi nơi khác — không có kiểu
+   nào viết riêng lần hai.
+   ========================================================================= */
+
+
+/* ===== settings/tokens.css ===== */
+/* =========================================================================
+   1. SETTINGS — token
+   =========================================================================
+   Chỉ tệp này được viết mã màu và con số gốc. Mọi tệp khác dùng biến.
+
+   Giá trị lấy từ số đo giao diện đang chạy (getComputedStyle):
+     thanh trên & cột trái  rgb(34,55,113)
+     nền nội dung           rgb(240,243,253)
+     xanh nhấn              rgb(13,110,253)
+     chữ                    Arial 14–15px
+   ========================================================================= */
+
+:root {
+    /* ---- Nền tối của khung ---- */
+    --ums-navy: #223771;
+    --ums-navy-d: #1b2c5b;
+    --ums-navy-l: #2c4589;
+
+    /* ---- Xanh nhấn ---- */
+    --ums-blue: #0d6efd;
+    --ums-blue-d: #0b5ed7;
+    --ums-blue-l: #e8f0ff;
+
+    /* ---- Màu nhóm chức năng (dùng cho thẻ vai trò) ---- */
+    --ums-g-blue: #2563eb;
+    --ums-g-blue-bg: #e8f0fe;
+    --ums-g-green: #0f9d58;
+    --ums-g-green-bg: #e6f6ed;
+    --ums-g-purple: #7c3aed;
+    --ums-g-purple-bg: #f0e9fe;
+    --ums-g-amber: #d99400;
+    --ums-g-amber-bg: #fdf3dc;
+    --ums-g-red: #e0455c;
+    --ums-g-red-bg: #fdeaed;
+    --ums-g-slate: #64748b;
+    --ums-g-slate-bg: #eef1f6;
+
+    /* ---- Trạng thái ---- */
+    --ums-ok: #12805c;
+    --ums-ok-bg: #e4f6ef;
+    --ums-warn: #9a6a00;
+    --ums-warn-bg: #fdf3dc;
+    --ums-bad: #c0392f;
+    --ums-bad-bg: #fdeaed;
+
+    /* ---- Hành động ---- */
+    --ums-act-add: #198754;   /* xanh success của Bootstrap 5 — nút Thêm mới */
+    --ums-act-save: #22c55e;
+    --ums-act-edit: #d99400;
+    --ums-act-del: #df322b;
+
+    /* Màu ô đánh dấu và ô tròn = primary của Bootstrap (#0d6efd), cũng chính là
+       màu nhấn của hệ — để một chỗ để sau này đổi riêng được nếu cần. */
+    --ums-check: var(--ums-blue);
+
+    /* ---- Nền & bề mặt ---- */
+    --ums-bg: #eef1fb;
+    --ums-surface: #ffffff;
+    --ums-surface-2: #f7f9fc;
+    --ums-surface-3: #eef2f7;
+
+    /* ---- Viền ---- */
+    /* Đậm hơn bản đầu (#e4e8f0 / #d3d9e4): viền quá nhạt làm cả trang trông
+       nhoè, khung với bảng gần như không thấy mép. */
+    --ums-line: #d8dee9;
+    --ums-line-2: #bfc7d6;
+
+    /* ---- Chữ ---- */
+    /* Ba mức chữ. Số trong ngoặc là ĐỘ TƯƠNG PHẢN trên nền trắng (đo được):
+       mức 3 trước đây chỉ 2.95 — dưới ngưỡng đọc được 4.5 của WCAG, nên nhãn
+       "Lớp / Ngành / Khoá…" nhìn nhợt nhạt. Đã nâng cả ba. */
+    --ums-ink: #131a27;      /* 17.4 — chữ chính */
+    --ums-ink-2: #47536a;    /*  7.7 — chữ phụ, nhãn ô */
+    --ums-ink-3: #6e7a90;    /*  4.3 — chữ mờ, chữ gợi ý */
+    --ums-on-dark: #ffffff;
+    --ums-on-dark-2: #b9c6de;
+    --ums-accent-on-dark: #ffe600;
+
+    /* ---- Bộ chữ ----
+       Giao diện đang chạy hiển thị Arial: css-new/main.css khai báo Mulish ở
+       dòng 4 nhưng dòng 399 ghi đè lại thành Arial. Lấy đúng cái đang thấy;
+       muốn đổi cả hệ sang Mulish (đã có trong assets/fonts) thì sửa dòng này. */
+    --ums-font: Arial, Helvetica, sans-serif;
+    --ums-font-mono: Consolas, "SF Mono", "Courier New", monospace;
+
+    --ums-fz-11: 11px;
+    --ums-fz-12: 12px;
+    --ums-fz-13: 13px;
+    --ums-fz-14: 14px;
+    --ums-fz-15: 15px;
+    --ums-fz-16: 16px;
+    --ums-fz-18: 18px;
+    --ums-fz-20: 20px;
+    --ums-fz-22: 22px;
+    --ums-fz-26: 26px;
+
+    --ums-fw-regular: 400;
+    --ums-fw-medium: 500;
+    --ums-fw-semibold: 600;
+    --ums-fw-bold: 700;
+
+    --ums-lh: 1.45;
+    --ums-lh-tight: 1.25;
+
+    /* ---- Khoảng cách (thang 4px) ---- */
+    --ums-sp-1: 4px;
+    --ums-sp-2: 8px;
+    --ums-sp-3: 12px;
+    --ums-sp-4: 16px;
+    --ums-sp-5: 20px;
+    --ums-sp-6: 24px;
+    --ums-sp-7: 32px;
+    --ums-sp-8: 40px;
+
+    /* ---- Bo góc ---- */
+    --ums-r-1: 6px;
+    --ums-r-2: 10px;
+    --ums-r-3: 14px;
+    --ums-r-pill: 999px;
+
+    /* ---- Đổ bóng ---- */
+    --ums-sh-1: 0 1px 2px rgba(16, 24, 40, .05);
+    --ums-sh-2: 0 2px 8px rgba(15, 23, 42, .07);
+    --ums-sh-3: 0 10px 28px rgba(15, 23, 42, .14);
+    --ums-ring: 0 0 0 3px rgba(13, 110, 253, .18);
+
+    /* ---- Kích thước khung ---- */
+    --ums-topbar-h: 56px;
+    --ums-sidebar-w: 280px;
+    --ums-control-h: 38px;
+    --ums-control-h-sm: 32px;
+
+    /* ---- Lớp chồng ---- */
+    --ums-z-sidebar: 80;
+    --ums-z-topbar: 100;
+    --ums-z-veil: 70;
+    --ums-z-pop: 1060;
+
+    /* ---- Chuyển động ---- */
+    --ums-t: .16s ease;
+
+    /* Hiệu ứng vào màn: đủ dài để mắt bắt được hướng chuyển, đủ ngắn để
+       không cản người thao tác nhanh. */
+    --ums-t-in: .24s;
+    --ums-ease-out: cubic-bezier(.22, .68, .36, 1);
+    --ums-in-dy: 14px;
+}
+
+
+/* ===== generic/fonts.css ===== */
+/* =========================================================================
+   3. GENERIC — font
+   Mulish lấy từ kho font sẵn có của dự án (assets/fonts), đã sao vào
+   _v2/assets/fonts. Hiện --ums-font đang đặt Arial cho khớp giao diện
+   đang chạy; các khai báo dưới đây để sẵn, đổi một dòng trong tokens là dùng.
+   ========================================================================= */
+
+@font-face { font-family: "Mulish"; font-weight: 300; font-display: swap; src: url("../fonts/Mulish-Light.ttf") format("truetype"); }
+@font-face { font-family: "Mulish"; font-weight: 400; font-display: swap; src: url("../fonts/Mulish-Regular.ttf") format("truetype"); }
+@font-face { font-family: "Mulish"; font-weight: 400; font-style: italic; font-display: swap; src: url("../fonts/Mulish-Italic.ttf") format("truetype"); }
+@font-face { font-family: "Mulish"; font-weight: 500; font-display: swap; src: url("../fonts/Mulish-Medium.ttf") format("truetype"); }
+@font-face { font-family: "Mulish"; font-weight: 600; font-display: swap; src: url("../fonts/Mulish-SemiBold.ttf") format("truetype"); }
+@font-face { font-family: "Mulish"; font-weight: 700; font-display: swap; src: url("../fonts/Mulish-Bold.ttf") format("truetype"); }
+@font-face { font-family: "Mulish"; font-weight: 800; font-display: swap; src: url("../fonts/Mulish-ExtraBold.ttf") format("truetype"); }
+
+
+/* ===== generic/reset.css ===== */
+/* =========================================================================
+   3. GENERIC — reset
+   Không dùng Bootstrap. Reset viết tay, chỉ những gì thật sự cần.
+   ========================================================================= */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+    margin: 0;
+    background: var(--ums-bg);
+    color: var(--ums-ink);
+    font-family: var(--ums-font);
+    font-size: var(--ums-fz-14);
+    line-height: var(--ums-lh);
+}
+
+h1, h2, h3, h4, h5, h6, p, figure, blockquote, dl, dd { margin: 0; }
+
+ul, ol { margin: 0; padding: 0; list-style: none; }
+
+img, svg, canvas, video { display: block; max-width: 100%; }
+
+button, input, select, textarea {
+    font: inherit;
+    color: inherit;
+    margin: 0;
+}
+
+button { background: none; border: 0; padding: 0; cursor: pointer; }
+
+a { color: inherit; text-decoration: none; }
+
+table { border-collapse: collapse; border-spacing: 0; }
+
+hr { border: 0; border-top: 1px solid var(--ums-line); margin: var(--ums-sp-4) 0; }
+
+:focus-visible { outline: 2px solid var(--ums-blue); outline-offset: 2px; }
+
+[hidden] { display: none !important; }
+
+/* Thanh cuộn mảnh */
+* { scrollbar-width: thin; scrollbar-color: #c3ccdb transparent; }
+*::-webkit-scrollbar { width: 9px; height: 9px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb { background: #c3ccdb; border-radius: var(--ums-r-pill); }
+*::-webkit-scrollbar-thumb:hover { background: #a7b2c6; }
+
+
+/* ===== elements/base.css ===== */
+/* =========================================================================
+   4. ELEMENTS — kiểu mặc định cho thẻ HTML trần
+   ========================================================================= */
+
+h1 { font-size: var(--ums-fz-22); font-weight: var(--ums-fw-bold); line-height: var(--ums-lh-tight); }
+h2 { font-size: var(--ums-fz-18); font-weight: var(--ums-fw-bold); line-height: var(--ums-lh-tight); }
+h3 { font-size: var(--ums-fz-16); font-weight: var(--ums-fw-semibold); line-height: var(--ums-lh-tight); }
+h4 { font-size: var(--ums-fz-14); font-weight: var(--ums-fw-semibold); }
+
+p + p { margin-top: var(--ums-sp-3); }
+
+b, strong { font-weight: var(--ums-fw-semibold); }
+
+small { font-size: var(--ums-fz-12); }
+
+code, kbd, samp {
+    font-family: var(--ums-font-mono);
+    font-size: .92em;
+    background: var(--ums-surface-3);
+    color: var(--ums-navy);
+    padding: 1px 5px;
+    border-radius: 4px;
+}
+
+::placeholder { color: var(--ums-ink-3); opacity: 1; }
+
+
+/* =========================================================================
+   LIÊN KẾT TRONG NỘI DUNG — nhìn là biết bấm được
+   -------------------------------------------------------------------------
+   Dùng cho chỗ mở khung chi tiết, mở hồ sơ… việc đó không đáng một cái nút
+   nhưng phải thấy được là bấm được. Dùng được cho cả <a> lẫn <button>.
+   ========================================================================= */
+.ums-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ums-sp-2);
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--ums-blue);
+    font: inherit;              /* cùng phông + cỡ chữ với chữ quanh nó (trong bảng = 14px) — người dùng 2026-09-27:
+                                   "link vẫn để font 14", "để font mặc định"; trước đây ép 13px */
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.ums-link:hover { color: var(--ums-blue-d); text-decoration: underline; }
+.ums-link:focus-visible { outline: 2px solid var(--ums-blue); outline-offset: 2px; border-radius: 2px; }
+.ums-link > i { font-size: var(--ums-fz-14); }
+
+
+/* ===== components/button.css ===== */
+/* =========================================================================
+   6. COMPONENTS — nút
+   ========================================================================= */
+
+.ums-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ums-sp-2);
+    height: var(--ums-control-h);
+    padding: 0 var(--ums-sp-4);
+    border: 1px solid transparent;
+    border-radius: var(--ums-r-1);
+    font-size: var(--ums-fz-14);
+    font-weight: var(--ums-fw-medium);
+    line-height: 1;
+    white-space: nowrap;
+    transition: background var(--ums-t), border-color var(--ums-t), color var(--ums-t);
+}
+
+.ums-btn:disabled,
+.ums-btn.is-disabled { opacity: .5; pointer-events: none; }
+
+.ums-btn--sm { height: var(--ums-control-h-sm); padding: 0 var(--ums-sp-3); font-size: var(--ums-fz-13); }
+.ums-btn--block { width: 100%; }
+
+/* Nền đặc */
+.ums-btn--primary { background: var(--ums-blue); color: #fff; }
+.ums-btn--primary:hover { background: var(--ums-blue-d); }
+
+.ums-btn--navy { background: var(--ums-navy); color: #fff; }
+.ums-btn--navy:hover { background: var(--ums-navy-l); }
+
+.ums-btn--add { background: var(--ums-act-add); color: #fff; }
+.ums-btn--add:hover { background: #157347; }
+
+.ums-btn--save { background: var(--ums-act-save); color: #fff; }
+.ums-btn--save:hover { background: #16a34a; }
+
+/* btn-warning của bản gốc — việc "xem/tải lại/tải tệp lỗi", không phải cảnh báo */
+.ums-btn--warn { background: var(--ums-act-edit); color: #fff; }
+.ums-btn--warn:hover { background: #b87c00; }
+
+.ums-btn--danger { background: var(--ums-act-del); color: #fff; }
+.ums-btn--danger:hover { background: #c02a24; }
+
+/* =========================================================================
+   NÚT VIỀN — thay cho nút trắng khi việc có tính chất rõ ràng
+   -------------------------------------------------------------------------
+   Màn cũ đầy nút trắng giống hệt nhau nên nhìn không ra việc nào là gì.
+   Chia theo ĐỘNG TÁC, không theo sở thích từng màn:
+
+       out-primary   xem · tìm · tải lại · mở danh sách
+       out-success   thêm một mục phụ (thêm dòng, thêm thành viên…)
+       out-info      in · xuất · gửi · import
+       out-warn      việc cần cân nhắc (sinh số, chốt số…)
+       out-danger    xoá · huỷ · gỡ
+
+   Giữ ghost (trắng) cho việc TRUNG TÍNH: Đóng, Viết lại, Thử lại.
+   ========================================================================= */
+/* Nền nhạt CÙNG THÔNG MÀU với viền, không để trắng — đo từ bộ nút mẫu
+   người dùng gửi (#e7f0ff cho viền xanh, #e9f6ed cho viền xanh lá). Nền trắng
+   làm nút viền trông vẫn "trống", đúng thứ đang muốn tránh. */
+.ums-btn--out-primary { background: var(--ums-blue-l); border-color: var(--ums-blue); color: var(--ums-blue); }
+.ums-btn--out-primary:hover { background: #d6e4ff; }
+
+.ums-btn--out-success { background: #e9f6ed; border-color: var(--ums-act-save); color: #15803d; }
+.ums-btn--out-success:hover { background: #d8efe1; }
+
+.ums-btn--out-info { background: #e6f7fd; border-color: #22a2d6; color: #0e7fa8; }
+.ums-btn--out-info:hover { background: #d2eefa; }
+
+.ums-btn--out-warn { background: var(--ums-warn-bg); border-color: var(--ums-act-edit); color: #9a6a00; }
+.ums-btn--out-warn:hover { background: #f9e8c2; }
+
+.ums-btn--out-danger { background: #fdecec; border-color: var(--ums-act-del); color: var(--ums-act-del); }
+.ums-btn--out-danger:hover { background: #f9d8d8; }
+
+/* Viền / nền nhạt */
+.ums-btn--ghost {
+    background: var(--ums-surface);
+    border-color: var(--ums-line-2);
+    color: var(--ums-ink-2);
+}
+
+.ums-btn--ghost:hover { background: var(--ums-surface-2); border-color: var(--ums-ink-3); color: var(--ums-ink); }
+
+.ums-btn--quiet { background: transparent; color: var(--ums-ink-2); }
+.ums-btn--quiet:hover { background: var(--ums-surface-3); color: var(--ums-ink); }
+
+/* Nút HÀNH ĐỘNG nằm trong Ô BẢNG luôn mang màu đã quy định, không để trung
+   tính như chữ: kiểu mờ (ghost / quiet) trong bảng hiện màu xanh hành động.
+   Nút mang màu riêng (lưu, cảnh báo, xoá…) giữ nguyên màu của nó. */
+.ums-table td > .ums-btn--ghost,
+.ums-table td > .ums-btn--quiet,
+.ums-table td .ums-btn--ghost,
+.ums-table td .ums-btn--quiet { border-color: var(--ums-blue); background: var(--ums-blue-l); color: var(--ums-blue); }
+.ums-table td .ums-btn--ghost:hover,
+.ums-table td .ums-btn--quiet:hover { background: #d6e4ff; border-color: var(--ums-blue); color: var(--ums-blue); }
+.ums-table td .ums-btn--ghost[disabled],
+.ums-table td .ums-btn--quiet[disabled] { border-color: var(--ums-line-2); background: var(--ums-surface); color: var(--ums-ink-3); }
+
+/* =========================================================================
+   Nút "Xoá đã chọn" — đổi hẳn vẻ khi đã có dòng được chọn
+   -------------------------------------------------------------------------
+   Chưa chọn gì: nút mờ, im lặng, không hút mắt (và disabled nên không bấm
+   được). Chọn rồi: viền đỏ, chữ đỏ đậm, nền hồng rất nhạt — đang cầm dao
+   thì phải thấy rõ con dao. Chữ nút cũng đổi thành "Xoá N dòng đã chọn".
+   ========================================================================= */
+.ums-btn--delsel {
+    background: transparent;
+    border-color: transparent;
+    color: var(--ums-ink-3);
+}
+
+.ums-btn--delsel:not(:disabled) {
+    background: #fdecec;
+    border-color: var(--ums-act-del);
+    color: var(--ums-act-del);
+    font-weight: var(--ums-fw-semibold);
+}
+
+.ums-btn--delsel:not(:disabled):hover { background: var(--ums-act-del); color: #fff; }
+
+/* Nút TẢI LẠI chuẩn (ui.btn('reload') chữ mặc định): chỉ biểu tượng, nhẹ như "Xoá đã chọn".
+   THỨ TỰ trong nhóm nút (người dùng 2026-09-26): các nút chức năng → Xoá đã chọn → Tải lại (cuối cùng) —
+   đặt bằng order nên màn không phải tự sắp. */
+.ums-btn--tailai {
+    min-width: var(--ums-control-h);
+    padding: 0;
+    justify-content: center;
+    background: transparent;
+    border-color: var(--ums-line-2);
+    color: var(--ums-ink-2);
+}
+.ums-btn--tailai:hover { background: var(--ums-surface-3); color: var(--ums-blue); }
+.ums-btn--delsel { order: 90; }
+.ums-btn--tailai { order: 99; }
+/* Lưới an toàn: nút ↻ tự vẽ dạng .ums-iconbtn trong nhóm nút của KHUNG / đầu trang cũng xếp CUỐI (trừ đầu cột trái — ở đó ↻ đứng
+   trước nút Bộ lọc nâng cao theo luật cột trái) */
+:is(.ums-panel__tools, .ums-page__actions) > .ums-iconbtn:has(> .fa-rotate-right):not(.ums-master__side *) { order: 99; }
+/* chân hộp thoại giữ quy ước riêng: Xoá dạt trái (dialog.css) */
+.ums-dialog__foot > .ums-btn--delsel { order: 0; }
+
+/* Nút chỉ có biểu tượng, dùng trong ô bảng */
+.ums-iconbtn {
+    width: var(--ums-control-h-sm);
+    height: var(--ums-control-h-sm);
+    display: inline-grid;
+    place-items: center;
+    border: 1px solid transparent;
+    border-radius: var(--ums-r-1);
+    color: var(--ums-ink-2);
+    font-size: var(--ums-fz-14);
+    transition: all var(--ums-t);
+}
+
+.ums-iconbtn:hover { background: var(--ums-surface-3); }
+.ums-iconbtn + .ums-iconbtn { margin-left: var(--ums-sp-1); }
+
+/* Biểu tượng hành động nằm trong BẢNG: không khai kiểu thì mặc định màu xanh
+   (hành động chính), đúng luật "nút hành động phải mang màu đã quy định".
+   Nút biểu tượng ở đầu khung / hộp thoại (Đóng, Tải lại) vẫn trung tính. */
+.ums-table .ums-iconbtn:not([class*="ums-iconbtn--"]) { color: var(--ums-blue); }
+.ums-table .ums-iconbtn:not([class*="ums-iconbtn--"]):hover { background: var(--ums-blue-l); }
+
+.ums-iconbtn--view { color: var(--ums-blue); }
+.ums-iconbtn--view:hover { background: var(--ums-blue-l); }
+.ums-iconbtn--edit { color: var(--ums-act-edit); }
+.ums-iconbtn--edit:hover { background: var(--ums-warn-bg); }
+.ums-iconbtn--del { color: var(--ums-act-del); }
+.ums-iconbtn--del:hover { background: var(--ums-bad-bg); }
+
+
+/* ===== components/field.css ===== */
+/* =========================================================================
+   6. COMPONENTS — ô nhập và dòng biểu mẫu
+   ========================================================================= */
+
+/* ---------- Ô nhập ------------------------------------------------------- */
+.ums-input,
+.ums-select,
+.ums-textarea {
+    width: 100%;
+    height: var(--ums-control-h);
+    padding: 0 var(--ums-sp-3);
+    background: var(--ums-surface);
+    border: 1px solid var(--ums-line-2);
+    border-radius: var(--ums-r-1);
+    color: var(--ums-ink);
+    font-size: var(--ums-fz-14);
+    transition: border-color var(--ums-t), box-shadow var(--ums-t);
+}
+
+.ums-textarea {
+    height: auto;
+    min-height: 82px;
+    padding: var(--ums-sp-2) var(--ums-sp-3);
+    line-height: var(--ums-lh);
+    resize: vertical;
+}
+
+.ums-input:focus,
+.ums-select:focus,
+.ums-textarea:focus {
+    outline: none;
+    border-color: var(--ums-blue);
+    box-shadow: var(--ums-ring);
+}
+
+.ums-input[readonly] { background: var(--ums-surface-2); }
+
+/* =========================================================================
+   Ô CHỌN TRONG BẢNG — vẽ giống select2, nhưng là ô gốc
+   -------------------------------------------------------------------------
+   ums.ui.enhance KHÔNG gắn select2 cho ô chọn nằm trong .ums-table (bảng
+   trăm dòng là trăm khung select2: nặng, và khung xổ gắn ở body dễ lạc chỗ
+   khi bảng cuộn ngang). Ô gốc vốn đã dùng chung .ums-select nên khung, viền,
+   bo góc, cỡ chữ đã khớp; chỉ còn MŨI TÊN là khác — trình duyệt vẽ mũi tên
+   riêng của nó. Ở đây tắt mũi tên gốc và vẽ lại đúng tam giác xám của
+   select2 (8×5, #888, cách mép phải 10px) để nhìn không phân biệt được.
+   Áp cho CẢ ô đánh dấu data-no-s2 ở bất kỳ đâu (vd ô "Hiển thị" của thanh
+   phân trang): màn bỏ select2 cho một ô mà giao diện vẫn đồng bộ.
+   ========================================================================= */
+.ums-table select.ums-select,
+select.ums-select[data-no-s2] {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 28px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5' viewBox='0 0 8 5'%3E%3Cpath d='M0 0h8L4 5z' fill='%23888'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 8px 5px;
+}
+
+.ums-table select.ums-select:disabled,
+select.ums-select[data-no-s2]:disabled {
+    background-color: var(--ums-surface-3);
+    opacity: 1;
+}
+
+/* Firefox vẽ thêm viền chấm khi ô đang chọn — bỏ cho khớp select2 */
+.ums-table select.ums-select:-moz-focusring,
+select.ums-select[data-no-s2]:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--ums-ink); }
+.ums-input:disabled,
+.ums-select:disabled { background: var(--ums-surface-3); color: var(--ums-ink-3); }
+
+/* =========================================================================
+   Ô CHỌN TỆP — ums.ui.file
+   -------------------------------------------------------------------------
+   Nhìn như một ô nhập có nút ở đầu: cùng chiều cao, cùng viền, cùng bo
+   góc với .ums-input / select2 nên đứng cạnh nhau không lệch. Ô thật vẫn
+   nằm trong nhãn (ẩn bằng clip) để bàn phím và trình đọc màn hình vẫn dùng
+   được — không dùng display:none.
+   ========================================================================= */
+.ums-file {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: var(--ums-control-h);
+    /* Viền / bo góc / vòng focus GIỐNG HỆT .ums-input (người dùng 2026-09-26: "border phải giống các input khác") */
+    border: 1px solid var(--ums-line-2);
+    border-radius: var(--ums-r-1);
+    background: var(--ums-surface);
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color var(--ums-t), box-shadow var(--ums-t);
+}
+
+.ums-file:focus-within { border-color: var(--ums-blue); box-shadow: var(--ums-ring); }
+
+.ums-file__input {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+.ums-file__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ums-sp-2);
+    align-self: stretch;
+    padding: 0 var(--ums-sp-4);
+    border-right: 1px solid var(--ums-line-2);
+    background: var(--ums-surface-2);
+    color: var(--ums-navy);
+    font-size: var(--ums-fz-13);
+    font-weight: var(--ums-fw-semibold);
+    white-space: nowrap;
+}
+
+.ums-file:hover .ums-file__btn { background: var(--ums-surface-3); }
+.ums-file__btn > i { color: var(--ums-blue); }
+
+.ums-file__name {
+    flex: 1;
+    min-width: 0;
+    padding: 0 var(--ums-sp-3);
+    color: var(--ums-ink);
+    font-size: var(--ums-fz-14);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ums-file__name.is-empty { color: var(--ums-ink-3); }
+
+/* ---------- Tệp đính kèm của bản ghi (ums.files) -------------------------
+   Nút "Chọn tệp" + danh sách tệp: tệp đã lưu là liên kết mở tab mới, tệp
+   vừa tải lên mang nhãn "chưa lưu" (chỉ gắn vào bản ghi khi bấm Lưu). */
+.ums-files { display: grid; gap: var(--ums-sp-2); justify-items: start; }
+.ums-files__pick { cursor: pointer; }
+.ums-files__list { display: flex; flex-wrap: wrap; gap: var(--ums-sp-2); width: 100%; }
+.ums-files__item {
+    display: inline-flex; align-items: center; gap: var(--ums-sp-2);
+    max-width: 100%; min-height: 32px; padding: 2px 4px 2px 10px;
+    border: 1px solid var(--ums-line); border-radius: var(--ums-r-1);
+    background: var(--ums-surface-2); font-size: var(--ums-fz-13);
+}
+.ums-files__item.is-new { border-style: dashed; background: var(--ums-surface); }
+.ums-files__name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ums-ink); }
+a.ums-files__name { color: var(--ums-blue); text-decoration: none; }
+a.ums-files__name:hover { text-decoration: underline; }
+.ums-files__ic { color: var(--ums-ink-3); font-size: 16px; }
+.ums-files__ic--pdf { color: #d93025; }
+.ums-files__ic--doc { color: #2b579a; }
+.ums-files__ic--xls { color: #1e7145; }
+.ums-files__ic--img { color: #c2185b; }
+.ums-files__tag { font-size: var(--ums-fz-12); color: var(--ums-warn, #b45309); }
+.ums-files__del { width: 24px; height: 24px; }
+.ums-files__empty { color: var(--ums-ink-3); font-size: var(--ums-fz-13); }
+
+.ums-input.is-invalid { border-color: var(--ums-act-del); }
+.ums-input.is-invalid:focus { box-shadow: 0 0 0 3px rgba(223, 50, 43, .16); }
+
+.ums-input--sm { height: var(--ums-control-h-sm); font-size: var(--ums-fz-13); }
+
+/* Ô nhập có biểu tượng bên phải */
+.ums-inputwrap { position: relative; }
+
+.ums-inputwrap > i {
+    position: absolute;
+    right: var(--ums-sp-3);
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--ums-ink-3);
+    font-size: var(--ums-fz-14);
+    pointer-events: none;
+}
+
+/* flatpickr static:true chèn thêm .flatpickr-wrapper giữa — chừa chỗ cho
+   biểu tượng ở cả hai kiểu lồng nhau. */
+.ums-inputwrap > .ums-input,
+.ums-inputwrap > .flatpickr-wrapper > .ums-input { padding-right: 34px; }
+
+/* Ảnh đại diện (ums.files.avatar) — tỉ lệ 3:4 như ảnh hồ sơ 336×448 */
+.ums-avatar { position: relative; display: block; width: 100%; max-width: 168px; aspect-ratio: 3 / 4;
+    border: 1px solid var(--ums-line); border-radius: var(--ums-r-2); overflow: hidden; cursor: pointer; background: var(--ums-surface-2); }
+.ums-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ums-avatar__hint { position: absolute; left: 0; right: 0; bottom: 0; padding: 6px; text-align: center; font-size: var(--ums-fz-12);
+    color: #fff; background: rgba(15, 23, 42, .55); opacity: 0; transition: opacity var(--ums-t); }
+.ums-avatar:hover .ums-avatar__hint,
+.ums-avatar.is-empty .ums-avatar__hint { opacity: 1; }   /* ô trống: hiện sẵn "Đổi ảnh" cho biết bấm được */
+/* width/height auto: Font Awesome 7 ép biểu tượng rộng 1.25em cố định → hình người dạt trái */
+.ums-avatar__none { position: absolute; inset: 0; width: auto; height: auto; line-height: 1; display: none; place-items: center;
+    font-size: 64px; color: var(--ums-ink-3); }
+.ums-avatar.is-empty img { display: none; }
+.ums-avatar.is-empty .ums-avatar__none { display: grid; }
+
+/* Ô địa chỉ (ums.pat.diaChi): nút kính lúp bấm được, khác biểu tượng trang trí */
+.ums-diachi__btn {
+    position: absolute; right: 4px; top: 50%; transform: translateY(-50%);
+    width: 28px; height: 28px; display: grid; place-items: center;
+    border: 0; border-radius: var(--ums-r-1); background: transparent;
+    color: var(--ums-blue); cursor: pointer;
+}
+.ums-diachi__btn:hover { background: var(--ums-blue-l); }
+
+/* ---------- Dòng biểu mẫu: nhãn trên, ô dưới ----------------------------- */
+.ums-field { margin-bottom: var(--ums-sp-4); }
+.ums-field:last-child { margin-bottom: 0; }
+
+.ums-field__label {
+    display: block;
+    margin-bottom: var(--ums-sp-1);
+    color: var(--ums-ink-2);
+    font-size: var(--ums-fz-13);
+    font-weight: var(--ums-fw-semibold);
+}
+
+.ums-field__req { margin-left: 3px; color: var(--ums-act-del); font-style: normal; }
+.ums-field__hint { margin-top: var(--ums-sp-1); color: var(--ums-ink-3); font-size: var(--ums-fz-12); }
+.ums-field__error { margin-top: var(--ums-sp-1); color: var(--ums-act-del); font-size: var(--ums-fz-12); }
+
+/* Biến thể nhãn nằm trái */
+.ums-field--inline {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--ums-sp-3);
+}
+
+.ums-field--inline .ums-field__label {
+    flex: 0 0 var(--ums-label-w, 140px);
+    min-height: var(--ums-control-h);
+    display: flex;
+    align-items: center;
+    margin-bottom: 0;
+}
+
+.ums-field--inline .ums-field__control { flex: 1; min-width: 0; }
+
+/* ---------- Ô chọn ------------------------------------------------------- */
+/* =========================================================================
+   Ô ĐÁNH DẤU và Ô CHỌN MỘT — tự vẽ
+   -------------------------------------------------------------------------
+   Ô gốc của trình duyệt mỗi hệ điều hành một kiểu, không đổi được màu, và
+   trên Windows thì nhỏ và mờ. Tắt kiểu gốc (appearance:none) rồi tự vẽ để
+   khớp phần còn lại của giao diện: cùng màu xanh, cùng bo góc, cùng viền,
+   cùng vòng sáng khi focus như ô nhập.
+
+   Đặt ở TẦNG PHẦN TỬ (input[type=…]) chứ không bó trong .ums-check, để mọi
+   ô đánh dấu đều giống nhau — kể cả ô trong bảng (chọn dòng, chọn tất cả)
+   vốn là <input> trần.
+   ========================================================================= */
+input[type="checkbox"],
+input[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+    flex: 0 0 auto;
+    display: inline-grid;
+    place-content: center;
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    padding: 0;
+    background: var(--ums-surface);
+    border: 1.5px solid var(--ums-line-2);
+    border-radius: 4px;          /* ô nhỏ 18px — bo 6px nhìn tròn quá */
+    color: inherit;
+    vertical-align: -4px;
+    cursor: pointer;
+    transition: background var(--ums-t), border-color var(--ums-t), box-shadow var(--ums-t);
+}
+
+input[type="radio"] { border-radius: 50%; }
+
+/* Dấu tích / chấm tròn: vẽ sẵn, phóng to khi đánh dấu nên có chuyển động */
+input[type="checkbox"]::before,
+input[type="radio"]::before {
+    content: "";
+    width: 10px;
+    height: 10px;
+    background: #fff;
+    transform: scale(0);
+    transition: transform .12s ease-out;
+}
+
+input[type="checkbox"]::before {
+    clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+}
+
+input[type="radio"]::before { width: 8px; height: 8px; border-radius: 50%; }
+
+input[type="checkbox"]:hover:not(:disabled),
+input[type="radio"]:hover:not(:disabled) { border-color: var(--ums-check); }
+
+/* Ô vuông: tô KÍN màu, dấu tích trắng — như bộ mẫu */
+input[type="checkbox"]:checked {
+    background: var(--ums-check);
+    border-color: var(--ums-check);
+}
+
+/* Ô tròn: KHÔNG tô kín — viền màu dày hơn, chấm màu ở giữa, lòng trắng */
+input[type="radio"]:checked {
+    background: var(--ums-surface);
+    border-color: var(--ums-check);
+    border-width: 2px;
+}
+
+input[type="radio"]:checked::before { background: var(--ums-check); }
+
+input[type="checkbox"]:checked::before,
+input[type="radio"]:checked::before { transform: scale(1); }
+
+/* Đánh dấu một phần (chọn tất cả khi mới chọn vài dòng) → gạch ngang */
+input[type="checkbox"]:indeterminate {
+    background: var(--ums-check);
+    border-color: var(--ums-check);
+}
+input[type="checkbox"]:indeterminate::before {
+    clip-path: none;
+    width: 10px;
+    height: 2px;
+    border-radius: 1px;
+    transform: scale(1);
+}
+
+input[type="checkbox"]:focus-visible,
+input[type="radio"]:focus-visible {
+    outline: none;
+    border-color: var(--ums-check);
+    box-shadow: var(--ums-ring);
+}
+
+input[type="checkbox"]:disabled,
+input[type="radio"]:disabled {
+    background: var(--ums-surface-3);
+    border-color: var(--ums-line);
+    cursor: not-allowed;
+}
+input[type="checkbox"]:disabled:checked,
+input[type="radio"]:disabled:checked { background: var(--ums-ink-3); border-color: var(--ums-ink-3); }
+
+.ums-check {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ums-sp-2);
+    font-size: var(--ums-fz-14);
+    cursor: pointer;
+    user-select: none;
+}
+.ums-check input[type="checkbox"],
+.ums-check input[type="radio"] { vertical-align: 0; }
+
+/* Hai ô đánh dấu đứng CÙNG MỘT HÀNG thì cách nhau; đứng theo CỘT thì không.
+   Trước đây luật này không phân biệt, nên mọi danh sách dọc tự dựng (không
+   dùng .ums-checklist / .ums-checkgrid) đều bị thụt vào từ mục thứ hai — nhìn
+   như danh sách lồng nhau (đã gặp ở khung lọc "Trạng thái người học").
+   inline-flex chỉ nằm cùng hàng khi cha KHÔNG phải grid/flex-column, nên chỉ
+   cộng lề khi cha là khối thuần (block) hoặc .ums-row. */
+.ums-check + .ums-check { margin-left: var(--ums-sp-5); }
+
+:is(.ums-checklist, .ums-checkgrid, [class*="--stack"]) .ums-check + .ums-check,
+:is(div, span, fieldset):where([style*="grid"], [style*="flex-direction:column"]) > .ums-check + .ums-check { margin-left: 0; }
+
+/* Mọi khối xếp dọc bằng grid/flex-column: bỏ lề trái giữa các ô */
+.ums-checklist { display: flex; flex-direction: column; gap: var(--ums-sp-2); }
+.ums-checklist .ums-check + .ums-check { margin-left: 0; }
+
+/* Nhóm ô đánh dấu dài xếp hai cột — dùng trong biểu mẫu của ums.crud */
+/* Chia cột theo BỀ RỘNG CÓ THẬT: khung rộng thì bốn năm cột, khung hẹp tự
+   rút còn một. Trước đây cố định hai cột nên một danh sách 14 trạng thái
+   kéo dài bảy hàng, nhìn rối. */
+.ums-checkgrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: var(--ums-sp-2) var(--ums-sp-5);
+}
+.ums-checkgrid .ums-check + .ums-check { margin-left: 0; }
+
+@media (max-width: 767px) {
+    .ums-checkgrid { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (max-width: 767px) {
+    .ums-field--inline { display: block; }
+    .ums-field--inline .ums-field__label { min-height: 0; margin-bottom: var(--ums-sp-1); }
+}
+
+
+/* ===== components/login.css ===== */
+/* =========================================================================
+   6. COMPONENTS — trang đăng nhập (_v2/login.aspx)
+   -------------------------------------------------------------------------
+   Bám bố cục bản gốc: một thẻ trắng NẰM GIỮA, chia hai cột — biểu mẫu bên
+   trái, ảnh minh hoạ bên phải — đặt trên nền xanh có các điểm nối nhau.
+
+   Hai ảnh đều lấy từ chính bản gốc, chép vào _v2/assets/img/:
+       login-bg.jpg           = App_Themes/Cms/Custom_V1/images/bg_login_1.jpg
+       login-illustration.jpg = App_Themes/Cms/Custom_V1/images/img-edu.jpg
+   Dưới ảnh nền còn một lớp màu chuyển sắc đo đúng theo ảnh đó
+   (#01013d · #0b39ee · #05acea) — ảnh chưa kịp tải hay bị thiếu thì trang vẫn
+   đúng tone, không ra nền trắng.
+   Trên cùng là lớp điểm trôi nối nhau do assets/js/login-bg.js vẽ (canvas).
+   ========================================================================= */
+
+.ums-login {
+    --ums-login-dot: rgba(255, 255, 255, .5);   /* ảnh nền đã có đốm sáng sẵn */
+    --ums-login-line: 150, 200, 255;
+    position: relative;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: var(--ums-sp-6);
+    background-color: #01013d;
+    background-image:
+        url("../img/login-bg.jpg"),
+        radial-gradient(1100px 700px at 12% 62%, #0b39ee 0%, rgba(11, 57, 238, 0) 62%),
+        radial-gradient(900px 700px at 96% 78%, #05acea 0%, rgba(5, 172, 234, 0) 60%),
+        linear-gradient(180deg, #01013d 0%, #04104f 45%, #052a7a 100%);
+    background-size: cover, auto, auto, auto;
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
+#umsLoginBg {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    pointer-events: none;   /* nền trang trí, không chặn chuột */
+}
+
+/* <form runat="server"> bọc cả thẻ — nó là khung hai cột luôn */
+.ums-login__form {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 980px;
+}
+
+.ums-login__box {
+    display: grid;
+    grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
+    border-radius: var(--ums-r-3);
+    background: var(--ums-surface);
+    box-shadow: 0 26px 70px rgba(2, 10, 40, .45);
+    overflow: hidden;
+}
+
+/* --- Cột trái: biểu mẫu ------------------------------------------------- */
+.ums-login__main { padding: var(--ums-sp-6); }
+
+/* Tiêu đề: chữ hoa, màu nhấn, canh giữa — như bản gốc */
+.ums-login__title {
+    margin: 0 0 var(--ums-sp-5);
+    padding-top: var(--ums-sp-2);
+    color: var(--ums-blue);
+    font-size: var(--ums-fz-20);
+    font-weight: var(--ums-fw-bold);
+    text-transform: uppercase;
+    text-align: center;
+    letter-spacing: .5px;
+}
+
+/* Ô nhập: biểu tượng nằm BÊN TRÁI như bản gốc */
+.ums-login__field { position: relative; margin-bottom: var(--ums-sp-4); }
+/* Biểu tượng trong ô: MÀU NHẤN, không phải xám — đo từ bản gốc được
+   #3c8dee (đúng màu nút chính của hệ cũ). Ở đây buộc vào --ums-blue để đổi
+   màu hệ thống thì biểu tượng đổi theo. */
+.ums-login__field > i,
+.ums-login__field > .ums-login__svg {
+    position: absolute;
+    left: var(--ums-sp-4);
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--ums-blue);
+    font-size: var(--ums-fz-16);
+    pointer-events: none;
+}
+.ums-login__field > .ums-input {
+    width: 100%;
+    height: 44px;
+    padding-left: 42px;
+    border-radius: var(--ums-r-pill);
+}
+
+/* Nút hiện / ẩn mật khẩu — nằm trong ô, không đẩy bố cục */
+.ums-login__field--pass > .ums-input { padding-right: 44px; }
+
+.ums-login__eye {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 32px;
+    height: 32px;
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--ums-ink-3);
+    cursor: pointer;
+    transition: color var(--ums-t), background var(--ums-t);
+}
+
+.ums-login__eye:hover { color: var(--ums-ink); background: var(--ums-surface-2); }
+.ums-login__eye:focus-visible { outline: 2px solid var(--ums-blue); outline-offset: 1px; }
+
+.ums-login__submit {
+    height: 44px;
+    border-radius: var(--ums-r-pill);
+    background: linear-gradient(90deg, var(--ums-blue-d), var(--ums-blue));
+}
+.ums-login__submit:hover { background: var(--ums-blue-d); }
+
+/* Chỗ báo lỗi của code-behind (lblNotify). Rỗng thì không chiếm chỗ. */
+.ums-login__notify {
+    margin: var(--ums-sp-3) 0 0;
+    text-align: center;
+    font-size: var(--ums-fz-13);
+}
+.ums-login__notify:empty { display: none; }
+
+/* Vạch "hoặc" giữa hai lối đăng nhập */
+.ums-login__or {
+    display: flex;
+    align-items: center;
+    gap: var(--ums-sp-3);
+    margin: var(--ums-sp-4) 0;
+    color: var(--ums-ink-3);
+    font-size: var(--ums-fz-12);
+}
+.ums-login__or::before,
+.ums-login__or::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--ums-line);
+}
+
+/* Biểu tượng SVG nội tuyến — trang này không nạp Font Awesome */
+.ums-login__svg { width: 18px; height: 18px; flex: 0 0 auto; }
+
+/* Nút con mắt: hai hình chồng nhau, đổi bằng lớp is-hien */
+.ums-login__eye .ums-login__svg--off,
+.ums-login__eye.is-hien .ums-login__svg--on { display: none; }
+.ums-login__eye.is-hien .ums-login__svg--off { display: block; }
+
+.ums-login__sso { border-radius: var(--ums-r-pill); }
+.ums-login__ico { width: 16px; height: 16px; object-fit: contain; }
+
+.ums-login__foot {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--ums-sp-3);
+    margin-top: var(--ums-sp-5);
+    padding-top: var(--ums-sp-4);
+    border-top: 1px solid var(--ums-line);
+    font-size: var(--ums-fz-13);
+}
+
+.ums-login__foot a { color: var(--ums-blue); text-decoration: none; }
+.ums-login__foot a:hover { text-decoration: underline; }
+
+/* --- Cột phải: ảnh minh hoạ -------------------------------------------- */
+.ums-login__art {
+    min-height: 420px;
+    background-color: #eef4ff;
+    background-image: url("../img/login-illustration.jpg");
+    background-repeat: no-repeat;
+    /* BÁM MÉP PHẢI: cột hẹp hơn ảnh nên phải cắt bớt — cắt bên TRÁI để phần
+       phải của hình (chậu cây, toà bên phải) còn đủ, thay vì cắt cả hai bên
+       như khi để center. */
+    background-position: right center;
+    background-size: cover;
+}
+
+/* Màn hẹp: bỏ cột ảnh, còn một cột như cũ */
+@media (max-width: 767px) {
+    .ums-login__form { max-width: 420px; }
+    .ums-login__box { grid-template-columns: minmax(0, 1fr); }
+    .ums-login__art { display: none; }
+}
+
+@media (max-width: 575px) {
+    .ums-login { padding: var(--ums-sp-4); }
+    .ums-login__main { padding: var(--ums-sp-5); }
+}
+

@@ -1,0 +1,298 @@
+﻿<style>
+    .progress{
+        margin-bottom:10px;
+    }
+    .input-group-addon{
+        cursor:pointer;
+    }
+    #content_search{
+        display:none;
+    }
+    .nav-tabs-custom > .nav-tabs > li.active > a,
+    .nav-tabs-custom > .nav-tabs > li.active:hover > a{
+        color:#4e8d42;
+    }
+</style>
+<!-- Main content -->
+<section class="content aps-theodoicongno">
+    <div class="row box box-shadow">
+        <div class="col-lg-12 aps-search">
+            <div class="box box-solid box-search mb-0" style="padding-bottom: 18px !important;"> 
+                <div class="box-body">
+                    <div class="area-search">
+                        <div id="search" class="inputSearch collapse in">
+                            <!-- Bộ tìm kiếm -->
+                            <div class="col-sm-6 item-search mb-0">
+                                <div class="input-group">
+                                    <input type="text" id="txtSearch_TuKhoa" class="form-control" placeholder="Nhập từ khóa tìm kiếm">
+                                    <span class="input-group-addon">
+                                        <i class="fa fa-angle-double-down"></i>
+                                    </span>
+                                </div>
+                                <div id="content_search" style="width: 99.3%; position: absolute" class="mb-10 content_search">
+                                    <div class="col-sm-12 mt-5" style="padding-left:5px; color: #666"> Tiêu chí tìm kiếm</div>
+                                    <div class="col-sm-6 mt-5 pr10 mb-10">
+                                        <select id="dropHeDaoTao" class="select-opt">
+                                            <option value="">-- Chọn hệ đào tạo --</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-6 mt-5 mb-10">
+                                        <select id="dropKhoaDaoTao" class="select-opt">
+                                            <option value="">-- Chọn khóa đào tạo --</option>
+                                        </select>
+                                    </div>
+                                    <div class="clear"></div>
+                                    <div class="col-sm-6  pr10 mb-10">
+                                        <select id="dropChuongTrinhDaoTao" class="select-opt">
+                                            <option value="">-- Chọn chương trình đào tạo --</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-6">
+                                    </div>
+                                    <div style="height: 10px; width: 100%;"></div>
+                                </div>
+                            </div>
+                            <div class="col-sm-3 item-search mb-0" id="button_search">
+                                <a id="btnSearch_TDCN" class="btn btn-default btn-search"><i class="fa fa-search"></i> <span class="lang" key="">Tìm kiếm</span></a>
+                            </div>
+                            <!-- Kết thúc bộ tìm kiếm -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="clear"></div>
+        </div>
+        <div class="row aps-theodoicongno-detail">
+            <div class="col-sm-9 aps-theodoicongno-tab">
+                <div class="box box-solid">
+                    <div class="box-body">
+                        <div class="nav-tabs-custom">
+                            <ul class="nav nav-tabs" id="tab_congno">
+                                <li id="tab1" class="active"><a href="#tab1_nochung" data-toggle="tab" aria-expanded="true"><i class="fal fa-sack-dollar"></i> Nợ chung (<span id="tab1_total_nc">0</span>)</a></li>
+                                <li id="tab2" class=""><a href="#tab2_norieng" data-toggle="tab" aria-expanded="false"><i class="fal fa-file-invoice-dollar"></i> Nợ riêng (<span id="tab2_total_nr"><i class="fa fa-refresh"></i></span>)</a></li>
+                                <li id="tab3" class=""><a href="#tab3_duchung" data-toggle="tab" aria-expanded="false"><i class="fal fa-hands-usd"></i> Dư chung (<span id="tab3_total_dc"><i class="fa fa-refresh"></i></span>)</a></li>
+                                <li id="tab4" class=""><a href="#tab4_durieng" data-toggle="tab" aria-expanded="false"><i class="fal fa-hand-holding-usd"></i> Dư riêng (<span id="tab4_total_dr"><i class="fa fa-refresh"></i></span>)</a></li>
+                                <li class="pull-right aps-list-btn">
+                                    <a id="btnDelete" class="btn btn-default btn-soft-primary btnDelete"><i class="fa fa-file-excel-o"></i> <span class="lang" key="">Tải excle</span></a>
+                                </li>
+                            </ul>
+                            <div class="tab-content zonelist_tdcn" id="zonelist_tdcn">
+                                <!-- No Chung -->
+                                <div class="tab-pane active" id="tab1_nochung">
+                                    <div class="row row-tab row-align">
+                                        <div class="scroll-table-x mt-15">
+                                            <table id="tblNoChung" class="table table-condensed table-hover aps-theodoicongno-tab_nochung table-noborder table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="td-fixed td-center">STT</th>
+                                                        <th class="td-center"><span class="lang" key="">Tình trạng</span></th>
+                                                        <th class="td-center"><span class="lang" key="">Mã số</span></th>
+                                                        <th class="td-left"><span class="lang" key="">Họ tên</span></th>
+                                                        <th class="td-left"><span class="lang" key="">Lớp quản lý</span></th>
+                                                        <th class="td-right"><span class="lang" key="">Tổng nợ</span></th>
+                                                        <th class="td-center"><span class="lang" key="">Chi tiết</span></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <!-- Load from tinnhanthongbao.js -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- No Rieng -->
+                                <div class="tab-pane" id="tab2_norieng">
+                                    <div class="row row-tab row-align">
+                                        <div class="scroll-table-x mt-15">
+                                            <table id="tblNoRieng" class="table table-condensed table-hover aps-theodoicongno-tab_norieng table-bordered table-noborder">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="td-fixed td-center">Stt</th>
+                                                        <th class="td-center"><span class="lang" key="">Tình trạng</span></th>
+                                                        <th class="td-center"><span class="lang" key="">Mã số</span></th>
+                                                        <th class="td-left"><span class="lang" key="">Họ tên</span></th>
+                                                        <th class="td-left"><span class="lang" key="">Lớp quản lý</span></th>
+                                                        <th class="td-left"><span class="lang" key="">Loại khoản</span></th>
+                                                        <th class="td-right"><span class="lang" key="">Số tiền</span></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <!-- Load from tinnhanthongbao.js -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Du Chung -->
+                                <div class="tab-pane" id="tab3_duchung">
+                                    <div class="row row-tab row-align">
+                                        <div class="scroll-table-x mt-15">
+                                            <table id="tblDuChung" class="table table-condensed table-hover aps-theodoicongno-tab_duchung table-bordered table-noborder">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="td-fixed td-center">Stt</th>
+                                                        <th class="td-center"><span class="lang" key="">Tình trạng</span></th>
+                                                        <th class="td-center"><span class="lang" key="">Mã số</span></th>
+                                                        <th class="td-left"><span class="lang" key="">Họ tên</span></th>
+                                                        <th class="td-left"><span class="lang" key="">Lớp quản lý</span></th>
+                                                        <th class="td-right"><span class="lang" key="">Tổng nợ</span></th>
+                                                        <th class="td-center"><span class="lang" key="">Chi tiết</span></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <!-- Load from tinnhanthongbao.js -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Du Rieng -->
+                                <div class="tab-pane" id="tab4_durieng">
+                                    <div class="row row-tab row-align">
+                                        <div class="scroll-table-x mt-15">
+                                            <table id="tblDuRieng" class="table table-condensed table-hover aps-theodoicongno-tab_durieng table-bordered table-noborder">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="td-fixed td-center">Stt</th>
+                                                        <th class="td-center"><span class="lang" key="">Tình trạng</span></th>
+                                                        <th class="td-center"><span class="lang" key="">Mã số</span></th>
+                                                        <th class="td-left"><span class="lang" key="">Họ tên</span></th>
+                                                        <th class="td-left"><span class="lang" key="">Lớp quản lý</span></th>
+                                                        <th class="td-left"><span class="lang" key="">Loại khoản</span></th>
+                                                        <th class="td-right"><span class="lang" key="">Số tiền</span></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <!-- Load from tinnhanthongbao.js -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-content zonedetail_tdcn" id="zonedetail_tdcn">
+                                <div class="row row-tab row-align">
+                                    <div class="form-container">
+                                        <div class="form-container-header">
+                                            <div class="pull-left">
+                                                <h4 class="color-active" style="padding:15px"><i class="fa fa-info-circle"></i> Chi tiết theo khoản</h4>
+                                            </div>
+                                            <div class="pull-right">
+                                                <a class="btn btn-default pointer btnClose"><i class="fa fa-times-circle"></i></a>
+                                            </div>
+                                            <div class="clear"></div>
+                                        </div>
+                                        <div class="form-container-body">
+                                            <div class="table-responsive">
+                                                <div class="scroll-table-x">
+                                                    <table id="tblDetail_TDCN" class="table table-bordered table-noborder table-hover tblDetail_TDCN">
+                                                        <thead>
+                                                            <tr>
+                                                                <th class="td-fixed td-center">Stt</th>
+                                                                <th class="td-left">Loại khoản</th>
+                                                                <th class="td-right">Số tiền</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td class="td-fixed td-center">1</td>
+                                                                <td class="td-left">Học phí</td>
+                                                                <td class="td-right">1.900.000</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="td-fixed td-center">2</td>
+                                                                <td class="td-left">Học phí</td>
+                                                                <td class="td-right">1.900.000</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="td-fixed td-center">3</td>
+                                                                <td class="td-left">Học phí</td>
+                                                                <td class="td-right">1.900.000</td>
+                                                            </tr>
+                                                            <!--Load from js-->
+                                                        </tbody>
+                                                        <tfoot>
+                                                            <tr>
+                                                                <th class="td-center" colspan="2">Tổng</th>
+                                                                <th class="td-right">4.290.000</th>
+                                                            </tr>
+                                                        </tfoot>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                            <div class="clear"></div>
+                                        </div>
+                                        <div class="form-container-footer">
+                                            <div class="col-sm-12">
+                                                <div class="pull-right">
+                                                    <a class="btn btn-default pointer btnClose"><i class="fa fa-times-circle"></i> Đóng</a>
+                                                </div>
+                                            </div>
+                                            <div class="clear"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3 aps-theodoicongno-progress">
+                <div class="box box-solid">
+                    <div class="box-body">
+                        <!-- /.progress-group -TONGHOP -->
+                        <div class="progress-group mb-10">
+                            <span class="progress-text color-red fz18 bold">Tổng</span>
+                            <span class="progress-number color-red fz18 bold" id="lblTongNo">0</span>
+                            <div class="progress xxs mt-5">
+                                <div class="progress-bar progress-bar-green" style="width: 100%"></div>
+                            </div>
+                        </div>
+                        <div id="zoneCongNo_LoaiKhoan" class="zoneCongNo_LoaiKhoan">
+                        </div>
+                        <div class="zone-chart">
+                        </div>
+                    </div>
+                </div>
+                <div class="box box-solid aps-tinhcongno">
+                    <div class="box-header bg-blue d-flex">
+                        <i class="fa fa-fax pr5 mt-10 mb-5"></i>
+                        <h3 class="box-title mb-5">Tính công nợ</h3>
+                    </div>
+                    <div class="box-body pt10 pl0 pr0 pb0">
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <td>Ngày chốt</td>
+                                    <td id="lblNgayChotDuLieu">: __/__/____</td>
+                                </tr>
+                                <tr>
+                                    <td>Ngày thay đổi</td>
+                                    <td id="lblNgayThayDoi">: __/__/____</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="box-footer pd0" style="border-top:0 !important">
+                        <div class="pull-left">
+
+                        </div>
+                        <div class="pull-right">
+                            <a class="btn btn-primary"><i class="fa fa-calculator"></i> Tính</a>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- page script -->
+<script src="modules/thongke/scripts/theodoicongno.js?v=1.0.0.0"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['TheoDoiCongNo'] = new TheoDoiCongNo();
+    $(document).ready(function () {
+        main_doc.TheoDoiCongNo.init();
+    });
+</script>

@@ -1,0 +1,890 @@
+/* =========================================================================
+   TẦNG CẦU NỐI — màn cũ lột da bằng class ums- (vẫn chạy trong indexi.aspx)
+   -------------------------------------------------------------------------
+   Viết tay, được `python _harness/skin.py css` nối vào CUỐI ums-skin.css.
+   Mọi luật nằm dưới .ums-skin (phần tử gốc của màn) → không lan ra đầu
+   trang, menu trái, hay màn khác.
+
+   Ba việc:
+   1. Trung hoà kiểu Bootstrap 3 của các class PHẢI GIỮ vì JS bám vào
+      (btn, form-control — Corei đọc id theo hai class này).
+   2. Vẽ lại markup do JS gốc tự sinh bằng class cũ (nút trong ô bảng
+      "btn btn-default", ô td-center, phân trang của Corei).
+   3. Nối cơ chế tab của Bootstrap 3 (li.active + .tab-pane) với .ums-tabs.
+   ========================================================================= */
+
+/* ---------- phần tử gốc ----------
+   .ums-skin đặt lên CHÍNH section.content của màn — GIỮ NGUYÊN khung ngoài của vỏ
+   indexi (#main-content-wrapper > section.content > div.col-lg-12 …): vỏ định kiểu
+   theo đúng chuỗi đó (padding, bề ngang). KHÔNG đổi display / padding của nó ở đây. */
+.ums-skin {
+    color: var(--ums-ink);
+    font-family: var(--ums-font);
+    font-size: var(--ums-fz-14);
+    line-height: var(--ums-lh);
+    --ums-label-w: 180px;
+
+    /* Màu chủ đạo: Navy Dark Blue (#223771) theo yêu cầu thiết kế */
+    --ums-navy: #223771;
+    --ums-navy-d: #182852;
+    --ums-navy-l: #2c4589;
+    --ums-blue: #223771;
+    --ums-blue-d: #182852;
+    --ums-blue-h: #182852;
+}
+
+/* Vùng .zone-bus (mỗi lúc chỉ MỘT vùng hiện — slideUp / slideDown) chỉ là LỚP BỌC trong suốt;
+   khung trắng là .ums-panel bên trong (người dùng 2026-10-01). Vỏ có luật tô nền / bóng cho
+   vùng này nên phải !important. */
+.ums-skin .zone-bus,
+.ums-skin .zone-bus-GroupQuestionDetail {
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+/* Bộ lột da v1: bảng KHÔNG sát mép khung (khác _v2) — cách mép bằng đúng padding thân khung,
+   luôn có đường kẻ cuối (người dùng 2026-10-01). */
+.ums-skin .ums-panel>.ums-tablewrap {
+    margin: 0 var(--ums-sp-5) var(--ums-sp-5);
+    border-bottom: 1px solid var(--ums-line);
+}
+
+.ums-skin .ums-panel>.ums-panel__head+.ums-tablewrap {
+    margin-top: var(--ums-sp-5);
+}
+
+.ums-skin h3 {
+    margin: 0;
+}
+
+.ums-skin label {
+    font-weight: inherit;
+    margin-bottom: 0;
+    max-width: none;
+}
+
+/* ---------- 1. trung hoà Bootstrap 3 trên class móc ---------- */
+.ums-skin .btn.ums-btn,
+.ums-skin .btn.ums-iconbtn {
+    margin-bottom: 0;
+    background-image: none;
+    box-shadow: none;
+    touch-action: manipulation;
+    user-select: none;
+    cursor: pointer;
+}
+
+.ums-skin .btn.ums-btn {
+    line-height: 1;
+}
+
+.ums-skin a.ums-btn,
+.ums-skin a.ums-btn:hover,
+.ums-skin a.ums-btn:focus,
+.ums-skin a.ums-iconbtn,
+.ums-skin a.ums-iconbtn:hover {
+    text-decoration: none;
+}
+
+.ums-skin .btn.ums-btn:active,
+.ums-skin .btn.ums-btn.active {
+    box-shadow: none;
+}
+
+.ums-skin .ums-btn:focus-visible {
+    outline: 2px solid var(--ums-blue);
+    outline-offset: 2px;
+}
+
+.ums-skin div.ums-btn {
+    user-select: none;
+    cursor: pointer;
+}
+
+/* ---------- Nút chính (Primary) - Màu #223771 ---------- */
+.ums-skin .ums-btn--primary,
+.ums-skin .btn.btn-primary.ums-btn,
+.ums-skin .btn.btn-primary,
+.ums-skin a.ums-btn--primary,
+.ums-skin span.ums-btn--primary {
+    background-color: #223771 !important;
+    border-color: #223771 !important;
+    color: #ffffff !important;
+}
+
+.ums-skin .ums-btn--primary:hover,
+.ums-skin .btn.btn-primary.ums-btn:hover,
+.ums-skin .btn.btn-primary:hover,
+.ums-skin a.ums-btn--primary:hover,
+.ums-skin span.ums-btn--primary:hover,
+.ums-skin .ums-btn--primary:focus,
+.ums-skin .btn.btn-primary:focus {
+    background-color: #182852 !important;
+    border-color: #182852 !important;
+    color: #ffffff !important;
+}
+
+.ums-skin .form-control.ums-input,
+.ums-skin .form-control.ums-select {
+    display: block;
+    height: var(--ums-control-h);
+    padding: 0 var(--ums-sp-3);
+    font-size: var(--ums-fz-14);
+    line-height: normal;
+    color: var(--ums-ink);
+    box-shadow: none;
+}
+
+.ums-skin .ums-input--so {
+    width: 110px;
+}
+
+/* ---------- Box Filter - Nền #f4f4f4 bao toàn khung ---------- */
+.ums-skin .skin-filter-panel,
+.ums-skin .ums-panel.skin-filter-panel,
+.ums-skin .ums-panel:has(> .ums-panel__body > .skin-filter-box) {
+    background: #f4f4f4 !important;
+    border: 1px solid var(--ums-line);
+    border-radius: var(--ums-r-3);
+    margin-bottom: var(--ums-sp-3);
+    box-shadow: none;
+}
+
+.ums-skin .ums-panel:has(> .ums-panel__body > .skin-filter-box) > .ums-panel__body {
+    padding: var(--ums-sp-4) var(--ums-sp-4);
+}
+
+.ums-skin .ums-panel:has(> .ums-panel__body > .skin-filter-box) .skin-filter-box,
+.ums-skin .skin-filter-panel .skin-filter-box {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    margin-bottom: 0 !important;
+    box-shadow: none !important;
+}
+
+.ums-skin .skin-filter-panel {
+    background: #f4f4f4 !important;
+    border: 1px solid var(--ums-line);
+    border-radius: var(--ums-r-2);
+    padding: var(--ums-sp-3) var(--ums-sp-4);
+    margin-bottom: var(--ums-sp-3);
+}
+
+.ums-skin .skin-filter-box {
+    background: #f4f4f4 !important;
+    border: 1px solid var(--ums-line);
+    border-radius: var(--ums-r-2);
+    padding: var(--ums-sp-4) var(--ums-sp-4);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: var(--ums-sp-3);
+    margin-bottom: var(--ums-sp-3);
+}
+
+.ums-skin .ums-filter {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--ums-sp-2);
+}
+
+.ums-skin .ums-filter > .ums-field {
+    flex: 1 1 180px;
+    min-width: 130px;
+    margin-bottom: 0;
+}
+
+.ums-skin .ums-filter > .ums-field--fit {
+    flex: 0 0 auto;
+    min-width: auto;
+}
+
+.ums-skin .skin-filter-row {
+    display: flex;
+    gap: var(--ums-sp-2);
+    align-items: center;
+    width: 100%;
+}
+
+.ums-skin .skin-filter-row > .ums-field {
+    margin-bottom: 0;
+}
+
+
+.ums-skin .skin-filter-row > .skin-flex-search {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+}
+
+.ums-skin .skin-filter-row > .skin-field-fit {
+    flex: 0 0 auto !important;
+}
+
+.ums-skin .skin-self-end {
+    align-self: flex-end !important;
+}
+
+.ums-skin .skin-filter-row-1 {
+    display: flex;
+    gap: var(--ums-sp-2);
+    align-items: center;
+    width: 100%;
+    margin-bottom: var(--ums-sp-3);
+}
+
+.ums-skin .skin-filter-row-1 > .ums-field {
+    flex: 1 1 0;
+    min-width: 0;
+    margin-bottom: 0;
+}
+
+.ums-skin .skin-filter-row-2 {
+    display: flex;
+    gap: var(--ums-sp-2);
+    align-items: center;
+    width: 100%;
+}
+
+.ums-skin .skin-filter-row-2 > .ums-field--date {
+    flex: 0 0 130px;
+    margin-bottom: 0;
+}
+
+.ums-skin .skin-filter-row-2 > .ums-field--search {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin-bottom: 0;
+}
+
+.ums-skin .skin-filter-row-2 > .ums-field--btn {
+    flex: 0 0 auto;
+    margin-bottom: 0;
+}
+
+/* ---------- Thanh công cụ Báo cáo & Tác vụ ---------- */
+.ums-skin .skin-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--ums-sp-3);
+    margin-top: var(--ums-sp-3);
+    margin-bottom: var(--ums-sp-4);
+    width: 100%;
+}
+
+.ums-skin .skin-toolbar-group {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--ums-sp-2);
+}
+
+.ums-skin .skin-toolbar-group > * {
+    flex: 0 0 auto;
+}
+
+.ums-skin .skin-toolbar-group .chosen-container,
+.ums-skin .skin-toolbar-group .select2-container,
+.ums-skin .skin-toolbar-group select.ums-select,
+.ums-skin .skin-toolbar-group select.chosen-select,
+.ums-skin .skin-toolbar-group select.select-opt {
+    min-width: 160px;
+    max-width: 260px;
+    width: auto !important;
+}
+
+.ums-skin .skin-toolbar-group .dropdown {
+    display: inline-block;
+}
+
+.ums-skin .skin-mb-2 { margin-bottom: var(--ums-sp-2) !important; }
+.ums-skin .skin-mb-3 { margin-bottom: var(--ums-sp-3) !important; }
+.ums-skin .skin-mb-4 { margin-bottom: var(--ums-sp-4) !important; }
+.ums-skin .skin-pad-0 { padding: 0 !important; }
+.ums-skin .skin-pad-t-2 { padding-top: 2px !important; }
+.ums-skin .skin-pt-8 { padding-top: 8px !important; }
+.ums-skin .skin-flex-search { flex: 2 1 240px !important; }
+.ums-skin .skin-flex-1 { flex: 1 1 0 !important; min-width: 0 !important; }
+.ums-skin .skin-field-fit { flex: 0 0 auto !important; }
+.ums-skin .skin-w-full { width: 100% !important; }
+.ums-skin .skin-span-full { grid-column: 1 / -1 !important; }
+.ums-skin .skin-flex-between { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--ums-sp-2); }
+.ums-skin .skin-flex-wrap { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ums-sp-2); }
+.ums-skin .skin-flex-end { display: flex; justify-content: flex-end; }
+.ums-skin .skin-select-full { width: 100% !important; }
+.ums-skin .skin-matkhau-box { padding-left: 25px; }
+
+/* ---------- Khung Thông tin chi tiết (Info Box) ---------- */
+.ums-skin .skin-info-section {
+    background: #f8f9fa;
+    border: 1px solid var(--ums-line);
+    border-radius: var(--ums-r-2);
+    padding: var(--ums-sp-3) var(--ums-sp-4);
+    margin-bottom: var(--ums-sp-3);
+}
+
+.ums-skin .skin-info-section__title {
+    margin-bottom: var(--ums-sp-2);
+    display: flex;
+    align-items: center;
+    gap: var(--ums-sp-2);
+}
+
+.ums-skin .skin-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--ums-sp-2) var(--ums-sp-4);
+}
+
+.ums-skin .skin-info-grid--2col {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ums-sp-2) var(--ums-sp-4);
+}
+
+.ums-skin .skin-info-item {
+    display: flex;
+    align-items: baseline;
+    gap: var(--ums-sp-2);
+    font-size: var(--ums-fz-13);
+}
+
+.ums-skin .skin-info-label {
+    color: var(--ums-sub);
+    white-space: nowrap;
+    font-weight: 500;
+}
+
+.ums-skin .skin-info-value {
+    color: #223771 !important;
+    font-weight: 600;
+    word-break: break-word;
+}
+
+/* ---------- ô chọn select2 của Corei: luôn đầy ô ---------- */
+.ums-skin .ums-field__control>.select2-container,
+.ums-skin .ums-filter .select2-container {
+    width: 100% !important;
+}
+
+/* ô chọn thường (chosen-select của gốc KHÔNG được bọc plugin nào) */
+.ums-skin select.ums-select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 28px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5' viewBox='0 0 8 5'%3E%3Cpath d='M0 0h8L4 5z' fill='%23888'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 8px 5px;
+}
+
+/* ---------- dòng "tên : giá trị" chỉ xem ---------- */
+.ums-skin .ums-field--inline+.ums-field--inline {
+    margin-top: calc(var(--ums-sp-3) * -1);
+}
+
+.ums-skin .skin-gt {
+    display: flex;
+    align-items: center;
+    min-height: var(--ums-control-h);
+    color: var(--ums-blue);
+    font-weight: var(--ums-fw-semibold);
+}
+
+.ums-skin .skin-canh {
+    color: var(--ums-act-del);
+    font-weight: var(--ums-fw-semibold);
+}
+
+/* ---------- bố cục ---------- */
+.ums-skin .skin-2cot {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);
+    gap: var(--ums-sp-4);
+    align-items: start;
+}
+
+@media (max-width: 991px) {
+    .ums-skin .skin-2cot {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+.ums-skin .skin-2cot>.ums-stack>.ums-panel+.ums-panel {
+    margin-top: 0;
+}
+
+.ums-skin .skin-tach {
+    border-top: 1px solid var(--ums-line);
+}
+
+/* ---------- 3. tab Bootstrap 3 ---------- */
+.ums-skin ul.ums-tabs {
+    margin: 0;
+    list-style: none;
+}
+
+.ums-skin li.ums-tabs__item {
+    padding: 0;
+    list-style: none;
+}
+
+.ums-skin li.ums-tabs__item>a {
+    display: block;
+    padding: var(--ums-sp-3) var(--ums-sp-4);
+    color: inherit;
+    text-decoration: none;
+}
+
+.ums-skin li.ums-tabs__item.active {
+    border-bottom-color: var(--ums-blue);
+    color: var(--ums-blue);
+    font-weight: var(--ums-fw-bold);
+}
+
+.ums-skin .tab-content>.tab-pane {
+    padding: var(--ums-sp-5);
+}
+
+/* ---------- 2. markup JS gốc sinh ra trong bảng ---------- */
+.ums-skin .ums-table th.td-center,
+.ums-skin .ums-table td.td-center,
+.ums-skin .ums-table .text-center {
+    text-align: center;
+}
+
+.ums-skin .ums-table .td-left {
+    text-align: left;
+}
+
+.ums-skin .ums-table .td-right {
+    text-align: right;
+}
+
+.ums-skin .ums-table .td-fixed {
+    width: 1%;
+    white-space: nowrap;
+}
+
+.ums-skin .ums-table>tfoot>tr>td {
+    padding: var(--ums-sp-3);
+    background: var(--ums-surface-2);
+    border-top: 1px solid var(--ums-line-2);
+    font-weight: var(--ums-fw-semibold);
+}
+
+.ums-skin .ums-table>tbody>tr:hover>td {
+    background: var(--ums-surface-2);
+}
+
+/* nút trong ô: '<a class="btn btn-default …"><i class="fa fa-edit color-active"></i> Sửa</a>' */
+.ums-skin .ums-table td .btn.btn-default {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ums-sp-1);
+    height: var(--ums-control-h-sm);
+    padding: 0 var(--ums-sp-3);
+    border: 1px solid var(--ums-blue);
+    border-radius: var(--ums-r-1);
+    background: var(--ums-blue-l);
+    color: var(--ums-blue);
+    font-size: var(--ums-fz-13);
+    font-weight: var(--ums-fw-medium);
+    line-height: 1;
+    white-space: nowrap;
+    text-decoration: none;
+    box-shadow: none;
+}
+
+.ums-skin .ums-table td .btn.btn-default:hover {
+    background: #d6e4ff;
+}
+
+.ums-skin .ums-table td .btn.btn-default>i,
+.ums-skin .ums-table td .color-active {
+    color: inherit;
+}
+
+/* ---------- phân trang Corei (zone-pag-*, simplePagination) ---------- */
+.ums-skin [class*="zone-pag-header"],
+.ums-skin .zone-pag-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-wrap: wrap !important;
+    gap: var(--ums-sp-2) !important;
+    padding: var(--ums-sp-2) 0 !important;
+    margin-bottom: var(--ums-sp-3) !important;
+    color: var(--ums-ink-2);
+    font-size: var(--ums-fz-13);
+    clear: both !important;
+}
+
+.ums-skin [class*="zone-pag-header"] + table,
+.ums-skin [class*="zone-pag-header"] + .ums-table {
+    margin-top: var(--ums-sp-3) !important;
+}
+
+.ums-skin [class*="zone-pag-footer"],
+.ums-skin .zone-pag-footer {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-wrap: wrap !important;
+    gap: var(--ums-sp-2) !important;
+    padding: var(--ums-sp-3) 0 !important;
+    margin-top: var(--ums-sp-3) !important;
+    color: var(--ums-ink-2);
+    font-size: var(--ums-fz-13);
+    clear: both !important;
+}
+
+/* Khung "Hiển thị [ 10 ] dữ liệu" */
+.ums-skin [class*="zone-pag-header"] [class*="change-"],
+.ums-skin [id^="change"] {
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    float: none !important;
+    width: auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.ums-skin .aps-hienthi,
+.ums-skin .aps-dulieu {
+    float: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    font-style: italic !important;
+    color: var(--ums-ink-2) !important;
+    font-size: var(--ums-fz-13) !important;
+    line-height: 1 !important;
+}
+
+.ums-skin .aps-hienthi label,
+.ums-skin .aps-dulieu label {
+    margin: 0 !important;
+    padding: 0 !important;
+    font-weight: normal !important;
+    font-style: italic !important;
+    cursor: default;
+}
+
+/* Ô select số lượng hiển thị nhỏ gọn */
+.ums-skin .aps-hienthi-input {
+    float: none !important;
+    width: auto !important;
+    padding: 0 !important;
+    margin: 0 4px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+}
+
+.ums-skin .aps-hienthi-input .select2-container {
+    width: 62px !important;
+}
+
+.ums-skin .aps-hienthi-input .select2-container--default .select2-selection--single {
+    height: 24px !important;
+    min-height: 24px !important;
+    padding: 0 18px 0 6px !important;
+    font-size: 12px !important;
+    border: 1px solid var(--ums-line-2) !important;
+    border-radius: var(--ums-r-1) !important;
+    background: var(--ums-surface) !important;
+    line-height: 22px !important;
+    box-shadow: none !important;
+}
+
+.ums-skin .aps-hienthi-input .select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 22px !important;
+    padding: 0 !important;
+    font-size: 12px !important;
+    color: var(--ums-ink) !important;
+}
+
+.ums-skin .aps-hienthi-input .select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 22px !important;
+    width: 16px !important;
+    right: 2px !important;
+}
+
+.ums-skin .aps-hienthi-input select.select-opt {
+    height: 24px !important;
+    padding: 1px 4px !important;
+    font-size: 12px !important;
+    border-radius: var(--ums-r-1) !important;
+    border: 1px solid var(--ums-line-2) !important;
+}
+
+.ums-skin [class*="zone-pag-header"] [class*="filter-"] {
+    float: none !important;
+    width: auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    margin-left: auto !important;
+}
+
+.ums-skin .light-pagination li a,
+.ums-skin .light-pagination li span {
+    min-width: 32px;
+    height: 32px;
+    border: 1px solid var(--ums-line-2);
+    border-radius: var(--ums-r-1);
+    background: var(--ums-surface);
+    color: var(--ums-ink);
+    box-shadow: none;
+}
+
+.ums-skin .light-pagination li.active span {
+    background: var(--ums-blue);
+    border-color: var(--ums-blue);
+    color: #fff;
+}
+
+/* ---------- vùng xem trước / in ---------- */
+.ums-skin .skin-xemin {
+    padding: var(--ums-sp-5);
+    background: var(--ums-surface);
+    overflow-x: auto;
+}
+
+/* huy hiệu đếm do JS điền: chưa có số thì ẩn (không để chấm tròn trơ trọi) */
+.ums-skin .ums-badge:has(> span:empty) {
+    display: none;
+}
+
+/* ---------- ô tìm có nút kính lúp liền (input-group của gốc, vd phân quyền phê duyệt) ---------- */
+.ums-skin .skin-timkiem {
+    display: flex;
+    gap: var(--ums-sp-2);
+    align-items: center;
+}
+
+.ums-skin .skin-timkiem>.ums-input {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.ums-skin .skin-timkiem>.ums-btn {
+    flex: 0 0 auto;
+}
+
+/* ---------- danh sách người (cột trái, JS gốc sinh: ảnh .table-img | tên + email | nút .btn-circle) ---------- */
+.ums-skin .ums-table .tr-pointer {
+    cursor: pointer;
+}
+
+.ums-skin .ums-table>tbody>tr.tr-bg>td {
+    background: var(--ums-blue-l);
+}
+
+.ums-skin .ums-table img.table-img {
+    display: block;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--ums-surface-2);
+}
+
+.ums-skin .ums-table td .btn.btn-default.btn-circle {
+    width: var(--ums-control-h-sm);
+    padding: 0;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.ums-skin .skin-dsnguoi .italic {
+    color: var(--ums-ink-2);
+    font-size: var(--ums-fz-13);
+    font-style: normal;
+}
+
+/* ---------- Kéo thả câu hỏi & đề thi (tách từ HTML gốc) ---------- */
+@-webkit-keyframes myAnimation {
+    0% { color: red; }
+    50% { color: #fff; }
+    100% { color: red; }
+}
+
+@keyframes myAnimation {
+    0% { color: red; }
+    50% { color: #fff; }
+    100% { color: red; }
+}
+
+.ums-skin .cssGianLan {
+    font-size: 24px;
+    font-weight: bold;
+    animation: myAnimation 700ms infinite;
+    cursor: pointer;
+}
+
+.ums-skin .question {
+    margin-bottom: 30px;
+    padding: 15px;
+    border: 1px solid var(--ums-line);
+    border-radius: var(--ums-r-2);
+    background: var(--ums-surface-2);
+}
+
+.ums-skin .question-text {
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: var(--ums-ink);
+    line-height: 1.6;
+}
+
+.ums-skin .draggable-word {
+    display: inline-block;
+    padding: 6px 10px;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    margin: 2px;
+    cursor: move;
+    font-size: 13px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+
+.ums-skin .draggable-word:hover {
+    background: #45a049;
+    transform: translateY(-1px);
+}
+
+.ums-skin .draggable-word.ui-draggable-dragging {
+    opacity: 0.8;
+    transform: rotate(3deg);
+}
+
+.ums-skin .draggable-word.used {
+    background: #9E9E9E;
+    color: #fff;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.ums-skin .draggable-word.used:hover {
+    background: #9E9E9E;
+    transform: none;
+}
+
+.ums-skin .answer-slot {
+    display: inline-block;
+    min-width: 100px;
+    height: 35px;
+    border: 2px dashed #ccc;
+    border-radius: 4px;
+    margin: 2px;
+    padding: 6px 10px;
+    text-align: center;
+    background: #f0f0f0;
+    vertical-align: middle;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.ums-skin .answer-slot.highlight {
+    border-color: #2196F3;
+    background: #E3F2FD;
+}
+
+.ums-skin .answer-slot.filled {
+    border-color: #4CAF50;
+    background: #E8F5E8;
+    cursor: move;
+}
+
+.ums-skin .answer-slot.correct {
+    border-color: #4CAF50;
+    background: #C8E6C9;
+    color: #2E7D32;
+}
+
+.ums-skin .answer-slot.incorrect {
+    border-color: #F44336;
+    background: #FFCDD2;
+    color: #C62828;
+}
+
+.ums-skin .answers-section {
+    margin: 20px 0;
+    padding: 15px;
+    background: #f0f8ff;
+    border-radius: 8px;
+    border-left: 4px solid #2196F3;
+}
+
+.ums-skin .answers-title {
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #2196F3;
+    font-size: 16px;
+}
+
+.ums-skin .answer-item {
+    margin: 10px 0;
+    padding: 10px;
+    background: white;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
+
+.ums-skin .answer-label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.ums-skin .drop-zone {
+    min-height: 50px;
+    border: 2px dashed #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 5px 0;
+    background: #f9f9f9;
+    text-align: center;
+    color: #666;
+}
+
+.ums-skin .drop-zone.highlight {
+    border-color: #2196F3;
+    background: #E3F2FD;
+}
+
+.ums-skin .drop-zone.filled {
+    border-color: #4CAF50;
+    background: #E8F5E8;
+}
+
+.ums-skin .drop-zone.correct {
+    border-color: #4CAF50;
+    background: #C8E6C9;
+    color: #2E7D32;
+}
+
+.ums-skin .drop-zone.incorrect {
+    border-color: #F44336;
+    background: #FFCDD2;
+    color: #C62828;
+}
+
+.ums-skin .word-in-answer {
+    display: inline-block;
+    padding: 4px 8px;
+    background: #4CAF50;
+    color: white;
+    border-radius: 3px;
+    margin: 2px;
+    cursor: move;
+    font-size: 12px;
+}

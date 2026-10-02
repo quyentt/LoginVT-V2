@@ -1,0 +1,305 @@
+﻿<style>
+    .hour-row {
+        height: 100px;
+    }
+
+    .date-body {
+        height: unset;
+    }
+
+    .date-header .day {
+        font-size: 18px;
+    }
+
+    .task-header {
+        max-height: unset;
+        width: unset;
+    }
+
+    .task-1 .title {
+        font-weight: bold
+    }
+
+    /*@media (min-width: 992px) {
+        .modal-lg, .modal-xl {
+            max-width: 90%;
+        }
+    }*/
+
+    .aps-lichhoc .block-calendar ul.weekdays,
+    .aps-lichhoc .block-calendar ul.days {
+        display: grid !important;
+        grid-template-columns: repeat(7, 1fr) !important;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        font-size: 14px;
+    }
+
+    .aps-lichhoc .block-calendar ul.weekdays > li,
+    .aps-lichhoc .block-calendar ul.days > li {
+        width: auto !important;
+        max-width: none !important;
+        min-width: 0 !important;
+        flex: unset !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 9px 0;
+        cursor: pointer;
+    }
+
+    .aps-lichhoc .block-calendar ul.days > li.today:not(.active) span {
+        width: 100%;
+        max-width: 32px;
+        aspect-ratio: 1 / 1;
+        background-color: var(--color-link, #2f55a4);
+        color: #fff;
+        border-radius: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Khối sự kiện quá ngắn (thi 30-90 phút) khiến tiêu đề + mô tả + thanh
+       đánh giá cảm xúc (- icon +) đè lên nhau, chữ bị cắt khó đọc.
+       Scoped riêng trang này, không sửa calendar.css dùng chung. */
+    .aps-lichhoc .day-of-week .task {
+        min-height: 112px;
+    }
+
+    .aps-lichhoc .day-of-week .task .task-description {
+        padding-bottom: 28px;
+    }
+
+    .aps-lichhoc .day-of-week .task .task-description .eval {
+        bottom: 3px;
+        right: 3px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+    }
+</style>
+<div class="one-door study-space aps-lichhoc">
+    <div class="row register-school my-calendar">
+        <div class="col-12 col-md-9 register-school-right">
+            <!-- Lớp học phần không có lịch chi tiết — đặt TRÊN card "Lịch cá nhân" (2026-09-17).
+                 TKB của sinh viên đang xem (main_doc.InBangDiem.strSinhVien_Id) nên dùng API phía SV. -->
+            <div class="box-shadow mb-20 zoneTKBKhongLichChiTiet" id="zoneTKBKhongLichChiTiet">
+                <div class="news-search-form">
+                    <p class="me-auto color-dask-blue fw-bold fs-18 mb-10"><i class="far fa-users-class mr-10"></i>Lớp
+                        học phần (không có lịch chi tiết)</p>
+                </div>
+                <div class="tkb-khong-lich-chi-tiet aps-table-select scroll-table-x pl20 pr20 pb20">
+                    <table class="table transcrip-table tabs-scores fs-14 table-noborder tblTKBKhongLichChiTiet"
+                        id="tblTKBKhongLichChiTiet">
+                        <thead>
+                            <tr>
+                                <th scope="col">Mã lớp</th>
+                                <th scope="col">Tên lớp</th>
+                                <th scope="col">Hình thức học</th>
+                                <th scope="col">Ngày bắt đầu</th>
+                                <th scope="col">Ngày kết thúc</th>
+                                <th scope="col">Ghi chú</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="box-shadow ">
+                <div class="news-search-form">
+                    <p class="me-auto color-dask-blue fw-bold fs-18">Lịch cá nhân <span id="lblSinhVien"></span></p>
+
+                </div>
+                <div class="lich-canhan">
+                    <div class="calendar-week-table">
+                        <div class="date-header" id="date-header">
+                            <div class="date">
+                                <i class="fal fa-clock day color-66"></i>
+                                <p class="m-0 text">GMT+7</p>
+                            </div>
+                            <div class="day-of-week">
+                                <div class="day">9</div>
+                                <div class="text">Mon</div>
+                            </div>
+                            <div class="day-of-week">
+                                <div class="day">10</div>
+                                <div class="text">Tue</div>
+                            </div>
+                            <div class="day-of-week">
+                                <div class="day">11</div>
+                                <div class="text">Wed</div>
+                            </div>
+                            <div class="day-of-week">
+                                <div class="day">12</div>
+                                <div class="text">Thu</div>
+                            </div>
+                            <div class="day-of-week">
+                                <div class="day">13</div>
+                                <div class="text">Fri</div>
+                            </div>
+                            <div class="day-of-week">
+                                <div class="day">14</div>
+                                <div class="text">Sat</div>
+                            </div>
+                            <div class="day-of-week">
+                                <div class="day">15</div>
+                                <div class="text">Sun</div>
+                            </div>
+                        </div>
+                        <div class="date-body" id="datebody">
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-3 register-school-left">
+            <!--   Box -->
+            <div class="box-shadow  p-0 block-calendar mt-4 mt-md-0">
+                <div class="block-label top-radius bg-dask-blue">
+                    <span id="thang"></span> - <span id="nam"></span>
+                    <div class="next-prev-month month">
+                        <a class="prev" style="color: white"><i class="fal fa-chevron-left me-4"></i></a>
+                        <a class="next" style="color: white; padding-left: 20px"><i
+                                class="fal fa-chevron-right"></i></a>
+                    </div>
+                </div>
+                <div class="calendar-block-cover">
+                    <ul class="weekdays">
+                        <li>T2</li>
+                        <li>T3</li>
+                        <li>T4</li>
+                        <li>T5</li>
+                        <li>T6</li>
+                        <li>T7</li>
+                        <li>Cn</li>
+                    </ul>
+                    <ul class="days"></ul>
+                </div>
+            </div>
+            <div class="mt-4">
+                <p class="search pd-15">
+                <div class="dropdown" id="zonebtnBaoCao_LichGiang">
+                </div>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- modal khối kiến thức chuyên ngành-->
+<div class="modal fade finance-modal my-calendar modal-calender-detail" id="my_calendar" tabindex="-1" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="finance-user-info in-modal ">
+                    <p id="lblHocPhan"></p>
+
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-3">
+                <div class="calendar-form-top mb-3">
+                    <p class="m-0" id="lblLopHocPhan"></p>
+                    <span class="fs-14 ms-auto me-4">Từ khóa điểm danh</span>
+                    <div class="form-item d-flex form-add-info">
+                        <div class="input-group no-icon" style="width:160px;">
+                            <input class="form-control fs-14" style=" height: 32px" id="txtTuKhoaDiemDanh"
+                                placeholder="Từ khóa điểm danh">
+                        </div>
+                    </div>
+                    <button class="btn btn-sm btn-outline-dask-blue min-w-auto fs-14" id="btnSaveChuyenCan"><i
+                            class="fal fa-save me-2"></i><span>Lưu</span></button>
+                    <!--<button class="btn btn-sm btn-outline-orange min-w-auto fs-14" id="btnDiemDanhTuDong"><i class="fas fa-user-edit me-2"></i><span>Điểm danh tự động</span></button>-->
+                </div>
+                <div class="aps-table-select scroll-table-x">
+                    <table
+                        class="table transcrip-table tabs-scores fs-14 table-bordered table-noborder tblNhapChuyenCan"
+                        id="tblNhapChuyenCan">
+                        <thead>
+                            <tr>
+                                <th class="text-center w-50px" scope="col">STT</th>
+                                <th scope="col">Mã số</th>
+                                <th scope="col">Họ đệm</th>
+                                <th scope="col">Tên</th>
+                                <!--<th class="text-center" scope="col">Có mặt(44)</th>
+                            <th class="text-center" scope="col">Vắng mặt(2)</th>-->
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- modal khối kiến thức chuyên ngành-->
+<div class="modal fade finance-modal my-calendar" id="modal_LichThi" tabindex="-1" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="finance-user-info in-modal ">
+                    <p><b>Chi tiết lịch thi</b></p>
+
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-2">
+                <div class="calendar-modal-title">
+                    Học phần thi: <span id="lblHocPhanThi"></span>
+                </div>
+                <div class="calendar-modal-meta">
+                    <div class="left">
+                        <div class="item">
+                            <span>Hình thức thi: </span> <b id="lblHinhThucThi"></b>
+                        </div>
+                        <div class="item">
+                            <span>Phòng thi: </span> <b id="lblPhongThi"></b>
+                        </div>
+                    </div>
+                    <div class="right">
+                        <div class="item">
+                            <span>Ngày thi: </span> <b id="lblNgayThi"></b>
+                        </div>
+                        <div class="item">
+                            <span>Giờ thi: </span> <b id="lblGioThi"></b>
+                        </div>
+                    </div>
+                </div>
+                <div class="calendar-modal-title">
+                    Lịch thi trong tháng
+                </div>
+                <table class="calendar-modal-table table transcrip-table tabs-scores " id="tblLichThi">
+                    <thead>
+                        <tr>
+                            <th class="text-center" scope="col">STT</th>
+                            <th scope="col">Hình thức thi</th>
+                            <th scope="col">Ngày thi</th>
+                            <th scope="col">Giờ thi</th>
+                            <th scope="col">Phòng thi</th>
+                            <th scope="col">Học phần thi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- page script -->
+<script src="modules/nhapdiem/script/lichgiang.js?v=1.0.0.3"></script>
+<script type="text/javascript">
+    //var main_doc = {};
+    main_doc['LichGiang'] = new LichGiang();
+    $(document).ready(function () {
+        main_doc.LichGiang.init();
+    });
+</script>

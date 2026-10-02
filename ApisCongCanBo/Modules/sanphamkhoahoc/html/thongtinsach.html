@@ -1,0 +1,459 @@
+﻿<style>
+    .btn-white {
+        background-color: #fff;
+        -webkit-box-shadow: 1px 1px 1px 1px #ccc;
+        -moz-box-shadow: 1px 1px 1px 1px #ccc;
+        /* Firefox 3.5 - 3.6 */
+        box-shadow: 1px 1px 1px 1px #ccc;
+        height: 26px;
+    }
+
+    .lbTinhTrang {
+        float: right;
+        font-weight: bold;
+        border: 4px solid;
+        opacity: 0.5;
+        color: red;
+        -ms-transform: rotate(10deg);
+        /* IE 9 */
+        -webkit-transform: rotate(10deg);
+        /* Safari 3-8 */
+        transform: rotate(10deg);
+    }
+</style>
+<section class="content aps-congcanbo">
+    <div class="row aps-spkh-thongtinsach">
+        <!-- /.left-content -->
+        <div class="col-lg-3 box-shadow aps-box-l aps-spkh-thongtinsach-l">
+            <div class="box box-solid box-search pd15">
+                <div class="box-body pd0">
+                    <!-- Bộ tìm kiếm -->
+                    <div class="bss-item pd0">
+                        <select id="dropSearch_NamDanhGia_DT" class="select-opt">
+                            <option value="">--Tất cả năm đánh giá--</option>
+                        </select>
+                    </div>
+                    <div class="bs-item input-group mt-10">
+                        <input type="text" id="txtSearch_TuKhoa" class="form-control"
+                            placeholder="Nhập từ khóa tìm kiếm">
+                        <span class="input-group-addon poiter btnExtend_Search" title="Search">
+                            <i class="fa fa-search"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="box box-solid pd15 aps-spkh-thongtinsach-list">
+                <div class="box-header pd0">
+                    <h3 class="box-title" title="Danh sách sản phẩm">
+                        <i class="fa-solid fa-books"></i> Danh sách sản phẩm
+                    </h3>
+                    <span class="pull-right badge bg-light-blue" style="margin-top:5px !important;">
+                        <span id="lblTTS_Tong"></span>
+                    </span>
+                </div>
+                <div class="box-body pd0 mt-5">
+                    <table id="tblTTS" class="table table-hover">
+                        <tbody>
+                            <!-- Load from js -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- /.right-content -->
+        <div class="col-lg-9 pl20 aps-box-r aps-spkh-thongtinsach-r">
+            <!-- box Notify_TTS -->
+            <div class="box box-solid zone-bus pd0" id="zone_notify_TTS">
+                <div class="box-header with-border bg-blue">
+                    <h3 class="box-title color-white" style="color: #fff !important;">
+                        <i class="fa fa-info-circle"></i>Thông tin chung
+                    </h3>
+                </div>
+                <div class="box-body pd20">
+                    <div class="col-sm-12">
+                        <p>Hôm nay bạn có sản phẩm mới không?
+                            <a class="btn btnAdd btn-outline-primary ml-10" href="#"><i class="fa fa-plus"></i> Thêm
+                                mới</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- box Edit_TTS -->
+            <div class="box box-solid form-container zone-bus zone_input_TTS" id="zone_input_TTS">
+                <div class="box-header with-border">
+                    <h3 class="box-title"> <span class="myModalLabel">
+                            <i class="fa fa-plus"></i> Thêm mới - </span> Thông tin sách</h3>
+                    <div class="pull-right">
+                        <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times"></i></a>
+                    </div>
+                </div>
+                <div class="box-body pd0">
+                    <div class="col-sm-12 box-view aps-add-new pd20 pt10">
+                        <!-- 1. Noi dung sach -->
+                        <div class="row aps-form">
+                            <!--row aps-lable-name-->
+                            <div class="row aps-lable-name">
+                                <p class="group-group-title-name border-0 mb-0">
+                                    <span class="badge bg-blue" style="color:#3380db !important">Thông tin sách</span>
+                                </p>
+                            </div>
+                            <!--row 2-->
+                            <div class="row aps-form-item">
+                                <div class="col-sm-2 aps-form-lable">Tên sách <span class="color-red">(*)</span></div>
+                                <div class="col-sm-8 aps-form-input">
+                                    <input id="txtTTS_Ten" class="form-control" />
+                                </div>
+                                <div class="col-sm-2 aps-form-btn pl15">
+                                    <a class="btn btn-outline-primary btnSearchTTS_BaiBao ml-10" id=""><i
+                                            class="fa fa-search"></i> Tìm sách</a>
+                                </div>
+                            </div>
+                            <!--row 3-->
+                            <div class="row aps-form-item">
+                                <div class="col-sm-2 aps-form-lable">Năm xuất bản <span class="color-red">(*)</span>
+                                </div>
+                                <div class="col-sm-2 aps-form-input">
+                                    <input id="txtTTS_NamXuatBan" class="form-control" />
+                                </div>
+                                <div class="col-sm-2 aps-form-lable text-right pr15">Tháng xuất bản <span
+                                        class="color-red" style="padding-left: 5px !important;">(*)</span></div>
+                                <div class="col-sm-2 aps-form-input">
+                                    <input id="txtTTS_ThangXuatBan" class="form-control" />
+                                </div>
+                                <div class="col-sm-2 aps-form-lable text-right pr15">Lần xuất bản <span
+                                        class="color-red ml-5" style="padding-left: 5px !important;">(*)</span></div>
+                                <div class="col-sm-2 aps-form-input">
+                                    <select id="dropTTS_LanXuatBan" class="select-opt">
+                                        <option value="">--- Chọn lần xuất bản --</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <!--row 4-->
+                            <div class="row aps-form-item">
+                                <div class="col-sm-2 aps-form-lable">Số tác giả <span class="color-red">(*)</span></div>
+                                <div class="col-sm-2 aps-form-input">
+                                    <input id="txtTTS_SoTacGia" class="form-control" />
+                                </div>
+                                <div class="col-sm-2 aps-form-lable text-right pr15">Số trang viết</div>
+                                <div class="col-sm-2 aps-form-input">
+                                    <input id="txtTTS_SoTrangViet" class="form-control" />
+                                </div>
+                                <div class="col-sm-2 aps-form-lable text-right pr15">Tổng số trang</div>
+                                <div class="col-sm-2 aps-form-input">
+                                    <input id="txtTTS_TongSoTrang" class="form-control" />
+                                </div>
+                            </div>
+                            <!--row 5-->
+                            <div class="row aps-form-item">
+                                <div class="col-sm-2 aps-form-lable">Nhà xuất bản<span class="color-red">(*)</span>
+                                </div>
+                                <div class="col-sm-2 aps-form-input">
+                                    <input id="txtTTS_NhaXuatBan" class="form-control" />
+                                </div>
+                                <div class="col-sm-2 aps-form-lable text-right pr15">Số ISBN</div>
+                                <div class="col-sm-2 aps-form-input">
+                                    <input id="txtTTS_ISSN" class="form-control" />
+                                </div>
+                                <div class="col-sm-2 aps-form-lable text-right pr15">Số tác giả trong
+                                    <span class="cosoxet">trường</span>
+                                </div>
+                                <div class="col-sm-2 aps-form-input">
+                                    <input id="txtTTS_SoTacGiaTrongTruong" class="form-control" />
+                                </div>
+                            </div>
+
+                            <!--row 6-->
+                            <div class="row aps-form-item">
+                                <div class="col-sm-2 aps-form-lable">Lĩnh vực</div>
+                                <div class="col-sm-2 aps-form-input">
+                                    <select id="dropTTS_LinhVuc" class="select-opt">
+                                        <option value="">--- Chọn lĩnh vực --</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-2 aps-form-lable text-right pr15">
+                                    Loại sách <span class="color-red ml-5">(*)</span>
+                                </div>
+                                <div class="col-sm-2 aps-form-input">
+                                    <select id="dropTTS_LoaiSach" class="select-opt">
+                                        <option value="">--- Chọn loại sách--</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-2 aps-form-lable text-right pr15">Số tín chỉ</div>
+                                <div class="col-sm-2 aps-form-input">
+                                    <input id="txtTTS_SoTinChi" class="form-control" />
+                                </div>
+                            </div>
+                            <!--row 2-->
+                            <div class="row aps-form-item">
+                                <div class="col-sm-2 aps-form-lable">Trích dẫn</div>
+                                <div class="col-sm-10 aps-form-input">
+                                    <textarea id="txtTTS_TrichDanPubmed" class="form-control min-h-168"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2. Minh chung -->
+                        <div class="row aps-form mt-25">
+                            <!--row aps-lable-name-->
+                            <div class="row aps-lable-name">
+                                <p class="group-group-title-name border-0 mb-0">
+                                    <span class="badge bg-blue" style="color:#198754 !important">Nội dung minh
+                                        chứng</span>
+                                </p>
+                            </div>
+                            <!--row 2-->
+                            <div class="row aps-form-item">
+                                <div class="col-sm-2 aps-form-lable">Nội dung</div>
+                                <div class="col-sm-10 aps-form-input">
+                                    <textarea id="txtTTS_NoiDungMinhChung" class="form-control min-h-168"></textarea>
+                                </div>
+                            </div>
+                            <!--row 3-->
+                            <div class="row aps-form-item">
+                                <div class="col-sm-2 aps-form-lable">File đính kèm</div>
+                                <div class="col-sm-2 aps-form-input pt5">
+                                    <div id="txtTTS_FileDinhKem"></div>
+                                </div>
+                                <div class="col-sm-8 aps-form-note pl15" style="line-height: 20px">
+                                    <b>Chú ý:</b> File đính kèm là pdf chứa các hình ảnh (trang bìa, trang đầu, trang
+                                    cuối, mục lục, số ISBN). Có thể ghép file tại: <a
+                                        href="https://smallpdf.com/vi">https://smallpdf.com/vi</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3. Thanh vien tham gia -->
+                        <div class="row aps-form mt-25">
+                            <!--row aps-lable-name-->
+                            <div class="row">
+                                <p class="group-group-title-name border-0 mb-0">
+                                    <span class="badge bg-blue" style="color:#FF0000 !important">Thành viên trong 
+                                        <span class="cosoxet">trường</span> tham gia</span>
+                                </p>
+                            </div>
+                            <!--row 2-->
+                            <div class="row aps-form-table">
+                                <table id="tblInput_TTS_ThanhVien" class="table table-hover mr-0 mb-10 tblInput_TTS_ThanhVien table-border">
+                                    <thead>
+                                        <tr>
+                                            <td class="td-fixed td-center">#</td>
+                                            <td class="td-center">Hình ảnh</td>
+                                            <td>Họ tên</td>
+                                            <td style="width: 250px">Vai trò</td>
+                                            <td class="td-center">Tỷ lệ tham gia</td>
+                                            <td class="td-center td-fixed">Xóa</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!--<tr><td colspan="5">Hãy chọn nhân sự</td></tr>-->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!--row 3-->
+                            <div class="row aps-form-btn">
+                                <div class="pull-right">
+                                    <a class="btn btn-outline-primary btnSearchTTS_NhanSu" id="">
+                                        <i class="fa fa-plus mr-0"></i>Thêm thành viên</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 4. Thanh vien tham gia -->
+                        <div class="row aps-form mt-25">
+                            <!--row aps-lable-name-->
+                            <div class="row">
+                                <p class="group-group-title-name border-0 mb-0">
+                                    <span class="badge bg-blue" style="color:#ff0081 !important">
+                                        Thành viên ngoài <span class="cosoxet">trường</span> tham gia</span>
+                                </p>
+                            </div>
+                            <!--row 2-->
+                            <div class="row aps-form-table">
+                                <table id="tblInput_TTS_ThanhVien_NgoaiTruong" class="table table-hover mr-0 mb-10 tblInput_TTS_ThanhVien_NgoaiTruong table-border">
+                                    <thead>
+                                        <tr>
+                                            <td class="td-fixed td-center">#</td>
+                                            <td>Họ tên</td>
+                                            <td style="width: 250px">Vai trò</td>
+                                            <td class="td-center td-fixed">Xóa</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- load from js -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!--row 3-->
+                            <div class="row aps-form-btn mb-20">
+                                <div class="pull-right">
+                                    <a class="btn btn-outline-primary btnSearchTTS_NhanSu_NgoaiTruong" id="">
+                                        <i class="fa fa-plus mr-0"></i>Thêm thành viên</a>
+                                </div>
+                            </div>
+                            <div class="col-sm-2 aps-form-lable">Thành viên khác</div>
+                            <div class="col-sm-10 aps-form-input">
+                                <input id="txtSach_NgoaiTruongKhac" class="form-control" />
+                            </div>
+                        </div>
+
+                        <!-- 5. Sản phẩm thuộc đề tài-->
+                        <div class="row aps-form mt-25">
+                            <!--row aps-lable-name-->
+                            <div class="row aps-lable-name">
+                                <p class="group-group-title-name border-0 mb-0">
+                                    <span class="badge bg-blue" style="color:#e300ff !important">Sản phẩm thuộc đề
+                                        tài</span>
+                                </p>
+                            </div>
+                            <!--row 2-->
+                            <div class="row aps-form-item">
+                                <div class="col-sm-2 aps-form-lable">Tên đề tài</div>
+                                <div class="col-sm-4 aps-form-input">
+                                    <select id="dropTTS_DeTai" class="select-opt">
+                                        <option value="">--- Chọn đề tài--</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-6 aps-form-note pl15 line-38">
+                                    <b>Chú ý:</b> Nếu sản phẩm không thuộc đề tài nào thì bỏ qua mục này
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box-footer">
+                        <div class="pull-right">
+                            <!--<a class="btn btn-default btnReWrite" href="#" title="Xóa trắng toàn bộ thông tin nhập"><i class="fa fa fa-eraser"></i> Nhập tiếp</a>-->
+                            <a class="btn btn-default btnClose" href="#" title="Close">
+                                <i class="fa fa-times-circle"></i> Đóng</a>
+                            <a id="btnSave_TTS" class="btn btn-primary"><i class="fa fa-save"></i> Lưu</a>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<div class="modal fade aps-modal-nhansu" id="modal_nhansu" role="dialog" aria-labelledby="myModalLabel"
+    aria-hidden="true">
+    <!-- load from js -->
+</div>
+<div class="modal fade aps-modal-nhansu" id="modal_TimBaiBao" role="dialog" aria-labelledby="myModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" style="width:80%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+                <h4 class="modal-title modal-name"><i class="fa fa-search"></i> Tìm kiếm sách</h4>
+            </div>
+            <div class="modal-body" id="modalContent">
+                <!--row 2-->
+                <div class="row aps-form-item">
+                    <div class="col-sm-3">
+                        <div class="box box-solid">
+                            <div class="box-body">
+                                <div class="search">
+                                    <div class="item-modal">
+                                        <p class="group-title"><i class="fa fa-ellipsis-v"></i><i
+                                                class="fa fa-ellipsis-v"></i> Tìm kiếm</p>
+                                    </div>
+                                    <div class="item-modal">
+                                        <input id="txtSearchModal_TTS_TuKhoa" class="form-control"
+                                            placeholder="Nhập từ khóa tìm kiếm" />
+                                    </div>
+                                    <div class="item-modal">
+                                        <select id="dropSearchModal_TTS_DonVi" class="select-opt"
+                                            style="width:100% !important">
+                                            <option value=""> -- Chọn đơn vị --</option>
+                                        </select>
+                                    </div>
+                                    <div class="item-modal">
+                                        <select id="dropSearchModal_TTS_LinhVuc" class="select-opt"
+                                            style="width:100% !important">
+                                            <option value=""> -- Chọn lĩnh vực--</option>
+                                        </select>
+                                    </div>
+                                    <div class="item-modal">
+                                        <a class="btn btn-default" href="#" id="btnSearch_Modal_TTS"><i
+                                                class="fa fa-search fa-customer"></i> Tìm kiếm</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-9">
+                        <div class="box box-solid">
+                            <div class="box-body">
+                                <div class="item-modal">
+                                    <p class="group-title"><i class="fa fa-ellipsis-v"></i><i
+                                            class="fa fa-ellipsis-v"></i> Danh sách</p>
+                                </div>
+                                <div class="scroll-table-x">
+                                    <table id="tblModal_TTS" class="table">
+                                        <thead>
+                                            <tr>
+                                                <th class="td-fixed td-center">Stt</th>
+                                                <th class="td-left">Tên sách</th>
+                                                <th class="td-left">Loại sách</th>
+                                                <th class="td-left">Lĩnh vực</th>
+                                                <th class="td-left">Thành viên</th>
+                                                <th class="td-fixed td-center">#</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" id="btnCancel"><i
+                        class="fa fa-times-circle"></i> Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- page script -->
+<script src="modules/sanphamkhoahoc/script/thongtinsach.js?v=1.0.3.1"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['ThongTinSach'] = new ThongTinSach();
+    $(document).ready(function () {
+        main_doc.ThongTinSach.init();
+    });
+</script>
+<!-- FIX 2026-08-26: Select2 trong modal — re-init voi dropdownParent = modal
+     de popup nam trong modal, khong lech / che noi dung. Universal handler,
+     an toan khi modal khong co select. -->
+<script>
+(function () {
+    if (typeof jQuery === 'undefined') return;
+    var $ = jQuery;
+    $(document).off('shown.bs.modal.__s2fix').on('shown.bs.modal.__s2fix', '.modal', function () {
+        var $modal = $(this);
+        $modal.find('select.select-opt, select[id^="drop"]').each(function () {
+            var $sel = $(this);
+            try {
+                if ($sel.hasClass('select2-hidden-accessible')) $sel.select2('destroy');
+            } catch (e) {}
+            $sel.select2({ dropdownParent: $modal, width: '100%' });
+        });
+    });
+})();
+</script>
+<style>
+    .modal .select2-container--open,
+    .modal .select2-container--open .select2-dropdown {
+        z-index: 100060 !important;
+    }
+    .modal .select2-results__options {
+        max-height: 220px !important;
+        overflow-y: auto !important;
+    }
+</style>

@@ -1,0 +1,88 @@
+/* Kiểu riêng của module "Thủ tục hành chính" (Cổng sinh viên).
+   Chỉ giữ những gì tầng chung không có: lưới thẻ yêu cầu rộng hơn mặc định,
+   khối trao đổi trong thẻ, chấm sao, khung xem kết quả. */
+
+/* Thẻ dịch vụ / thẻ yêu cầu: mặc định .ums-cards là 230px — thẻ yêu cầu có
+   khối trao đổi bên trong nên cần rộng hơn. */
+.ttc-cards--yc { grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); }
+
+/* Ảnh minh hoạ của một dịch vụ trong lưới "Các dịch vụ" */
+.ttc-dv__anh {
+    display: grid;
+    place-items: center;
+    height: 96px;
+    margin-bottom: var(--ums-sp-2);
+    background: var(--ums-surface);
+    border-radius: var(--ums-r-1);
+    overflow: hidden;
+}
+.ttc-dv__anh img { max-width: 100%; max-height: 96px; object-fit: contain; }
+.ttc-dv__anh i { font-size: 34px; color: var(--ums-ink-3); }
+.ttc-dv__ten { font-weight: var(--ums-fw-semibold); color: var(--ums-navy); text-align: center; }
+
+/* ---------- Khối trao đổi (tin nhắn) ---------------------------------- */
+.ttc-bl { margin-top: var(--ums-sp-2); border-top: 1px dotted #d3d3d3; padding-top: var(--ums-sp-2); }
+.ttc-bl__ds { display: flex; flex-direction: column; gap: var(--ums-sp-2); }
+
+.ttc-bl__item {
+    padding: var(--ums-sp-2) var(--ums-sp-3);
+    border-radius: var(--ums-r-1);
+    background: var(--ums-surface);
+    font-size: var(--ums-fz-12);
+}
+.ttc-bl__item.is-gv { background: #eaf2ff; }
+
+.ttc-bl__dau { display: flex; align-items: center; gap: var(--ums-sp-2); }
+.ttc-bl__anh {
+    display: grid; place-items: center;
+    width: 26px; height: 26px; flex: 0 0 26px;
+    border-radius: 50%; overflow: hidden;
+    background: var(--ums-surface-2); color: var(--ums-ink-3);
+}
+.ttc-bl__anh img { width: 100%; height: 100%; object-fit: cover; }
+.ttc-bl__ten { display: flex; flex-direction: column; line-height: 1.25; min-width: 0; }
+.ttc-bl__ten span { color: var(--ums-ink-2); font-size: var(--ums-fz-11); }
+.ttc-bl__xoa { margin-left: auto; }
+.ttc-bl__noi { margin-top: 4px; color: var(--ums-ink); }
+.ttc-bl__ngay { margin-top: 2px; color: var(--ums-ink-3); font-size: var(--ums-fz-11); }
+
+.ttc-bl__gui { display: flex; gap: var(--ums-sp-2); margin-top: var(--ums-sp-2); }
+.ttc-bl__o { flex: 1 1 auto; min-width: 0; }
+
+/* ---------- Chấm sao --------------------------------------------------- */
+.ttc-sao { display: flex; align-items: center; gap: 2px; margin-top: var(--ums-sp-2); }
+.ttc-sao__i { padding: 2px; border: 0; background: none; color: #f0a500; cursor: pointer; }
+.ttc-sao__chu { margin-left: var(--ums-sp-2); color: var(--ums-ink-2); font-size: var(--ums-fz-12); }
+
+/* ---------- Khung xem kết quả (iframe tệp máy chủ sinh ra) ------------- */
+.ttc-kq { width: 100%; height: 600px; border: 1px solid var(--ums-line); border-radius: var(--ums-r-1); }
+
+/* ---------- Trang mở đầu ----------------------------------------------- */
+.ttc-mo { text-align: center; padding: var(--ums-sp-6) var(--ums-sp-4); }
+.ttc-mo__icon { font-size: 46px; color: var(--ums-blue); }
+.ttc-mo__h2 { margin: var(--ums-sp-3) 0 0; color: var(--ums-navy); font-size: var(--ums-fz-18); font-weight: var(--ums-fw-medium); }
+.ttc-mo__h1 { margin: var(--ums-sp-1) 0 var(--ums-sp-4); color: var(--ums-navy); font-size: var(--ums-fz-22); text-transform: uppercase; }
+
+/* ---------- Ô nhập động do máy chủ khai (yeucau) ----------------------- */
+.ttc-ct { line-height: 2.2; }
+.ttc-ct .ums-input, .ttc-ct .ums-select { display: inline-block; width: auto; min-width: 180px; vertical-align: middle; }
+.ttc-ct .select2 { vertical-align: middle; }
+.ttc-ct__o { display: inline-block; min-width: 180px; max-width: 100%; vertical-align: middle; }
+.ttc-bb { color: var(--ums-bad); font-size: var(--ums-fz-13); }
+.ttc-canhbao {
+    display: flex; align-items: flex-start; gap: var(--ums-sp-2);
+    margin-bottom: var(--ums-sp-4); padding: var(--ums-sp-3);
+    border-radius: var(--ums-r-1);
+    background: var(--ums-warn-bg); color: var(--ums-ink);
+}
+.ttc-canhbao i { color: var(--ums-warn); margin-top: 2px; }
+
+/* ---------- Đầu khối giới thiệu dịch vụ (yeucau) ----------------------- */
+/* KHÔNG đặt font-weight lên phần tử bọc biểu tượng — đặt riêng cho thẻ chữ */
+.ttc-gt__dau { display: flex; align-items: center; justify-content: space-between; gap: var(--ums-sp-3); margin-bottom: var(--ums-sp-3); }
+.ttc-gt__ten { color: var(--ums-navy); font-size: var(--ums-fz-15); font-weight: var(--ums-fw-semibold); }
+.ttc-ct__dong { display: inline; }
+
+/* Số của thẻ tổng hợp (yeucau): nhãn giữ cỡ chữ của nó, không kéo dài hết thẻ */
+.ttc-kpi { margin-top: auto; }
+.ttc-kpi .ums-badge { font-size: var(--ums-fz-16); padding: 4px 14px; }

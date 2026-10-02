@@ -1,0 +1,651 @@
+﻿<!-- Main content -->
+<style>
+    .jstree-leaf:hover {
+        background: #f1f1f1 !important;
+    }
+    /* Cây chức năng + form: chữ to đậm */
+    .aps-chucnang #treesjs_chucnang_cn .jstree-anchor {
+        font-size: 15px !important;
+        font-weight: 600 !important;
+        color: #0f172a !important;
+        line-height: 26px !important;
+    }
+    .aps-chucnang #treesjs_chucnang_cn .jstree-icon.fa {
+        font-size: 15px !important;
+    }
+    .aps-chucnang #txtSearch_ChucNang_CN {
+        font-size: 14px;
+        font-weight: 500;
+        height: 34px;
+    }
+    .aps-chucnang .box-title {
+        font-size: 15px !important;
+        font-weight: 700 !important;
+        color: #0f172a !important;
+    }
+    .aps-chucnang .aps-function-detail .aps-form-lable,
+    .aps-chucnang .aps-form .aps-form-lable {
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        color: #0f172a !important;
+    }
+    .aps-chucnang .aps-function-detail .aps-form-input span,
+    .aps-chucnang .aps-function-detail .col-sm-10 span {
+        font-size: 14px !important;
+        font-weight: 500 !important;
+        color: #0f172a !important;
+    }
+    .aps-chucnang .aps-form .form-control {
+        font-size: 14px !important;
+        font-weight: 500 !important;
+        color: #0f172a !important;
+    }
+    .aps-chucnang .table thead th {
+        font-size: 14px !important;
+        font-weight: 700 !important;
+        color: #0f172a !important;
+    }
+    .aps-chucnang .table tbody td {
+        font-weight: 600 !important;
+        color: #0f172a !important;
+    }
+
+    /* ============================================================
+       Modal #myModalQuyenCN — reskin header + footer nút theo memory
+       feedback_modal_design.md: destructive tách trái, Đóng/Lưu nhóm phải, gap ≥10px.
+       Nút close (×) đưa về góc PHẢI (chuẩn Bootstrap), nền header xanh navy sạch.
+       ============================================================ */
+    #myModalQuyenCN .modal-content {
+        border-radius: 10px !important;
+        border: none !important;
+        box-shadow: 0 20px 50px rgba(15, 23, 42, 0.25) !important;
+        overflow: hidden;
+    }
+    #myModalQuyenCN .modal-header {
+        background: #1e3a8a !important;
+        background-color: #1e3a8a !important;
+        background-image: none !important;
+        border-bottom: none !important;
+        padding: 14px 20px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        flex-direction: row-reverse;
+    }
+    /* Force màu trắng cho MỌI text/element trong modal-header.
+       Text "Quyền" đã wrap trong <span class="modalTitleSuffix"> để CSS target chính xác
+       (text node trực tiếp trong h3 inherit không ổn định — có thể bị theme global đè). */
+    html body #myModalQuyenCN .modal-header,
+    html body #myModalQuyenCN .modal-header *,
+    html body #myModalQuyenCN .modal-header h3,
+    html body #myModalQuyenCN .modal-header h3 *,
+    html body #myModalQuyenCN .modal-header .box-title,
+    html body #myModalQuyenCN .modal-header .box-title *,
+    html body #myModalQuyenCN .modal-header .myModalLabel,
+    html body #myModalQuyenCN .modal-header .myModalLabel *,
+    html body #myModalQuyenCN .modal-header .modalTitleSuffix,
+    html body #myModalQuyenCN .modal-header .modalTitleSuffix * {
+        color: #ffffff !important;
+        -webkit-text-fill-color: #ffffff !important;
+        text-shadow: none !important;
+    }
+    #myModalQuyenCN .modal-header .box-title,
+    #myModalQuyenCN .modal-header h3 {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    #myModalQuyenCN .modal-header .box-title {
+        font-size: 16px !important;
+        font-weight: 600 !important;
+        line-height: 1 !important;
+        flex: 1;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 8px;
+    }
+    #myModalQuyenCN .modal-header .box-title i {
+        color: #ffffff !important;
+        font-size: 18px !important;
+    }
+    #myModalQuyenCN .modal-header .close,
+    #myModalQuyenCN .modal-header button.close {
+        float: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 32px !important;
+        height: 32px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 20px !important;
+        font-weight: 400 !important;
+        line-height: 1 !important;
+        color: #fff !important;
+        background: rgba(255, 255, 255, 0.15) !important;
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        border-radius: 8px !important;
+        opacity: 1 !important;
+        text-shadow: none !important;
+        cursor: pointer;
+        transition: background 0.15s;
+    }
+    #myModalQuyenCN .modal-header .close:hover,
+    #myModalQuyenCN .modal-header .close:focus {
+        background: rgba(220, 53, 69, 0.85) !important;
+        border-color: rgba(220, 53, 69, 0.85) !important;
+        color: #fff !important;
+        outline: none !important;
+    }
+    /* Footer: Đóng (grey outline) + Lưu (blue CTA), gap 10, height 38, radius 6 */
+    #myModalQuyenCN .modal-footer {
+        background: #f8fafc !important;
+        border-top: 1px solid #e2e8f0 !important;
+        padding: 14px 20px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-end !important;
+        gap: 10px !important;
+    }
+    #myModalQuyenCN .modal-footer .btn {
+        margin: 0 !important;
+        height: 38px !important;
+        padding: 8px 18px !important;
+        font-size: 13px !important;
+        font-weight: 500 !important;
+        line-height: 1 !important;
+        border-radius: 6px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        background-image: none !important;
+    }
+    #myModalQuyenCN .modal-footer .btn-default {
+        background: #fff !important;
+        border: 1px solid #cbd5e1 !important;
+        color: #475569 !important;
+    }
+    #myModalQuyenCN .modal-footer .btn-default:hover {
+        background: #f1f5f9 !important;
+        border-color: #94a3b8 !important;
+        color: #1e293b !important;
+    }
+    #myModalQuyenCN .modal-footer .btn-primary,
+    #myModalQuyenCN .modal-footer .btn-primary *,
+    #myModalQuyenCN .modal-footer #btnSave_QuyenCN,
+    #myModalQuyenCN .modal-footer #btnSave_QuyenCN * {
+        background: #2563eb !important;
+        background-color: #2563eb !important;
+        color: #ffffff !important;
+        font-weight: 600 !important;
+        text-shadow: none !important;
+    }
+    #myModalQuyenCN .modal-footer .btn-primary {
+        border: 1px solid #2563eb !important;
+    }
+    #myModalQuyenCN .modal-footer .btn-primary:hover,
+    #myModalQuyenCN .modal-footer .btn-primary:hover *,
+    #myModalQuyenCN .modal-footer #btnSave_QuyenCN:hover,
+    #myModalQuyenCN .modal-footer #btnSave_QuyenCN:hover * {
+        background: #1d4ed8 !important;
+        background-color: #1d4ed8 !important;
+        border-color: #1d4ed8 !important;
+        color: #ffffff !important;
+    }
+    /* Icon + span text con của nút primary/close cũng phải trắng */
+    #myModalQuyenCN .modal-footer .btn-primary i,
+    #myModalQuyenCN .modal-footer .btn-primary span,
+    #myModalQuyenCN .modal-footer #btnSave_QuyenCN i,
+    #myModalQuyenCN .modal-footer #btnSave_QuyenCN span,
+    #myModalQuyenCN .modal-footer #btnSave_QuyenCN .lang {
+        color: #ffffff !important;
+        background: transparent !important;
+        background-color: transparent !important;
+    }
+    #myModalQuyenCN .modal-footer .btn i {
+        font-size: 13px !important;
+    }
+
+    /* Text contrast trong modal — memory feedback_global_text_contrast.md
+       Label + value đen đậm #0f172a w600, placeholder #64748b w500 normal opacity:1 */
+    #myModalQuyenCN .modal-body label,
+    #myModalQuyenCN .modal-body .aps-form-lable label,
+    #myModalQuyenCN .modal-body .aps-form-lable span {
+        color: #0f172a !important;
+        font-weight: 600 !important;
+        font-size: 14px !important;
+    }
+    #myModalQuyenCN .modal-body input.form-control,
+    #myModalQuyenCN .modal-body textarea.form-control,
+    #myModalQuyenCN .modal-body .select2-selection__rendered,
+    #myModalQuyenCN .modal-body .select2-selection__choice,
+    #myModalQuyenCN .modal-body .select2-selection__choice__display {
+        color: #0f172a !important;
+        font-weight: 600 !important;
+        font-size: 14px !important;
+    }
+    #myModalQuyenCN .modal-body input.form-control::placeholder,
+    #myModalQuyenCN .modal-body textarea.form-control::placeholder,
+    #myModalQuyenCN .modal-body .select2-selection__placeholder,
+    #myModalQuyenCN .modal-body .select2-search__field::placeholder {
+        color: #64748b !important;
+        font-weight: 500 !important;
+        font-style: normal !important;
+        opacity: 1 !important;
+    }
+    /* Select2 dropdown options — text đen đậm cho dễ đọc */
+    .select2-container .select2-results__option {
+        color: #0f172a !important;
+        font-weight: 500 !important;
+        font-size: 14px !important;
+    }
+    .select2-container .select2-results__option--highlighted[aria-selected],
+    .select2-container .select2-results__option[aria-selected="true"] {
+        color: #0f172a !important;
+        font-weight: 600 !important;
+    }
+</style>
+
+<!-- Fix Select2 dropdown bay ra ngoài modal: đã chuyển sang chucnang.js init()
+     (script inline trong HTML load qua AJAX đôi khi không thực thi). -->
+
+<section class="content aps-cms">
+    <div class="row box-solid box-shadow aps-function aps-chucnang">
+        <div class="col-sm-3 aps-box-l aps-function-l">
+            <div class="box box-solid box-search pd15">
+                <div class="box-body pd0">
+                    <!-- Bộ tìm kiếm -->
+                    <div class="bs-item pd0">
+                        <select class="select-opt" id="dropSearch_UngDung_CN"></select>
+                    </div>
+                </div>
+            </div>
+            <div class="box box-solid aps-list-chucnang pd5 mt-10">
+                <div class="box-header pl15 pr15">
+                    <h3 class="box-title  pt0 mt-0" style="margin-top: 0 !important;" title="Danh sách chức năng">
+                        <i class="fa-light fa-gear-complex"></i>Danh sách chức năng
+                    </h3>
+                    <span class="pull-right badge bg-light-blue mt-25">
+                        <span id="lblChucNang_Tong_CN"></span>
+                    </span>
+                </div>
+                <div class="box-body">
+                    <div style="padding:6px 8px 8px">
+                        <input id="txtSearch_ChucNang_CN" class="form-control input-sm" placeholder="Tìm tên chức năng..." />
+                    </div>
+                    <div id="treesjs_chucnang_cn">
+                        <!--Content of treejs-->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-9 aps-box-r aps-function-r pd0">
+            <!-- Zone detail ChucNang -->
+            <div class="box box-solid zone-bus-cn mt-20" id="zone_detail_cn">
+                <div class="box-header with-border">
+                    <h3 class="box-title" style="margin-top: 10px !important;"><i class="fa fa-info-circle"></i> Thông tin chi tiết</h3>
+                    <div class="pull-right">
+                        <a id="btnDownloadFile" class="btn btn-info userAzz" style="display: none"><i class="fa fa-download"></i><span class="lang" key=""> Tải file</span></a>
+                        <a class="submit btn btn-danger" id="btnDelete_CN"><i class="fa fa-trash"></i> <span class="lang" key="">Xóa</span></a>
+                        <a class="submit btn btn-warning btnEdit" id="btnEdit_CN"><i class="fa fa-pencil"></i> <span class="lang" key="">Sửa</span></a>
+                        <a class="submit btn btn-primary btnAddnew btnAdd"><i class="fa fa-plus color-active"></i> <span class="lang" key="">Thêm</span></a>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="col-sm-12 box-view aps-function-detail">
+                        <div class="row">
+                            <div class="col-sm-2 aps-form-lable">Tên</div>
+                            <div class="col-sm-4 aps-form-input aps-form-input">
+                                <span id="lblChucNang_Ten" class="color-active"></span>
+                            </div>
+                            <div class="col-sm-2 aps-form-lable justify-content-end pr15">Mã</div>
+                            <div class="col-sm-4 aps-form-input">
+                                <span id="lblChucNang_Ma"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-2 aps-form-lable">Icon</div>
+                            <div class="col-sm-4 aps-form-input">
+                                <span><i id="lblChucNang_Icon"></i></span>
+                            </div>
+                            <div class="col-sm-2 aps-form-lable justify-content-end pr15">Thứ tự</div>
+                            <div class="col-sm-4 aps-form-input">
+                                <span id="lblChucNang_ThuTuHienThi"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-2 aps-form-lable">
+                                <div class="title-name">
+                                    Link hiển thị<span class="title-colon">:</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-4 aps-form-input">
+                                <span id="lblChucNang_DuongDanHienThi"></span>
+                            </div>
+                            <div class="col-sm-2 aps-form-lable justify-content-end pr15">Chức năng cha</div>
+                            <div class="col-sm-4 aps-form-input">
+                                <span id="lblChucNang_Cha"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-2 aps-form-lable">Link vật lý</div>
+                            <div class="col-sm-10">
+                                <span id="lblChucNang_DuongDanThuMuc"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-2 aps-form-lable">Link hướng dẫn</div>
+                            <div class="col-sm-10">
+                                <span id="lblChucNang_DuongDanHuongDan"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-2 aps-form-lable">Ứng dụng</div>
+                            <div class="col-sm-4 aps-form-input">
+                                <span id="lblChucNang_UngDung"></span>
+                            </div>
+                            <div class="col-sm-2 aps-form-lable justify-content-end pr15">Phạm vi</div>
+                            <div class="col-sm-4 aps-form-input">
+                                <span id="lblChucNang_PhamViTruyCap"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-2 aps-form-lable">Mô tả</div>
+                            <div class="col-sm-10">
+                                <span id="lblChucNang_MoTa"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-2 aps-form-lable">Nội dung ẩn</div>
+                            <div class="col-sm-10">
+                                <span id="lblChucNang_NoiDungAn"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <p>
+                        <i class="fa fa-angle-right"></i> Người dùng thuộc chức năng (<span id="lblNguoiDungChucNang_Tong_CN2"></span>)
+                        <!--<a href="#" id="btnDelete_NguoiDungChucNang_CN2" title="Xóa chức năng khỏi tất cả người dùng"> Xóa</a>-->
+                    </p>
+                    <table class="table table-hover" id="tblNguoiDungChucNang_CN2">
+                        <thead>
+                            <tr>
+                                <th class="td-center td-fixed">Stt</th>
+                                <th class="td-left"><span class="lang" key="">Mã</span></th>
+                                <th class="td-left"><span class="lang" key="">Tên</span></th>
+                                <th class="td-left"><span class="lang" key="">Email</span></th>
+                                <!--<th class="td-left"><span class="lang" key="">Nhóm</span></th>
+                                <th class="td-center td-fixed"><span class="lang" key="">Sửa</span></th>
+                                <th class="td-center td-fixed">
+                                    <input type="checkbox" name="chkSelectAll_DMTB" id='chkSelectAll_DMTB' />
+                                </th>-->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- load from js -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="box-body">
+                    <p>
+
+                        <!--<a href="#" id="btnDelete_NguoiDungChucNang_CN2" title="Xóa chức năng khỏi tất cả người dùng"> Xóa</a>-->
+                    </p>
+                    <div class="row">
+                        <div class="pull-left"><i class="fa fa-angle-right"></i> Quyền cho chức năng</div>
+                        <div class="pull-right">
+                            <a id="btnAdd_QuyenCN" class="btnAdd btn btn-primary"><i class="fa fa-plus"></i> <span class="lang" key="">Thêm mới</span></a>
+                            <a class="submit btn btn-danger" id="btnDelete_QuyenCN"><i class="fa fa-trash"></i> <span class="lang" key="">Xóa</span></a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <table id="tblQuyenCN" class="table table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="td-fixed">Stt</th>
+                                    <th class="td-center"><span class="lang" key="">Quyền</span></th>
+                                    <th class="td-center"><span class="lang" key="">Mô tả</span></th>
+                                    <th class="td-center"><span class="lang" key="">Hiệu lực</span></th>
+                                    <th class="td-center"><span class="lang" key="">Chức năng</span></th>
+                                    <th class="td-center"><span class="lang" key="">Ngày tạo</span></th>
+                                    <th class="td-center"><span class="lang" key="">Người tạo</span></th>
+                                    <th class="td-center"><span class="lang" key="">Sửa</span></th>
+                                    <th class="td-center td-fixed">
+                                        <input type="checkbox" class="chkSystemSelectAll">
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- Zone add/edit ChucNang -->
+            <div class="box box-solid form-container zone-bus-cn aps-function-add" id="zone_input_cn"
+                 style="padding: 0 !important;">
+                <div class="box-header with-border bg-blue" style="border-radius: 0 !important;">
+                    <h3 class="box-title pt15 pl20"><span class="myModalLabel"><i class="fa fa-plus"></i> Thêm mới - </span>Chức năng</h3>
+                    <div class="pull-right">
+                        <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times"></i></a>
+                    </div>
+                </div>
+                <div class="box-body pd0 aps-add-new">
+                    <div class="col-sm-12 box-view aps-form pd20">
+                        <div class="row d-none">
+                            <p class="group-title-name">
+                                - Thông tin chức năng
+                            </p>
+                        </div>
+                        <div class="row aps-form-item">
+                            <div class="col-sm-2 aps-form-lable aps-form-lable">Tên</div>
+                            <div class="col-sm-4 aps-form-input">
+                                <input type="text" id="txtChucNang_Ten" class="form-control" placeholder="Nhập tên chức năng" />
+                            </div>
+                            <div class="col-sm-2 aps-form-lable justify-content-end pr15">Mã</div>
+                            <div class="col-sm-4 aps-form-input">
+                                <input type="text" id="txtChucNang_Ma" class="form-control" placeholder="Nhập mã chức năng" />
+                            </div>
+                        </div>
+                        <div class="row aps-form-item">
+                            <div class="col-sm-2 aps-form-lable">Icon</div>
+                            <div class="col-sm-4 aps-form-input">
+                                <input type="text" id="txtChucNang_Icon" class="form-control" placeholder="Nhập icon hiển thị" />
+                            </div>
+                            <div class="col-sm-2 aps-form-lable text-right pr10">Thứ tự</div>
+                            <div class="col-sm-4 aps-form-input">
+                                <input type="text" id="txtChucNang_ThuTuHienThi" class="form-control" placeholder="Nhập thứ tự hiển thị" />
+                            </div>
+                        </div>
+                        <div class="row aps-form-item">
+                            <div class="col-sm-2 aps-form-lable">Link vật lý</div>
+                            <div class="col-sm-10">
+                                <input type="text" id="txtChucNang_DuongDanThuMuc" class="form-control" placeholder="Modules/..." />
+                            </div>
+                        </div>
+                        <div class="row aps-form-item">
+                            <div class="col-sm-2 aps-form-lable">Link hướng dẫn</div>
+                            <div class="col-sm-10">
+                                <input type="text" id="txtChucNang_DuongDanHuongDan" class="form-control" placeholder="https://youtu.be/w_VWSrabSbE" />
+                            </div>
+                        </div>
+                        <div class="row aps-form-item">
+                            <div class="col-sm-2 aps-form-lable">Link hiển thị</div>
+                            <div class="col-sm-4 aps-form-input">
+                                <input type="text" id="txtChucNang_DuongDanHienThi" class="form-control" placeholder="#tenchucnang" />
+                            </div>
+                            <div class="col-sm-2 aps-form-lable  text-right pr10">Chức năng cha</div>
+                            <div class="col-sm-4 aps-form-input">
+                                <select id="dropChucNang_Cha" class="select-opt"></select>
+                            </div>
+                        </div>
+                        <div class="row aps-form-item">
+                            <div class="col-sm-2 aps-form-lable">Ứng dụng</div>
+                            <div class="col-sm-4 aps-form-input">
+                                <select id="dropChucNang_UngDung" class="select-opt"></select>
+                            </div>
+                            <div class="col-sm-2 aps-form-lable text-right pr10">Phạm vị</div>
+                            <div class="col-sm-4 aps-form-input">
+                                <select id="dropChucNang_PhamViTruyCap" class="select-opt">
+                                    <option value="">-- Chọn phạm vi truy cập --</option>
+                                    <option value="Internet">Internet</option>
+                                    <option value="Intranet">Intranet</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row aps-form-item">
+                            <div class="col-sm-2 aps-form-lable">Mô tả</div>
+                            <div class="col-sm-10 aps-form-input">
+                                <input type="text" id="txtChucNang_MoTa" class="form-control" placeholder="Nhập nội dung mô tả" />
+                            </div>
+                        </div>
+                        <div class="row aps-form-item">
+                            <div class="col-sm-2 aps-form-lable">Nội dung ẩn</div>
+                            <div class="col-sm-10 aps-form-input">
+                                <textarea type="text" id="txtChucNang_NoiDungAn" class="form-control min-h-168" placeholder="Nhập id hoặc class của nội dung bạn muốn ẩn, cách nhau bởi khoảng trắng. Vd: #hotennguoidung .thongtinkhach .thongtinan\n {'me':'.btnSearchDT_SV','father':'#txtDTSV_NamThucHien,.btnSearchDTSV_SinhVien','parent':'#txtDTSV_TenDetai,#txtDTSV_NamThucHien'}"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="box-footer">
+                    <div class="pull-right">
+                        <a class="btn btn-default btnClose"><span class="lang" key="lb_dong"><i class="fa fa-times-circle"></i> Đóng</span></a>
+                        <a class="submit btn btn-primary ml-5" id="btnSave_CN"><i class="fal fa-save"></i> <span class="lang" key="lb_luu">Lưu</span></a>
+                    </div>
+                </div>
+            </div>
+            <!-- Zone delete ChucNang -->
+            <div class="box box-solid form-container zone-bus-cn" id="zone_delete_cn">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><i class="fa fa-trash"></i> Vui lòng xóa các nội dung liên quan đến chức năng nếu có</h3>
+                    <div class="pull-right">
+                        <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times"></i></a>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="col-sm-4 aps-form-input">
+                        <div class="box box-solid">
+                            <div class="box-body">
+                                <p>
+                                    <i class="fa fa-angle-right"></i> Vai trò thuộc chức năng (<span id="lblVaiTroNguoiDung_Tong_CN"></span>)
+                                    <a href="#" id="btnDelete_VaiTroChucNang_CN" title="Xóa chức năng khỏi tất cả vai trò"> Xóa</a>
+                                </p>
+                                <div id="treejsVaiTroChucNang_CN">
+                                    <!-- load from js -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-8">
+                        <div class="box box-solid">
+                            <div class="box-body">
+                                <p>
+                                    <i class="fa fa-angle-right"></i> Người dùng thuộc chức năng (<span id="lblNguoiDungChucNang_Tong_CN"></span>)
+                                    <a href="#" id="btnDelete_NguoiDungChucNang_CN" title="Xóa chức năng khỏi tất cả người dùng"> Xóa</a>
+                                </p>
+                                <table class="table table-hover" id="tblNguoiDungChucNang_CN">
+                                    <tbody>
+                                        <!-- load from js -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="notify_cn" class="color-danger"></div>
+                </div>
+                <div class="box-footer">
+                    <!--<div class="pull-right">
+                        <a class="btn btn-default btnClose"><span class="lang" key="lb_dong"><i class="fa fa-times-circle"></i> Đóng</span></a>
+                        <a class="submit btn btn-primary" id="btnSave_CN"><i class="fa fa-toggle-on"></i> <span class="lang" key="lb_luu">Lưu</span></a>
+                    </div>-->
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<div class="modal fade  aps-modal-hesohocphan" id="myModalQuyenCN" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h3 class="box-title"><span class="myModalLabel"> <i class="fa fa-pencil"></i></span> <span class="modalTitleSuffix">Quyền</span></h3>
+            </div>
+            <div class="modal-body  aps-form mt-10" id="modal_body">
+                <div class="row zone-box">
+                    <div class="row">
+                        <div class="col-sm-3 aps-form-lable">
+                            <label style="font-weight: normal"><span class="lang" key="">Quyền </span></label>
+                        </div>
+                        <div class="col-sm-9 aps-form-input">
+                            <select id="dropQuyen_QuyenCN" class="select-opt" multiple="multiple">
+                            </select>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3 aps-form-lable">
+                            <label style="font-weight: normal"><span class="lang" key="">Mô tả</span></label>
+                        </div>
+                        <div class="col-sm-9 aps-form-input">
+                            <input type="text" id="txtMoTa_QuyenCN" class="form-control" style="height:300px" />
+                        <div class="clear"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3 aps-form-lable">
+                            <label style="font-weight: normal"><span class="lang" key="">Hiệu lực</span></label>
+                        </div>
+                        <div class="col-sm-9 aps-form-input">
+                            <select id="dropHieuLuc_QuyenCN" class="select-opt">
+                                <option value="1">Hiệu lực</option>
+                                <option value="0">Hết hiệu lực</option>
+                            </select>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="clear"></div>
+            <div id="notify"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times-circle-o"></i> <span class="lang" key="">Đóng</span></button>
+                <a class="submit btn btn-primary" id="btnSave_QuyenCN"><i class="fa fa-check-circle"></i><span class="lang" key=""> Lưu</span></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- page script -->
+<script src="modules/chucnang/script/chucnang.js?v=1.0.0.1"></script>
+<script type="text/javascript">
+    //init
+    var main_doc = {};
+    main_doc['ChucNang'] = new ChucNang();
+    $(document).ready(function () {
+        main_doc.ChucNang.init();
+
+        // FIX 2026-08-26: Select2 trong modal — re-init voi dropdownParent = modal
+        $(document).on('shown.bs.modal', '.modal', function () {
+            var $modal = $(this);
+            $modal.find('select.select-opt, select[id^="drop"]').each(function () {
+                var $sel = $(this);
+                try {
+                    if ($sel.hasClass('select2-hidden-accessible')) $sel.select2('destroy');
+                } catch (e) {}
+                $sel.select2({ dropdownParent: $modal, width: '100%' });
+            });
+        });
+    });
+</script>
+<style>
+    .modal .select2-container--open,
+    .modal .select2-container--open .select2-dropdown {
+        z-index: 100060 !important;
+    }
+    .modal .select2-results__options {
+        max-height: 220px !important;
+        overflow-y: auto !important;
+    }
+</style>

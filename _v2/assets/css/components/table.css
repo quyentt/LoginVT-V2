@@ -1,0 +1,133 @@
+/* =========================================================================
+   6. COMPONENTS — bảng
+   ========================================================================= */
+
+.ums-tablewrap { overflow-x: auto; overscroll-behavior-x: contain; }
+
+/* Đường kẻ CUỐI bảng (người dùng chốt 2026-09-26): bảng luôn khép bằng một đường kẻ — dòng cuối của tbody bỏ kẻ
+   riêng nên kẻ đặt ở khung bọc. BỎ khi đáy bảng đã chạm một đường kẻ khác: đáy khung (thân sát viền / khung / kỳ
+   học), hoặc ngay sau là vùng có kẻ trên (phân trang, vùng dưới bảng, tổng kết kỳ) — tránh kẻ đôi. */
+.ums-tablewrap { border-bottom: 1px solid var(--ums-line); }
+.ums-panel > .ums-tablewrap:last-child,
+.ums-panel__body--flush > .ums-tablewrap:last-child,
+.ums-dh__ky > div > .ums-tablewrap:last-child,
+.ums-tablewrap:has(+ .ums-pager, + .ums-tablefoot, + .ums-dh__tk--ky) { border-bottom: 0; }
+
+/* Kéo chuột để vuốt ngang (ums.ui, cuối tệp): bàn tay chỉ hiện ở bảng đang
+   tràn, và trong lúc kéo thì không bôi đen chữ. */
+.ums-tablewrap.is-scrollable { cursor: grab; }
+.ums-tablewrap.is-panning { cursor: grabbing; user-select: none; }
+
+/* Màn hẹp: giữ bề rộng tối thiểu để cột không bị bóp thành một chữ một dòng;
+   phần thừa thì VUỐT NGANG trong .ums-tablewrap. Trên màn rộng bảng vẫn
+   width:100% như cũ, không đổi gì. */
+@media (max-width: 991px) {
+    .ums-tablewrap > .ums-table { min-width: 720px; }
+}
+@media (max-width: 575px) {
+    .ums-tablewrap > .ums-table { min-width: 640px; }
+}
+
+.ums-table {
+    width: 100%;
+    font-size: var(--ums-fz-14);
+    line-height: var(--ums-lh);
+    color: var(--ums-ink);
+}
+
+/* Hàng tiêu đề bảng KHÔNG dính vào trang được: .ums-tablewrap luôn có
+   overflow-x:auto (cuộn ngang phải luôn dùng được), mà position:sticky bám
+   vào vùng cuộn gần nhất — tức bám vào chính khung này. Khung không cuộn dọc
+   nên top ở đây chỉ có tác dụng nếu sau này cho khung cao cố định.
+   Thanh dính của cả nhóm là .ums-panel__head (xem shell.css). */
+.ums-table > thead > tr > th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    padding: var(--ums-sp-3);
+    background: var(--ums-surface-3);
+    border-bottom: 1px solid var(--ums-line-2);
+    color: var(--ums-navy);
+    font-size: var(--ums-fz-13);
+    font-weight: var(--ums-fw-semibold);
+    text-align: left;
+    white-space: nowrap;
+}
+
+/* Tiêu đề nhiều tầng (cột có `group`, ums.ui.table): kẻ ô để nhìn ra cột nào
+   thuộc nhóm nào; chữ được xuống dòng — tiêu đề nhóm của hệ cũ rất dài. */
+.ums-table > thead:has(> tr + tr) > tr > th {
+    /* kẻ ô cùng màu thân bảng (--ums-line), không đậm hơn (người dùng 2026-09-27: "border đậm thế") */
+    border: 1px solid var(--ums-line);
+    text-align: center;
+    vertical-align: middle;
+    white-space: normal !important;   /* thắng cả lớp is-nowrap của cột */
+    min-width: 72px;
+}
+.ums-table > thead > tr > th.ums-table__grp { background: var(--ums-surface-2); }
+/* Không kẻ viền NGOÀI của khối tiêu đề nhiều tầng — khung / đường kẻ bảng đã có; viền trong vẫn giữ để thấy nhóm cột */
+.ums-table > thead:has(> tr + tr) > tr:first-child > th { border-top: 0; }
+.ums-table > thead:has(> tr + tr) > tr > th:first-child[rowspan], .ums-table > thead:has(> tr + tr) > tr:first-child > th:first-child { border-left: 0; }
+.ums-table > thead:has(> tr + tr) > tr > th:last-child[rowspan], .ums-table > thead:has(> tr + tr) > tr:first-child > th:last-child { border-right: 0; }
+.ums-table > tbody > tr > td {
+    padding: var(--ums-sp-3);
+    border-bottom: 1px solid var(--ums-line);
+    vertical-align: middle;
+}
+
+.ums-table > tbody > tr:last-child > td { border-bottom: 0; }
+
+/* Danh sách lịch trong ô (ums.ui.escBr tự dựng từ "Tu … den …:<br>Thu 3 tiet …"): mỗi khoảng thời gian một mục
+   có dấu đầu dòng, luôn căn trái kể cả khi cột căn giữa — căn giữa thì dấu đầu dòng nhảy lung tung. */
+.ums-dsl { list-style: disc outside; margin: 0; padding: 0 0 0 18px; text-align: left; white-space: normal; }
+.ums-dsl > li { margin: 0; padding: 0; line-height: 1.4; }
+.ums-dsl > li + li { margin-top: var(--ums-sp-2); }
+.ums-dsl > li::marker { color: var(--ums-blue); }
+.ums-dsl__dau { display: block; color: var(--ums-ink-3); font-size: var(--ums-fz-12); }
+
+/* Ô đánh dấu trong ô bảng: thẳng hàng với chữ đứng cạnh ("THI1 ☐" ở tiêu đề cột) và nằm giữa ô khi đứng một
+   mình. Luật gốc ở field.css (vertical-align: -4px) đo được thấp hơn tâm chữ 4px (người dùng 2026-09-29). */
+.ums-table th input[type="checkbox"], .ums-table td input[type="checkbox"],
+.ums-table th input[type="radio"], .ums-table td input[type="radio"] { vertical-align: middle; position: relative; top: -1px; }
+.ums-table th .ums-check input, .ums-table td .ums-check input { vertical-align: 0; top: 0; }
+
+/* Kẻ màu dòng chẵn cho dễ dò theo hàng. Đặt TRƯỚC luật :hover / .is-selected
+   để hai luật kia vẫn thắng (cùng độ ưu tiên thì luật sau thắng). */
+.ums-table > tbody > tr:nth-child(even) > td { background: var(--ums-surface-2); }
+
+/* Dòng tổng */
+.ums-table > tfoot > tr > td {
+    padding: var(--ums-sp-3);
+    background: var(--ums-surface-2);
+    border-top: 1px solid var(--ums-line-2);
+    color: var(--ums-navy);
+}
+.ums-table--lined > tfoot > tr > td { border-right: 1px solid var(--ums-line); }
+.ums-table--lined > tfoot > tr > td:last-child { border-right: 0; }
+.ums-table > tbody > tr:hover > td { background: var(--ums-surface-3); }
+.ums-table > tbody > tr.is-selected > td { background: var(--ums-blue-l); }
+
+.ums-table--lined > thead > tr > th,
+.ums-table--lined > tbody > tr > td { border-right: 1px solid var(--ums-line); }
+.ums-table--lined > thead > tr > th:last-child,
+.ums-table--lined > tbody > tr > td:last-child { border-right: 0; }
+
+.ums-table--tight > thead > tr > th,
+.ums-table--tight > tbody > tr > td { padding: var(--ums-sp-2); }
+
+/* Căn ô */
+.ums-table .is-center { text-align: center; }
+.ums-table .is-right { text-align: right; }
+.ums-table .is-nowrap { white-space: nowrap; }
+
+/* Ô thao tác */
+.ums-table .is-actions { text-align: center; white-space: nowrap; }
+
+/* Ô hai dòng */
+.ums-cell__title { font-weight: var(--ums-fw-semibold); color: var(--ums-navy); }
+.ums-cell__sub { margin-top: 2px; color: var(--ums-ink-3); font-size: var(--ums-fz-12); }
+
+/* Ô có thanh tỉ lệ */
+.ums-meter { display: flex; align-items: center; gap: var(--ums-sp-2); }
+.ums-meter__track { flex: 1; height: 6px; border-radius: var(--ums-r-pill); background: var(--ums-surface-3); overflow: hidden; }
+.ums-meter__fill { height: 100%; background: var(--ums-blue); }

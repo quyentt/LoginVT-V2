@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Lãnh đạo khoa</title>
+    <style>
+        /* ============================================
+           DASHBOARD LÃNH ĐẠO KHOA - GIAO DIỆN
+           Thiết kế: Modern, Responsive, Clean
+           ============================================ */
+        
+        /* Reset & Base */
+        * { box-sizing: border-box; }
+        
+        .main-content,
+        section.content.aps-congcanbo {
+            max-width: none !important;
+            width: 100% !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        
+        .dashboard-khoa {
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        /* Breadcrumb */
+        .dashboard-khoa .content-tab.no-tab {
+            margin-bottom: 10px;
+            background: white;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .dashboard-khoa .content-tab.no-tab .link {
+            margin: 0;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .dashboard-khoa .content-tab.no-tab .link a {
+            color: #64748b;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .dashboard-khoa .content-tab.no-tab .link a:hover {
+            color: #10b981;
+        }
+
+        /* Dashboard Header */
+        .dashboard-header {
+            padding: 30px 20px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            margin: 0 0 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .dashboard-header h3 {
+            margin: 0 0 15px 0;
+            font-size: 28px;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 30px;
+            font-size: 14px;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-stat {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Stats Cards Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            padding: 0 20px 20px 20px;
+            margin-bottom: 0;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--card-color);
+        }
+
+        .stat-card.blue { --card-color: #3b82f6; }
+        .stat-card.green { --card-color: #10b981; }
+        .stat-card.orange { --card-color: #f59e0b; }
+        .stat-card.purple { --card-color: #8b5cf6; }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            background: var(--card-color);
+        }
+
+        .stat-trend {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .stat-trend.up {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .stat-trend.down {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 8px;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #64748b;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+
+        .stat-subtitle {
+            font-size: 13px;
+            color: #94a3b8;
+            margin: 0;
+        }
+
+        /* Main Content Layout */
+        .main-content-grid {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 20px;
+            padding: 0 20px 20px 20px;
+            overflow: visible;
+            min-height: 600px;
+        }
+
+        .charts-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            min-width: 0;
+            width: 100%;
+        }
+
+        /* Chart Cards */
+        .chart-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            width: 100%;
+            min-height: 460px;
+            overflow: hidden;
+        }
+
+        .chart-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .chart-header {
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chart-subtitle {
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 12px;
+        }
+
+        .chart-canvas {
+            height: 360px;
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            padding: 10px;
+        }
+
+        .chart-canvas canvas {
+            max-height: 360px !important;
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        /* Sidebar */
+        .dashboard-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            min-width: 350px;
+            max-width: 400px;
+            width: 400px;
+            height: fit-content;
+        }
+
+        .sidebar-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .sidebar-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .sidebar-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Filters */
+        .filter-group {
+            margin-bottom: 20px;
+        }
+
+        .filter-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .filter-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .filter-select:focus {
+            border-color: #10b981;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        /* Quick Stats */
+        .quick-stats {
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #a7f3d0;
+        }
+
+        .quick-stats-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #065f46;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .quick-stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(16, 185, 129, 0.1);
+        }
+
+        .quick-stat-item:last-child {
+            border-bottom: none;
+        }
+
+        .quick-stat-label {
+            font-size: 13px;
+            color: #0f172a;
+            font-weight: 500;
+        }
+
+        .quick-stat-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: #065f46;
+        }
+
+        /* Risk List */
+        .risk-item {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border-left: 4px solid var(--risk-color);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: all 0.2s;
+        }
+
+        .risk-item:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .risk-item.high { 
+            --risk-color: #ef4444;
+            background: linear-gradient(to right, #fef2f2 0%, white 20%);
+        }
+        .risk-item.medium { 
+            --risk-color: #f59e0b;
+            background: linear-gradient(to right, #fffbeb 0%, white 20%);
+        }
+        .risk-item.low { 
+            --risk-color: #10b981;
+            background: linear-gradient(to right, #f0fdf4 0%, white 20%);
+        }
+
+        .risk-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .risk-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .risk-score {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--risk-color);
+        }
+
+        .risk-description {
+            font-size: 12px;
+            color: #64748b;
+            margin: 0;
+        }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        .slide-up {
+            animation: slideUp 0.8s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stat-card:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card:nth-child(2) { animation-delay: 0.2s; }
+        .stat-card:nth-child(3) { animation-delay: 0.3s; }
+        .stat-card:nth-child(4) { animation-delay: 0.4s; }
+
+        /* Responsive Design */
+        @media (max-width: 1400px) {
+            .main-content-grid {
+                grid-template-columns: 1fr 350px;
+                gap: 15px;
+            }
+            
+            .dashboard-sidebar {
+                min-width: 320px;
+                max-width: 350px;
+                width: 350px;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .main-content-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .dashboard-sidebar {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 20px;
+                min-width: auto;
+                max-width: none;
+                width: 100%;
+                position: static;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+                padding: 0 15px 15px 15px;
+            }
+            
+            .main-content-grid {
+                padding: 0 15px 15px 15px;
+            }
+            
+            .dashboard-sidebar {
+                grid-template-columns: 1fr;
+            }
+            
+            .dashboard-header {
+                padding: 20px 15px;
+            }
+            
+            .header-stats {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<section class="content aps-congcanbo">
+    <div class="row dashboard-khoa">
+        <!-- Breadcrumb -->
+        <div class="content-tab no-tab">
+            <p class="link">
+                <a href="#">Dashboard</a><i class="fal fa-angle-right"></i>
+                <a href="#">Lãnh đạo khoa</a>
+            </p>
+        </div>
+
+        <!-- Header -->
+        <div class="dashboard-header">
+            <h3>
+                <i class="fa-solid fa-chart-pie"></i>
+                Dashboard Lãnh đạo khoa
+            </h3>
+            <p>📊 Quản lý và theo dõi hoạt động của khoa - Dữ liệu cập nhật theo thời gian thực</p>
+            <div class="header-stats">
+                <div class="header-stat">
+                    <i class="fa-solid fa-clock"></i>
+                    <span>Cập nhật: <span id="lastUpdateTime">--</span></span>
+                </div>
+                <div class="header-stat">
+                    <i class="fa-solid fa-database"></i>
+                    <span>Nguồn: Hệ thống quản lý sinh viên</span>
+                </div>
+                <div class="header-stat">
+                    <i class="fa-solid fa-shield-check"></i>
+                    <span>Trạng thái: <span id="systemStatus">Đang tải...</span></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid fade-in" id="statsCards">
+            <!-- Sẽ được render bởi JavaScript -->
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content-grid">
+            <!-- Charts Section -->
+            <div class="charts-section">
+                <!-- Chart 1: GPA / Tỷ lệ đỗ -->
+                <div class="chart-card slide-up">
+                    <div class="chart-header">
+                        <h3 class="chart-title">
+                            <i class="fa-solid fa-chart-column" style="color: #3b82f6;"></i>
+                            GPA / Tỷ lệ đỗ
+                        </h3>
+                        <p class="chart-subtitle">
+                            Biểu đồ kết hợp: Cột (GPA TB) và Đường (Tỷ lệ đỗ %) theo ngành/CTĐT thuộc Khoa
+                        </p>
+                        <div style="display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; margin-top: 12px;">
+                            <span style="display: flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 16px; background: #dcfce7; color: #166534;">
+                                <span style="width: 8px; height: 8px; border-radius: 50%; background: #10b981;"></span>
+                                Tốt: GPA >2.5 & Tỷ lệ đỗ >90%
+                            </span>
+                            <span style="display: flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 16px; background: #fef3c7; color: #92400e;">
+                                <span style="width: 8px; height: 8px; border-radius: 50%; background: #f59e0b;"></span>
+                                Chưa cao: GPA ≤2.5 & Tỷ lệ đỗ >90%
+                            </span>
+                            <span style="display: flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 16px; background: #fee2e2; color: #991b1b;">
+                                <span style="width: 8px; height: 8px; border-radius: 50%; background: #ef4444;"></span>
+                                Phân hóa: GPA >2.5 & Tỷ lệ đỗ ≤90%
+                            </span>
+                        </div>
+                    </div>
+                    <div class="chart-canvas">
+                        <canvas id="studentByMajorChart"></canvas>
+                        <div id="studentByMajorChartFallback" style="display: none;"></div>
+                    </div>
+                </div>
+
+                <!-- Chart 2: Quy mô sinh viên toàn Khoa -->
+                <div class="chart-card slide-up">
+                    <div class="chart-header">
+                        <h3 class="chart-title">
+                            <i class="fa-solid fa-chart-line" style="color: #10b981;"></i>
+                            Quy mô sinh viên toàn Khoa
+                        </h3>
+                        <p class="chart-subtitle">
+                            Theo dõi biến động quy mô sinh viên của Khoa theo các năm học (5-6 năm gần nhất)
+                        </p>
+                        <div style="display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; margin-top: 12px;">
+                            <span style="display: flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 16px; background: #dcfce7; color: #166534;">
+                                <span style="width: 8px; height: 8px; border-radius: 50%; background: #10b981;"></span>
+                                Kịch bản 1: Quy mô bền vững
+                            </span>
+                            <span style="display: flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 16px; background: #fef3c7; color: #92400e;">
+                                <span style="width: 8px; height: 8px; border-radius: 50%; background: #f59e0b;"></span>
+                                Kịch bản 2: Cảnh báo tuyển sinh
+                            </span>
+                            <span style="display: flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 16px; background: #dbeafe; color: #1e40af;">
+                                <span style="width: 8px; height: 8px; border-radius: 50%; background: #3b82f6;"></span>
+                                Kịch bản 3: Mở rộng nhanh
+                            </span>
+                            <span style="display: flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 16px; background: #fee2e2; color: #991b1b;">
+                                <span style="width: 8px; height: 8px; border-radius: 50%; background: #ef4444;"></span>
+                                Kịch bản 4: Tắc nghẽn đầu ra
+                            </span>
+                        </div>
+                    </div>
+                    <div class="chart-canvas">
+                        <canvas id="academicResultChart"></canvas>
+                        <div id="academicResultChartFallback" style="display: none;"></div>
+                    </div>
+                </div>
+
+                <!-- Chart 3: Danh sách rủi ro -->
+                <div class="chart-card slide-up">
+                    <div class="chart-header">
+                        <h3 class="chart-title">
+                            <i class="fa-solid fa-triangle-exclamation" style="color: #ef4444;"></i>
+                            Danh sách rủi ro theo ngành/CTĐT
+                        </h3>
+                        <p class="chart-subtitle">
+                            Phát hiện ngành/CTĐT đang có rủi ro cao để lãnh đạo Khoa tập trung chỉ đạo
+                        </p>
+                        <div style="display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; margin-top: 12px;">
+                            <span style="display: flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 16px; background: #fee2e2; color: #991b1b;">
+                                <i class="fa-solid fa-circle" style="font-size: 8px;"></i>
+                                Cao: ≥80 điểm
+                            </span>
+                            <span style="display: flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 16px; background: #fef3c7; color: #92400e;">
+                                <i class="fa-solid fa-circle" style="font-size: 8px;"></i>
+                                Trung bình: 50-79 điểm
+                            </span>
+                            <span style="display: flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 16px; background: #dcfce7; color: #166534;">
+                                <i class="fa-solid fa-circle" style="font-size: 8px;"></i>
+                                Thấp: <50 điểm
+                            </span>
+                        </div>
+                    </div>
+                    <div id="riskList" style="max-height: 500px; overflow-y: auto; padding: 10px;">
+                        <!-- Risk list will be loaded by JS -->
+                    </div>
+                </div>
+
+                <!-- Chart 4: Biểu đồ tài chính -->
+                <div class="chart-card slide-up">
+                    <div class="chart-header">
+                        <h3 class="chart-title">
+                            <i class="fa-solid fa-coins" style="color: #f59e0b;"></i>
+                            Xu hướng thu học phí theo khoa
+                        </h3>
+                        <p class="chart-subtitle">
+                            Biểu đồ kết hợp: Cột (Số tiền đã thu) và Đường (Tỷ lệ thu %) theo tháng
+                        </p>
+                        <div style="display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; margin-top: 12px;">
+                            <span style="display: flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 16px; background: #dcfce7; color: #166534;">
+                                <i class="fa-solid fa-check-circle" style="font-size: 10px;"></i>
+                                Đạt mục tiêu: ≥100%
+                            </span>
+                            <span style="display: flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 16px; background: #fef3c7; color: #92400e;">
+                                <i class="fa-solid fa-exclamation-circle" style="font-size: 10px;"></i>
+                                Gần đạt: 80-99%
+                            </span>
+                            <span style="display: flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 16px; background: #fee2e2; color: #991b1b;">
+                                <i class="fa-solid fa-times-circle" style="font-size: 10px;"></i>
+                                Chưa đạt: <80%
+                            </span>
+                        </div>
+                    </div>
+                    <div class="chart-canvas">
+                        <canvas id="tuitionChart"></canvas>
+                        <div id="tuitionChartFallback" style="display: none;"></div>
+                    </div>
+                </div>
+
+                <!-- Danh sách ngành (đã bỏ) -->
+                <div class="chart-card slide-up" style="display: none;">
+                    <div class="chart-header">
+                        <h3 class="chart-title">
+                            <i class="fa-solid fa-list" style="color: #f59e0b;"></i>
+                            Danh sách ngành
+                        </h3>
+                        <p class="chart-subtitle">
+                            Các ngành đào tạo trong khoa
+                        </p>
+                    </div>
+                    <div id="majorList">
+                        <!-- Major list will be loaded by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="dashboard-sidebar">
+                <!-- Filters Card -->
+                <div class="sidebar-card">
+                    <h3 class="sidebar-title">
+                        <i class="fa-solid fa-filter"></i>
+                        Bộ lọc & Tùy chọn
+                    </h3>
+                    
+                    <!-- Năm học -->
+                    <div class="filter-group">
+                        <label class="filter-label">
+                            <i class="fa-solid fa-calendar-days" style="margin-right: 5px;"></i>
+                            Năm học
+                        </label>
+                        <select id="yearFilter" class="filter-select">
+                            <option value="">Chọn năm học...</option>
+                            <option value="2024-2025">2024-2025</option>
+                            <option value="2023-2024">2023-2024</option>
+                            <option value="2022-2023">2022-2023</option>
+                        </select>
+                    </div>
+
+                    <!-- Ngành -->
+                    <div class="filter-group">
+                        <label class="filter-label">
+                            <i class="fa-solid fa-graduation-cap" style="margin-right: 5px;"></i>
+                            Ngành
+                        </label>
+                        <select id="majorFilter" class="filter-select">
+                            <option value="">Tất cả ngành</option>
+                            <option value="cntt">Công nghệ thông tin</option>
+                            <option value="ketoan">Kế toán</option>
+                            <option value="marketing">Marketing</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Quick Stats Card -->
+                <div class="sidebar-card">
+                    <div class="quick-stats">
+                        <h4 class="quick-stats-title">
+                            <i class="fa-solid fa-gauge-high"></i>
+                            Thống kê nhanh
+                        </h4>
+                        <div id="quickStats">
+                            <!-- Sẽ được render bởi JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Load Scripts -->
+<!-- Chart.js v2.9.4 - Phiên bản ổn định -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+<script>
+    // Kiểm tra Chart.js đã load chưa
+    if (typeof Chart === 'undefined') {
+        console.warn('⚠️ Chart.js không load được từ CDN chính, thử CDN dự phòng...');
+        // Load từ CDN dự phòng
+        var script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js';
+        script.onload = function() {
+            console.log('✅ Chart.js loaded từ CDN dự phòng');
+            if (typeof main_doc !== 'undefined' && main_doc.DashboardKhoa) {
+                main_doc.DashboardKhoa.initCharts();
+            }
+        };
+        script.onerror = function() {
+            console.error('❌ Không thể load Chart.js từ cả 2 CDN');
+        };
+        document.head.appendChild(script);
+    } else {
+        console.log('✅ Chart.js v2.9.4 loaded successfully');
+    }
+</script>
+<script src="modules/Dashboardv2/script/lanh-dao-khoa.js?v=2.0.1"></script>
+<script type="text/javascript">
+    // Khởi tạo Dashboard
+    var main_doc = {};
+    main_doc['DashboardKhoa'] = new DashboardKhoa();
+    
+    $(document).ready(function () {
+        // Fix: Remove width constraint
+        $('.main-content').css({
+            'max-width': 'none',
+            'width': '100%'
+        });
+        
+        $('section.content.aps-congcanbo').css({
+            'max-width': 'none',
+            'width': '100%',
+            'padding': '0',
+            'margin': '0'
+        });
+        
+        // Khởi động Dashboard
+        main_doc.DashboardKhoa.init();
+    });
+</script>
+
+</body>
+</html>

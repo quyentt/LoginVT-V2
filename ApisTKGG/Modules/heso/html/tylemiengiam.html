@@ -1,0 +1,147 @@
+﻿<section class="content aps-TKGG">
+    <div class="row aps-tylemiengiam">
+        <div class="box box-solid aps-tylemiengiam-list pd0">
+            <div class="box-header with-border bg-blue">
+                <h3 class="box-title"><i class="fa fa-hdd-o"></i> Danh sách khung định mức</h3>
+                <div class="pull-right">
+                    <a class="btn btn-primary " id="btnAddnew_TyLeMienGiam"><i class="fa fa-plus"></i> Thêm</a>
+                    <a id="btnRefresh_TyLeMienGiam" class="btn btn-warning"><i class="fa fa-refresh"></i> Tải lại</a>
+                </div>
+            </div>
+            <div class="box-body pd20">
+                <div class="scroll-table-x">
+                    <table id="tblTyLeMienGiam" class="table table-hover table-bordered tblTyLeMienGiam">
+                        <thead>
+                            <tr>
+                                <th class="td-fixed td-center">Stt</th>
+                                <th class="td-left">Thời gian</th>
+                                <th class="td-left">Chức vụ</th>
+                                <th class="td-right">Tỷ lệ miễn giảm</th>
+                                <th class="td-left">Ghi chú</th>
+                                <th class="td-fixed td-center">Sửa</th>
+                                <th class="td-fixed td-center">Xóa</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- load from js -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thêm mới khung định mức -->
+        <div class="modal fade modal-add-khungdinhmuc" id="myModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span
+                                aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="myModalLabel"><span class="lang" key="">--</span></h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="col-sm-12 aps-add-new pd10">
+                            <div class="row aps-form">
+                                <!--row 1-->
+                                <div class="row aps-form-item">
+                                    <div class="col-sm-3 aps-form-lable">
+                                        <label style="font-weight: normal">
+                                            <span class="lang" key="">Tên khoản thu</span></label>
+                                    </div>
+                                    <div class="col-sm-9 aps-form-input">
+                                        <input type="text" id="txtTyLeMienGiam_Ten" class="form-control" />
+                                    </div>
+                                </div>
+                                <!--row 2-->
+                                <div class="row aps-form-item">
+                                    <div class="col-sm-3 aps-form-lable">
+                                        <label style="font-weight: normal"><span class="lang" key="">Mã</span></label>
+                                    </div>
+                                    <div class="col-sm-9 aps-form-input">
+                                        <input type="text" id="txtTyLeMienGiam_Ma" class="form-control" />
+                                    </div>
+                                </div>
+                                <!--row 3-->
+                                <div class="row aps-form-item">
+                                    <div class="col-sm-3 aps-form-lable">
+                                        <label style="font-weight: normal"><span class="lang" key="">Thứ
+                                                tự</span></label>
+                                    </div>
+                                    <div class="col-sm-9 aps-form-input">
+                                        <input type="text" id="txtTyLeMienGiam_ThuTu" class="form-control" />
+                                    </div>
+                                </div>
+                                <!--row 4-->
+                                <div class="row aps-form-item">
+                                    <div class="col-sm-3 aps-form-lable">
+                                        <label style="font-weight: normal"><span class="lang" key="">Nhóm khoản
+                                                thu</span></label>
+                                    </div>
+                                    <div class="col-sm-9 aps-form-input">
+                                        <select id="dropTyLeMienGiam_Nhom" class="select-opt"></select>
+                                    </div>
+                                </div>
+                                <!--row 5-->
+                                <div class="row aps-form-item">
+                                    <div class="col-sm-3 aps-form-lable">
+                                        <label style="font-weight: normal"><span class="lang" key="">Mô
+                                                tả</span></label>
+                                    </div>
+                                    <div class="col-sm-9 aps-form-input">
+                                        <input type="text" id="txtTyLeMienGiam_MoTa" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                    <div id="notify"></div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal"><i
+                                class="fa fa-times-circle"></i><span class="lang" key=""> Đóng</span></button>
+                        <a class="submit btn btn-primary" id="btnSave_TyLeMienGiam"><i class="fa fa-save"></i><span
+                                class="lang" key=""> Lưu</span></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- page script -->
+<script src="modules/heso/script/tylemiengiam.js?v=1.0.0.0"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['TyLeMienGiam'] = new TyLeMienGiam();
+    $(document).ready(function () {
+        main_doc.TyLeMienGiam.init();
+    });
+</script>
+<!-- FIX 2026-08-26: Select2 trong modal — re-init voi dropdownParent = modal
+     de popup nam trong modal, khong lech / che noi dung. Universal handler,
+     an toan khi modal khong co select. -->
+<script>
+(function () {
+    if (typeof jQuery === 'undefined') return;
+    var $ = jQuery;
+    $(document).off('shown.bs.modal.__s2fix').on('shown.bs.modal.__s2fix', '.modal', function () {
+        var $modal = $(this);
+        $modal.find('select.select-opt, select[id^="drop"]').each(function () {
+            var $sel = $(this);
+            try {
+                if ($sel.hasClass('select2-hidden-accessible')) $sel.select2('destroy');
+            } catch (e) {}
+            $sel.select2({ dropdownParent: $modal, width: '100%' });
+        });
+    });
+})();
+</script>
+<style>
+    .modal .select2-container--open,
+    .modal .select2-container--open .select2-dropdown {
+        z-index: 100060 !important;
+    }
+    .modal .select2-results__options {
+        max-height: 220px !important;
+        overflow-y: auto !important;
+    }
+</style>

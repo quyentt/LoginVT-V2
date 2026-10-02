@@ -1,0 +1,513 @@
+﻿<style>
+    .dkmh_title {
+        margin: auto;
+    }
+
+    .dkmh_title {
+        text-align: center !important;
+    }
+
+    .dkmh_info {}
+
+    .dkmh_stu {
+        padding-top: 5px;
+        padding-left: 5px;
+    }
+
+    .dkmh_mh {
+        padding-top: 5px;
+        padding-right: 5px;
+    }
+
+    .dkmh_info_stu {
+        text-align: center !important;
+        font-size: 13PX;
+        float: left;
+    }
+
+    .dkmh_info_mh {
+        margin-top: 5px;
+        font-size: 13PX;
+        font-style: italic;
+    }
+
+    .dkmh_search {
+        margin-bottom: 5px !important;
+    }
+</style>
+<section class="content-header d-none">
+    <div class="row">
+        <div class="col-sm-12">
+            <ul class="list-group">
+                <li class="list-group-item list-group-title">
+                    <a onclick="edu.system.initMain('#dashboard','/modules/dashboard/html/dashboard.aspx')"
+                        href="#dashboard" class="list-group-a"><span class="glyphicon glyphicon-home"></span>
+                        Dashboard</a>
+                    <span style="color:#808080; font-weight:normal">/ Đăng ký học</span>
+                    <a style="float:right; cursor: pointer" data-toggle="popover" data-placement="left" title="Help"
+                        data-content="intro.user"><i class="fa fa-question-circle fa-customer"></i></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</section>
+<!-- Main content -->
+<section class="content aps-dangky">
+    <div class="zone-content">
+        <div class="row row-align aps-box-search">
+            <div class="col-lg-12">
+                <div class="dkmh_info">
+                    <div class="pull-left dkmh_stu">
+                        <!--<p class="dkmh_info_stu">Họ tên: Trần Thu Phương</p><br />
+                    <p class="dkmh_info_stu">MSSV: dtk1151030104</p>-->
+                        <p class="dkmh_info_stu">Tổng số đã đăng ký: <span class="label label-success"
+                                style="line-height: 17px;">
+                                <span id="dkh_lblTongSoTinChi">0</span>/<span id="dkh_lblGioiHan">30</span></span></p>
+                        <br />
+                    </div>
+                    <div class="pull-right dkmh_mh">
+                        <p class="dkmh_info_stu">Tổng tiền phải nộp:
+                            <span class="label label-success" style="line-height: 17px;"><span
+                                    id="dkh_lblTongSoTien">0</span> vnđ</span>
+                        </p>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+                <!--<div class="dkmh_title">
+                <h4 class="dkmh_title color-active">ĐĂNG KÝ HỌC ONLINE - HỌC KỲ 2017_2018_I</h4>
+            </div>-->
+                <div class="group-title d-none">
+                    <p class="titleSearchContent" data-toggle="collapse" data-target="#search">
+                        <i class="fa fa-window-restore"></i> <span class="lang" key="">Tìm kiếm môn học</span>
+                    </p>
+                </div>
+                <div class="dkmh_search" style="margin-top: 15px">
+                    <div class="area-search">
+                        <div class="col-sm-4 item-search">
+                            <select id="dropKeHoach_Search" class="select-opt">
+                                <!--Load from dangky.js-->
+                            </select>
+                        </div>
+                        <div class="col-sm-4 item-search">
+                            <select id="dropHocPhan_Search" class="select-opt">
+                                <!--Load from dangky.js-->
+                            </select>
+                        </div>
+                        <div class="col-sm-4 item-search">
+                            <p class="dkmh_info_mh color-888">
+                                (Số tín chỉ: <span class="bold" id="iTinChi">0</span>
+                                Loại lớp: <span class="bold" id="iLoaiLop">-</span> )
+                            </p>
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+            </div>
+        </div>
+        <div class="row row-align aps-box-table">
+            <div class="col-lg-12">
+                <div class="group-title line-20 pl20 d-none">
+                    <p class="titleSearchContent" data-toggle="collapse" data-target="#search">
+                        <i class="far fa-users-class"></i> <span class="lang" key="">Danh sách lớp học đăng ký</span>
+                    </p>
+                </div>
+                <div class="nav-tabs-custom">
+                    <ul class="nav nav-tabs">
+                        <li id="tab1_dsdk" class="active"><a href="#zone_content_dsdk" data-toggle="tab"
+                                aria-expanded="true"><i class="fa-light fa-screen-users"></i> Danh sách đăng ký (<span
+                                    id="tab1_total">0</span>)</a></li>
+                        <li id="tab2_kqdk" class=""><a href="#zone_content_kqdk" data-toggle="tab"
+                                aria-expanded="false"><i class="fa-light fa-calendar-users"></i> Kết quả đăng ký (<span
+                                    id="tab2_total">0</span>)</a></li>
+                        <li id="tab3_nvdk" class=""><a href="#zone_content_nvdk" data-toggle="tab"
+                                aria-expanded="false"><i class="fa-light fa-chalkboard-user"></i> Nguyện vọng đăng ký
+                                (<span id="tab3_total">0</span>)</a></li>
+                        <li class="pull-right ml-10 mr-0 d-flex aps-gap-10">
+                            <a id="btnRefresh" class="btn btn-warning lblRefresh btnRefresh d-flex">
+                                <i class="fa fa-refresh"></i> <span class="lang" key="">Tải lại</span></a>
+
+                            <a id="btnClearCache" class="btn btn-secondary lblRefresh btnClearCache d-flex">
+                                <i class="fa-light fa-broom-wide"></i><span class="lang" key="">Clear cache</span></a>
+                        </li>
+                    </ul>
+                    <div class="tab-content pd20">
+                        <!-- Danh sách đăng ký -->
+                        <div class="tab-pane active" id="zone_content_dsdk">
+                            <div class="row row-tab row-align">
+                                <div id="zone_action_dk">
+                                    <div id="zone_dkh_action">
+                                        <span id="dkh_step"></span>
+                                        <span id="dkh_action"></span>
+                                    </div>
+                                    <!--
+                                <div class="pull-left" id="dkh_action_step">
+                                    <p>
+                                        <span class="badge bg-green action_step">1</span> Lớp LT: Toán 01
+                                        <span class="badge bg-green action_step">2</span> Lớp TH: <i class="fa fa-spin fa-ellipsis-h"></i>
+                                        <span class="badge bg-red action_step">3</span> Bài tập: <i class="fa fa-spin fa-ellipsis-h"></i>
+                                        <button type="button" class="badge bg-green btn-xs"><i class="fa fa-check"></i> Save</button>
+                                    </p>
+                                </div>
+                                <div class="pull-right row-align-bottom" id="dkh_action_move">
+                                    <button type="button" class="btn btn-default btn-xs"><i class="fa fa-angle-double-left"></i> Prev</button>
+                                    <button type="button" class="btn btn-default btn-xs">Next <i class="fa fa-angle-double-right"></i></button>
+                                </div>
+                                -->
+                                    <div class="clear"></div>
+                                </div>
+                                <div class="scroll-table-x aps-table-select">
+                                    <table id="tblDangKy"
+                                        class="table table-hover table-bordered table-noborder tblDangKy">
+                                        <thead>
+                                            <tr>
+                                                <th class="td-center td-fixed w-50px"><span class="lang" key="">#</span>
+                                                </th>
+                                                <th class="td-center"><span class="lang" key="">Chọn</span></th>
+                                                <th class="td-left">Mã Lớp</th>
+                                                <th class="td-left"><span class="lang" key="">Tình trạng</span></th>
+                                                <th class="td-left"><span class="lang" key="">Loại lớp</span></th>
+                                                <th class="td-left"><span class="lang" key="">Lớp học phần</span></th>
+                                                <th class="td-center"><span class="lang" key="">Thời gian</span></th>
+                                                <th class="td-left"><span class="lang" key="">Lịch tuần</span></th>
+                                                <th class="td-left"><span class="lang" key="">Giảng viên</span></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!--Load from dangky.js-->
+                                            <!-- <tr>
+                                            <td class="td-center td-fixed"><input type="radio" name="rd_lop1" id='rd_mon1' /></td>
+                                            <td class="td-center">HP-X01</td>
+                                            <td class="td-center"><span class="lang" key="">45/50</span></td>  
+                                            <td class="td-left"><span class="lang" key="">Lý thuyết</span></td> 
+                                            <td class="td-left"><span class="lang" key="">Chủ nghĩa xã hội & khoa học</span></td>
+                                            <td class="td-center"><span class="lang" key="">15/02/2018 - 25/06/2016</span></td>
+                                            <td class="td-left">
+                                                <span class="lang" key="">
+                                                    <a class="color-active poiter detail">1</a>
+                                                    <a class="color-active poiter detail">2</a>
+                                                    <a class="color-active poiter detail">3</a>
+                                                    <a class="color-active poiter detail">4</a>
+                                                    <a class="color-active poiter detail">5</a>
+                                                    <a class="color-active poiter detail">6</a>
+                                                    <a class="color-active poiter detail">-</a>
+                                                    <a class="color-active poiter detail">8</a>
+                                                    <a class="color-active poiter detail">9</a>
+                                                    <a class="color-active poiter detail">10</a>
+                                                    <a class="color-active poiter detail">-</a>
+                                                    <a class="color-active poiter detail">-</a>
+                                                    <a class="color-active poiter detail">13</a>
+                                                    <a class="color-active poiter detail">14</a>
+                                                    <a class="color-active poiter detail">15</a>
+                                                    <a class="color-active poiter detail">16</a>
+                                                    <a class="color-active poiter detail">17</a>
+                                                </span>
+                                            </td>
+                                            <td class="td-left"><span class="lang" key="">Trương Giang Long</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="td-center td-fixed"><input type="radio" name="rd_lop1" id='rd_mon2' /></td>
+                                            <td class="td-center">HP-X02</td>
+                                            <td class="td-center"><span class="lang" key="">45/50</span></td>  
+                                            <td class="td-left"><span class="lang" key="">Thực hành</span></td> 
+                                            <td class="td-left"><span class="lang" key="">Chủ nghĩa xã hội & khoa học</span></td>
+                                            <td class="td-center"><span class="lang" key="">15/02/2018 - 25/06/2016</span></td>
+                                            <td class="td-left"><span class="lang" key="">1 - 3 4 - 6 - 8 9 - 11 12 13 14 - 16 17</span></td>
+                                            <td class="td-left"><span class="lang" key="">Trương Giang Long</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="td-center td-fixed"><input type="radio" name="rd_lop1" id='rd_mon3' /></td>
+                                            <td class="td-center">HP-X03</td>
+                                            <td class="td-center"><span class="lang" key="">45/50</span></td>  
+                                            <td class="td-left"><span class="lang" key="">Bài tập lớn</span></td> 
+                                            <td class="td-left"><span class="lang" key="">Chủ nghĩa xã hội & khoa học</span></td>
+                                            <td class="td-center"><span class="lang" key="">01/02/2018 - 27/06/2016</span></td>
+                                            <td class="td-left"><span class="lang" key="">- - 3 4 - 6 - - 9 10 11 12 13 14 15 16 17</span></td>
+                                            <td class="td-left"><span class="lang" key="">Trương Giang Long</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="td-center td-fixed"><input type="radio" name="rd_lop2" id='rd_lop2mon1' /></td>
+                                            <td class="td-center">HP-K01</td>
+                                            <td class="td-center"><span class="lang" key="">45/50</span></td>  
+                                            <td class="td-left"><span class="lang" key="">Lý thuyết</span></td> 
+                                            <td class="td-left"><span class="lang" key="">Công nghệ thông tin</span></td>
+                                            <td class="td-center"><span class="lang" key="">10/02/2018 - 20/06/2016</span></td>
+                                            <td class="td-left"><span class="lang" key="">1 2 3 4 5 6 - 8 9 - 11 - - 14 - 16 -</span></td>
+                                            <td class="td-left"><span class="lang" key="">Hoàng Minh Duy</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="td-center td-fixed"><input type="radio" name="rd_lop2" id='rd_lop2mon2' /></td>
+                                            <td class="td-center">HP-K02</td>
+                                            <td class="td-center"><span class="lang" key="">45/50</span></td>  
+                                            <td class="td-left"><span class="lang" key="">Thực hành</span></td> 
+                                            <td class="td-left"><span class="lang" key="">Công nghệ thông tin</span></td>
+                                            <td class="td-center"><span class="lang" key="">07/02/2018 - 30/06/2016</span></td>
+                                            <td class="td-left"><span class="lang" key="">1 - 3 4 - 6 - 8 9 - 11 12 - 14 15 16 17</span></td>
+                                            <td class="td-left"><span class="lang" key="">Hoàng Minh Duy</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="td-center td-fixed"><input type="radio" name="rd_lop2" id='rd_lop2mon3' /></td>
+                                            <td class="td-center">HP-K03</td>
+                                            <td class="td-center"><span class="lang" key="">45/50</span></td>  
+                                            <td class="td-left"><span class="lang" key="">Thảo luận</span></td> 
+                                            <td class="td-left"><span class="lang" key="">Công nghệ thông tin</span></td>
+                                            <td class="td-center"><span class="lang" key="">15/02/2018 - 25/06/2016</span></td>
+                                            <td class="td-left"><span class="lang" key="">1 2 - 4 5 6 7 - 9 - 11 12 - 14 - 16 17</span></td>
+                                            <td class="td-left"><span class="lang" key="">Hoàng Minh Duy</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="td-center td-fixed"><input type="radio" name="rd_lop3" id='rd_lop3mon1' /></td>
+                                            <td class="td-center">HP-F01</td>
+                                            <td class="td-center"><span class="lang" key="">45/50</span></td>  
+                                            <td class="td-left"><span class="lang" key="">Lý thuyết</span></td> 
+                                            <td class="td-left"><span class="lang" key="">Pháp luật và đại cương</span></td>
+                                            <td class="td-center"><span class="lang" key="">15/02/2018 - 25/06/2016</span></td>
+                                            <td class="td-left"><span class="lang" key="">1 - 3 4 - 6 - 8 9 - 11 12 13 14 - 16 17</span></td>
+                                            <td class="td-left"><span class="lang" key="">Hoàng Minh Duy</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="td-center td-fixed"><input type="radio" name="rd_lop3" id='rd_lop3mon2' /></td>
+                                            <td class="td-center">HP-F02</td>
+                                            <td class="td-center"><span class="lang" key="">45/50</span></td>  
+                                            <td class="td-left"><span class="lang" key="">Thực hành</span></td> 
+                                            <td class="td-left"><span class="lang" key="">Pháp luật và đại cương</span></td>
+                                            <td class="td-center"><span class="lang" key="">20/02/2018 - 30/06/2016</span></td>
+                                            <td class="td-left"><span class="lang" key="">1 - 3 4 - 6 - 8 9 - 11 12 13 14 - 16 17</span></td>
+                                            <td class="td-left"><span class="lang" key="">Hoàng Minh Duy</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="td-center td-fixed"><input type="radio" name="rd_lop3" id='rd_lop3mon3' /></td>
+                                            <td class="td-center">HP-F03</td>
+                                            <td class="td-center"><span class="lang" key="">45/50</span></td>  
+                                            <td class="td-left"><span class="lang" key="">Thảo luận</span></td> 
+                                            <td class="td-left"><span class="lang" key="">Pháp luật và đại cương</span></td>
+                                            <td class="td-center"><span class="lang" key="">05/02/2018 - 20/06/2016</span></td>
+                                            <td class="td-left"><span class="lang" key="">1 - 3 4 - 6 - 8 9 - 11 12 13 14 - 16 17</span></td>
+                                            <td class="td-left"><span class="lang" key="">Hoàng Minh Duy</span></td>
+                                        </tr>-->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Kết quả đăng ký -->
+                        <div class="tab-pane" id="zone_content_kqdk">
+                            <div class="row row-tab row-align">
+                                <div class="scroll-table-x mt-10 aps-table-select">
+                                    <table id="tblKetQuaDangKy"
+                                        class="table table-hover table-bordered table-noborder tblKetQuaDangKy">
+                                        <thead>
+                                            <tr>
+                                                <th class="td-center td-fixed w-50px">#</th>
+                                                <th class="td-left"><span class="lang" key="">Học phần</span></th>
+                                                <th class="td-left"><span class="lang" key="">Lớp học phần</span></th>
+                                                <th class="td-left"><span class="lang" key="">Loại lớp</span></th>
+                                                <th class="td-center"><span class="lang" key="">Thời gian</span></th>
+                                                <th class="td-left"><span class="lang" key="">Lịch tuần</span></th>
+                                                <th class="td-left"><span class="lang" key="">Giảng viên</span></th>
+                                                <th class="td-right"><span class="lang" key="">Số tiền (vnđ)</span></th>
+                                                <th class="td-center"><span class="lang" key="">Hủy</span></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!--Load from dangky.js-->
+                                            <!-- <tr>
+                                            <td class="td-center td-fixed" rowspan="2">1</td>
+                                            <td class="td-left" rowspan="2"><span class="lang" key="">LT</span></td> 
+                                            <td class="td-left"><span class="lang" key="">Chủ nghĩa xã hội & khoa học</span></td>
+                                            <td class="td-left"><span class="lang" key="">LHP-01 Chủ nghĩa xã hội & khoa học</span></td>
+                                            <td class="td-center"><span class="lang" key="">15/02/2018 - 25/06/2016</span></td>
+                                            <td class="td-left">
+                                                <span class="lang" key="">
+                                                    <a class="color-active poiter detail">1</a>
+                                                    <a class="color-active poiter detail">2</a>
+                                                    <a class="color-active poiter detail">3</a>
+                                                    <a class="color-active poiter detail">4</a>
+                                                    <a class="color-active poiter detail">5</a>
+                                                    <a class="color-active poiter detail">6</a>
+                                                    <a class="color-active poiter detail">-</a>
+                                                    <a class="color-active poiter detail">8</a>
+                                                    <a class="color-active poiter detail">9</a>
+                                                    <a class="color-active poiter detail">10</a>
+                                                    <a class="color-active poiter detail">-</a>
+                                                    <a class="color-active poiter detail">-</a>
+                                                    <a class="color-active poiter detail">13</a>
+                                                    <a class="color-active poiter detail">14</a>
+                                                    <a class="color-active poiter detail">15</a>
+                                                    <a class="color-active poiter detail">16</a>
+                                                    <a class="color-active poiter detail">17</a>
+                                                </span>
+                                            </td>
+                                            <td class="td-left"><span class="lang" key="">Trương Giang Long</span></td>
+                                            <td class="td-right" rowspan="2"><span class="lang" key="">200.000 vnđ</span></td>
+                                            <td class="td-center" rowspan="2"><span class="lang" key=""><a href="#">Hủy</a></span></td> 
+
+                                        </tr>
+                                        <tr>
+                                            <td class="td-left"><span class="lang" key="">Chủ nghĩa xã hội & khoa học</span></td>
+                                            <td class="td-left"><span class="lang" key="">LHP-01 Chủ nghĩa xã hội & khoa học</span></td>
+                                            <td class="td-center"><span class="lang" key="">15/02/2018 - 25/06/2016</span></td>
+                                            <td class="td-left">
+                                                <span class="lang" key="">
+                                                    <a class="color-active poiter detail">1</a>
+                                                    <a class="color-active poiter detail">2</a>
+                                                    <a class="color-active poiter detail">3</a>
+                                                    <a class="color-active poiter detail">4</a>
+                                                    <a class="color-active poiter detail">5</a>
+                                                    <a class="color-active poiter detail">6</a>
+                                                    <a class="color-active poiter detail">-</a>
+                                                    <a class="color-active poiter detail">8</a>
+                                                    <a class="color-active poiter detail">9</a>
+                                                    <a class="color-active poiter detail">10</a>
+                                                    <a class="color-active poiter detail">-</a>
+                                                    <a class="color-active poiter detail">-</a>
+                                                    <a class="color-active poiter detail">13</a>
+                                                    <a class="color-active poiter detail">14</a>
+                                                    <a class="color-active poiter detail">15</a>
+                                                    <a class="color-active poiter detail">16</a>
+                                                    <a class="color-active poiter detail">17</a>
+                                                </span>
+                                            </td>
+                                            <td class="td-left"><span class="lang" key="">Trương Giang Long</span></td>
+
+                                        </tr>
+                                        <tr>
+                                            <td class="td-center td-fixed">2</td>
+                                            <td class="td-left"><span class="lang" key="">LT</span></td> 
+                                            <td class="td-left"><span class="lang" key="">Công nghệ thông tin</span></td>
+                                            <td class="td-left"><span class="lang" key="">LHP-01 Công nghệ thông tin</span></td>
+                                            <td class="td-center"><span class="lang" key="">15/02/2018 - 25/06/2016</span></td>
+                                            <td class="td-left">
+                                                <span class="lang" key="">
+                                                    <a href="#" class="detail">1</a>
+                                                    <a href="#" class="detail">2</a>
+                                                    <a href="#" class="detail">-</a>
+                                                    <a href="#" class="detail">4</a>
+                                                    <a href="#" class="detail">5</a>
+                                                    <a href="#" class="detail">6</a>
+                                                    <a href="#" class="detail">7</a>
+                                                    <a href="#" class="detail">-</a>
+                                                    <a href="#" class="detail">9</a>
+                                                    <a href="#" class="detail">-</a>
+                                                    <a href="#" class="detail">-</a>
+                                                    <a href="#" class="detail">-</a>
+                                                    <a href="#" class="detail">13</a>
+                                                    <a href="#" class="detail">14</a>
+                                                    <a href="#" class="detail">15</a>
+                                                    <a href="#" class="detail">-</a>
+                                                    <a href="#" class="detail">17</a>
+                                                </span>
+                                            </td>
+                                            <td class="td-left"><span class="lang" key="">Hoàng Minh Duy</span></td>
+                                            <td class="td-right"><span class="lang" key="">200.000 vnđ</span></td>
+                                            <td class="td-center"><span class="lang" key=""><a href="#">Hủy</a></span></td> 
+                                        </tr>-->
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <th colspan="7">Tổng tiền</th>
+                                                <th class="td-right" id="dkh_lblTongSoTien_footer">400.000</th>
+                                                <th><a href="#">All</a></span></th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                                <div id="zone_action_kqdk" class="mt-10">
+                                    <div class="pull-left"> </div>
+                                    <div class="pull-right row-align-bottom d-flex">
+                                        <button type="button" class="btn btn-primary btn-xs">
+                                            <i class="fa fa-eye"></i>View</button>
+                                        <button type="button" class="btn btn-success btn-xs ml-5">
+                                            <i class="fa fa-print" style="margin-top: 2px;margin-right: 5px;"></i>Print</button>
+                                    </div>
+                                    <div class="clear"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Nguyen vong dang ky -->
+                        <div class="tab-pane" id="zone_content_nvdk">
+                            <div class="row row-tab row-align">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- page script -->
+<script src="modules/sinhviendangky/script/dangky.js?v=1.0.3.2"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['DangKy'] = new DangKy();
+    $(document).ready(function () {
+        main_doc.DangKy.init();
+    });
+</script>
+<!-- tabs -> accordion -->
+ <script>
+    $(document).ready(function () {
+
+  function isMobile() {
+    return window.innerWidth < 768;
+  }
+
+  function initMobileTab() {
+
+    //  remove toàn bộ event cũ trước
+    $('.nav-tabs li a').off('click.mobile');
+
+    $('.nav-tabs li a').on('click.mobile', function (e) {
+
+      if (!isMobile()) return;
+
+      e.preventDefault();
+
+      const target = $(this).attr('href');
+      const $li = $(this).parent();
+      const $content = $(target);
+
+      if (!$content.length) return;
+
+      // đóng hết
+      $('.tab-pane').stop(true, true).slideUp().removeClass('active');
+      $('.nav-tabs li').removeClass('active');
+
+      // active
+      $li.addClass('active');
+
+      // move xuống dưới LI
+      $('.tab-pane').not($content).appendTo('.tab-content'); // đưa về chỗ cũ trước
+      $li.after($content);
+
+      // mở
+      $content.addClass('active').stop(true, true).slideDown();
+    });
+
+    // auto mở tab active
+    $('.nav-tabs li.active a').trigger('click.mobile');
+  }
+
+//   function resetDesktop() {
+//     if (isMobile()) return;
+
+//     $('.nav-tabs li a').off('click.mobile');
+
+//     // đưa content về lại tab-content
+//     $('.tab-pane').each(function () {
+//       $('.tab-content').append($(this)).show();
+//     });
+//   }
+
+  function handle() {
+    if (isMobile()) {
+      initMobileTab();
+    } else {
+      resetDesktop();
+    }
+  }
+
+  handle();
+  $(window).on('resize', handle);
+
+});
+ </script>

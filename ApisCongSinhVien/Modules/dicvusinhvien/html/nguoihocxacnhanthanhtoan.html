@@ -1,0 +1,301 @@
+<style>
+    /* ===== Tùy chỉnh nhỏ cho trang Xác nhận thông tin ===== */
+    .aps-nguoihocxacnhanthanhtoan .info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px 24px;
+        margin: 0;
+    }
+    .aps-nguoihocxacnhanthanhtoan .info-grid .info-row {
+        display: flex; gap: 10px; padding: 6px 0;
+        border-bottom: 1px dashed #eef1f7;
+        font-size: 14px;
+    }
+    .aps-nguoihocxacnhanthanhtoan .info-grid .info-row.full { grid-column: 1 / -1; }
+    .aps-nguoihocxacnhanthanhtoan .info-grid .info-row:last-child,
+    .aps-nguoihocxacnhanthanhtoan .info-grid .info-row.full:last-child { border-bottom: none; }
+    .aps-nguoihocxacnhanthanhtoan .info-grid .info-label {
+        flex: 0 0 130px; color: #475569; font-weight: 600;
+    }
+    .aps-nguoihocxacnhanthanhtoan .info-grid .info-value { color: #0f172a; }
+
+    .aps-nguoihocxacnhanthanhtoan .xn-block-title {
+        display: flex; align-items: center; justify-content: space-between;
+        margin: 14px 0 10px;
+    }
+    .aps-nguoihocxacnhanthanhtoan .xn-block-title p {
+        margin: 0; font-weight: 600; color: var(--dask-blue, #1f3a8a);
+        font-size: 15px;
+    }
+    .aps-nguoihocxacnhanthanhtoan .xn-block-title i { margin-right: 6px; }
+
+    .aps-nguoihocxacnhanthanhtoan #tblXacNhan thead th {
+        background: #eef2ff; color: #1e293b; vertical-align: middle;
+    }
+    .aps-nguoihocxacnhanthanhtoan #tblXacNhan input[type="checkbox"] {
+        width: 16px; height: 16px; cursor: pointer; vertical-align: middle;
+    }
+
+    @media (max-width: 768px) {
+        .aps-nguoihocxacnhanthanhtoan .info-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ===== Select2 dropdown khi mở =====
+       Select trong modal có style="width: 100% !important". Select2 đọc width đó áp
+       cho container, mà container lại được attach vào <body> → dropdown lan full màn hình.
+       Cap theo viewport + giới hạn hợp lý để không bị tràn nhưng vẫn đủ rộng đọc text. */
+    .select2-container.select2-container--open {
+        max-width: min(95vw, 800px) !important;
+    }
+    .select2-container--open .select2-dropdown {
+        border: 1px solid #c7d2fe !important;
+        border-radius: 10px !important;
+        box-shadow: 0 8px 24px rgba(15, 23, 42, .12);
+        overflow: hidden;
+        margin-top: 4px;
+    }
+    .select2-container--default .select2-search--dropdown {
+        padding: 8px 10px;
+        background: #f8faff;
+        border-bottom: 1px solid #eef1f7;
+    }
+    .select2-container--default .select2-search--dropdown .select2-search__field {
+        height: 34px;
+        padding: 0 12px;
+        border-radius: 8px !important;
+        border: 1px solid #d8e0ee !important;
+        font-size: 14px;
+        outline: none;
+        box-shadow: none;
+    }
+    .select2-container--default .select2-search--dropdown .select2-search__field:focus {
+        border-color: #2563eb !important;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, .15);
+    }
+    .select2-container--default .select2-results__options { padding: 6px; max-height: 280px; }
+    .select2-container--default .select2-results__option {
+        padding: 8px 12px; border-radius: 6px; font-size: 14px; color: #1e293b;
+    }
+    .select2-container--default .select2-results__option--highlighted[aria-selected],
+    .select2-container--default .select2-results__option--highlighted {
+        background: linear-gradient(135deg, #1f3a8a 0%, #2563eb 100%) !important;
+        color: #fff !important;
+    }
+    .select2-container--default .select2-results__option[aria-selected="true"] {
+        background: #eef2ff; color: #1f3a8a;
+    }
+    .select2-container--default .select2-results__message,
+    .select2-container--default .select2-results__option[role="alert"] {
+        background: transparent !important;
+        color: #94a3b8 !important;
+        font-style: italic;
+        text-align: center;
+        padding: 14px 12px;
+        cursor: default;
+    }
+
+    /* ===== Modal Thực hiện xác nhận ===== */
+    #modal_ThucHienXacNhan .modal-body { padding: 20px 24px; }
+    #modal_ThucHienXacNhan .row.aps-form { align-items: flex-start; }
+    #modal_ThucHienXacNhan .row.aps-form .aps-form-label { padding-top: 9px; }
+
+    /* Textarea Ghi chú: full width, đủ cao, text canh top-left */
+    #modal_ThucHienXacNhan .aps-textarea-ghichu {
+        display: block;
+        width: 100% !important;
+        min-height: 110px;
+        padding: 10px 12px;
+        font-size: 14px;
+        line-height: 1.5;
+        color: #1e293b;
+        background-color: #fff;
+        border: 1px solid #d8e0ee;
+        border-radius: 8px;
+        resize: vertical;
+        box-sizing: border-box;
+        text-align: left;
+        font-family: inherit;
+        overflow: auto;
+    }
+    #modal_ThucHienXacNhan .aps-textarea-ghichu:focus {
+        outline: none;
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, .15);
+    }
+    #modal_ThucHienXacNhan .aps-textarea-ghichu::placeholder {
+        color: #94a3b8;
+        font-style: italic;
+    }
+</style>
+
+<div class="one-door aps-nguoihocxacnhanthanhtoan">
+    <div class="overlay"></div>
+    <div class="content-tab no-tab">
+        <div class="d-flex justify-content-between">
+            <div class="nav-content-left">
+                <p class="link"><a href="#">Kiểm tra thông tin cá nhân</a></p>
+            </div>
+            <div class="nav-content-right">
+                <a class="d-block text-right" href=""><i class="fas fa-question-circle"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="box-shadow register-wish pt-0">
+        <!-- Search -->
+        <div class="form-top box-search">
+            <div class="row">
+                <div class="col-12 col-lg-6 col-md-8 mb-15 item-search">
+                    <div class="form-item d-flex form-add-info flex-grow-1">
+                        <div class="input-group no-icon">
+                            <i class="fal fa-angle-down"></i>
+                            <select class="form-select select-opt" id="dropSearch_KeHoachXacNhan"
+                                aria-label="Chọn kế hoạch xác nhận">
+                                <option value="">-- Chọn kế hoạch xác nhận --</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-3 col-md-4 mb-15 item-search item-search-btn">
+                    <div class="d-flex align-items-center">
+                        <a class="btn btn-dask-blue" id="btnXem" style="cursor:pointer">
+                            <i class="far fa-search mr-5"></i> <span class="lang" key="">Xem</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container-fluid px-20">
+
+            <!-- Thông tin kế hoạch -->
+            <div id="zoneThongTinKeHoach" style="display:none">
+                <div class="xn-block-title">
+                    <p><i class="fa fa-info-circle"></i> Thông tin kế hoạch</p>
+                </div>
+                <div class="info-grid">
+                    <div class="info-row full">
+                        <div class="info-label">Tên kế hoạch:</div>
+                        <div class="info-value"><span id="lblTenKeHoach"></span></div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Từ ngày:</div>
+                        <div class="info-value"><span id="lblTuNgay"></span></div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Đến ngày:</div>
+                        <div class="info-value"><span id="lblDenNgay"></span></div>
+                    </div>
+                    <div class="info-row full">
+                        <div class="info-label">Mô tả:</div>
+                        <div class="info-value"><span id="lblMoTa"></span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bảng thông tin xác nhận -->
+            <div id="zoneXacNhan" style="display:none">
+                <div class="xn-block-title">
+                    <p><i class="fa-solid fa-list-check"></i> Thông tin xác nhận</p>
+                    <a class="btn btn-success" id="btnXacNhan" style="cursor:pointer">
+                        <i class="fa-solid fa-circle-check mr-5"></i> <span class="lang" key="">Xác nhận</span>
+                    </a>
+                </div>
+
+                <div class="aps-table-select scroll-table-x">
+                    <table id="tblXacNhan" class="table table-hover table-bordered">
+                        <thead>
+                            <tr>
+                                <th rowspan="3" class="td-center td-fixed">STT</th>
+                                <th rowspan="3" class="td-center">Loại thông tin</th>
+                                <th rowspan="3" class="td-center">Dữ liệu</th>
+                                <th colspan="4" class="td-center">Thông tin xác nhận</th>
+                                <th rowspan="3" class="td-center">
+                                    Chọn<br />
+                                    <input type="checkbox" id="chkSelectAll_XN" />
+                                </th>
+                            </tr>
+                            <tr>
+                                <th colspan="2" class="td-center">Cá nhân xác nhận</th>
+                                <th colspan="2" class="td-center">Nhà trường phản hồi</th>
+                            </tr>
+                            <tr>
+                                <th class="td-center">Xác nhận</th>
+                                <th class="td-center">Ghi chú theo xác nhận</th>
+                                <th class="td-center">Xác nhận</th>
+                                <th class="td-center">Ghi chú theo xác nhận</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Modal thực hiện xác nhận -->
+<div class="modal fade" id="modal_ThucHienXacNhan" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 720px; max-width: 95vw;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">
+                    <i class="fa-solid fa-circle-check"></i> <span class="lang" key="">Thực hiện xác nhận</span>
+                </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="aps-add-new pd10">
+                    <div class="row aps-form">
+                        <div class="col-sm-3 aps-form-label text-right"><b>Loại xác nhận:</b></div>
+                        <div class="col-sm-9 aps-form-input">
+                            <select id="dropSearch_LoaiXacNhan" class="select-opt form-control"
+                                style="width: 100% !important">
+                                <option value="">--Chọn loại xác nhận--</option>
+                            </select>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="row aps-form mt-10">
+                        <div class="col-sm-3 aps-form-label text-right"><b>Xác nhận:</b></div>
+                        <div class="col-sm-9 aps-form-input">
+                            <select id="dropSearch_HanhDong" class="select-opt form-control"
+                                style="width: 100% !important">
+                                <option value="">--Chọn hành động xác nhận--</option>
+                            </select>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="row aps-form mt-10">
+                        <div class="col-sm-3 aps-form-label text-right"><b>Ghi chú:</b></div>
+                        <div class="col-sm-9 aps-form-input">
+                            <textarea id="txtGhiChu_XN" class="form-control aps-textarea-ghichu" rows="5"
+                                placeholder="Nhập ghi chú..."></textarea>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+            </div>
+            <div id="notify"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-bs-dismiss="modal" data-dismiss="modal">
+                    <i class="fa fa-times-circle"></i> <span class="lang" key="">Đóng</span>
+                </button>
+                <button type="button" class="btn btn-primary" id="btnXacNhan_Modal">
+                    <i class="fa-solid fa-circle-check"></i> <span class="lang" key="">Xác nhận</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- js -->
+<script src="modules/dicvusinhvien/script/nguoihocxacnhanthanhtoan.js?v=1.0.0.4"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['NguoiHocXacNhanThanhToan'] = new NguoiHocXacNhanThanhToan();
+    $(document).ready(function () {
+        main_doc.NguoiHocXacNhanThanhToan.init();
+    });
+</script>

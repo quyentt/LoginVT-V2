@@ -1,0 +1,56 @@
+/* =========================================================================
+   6. COMPONENTS — tab
+   ========================================================================= */
+
+.ums-tabs {
+    display: flex;
+    gap: var(--ums-sp-1);
+    padding: 0 var(--ums-sp-5);
+    border-bottom: 1px solid var(--ums-line);
+    overflow-x: auto;
+    min-width: 0;
+    max-width: 100%;
+}
+
+/* Dải tab nhiều mục phải tự CUỘN NGANG trong chính nó. Khi khối bọc dải tab là con của một hàng flex
+   (vd .ums-row), bề rộng tối thiểu mặc định của nó = bề rộng toàn bộ các tab → khối phình ra, cả hộp
+   thoại / trang phải cuộn ngang (người dùng 2026-09-29, hộp "Khai trực tiếp hồ sơ" 8 tab). */
+:where(*):has(> .ums-tabs) { min-width: 0; max-width: 100%; }
+.ums-tabs__item { flex: 0 0 auto; }
+
+/* Dải tab đứng RIÊNG (không nằm trong .ums-panel) thì tự là một khung nền trắng —
+   nếu không, tab nổi trần trên nền trang, lệch hẳn với các vùng nội dung khác. */
+.ums-tabs:not(.ums-panel *) {
+    background: var(--ums-surface);
+    border: 1px solid var(--ums-line);
+    border-radius: var(--ums-r-2);
+}
+
+/* Chữ tab dùng mức chữ CHÍNH (--ums-ink, tương phản 17.4) chứ không phải
+   mức phụ: tab là lối đi chính của màn, để mờ thì nhìn như bị khoá. */
+.ums-tabs__item {
+    padding: var(--ums-sp-3) var(--ums-sp-4);
+    border-bottom: 2px solid transparent;
+    color: var(--ums-ink);
+    font-size: var(--ums-fz-14);
+    font-weight: var(--ums-fw-semibold);
+    white-space: nowrap;
+}
+
+.ums-tabs__item > i { color: var(--ums-ink-3); }
+.ums-tabs__item:hover > i,
+.ums-tabs__item.is-active > i { color: inherit; }
+
+.ums-tabs__item:hover { color: var(--ums-navy); }
+
+.ums-tabs__item.is-active {
+    border-bottom-color: var(--ums-blue);
+    color: var(--ums-blue);
+    font-weight: var(--ums-fw-bold);
+}
+
+/* Dải tab chỉ có MỘT tab (hoặc chưa có tab nào) thì không vẽ — trang một màn không cần tab
+   (người dùng yêu cầu 2026-09-22). Áp cho mọi dải: ums.ui.tabs, pat.sections, dải tự dựng từ
+   dữ liệu máy chủ (vd hoso/qtthongtin: "Tất cả hoạt động" + các loại hoạt động — không có loại
+   nào thì chỉ còn một tab). Tab bị ẩn (hidden) không tính. */
+.ums-tabs:not(:has(> .ums-tabs__item:not([hidden]) ~ .ums-tabs__item:not([hidden]))) { display: none; }

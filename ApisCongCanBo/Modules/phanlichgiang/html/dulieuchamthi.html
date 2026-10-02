@@ -1,0 +1,186 @@
+﻿<style>
+    .lbTinhTrang {
+        float: right;
+        font-weight: bold;
+        border: 4px solid;
+        opacity: 0.5;
+        color: red;
+        -ms-transform: rotate(10deg);
+        /* IE 9 */
+        -webkit-transform: rotate(10deg);
+        /* Safari 3-8 */
+        transform: rotate(10deg);
+    }
+
+    #txtTenSanPham {
+        width: 550px;
+        overflow: hidden !important;
+        display: block;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        float: left;
+        color: #4e8d42;
+    }
+
+    .btn-large {
+        width: 85px;
+        text-align: center;
+        background-color: #fff;
+        border-bottom: 1px solid #f1f1f1;
+        float: left;
+        margin-left: 5px;
+    }
+
+    .btnxacnhan_small {
+        width: 35px;
+        -webkit-box-shadow: 1px 1px 1px 1px #ccc;
+        -moz-box-shadow: 1px 1px 1px 1px #ccc;
+        /* Firefox 3.5 - 3.6 */
+        box-shadow: 1px 1px 1px 1px #ccc;
+    }
+</style>
+<section class="content aps-congcanbo">
+    <div class="row aps-dulieuchamthi">
+        <div class="col-lg-12" id="zone_TimKiem">
+            <div class="col-lg-3 box-shadow aps-box-l aps-dulieuchamthi-l">
+                <div class="box box-solid box-search pd15">
+                    <div class="box-body pd0">
+                        <div class="bs-item">
+                            <div class="bss-item mb-10">
+                                <input id="txtSearch_TuKhoa" class="form-control" placeholder="Nhập từ khóa tìm kiếm" />
+                            </div>
+                        </div>
+                        <div class="bss-item mb-10">
+                            <select id="dropSearch_ThoiGianDaoTao" class="select-opt">
+                                <option value="">--Chọn thời gian đào tạo--</option>
+                            </select>
+                        </div>
+                        <div class="bss-item mb-10">
+                            <select id="dropSearch_HeDaoTao" class="select-opt">
+                                <option value="">--Chọn hệ đào tạo--</option>
+                            </select>
+                        </div>
+                        <div class="bss-item mb-10">
+                            <select id="dropSearch_CoCauToChuc" class="select-opt">
+                                <option value="">--Chọn bộ môn--</option>
+                            </select>
+                        </div>
+                        <div class="bss-item mb-10">
+                            <select id="dropSearch_HocPhan" class="select-opt">
+                                <option value="">--Chọn học phần--</option>
+                            </select>
+                        </div>
+                        <div class="bs-item bs-item-btn Row">
+                            <div class="col-6 col-sm-6 pr5">
+                                <div class="dropdown w-100" id="zonebtnCT_Import" style="float: left">
+                                    <button class="btn btn-success dropdown-toggle w-100" type="button"
+                                        data-toggle="dropdown">
+                                        <i class="fa-solid fa-file-import"></i>Import <span class="caret"
+                                            style="margin-top: -1px !important;"></span>
+                                    </button>
+                                    <ul class="dropdown-menu form-container">
+                                        <li><a class="btnImportWithProce" name="IMPORTWITHPROC_CHAMTHI" title="Thi"
+                                                href="#"> 1. Import Chấm thi</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-6 col-sm-6 pl5">
+                                <a class="btn btn-default btn-search btnExtend_Search w-100"><i
+                                        class="fa fa-search"></i><span class="lang" key="">Tìm kiếm</span></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="box box-solid aps-dulieuchamthi-list pl0 pr0 ">
+                    <div class="box-header pd0 pl15 pr15">
+                        <h3 class="box-title">
+                            <i class="fa-solid fa-screen-users"></i> Danh sách lớp học phần
+                        </h3>
+                        <span class="badge bg-light-blue pull-right">
+                            <span id="lblLopHocPhan_Tong"></span>
+                        </span>
+                    </div>
+                    <div class="box-body pd0 mt-10" id="zoneLopHocPhan">
+                        <table id="tblLopHocPhan" class="table table-hover tblLopHocPhan table-no-boder-l-r">
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-9 aps-box-r aps-dulieuchamthi-r pl20" id="zoneLichGiangChiTiet" style="display: block">
+                <div class="row box-shadow aps-box-r aps-dulieuchamthi-r zone-bus">
+                    <div class="box box-solid pd0">
+                        <div class="box box-solid">
+                            <div class="col-sm-12">
+                                <div class="box box-solid">
+                                    <div class="box-header with-border bg-blue" style="text-align: center">
+                                        <a class="fz20 mt-5"><i
+                                                class="fa-solid fa-calendar-circle-user fw-bold mr-5"></i>Lịch học học
+                                            phần: <span class="color-active lblLichHoc_HP font-bold"></span></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="clear"></div>
+                            <div class="box-body pd20">
+                                <div class="box-header pd0">
+                                    <h3 class="box-title mt-10">
+                                        <i class="fa-solid fa-users-between-lines"></i>Danh sách cán bộ
+                                        <span class="pull-right badge bg-light-blue">
+                                            <span id="lblCanBo_Tong"></span>
+                                        </span>
+                                    </h3>
+                                    <div class="pull-right"></div>
+                                </div>
+                                <div class="aps-table-selectv mt-10">
+                                    <table id="tblInputDanhSachNhanSu"
+                                        class="table table-hover table-bordered tblInputDanhSachNhanSu mb-10 table-bordered table-noborder">
+                                        <thead>
+                                            <tr>
+                                                <th class="td-fixed td-center w-50px">Stt</th>
+                                                <th class="td-center">Đơn vị</th>
+                                                <th class="td-center">Mã cán bộ</th>
+                                                <th class="td-center">Họ tên</th>
+                                                <th class="td-center">Học phần</th>
+                                                <th class="td-center">Số lượng</th>
+                                                <th class="td-center">Ngày chấm thi</th>
+                                                <th class="td-center">Đối tượng</th>
+                                                <th class="td-center td-fixed">
+                                                    <!--<input type="checkbox" id="chkSelectAll">-->
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                                <div class="row">
+                                    <div class="pull-right">
+                                        <div class="group-title-name d-flex">
+                                            <a class="btn btn-outline-primary" id="btnSearch_NhanSu"><i
+                                                    class="fa fa-plus color-active"></i>Thêm dòng mới</a>
+                                            <a id="btnSave_DuLieuChamThi" class="btn btn-primary"><i
+                                                    class="fa fa-save"></i>
+                                                Lưu</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<div class="modal fade aps-modal-nhansu" id="modal_nhansu" role="dialog" aria-labelledby="myModalLabel"
+    aria-hidden="true">
+    <!-- load from js -->
+</div>
+<!-- page script -->
+<script src="modules/phanlichgiang/script/DuLieuChamThi.js?v=1.0.0.1"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['DuLieuChamThi'] = new DuLieuChamThi();
+    $(document).ready(function () {
+        main_doc.DuLieuChamThi.init();
+    });
+</script>

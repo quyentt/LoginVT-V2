@@ -1,0 +1,186 @@
+<style>
+    .aps-thongketinhtrangtochucthi .tk-filter-label {
+        display: block;
+        font-weight: 600;
+        font-size: 12px;
+        color: #555;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        margin-bottom: 6px;
+    }
+    .aps-thongketinhtrangtochucthi .tk-filter-label i {
+        color: #337ab7;
+        margin-right: 4px;
+    }
+    .aps-thongketinhtrangtochucthi .tk-loaiLoc-card {
+        background: #f8f9fb;
+        border: 1px solid #e3e6ec;
+        border-radius: 6px;
+        padding: 10px 14px;
+    }
+    .aps-thongketinhtrangtochucthi .tk-loaiLoc-card .radio-opt {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        border: 1px solid #d0d4dc;
+        border-radius: 20px;
+        background: #fff;
+        cursor: pointer;
+        margin-right: 8px;
+        font-size: 13px;
+        transition: all 0.15s ease;
+    }
+    .aps-thongketinhtrangtochucthi .tk-loaiLoc-card .radio-opt:hover {
+        border-color: #337ab7;
+    }
+    .aps-thongketinhtrangtochucthi .tk-loaiLoc-card .radio-opt input {
+        margin: 0;
+    }
+    .aps-thongketinhtrangtochucthi .tk-loaiLoc-card .radio-opt.is-active {
+        background: #eaf3fb;
+        border-color: #337ab7;
+        color: #1f5d8a;
+        font-weight: 600;
+    }
+    .aps-thongketinhtrangtochucthi .btn-thuchien-loc {
+        background-color: #ffd43b !important;
+        color: #000 !important;
+        border: 1px solid #d4a017 !important;
+        font-weight: 700;
+        padding: 8px 22px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    }
+    .aps-thongketinhtrangtochucthi .btn-thuchien-loc:hover {
+        background-color: #fcc419 !important;
+        box-shadow: 0 3px 6px rgba(0,0,0,0.12);
+    }
+    .aps-thongketinhtrangtochucthi #tblThongKe th.th-tonghop {
+        background-color: #fffacd;
+    }
+    .aps-thongketinhtrangtochucthi .tk-search-row {
+        display: flex;
+        gap: 10px;
+        align-items: stretch;
+    }
+    .aps-thongketinhtrangtochucthi .tk-search-row .form-control {
+        flex: 1;
+    }
+</style>
+<section class="content aps-thiphach">
+    <div class="row aps-thongketinhtrangtochucthi">
+        <div class="zone-bus" id="zonebatdau">
+            <!--Box search-->
+            <div class="box box-solid box-search pd20 pb15">
+                <div class="box-body pd0">
+                    <div class="area-search">
+                        <!-- Hàng label row 1 -->
+                        <div class="tk-label-row">
+                            <div class="col-sm-3"><label class="tk-filter-label"><i class="fa fa-calendar"></i>Học kỳ</label></div>
+                            <div class="col-sm-3"><label class="tk-filter-label"><i class="fa fa-graduation-cap"></i>Hệ đào tạo</label></div>
+                            <div class="col-sm-6"><label class="tk-filter-label"><i class="fa fa-filter"></i>Loại lọc</label></div>
+                            <div class="clear"></div>
+                        </div>
+                        <div id="search" class="inputSearch">
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_ThoiGianDaoTao" class="select-opt" style="width:100% !important" multiple="multiple">
+                                    <option id="" value=""> --Chọn thời gian-- </option>
+                                </select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_HeDaoTao" class="select-opt" style="width:100% !important" multiple="multiple">
+                                    <option id="" value=""> --Chọn hệ đào tạo-- </option>
+                                </select>
+                            </div>
+                            <div class="col-sm-6 item-search">
+                                <div class="tk-loaiLoc-card">
+                                    <label class="radio-opt is-active" for="rdLoc_TatCa">
+                                        <input type="radio" name="rdLoaiLoc" id="rdLoc_TatCa" value="0" checked />
+                                        <span>Tất cả</span>
+                                    </label>
+                                    <label class="radio-opt" for="rdLoc_ChuaCoDSThi">
+                                        <input type="radio" name="rdLoaiLoc" id="rdLoc_ChuaCoDSThi" value="1" />
+                                        <span>Có DS học – Chưa có DS thi</span>
+                                    </label>
+                                    <label class="radio-opt" for="rdLoc_SotSV">
+                                        <input type="radio" name="rdLoaiLoc" id="rdLoc_SotSV" value="2" />
+                                        <span>Có DS thi – Sót sinh viên</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="clear"></div>
+                            <!-- Hàng label row 2 -->
+                            <div class="tk-label-row mt-10">
+                                <div class="col-sm-6"><label class="tk-filter-label"><i class="fa fa-search"></i>Từ khóa</label></div>
+                                <div class="col-sm-3"><label class="tk-filter-label" style="visibility:hidden">.</label></div>
+                                <div class="col-sm-3"><label class="tk-filter-label" style="visibility:hidden">.</label></div>
+                                <div class="clear"></div>
+                            </div>
+                            <!-- Hàng 2: Tìm kiếm + Action -->
+                            <div class="col-sm-6 item-search">
+                                <input id="txtSearch" class="form-control" placeholder="Nhập mã / tên học phần để lọc..." />
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <a id="btnThucHienLoc" class="btn btn-thuchien-loc" style="width:100%"><i class="fa fa-filter"></i> Thực hiện lọc</a>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <div class="dropdown" id="zonebtnBaoCao_TKTC"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="clear"></div>
+            <!-- Danh sách -->
+            <div class="box box-solid aps-list-thongketinhtrang">
+                <div class="box-header">
+                    <h3 class="box-title">
+                        <i class="fa-light fa-list-timeline"></i> Danh sách học phần
+                        <span class="pull-right badge bg-light-blue ml-15">
+                            <span id="lblThongKe_Tong"></span>
+                        </span>
+                    </h3>
+                </div>
+                <div class="box-body pt0">
+                    <div class="table-select2 aps-table-select mt-10 scroll-table-x">
+                        <table id="tblThongKe" class="table table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="td-fixed td-center" rowspan="2">Stt</th>
+                                    <th class="td-center" rowspan="2">Mã học phần</th>
+                                    <th class="td-center" rowspan="2">Tên học phần</th>
+                                    <th class="td-center" rowspan="2">Chương trình mở học phần</th>
+                                    <th class="td-center" rowspan="2">Số tín chỉ</th>
+                                    <th class="td-center" rowspan="2">Khoa quản lý học phần</th>
+                                    <th class="td-center th-tonghop" colspan="5">TỔNG HỢP</th>
+                                    <th class="td-center td-fixed" rowspan="2">
+                                        <input type="checkbox" id="chkSelectAll_ThongKe" />
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th class="td-center th-tonghop">Tổng số đã đăng ký học</th>
+                                    <th class="td-center th-tonghop">Tổng số đã rút</th>
+                                    <th class="td-center th-tonghop">Tổng số đã tổ chức thi</th>
+                                    <th class="td-center th-tonghop">Tổng số chưa đủ điều kiện thi</th>
+                                    <th class="td-center th-tonghop">Tổng số chưa có tên trong DST</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- load from js -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- page script -->
+<script src="modules/kehoach/script/thongketinhtrangtochucthi.js?v=1.0.0.0"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['ThongKeTinhTrang'] = new ThongKeTinhTrang();
+    $(document).ready(function () {
+        main_doc.ThongKeTinhTrang.init();
+    });
+</script>

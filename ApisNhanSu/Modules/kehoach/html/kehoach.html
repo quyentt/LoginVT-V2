@@ -1,0 +1,833 @@
+﻿<div class="action-inner">
+    <div class="action-function">
+        <button class="btn btn-add btnAdd" id="btnAdd_KeHoach">
+            <i class="fal fa-plus"></i>
+            <span>Thêm</span>
+        </button>
+        <button class="btn btn-delete" id="btnDelete_KeHoach">
+            <i class="fal fa-trash "></i>
+            <span>Xóa</span>
+        </button>
+    </div>
+</div>
+<div class="swiper content-slider">
+    <div class="swiper-wrapper">
+        <!-- Kế hoạch tuyển dụng -->
+        <div class="swiper-slide">
+            <div class="function">
+                <div class="function-content">
+                    <div class="feature-content has-tabs">
+                        <div class="card today-card today-card-1 mb-40">
+                            <div class="card-header">
+                                <div class="myTab-header">
+                                    <div class="myTab-header-item">
+                                        <a href="#"
+                                           class="myTab-header-link active"
+                                           data-myTab="kehoachtuyendung">
+                                            Kế hoạch tuyển dụng
+                                        </a>
+                                    </div>
+                                    <!--<div class="myTab-header-item">
+                                        <a href="#"
+                                           class="myTab-header-link"
+                                           data-myTab="cacdottuyendung">
+                                            Các đợt tuyển dụng
+                                        </a>
+                                    </div>
+                                    <div class="myTab-header-item">
+                                        <a href="#"
+                                           class="myTab-header-link"
+                                           data-myTab="dexuatcacdonvitheodot">
+                                            Đề xuất của các đơn vị theo đợt
+                                        </a>
+                                    </div>
+                                    <div class="myTab-header-item">
+                                        <a href="#"
+                                           class="myTab-header-link"
+                                           data-myTab="thongtinhoidong">
+                                            Thông tin hội đồng
+                                        </a>
+                                    </div>-->
+                                </div>
+                            </div>
+
+                            <div class="card-body">
+                                <div class="myTab-content">
+                                    <div class="myTab-item show" id="kehoachtuyendung">
+                                        <div class="filter-sm mb-20">
+                                            <div class="filter-item w-lg-40 w-md-60">
+                                                <div class="input-label-left">
+                                                    <label class="mt-5">Năm</label>
+                                                    <div class="custom-select">
+                                                        <select name="" id="dropSearch_Nam" class="form-select select-opt"></select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="filter-item">
+                                                <div class="btn btn-view" id="btnSearch">Xem danh sách</div>
+                                            </div>
+                                        </div>
+                                        <div class="table-wrap">
+                                            <div class="table-responsive fs-14 no-swiper">
+                                                <table class="table" id="tblKeHoach">
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="text-center" scope="col">
+                                                                STT
+                                                            </th>
+                                                            <th scope="col">
+                                                                Mã kế hoạch
+                                                            </th>
+                                                            <th scope="col">
+                                                                Tên kế hoạch
+                                                            </th>
+                                                            <th scope="col">
+                                                                Phân loại
+                                                            </th>
+                                                            <th scope="col">
+                                                                Mô tả
+                                                            </th>
+                                                            <th class="text-center"
+                                                                scope="col">
+                                                                Mẫu hồ sơ kê khai
+                                                            </th>
+                                                            <th class=" text-center"
+                                                                scope="col">
+                                                                Phân loại
+                                                            </th>
+                                                            <th class="text-center"
+                                                                scope="col">
+                                                                Các đợt tuyển dụng
+                                                            </th>
+                                                            <th class=" text-center"
+                                                                scope="col">
+                                                                Nhân sự
+                                                            </th>
+                                                            <th class="text-center"
+                                                                scope="col">
+                                                                Tổng hợp đề xuất
+                                                            </th>
+                                                            <th class="text-center"
+                                                                scope="col">
+                                                                Tổng hợp kết quả
+                                                            </th>
+
+                                                            <th class="text-center" scope="col">Sửa</th>
+                                                            <th class="text-center">
+                                                                <input class="chkSystemSelectAll" type="checkbox">
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody></tbody>
+                                                    <tfoot></tfoot>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- modal  Giao đề tài Chi tiết -->
+<div class="modal fade" id="modalTongHopDeXuat">
+    <div class="modal-dialog modal-dialog-centered modal-1400">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-header-wrap">
+                    <div class="title">Tổng hợp đề xuất - <span class="lblKeHoach"></span></div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive fs-14 no-swiper ">
+                    <table class="table" id="tblTongHopDeXuat">
+                        <thead>
+                            <tr>
+                                <th class="text-center border-top-1" scope="col">STT</th>
+                                <th class="min-w-185p border-top-1" scope="col">Đơn vị đề xuất</th>
+                                <th class="min-w-185p border-top-1" scope="col">Cán bộ đưa thông tin </th>
+                                <th class="min-w-110p border-top-1 py-11" scope="col">Vị trí công việc đề xuất</th>
+                                <th class="min-w-110p border-top-1  py-11" scope="col">Số lượng đề xuất</th>
+                                <th class="min-w-130p border-top-1  py-11" scope="col">Hồ sơ ứng viên theo đề xuất</th>
+                                <th class="min-w-130p border-top-1  py-11" scope="col">Số lượng đề xuất</th>
+                                <th class="min-w-130p border-top-1  py-11" scope="col">Mô tả</th>
+                                <th class="min-w-130p border-top-1  py-11" scope="col">Trạng thái duyệt</th>
+                                <th class="text-center  border-top-1 min-w-65p  py-11" scope="col">
+                                    <input class="chkSystemSelectAll" type="checkbox">
+                                </th>
+
+                            </tr>
+
+                        </thead>
+                        <tbody></tbody>
+                        <tfoot></tfoot>
+                    </table>
+                </div>
+                <div style="display: flex">
+                    <div class="d-flex ms-auto">
+                        <a class="btn btn-add btn-sm btnDuyet_TongHopDeXuat">
+                            <i class="fal fa-paper-plane "></i>
+                            <span>Duyệt</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-outline-secondary ms-20" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fal fa-times"></i>
+                    <span>Đóng</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- modal Thêm mới kế hooạch -->
+<div class="modal fade" id="themmoikehoach">
+    <div class="modal-dialog modal-dialog-centered modal-680">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-header-wrap">
+                    <div class="title"><span class="myModalLabel"></span> kế hoạch</div>
+
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="form p-md-30">
+                    <div class="input-label-left mb-16">
+                        <label class="mt-7 min-w-120p">Mã kế hoạch</label>
+                        <div class="input">
+                            <input type="text" class="form-control" id="txtMaKeHoach" />
+                        </div>
+                    </div>
+                    <div class="input-label-left mb-16">
+                        <label class="mt-7 min-w-120p">Tên kế hoạch</label>
+                        <div class="input">
+                            <input type="text" class="form-control" id="txtTenKeHoach" />
+                        </div>
+                    </div>
+                    <div class="input-label-left mb-16">
+                        <label class="mt-7 min-w-120p">Phân loại</label>
+                        <div class="custom-select">
+                            <select id="dropPhanLoai" class="form-select select-opt"></select>
+                        </div>
+                    </div>
+                    <div class="input-label-left mb-16">
+                        <label class="mt-7 min-w-120p">Mẫu hồ sơ kê khai </label>
+                        <div class="custom-select">
+                            <select id="dropMauHoSo" class="form-select select-opt"></select>
+                        </div>
+                    </div>
+                    <div class="input-label-left mb-16">
+                        <label class="mt-7 min-w-120p">Năm</label>
+                        <div class="custom-select">
+                            <select id="dropNam" class="form-select select-opt"></select>
+                        </div>
+                    </div>
+                    <div class="input-label-left mb-16">
+                        <label class="mt-7 min-w-120p">Mô tả </label>
+                        <div class="input input-icon-right">
+                            <textarea class="form-control" id="txtMoTa" rows="4"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="d-flex justify-content-end">
+                    <button class="btn btn-save" id="btnSave_KeHoach">
+                        <i class="fal fa-save"></i>
+                        <span>Lưu</span>
+                    </button>
+                    <!--<button class="btn btn-outline-secondary ms-20"
+                            data-bs-dismiss="modal" id="btnDelete_KeHoach">
+                        <i class="fal fa-times"></i>
+                        <span>Hủy</span>
+                    </button>-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- modal  Giao đề tài Chi tiết -->
+<div class="modal fade" id="modalDotTuyenDung">
+    <div class="modal-dialog modal-dialog-centered modal-1400">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-header-wrap">
+                    <div class="title">Các đợt tuyển dụng</div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive fs-14 no-swiper ">
+                    <table class="table" id="tblDotTuyenDung">
+                        <thead>
+                            <tr>
+                                <th class="text-center border-top-1" scope="col">STT</th>
+                                <th class="min-w-185p border-top-1" scope="col">Mô tả</th>
+                                <th class="min-w-185p border-top-1" scope="col">Từ ngày</th>
+                                <th class="min-w-110p border-top-1 py-11" scope="col">Đến ngày</th>
+                                <th class="min-w-110p border-top-1  py-11" scope="col">Đề xuất của các đơn vị</th>
+                                <th class="min-w-130p border-top-1  py-11" scope="col">Hội đồng</th>
+                                <th class="min-w-130p border-top-1  py-11" scope="col">Trạng thái duyệt</th>
+                                <th class="min-w-130p border-top-1  py-11" scope="col">Kết quả tuyển dụng</th>
+                                <th class="min-w-130p border-top-1" scope="col">Sửa</th>
+                                <th class="text-center  border-top-1 min-w-65p  py-11" scope="col">
+                                    <input class="chkSystemSelectAll" type="checkbox">
+                                </th>
+
+                            </tr>
+
+                        </thead>
+                        <tbody></tbody>
+                        <tfoot></tfoot>
+                    </table>
+                </div>
+                <div style="display: flex">
+                    <div class="d-flex">
+                        <a class="btn btn-delete btn-sm btnDelete_DotTuyenDung">
+                            <i class="fal fa-trash "></i>
+                            <span>Xóa</span>
+                        </a>
+                    </div>
+                    <div class="d-flex ms-auto">
+                        <a class="btn btn-add btn-sm btnAdd btnAdd_DotTuyenDung">
+                            <i class="fal fa-plus "></i>
+                            <span>Thêm</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-outline-secondary ms-20" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fal fa-times"></i>
+                    <span>Đóng</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- modal  Giao đề tài Chi tiết -->
+<div class="modal fade" id="modalDeXuat">
+    <div class="modal-dialog modal-dialog-centered modal-1400">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-header-wrap">
+                    <div class="title"><span class="lblDeXuat"></span></div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive fs-14 no-swiper ">
+                    <table class="table" id="tblDeXuat">
+                        <thead>
+                            <tr>
+                                <th class="text-center border-top-1" scope="col">STT</th>
+                                <th class="min-w-185p border-top-1" scope="col">Đơn vị đề xuất</th>
+                                <th class="min-w-185p border-top-1" scope="col">Cán bộ đưa thông tin </th>
+                                <th class="min-w-110p border-top-1 py-11" scope="col">Vị trí công việc đề xuất</th>
+                                <th class="min-w-110p border-top-1  py-11" scope="col">Số lượng đề xuất</th>
+                                <th class="min-w-130p border-top-1  py-11" scope="col">Hồ sơ ứng viên theo đề xuất</th>
+                                <th class="min-w-130p border-top-1  py-11" scope="col">Số lượng đề xuất</th>
+                                <th class="min-w-130p border-top-1  py-11" scope="col">Mô tả</th>
+                                <th class="min-w-130p border-top-1  py-11" scope="col">Trạng thái duyệt</th>
+                                <th class="text-center  border-top-1 min-w-65p  py-11" scope="col">
+                                    <input class="chkSystemSelectAll" type="checkbox">
+                                </th>
+
+                            </tr>
+
+                        </thead>
+                        <tbody></tbody>
+                        <tfoot></tfoot>
+                    </table>
+                </div>
+                <div style="display: flex">
+                    <div class="d-flex ms-auto">
+                        <a class="btn btn-add btn-sm btnDuyet_DeXuat">
+                            <i class="fal fa-paper-plane "></i>
+                            <span>Duyệt</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-outline-secondary ms-20" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fal fa-times"></i>
+                    <span>Đóng</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- modal Thêm mới đợt tuyển dung -->
+<div class="modal fade" id="themmoidottuyendung">
+    <div class="modal-dialog modal-dialog-centered modal-680">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-header-wrap">
+                    <div class="title"><span class="myModalLabel"></span> đợt tuyển dụng</div>
+
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="form p-md-30">
+                    <div class="input-label-left mb-16">
+                        <label class="mt-7 min-w-110p">Từ ngày </label>
+                        <div class="input input-icon-right">
+                            <input type="text" class="form-control" id="txtDTD_TuNgay" value="--/--/--" />
+                        </div>
+                    </div>
+                    <div class="input-label-left mb-16">
+                        <label class="mt-7 min-w-110p">Đến ngày </label>
+                        <div class="input input-icon-right">
+                            <input type="text" class="form-control" id="txtDTD_DenNgay" value="--/--/--" />
+                        </div>
+                    </div>
+                    <div class="input-label-left mb-16">
+                        <label class="mt-7 min-w-110p">Mô tả</label>
+                        <div class="input input-icon-right">
+                            <textarea class="form-control" id="txtDTD_MoTa" rows="4"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="d-flex justify-content-end">
+                    <button class="btn btn-save btnSave_DotTuyenDung">
+                        <i class="fal fa-save"></i>
+                        <span>Lưu</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- modal  Giao đề tài Chi tiết -->
+<div class="modal fade" id="modalHoiDong">
+    <div class="modal-dialog modal-dialog-centered modal-1400">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-header-wrap">
+                    <div class="title">Thông tin hội đồng</div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive fs-14 no-swiper ">
+                    <table class="table" id="tblHoiDong">
+                        <thead>
+                            <tr>
+                                <th class="text-center border-top-1" scope="col">STT</th>
+                                <th class="min-w-185p border-top-1" scope="col">Loại hội đồng</th>
+                                <th class="min-w-185p border-top-1" scope="col">Tên hội đồng</th>
+                                <th class="min-w-110p border-top-1 py-11" scope="col">Quyết định</th>
+                                <th class="min-w-110p border-top-1  py-11" scope="col">Thành viên hội đồng</th>
+                                <th class="min-w-130p border-top-1  py-11" scope="col">Kết quả đánh giá của hội đồng</th>
+                                <th class="min-w-130p border-top-1" scope="col">Sửa</th>
+                                <th class="text-center  border-top-1 min-w-65p  py-11" scope="col">
+                                    <input class="chkSystemSelectAll" type="checkbox">
+                                </th>
+
+                            </tr>
+
+                        </thead>
+                        <tbody></tbody>
+                        <tfoot></tfoot>
+                    </table>
+                </div>
+                <div style="display: flex">
+                    <div class="d-flex">
+                        <a class="btn btn-delete btn-sm btnDelete_HoiDong">
+                            <i class="fal fa-trash "></i>
+                            <span>Xóa</span>
+                        </a>
+                    </div>
+                    <div class="d-flex ms-auto">
+                        <a class="btn btn-add btn-sm btnAdd btnAdd_HoiDong">
+                            <i class="fal fa-plus "></i>
+                            <span>Thêm</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-outline-secondary ms-20" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fal fa-times"></i>
+                    <span>Đóng</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- modal Thêm mới hội đồng -->
+<div class="modal fade" id="themmoihoidong">
+    <div class="modal-dialog modal-dialog-centered modal-680">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-header-wrap">
+                    <div class="title"><span class="myModalLabel"></span> hội đồng</div>
+
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="form p-md-30">
+                    <div class="input-label-left mb-16">
+                        <label class="mt-7 min-w-110p">Loại hội đồng </label>
+                        <div class="custom-select">
+                            <select id="dropHD_Loai" class="form-select select-opt"></select>
+                        </div>
+                    </div>
+                    <div class="input-label-left mb-16">
+                        <label class="mt-7 min-w-110p">Tên hội đồng </label>
+                        <div class="input input-icon-right">
+                            <input type="text" class="form-control" id="txtHD_Ten" />
+                        </div>
+                    </div>
+                    <div class="input-label-left mb-16">
+                        <label class="mt-7 min-w-110p">Mô tả</label>
+                        <div class="input input-icon-right">
+                            <textarea class="form-control" id="txtHD_MoTa" rows="4"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="d-flex justify-content-end">
+                    <button class="btn btn-save btnSave_HoiDong">
+                        <i class="fal fa-save"></i>
+                        <span>Lưu</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- modal  Giao đề tài Chi tiết -->
+<div class="modal fade" id="modalTVHoiDong">
+    <div class="modal-dialog modal-dialog-centered modal-1400">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-header-wrap">
+                    <div class="title">Thông tin hội đồng</div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive fs-14 no-swiper ">
+                    <table class="table" id="tblHoiDong">
+                        <thead>
+                            <tr>
+                                <th class="text-center border-top-1" scope="col">STT</th>
+                                <th class="min-w-185p border-top-1" scope="col">Thành viên</th>
+                                <th class="min-w-185p border-top-1" scope="col">Vai trò</th>
+                                <th class="min-w-110p border-top-1 py-11" scope="col">Mô tả</th>
+                                <th class="min-w-130p border-top-1" scope="col">Sửa</th>
+                                <th class="text-center  border-top-1 min-w-65p  py-11" scope="col">
+                                    <input class="chkSystemSelectAll" type="checkbox">
+                                </th>
+
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                        <tfoot></tfoot>
+                    </table>
+                </div>
+                <div style="display: flex">
+                    <div class="d-flex">
+                        <a class="btn btn-delete btn-sm btnDelete_TVHoiDong">
+                            <i class="fal fa-trash "></i>
+                            <span>Xóa</span>
+                        </a>
+                    </div>
+                    <div class="d-flex ms-auto">
+                        <a class="btn btn-add btn-sm btnAdd btnAdd_TVHoiDong">
+                            <i class="fal fa-plus "></i>
+                            <span>Thêm</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-outline-secondary ms-20" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fal fa-times"></i>
+                    <span>Đóng</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- modal Thêm mới hội đồng -->
+
+<div class="modal fade" id="themmoiTVHoiDong">
+    <div class="modal-dialog modal-dialog-centered modal-800">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-header-wrap">
+                    <div class="title "><span class="myModalLabel"></span> - Thành viên hội đồng</div>
+
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="input-label-left mb-20">
+                    <label class="mt-5 w-110p">Đơn vị</label>
+                    <select id="dropTVHD_DonVi" class="form-select select-opt"></select>
+                </div>
+
+                <div class="input-label-left mb-20">
+                    <label class="mt-5 w-110p">Thành viên</label>
+                    <select id="dropTVHD_ThanhVien" class="form-select select-opt"></select>
+                </div>
+                <div class="input-label-left mb-20">
+                    <label class="mt-5 w-110p">Vai trò</label>
+                    <select id="dropTVHD_VaiTro" class="form-select select-opt"></select>
+                </div>
+                <div class="input-label-left mb-20">
+                    <label class="mt-5 w-110p">Mô tả</label>
+                    <input type="text" id="txtTVHD_MoTa" class="form-control">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="d-flex justify-content-end">
+                    <button class="btn btn-save btnSave_TVHoiDong">
+                        <i class="fal fa-save"></i>
+                        <span>Lưu</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- modal  Giao đề tài Chi tiết -->
+<div class="modal fade" id="modalHoSoUngVien">
+    <div class="modal-dialog modal-dialog-centered modal-1400">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-header-wrap">
+                    <div class="title lblHoSoUngVien"></div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive fs-14 no-swiper ">
+                    <table class="table" id="tblHoSoUngVien">
+                        <thead>
+                            <tr>
+                                <th class="text-center border-top-1" scope="col">STT</th>
+                                <th class="min-w-185p border-top-1" scope="col">Mã hồ sơ</th>
+                                <th class="min-w-185p border-top-1" scope="col">Họ đệm</th>
+                                <th class="min-w-110p border-top-1 py-11" scope="col">Tên</th>
+                                <th class="min-w-110p border-top-1 py-11" scope="col">Vị trí tuyển dụng</th>
+                                <th class="min-w-110p border-top-1 py-11" scope="col">Ngày sinh</th>
+                                <th class="min-w-110p border-top-1 py-11" scope="col">CCCD</th>
+                                <th class="min-w-110p border-top-1 py-11" scope="col">Giới tính</th>
+                                <th class="min-w-110p border-top-1 py-11" scope="col">Dân tộc</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                        <tfoot></tfoot>
+                    </table>
+                </div>
+                <!--<div style="display: flex">
+                    <div class="d-flex">
+                        <a class="btn btn-delete btn-sm btnDelete_TVHoiDong">
+                            <i class="fal fa-trash "></i>
+                            <span>Xóa</span>
+                        </a>
+                    </div>
+                    <div class="d-flex ms-auto">
+                        <a class="btn btn-add btn-sm btnAdd btnAdd_TVHoiDong">
+                            <i class="fal fa-plus "></i>
+                            <span>Thêm</span>
+                        </a>
+                    </div>
+                </div>-->
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-outline-secondary ms-20" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fal fa-times"></i>
+                    <span>Đóng</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- modal kết quả đánh giá hội đồng -->
+<div class="modal fade" id="hoidong_ketquadanhgia">
+    <div class="modal-dialog modal-dialog-centered modal-1800">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-header-wrap">
+                    <div class="title lblKetQua"></div>
+
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive fs-14 no-swiper">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th colspan="9" class="text-center border-top-1 py-11">
+                                    THÔNG TIN ỨNG VIÊN
+                                </th>
+                                <th colspan="9"
+                                    class="text-center border-top-1 border-left-1 py-11">
+                                    KẾT QUẢ HỘI ĐỒNG
+                                </th>
+                                <th colspan="2"
+                                    class="text-center border-top-1 border-left-1 py-11">
+                                    Kết quả chung
+                                </th>
+                                <th rowspan="2"
+                                    class="text-center border-top-1 border-left-1 py-11 min-w-100p"
+                                    scope="col">
+                                    Minh chứng
+                                </th>
+                            </tr>
+                            <tr>
+                                <th class="text-center border-top-1" scope="col">STT</th>
+                                <th class="text-center min-w-100p border-top-1" scope="col">
+                                    Mã hồ sơ
+                                </th>
+                                <th class="min-w-130p border-top-1" scope="col">Họ đệm</th>
+                                <th class="min-w-60p border-top-1" scope="col">Tên</th>
+                                <th class="min-w-150p border-top-1 py-11 text-center"
+                                    scope="col">
+                                    Vị trí tuyển dụng
+                                </th>
+                                <th class="min-w-85p border-top-1 py-11 text-center"
+                                    scope="col">
+                                    Ngày sinh
+                                </th>
+                                <th class="min-w-100p border-top-1 py-11 text-center"
+                                    scope="col">
+                                    CCCD
+                                </th>
+                                <th class="min-w-100p border-top-1 py-11 text-center"
+                                    scope="col">
+                                    Giới tính
+                                </th>
+                                <th class="min-w-100p border-top-1 py-11 text-center"
+                                    scope="col">
+                                    Dân tộc
+                                </th>
+                                <th colspan="2"
+                                    class="min-w-250p border-top-1 py-11 border-left-1 text-center"
+                                    scope="col">
+                                    Chủ tịch HĐ - Nguyễn Văn X
+                                </th>
+                                <th colspan="2"
+                                    class="min-w-250p border-top-1 border-left-1 py-11 text-center"
+                                    scope="col">
+                                    Thành viên HĐ - Nguyễn Văn Y
+                                </th>
+                                <th colspan="5"
+                                    class="min-w-250p border-top-1 border-left-1 py-11 text-center"
+                                    scope="col">
+                                    Thành viên HĐ - Nguyễn Văn Y
+                                </th>
+                                <th class="min-w-100p border-top-1 border-left-1 py-11 text-center"
+                                    scope="col">
+                                    Đề xuất
+                                </th>
+                                <th class="min-w-100p text-center border-top-1 py-11"
+                                    scope="col">
+                                    Duyệt
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="d-flex justify-content-end">
+                    <button class="btn btn-save">
+                        <i class="fal fa-save"></i>
+                        <span>Lưu</span>
+                    </button>
+                    <!--<button class="btn btn-outline-secondary ms-20"
+                            data-bs-dismiss="modal">
+                        <i class="fal fa-times"></i>
+                        <span>Hủy</span>
+                    </button>-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="modules/nhansu/script/kehoach.js?v=1.0.1.4"></script>
+<script type="text/javascript">
+    //var main_doc = {};
+    if (typeof (main_doc) != "object") {
+        var main_doc = {};
+    };
+    main_doc['KeHoach'] = new KeHoach();
+    $(document).ready(function () {
+        main_doc.KeHoach.init();
+    });
+</script>
+
+<!-- FIX 2026-08-26: Select2 trong modal — re-init voi dropdownParent = modal
+     de popup nam trong modal, khong lech / che noi dung. Universal handler,
+     an toan khi modal khong co select. -->
+<script>
+(function () {
+    if (typeof jQuery === 'undefined') return;
+    var $ = jQuery;
+    $(document).off('shown.bs.modal.__s2fix').on('shown.bs.modal.__s2fix', '.modal', function () {
+        var $modal = $(this);
+        $modal.find('select.select-opt, select[id^="drop"]').each(function () {
+            var $sel = $(this);
+            try {
+                if ($sel.hasClass('select2-hidden-accessible')) $sel.select2('destroy');
+            } catch (e) {}
+            $sel.select2({ dropdownParent: $modal, width: '100%' });
+        });
+    });
+})();
+</script>
+<style>
+    .modal .select2-container--open,
+    .modal .select2-container--open .select2-dropdown {
+        z-index: 100060 !important;
+    }
+    .modal .select2-results__options {
+        max-height: 220px !important;
+        overflow-y: auto !important;
+    }
+</style>

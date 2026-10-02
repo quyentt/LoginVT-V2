@@ -1,0 +1,1127 @@
+﻿<style>
+    /* Modal "Thiet lap bao cao chay tu dong": title CENTER, X button o goc top-right */
+    .myModalLichBaoCao .modal-header {
+        position: relative !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 12px 50px !important;
+    }
+    .myModalLichBaoCao .modal-header .modal-title {
+        margin: 0 auto !important;
+        text-align: center !important;
+        flex: 0 0 auto !important;
+    }
+    .myModalLichBaoCao .modal-header .close {
+        position: absolute !important;
+        top: 50% !important;
+        right: 16px !important;
+        transform: translateY(-50%) !important;
+        margin: 0 !important;
+        padding: 4px 10px !important;
+        opacity: 0.9 !important;
+        color: #ffffff !important;
+        font-size: 22px !important;
+        line-height: 1 !important;
+        background: transparent !important;
+        border: 0 !important;
+        z-index: 5 !important;
+    }
+    .myModalLichBaoCao .modal-header .close:hover {
+        opacity: 1 !important;
+        color: #ffffff !important;
+    }
+    .myModalLichBaoCao .modal-header .close span {
+        color: #ffffff !important;
+    }
+    .todo-list {
+        overflow: unset;
+    }
+
+    .checkbox-inline+.checkbox-inline,
+    .radio-inline+.radio-inline {
+        margin-left: 0px;
+    }
+
+    .dr-progress {
+        font-size: 16px;
+        margin-left: 10px;
+        border-radius: 0.25em;
+        font-weight: 700;
+    }
+
+    .dr-progress-content {
+        border-radius: 0.25em;
+        padding: 0.2em 0.6em 0.3em;
+    }
+
+    .w3-light {
+        margin-top: -5px;
+        margin-bottom: -10px;
+        font-weight: 700;
+        margin-left: 10px
+    }
+
+    .w3-light-grey,
+    .w3-hover-light-grey:hover,
+    .w3-light-gray,
+    .w3-hover-light-gray:hover {
+        background-color: #f1f1f1 !important;
+        color: #000 !important;
+    }
+
+    .w3-container,
+    .w3-panel {
+        padding: 0.01em 16px;
+    }
+
+    .w3-green,
+    .w3-hover-green:hover {
+        background-color: #4caf50 !important;
+        color: #fff !important;
+    }
+
+    .w3-round,
+    .w3-round-medium {
+        border-radius: 4px;
+    }
+
+    .w3-round-xlarge {
+        border-radius: 16px;
+    }
+
+    .box {
+        margin-bottom: 5px
+    }
+
+    .callsuccess {
+        color: green;
+        font-weight: bold;
+    }
+
+    dropdown-menu>li>a:hover {
+        background-color: gray !important;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice {
+        background-color: #f1f1f1 !important;
+        color: black;
+        margin-top: 12px;
+    }
+
+    .box-mini {
+        background: #f7f7f7;
+        padding: 5px;
+        cursor: pointer;
+        width: 99%
+    }
+
+    .box-mini:hover {
+        background: #eaeaea;
+    }
+
+    .popover {
+        max-width: 100%;
+        /* Max Width of the popover (depending on the container!) */
+    }
+
+    .lbsymbolHD {
+        font-size: 13px;
+        font-family: 'Times New Roman', Times, serif
+    }
+
+    .btnMauInChungTu {
+        width: 85px;
+        text-align: center;
+        background-color: #fff;
+        border-bottom: 1px solid #f1f1f1;
+        cursor: pointer
+    }
+</style>
+
+<!-- Main content -->
+<section class="content MainPage aps-baocao" id="MainContent">
+    <div class="box box-solid box-shadow pd0 mb-20">
+        <!--Search zone-->
+        <div class="col-lg-12 box-search pd20" style="padding-bottom: 15px !important;">
+            <div class="box-body pd0">
+                <div class="group-title d-none">
+                    <p>
+                        <i class="fa fa-window-restore"></i>
+                        <span class="lang" key="">Tìm kiếm</span>
+                    </p>
+                </div>
+                <div class="area-search pb20">
+                    <div id="search" class="inputSearch collapse in">
+                        <!-- Bộ tìm kiếm -->
+                        <!-- THEM 2026-09-11: Cơ sở đào tạo — data lấy từ proc business
+                             pkg_kehoach_thongtin.LayDSDaoTao_CoSoDaoTao (giống module TS),
+                             qua edu.system.getList_CoSoDaoTao. -->
+                        <div class="col-sm-3 item-search">
+                            <select id="dropSearch_CoSoDaoTao_IHD" class="select-opt" style="width:100% !important"
+                                multiple="multiple">
+                                <option id="" value=""> --Chọn cơ sở đào tạo-- </option>
+                            </select>
+                        </div>
+                        <div class="col-sm-3 item-search">
+                            <select id="dropSearch_HeDaoTao_IHD" class="select-opt" style="width:100% !important"
+                                multiple="multiple">
+                                <option id="" value=""> --Chọn hệ đào tạo-- </option>
+                            </select>
+                        </div>
+                        <div class="col-sm-3 item-search">
+                            <select id="dropSearch_KhoaDaoTao_IHD" class="select-opt" style="width:100% !important"
+                                multiple="multiple">
+                                <option id="" value=""> --Chọn khóa đào tạo-- </option>
+                            </select>
+                        </div>
+                        <div class="col-sm-3 item-search">
+                            <select id="dropSearch_ChuongTrinh_IHD" class="select-opt" style="width:100% !important"
+                                multiple="multiple">
+                                <option id="" value=""> --Chọn chương trình-- </option>
+                            </select>
+                        </div>
+                        <div class="col-sm-3 item-search pr10">
+                            <select id="dropSearch_Lop_IHD" class="select-opt" style="width:100% !important"
+                                multiple="multiple">
+                                <option id="" value=""> --Chọn lớp-- </option>
+                            </select>
+                        </div>
+                        <div class="col-sm-3 item-search">
+                            <select id="dropSearch_HocKy_IHD" class="select-opt" style="width:100% !important"
+                                multiple="multiple">
+                                <option id="" value=""> --Chọn học kỳ-- </option>
+                            </select>
+                        </div>
+                        <div class="col-sm-3 item-search" style="display: none">
+                            <select id="dropSearch_KyThucHien_IHD" class="select-opt" style="width:100% !important">
+                                <option id="" value="1"> Trong kỳ này </option>
+                                <option id="" value="0"> Đến kỳ này </option>
+                            </select>
+                        </div>
+                        <div class="col-sm-3 item-search">
+                            <select id="dropKeHoachDangKy_TP" class="select-opt" multiple="multiple">
+                                <option value="">-- Chọn kế hoạch đăng ký --</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-3 item-search">
+                            <select id="dropSearch_NguoiThu_IHD" class="select-opt" style="width:100% !important"
+                                multiple="multiple">
+                                <option id="" value=""> --Chọn người thu-- </option>
+                            </select>
+                        </div>
+                        <div class="col-sm-3 item-search">
+                            <select id="dropSearch_NamNhapHoc_IHD" class="select-opt" style="width:100% !important"
+                                multiple="multiple"></select>
+                        </div>
+                        <div class="col-sm-3 item-search">
+                            <select id="dropSearch_KhoaQuanLy_IHD" class="select-opt" style="width:100% !important"
+                                multiple="multiple"></select>
+                        </div>
+                        <div class="col-sm-3 item-search">
+                            <input id="txtSearch_TuNgay_IHD" class="form-control input-datepicker"
+                                placeholder="Từ ngày dd/mm/yyyy" />
+                        </div>
+                        <div class="col-sm-3 item-search">
+                            <input id="txtSearch_DenNgay_IHD" class="form-control input-datepicker"
+                                placeholder="Đến ngày dd/mm/yyyy" />
+                        </div>
+                        <div class="col-sm-3 item-search">
+                            <input id="txtSearch_TuSo_IHD" class="form-control" placeholder="Từ số" />
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="col-sm-3 item-search">
+                            <input id="txtSearch_DenSo_IHD" class="form-control" placeholder="Đến số" />
+                        </div>
+                        <div class="col-sm-3 item-search">
+                            <select id="dropSearch_PhanLoai" class="select-opt" style="width:100% !important"
+                                multiple="multiple"></select>
+                        </div>
+                        <div class="col-sm-3 item-search">
+                            <select id="dropSearch_HinhThucThu" class="select-opt" style="width:100% !important"
+                                multiple="multiple"></select>
+                        </div>
+                        <div class="col-sm-3 item-search">
+                            <select id="dropSearch_PhanLoaiCSDT" class="select-opt" style="width:100% !important">
+                                <option value="1">1. Cơ sở đào tạo theo người thu</option>
+                                <option value="0">2. cơ sở đào tạo theo người học</option>
+                            </select>
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="col-sm-3 item-search">
+                            <select id="dropSearch_DoiTuongSV" class="select-opt" style="width:100% !important">
+                                <option value="">1. Tất cả</option>
+                                <option value="1">2. Là sinh viên</option>
+                                <option value="0">3. Là đối tác đào tạo</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-3 item-search">
+                            <select id="dropSearch_NamBaoCao" class="select-opt" style="width:100% !important"></select>
+                        </div>
+                        <div class="col-sm-3 item-search">
+                            <select id="dropSearch_NganhHoc" class="select-opt" style="width:100% !important"
+                                multiple="multiple"></select>
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="col-sm-6 item-search">
+                            <input id="txtSearch_DT" class="form-control" placeholder="Nhập từ khóa tìm kiếm" />
+                        </div>
+                        <div class="col-sm-3 item-search">
+                            <a id="btnSearch" class="btn btn-default btn-search">
+                                <i class="fa fa-search"></i> <span class="lang" key="">Tìm kiếm</span>
+                            </a>
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="col-sm-6 item-search d-flex justify-content-between" style="gap: 10px;">
+                            <a id="btnXoaNamBaoCao" class="btn btn-danger">
+                                <i class="fa fa-trash"></i> Xóa năm tài chính
+                            </a>
+                            <div class="d-flex" style="gap: 10px;">
+                                <a id="btnAddNamBaoCao" class="btn btn-primary">
+                                    <i class="fal fa-usd-circle"></i>
+                                    <span class="lang" key="">Cấu hình năm tài chính</span>
+                                </a>
+                                <a id="btnViewBaoCao" class="btn btn-success">
+                                    <i class="fal fa-file-invoice-dollar"></i>
+                                    <span class="lang" key="">Xem báo cáo đã thực hiện</span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 item-search d-flex">
+                            <div class="dropdown zonebtnBaoCao_TC" id="zonebtnBaoCao_TC"
+                                style="width: auto !important;"></div>
+                            <div class="dropdown zonebtnBaoCao_TC_DatLich" id="zonebtnBaoCao_TC_DatLich"
+                                style="width: auto !important; margin-left: 5px;"></div>
+                            <a id="btnXemLichBaoCao" class="btn btn-default" style="margin-left: 5px;">
+                                <i class="fal fa-calendar-alt"></i> Xem đã đặt
+                            </a>
+                            <div class="dropdown zonebtnBaoCao_TC_Import" id="zonebtnBaoCao_TC_Import"
+                                style="width: auto !important; margin-left: 5px;">
+                                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                                    <i class="fa-regular fa-file-import"></i> Import <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu form-container">
+                                    <li>
+                                        <a class="btnImportWithProce" name="IMPORTWITHPROC_KHTPN" title="" href="#">
+                                            1.
+                                            Xóa nợ khoản phải nộp
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row box-select pd-20">
+            <!--Search zone-->
+            <div class="col-lg-8 box-select-khoanrut">
+                <div class="box box-solid">
+                    <div class="box-body">
+                        <div class="group-title  pl5 pt0">
+                            <p class="titleSearchContent">
+                                <i class="fal fa-money-check-edit-alt"></i>
+                                <span class="lang" key="">Chọn khoản thu cần xuất hóa đơn</span>
+                            </p>
+                        </div>
+                        <div class="area-search mt-10">
+                            <div id="DSKhoanThu" style="padding-left: 25px;" class="inputSearch collapse in">
+                                <div id="zoneLoaiKhoanPhi"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 box-select-trangthai">
+                <div class="box box-solid" style="margin-left: 5px;background: transparent">
+                    <div class="box-body">
+                        <div class="group-title pl5 pr5 pt0">
+                            <p class="titleSearchContent">
+                                <i class="fal fa-user-graduate color-red"></i>
+                                <span class="lang color-red" key="">Chọn trạng thái sinh viên</span>
+                            </p>
+                        </div>
+                        <div class="area-search mt-10">
+                            <div style="padding-left: 25px" id="DSTrangThaiSV_LHD" style="padding-left: 25px"
+                                class="inputSearch collapse in">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="clear"></div>
+        </div>
+    </div>
+    <div class="row box-shadow pd0 mb-20 mt-20 aps-dssv-dutien aps-baocao-tab">
+        <div class="box box-solid box-KhoanThu pd0" id="mainKhoanThu">
+            <div class="box-body pd0">
+                <div class="nav-tabs-custom">
+                    <ul class="nav nav-tabs" id="zonetabkhoanthu">
+                        <li class="active">
+                            <a href="#tab_tongthu" data-toggle="tab" aria-expanded="true">
+                                1. <span class="lang" key="">Kết quả đã nộp</span>
+                            </a>
+                        </li>
+                        <li class=""><a href="#tab_phainop" data-toggle="tab">2. Kết quả phải nộp</a></li>
+                        <li class=""><a href="#tab_ketnoiketoan" data-toggle="tab">3. Kết nối kế toán</a></li>
+                    </ul>
+                    <div class="tab-content mt-20">
+                        <!-- Kết quả đã nộp< -->
+                        <div class="tab-pane active" id="tab_tongthu">
+                            <div class="row row-tab row-align">
+                                <div class="zone-content-baocao scroll-table-x">
+                                    <table id="tblKetQua" class="table table-hover mb-0  table-bordered table-noborder">
+                                        <thead>
+                                            <tr>
+                                                <th class="td-fixed">Stt</th>
+                                                <th class="td-center">
+                                                    <span class="lang" key="">Số tiền đã nộp</span>
+                                                </th>
+                                                <th class="td-center"><span class="lang" key="">Ngày nộp</span></th>
+                                                <th class="td-center"><span class="lang" key="">Mã đơn hàng</span></th>
+                                                <th class="td-center"><span class="lang" key="">Chứng từ</span></th>
+                                                <th class="td-center"><span class="lang" key="">Hình thức</span></th>
+                                                <th class="td-center"><span class="lang" key="">Thời gian</span></th>
+                                                <th class="td-center"><span class="lang" key="">Người thu</span></th>
+                                                <th class="td-center"><span class="lang" key="">Khoản thu</span></th>
+                                                <th class="td-center"><span class="lang" key="">Mã số</span></th>
+                                                <th class="td-center"><span class="lang" key="">Họ tên</span></th>
+                                                <th class="td-center"><span class="lang" key="">Ngày sinh</span></th>
+                                                <th class="td-center"><span class="lang" key="">Trạng thái</span></th>
+                                                <th class="td-center"><span class="lang" key="">Lớp học</span></th>
+                                                <th class="td-center"><span class="lang" key="">Chương trình</span></th>
+                                                <th class="td-center"><span class="lang" key="">Khóa học</span></th>
+                                                <th class="td-center"><span class="lang" key="">Khoa quản lý</span></th>
+                                                <th class="td-center"><span class="lang" key="">Hệ đào tạo</span></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="17" style="text-align: center">
+                                                    Vui lòng chọn khoản và ấn
+                                                    "Tìm kiếm" để tải danh sách
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="zone-content-baocao scroll-table-x mt-5">
+                                    <table class="table table-hover table-noborder" style="border: 0 !important;">
+                                        <tfoot>
+                                            <tr>
+                                                <td style="font-weight: bold;border: 0 !important;">Tổng tiền: </td>
+                                                <td style="font-weight: bold; text-align: left" id="lblTongTien"></td>
+                                                <td>Bằng chữ: <i id="lblTongTienBangChu"></i></td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 2. Kết quả phải nộp -->
+                        <div class="tab-pane" id="tab_phainop">
+                            <div class="row">
+                                <div class="pull-right">
+                                    <a id="btnDelete_KetQuaPhaiNop" class="btn btn-default"><i class="fa fa-trash"></i>
+                                        Xóa</a>
+                                </div>
+                            </div>
+                            <div class="row row-tab row-align">
+                                <div class="zone-content-baocao scroll-table-x">
+                                    <table id="tblKetQuaPhaiNop"
+                                        class="table table-hover tblKetQuaPhaiNop mb-0 table-bordered table-noborder">
+                                        <thead>
+                                            <tr>
+                                                <th class="td-fixed">Stt</th>
+                                                <th class="td-center">
+                                                    <span class="lang" key="">Số tiền phải nộp</span>
+                                                </th>
+                                                <th class="td-center">
+                                                    <span class="lang" key="">Ngày phát sinh</span>
+                                                </th>
+                                                <th class="td-center"><span class="lang" key="">Chứng từ</span></th>
+                                                <th class="td-center"><span class="lang" key="">Hình thức</span></th>
+                                                <th class="td-center"><span class="lang" key="">Thời gian</span></th>
+                                                <th class="td-center"><span class="lang" key="">Người thu</span></th>
+                                                <th class="td-center"><span class="lang" key="">Khoản thu</span></th>
+                                                <th class="td-center"><span class="lang" key="">Mã số</span></th>
+                                                <th class="td-center"><span class="lang" key="">Họ tên</span></th>
+                                                <th class="td-center"><span class="lang" key="">Ngày sinh</span></th>
+                                                <th class="td-center"><span class="lang" key="">Trạng thái</span></th>
+                                                <th class="td-center"><span class="lang" key="">Lớp học</span></th>
+                                                <th class="td-center"><span class="lang" key="">Chương trình</span></th>
+                                                <th class="td-center"><span class="lang" key="">Khóa học</span></th>
+                                                <th class="td-center"><span class="lang" key="">Khoa quản lý</span></th>
+                                                <th class="td-center"><span class="lang" key="">Hệ đào tạo</span></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="17" style="text-align: center">
+                                                    Vui lòng chọn khoản và ấn
+                                                    "Tìm kiếm" để tải danh sách
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="table-tongtien mt-10">
+                                    <table class="table table-hover border-0 table-noborder">
+                                        <tfoot>
+                                            <tr>
+                                                <td style="font-weight: bold; border: 0 !important;">Tổng tiền: </td>
+                                                <td style="font-weight: bold; text-align: left" id="lblTongTien2"></td>
+                                                <td>Bằng chữ: <i id="lblTongTienBangChu2"></i></td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+                        <!-- 3. Kết nối kế toán -->
+                        <div class="tab-pane" id="tab_ketnoiketoan">
+                            <div class="row row-tab row-align">
+                                <div class="area-search">
+                                    <div id="search" class="inputSearch collapse in">
+                                        <!-- Bộ tìm kiếm -->
+                                        <div class="col col-sm-3 item-search">
+                                            <select id="dropSearch_BangKetNoiKeToan" class="select-opt"></select>
+                                        </div>
+                                        <div class="col col-sm-3 item-search">
+                                            <input id="txtSearch_DatTenBangDuLieu" class="form-control"
+                                                placeholder="Đặt tên bảng dữ liệu" />
+                                        </div>
+                                        <div class="col col-sm-6 item-search aps-list-btn">
+                                            <a id="btnTaoDuLieu" class="btn btn-success">
+                                                <i class="fa fa-plus"></i>
+                                                <span class="lang" key="">Tạo dữ liệu</span>
+                                            </a>
+                                            <a id="btnKhaiMaKhachHang" class="btn btn-primary">
+                                                <i class="fal fa-users"></i> <span class="lang" key="">
+                                                    Khai báo mã khách
+                                                </span>
+                                            </a>
+                                        </div>
+                                        <div class="clear"></div>
+                                        <div class="col col-sm-6 item-search">
+                                            <select id="dropSearch_BangDuLieuDuocTao" class="select-opt"></select>
+                                        </div>
+                                        <div class="col col-sm-3 item-search">
+                                            <a id="btnSearchDuLieu" class="btn btn-default btn-search">
+                                                <i class="fa fa-search"></i> <span class="lang" key="">
+                                                    Tìm kiếm
+                                                </span>
+                                            </a>
+                                        </div>
+                                        <div class="col-sm-12 item-search aps-list-btn">
+                                            <a id="btnDeleteBangDuLieu" class="btn btn-soft-danger ml0"
+                                                style="margin-left: 0 !important;">
+                                                <i class="fa fa-trash"></i> <span class="lang" key="">Xóa bảng dữ
+                                                    liệu</span>
+                                            </a>
+                                            <a id="btnTaoChungTu" class="btn btn-soft-success">
+                                                <i class="fal fa-file-medical"></i> <span class="lang" key="">
+                                                    Tạo chứng
+                                                    từ
+                                                </span>
+                                            </a>
+                                            <a id="btnXoaDuLieuChungTu" class="btn btn-soft-danger">
+                                                <i class="fa fa-trash"></i> <span class="lang" key="">
+                                                    Xóa dữ liệu chứng
+                                                    từ
+                                                </span>
+                                            </a>
+                                            <a id="btnTongHopChungTu" class="btn btn-primary">
+                                                <i class="fal fa-paste"></i> <span class="lang" key="">
+                                                    Tổng hợp chứng
+                                                    từ
+                                                </span>
+                                            </a>
+                                            <a id="btnDuyetSangKeToan" class="btn btn btn-info">
+                                                <i class="fal fa-file-signature"></i> <span class="lang" key="">
+                                                    Duyệt
+                                                    sang kế toán
+                                                </span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="clear"></div>
+                                <div class="zone-content-baocao scroll-table-x mt-10">
+                                    <table id="tblBangDuLieuKetNoi"
+                                        class="table table-hover tblBangDuLieuKetNoi mb-0 table-bordered table-noborder">
+                                        <thead>
+                                            <tr>
+                                                <th class="td-fixed">Stt</th>
+                                                <th class="td-center"><span class="lang" key="">Mã</span></th>
+                                                <th class="td-center"><span class="lang" key="">Tên</span></th>
+                                                <th class="td-center"><span class="lang" key="">Ghi chú</span></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                        <tfoot></tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.box-Nhap Tui Ho So -->
+        </div>
+    </div>
+</section>
+<div class="aps-all-btn" style="display: none !important;">
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModalNamTaiChinh">Khoản đã
+        nộp</button>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModalKetQua">Xem báo
+        cáo</button>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal_XacNhan">Xac nhan</button>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModalMaKhachHang">Mã khách
+        hàng</button>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModalHeKhoaMaKhachHang">Mã khách
+        hàng Khac</button>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModalLichBaoCao">Thiết lập
+        báo cáo chạy tự động</button>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModalThongSoBaoCao">Thông số báo
+        cáo</button>
+</div>
+
+<!--Năm tài chính-->
+<div class="modal fade myModalNamTaiChinh" id="myModalNamTaiChinh" role="dialog" aria-labelledby="myModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" style="width:860px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                </button>
+                <h3 class="box-title"><span class="myModalLabel" style="padding-right: 0 !important;"> <i
+                            class="fal fa-usd-circle"></i> Năm tài chính</h3>
+            </div>
+            <div class="modal-body pd0" id="modal_body">
+                <div class="row box-search">
+                    <div class="col-sm-3 aps-form-lable text-left pl10" style="text-align: left !important;">
+                        <label style="font-weight: normal"><span class="lang" key="">Năm tài chính</span></label>
+                    </div>
+                    <div class="col-sm-9 aps-form-input pr0">
+                        <input type="text" id="txtNamBaoCao" class="form-control" />
+                    </div>
+                    <div class="clear"></div>
+                </div>
+                <div class="row  pl20 pr20 pt10">
+                    <!--<div class="pull-left">
+                        <a id="btnXoaNamBaoCao" class="btn btn-default"><i class="fa fa-trash"></i> Xóa</a>
+                    </div>-->
+                    <div class="pull-right">
+
+                    </div>
+                </div>
+                <div class="row mt-10 aps-table-taichinh pl20 pr20">
+                    <table id="tblNamTaiChinh" class="table table-hover table-bordered table-noborder">
+                        <thead>
+                            <tr>
+                                <th style="text-align:center; width: 40px">STT</th>
+                                <th style="text-align:center;">Năm tài chính</th>
+                                <th style="text-align:center;">Năm</th>
+                                <th style="text-align:center;">Tháng</th>
+                                <th style="text-align:center;width: 80px">Xóa</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div class="row mt-10" style="padding-right: 20px !important;">
+                    <div class="pull-right aps-list-btn">
+                        <a class="btn btn-soft-primary" id="btnSaveNamBaoCao"><i class="fal fa-save"></i> Lưu năm báo
+                            cáo</a>
+                        <a class="btn btn-soft-success" id="btnThemNamTaiChinh">
+                            <i class="fa-light fa-plus"></i>Thêm dòng mới
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="clear"></div>
+            <div id="notify"></div>
+            <div class="modal-footer">
+                <div class="pull-left"></div>
+                <div class="pull-right aps-list-btn">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        <i class="fa fa-times-circle-o"></i>
+                        <span class="lang" key="">Đóng</span>
+                    </button>
+                    <a class="submit btn btn-primary" id="btnSave_NamTaiChinh">
+                        <i class="fal fa-save"></i><span class="lang" key="">Lưu</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Xem báo cáo đã thực hiện-->
+<div class="modal fade myModalKetQua" id="myModalKetQua" role="dialog" aria-labelledby="myModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" style="width: 95%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title">
+                    <span class="myModalLabel1" style="padding-right: 0 !important;">
+                        <i class="fa-solid fa-file-chart-column"></i> Danh sách
+                    </span>
+                </h4>
+            </div>
+            <div class="modal-body" id="modal_body">
+                <div class="row pl0">
+                    <div class="pull-left mr-10">
+                        <div class="group-title-name">
+                            <a class="btn btn-soft-success btnXacNhan_BaoCaoDaLuu" id="">
+                                <i class="fa-duotone fa-solid fa-circle-check"></i>
+                                Xác nhận dữ liệu
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-sm-3 item-search mb-0" style="margin-top: 1px;">
+                        <select id="dropSearch_CanBoXuatBC" class="select-opt form-control"
+                            style="width:100% !important"></select>
+                    </div>
+                </div>
+                <table id="tblBaoCaoDaLuu" class="table table-hover table-bordered mt-10 tblBaoCaoDaLuu">
+                    <thead>
+                        <tr>
+                            <th class="td-fixed" rowspan="2">Stt</th>
+                            <th class="td-center" rowspan="2"><span class="lang" key="">Xác nhận</span></th>
+                            <th class="td-center" rowspan="2"><span class="lang" key="">Tên báo cáo</span></th>
+                            <th class="td-center" rowspan="2"><span class="lang" key="">Dữ liệu báo cáo</span></th>
+                            <th class="td-center" rowspan="2"><span class="lang" key="">Người thực hiện</span></th>
+                            <th class="td-center" rowspan="2"><span class="lang" key="">Ngày thực hiện</span></th>
+                            <th class="td-center" colspan="13">
+                                <span class="lang" key="">
+                                    Thông tin đầu vào khi thực hiện
+                                    báo cáo
+                                </span>
+                            </th>
+                            <th class="td-center td-fixed" rowspan="2">
+                                <input class="chkSystemSelectAll" type="checkbox" id="chkSelectAll">
+                            </th>
+                        </tr>
+                        <tr>
+                            <th class="td-center">Ngành học</th>
+                            <th class="td-center">Hệ đào tạo</th>
+                            <th class="td-center">Khóa đào tạo</th>
+                            <th class="td-center">Chương trình</th>
+                            <th class="td-center">Khoa quản lý</th>
+                            <th class="td-center">Lớp quản lý</th>
+                            <th class="td-center">Thời gian(Kỳ, đợt)</th>
+                            <th class="td-center">Người thu</th>
+                            <th class="td-center">Năm nhập học</th>
+                            <th class="td-center">Hình thức thu</th>
+                            <th class="td-center">Từ ngày --> đến ngày</th>
+                            <th class="td-center">Loại khoản</th>
+                            <th class="td-center">Trạng thái người học</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <div class="row mt-10 pr0">
+                    <div class="pull-right">
+                        <div class="group-title-name">
+                            <a class="btn btn-soft-danger btnDelete_BaoCaoDaLuu" id=""><i class="fa fa-trash"></i>
+                                Xóa</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="notify"></div>
+            <div class="modal-footer pr20">
+                <div class="pull-left"></div>
+                <div class="pull-right">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        <i class="fa fa-times-circle-o"></i>
+                        <span class="lang" key="">Đóng</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--modal_XacNhan-->
+<div class="modal fade modal_XacNhan" id="modal_XacNhan" role="dialog" aria-labelledby="myModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" style="width: 800px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title modal-name" id="myModalLabel">
+                    <span style="float: left">
+                        <i class="fa-solid fa-circle-check"></i> Đăng ký:
+                    </span><span id="txtTenSanPham" class="lblLichHoc_HP"></span>
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="aps-add-new pd10">
+                    <!-- 1. Nội dung xác nhận -->
+                    <div class="row aps-form">
+                        <div class="row aps-lable text-left">
+                            <p class="group-group-title-name border-0 mb-0">
+                                <span class="badge bg-blue">Nội dung</span>
+                            </p>
+                        </div>
+                        <div class="row aps-form-item">
+                            <div class="col-sm-12 aps-form-input">
+                                <input id="txtNoiDungXacNhanSanPham" class="form-control form-border-bottom" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. Chọn xác nhận -->
+                    <div class="row aps-form mt-20">
+                        <div class="row aps-lable text-left">
+                            <p class="group-group-title-name border-0 mb-0">
+                                <span class="badge bg-blue">Chọn xác nhận</span>
+                            </p>
+                        </div>
+                        <div class="row zoneBtnXacNhan" id="zoneBtnXacNhan">
+                            <div style="margin-left: auto; margin-right: auto; width: 270px">
+                                <div id="btnClose_HDBL" class="btn-large">
+                                    <a class="btn">
+                                        <i style="color: #337ab7" class="fa fa-angle-double-down fa-4x"></i>
+                                    </a>
+                                    <a class="color-active bold lbsymbolHD">Đóng</a>
+                                </div>
+                                <div id="btnClose_HDBL" class="btn-large">
+                                    <a class="btn">
+                                        <i style="color: #337ab7" class="fa fa-angle-double-down fa-4x"></i>
+                                    </a>
+                                    <a class="color-active bold lbsymbolHD">Đóng</a>
+                                </div>
+                                <div id="btnClose_HDBL" class="btn-large">
+                                    <a class="btn">
+                                        <i style="color: #337ab7" class="fa fa-angle-double-down fa-4x"></i>
+                                    </a>
+                                    <a class="color-active bold lbsymbolHD">Đóng</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- 3. Lịch sử xác nhận -->
+                    <div class="row aps-form mt-20">
+                        <div class="row aps-lable text-left mb-0">
+                            <p class="group-group-title-name border-0 mb-0">
+                                <span class="badge bg-blue">Lịch sử xác nhận</span>
+                            </p>
+                        </div>
+                        <div class="row aps-form-table">
+                            <table id="tblModal_XacNhan" class="table  mb-0 mr-0 tblModal_XacNhan">
+                                <thead>
+                                    <tr>
+                                        <th class="td-fixed td-center">Stt</th>
+                                        <th class="td-left">Xác nhận</th>
+                                        <th class="td-left">Nội dung</th>
+                                        <th class="td-left">Người xác nhận</th>
+                                        <th class="td-center" style="width: 100px">Ngày</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div id="notify"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" id="btnCancel">
+                    <i class="fa fa-times-circle"></i> Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--Mã khách hàng-->
+<div class="modal fade" id="myModalMaKhachHang" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 1200px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                </button>
+                <h3 class="box-title">
+                    <span class="myModalLabel">
+                        <i class="fa-duotone fa-solid fa-users"></i></span>Mã khách hàng
+                </h3>
+            </div>
+            <div class="modal-body">
+                <div class="row pl0 pr0">
+                    <!--<div class="pull-left">
+                        <a id="btnXoaNamBaoCao" class="btn btn-default"><i class="fa fa-trash"></i> Xóa</a>
+                    </div>-->
+                    <!--<div class="pull-right">
+                        <a class="btn btn-default" id="btnSaveNamBaoCao"><i class="fa fa-paper-plane"></i> Lưu năm báo cáo</a>
+                    </div>-->
+                </div>
+                <div class="row pl0 pr0">
+                    <div class="aps-table-select scroll-table-x">
+                        <table id="tblMaKhachHang" class="table table-hover table-bordered tblMaKhachHang table-noborder">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:center; width: 40px">STT</th>
+                                    <th style="text-align:left;">Mã khóa</th>
+                                    <th style="text-align:left;">Tên khóa</th>
+                                    <th style="text-align:left;">Mã chương trình</th>
+                                    <th style="text-align:left;">Tên chương trình</th>
+                                    <th style="text-align:center;">Ký hiệu</th>
+                                    <th style="text-align:center;width: 40px">
+                                        <input type="checkbox" class="chkSystemSelectAll">
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row pl0 pr0">
+                    <div class="pull-right pt10">
+                        <a class="btn btn-soft-success" id="btnAdd_MaKhachHang">
+                            <i class="fa fa-plus"></i> Thêm mới
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="clear"></div>
+            <div id="notify"></div>
+            <div class="modal-footer">
+                <div class="pull-left aps-list-btn">
+                    <a id="btnDelete_MaKhachHang" class="btn btn-danger"><i class="fa fa-trash"></i> Xóa</a>
+                </div>
+                <div class="pull-right aps-list-btn">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        <i class="fa fa-times-circle-o"></i>
+                        <span class="lang" key="">Đóng</span>
+                    </button>
+
+                    <a class="submit btn btn-primary" id="btnSave_MaKhachHang">
+                        <i class="fal fa-save"></i><span class="lang" key="">Lưu</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--Them Mã khách hàng-->
+<div class="modal fade myModalHeKhoaMaKhachHang" id="myModalHeKhoaMaKhachHang" role="dialog"
+    aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                </button>
+                <h3 class="box-title">
+                    <span class="myModalLabel pr0" style="padding-right: 0 !important;"> 
+                        <i class="fa-duotone fa-solid fa-users"></i></span> Mã khách hàng
+                </h3>
+            </div>
+            <div class="modal-body" id="modal_body">
+                <!--row 1-->
+                <div class="row pd0 aps-form">
+                    <div class="col-sm-3 aps-form-lable">
+                        <label style="font-weight: normal"><span class="lang" key="">Hệ đào tạo</span></label>
+                    </div>
+                    <div class="col-sm-9 aps-form-input">
+                        <select id="dropHKHeDaoTao" class="select-opt"></select>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+                <!--row 2-->
+                <div class="row pd0 aps-form">
+                    <div class="col-sm-3  aps-form-lable">
+                        <label style="font-weight: normal"><span class="lang" key="">Khóa đào tạo</span></label>
+                    </div>
+                    <div class="col-sm-9  aps-form-input">
+                        <select id="dropHKKhoaDaoTao" class="select-opt"></select>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+            </div>
+            <div class="clear"></div>
+            <div id="notify"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <i class="fa fa-times-circle-o"></i>
+                    <span class="lang" key="">Đóng</span>
+                </button>
+                <a class="submit btn btn-primary" id="btnSave_HeKhoaMaKhachHang">
+                    <i class="fal fa-save"></i><span class="lang" key="">Lưu</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Thiết lập báo cáo chạy tự động -->
+<div class="modal fade myModalLichBaoCao" id="myModalLichBaoCao" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-fullscreen">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title line-20">
+                    <span class="myModalLabel1">
+                        <i class="fa-sharp-duotone fa-solid fa-file-chart-column"></i>
+                        Thiết lập báo cáo chạy tự động
+                    </span>
+                </h4>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                    <span class="sr-only">Close</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row pd0">
+                    <!--<div class="pull-left">
+                        <a id="btnXoaNamBaoCao" class="btn btn-default"><i class="fa fa-trash"></i> Xóa</a>
+                    </div>-->
+                    <!--<div class="pull-right">
+                        <a class="btn btn-default" id="btnSaveNamBaoCao"><i class="fa fa-paper-plane"></i> Lưu năm báo cáo</a>
+                    </div>-->
+                </div>
+                <div class="row pd0">
+                    <div class="aps-table-select scroll-table-x">
+                        <table id="tblLichBaoCao" class="table table-hover table-bordered table-noborder">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:center; width: 40px">STT</th>
+                                    <th style="text-align:center;">Người tạo</th>
+                                    <th style="text-align:center;">Ngày tạo</th>
+                                    <th style="text-align:center;">Loại báo cáo</th>
+                                    <th style="text-align:center;">Thông số báo cáo</th>
+                                    <th style="text-align:center;">Đặt lịch tự động</th>
+                                    <th style="text-align:center;">Xem kết quả</th>
+                                    <th style="text-align:center;width: 40px"><input type="checkbox"
+                                            class="chkSystemSelectAll"></th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="clear"></div>
+            <div id="notify"></div>
+            <div class="modal-footer">
+                <div class="pull-left aps-list-btn"><a id="btnDelete_LichTuDong" class="btn btn-danger"><i
+                            class="fa fa-trash"></i>
+                        Xóa</a></div>
+                <div class="pull-right aps-list-btn">
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><i
+                            class="fa fa-times-circle-o"></i>
+                        <span class="lang" key="">Đóng</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Thông số báo cáo -->
+<div class="modal fade" id="myModalThongSoBaoCao" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 1200px; overflow: hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+                <h3 class="box-title"><span class="myModalLabel1" style="padding-right: 0 !important;"> 
+                    <i class="fa-regular fa-file-chart-pie"></i></span> Thông số báo cáo
+                </h3>
+            </div>
+            <div class="modal-body">
+                <div class="row pd0">
+                    <!--<div class="pull-left">
+                        <a id="btnXoaNamBaoCao" class="btn btn-default"><i class="fa fa-trash"></i> Xóa</a>
+                    </div>-->
+                    <!--<div class="pull-right">
+                        <a class="btn btn-default" id="btnSaveNamBaoCao"><i class="fa fa-paper-plane"></i> Lưu năm báo cáo</a>
+                    </div>-->
+                </div>
+                <div class="row pd0">
+                    <table id="tblThongSoBaoCao" class="table table-hover table-bordered  table-noborder">
+                        <thead>
+                            <tr>
+                                <th style="text-align:center; width: 40px">STT</th>
+                                <th style="text-align:center;">Từ khóa</th>
+                                <th style="text-align:center;">Dữ liệu</th>
+                                <th style="text-align:center;">Ngày tạo</th>
+                                <th style="text-align:center;">Người tạo</th>
+                                <th style="text-align:center;width: 40px"><input type="checkbox"
+                                        class="chkSystemSelectAll"></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="clear"></div>
+            <div id="notify"></div>
+            <div class="modal-footer">
+                <div class="pull-left aps-list-btn"></div>
+                <div class="pull-right aps-list-btn">
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><i
+                            class="fa fa-times-circle-o"></i>
+                        <span class="lang" key="">Đóng</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="modules/baocao/scripts/baocao.js?v=1.0.0.27"></script>
+<script src="modules/hoadon/scripts/n2vi.min.js"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['BaoCao'] = new BaoCao();
+    $(document).ready(function () {
+        main_doc.BaoCao.init();
+    });
+</script>
+<!-- FIX 2026-08-26: Select2 trong modal — re-init voi dropdownParent = modal
+     de popup nam trong modal, khong lech / che noi dung. Universal handler,
+     an toan khi modal khong co select. -->
+<script>
+(function () {
+    if (typeof jQuery === 'undefined') return;
+    var $ = jQuery;
+    $(document).off('shown.bs.modal.__s2fix').on('shown.bs.modal.__s2fix', '.modal', function () {
+        var $modal = $(this);
+        $modal.find('select.select-opt, select[id^="drop"]').each(function () {
+            var $sel = $(this);
+            try {
+                if ($sel.hasClass('select2-hidden-accessible')) $sel.select2('destroy');
+            } catch (e) {}
+            $sel.select2({ dropdownParent: $modal, width: '100%' });
+        });
+    });
+})();
+</script>
+<style>
+    .modal .select2-container--open,
+    .modal .select2-container--open .select2-dropdown {
+        z-index: 100060 !important;
+    }
+    .modal .select2-results__options {
+        max-height: 220px !important;
+        overflow-y: auto !important;
+    }
+</style>

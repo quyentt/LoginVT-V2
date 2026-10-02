@@ -1,0 +1,72 @@
+/* =========================================================================
+   6. COMPONENTS — vùng cuộn có thanh trượt tự vẽ
+   =========================================================================
+   Thanh trượt của trình duyệt chiếm chỗ thật trong bố cục, đẩy nội dung hẹp
+   lại và để hở một dải trống. Ở đây ẩn hẳn thanh trượt gốc rồi vẽ lại bằng
+   JS, đặt chồng lên nội dung nên không tốn chiều ngang.
+
+   Markup:
+     <div class="ums-scroll">
+       <div class="ums-scroll__view"> …nội dung… </div>
+       <div class="ums-scroll__bar"><div class="ums-scroll__thumb"></div></div>
+     </div>
+   ========================================================================= */
+
+.ums-scroll {
+    position: relative;
+    min-height: 0;
+    flex: 1;
+}
+
+.ums-scroll__view {
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    /* Ẩn thanh trượt gốc — mọi trình duyệt */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.ums-scroll__view::-webkit-scrollbar { width: 0; height: 0; }
+
+.ums-scroll__bar {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    bottom: 2px;
+    width: 6px;
+    border-radius: var(--ums-r-pill);
+    opacity: 0;
+    transition: opacity var(--ums-t);
+    pointer-events: none;
+}
+
+/* Hiện khi rê chuột vào vùng, khi đang cuộn, hoặc khi đang kéo */
+.ums-scroll:hover .ums-scroll__bar,
+.ums-scroll.is-scrolling .ums-scroll__bar,
+.ums-scroll.is-dragging .ums-scroll__bar {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.ums-scroll__thumb {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    min-height: 28px;
+    border-radius: var(--ums-r-pill);
+    background: rgba(255, 255, 255, .28);
+    cursor: grab;
+    transition: background var(--ums-t);
+}
+
+.ums-scroll__thumb:hover { background: rgba(255, 255, 255, .42); }
+.ums-scroll.is-dragging .ums-scroll__thumb { background: rgba(255, 255, 255, .55); cursor: grabbing; }
+
+/* Biến thể dùng trên nền sáng */
+.ums-scroll--light .ums-scroll__thumb { background: rgba(29, 36, 51, .22); }
+.ums-scroll--light .ums-scroll__thumb:hover { background: rgba(29, 36, 51, .34); }
+.ums-scroll--light.is-dragging .ums-scroll__thumb { background: rgba(29, 36, 51, .45); }
+
+/* Không có gì để cuộn thì giấu hẳn */
+.ums-scroll.is-idle .ums-scroll__bar { display: none; }

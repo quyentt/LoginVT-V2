@@ -1,0 +1,704 @@
+﻿<!-- Main content -->
+<section class="content">
+    <div class="row zone-bus" id="zone_view">
+        <!-- /.left-content -->
+        <div class="col-sm-3">
+            <div class="box box-solid">
+                <div class="box-body">
+                    <!-- Bộ tìm kiếm -->
+                    <div class="bs-item">
+                        <select id="dropSearch_UngDung_DMIP" class="select-opt">
+                            <option value="">-- Chọn ứng dụng --</option>
+                            <!-- Load from js -->
+                        </select>
+                    </div>
+                    <div class="bs-item input-group">
+                        <input type="text" id="txtSearch_Keyword_DMTB_DMIP" class="form-control" placeholder="Nhập từ khóa tìm kiếm">
+                        <span class="input-group-addon poiter btnExtend_Search">
+                            <i class="fa fa-search"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="box box-solid">
+                <div class="box-header with-border">
+                    <h3 class="box-title" title="Tổng bài báo trong nước">
+                        <i class="fa fa-map-signs"></i> Danh sách chức năng
+                    </h3>
+                    <span class="pull-right badge bg-light-blue">
+                        <span id="lblDanhMucTenBang_Tong"></span>
+                    </span>
+                </div>
+                <div class="box-body">
+                    <div id="zone_danhmuctenbang_IP">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.right-content -->
+        <div class="col-sm-9">
+            <div class="box box-solid">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><i class="fa fa-info-circle"></i> Lịch sử import</h3>
+                    <div class="pull-right">
+                        <div style="float:left; margin-left: 2px">
+                            <a id="btnCall_Import_DMIP" class="btn btn-primary"><i class="fa fa-file-excel-o"></i> <span class="lang" key="">Import dữ liệu</span></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="col-sm-12 box-view">
+                        <div class="row">
+                            <table id="tbldata_DMIP" class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th class="td-center td-fixed">Stt</th>
+                                        <th class="td-left">Chức năng import</th>
+                                        <th class="td-left">Người thực hiện</th>
+                                        <th class="td-center">Số thành công</th>
+                                        <th class="td-center">Số lỗi</th>
+                                        <th class="td-center">File import</th>
+                                        <th class="td-center">File lỗi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td colspan='10' style='text-align:center'>Vui lòng chọn tên bảng để bắt đầu nhập dữ liệu!</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- box - Edit_DeTai -->
+    <div class="row zone-bus" id="zone_import" style="display: none">
+        <div class="box box-solid form-container zone-bus" id="zone_input_detai">
+            <div class="box-header with-border">
+                <h3 class="box-title">.. <i class="fa fa-pencil"></i> Import </h3>
+                <div class="pull-right">
+                    <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times"></i></a>
+                </div>
+            </div>
+            <div class="box-body">
+                <div id="zoneImportDuLieu" class="col-sm-12">
+                    <div class="col-sm-4">
+                        - Chọn file excel:
+                    </div>
+                    <div class="col-sm-6">
+                        <div id="txtFile_DMIP">
+
+                        </div>
+                    </div>
+                </div>
+                <div id="zoneViewImport" style="display: none">
+                    <div class="col-lg-8">
+                        <div class="nav-tabs-custom" id="SheetContent">
+                            <ul class="nav nav-tabs">
+                                <li class="active"><a href="#tab_thongtin" data-toggle="tab" aria-expanded="true"><span class="lang" key=""><i class="fa fa-clipboard"></i> Thông tin cơ bản</span></a></li>
+                                <li class="thongtinquatrinh"><a href="#tab_thongtinquatrinh" data-toggle="tab" aria-expanded="true"><span class="lang" key=""><i class="fa fa-th-list"></i> Thông tin quá trình</span></a></li>
+                                <li class="thongtinquatrinh"><a href="#tab_quatrinhcongtac" data-toggle="tab" aria-expanded="true"><span class="lang" key=""><i class="fa fa-retweet"></i> Quá trình công tác</span></a></li>
+                                <li class=""><a href="#tab_tuihoso" data-toggle="tab" aria-expanded="true"><span class="lang" key=""><i class="fa fa-user-secret"></i> Túi hồ sơ</span></a></li>
+                                <li class=""><a href="#tab_inan" data-toggle="tab" aria-expanded="true"><span class="lang" key=""><i class="fa fa-print"></i> In ấn</span></a></li>
+                            </ul>
+                            <div class="tab-content">
+                                <!-- Tab_1: Ho so ly lich -->
+                                <div class="tab-pane active" id="tab_thongtin">
+                                    <div class="row row-tab row-align">
+                                        <table id="tbldata_DMIP" class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th class="td-center td-fixed">Stt</th>
+                                                    <th class="td-left">Chức năng import</th>
+                                                    <th class="td-left">Người thực hiện</th>
+                                                    <th class="td-center">Số thành công</th>
+                                                    <th class="td-center">Số lỗi</th>
+                                                    <th class="td-center">File import</th>
+                                                    <th class="td-center">Chi tiết</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr><td colspan='10' style='text-align:center'>Vui lòng chọn tên bảng để bắt đầu nhập dữ liệu!</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <!-- Tab_2: Qua trinh thong tin -->
+                                <div class="tab-pane" id="tab_thongtinquatrinh">
+                                    <div class="row row-tab row-align">
+                                        <div class="box-group" id="quatrinhthongtin">
+                                            <!-- Chuc danh -->
+                                            <div class="panel">
+                                                <div class="box-header with-border">
+                                                    <p class="box-title">
+                                                        <a data-toggle="collapse" data-parent="#quatrinhthongtin" href="#qt_chucdanh" aria-expanded="false" class="collapsed activeThongTinQuaTrinh">+ Chức danh</a>
+                                                    </p>
+                                                </div>
+                                                <div id="qt_chucdanh" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
+                                                    <div class="box-body">
+                                                        <div class="zone-content scroll-table-x">
+                                                            <table id="tblChucDanh" class="table table-hover table-bordered">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th class="td-fixed td-center">Stt</th>
+                                                                        <th class="td-left">Chức danh</th>
+                                                                        <th class="td-center">Năm phong</th>
+                                                                        <th class="td-left">Nơi phong</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody></tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Hoc vi -->
+                                            <div class="panel">
+                                                <div class="box-header with-border">
+                                                    <p class="box-title">
+                                                        <a data-toggle="collapse" data-parent="#quatrinhthongtin" href="#qt_hocvi" aria-expanded="false" class="collapsed activeThongTinQuaTrinh">+ Học vị</a>
+                                                    </p>
+                                                </div>
+                                                <div id="qt_hocvi" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
+                                                    <div class="box-body">
+                                                        <div class="zone-content scroll-table-x">
+                                                            <table id="tblHocVi" class="table table-hover table-bordered">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th class="td-fixed td-center">Stt</th>
+                                                                        <th class="td-left">Học vị</th>
+                                                                        <th class="td-left">Chuyên ngành</th>
+                                                                        <th class="td-center">Năm nhận</th>
+                                                                        <th class="td-left">Nơi nhận</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody></tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Danh hieu -->
+                                            <div class="panel">
+                                                <div class="box-header with-border">
+                                                    <p class="box-title">
+                                                        <a data-toggle="collapse" data-parent="#quatrinhthongtin" href="#qt_danhhieu" aria-expanded="false" class="collapsed activeThongTinQuaTrinh">+ Danh hiệu</a>
+                                                    </p>
+                                                </div>
+                                                <div id="qt_danhhieu" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
+                                                    <div class="box-body">
+                                                        <div class="zone-content scroll-table-x">
+                                                            <table id="tblDanhHieu" class="table table-hover table-bordered">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th class="td-fixed td-center">Stt</th>
+                                                                        <th class="td-left">Danh hiệu</th>
+                                                                        <th class="td-left">Mô tả</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody></tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Tinh trang suc khoe -->
+                                            <div class="panel">
+                                                <div class="box-header with-border">
+                                                    <p class="box-title">
+                                                        <a data-toggle="collapse" data-parent="#quatrinhthongtin" href="#qt_khamsuckhoe" aria-expanded="false" class="collapsed activeThongTinQuaTrinh">+ Tình trạng sức khỏe</a>
+                                                    </p>
+                                                </div>
+                                                <div id="qt_khamsuckhoe" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
+                                                    <div class="box-body">
+                                                        <div class="zone-content scroll-table-x">
+                                                            <table id="tblKhamSucKhoe" class="table table-hover table-bordered">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th class="td-fixed td-center">Stt</th>
+                                                                        <th class="td-center">Ngày khám</th>
+                                                                        <th class="td-left">Nơi khám</th>
+                                                                        <th class="td-center">Chiều cao</th>
+                                                                        <th class="td-center">Cân nặng</th>
+                                                                        <th class="td-left">Nhóm máu</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody></tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Quan he gia dinh (Ban dau ten la: Quan he than toc) -->
+                                            <div class="panel">
+                                                <div class="box-header with-border">
+                                                    <p class="box-title">
+                                                        <a data-toggle="collapse" data-parent="#quatrinhthongtin" href="#qt_qhtc" aria-expanded="false" class="collapsed activeThongTinQuaTrinh">+ Quan hệ gia đình</a>
+                                                    </p>
+                                                </div>
+                                                <div id="qt_qhtc" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
+                                                    <div class="box-body">
+                                                        <div class="zone-content scroll-table-x">
+                                                            <table id="tblQHTT" class="table table-hover table-bordered">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th class="td-fixed td-center">Stt</th>
+                                                                        <th class="td-left">Quan hệ</th>
+                                                                        <th class="td-left">Mô tả</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody></tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Quan he vo chong (Du dinh se bo muc nay, chi giu lai: Quan he gia dinh) -->
+                                            <div class="panel">
+                                                <div class="box-header with-border">
+                                                    <p class="box-title">
+                                                        <a data-toggle="collapse" data-parent="#quatrinhthongtin" href="#qt_qhvc" aria-expanded="false" class="collapsed activeThongTinQuaTrinh">+ Quan hệ vợ chồng</a>
+                                                    </p>
+                                                </div>
+                                                <div id="qt_qhvc" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
+                                                    <div class="box-body">
+                                                        <div class="zone-content scroll-table-x">
+                                                            <table id="tblQHVC" class="table table-hover table-bordered">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th class="td-fixed td-center">Stt</th>
+                                                                        <th class="td-left">Quan hệ</th>
+                                                                        <th class="td-left">Mô tả</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody></tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Than nhan nuoc ngoai -->
+                                            <div class="panel">
+                                                <div class="box-header with-border">
+                                                    <p class="box-title">
+                                                        <a data-toggle="collapse" data-parent="#quatrinhthongtin" href="#qt_tnnn" aria-expanded="false" class="collapsed activeThongTinQuaTrinh">+ Thân nhân nước ngoài</a>
+                                                    </p>
+                                                </div>
+                                                <div id="qt_tnnn" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
+                                                    <div class="box-body">
+                                                        <div class="zone-content scroll-table-x">
+                                                            <table id="tblTNNN" class="table table-hover table-bordered">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th class="td-fixed td-center">Stt</th>
+                                                                        <th class="td-left">Họ tên</th>
+                                                                        <th class="td-left">Quan hệ</th>
+                                                                        <th class="td-left">Năm sinh</th>
+                                                                        <th class="td-left">Nghề nghiệp</th>
+                                                                        <th class="td-left">Nước định cư</th>
+                                                                        <th class="td-left">Quốc tịch</th>
+                                                                        <th class="td-left">Năm định cư</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody></tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Tieu su truoc tuyen dung -->
+                                            <div class="panel">
+                                                <div class="box-header with-border">
+                                                    <p class="box-title">
+                                                        <a data-toggle="collapse" data-parent="#quatrinhthongtin" href="#qt_tsttd" aria-expanded="false" class="collapsed activeThongTinQuaTrinh">+ Tiểu sử trước tuyển dụng</a>
+                                                    </p>
+                                                </div>
+                                                <div id="qt_tsttd" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
+                                                    <div class="box-body">
+                                                        <div class="zone-content scroll-table-x">
+                                                            <table id="tblTSTTD" class="table table-hover table-bordered">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th class="td-fixed td-center">Stt</th>
+                                                                        <th class="td-center">Thời gian</th>
+                                                                        <th class="td-left">Tiểu sử</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody></tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Tieu su sau tuyen dung -->
+                                            <div class="panel">
+                                                <div class="box-header with-border">
+                                                    <p class="box-title">
+                                                        <a data-toggle="collapse" data-parent="#quatrinhthongtin" href="#qt_tsstd" aria-expanded="false" class="collapsed activeThongTinQuaTrinh">+ Tiểu sử sau tuyển dụng</a>
+                                                    </p>
+                                                </div>
+                                                <div id="qt_tsstd" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
+                                                    <div class="box-body">
+                                                        <div class="zone-content scroll-table-x">
+                                                            <table id="tblTSSTD" class="table table-hover table-bordered">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th class="td-fixed td-center">Stt</th>
+                                                                        <th class="td-center">Thời gian</th>
+                                                                        <th class="td-left">Tiểu sử</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody></tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Tham gia to chuc chinh tri -->
+                                            <div class="panel">
+                                                <div class="box-header with-border">
+                                                    <p class="box-title">
+                                                        <a data-toggle="collapse" data-parent="#quatrinhthongtin" href="#qt_tcct" aria-expanded="false" class="collapsed activeThongTinQuaTrinh">+ Tổ chức chính trị</a>
+                                                    </p>
+                                                </div>
+                                                <div id="qt_tcct" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
+                                                    <div class="box-body">
+                                                        <div class="zone-content scroll-table-x">
+                                                            <table id="tblTCCT" class="table table-hover table-bordered">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th class="td-fixed td-center">Stt</th>
+                                                                        <th class="td-center">Thời gian</th>
+                                                                        <th class="td-left">Tổ chức</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody></tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Trinh do chuyen mon -->
+                                            <div class="panel">
+                                                <div class="box-header with-border">
+                                                    <p class="box-title">
+                                                        <a data-toggle="collapse" data-parent="#quatrinhthongtin" href="#qt_tdcm" aria-expanded="false" class="collapsed activeThongTinQuaTrinh">+ Trình độ chuyên môn</a>
+                                                    </p>
+                                                </div>
+                                                <div id="qt_tdcm" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
+                                                    <div class="box-body">
+                                                        <div class="zone-content scroll-table-x">
+                                                            <table id="tblTDCM" class="table table-hover table-bordered">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th class="td-fixed td-center">Stt</th>
+                                                                        <th class="td-left">Trình độ chuyên môn</th>
+                                                                        <th class="td-left">Mô tả</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody></tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Trinh do ngoai ngu -->
+                                            <div class="panel">
+                                                <div class="box-header with-border">
+                                                    <p class="box-title">
+                                                        <a data-toggle="collapse" data-parent="#quatrinhthongtin" href="#qt_tdnn" aria-expanded="false" class="collapsed activeThongTinQuaTrinh">+ Trình độ ngoại ngữ</a>
+                                                    </p>
+                                                </div>
+                                                <div id="qt_tdnn" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
+                                                    <div class="box-body">
+                                                        <div class="zone-content scroll-table-x">
+                                                            <table id="tblTDNN" class="table table-hover table-bordered">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th class="td-fixed td-center">Stt</th>
+                                                                        <th class="td-left">Ngôn ngữ</th>
+                                                                        <th class="td-left">Trình độ</th>
+                                                                        <th class="td-left">Điểm số</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody></tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Trinh do tin hoc -->
+                                            <div class="panel">
+                                                <div class="box-header with-border">
+                                                    <p class="box-title">
+                                                        <a data-toggle="collapse" data-parent="#quatrinhthongtin" href="#qt_tdth" aria-expanded="false" class="collapsed activeThongTinQuaTrinh">+ Trình độ tin học</a>
+                                                    </p>
+                                                </div>
+                                                <div id="qt_tdth" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
+                                                    <div class="box-body">
+                                                        <div class="zone-content scroll-table-x">
+                                                            <table id="tblTDTH" class="table table-hover table-bordered">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th class="td-fixed td-center">Stt</th>
+                                                                        <th class="td-left">Trình độ tin học</th>
+                                                                        <th class="td-left">Mô tả</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody></tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Tab_3: Qua trinh cong tac -->
+                                <div class="tab-pane" id="tab_quatrinhcongtac">
+                                    <div class="row row-tab row-align">
+                                        <div class="box-group" id="quatrinhcongtac">
+                                            <!-- Dieu chuyen -->
+                                            <div class="panel">
+                                                <div class="box-header with-border">
+                                                    <p class="box-title">
+                                                        <a data-toggle="collapse" data-parent="#quatrinhcongtac" href="#qt_dieuchuyen" aria-expanded="false" class="collapsed activeThongTinQuaTrinh">+ Quá trình điều chuyển</a>
+                                                    </p>
+                                                </div>
+                                                <div id="qt_dieuchuyen" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
+                                                    <div class="box-body">
+                                                        <div class="zone-content scroll-table-x">
+                                                            <table id="tblThuyenChuyen" class="table table-hover table-bordered">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th class="td-fixed td-center">TT</th>
+                                                                        <th class="td-left">Ngày chuyển</th>
+                                                                        <th class="td-left">Đơn vị cũ</th>
+                                                                        <th class="td-left">Đơn vị mới</th>
+                                                                        <th class="td-fixed td-center">File</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <!-- load from js -->
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Chuc vu -->
+                                            <div class="panel">
+                                                <div class="box-header with-border">
+                                                    <p class="box-title">
+                                                        <a data-toggle="collapse" data-parent="#quatrinhcongtac" href="#qt_chucvu" aria-expanded="false" class="collapsed activeThongTinQuaTrinh">+ Quá trình chức vụ</a>
+                                                    </p>
+                                                </div>
+                                                <div id="qt_chucvu" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
+                                                    <div class="box-body">
+                                                        <div class="zone-content scroll-table-x">
+                                                            <table id="tblChucVu" class="table table-hover table-bordered">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th class="td-fixed td-center">TT</th>
+                                                                        <th class="td-center">Thời gian</th>
+                                                                        <th class="td-left">Chức vụ</th>
+                                                                        <th class="td-center" style="width: 80px">Hệ số</th>
+                                                                        <th class="td-left">Ghi chú</th>
+                                                                        <th class="td-fixed td-center">File</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <!-- load from js -->
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Dao tao -->
+                                            <div class="panel">
+                                                <div class="box-header with-border">
+                                                    <p class="box-title">
+                                                        <a data-toggle="collapse" data-parent="#quatrinhcongtac" href="#qt_daotao" aria-expanded="false" class="collapsed activeThongTinQuaTrinh">+ Quá trình bồi dưỡng</a>
+                                                    </p>
+                                                </div>
+                                                <div id="qt_daotao" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
+                                                    <div class="box-body">
+                                                        <div class="zone-content scroll-table-x">
+                                                            <table id="tblDaoTao" class="table table-hover table-bordered">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th class="td-fixed td-center">TT</th>
+                                                                        <th class="td-center">Thời gian</th>
+                                                                        <th class="td-left">Nơi đào tạo</th>
+                                                                        <th class="td-left">Ngành đào tạo</th>
+                                                                        <th class="td-left">Hình thức</th>
+                                                                        <th class="td-left">Chứng chỉ</th>
+                                                                        <th class="td-fixed td-center">File</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <!-- load from js -->
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Boi duong -->
+                                            <div class="panel">
+                                                <div class="box-header with-border">
+                                                    <p class="box-title">
+                                                        <a data-toggle="collapse" data-parent="#quatrinhcongtac" href="#qt_boiduong" aria-expanded="false" class="collapsed activeThongTinQuaTrinh">+ Quá trình bồi dưỡng</a>
+                                                    </p>
+                                                </div>
+                                                <div id="qt_boiduong" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
+                                                    <div class="box-body">
+                                                        <div class="zone-content scroll-table-x">
+                                                            <table id="tblBoiDuong" class="table table-hover table-bordered">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th class="td-fixed td-center">TT</th>
+                                                                        <th class="td-center">Thời gian</th>
+                                                                        <th class="td-left">Nội dung</th>
+                                                                        <th class="td-left">Địa điểm</th>
+                                                                        <th class="td-left">Kết quả</th>
+                                                                        <th class="td-fixed td-center">File</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <!-- load from js -->
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Khen thuong -->
+                                            <div class="panel">
+                                                <div class="box-header with-border">
+                                                    <p class="box-title">
+                                                        <a data-toggle="collapse" data-parent="#quatrinhcongtac" href="#qt_khenthuong" aria-expanded="false" class="collapsed activeThongTinQuaTrinh">+ Quá trình khen thưởng</a>
+                                                    </p>
+                                                </div>
+                                                <div id="qt_khenthuong" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
+                                                    <div class="box-body">
+                                                        <div class="zone-content scroll-table-x">
+                                                            <table id="tblKhenThuong" class="table table-hover table-bordered">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th class="td-fixed td-center">TT</th>
+                                                                        <th class="td-center" style="width: 120px">Năm</th>
+                                                                        <th class="td-left">Hình thức khen</th>
+                                                                        <th class="td-left">Cơ quan khen thưởng</th>
+                                                                        <th class="td-left">Thành tích</th>
+                                                                        <th class="td-fixed td-center">File</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <!-- load from js -->
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Ky luat -->
+                                            <div class="panel">
+                                                <div class="box-header with-border">
+                                                    <p class="box-title">
+                                                        <a data-toggle="collapse" data-parent="#quatrinhcongtac" href="#qt_kyluat" aria-expanded="false" class="collapsed activeThongTinQuaTrinh">+ Quá trình kỷ luật</a>
+                                                    </p>
+                                                </div>
+                                                <div id="qt_kyluat" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
+                                                    <div class="box-body">
+                                                        <div class="zone-content scroll-table-x">
+                                                            <table id="tblKyLuat" class="table table-hover table-bordered">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th class="td-fixed td-center">TT</th>
+                                                                        <th class="td-center" style="width: 120px">Năm</th>
+                                                                        <th class="td-left">Hình thức kỷ luật</th>
+                                                                        <th class="td-left">Cơ quan kỷ luật</th>
+                                                                        <th class="td-fixed td-center">File</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <!-- load from js -->
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Tab_4: Tui ho so -->
+                                <div class="tab-pane" id="tab_tuihoso">
+                                    <div class="row">
+                                        <div class="col-sm-2">
+                                            <div class="title-name">
+                                                Tải lên hồ sơ<span class="title-colon">:</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-10">
+                                            <div id="txtThongTinDinhKem"></div>
+                                        </div>
+                                    </div>
+                                    <div class="row" id="zoneHienThiDinhKem">
+                                    </div>
+                                    <div class="row" style="margin-top: 10px">
+                                        <div style="text-align: center;">
+                                            <a id="btnHS_Save_TuiHoSo" class="btn btn-primary"><i class="fa fa-save"></i><span class="lang" key=""> Lưu</span></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Tab_5: In an ho so -->
+                                <div class="tab-pane" id="tab_inan">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <p class="" data-toggle="collapse" data-target="#importExportdata" title="nhấp chuột để đóng/mở">
+                            - <b>Kết quả import</b>: Thành công/tổng số: <span class="color-active" id="lblTinhTrang_Import"></span>
+                        </p>
+                        <div id="zoneNotify_Import">
+                            <table class="table" id="tblError_Import">
+                                <thead>
+                                    <tr>
+                                        <th class="td-center td-fixed">stt</th>
+                                        <th>Dữ liệu</th>
+                                        <th>Mô tả lỗi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="5" class="td-center">Không có dữ liệu lỗi!</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="box-footer">
+                <div class="pull-right">
+                    <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times-circle"></i> Đóng</a>
+                    <a id="btnSave_DeTai" class="btn btn-primary"><i class="fa fa-check"></i> Lưu</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- page script -->
+<script src="modules/danhmuc/script/import.js?v=1.0.0.4"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['Import'] = new Import();
+    $(document).ready(function () {
+        main_doc.Import.init();
+    });
+</script>

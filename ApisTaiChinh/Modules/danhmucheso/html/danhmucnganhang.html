@@ -1,0 +1,161 @@
+﻿<!-- Main content -->
+<section class="content aps-taichinh">
+    <div class="row aps-danhmucnganhang">
+        <!-- box Notify_VBSC -->
+        <div class="box box-solid zone-bus pd0">
+            <!--Search zone-->
+            <div class="box box-solid box-search pd20 pb10">
+                <div class="box-header with-border d-none">
+                    <h3 class="box-title"><i class="fa fa-window-restore"></i> Tìm kiếm</h3>
+                </div>
+                <div class="box-body pd0">
+                    <div class="bss-item">
+                        <!--<div class="col-sm-3 item-search">
+                                <select id="dropSearch_KhoanThu" class="select-opt"></select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_DoiTac" class="select-opt"></select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_HinhThuc" class="select-opt"></select>
+                            </div>-->
+                        <div class="col-sm-3 item-search">
+                            <input id="txtSearch_TuKhoa" class="form-control" placeholder="Nhập từ khóa tìm kiếm" />
+                        </div>
+                        <div class="col-sm-3 item-search">
+                            <a class="btn btn-default btn-search" id="btnSearch"><i class="fa fa-search"></i> <span
+                                    class="lang" key="">Tìm kiếm</span></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Danh sách -->
+            <div class="box box-solid aps-danhmucnganhang-list pd20">
+                <div class="box-header pd0">
+                    <h3 class="box-title">
+                        <i class="fa-solid fa-money-bill-transfer"></i> Danh sách
+                        <span class="badge bg-light-blue">
+                            <span id="lblDanhMucNganHang_Tong"></span>
+                        </span>
+                    </h3>
+
+                    <!--<div class="pull-right">
+                            <a class="btn btn-primary btnAdd" href="#"><i class="fa fa-plus"></i> Thêm mới</a>
+                            <a id="btnXoaDanhMucNganHang" class="btn btn-default"><i class="fa fa-trash"></i> Xóa</a>
+                        </div>-->
+                </div>
+                <div class="box-body pd0">
+                    <div class="aps-table-select mt-10">
+                        <table id="tblDanhMucNganHang"
+                            class="tblDanhMucNganHang table table-hover table-bordered table-noborder table-reponsize">
+                            <thead>
+                                <tr>
+                                    <th class="td-fixed td-center">Stt</th>
+                                    <th class="td-left">Mã</th>
+                                    <th class="td-left">Tên </th>
+                                    <th class="td-center">Trạng thái</th>
+                                    <th class="td-fixed td-center">Sửa</th>
+                                    <th class="td-center td-fixed"><input type="checkbox" class="chkSystemSelectAll">
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--  Chỉnh sửa - Thông tin -->
+<style>
+    /* Scoped: title center + close sat phai (giong pattern modal-alert o indexi.aspx:958-979).
+       Khong dung span.myModalLabel de tranh systemroot.js:128 chen ".." + "Chinh sua -" luc btnEdit. */
+    #myModal.modal-editInfo .modal-header {
+        position: relative !important;
+        justify-content: center !important;
+    }
+    #myModal.modal-editInfo .modal-header .modal-title {
+        margin: 0 auto !important;
+        text-align: center !important;
+    }
+    #myModal.modal-editInfo .modal-header .close {
+        position: absolute !important;
+        right: 15px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        margin: 0 !important;
+        padding: 0 8px !important;
+    }
+</style>
+<div class="modal fade modal-editInfo" id="myModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title"><i class="fa fa-pencil"></i> Chỉnh sửa - Thông tin</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body" id="modal_body">
+                <div class="aps-form mb-0">
+                    <!--row 1-->
+                    <div class="row aps-form-item">
+                        <div class="col-sm-3 aps-lable-name">
+                            <label style="font-weight: normal"><span class="lang" key="">Trạng thái</span></label>
+                        </div>
+                        <div class="col-sm-9 aps-form-input">
+                            <select id="dropTrangThai" class="select-opt">
+                                <option value="1"> Hoạt động</option>
+                                <option value="0"> Ẩn</option>
+                            </select>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="clear"></div>
+            <div id="notify"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times-circle-o"></i>
+                    <span class="lang" key="">Đóng</span></button>
+                <a class="submit btn btn-primary" id="btnSave_DanhMucNganHang">
+                    <i class="fa fa-save"></i><span class="lang" key=""> Lưu</span></a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- page script -->
+<script src="modules/danhmucheso/scripts/DanhMucNganHang.js?v=1.0.0.2"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['DanhMucNganHang'] = new DanhMucNganHang();
+    $(document).ready(function () {
+        main_doc.DanhMucNganHang.init();
+
+        // FIX 2026-08-26: Thay pattern reposition cu (khong on dinh) bang re-init
+        // select2 voi dropdownParent = modal — popup nam trong modal, khong bi
+        // global observer o indexi.aspx dam vao.
+        $(document).on('shown.bs.modal', '.modal', function () {
+            var $modal = $(this);
+            $modal.find('select.select-opt, select[id^="drop"]').each(function () {
+                var $sel = $(this);
+                try {
+                    if ($sel.hasClass('select2-hidden-accessible')) $sel.select2('destroy');
+                } catch (e) {}
+                $sel.select2({ dropdownParent: $modal, width: '100%' });
+            });
+        });
+    });
+</script>
+<style>
+    .modal .select2-container--open,
+    .modal .select2-container--open .select2-dropdown {
+        z-index: 100060 !important;
+    }
+    .modal .select2-results__options {
+        max-height: 220px !important;
+        overflow-y: auto !important;
+    }
+</style>

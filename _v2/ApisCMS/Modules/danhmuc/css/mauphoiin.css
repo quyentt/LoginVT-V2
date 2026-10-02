@@ -1,0 +1,71 @@
+/* =========================================================================
+   Mẫu phôi in — trình thiết kế phôi (ApisCMS/danhmuc/mauphoiin)
+   Bố cục gốc col-sm-3 | col-sm-9: cột trái thuộc tính, cột phải trang phôi.
+   ========================================================================= */
+
+.mpi-cols {
+    display: grid;
+    grid-template-columns: 330px minmax(0, 1fr);
+    gap: var(--ums-sp-4);
+    align-items: start;
+}
+@media (max-width: 991px) { .mpi-cols { grid-template-columns: minmax(0, 1fr); } }
+
+/* Nhóm thuộc tính ở cột trái (badge "Thêm nội dung", "Tùy chọn khổ giấy"… của gốc) */
+.mpi-sec { padding: var(--ums-sp-3) var(--ums-sp-4); border-top: 1px solid var(--ums-line); }
+.mpi-sec:first-child { border-top: 0; }
+.mpi-sec__title {
+    margin: 0 0 var(--ums-sp-2);
+    font-size: 12px;
+    font-weight: var(--ums-fw-semibold);
+    letter-spacing: .02em;
+    text-transform: uppercase;
+    color: var(--ums-blue);
+}
+
+/* Một dòng thuộc tính: nhãn + ô (hai cặp một dòng như gốc 20/30/20/30) */
+.mpi-prop { display: flex; align-items: center; gap: var(--ums-sp-2); margin-bottom: var(--ums-sp-2); }
+.mpi-prop > label { flex: 0 0 64px; margin: 0; font-size: 13px; color: var(--ums-ink-2); }
+.mpi-prop > label.mpi-prop__wide { flex: 1 1 auto; }
+.mpi-prop > .mpi-prop__ctl { flex: 1 1 0; min-width: 0; }
+.mpi-prop > .mpi-prop__num { flex: 0 0 86px; }
+.mpi-prop--tools { justify-content: space-between; }
+.mpi-prop__btns { display: flex; gap: 4px; }
+.mpi-prop--end { justify-content: flex-end; }
+.mpi-prop:last-child { margin-bottom: 0; }
+.mpi-prop--cap > label { flex: 0 0 52px; }
+.mpi-prop--cap > label.mpi-prop__r { flex: 0 0 40px; text-align: right; }
+
+/* Vùng vẽ phôi — nhận phím mũi tên khi đang chọn một nội dung */
+.mpi-canvas {
+    --mpi-font: "Times New Roman";
+    --mpi-size: 13px;
+    overflow: auto;
+    padding: var(--ums-sp-4);
+    background: var(--ums-surface-2);
+    min-height: 480px;
+}
+.mpi-canvas:focus { outline: none; }
+.mpi-canvas:focus-visible { box-shadow: inset 0 0 0 2px var(--ums-blue); }
+
+.mpi-page {
+    position: relative;
+    margin: 0 auto var(--ums-sp-4);
+    background-color: #fff;
+    background-repeat: no-repeat;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, .18);
+}
+/* Mẫu chưa có ảnh scan: gốc để trang cao 0 (nội dung chồng lên nhau) — trên màn
+   hình vẽ khung A4 dọc 96 dpi để còn thấy mà kéo */
+.mpi-page--trong { width: 794px; min-height: 1123px; }
+
+.mpi-phoi {
+    position: absolute;
+    font-family: var(--mpi-font);
+    font-size: var(--mpi-size);
+    cursor: pointer;
+}
+.mpi-phoi:hover { outline: 1px dotted var(--ums-blue); }
+.mpi-phoi.is-active { outline: 2px dashed var(--ums-bad); }
+
+.mpi-trang .ums-chips { margin: 0; }

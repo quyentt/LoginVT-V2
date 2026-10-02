@@ -1,0 +1,50 @@
+/* =========================================================================
+   ums.diemHoc — bảng điểm & học tập chi tiết (assets/js/diemhoc.js)
+   Bố cục bản gốc: cột trái (col-3) thông tin + tổng điểm | cột phải (col-9) tab.
+   ========================================================================= */
+/* Chiều rộng cột y như màn Đăng ký học (ums.pat.master): cột trái CỐ ĐỊNH
+   --ums-master-side, phần còn lại cho nội dung — người dùng chốt 2026-09-23. */
+.ums-dh { display: grid; grid-template-columns: var(--ums-master-side, 320px) minmax(0, 1fr); gap: var(--ums-sp-4); align-items: start; }
+@media (max-width: 991px) { .ums-dh { grid-template-columns: minmax(0, 1fr); } }
+.ums-dh__trai { display: flex; flex-direction: column; gap: var(--ums-sp-2); padding: var(--ums-sp-3); border: 1px solid var(--ums-line); border-radius: 10px; background: var(--ums-surface); }
+/* Thông tin cá nhân: mỗi dòng nhãn dạt TRÁI, giá trị dạt PHẢI (người dùng chốt
+   2026-09-23) — cùng kiểu với "Điểm mới" và "Tổng điểm" ngay dưới nó. */
+.ums-dh__tt { display: flex; flex-direction: column; gap: 5px; font-size: 14px; }
+.ums-dh__tt > div { display: flex; align-items: baseline; justify-content: space-between; gap: var(--ums-sp-2); }
+.ums-dh__tt span { color: var(--ums-ink-3); }
+/* Chỉ HỌ TÊN in đậm, các dòng còn lại chữ thường (người dùng chốt 2026-09-23,
+   cùng luật đã áp ở khối thông tin của Tình hình học phí). */
+.ums-dh__tt b { text-align: right; font-weight: var(--ums-fw-regular, 400); color: var(--ums-ink-1); }
+.ums-dh__tt > div:first-child b { font-weight: var(--ums-fw-bold, 700); color: var(--ums-navy); }
+.ums-dh__nhom { margin-top: var(--ums-sp-2); padding-bottom: 4px; border-bottom: 1px solid var(--ums-line); font-weight: 700; font-size: 14px; color: var(--ums-navy); }
+.ums-dh__moi { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
+.ums-dh__moi li { display: flex; justify-content: space-between; gap: var(--ums-sp-2); }
+.ums-dh__moi b.is-0 { color: #dc3545; } .ums-dh__moi b.is-yeu { color: #e8590c; } .ums-dh__moi b.is-kha { color: var(--ums-blue); } .ums-dh__moi b.is-gioi { color: #198754; }
+/* Tổng kết điểm — sáu dòng "nhãn — giá trị" của bản gốc, nhãn trái / số dạt phải.
+   Cột trái: MỘT cột (nhãn đầy đủ vẫn đủ chỗ). Dưới bảng điểm: HAI cột, nhưng mỗi
+   cột khống chế bề rộng (≤ 420px) để nhãn và số không dạt xa nhau ở màn rộng. */
+.ums-dh__tk { display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px var(--ums-sp-4); font-size: 13px; }
+.ums-dh__tk > div { display: flex; align-items: baseline; justify-content: space-between; gap: var(--ums-sp-2);
+    min-width: 0; padding-bottom: 3px; border-bottom: 1px dashed var(--ums-line); }
+.ums-dh__tk span { color: var(--ums-ink-3); }
+.ums-dh__tk b { white-space: nowrap; color: var(--ums-navy); }
+
+/* Dưới bảng của một học kỳ: nền liền với đáy khung. Hai cột hay một cột là theo
+   bề rộng THẬT của cột phải (@container), không theo bề rộng cửa sổ — cột trái cố
+   định 320px nên cùng một cỡ cửa sổ mà vùng này rộng hẹp khác nhau. */
+.ums-dh__phai { min-width: 0; container-type: inline-size; }
+.ums-dh__tk--ky { grid-template-columns: minmax(0, 340px); justify-content: start; gap: 4px var(--ums-sp-5);
+    padding: var(--ums-sp-2) var(--ums-sp-3); background: var(--ums-surface-2); border-top: 1px solid var(--ums-line); }
+@container (min-width: 700px) { .ums-dh__tk--ky { grid-template-columns: repeat(2, minmax(0, 340px)); } }
+/* Nội dung mỗi tab trong KHUNG TRẮNG như khung thông tin bên trái (người dùng 2026-09-26: "box phải có bg trắng") */
+.ums-dh__pane { margin-top: var(--ums-sp-3); padding: var(--ums-sp-4); border: 1px solid var(--ums-line); border-radius: 10px; background: var(--ums-surface); }
+.ums-dh__pane[hidden] { display: none; }
+/* Bảng SÁT MÉP khung trắng (quy ước bảng sát mép): bảng nằm thẳng trong khung tab thì tràn qua lề trong hai bên;
+   bảng trong ô "kỳ học" có viền riêng thì đã sát mép ô đó. */
+.ums-dh__pane .ums-tablewrap { margin-inline: calc(-1 * var(--ums-sp-4)); }
+.ums-dh__pane .ums-dh__ky .ums-tablewrap { margin-inline: 0; }
+.ums-dh__ky { margin-bottom: var(--ums-sp-3); border: 1px solid var(--ums-line); border-radius: 8px; overflow: hidden; }
+.ums-dh__ky > summary { padding: 8px var(--ums-sp-3); background: var(--ums-surface-2); font-weight: 700; color: var(--ums-navy); cursor: pointer; }
+/* Dòng bảng điểm bấm được cả dòng để mở điểm thành phần (kéo gốc 30/9, gốc tr.row-diem) */
+.ums-dh__dong { cursor: pointer; }
+.ums-dh__tg { max-width: 320px; margin-bottom: var(--ums-sp-3); }

@@ -1,0 +1,771 @@
+﻿<style>
+    .popover {
+        max-width: 100%; /* Max Width of the popover (depending on the container!) */
+    }
+    .colorcard {
+        color: #009688
+    }
+    .pcard {
+        font-size: 30px !important;
+        line-height: 1.7 !important;
+    }
+    .pcard i {
+        width: 30px;
+    }
+    .activeOnSearch, .activeSelect {
+        background-color: #f1f1f1;
+    }
+</style>
+<section class="content">
+    <div class="row">
+        <!-- /.left-content -->
+        <div class="col-lg-3">
+            <div class="zonecontent" id="zone_TimKiem">
+                <div class="box box-solid">
+                    <div class="box-body">
+                        <!-- Bộ tìm kiếm -->
+                        <div class="bs-item input-group">
+                            <input type="text" id="txtSearch_CapNhat_TuKhoa" class="form-control" placeholder="Nhập từ khóa tìm kiếm">
+                            <span class="input-group-addon poiter btnExtend_Search" title="Kéo xuống">
+                                <i class="fa fa-angle-double-down"></i>
+                            </span>
+                        </div>
+                        <div class="bs-item pull-right">
+                            <a id="btnSearchCapNhat_NhanSu" class="btn btn-default"><i class="fa fa-search"></i> <span class="lang" key="">Tìm kiếm</span></a>
+                        </div>
+                        <div class="box-sub-search" style="display: none">
+                            <div class="bss-item">
+                                <i>Chọn điều kiện tìm kiếm:</i>
+                            </div>
+                            <div class="bss-item">
+                                <select id="dropSearch_CapNhat_CCTC" class="select-opt">
+                                    <option value="">--Chọn Khoa/Viện/Phòng ban--</option>
+                                    <!-- Load from js -->
+                                </select>
+                            </div>
+                            <div class="bss-item">
+                                <select id="dropSearch_CapNhat_BoMon" class="select-opt">
+                                    <option value="">-- Bộ môn --</option>
+                                    <!-- Load from js -->
+                                </select>
+                            </div>
+                            <div class="bss-item">
+                                <select id="dropSearch_CapNhat_TinhTrangLamViec" class="select-opt">
+                                    <option value="">-- Chọn tình trạng làm việc--</option>
+                                    <!-- Load from js -->
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="box box-solid">
+                    <div class="box-header with-border">
+                        <h3 class="box-title" title="Tổng bài báo trong nước">
+                            <i class="fa fa-hdd-o"></i> Danh sách cán bộ
+                        </h3>
+                        <span class="pull-right badge bg-light-blue">
+                            <span id="lblHSLL_NhanSu_Tong"></span>
+                        </span>
+                    </div>
+                    <div class="box-body">
+                        <table id="tblCapNhat_NhanSu" class="table table-hover">
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.right-content -->
+        <div class="col-lg-9" id="zoneEdit" style="display: none">
+            <div class="box box-solid zonecontent" id="zone_main">
+                <div class="box box-solid">
+                    <div class="nav-tabs-custom">
+                        <ul class="nav nav-tabs">
+                            <li class="active">
+                                <a href="#tab_1" data-toggle="tab" aria-expanded="true">
+                                    <span class="lang" key="">1) Thông tin lý lịch</span>
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <!-- Tab_1: Thong tin ly lich -->
+                            <div class="tab-pane active" id="tab_1">
+                                <div class="row row-align">
+                                    <!-- Thong tin co ban -->
+                                    <div class="row zone-box">
+                                        <div class="row">
+                                            <p class="group-title-name">
+                                                <span class="badge bg-blue">Thông tin cơ bản</span>
+                                            </p>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <div id="uploadPicture_HS"></div>
+                                        </div>
+                                        <div class="col-sm-10">
+                                            <div class="row sub-row">
+                                                <div class="col-sm-2">
+                                                    <div class="group-title-name">
+                                                        Họ và tên <span class="title-colon">:</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <input type="text" id="txtNS_HoDem" placeholder="Họ đệm" class="form-control"  />
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <input type="text" id="txtNS_Ten" placeholder="Tên" class="form-control"  />
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <div class="group-title-name">
+                                                        Bí danh <span class="title-colon">:</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <input type="text" id="txtNS_BiDanh" class="form-control" />
+                                                </div>
+                                            </div>
+                                            <div class="row sub-row">
+                                                <div class="col-sm-2">
+                                                    <div class="group-title-name">
+                                                        Ngày sinh <span class="title-colon">:</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-1">
+                                                    <input type="text" id="txtNS_NgaySinh" placeholder="dd" class="form-control"  />
+                                                </div>
+                                                <div class="col-sm-1">
+                                                    <input type="text" id="txtNS_ThangSinh" placeholder="mm" class="form-control"  />
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <input type="text" id="txtNS_NamSinh" placeholder="yyyy" class="form-control"  />
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <div class="group-title-name">
+                                                        Giới tính <span class="title-colon">:</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <select id="dropNS_GioiTinh" class="select-opt">
+                                                        <option id="" value="">--Chọn giới tính-- </option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="row sub-row">
+                                                <div class="col-sm-2">
+                                                    <div class="group-title-name">
+                                                        Hôn nhân <span class="title-colon">:</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <select id="dropNS_TinhTrangHonNhan" class="select-opt">
+                                                        <option id="" value="">--Chọn tình trạng hôn nhân-- </option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <div class="group-title-name">
+                                                        Quốc tịch <span class="title-colon">:</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <select id="dropNS_QuocTich" class="select-opt">
+                                                        <option id="" value="">--Chọn quốc tịch-- </option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="row sub-row">
+                                                <div class="col-sm-2">
+                                                    <div class="group-title-name">
+                                                        Dân tộc <span class="title-colon">:</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <select id="dropNS_DanToc" class="select-opt">
+                                                        <option id="" value="">--Chọn dân tộc-- </option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <div class="group-title-name">
+                                                        Tôn giáo <span class="title-colon">:</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <select id="dropNS_TonGiao" class="select-opt">
+                                                        <option id="" value="">--Chọn tôn giáo-- </option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="row sub-row">
+                                                <div class="col-sm-2">
+                                                    <div class="group-title-name">
+                                                        Hoàn cảnh xuất thân <span class="title-colon">:</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <select id="dropNS_ThanhPhanXuatThan" class="select-opt">
+                                                        <option id="" value="">--Chọn thành phần xuất thân-- </option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <div class="group-title-name">
+                                                        Gia đình chính sách<span class="title-colon">:</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <select id="dropNS_GiaDinhChinhSach" class="select-opt">
+                                                        <option id="" value="">--Chọn gia đình chính sách-- </option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Thong tin can bo -->
+                                    <div class="row zone-box">
+                                        <div class="row">
+                                            <p class="group-title-name">
+                                                <span class="badge bg-blue">Thông tin cán bộ</span>
+                                            </p>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-2">
+                                                <div class="group-title-name">
+                                                    Mã số <span class="title-colon">:</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <input type="text" id="txtNS_MaSo" class="form-control"  />
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <div class="group-title-name">
+                                                    Tình trạng <span class="title-colon">:</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <select id="dropNS_TinhTrangNhanSu" class="select-opt">
+                                                    <option id="" value="">--Chọn tình trạng nhân sự-- </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-2">
+                                                <div class="group-title-name">
+                                                    Loại đối tượng <span class="title-colon">:</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <select id="dropNS_LoaiDoiTuong" class="select-opt">
+                                                    <option id="" value="">--Chọn loại đối tượng-- </option>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <div class="group-title-name">
+                                                    Loại giảng viên <span class="title-colon">:</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <select id="dropNS_LoaiGiangVien" class="select-opt">
+                                                    <option id="" value="">--Chọn loại giảng viên-- </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-2">
+                                                <div class="group-title-name">
+                                                    Đơn vị <span class="title-colon">:</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <select id="dropNS_CoCauToChuc" class="select-opt" readonly >
+                                                    <option id="" value="">--Chọn đơn vị-- </option>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <div class="group-title-name">
+                                                    Mã số thuế <span class="title-colon">:</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <input type="text" id="txtNS_MaSoThue" class="form-control form-border-bottom" />
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-2">
+                                                <div class="group-title-name">
+                                                    Chức danh nghề nghiệp<span class="title-colon">:</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <select id="dropNS_ChucDanh" class="select-opt">
+                                                    <option id="" value="">--Chọn chức danh-- </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-2">
+                                                <div class="group-title-name">
+                                                    Trình độ chuyên môn cao nhất <span class="title-colon">:</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-10">
+                                                <input type="text" id="txtNS_TrinhDoChuyenMonCaoNhat" class="form-control" readonly />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--Các mốc thời gian quan trọng-->
+                                    <div class="row">
+                                        <div class="col-sm-12 zone-box">
+                                            <div class="row">
+                                                <p class="group-title-name">
+                                                    <span class="badge bg-blue">Các mốc thời gian quan trọng</span>
+                                                </p>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-2">
+                                                    <div class="group-title-name">
+                                                        Ngày bắt đầu vào trường<span class="title-colon">:</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <input type="text" id="txtNgay_VaoTruong" placeholder="dd/mm/yyyy" class="form-control input-datepicker" />
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    <div class="group-title-name">
+                                                        Ngày bắt đầu vào ngành giáo dục <span class="title-colon">:</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    <input type="text" id="txtNgay_VaoNganhGD" placeholder="dd/mm/yyyy" class="form-control input-datepicker" />
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-2">
+                                                    <div class="group-title-name">
+                                                        Ngày vào biên chế<span class="title-colon">:</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <input type="text" id="txtNgay_VaoBienChe" placeholder="dd/mm/yyyy" class="form-control input-datepicker" />
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    <div class="group-title-name">
+                                                        Ngày bắt đầu đóng bảo hiểm xã hội <span class="title-colon">:</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    <input type="text" id="txtNgay_TinhBHXH" placeholder="dd/mm/yyyy" class="form-control input-datepicker" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Thong tin lien lac/ So can cuoc, so bao hiem -->
+                                    <div class="row">
+                                        <div class="col-sm-6 zone-box">
+                                            <div class="row">
+                                                <p class="group-title-name">
+                                                    <span class="badge bg-blue">Thông tin liên lạc</span>
+                                                </p>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-2">
+                                                    <div class="group-title-name">
+                                                        Email * <span class="title-colon">:</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <input type="text" id="txtNS_Email" class="form-control" />
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <div class="group-title-name">
+                                                        Số di động  <span class="title-colon">:</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <input type="text" id="txtNS_DienThoaiCaNhan"  class="form-control" />
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-2">
+                                                    <div class="group-title-name">
+                                                        Số cơ quan <span class="title-colon">:</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <input type="text" id="txtNS_DienThoaiCoQuan"  class="form-control" />
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <div class="group-title-name">
+                                                        Số gia đình <span class="title-colon">:</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <input type="text" id="txtNS_DienThoaiGiaDinh"  class="form-control" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6 zone-box">
+                                            <div class="row">
+                                                <p class="group-title-name">
+                                                    <span class="badge bg-blue">Số CMND (Căn cước), bảo hiểm</span>
+                                                </p>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-2">
+                                                    <div class="group-title-name">
+                                                        Số CMND<span class="title-colon">:</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <input type="text" id="txtNS_SCC_So" class="form-control" />
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <div class="group-title-name">
+                                                        Ngày cấp <span class="title-colon">:</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <input type="text" id="txtNS_SCC_NgayCap" class="form-control input-datepicker" />
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-2">
+                                                    <div class="group-title-name">
+                                                        Nơi cấp <span class="title-colon">:</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <input type="text" id="txtNS_SCC_NoiCap" class="form-control" />
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <div class="group-title-name">
+                                                        Số sổ BH <span class="title-colon">:</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <input type="text" id="txtNS_SoBaoHiem" class="form-control" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Dia chi -->
+                                    <div class="row zone-box">
+                                        <div class="row">
+                                            <p class="group-title-name">
+                                                <span class="badge bg-blue">Địa chỉ</span>
+                                            </p>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-2">
+                                                <div class="group-title-name">
+                                                    Nơi sinh <span class="title-colon">:</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-10">
+                                                <input type="text" id="txtNS_NoiSinh" class="form-control" />
+                                            </div>
+                                        </div>
+                                        <!-- Row 2 - Que quan -->
+                                        <div class="row">
+                                            <div class="col-sm-2">
+                                                <div class="group-title-name">
+                                                    Quê quán <span class="title-colon">:</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-10">
+                                                <input type="text" id="txtNS_QueQuan" class="form-control" />
+                                            </div>
+                                        </div>
+                                        <!-- Row 3 - Ho khau thuong tru -->
+                                        <div class="row">
+                                            <div class="col-sm-2">
+                                                <div class="group-title-name">
+                                                    Hộ khẩu thường trú <span class="title-colon">:</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-10">
+                                                <input type="text" id="txtNS_HoKhauThuongTru" class="form-control" />
+                                            </div>
+                                        </div>
+                                        <!-- Row 4 - No o hien nay -->
+                                        <div class="row">
+                                            <div class="col-sm-2">
+                                                <div class="group-title-name">
+                                                    Nơi ở hiện nay<span class="title-colon">:</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-10">
+                                                <input type="text" id="txtNS_NoiOHienNay" class="form-control" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Dang/ Quan ngu -->
+                                    <div class="row">
+                                        <div class="col-sm-6 zone-box">
+                                            <div class="row">
+                                                <p class="group-title-name">
+                                                    <span class="badge bg-blue">Đảng viên</span>
+                                                </p>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-2">
+                                                    <div class="group-title-name">
+                                                        Ngày vào<span class="title-colon">:</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <input type="text" id="txtNS_Dang_NgayVao" placeholder="dd/mm/yyyy" class="form-control input-datepicker" />
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <div class="group-title-name">
+                                                        Chính thức <span class="title-colon">:</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <input type="text" id="txtNS_Dang_NgayChinhThuc" placeholder="dd/mm/yyyy" class="form-control input-datepicker" />
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-2">
+                                                    <div class="group-title-name">
+                                                        Nơi kết nạp <span class="title-colon">:</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-10">
+                                                    <input type="text" id="txtNS_Dang_NoiKetNap" class="form-control" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6 zone-box">
+                                            <div class="row">
+                                                <p class="group-group-title-name">
+                                                    <span class="badge bg-blue">Quân ngũ</span>
+                                                </p>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-2">
+                                                    <div class="group-title-name">
+                                                        Ngày nhập<span class="title-colon">:</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <input type="text" id="txtNS_Ngu_NgayNhap" placeholder="dd/mm/yyyy" class="form-control input-datepicker" />
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <div class="group-title-name">
+                                                        Ngày xuất <span class="title-colon">:</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <input type="text" id="txtNS_Ngu_NgayXuat" placeholder="dd/mm/yyyy" class="form-control input-datepicker" />
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-2">
+                                                    <div class="group-title-name">
+                                                        Quân hàm <span class="title-colon">:</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <select id="dropNS_QuanHam" class="select-opt">
+                                                        <option id="" value="">--Chọn quân hàm-- </option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <div class="group-title-name">
+                                                        Thương binh <span class="title-colon">:</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <select id="dropNS_HangThuongBinh" class="select-opt">
+                                                        <option id="" value="">--Chọn hạng thương binh-- </option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Doan/ CongDoan -->
+                                    <div class="row">
+                                        <div class="col-sm-6 zone-box">
+                                            <div class="row">
+                                                <p class="group-title-name">
+                                                    <span class="badge bg-blue">Đoàn viên</span>
+                                                </p>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-2">
+                                                    <div class="group-title-name">
+                                                        Ngày vào<span class="title-colon">:</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <input type="text" id="txtNS_Doan_NgayVao" placeholder="dd/mm/yyyy" class="form-control input-datepicker" />
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <div class="group-title-name">
+                                                        Nơi kết nạp <span class="title-colon">:</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <input type="text" id="txtNS_Doan_NoiKetNap" class="form-control" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6 zone-box">
+                                            <div class="row">
+                                                <p class="group-group-title-name">
+                                                    <span class="badge bg-blue">Công đoàn</span>
+                                                </p>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-2">
+                                                    <div class="group-title-name">
+                                                        Ngày vào<span class="title-colon">:</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-10">
+                                                    <input type="text" id="txtNS_CongDoan_NgayVao" placeholder="dd/mm/yyyy" class="form-control input-datepicker" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Thong tin khac -->
+                                    <div class="row zone-box">
+                                        <div class="row">
+                                            <p class="group-title-name">
+                                                <span class="badge bg-blue">Thông tin khác</span>
+                                            </p>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-2">
+                                                <div class="group-title-name">
+                                                    Trình độ giáo dục phổ thông<span class="title-colon">:</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="txtNS_TDPhoThong" class="form-control" />
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <div class="group-title-name">
+                                                    Hệ <span class="title-colon">:</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="txtNS_He" class="form-control" />
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <div class="group-title-name">
+                                                    Xếp loại tốt nghiệp phổ thông <span class="title-colon">:</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <select id="dropNS_XepLoaiTotnhgiep" class="select-opt">
+                                                    <option id="" value="">--Chọn xếp loại tốt nghiệp-- </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-2">
+                                                <div class="group-title-name">
+                                                    Học vị cao nhất <span class="title-colon">:</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="txtNS_HocViCaoNhat" class="form-control" readonly />
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <div class="group-title-name">
+                                                    Ngày T/G cách mạng <span class="title-colon">:</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="txtNS_NgayThamGiaCachMang" class="form-control input-datepicker" placeholder="dd/mm/yyyy" />
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <div class="group-title-name">
+                                                    Ngày T/G TCCTXH <span class="title-colon">:</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="txtNS_NgayTGTCCTXH" class="form-control input-datepicker" placeholder="dd/mm/yyyy" />
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-2">
+                                                <div class="group-title-name">
+                                                    Sở trường công tác<span class="title-colon">:</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-10">
+                                                <input type="text" id="txtNS_SoTruongCongTac" class="form-control" />
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-2">
+                                                <div class="group-title-name">
+                                                    Hướng nghiên cứu chính<span class="title-colon">:</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-10">
+                                                <textarea id="txtNS_HuongNghienCuuChinh" class="form-control"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Thong tin hop dong -->
+                                    <div class="row zone-box">
+                                        <div class="row">
+                                            <p class="group-title-name">
+                                                <span class="badge bg-blue">Thông tin hợp đồng</span>
+                                            </p>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-2">
+                                                <div class="group-title-name">
+                                                    Hình thức tuyển dụng <span class="title-colon">:</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <input type="text" id="txtHinhThucTuyenDung" class="form-control" readonly />
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <div class="group-title-name">
+                                                    Loại hợp đồng <span class="title-colon">:</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <input type="text" id="txtLoaiHopDong" class="form-control" readonly />
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-2">
+                                                <div class="group-title-name">
+                                                    Công việc chính được giao <span class="title-colon">:</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-10">
+                                                <input type="text" id="txtNS_CongViecChinhDuocGiao" class="form-control " readonly />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Action: button save -->
+                                    <div class="box-footer">
+                                        <div style="text-align: center;">
+                                            <a id="btnHS_Save" class="btn btn-primary"><i class="fa fa-save"></i><span class="lang" key=""> Lưu</span></a>
+                                            <a id="btnHS_In" class="btn btn-Info"><i class="fa fa-print"></i><span class="lang" key=""> In mẫu 2C</span></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- page script -->
+<script src="modules/hoso/script/capnhatv2.js?v=1.0.0.0"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['CapNhatHoSo'] = new CapNhatHoSo();
+    $(document).ready(function () {
+        main_doc.CapNhatHoSo.init();
+    });
+</script>
+

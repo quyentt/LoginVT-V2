@@ -1,0 +1,536 @@
+﻿<style>
+    .checkbox-inline+.checkbox-inline,
+    .radio-inline+.radio-inline {
+        margin-left: 0px;
+    }
+
+    .btn-large {
+        width: 85px;
+        text-align: center;
+        background-color: #fff;
+        border-bottom: 1px solid #f1f1f1;
+        float: left;
+        margin-left: 5px;
+    }
+
+    .btnxacnhan_small {
+        width: 35px;
+        -webkit-box-shadow: 1px 1px 1px 1px #ccc;
+        -moz-box-shadow: 1px 1px 1px 1px #ccc;
+        /* Firefox 3.5 - 3.6 */
+        box-shadow: 1px 1px 1px 1px #ccc;
+    }
+</style>
+<section class="content aps-quydoichungchi">
+    <div class="row">
+        <div class="zone-bus" id="zonebatdau">
+            <div class="box box-solid box-search" style="padding-bottom: 5px !important;">
+                <div class="box-body">
+                    <div class="group-title d-none">
+                        <p class="titleSearchContent">
+                            <i class="fa fa-window-restore">
+                            </i> <span class="lang" key="">Tìm kiếm</span>
+                        </p>
+                    </div>
+                    <div class="area-search">
+                        <div id="search" class="inputSearch">
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_PhanLoai" class="select-opt"></select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_ChungChi" class="select-opt"></select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_HocPhan" class="select-opt"></select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <input id="txtSearch" class="form-control" placeholder="Nhập từ khóa tìm kiếm" />
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <a id="btnSearch" class="btn btn-default"><i class="fa fa-search"></i> <span
+                                        class="lang" key="">Tìm kiếm</span></a>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <div class="dropdown" id="zonebtnBaoCao_QuyDoiChungChi">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="clear"></div>
+            <div class="box box-solid">
+                <div class="box-header with-border pl0 pr0 pt0 pb10">
+                    <h3 class="box-title line-38">
+                        <i class="fa-duotone fa-solid fa-file-pen  line-38"></i>
+                        Danh sách kế hoạch
+                        <span class="badge bg-light-blue mt-10">
+                            <span id="lblQuyDoiChungChi_Tong"></span>
+                        </span>
+                    </h3>
+                    <div class="box-tools pull-right">
+                        <a class="btn btnAdd btn-primary" id="btnAdd" href="#"><i class="fa fa-plus"></i> Thêm mới</a>
+                        <a id="btnXoaQuyDoiChungChi" class="btn btn-danger"><i class="fa fa-trash"></i> Xóa</a>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="aps-table-select scroll-table-x">
+                        <table id="tblQuyDoiChungChi" class="table table-hover table-noborder">
+                            <table id="tblQuyDoiChungChi" class="table table-hover table-bordered table-noborder">
+                                <thead>
+                                    <tr>
+                                        <th class="td-fixed td-center">Stt</th>
+                                        <!--<th class="td-center">Mã</th>-->
+                                        <th class="td-center">Phân loại chứng chỉ</th>
+                                        <th class="td-center">Tên chứng chỉ</th>
+                                        <th class="td-center">Mức độ</th>
+                                        <th class="td-center">Công thức tính</th>
+                                        <th class="td-center">Phương thức quy đổi</th>
+                                        <th class="td-center">Bảng quy đổi chi tiết</th>
+                                        <th class="td-center">Ghi chú</th>
+                                        <th class="td-fixed td-center">Sửa</th>
+                                        <th class="td-center td-fixed">
+                                            <input type="checkbox" id="chkSelectAll_QuyDoiChungChi"
+                                                class="chkSystemSelectAll">
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- load from js -->
+                                </tbody>
+                            </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="box box-solid zone-bus form-container" id="zoneChiTiet" style="display: none">
+            <div class="box-header with-border">
+                <h3 class="box-title"><span class="myModalLabel1"></span> Bảng quy đổi chi tiết <span
+                        id="lblBangQuyDoiChiTiet"></span></h3>
+                <div class="pull-right">
+                    <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times"></i></a>
+                </div>
+            </div>
+            <div class="box-body pd20">
+                <div class="pull-right mb-10">
+                    <a class="btn btn-primary btnAdd" id="btnAddChiTiet" href="#"><i class="fa fa-plus"></i> Thêm
+                        mới</a>
+                    <a id="btnDeleteChiTiet" class="btn btn-danger"><i class="fa fa-trash"></i> Xóa</a>
+
+                </div>
+                <div class="clear"></div>
+                <table id="tblChiTiet" class="table table-hover table-bordered table-noborder">
+                    <thead>
+                        <tr>
+                            <th class="td-fixed">Stt</th>
+                            <th class="td-center"><span class="lang" key="">Mã học phần</span></th>
+                            <th class="td-center"><span class="lang" key="">Tên học phần</span></th>
+                            <th class="td-center"><span class="lang" key="">Đầu điểm</span></th>
+                            <th class="td-center"><span class="lang" key="">Cận dưới</span></th>
+                            <th class="td-center"><span class="lang" key="">Cận trên</span></th>
+                            <th class="td-center"><span class="lang" key="">Điểm công nhận</span></th>
+                            <th class="td-center"><span class="lang" key="">Phạm vi áp dụng</span></th>
+                            <th class="td-center"><span class="lang" key="">Mức nhóm điều kiện</span></th>
+                            <th class="td-center"><span class="lang" key="">Loại kiểm tra</span></th>
+                            <th class="td-center"><span class="lang" key="">Ghi chú</span></th>
+                            <th class="td-center"><span class="lang" key="">Sửa</span></th>
+                            <td class="td-center"><input type="checkbox" id="chkSelectAll_QuanSo"
+                                    class="chkSystemSelectAll" /></td>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="box-footer">
+                <div class="pull-right">
+                    <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times-circle"></i>
+                        Đóng</a>
+                    <!--<a id="" class="btn btn-primary btnXacNhan"><i class="fa fa-check"></i> Xác nhận</a>-->
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="modal fade aps-modal-nhansu" id="modal_nhansu" role="dialog" aria-labelledby="myModalLabel"
+    aria-hidden="true">
+    <!-- load from js -->
+</div>
+<div class="modal fade aps-modal-nhansu" id="modal_sinhvien_kehoach" role="dialog" aria-labelledby="myModalLabel"
+    aria-hidden="true">
+
+</div>
+
+
+<div class="modal fade aps-add-quydoicc" id="myModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-860">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+                <h3 class="box-title"><span class="myModalLabel"> <i class="fa fa-pencil"></i></span> Quy đổi chứng chỉ
+                </h3>
+            </div>
+            <div class="modal-body" id="modal_body">
+                <div class="row zone-box">
+
+                    <!--row 1-->
+                    <div class="row btnOpenNew">
+                        <div class="col-sm-3">
+                            <label style="font-weight: normal"><span class="lang" key="">Phân loại chứng
+                                    chỉ</span></label>
+                            <div class="row aps-add-new pd0">
+                                <div class="row aps-form mb-0">
+                                    <!--row 1-->
+                                    <div class="row btnOpenNew aps-form-item">
+                                        <div class="col-sm-3 aps-form-lable">
+                                            <label style="font-weight: normal"><span class="lang" key="">Phân loại chứng
+                                                    chỉ</span></label>
+                                        </div>
+                                        <div class="col-sm-9 aps-form-input">
+                                            <select id="dropPhanLoaiChungChi" class="select-opt"></select>
+                                        </div>
+                                        <div class="clear"></div>
+                                    </div>
+                                    <div class="row btnOpenNew aps-form-item">
+                                        <div class="col-sm-3 aps-form-lable">
+                                            <label style="font-weight: normal"><span class="lang" key="">Phâm loại chứng
+                                                    chỉ
+                                                    mới(chưa có)</span></label>
+                                        </div>
+                                        <div class="col-sm-9 aps-form-input">
+                                            <input type="text" id="txtPLCCMoi" class="form-control" />
+                                        </div>
+                                        <div class="clear"></div>
+                                    </div>
+                                    <div class="clear"></div>
+                                </div>
+                                <div class="row btnOpenNew">
+                                    <div class="col-sm-3">
+                                        <label style="font-weight: normal"><span class="lang" key="">Phâm loại chứng chỉ
+                                                mới(chưa
+                                                có)</span></label>
+                                        <div class="row btnOpenNew aps-form-item">
+                                            <div class="col-sm-3 aps-form-lable">
+                                                <label style="font-weight: normal"><span class="lang" key="">Chứng
+                                                        chỉ</span></label>
+                                            </div>
+                                            <div class="col-sm-9 aps-form-input">
+                                                <select id="dropChungChi" class="select-opt"></select>
+                                            </div>
+                                            <div class="clear"></div>
+                                        </div>
+                                        <div class="row btnOpenNew aps-form-item">
+                                            <div class="col-sm-3 aps-form-lable">
+                                                <label style="font-weight: normal"><span class="lang" key="">Chứng chỉ
+                                                        mới(chưa
+                                                        có)</span></label>
+                                            </div>
+                                            <div class="col-sm-9 aps-form-input">
+                                                <input type="text" id="txtChungChiMoi" class="form-control" />
+                                            </div>
+                                            <div class="clear"></div>
+                                        </div>
+                                        <div class="row aps-form-item">
+                                            <div class="col-sm-3 aps-form-lable">
+                                                <label style="font-weight: normal"><span class="lang" key="">Mức
+                                                        độ</span></label>
+                                            </div>
+                                            <div class="col-sm-9 aps-form-input">
+                                                <input type="text" id="txtMucDo" class="form-control" />
+                                            </div>
+                                            <div class="clear"></div>
+                                        </div>
+                                        <div class="row aps-form-item">
+                                            <div class="col-sm-3 aps-form-lable">
+                                                <label style="font-weight: normal"><span class="lang" key="">Công thức
+                                                        tính</span></label>
+                                            </div>
+                                            <div class="col-sm-9 aps-form-input">
+                                                <select id="dropCongThucTinh" class="select-opt"></select>
+                                            </div>
+                                            <div class="clear"></div>
+                                        </div>
+                                        <div class="clear"></div>
+                                    </div>
+                                    <div class="row btnOpenNew">
+                                        <div class="col-sm-3">
+                                            <label style="font-weight: normal"><span class="lang" key="">Chứng chỉ
+                                                    mới(chưa
+                                                    có)</span></label>
+                                            <div class="row aps-form-item">
+                                                <div class="col-sm-3 aps-form-lable">
+                                                    <label style="font-weight: normal"><span class="lang" key="">Phương
+                                                            thức quy
+                                                            đổi</span></label>
+                                                </div>
+                                                <div class="col-sm-9 aps-form-input">
+                                                    <select id="dropPhuongThucQuyDoi" class="select-opt"></select>
+                                                </div>
+                                                <div class="clear"></div>
+                                            </div>
+                                            <div class="row aps-form-item">
+                                                <div class="col-sm-3 aps-form-lable">
+                                                    <label style="font-weight: normal"><span class="lang" key="">Điểm
+                                                            công nhận trực
+                                                            tiếp</span></label>
+                                                </div>
+                                                <div class="col-sm-9 aps-form-input">
+                                                    <input type="text" id="txtDiemCongNhan" class="form-control" />
+                                                </div>
+                                                <div class="clear"></div>
+                                            </div>
+                                            <!--row 2-->
+                                            <div class="row aps-form-item">
+                                                <div class="col-sm-3 aps-form-lable">
+                                                    <label style="font-weight: normal"><span class="lang" key="">Ghi
+                                                            chú</span></label>
+                                                </div>
+                                                <div class="col-sm-9 aps-form-input">
+                                                    <input type="text" id="txtGhiChu" class="form-control" />
+                                                </div>
+                                                <div class="clear"></div>
+                                            </div>
+                                            <div class="col-sm-9">
+                                                <input type="text" id="txtMucDo" class="form-control" />
+                                            </div>
+                                            <div class="clear"></div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-3">
+                                                <label style="font-weight: normal"><span class="lang" key="">Công thức
+                                                        tính</span></label>
+                                            </div>
+                                            <div class="col-sm-9">
+                                                <select id="dropCongThucTinh" class="select-opt"></select>
+                                            </div>
+                                            <div class="clear"></div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-3">
+                                                <label style="font-weight: normal"><span class="lang" key="">Phương thức
+                                                        quy
+                                                        đổi</span></label>
+                                            </div>
+                                            <div class="col-sm-9">
+                                                <select id="dropPhuongThucQuyDoi" class="select-opt"></select>
+                                            </div>
+                                            <div class="clear"></div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-3">
+                                                <label style="font-weight: normal"><span class="lang" key="">Điểm công
+                                                        nhận trực
+                                                        tiếp</span></label>
+                                            </div>
+                                            <div class="col-sm-9">
+                                                <input type="text" id="txtDiemCongNhan" class="form-control" />
+                                            </div>
+                                            <div class="clear"></div>
+                                        </div>
+                                        <!--row 2-->
+                                        <div class="row">
+                                            <div class="col-sm-3">
+                                                <label style="font-weight: normal"><span class="lang" key="">Ghi
+                                                        chú</span></label>
+                                            </div>
+                                            <div class="col-sm-9">
+                                                <input type="text" id="txtGhiChu" class="form-control" />
+                                            </div>
+                                            <div class="clear"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="clear"></div>
+                                <div id="notify"></div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal"><i
+                                            class="fa fa-times-circle-o"></i>
+                                        <span class="lang" key="">Đóng</span></button>
+                                    <a class="submit btn btn-primary" id="btnSave_QuyDoiChungChi"><i
+                                            class="fa fa-check-circle"></i><span <a class="submit btn btn-primary"
+                                            id="btnSave_QuyDoiChungChi"><i class="fa fa-save"></i><span class="lang"
+                                                key=""> Lưu</span></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="myModalChiTiet" role="dialog" aria-labelledby="myModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal"><span
+                                            aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                    <h3 class="box-title"><span class="myModalLabel"> <i
+                                                class="fa fa-pencil"></i></span> Quy đổi chứng chỉ
+                                    </h3>
+                                </div>
+                                <div class="modal-body" id="modal_body">
+                                    <div class="row zone-box">
+
+                                        <!--row 1-->
+                                        <div class="row">
+                                            <div class="col-sm-3">
+                                                <label style="font-weight: normal"><span class="lang" key="">Đơn
+                                                        vị</span></label>
+                                            </div>
+                                            <div class="col-sm-9">
+                                                <select id="dropDonVi" class="select-opt"></select>
+                                            </div>
+                                            <div class="clear"></div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-3">
+                                                <label style="font-weight: normal"><span class="lang" key="">Học
+                                                        phần</span></label>
+                                            </div>
+                                            <div class="col-sm-9">
+                                                <select id="dropHocPhan" class="select-opt"></select>
+                                            </div>
+                                            <div class="clear"></div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-3">
+                                                <label style="font-weight: normal"><span class="lang" key="">Đầu
+                                                        điểm</span></label>
+                                            </div>
+                                            <div class="col-sm-9">
+                                                <select id="dropDauDiem" class="select-opt"></select>
+                                            </div>
+                                            <div class="clear"></div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-3">
+                                                <label style="font-weight: normal"><span class="lang" key="">Cận
+                                                        dưới</span></label>
+                                            </div>
+                                            <div class="col-sm-9">
+                                                <input type="text" id="txtCanDuoi" class="form-control" />
+                                            </div>
+                                            <div class="clear"></div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-3">
+                                                <label style="font-weight: normal"><span class="lang" key="">Cận
+                                                        trên</span></label>
+                                            </div>
+                                            <div class="col-sm-9">
+                                                <input type="text" id="txtCanTren" class="form-control" />
+                                            </div>
+                                            <div class="clear"></div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-3">
+                                                <label style="font-weight: normal"><span class="lang" key="">Đầu
+                                                        điểm</span></label>
+                                            </div>
+                                            <div class="col-sm-9">
+                                                <select id="dropDauDiem" class="select-opt"></select>
+                                            </div>
+                                            <div class="clear"></div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-3">
+                                                <label style="font-weight: normal"><span class="lang" key="">Điểm quy
+                                                        đổi</span></label>
+                                            </div>
+                                            <div class="col-sm-9">
+                                                <input type="text" id="txtDiemQuyDoi" class="form-control" />
+                                            </div>
+                                            <div class="clear"></div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-3">
+                                                <label style="font-weight: normal"><span class="lang" key="">Điểm công
+                                                        nhận</span></label>
+                                            </div>
+                                            <div class="col-sm-9">
+                                                <input type="text" id="txtDiemCongNhan2" class="form-control" />
+                                            </div>
+                                            <div class="clear"></div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-3">
+                                                <label style="font-weight: normal"><span class="lang" key="">Công thức
+                                                        tính</span></label>
+                                            </div>
+                                            <div class="col-sm-9">
+                                                <select id="dropCongThucTinh2" class="select-opt"></select>
+                                            </div>
+                                            <div class="clear"></div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-3">
+                                                <label style="font-weight: normal"><span class="lang" key="">Phạm vi
+                                                        công
+                                                        nhận</span></label>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <span type="text" id="lblPhamViApDung" class="form-control"></span>
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <a class="submit btn btn-primary btnSelect_PhamVi"><i
+                                                        class="fa fa-check"></i><span class="lang" key="">
+                                                        Chọn</span></a>
+                                            </div>
+                                            <div class="clear"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="clear"></div>
+                                <div id="notify"></div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal"><i
+                                            class="fa fa-times-circle-o"></i>
+                                        <span class="lang" key="">Đóng</span></button>
+                                    <a class="submit btn btn-primary" id="btnSave_ChiTiet"><i
+                                            class="fa fa-check-circle"></i><span class="lang" key=""> Lưu</span></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal fade" id="modal_sinhvien" role="dialog" aria-labelledby="myModalLabel"
+                        aria-hidden="true">
+                        <!-- load from js -->
+                    </div>
+                    <script src="modules/kehoach/script/quydoichungchi.js?v=1.0.0.0"></script>
+                    <script type="text/javascript">
+                        var main_doc = {};
+                        main_doc['QuyDoiChungChi'] = new QuyDoiChungChi();
+                        $(document).ready(function () {
+                            main_doc.QuyDoiChungChi.init();
+                        });
+                    </script>
+<!-- FIX 2026-08-26: Select2 trong modal — re-init voi dropdownParent = modal
+     de popup nam trong modal, khong lech / che noi dung. Universal handler,
+     an toan khi modal khong co select. -->
+<script>
+(function () {
+    if (typeof jQuery === 'undefined') return;
+    var $ = jQuery;
+    $(document).off('shown.bs.modal.__s2fix').on('shown.bs.modal.__s2fix', '.modal', function () {
+        var $modal = $(this);
+        $modal.find('select.select-opt, select[id^="drop"]').each(function () {
+            var $sel = $(this);
+            try {
+                if ($sel.hasClass('select2-hidden-accessible')) $sel.select2('destroy');
+            } catch (e) {}
+            $sel.select2({ dropdownParent: $modal, width: '100%' });
+        });
+    });
+})();
+</script>
+<style>
+    .modal .select2-container--open,
+    .modal .select2-container--open .select2-dropdown {
+        z-index: 100060 !important;
+    }
+    .modal .select2-results__options {
+        max-height: 220px !important;
+        overflow-y: auto !important;
+    }
+</style>

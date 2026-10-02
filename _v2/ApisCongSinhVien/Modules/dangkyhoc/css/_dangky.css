@@ -1,0 +1,166 @@
+/* =========================================================================
+   Đăng ký học (Cổng sinh viên) — kiểu riêng của hai màn dangky, tracuu.
+   Tiền tố dky-. Khung trang / khung nội dung / thẻ lớp dùng lớp chung
+   (.ums-master, .ums-panel, .ums-card của pat.cards, .ums-chips).
+   ========================================================================= */
+
+/* Cột trái bản gốc (col-md-3) dài hơn một màn hình khi danh sách giảng viên
+   dài — để dính đỉnh thì phần dưới (Phương án, Tìm kiếm) không bao giờ thấy. */
+.dky .ums-master__side { position: static; }
+
+/* ---------- Khối người học + các con số ---------------------------------- */
+.dky-sv { display: flex; align-items: center; gap: var(--ums-sp-4); padding-bottom: var(--ums-sp-4); border-bottom: 1px solid var(--ums-line); }
+.dky-sv__anh {
+    flex: 0 0 72px; width: 72px; height: 72px; border-radius: 50%; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--ums-surface-3); color: var(--ums-ink-3); font-size: 30px;
+}
+.dky-sv__anh img { width: 100%; height: 100%; object-fit: cover; }
+.dky-sv__ten { min-width: 0; }
+.dky-sv__ten b { display: block; font-size: var(--ums-fz-16); color: var(--ums-navy); }
+.dky-sv__ten span { color: var(--ums-ink-2); font-size: var(--ums-fz-13); }
+
+.dky-tt { list-style: none; margin: var(--ums-sp-2) 0 0; padding: 0; }
+.dky-tt > li { display: flex; align-items: center; gap: var(--ums-sp-2); padding: 7px 0; font-size: var(--ums-fz-13); border-bottom: 1px dotted var(--ums-line-2); }
+.dky-tt > li:last-child { border-bottom: 0; }
+.dky-tt i { flex: 0 0 18px; text-align: center; color: var(--ums-blue); }
+.dky-tt b { margin-left: auto; white-space: nowrap; }
+.dky-tt__nut {
+    display: flex; align-items: center; gap: var(--ums-sp-2); width: 100%;
+    padding: 0; border: 0; background: none; font: inherit; color: inherit; text-align: left; cursor: pointer;
+}
+.dky-tt__nut:hover > span { color: var(--ums-blue); text-decoration: underline; }
+/* highlightDaDangKy của gốc (kéo gốc 30/9): đăng ký / hủy / đổi lịch xong thì dòng "Xem và xóa, đổi lớp" nháy 3 lần */
+.dky-tt__nut.is-nhay { border-radius: var(--ums-r-1); animation: dky-nhay 1.2s ease-in-out 3; }
+@keyframes dky-nhay {
+    0%, 100% { background: transparent; box-shadow: none; }
+    50% { background: var(--ums-warn-bg); box-shadow: 0 0 0 2px var(--ums-warn-bg), 0 0 0 3px var(--ums-warn); }
+}
+@media (prefers-reduced-motion: reduce) { .dky-tt__nut.is-nhay { animation: none; } }
+.dky-xanh { color: var(--ums-blue); }
+.dky-cam { color: var(--ums-warn); }
+
+/* ---------- Bộ lọc tìm kiếm ----------------------------------------------- */
+.dky-loc + .dky-loc { margin-top: var(--ums-sp-4); padding-top: var(--ums-sp-4); border-top: 1px solid var(--ums-line); }
+.dky-loc__tieu { margin: 0 0 var(--ums-sp-2); font-size: var(--ums-fz-13); font-weight: var(--ums-fw-semibold); color: var(--ums-navy); }
+.dky-loc__nut { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ums-sp-2); }
+.dky-loc .ums-check { font-size: var(--ums-fz-13); }
+.dky-pa { display: flex; flex-direction: column; gap: 4px; }
+.dky-pa__muc {
+    display: flex; align-items: center; justify-content: space-between; gap: var(--ums-sp-2);
+    padding: 6px 10px; border: 1px solid var(--ums-line); border-radius: var(--ums-r-1);
+    background: var(--ums-surface-2); font: inherit; font-size: var(--ums-fz-13); color: inherit; text-align: left; cursor: pointer;
+}
+.dky-pa__muc:hover { border-color: var(--ums-blue); color: var(--ums-blue); }
+
+/* ---------- Chương trình / Kế hoạch / Học phần ---------------------------- */
+.dky .ums-chips { margin-bottom: 0; }
+.dky-thoigian { margin-top: var(--ums-sp-3); font-size: var(--ums-fz-13); color: var(--ums-ink-2); line-height: 1.6; }
+.dky-thoigian:empty { display: none; }
+.dky-hp { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2px var(--ums-sp-3); margin-top: var(--ums-sp-3); }
+.dky-hp__muc {
+    display: flex; align-items: center; gap: 6px; padding: 6px 10px;
+    border: 0; border-radius: var(--ums-r-1); background: none;
+    font: inherit; font-size: var(--ums-fz-13); color: inherit; text-align: left; cursor: pointer;
+}
+.dky-hp__muc:hover { background: var(--ums-surface-3); }
+/* Học phần đang chọn: nền xanh lá như gốc (.term-list .active a — register-school.css:372) */
+.dky-hp__muc.is-active { background: #4e8d42; color: #fff; }
+/* Học phần ĐÃ đăng ký: chữ xanh lá kèm dấu tích, đúng như gốc
+   (.term-list .registration a { color: #4e8d42 } — register-school.css:389) */
+.dky-hp__muc.is-dk { color: #4e8d42; }   /* KHÔNG đặt font-weight: Font Awesome chọn kiểu icon
+       theo font-weight (300 light / 900 solid) — đặt 600 là dấu tích thành ô rỗng. */
+.dky-hp__muc.is-dk.is-active { color: #fff; }
+.dky-hp__muc > span { flex: 1; min-width: 0; }
+.dky-xong { color: var(--ums-ok); }
+.dky-hp__muc.is-active .dky-xong { color: #fff; }
+
+/* ---------- Thẻ lớp học phần ----------------------------------------------
+   Vùng "Lớp học phần" xếp 3 thẻ một hàng (người dùng chốt 2026-09-23); màn hẹp
+   thì tự bớt cột. Thẻ trong khối môn (masonry) vẫn một thẻ mỗi hàng. */
+[data-z="lhp"] > .ums-cards,
+.ums-dialog .dky > .ums-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 1250px) { [data-z="lhp"] > .ums-cards, .ums-dialog .dky > .ums-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 820px)  { [data-z="lhp"] > .ums-cards, .ums-dialog .dky > .ums-cards { grid-template-columns: minmax(0, 1fr); } }
+
+/* Thẻ hẹp (lưới 230px) mà có ba nút: cho nút xuống dòng thay vì tràn ra ngoài thẻ */
+/* Thẻ lớp học phần hẹp (cột 1/4 màn) mà có 2-3 nút: xếp LƯỚI hai cột đều nhau,
+   nút lẻ cuối cùng chiếm cả hàng — không để nút rớt dòng lệch sang một bên. */
+.dky .ums-card__acts, .dky-mon .ums-card__acts {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; justify-content: stretch;
+}
+.dky .ums-card__acts > .ums-btn, .dky-mon .ums-card__acts > .ums-btn { width: 100%; justify-content: center; }
+.dky .ums-card__acts > .ums-btn:last-child:nth-child(odd),
+.dky-mon .ums-card__acts > .ums-btn:last-child:nth-child(odd) { grid-column: 1 / -1; }
+/* Thẻ đứng một mình trong hộp rộng thì không cần kéo nút full chiều ngang */
+.ums-dialog .dky .ums-card__acts { grid-template-columns: repeat(auto-fit, minmax(0, max-content)); justify-content: end; }
+.dky-the__ten { display: block; margin-bottom: 4px; }
+a.dky-the__ten { cursor: pointer; }
+.dky-the__dong { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; color: var(--ums-ink-2); }
+.dky-the__gia { margin-top: 6px; color: var(--ums-warn); }
+.dky-tinhtrang { color: var(--ums-warn); }
+.dky-mon .ums-panel__title { text-transform: none; }
+
+/* ---------- Kết quả đăng ký: xếp masonry theo môn ------------------------- */
+/* Bản gốc: mỗi môn một khối rộng 25% xếp bằng jQuery Masonry (.masonry-bq).
+   Ở đây là cột CSS — cùng kết quả nhìn thấy, khối cao thấp khác nhau vẫn khít. */
+/* Tối đa 4 cột như gốc (25%); khai cả column-width nên màn hẹp tự bớt cột,
+   không cần media query. */
+.dky-masonry { column-count: 4; column-width: 270px; column-gap: var(--ums-sp-4); }
+.dky-masonry > .dky-mon { break-inside: avoid; -webkit-column-break-inside: avoid; page-break-inside: avoid; margin: 0 0 var(--ums-sp-4); width: 100%; }
+/* Trong cột hẹp thì mỗi lớp một thẻ trên một dòng */
+.dky-masonry .ums-cards { grid-template-columns: minmax(0, 1fr); }
+
+/* Nền tiêu đề khối môn — 10 màu của bản gốc, lặp theo vị trí khối.
+   Viết đủ 4 lớp (.dky-masonry .dky-mon.dky-mon--N) cho bằng độ đặc hiệu của luật
+   đầu khung DÍNH ĐỈNH (objects/shell.css:379 — :has(.ums-panel__tools .ums-btn)
+   :not([hidden] *) = 0,4,0) vốn đặt nền surface; bằng nhau thì tệp nạp sau thắng. */
+/* Khối hẹp (1/4 chiều ngang): tên môn xuống dòng riêng, nút nằm dưới — không
+   để tên môn bị bóp thành từng chữ một như khi hai thứ cùng một hàng. */
+.dky-masonry .ums-panel.dky-mon > .ums-panel__head { position: static; }   /* KHÔNG dính đỉnh: viết đủ
+       4 lớp cho bằng luật dính objects/shell.css:379 (0,4,0) — nếu không, tiêu đề môn treo lại khi cuộn */
+.dky-mon > .ums-panel__head { border-bottom: 0; flex-wrap: wrap; row-gap: var(--ums-sp-2); }
+.dky-mon > .ums-panel__head > .ums-panel__title { flex: 1 1 100%; }
+.dky-mon > .ums-panel__head > .ums-panel__tools { flex: 1 1 100%; justify-content: flex-end; }
+.dky-mon > .ums-panel__head, .dky-mon > .ums-panel__head .ums-panel__title, .dky-mon > .ums-panel__head .ums-panel__title > i { color: #fff; }
+.dky-masonry .dky-mon.dky-mon--1 > .ums-panel__head { background: #198754; }
+.dky-masonry .dky-mon.dky-mon--2 > .ums-panel__head { background: #00a8bf; }
+.dky-masonry .dky-mon.dky-mon--3 > .ums-panel__head { background: #6a1a21; }
+.dky-masonry .dky-mon.dky-mon--4 > .ums-panel__head { background: #6f42c1; }
+.dky-masonry .dky-mon.dky-mon--5 > .ums-panel__head { background: #71b636; }
+.dky-masonry .dky-mon.dky-mon--6 > .ums-panel__head { background: #b02a37; }
+.dky-masonry .dky-mon.dky-mon--7 > .ums-panel__head { background: #b36000; }
+.dky-masonry .dky-mon.dky-mon--8 > .ums-panel__head { background: #d63384; }
+.dky-masonry .dky-mon.dky-mon--9 > .ums-panel__head { background: #055160; }
+.dky-masonry .dky-mon.dky-mon--10 > .ums-panel__head { background: #333333; }
+/* Nút trong đầu khối nằm trên nền màu */
+.dky-mon > .ums-panel__head .ums-btn { background: rgba(255, 255, 255, .92); border-color: transparent; color: var(--ums-ink); }
+.dky-mon > .ums-panel__head .ums-btn:hover { background: #fff; }
+
+/* ---------- Hộp "Chọn thêm … lớp" ------------------------------------------ */
+.dky-chon { margin-bottom: var(--ums-sp-4); padding: var(--ums-sp-4); border-radius: var(--ums-r-2); background: var(--ums-surface-2); }
+.dky-chon__tieu { margin: 0 0 var(--ums-sp-3); text-align: center; font-size: var(--ums-fz-14); font-weight: var(--ums-fw-semibold); color: var(--ums-navy); }
+.dky-chon__o { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: var(--ums-sp-3); }
+.dky-o { border-radius: var(--ums-r-2); cursor: pointer; }
+.dky-o > .ums-card { height: 100%; }
+.dky-o.is-active { outline: 2px solid var(--ums-blue); outline-offset: 2px; }
+.dky-o__trong {
+    display: flex; align-items: center; justify-content: center; height: 100%; min-height: 130px;
+    border: 2px dashed var(--ums-line-2); border-radius: var(--ums-r-2);
+    background: var(--ums-surface); color: var(--ums-ink-3); font-weight: var(--ums-fw-semibold);
+}
+
+/* ---------- Thẻ rê chuột (Số dư · Số phát sinh · Tổng lớp đã đăng ký) ------- */
+.dky-hc__td { margin: var(--ums-sp-3) 0 4px; font-size: var(--ums-fz-13); font-weight: var(--ums-fw-semibold); color: var(--ums-navy); }
+.dky-hc__td:first-child { margin-top: 0; }
+.dky-hc__chan { margin-top: var(--ums-sp-2); padding-top: var(--ums-sp-2); border-top: 1px dashed var(--ums-line); font-size: var(--ums-fz-12); color: var(--ums-ink-3); }
+/* KHÔNG cho cuộn trong thẻ rê chuột: thẻ đặt pointer-events:none nên chuột không
+   vào được, có thanh cuộn cũng không kéo nổi. Danh sách dài thì cắt bớt trong JS. */
+.dky-dadk { list-style: none; margin: 0; padding: 0; min-width: 320px; }
+.dky-dadk li { padding: 5px 0; border-bottom: 1px dotted var(--ums-line-2); font-size: var(--ums-fz-13); }
+.dky-dadk li:last-child { border-bottom: 0; }
+.dky-dadk p { display: flex; justify-content: space-between; gap: var(--ums-sp-3); margin: 0; }
+.dky-dadk p + p { color: var(--ums-ink-3); font-size: var(--ums-fz-12); }
+.dky-dadk .dky-cam { white-space: nowrap; }
+.dky-h { margin: var(--ums-sp-4) 0 var(--ums-sp-2); font-size: var(--ums-fz-14); font-weight: var(--ums-fw-semibold); }
+.dky-h:first-child { margin-top: 0; }

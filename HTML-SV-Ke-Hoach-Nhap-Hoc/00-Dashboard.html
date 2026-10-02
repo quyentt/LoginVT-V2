@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - Danh mục màn hình HTML</title>
+    <style>
+        :root {
+            --blue: #2f6fed;
+            --green: #22a652;
+            --orange: #f8843d;
+            --purple: #9f22d6;
+            --gray: #667085;
+            --bg: #f4f6fb;
+            --card: #ffffff;
+            --border: #e6e9f0;
+            --text: #1f2a44;
+            --muted: #8a93a6;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .page { max-width: 1320px; margin: 0 auto; padding: 28px 20px 60px; }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
+        }
+
+        .topbar h1 {
+            font-size: 24px;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .topbar h1 .dot {
+            width: 12px; height: 12px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--blue), var(--green));
+        }
+
+        .sub { color: var(--muted); font-size: 14px; margin: 4px 0 22px; }
+
+        .search-wrap { position: relative; }
+
+        #search {
+            width: 320px;
+            max-width: 100%;
+            padding: 11px 14px 11px 38px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 14px;
+            outline: none;
+            background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238a93a6' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E") no-repeat 12px center;
+            transition: border-color .15s, box-shadow .15s;
+        }
+        #search:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(47,111,237,.12); }
+
+        .stats { color: var(--muted); font-size: 13px; }
+
+        .group { margin-top: 30px; }
+
+        .group-head {
+            display: flex; align-items: center; gap: 10px;
+            margin-bottom: 14px;
+        }
+        .group-head .bar { width: 4px; height: 20px; border-radius: 4px; }
+        .group-head h2 { font-size: 17px; margin: 0; }
+        .group-head .count {
+            font-size: 12px; color: var(--muted);
+            background: #eef1f7; padding: 2px 9px; border-radius: 20px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 14px;
+        }
+
+        .card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px 14px;
+            text-decoration: none;
+            color: inherit;
+            transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 22px rgba(16, 24, 40, .10);
+            border-color: var(--c, var(--blue));
+        }
+
+        .card .code {
+            flex: 0 0 auto;
+            min-width: 54px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--c, var(--blue));
+            background: var(--cbg, rgba(47,111,237,.10));
+            border-radius: 8px;
+            padding: 8px 6px;
+            line-height: 1.2;
+        }
+
+        .card .meta { min-width: 0; }
+        .card .title {
+            font-size: 14px; font-weight: 600; margin: 0;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .card .file {
+            font-size: 11px; color: var(--muted); margin-top: 2px;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+
+        .empty { display: none; text-align: center; color: var(--muted); padding: 40px; }
+        .group.hidden { display: none; }
+
+        footer { margin-top: 40px; color: var(--muted); font-size: 12px; text-align: center; }
+    </style>
+</head>
+
+<body>
+    <div class="page">
+        <div class="topbar">
+            <div>
+                <h1><span class="dot"></span> Danh mục màn hình HTML</h1>
+            </div>
+            <div class="search-wrap">
+                <input id="search" type="text" placeholder="Tìm nhanh màn hình..." autocomplete="off" />
+            </div>
+        </div>
+        <div class="sub">Thư mục <b>HTML-SV-Ke-Hoach-Nhap-Hoc</b> &middot; <span class="stats" id="stats"></span></div>
+
+        <div id="root"></div>
+        <div class="empty" id="empty">Không tìm thấy màn hình phù hợp.</div>
+
+        <footer>Tổng hợp tự động — bấm vào thẻ để mở màn hình tương ứng.</footer>
+    </div>
+
+    <script>
+        const GROUPS = [
+            {
+                name: "Quản lý sinh viên (QLSV)", color: "#2f6fed", bg: "rgba(47,111,237,.10)",
+                items: [
+                    ["HTML-QLSV-01-tongquan-1.html", "QLSV-01", "Tổng quan toàn trường (360)"],
+                    ["HTML-QLSV-01-tongquan.html", "QLSV-01", "Tổng quan (bản gốc)"],
+                    ["HTML-QLSV-02-DanhSachSV-1.html", "QLSV-02", "Danh sách sinh viên"],
+                    ["HTML-QLSV-02-DanhSachSV.html", "QLSV-02", "Danh sách SV (bản gốc)"],
+                    ["HTML-QLSV-03-hoso360-1.html", "QLSV-03", "Hồ sơ sinh viên 360"],
+                    ["HTML-QLSV-03-hoso360.html", "QLSV-03", "Hồ sơ 360 (bản gốc)"],
+                    ["HTML-QLSV-04-DAQHHT-1.html", "QLSV-04", "Đa ngành / nhiều QHHT"],
+                    ["HTML-QLSV-04-DAQHHT.html", "QLSV-04", "Đa QHHT (bản gốc)"],
+                    ["HTML-QLSV-05-dangkyhoc-1.html", "QLSV-05", "Kết quả đăng ký học"],
+                    ["HTML-QLSV-05-dangkyhoc.html", "QLSV-05", "Đăng ký học (bản gốc)"],
+                    ["HTML-QLSV-06-chuyencan-1.html", "QLSV-06", "Kết quả chuyên cần"],
+                    ["HTML-QLSV-06-chuyencan.html", "QLSV-06", "Chuyên cần (bản gốc)"],
+                    ["HTML-QLSV-07-ketquahoctap-1.html", "QLSV-07", "Kết quả học tập / Bảng điểm"],
+                    ["HTML-QLSV-07-ketquahoctap.html", "QLSV-07", "Kết quả học tập (bản gốc)"],
+                    ["HTML-QLSV-08-XuLyHocVu-1.html", "QLSV-08", "Kết quả xử lý học vụ"],
+                    ["HTML-QLSV-08-XuLyHocVu.html", "QLSV-08", "Xử lý học vụ (bản gốc)"],
+                    ["HTML-QLSV-09-chungchi-1.html", "QLSV-09", "Chứng chỉ / điều kiện phụ"],
+                    ["HTML-QLSV-09-chungchi.html", "QLSV-09", "Chứng chỉ (bản gốc)"],
+                    ["HTML-QLSV-10-totnghiep-1.html", "QLSV-10", "Xét tốt nghiệp"],
+                    ["HTML-QLSV-10-totnghiep.html", "QLSV-10", "Tốt nghiệp (bản gốc)"],
+                    ["HTML-QLSV-11-taichinh-1.html", "QLSV-11", "Tài chính / học phí / công nợ"],
+                    ["HTML-QLSV-11-taichinh.html", "QLSV-11", "Tài chính (bản gốc)"],
+                    ["HTML-QLSV-12-TuongTacInbox-1.html", "QLSV-12", "Hộp thư / trao đổi SV"],
+                    ["HTML-QLSV-12-TuongTacInbox-2.html", "QLSV-12", "Hộp thư (biến thể 2)"],
+                    ["HTML-QLSV-12-TuongTacInbox.html", "QLSV-12", "Hộp thư (bản gốc)"],
+                    ["HTML-QLSV-13-CanhBaoCanThiep-1.html", "QLSV-13", "Cảnh báo sớm / Student Success"],
+                    ["HTML-QLSV-13-CanhBaoCanThiep.html", "QLSV-13", "Cảnh báo & can thiệp"],
+                    ["HTML-QLSV-14-BaoCaoThongKe-1.html", "QLSV-14", "Báo cáo & thống kê"],
+                    ["HTML-QLSV-14-BaoCaoThongKe.html", "QLSV-14", "Báo cáo thống kê (bản gốc)"],
+                ]
+            },
+            {
+                name: "Cố vấn học tập (COVAN)", color: "#22a652", bg: "rgba(34,166,82,.10)",
+                items: [
+                    ["HTML-COVAN-00-LuongChucNang.html", "COVAN-00", "Luồng chức năng"],
+                    ["HTML-COVAN-01-TongQuan.html", "COVAN-01", "Dashboard cố vấn"],
+                    ["HTML-COVAN-02-NhomSVNguyCo.html", "COVAN-02", "Nhóm SV nguy cơ"],
+                    ["HTML-COVAN-03-LichHenTuVan.html", "COVAN-03", "Lịch hẹn tư vấn"],
+                    ["HTML-COVAN-04-HoSoSVPhuTrach.html", "COVAN-04", "Hồ sơ SV phụ trách"],
+                    ["HTML-COVAN-05-DangKyHocTheoDoi.html", "COVAN-05", "Theo dõi đăng ký học"],
+                    ["HTML-COVAN-06-HocTapRenLuyen.html", "COVAN-06", "Học tập & rèn luyện"],
+                    ["HTML-COVAN-07-TuongTacSV.html", "COVAN-07", "Tương tác SV"],
+                    ["HTML-COVAN-08-BaoCaoCoVan.html", "COVAN-08", "Báo cáo cố vấn"],
+                ]
+            },
+            {
+                name: "Khoa / Viện (KHOA)", color: "#9f22d6", bg: "rgba(159,34,214,.10)",
+                items: [
+                    ["HTML-KHOA-00-LuongChucNang.html", "KHOA-00", "Luồng chức năng"],
+                    ["HTML-KHOA-00-LuongChucNang-1.html", "KHOA-00", "Luồng chức năng (bản 1)"],
+                    ["HTML-KHOA-01-TongQuan.html", "KHOA-01", "Dashboard Khoa/Viện"],
+                    ["HTML-KHOA-02-DanhSachTheoLop.html", "KHOA-02", "Danh sách theo lớp"],
+                    ["HTML-KHOA-03-HoSoSVTrongKhoa.html", "KHOA-03", "Hồ sơ SV trong Khoa"],
+                    ["HTML-KHOA-04-CanhBaoHocVu.html", "KHOA-04", "Cảnh báo học vụ"],
+                    ["HTML-KHOA-05-SapTotNghiep-01.html", "KHOA-05", "Sắp tốt nghiệp (theo dõi)"],
+                    ["HTML-KHOA-05-SapTotNghiep.html", "KHOA-05", "Sắp tốt nghiệp"],
+                    ["HTML-KHOA-06-TuongTacThongBao.html", "KHOA-06", "Tương tác / thông báo"],
+                    ["HTML-KHOA-07-BaoCaoKhoa.html", "KHOA-07", "Báo cáo Khoa/Viện"],
+                ]
+            },
+            {
+                name: "Sinh viên / Kế hoạch nhập học", color: "#f8843d", bg: "rgba(248,132,61,.12)",
+                items: [
+                    ["HTML-SV-TiepNhanDauVao.html", "SV", "Tiếp nhận đầu vào tuyển sinh"],
+                    ["HTML-SV-Ke-Hoach-Nhap-Hoc-01.html", "SV-KH", "Kế hoạch nhập học"],
+                    ["HTML-SV-Ke-Hoach-Nhap-Hoc-02-ThuPhi.html", "SV-KH", "Kế hoạch nhập học - Thu phí"],
+                    ["HTML-SV-Ke-Hoach-Nhap-Hoc-02-ThuPhi-old.html", "SV-KH", "Thu phí (bản cũ)"],
+                ]
+            },
+            {
+                name: "Khác", color: "#667085", bg: "rgba(102,112,133,.12)",
+                items: [
+                    ["HTML-99-GhiChuPhanQuyen.html", "99", "Ghi chú phân quyền & bộ lọc"],
+                ]
+            },
+        ];
+
+        const root = document.getElementById("root");
+        let total = 0;
+
+        GROUPS.forEach((g, gi) => {
+            total += g.items.length;
+            const sec = document.createElement("section");
+            sec.className = "group";
+            sec.dataset.group = gi;
+            sec.innerHTML =
+                '<div class="group-head">' +
+                '<span class="bar" style="background:' + g.color + '"></span>' +
+                '<h2>' + g.name + '</h2>' +
+                '<span class="count">' + g.items.length + '</span>' +
+                '</div>';
+            const grid = document.createElement("div");
+            grid.className = "grid";
+            g.items.forEach(([file, code, label]) => {
+                const a = document.createElement("a");
+                a.className = "card";
+                a.href = file;
+                a.style.setProperty("--c", g.color);
+                a.style.setProperty("--cbg", g.bg);
+                a.dataset.search = (code + " " + label + " " + file).toLowerCase();
+                a.innerHTML =
+                    '<span class="code">' + code + '</span>' +
+                    '<span class="meta">' +
+                    '<p class="title">' + label + '</p>' +
+                    '<p class="file">' + file + '</p>' +
+                    '</span>';
+                grid.appendChild(a);
+            });
+            sec.appendChild(grid);
+            root.appendChild(sec);
+        });
+
+        document.getElementById("stats").textContent = total + " màn hình";
+
+        const search = document.getElementById("search");
+        const empty = document.getElementById("empty");
+        search.addEventListener("input", () => {
+            const q = search.value.trim().toLowerCase();
+            let visible = 0;
+            document.querySelectorAll(".group").forEach(sec => {
+                let shown = 0;
+                sec.querySelectorAll(".card").forEach(card => {
+                    const ok = !q || card.dataset.search.includes(q);
+                    card.style.display = ok ? "" : "none";
+                    if (ok) shown++;
+                });
+                sec.classList.toggle("hidden", shown === 0);
+                visible += shown;
+            });
+            empty.style.display = visible === 0 ? "block" : "none";
+        });
+    </script>
+</body>
+
+</html>

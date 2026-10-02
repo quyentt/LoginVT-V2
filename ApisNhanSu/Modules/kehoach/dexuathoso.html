@@ -1,0 +1,1447 @@
+﻿<style>
+    /*.finance-modal .input-row{
+        display: flex
+    }*/
+    .finance-modal .form-add-info .form-label {
+        font-size: unset;
+        color: unset;
+    }
+
+    .zone-bus .select2-container--open {
+        max-width: unset;
+    }
+</style>
+<div class="one-door aps-phieu">
+    <div class="overlay"></div>
+    <div class="content-tab no-tab">
+        <div class="d-flex justify-content-between">
+            <div class="nav-content-left">
+                <p class="link">
+                    <a href="#">quản lý chung</a><i class="fal fa-angle-right"></i><a href="#">
+                        Quản lý phiếu 12
+                    </a>
+                </p>
+            </div>
+            <div class="nav-content-right">
+                <a class="d-block text-right" href=""><i class="fas fa-question-circle"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- đăng ký nguyện vọng -->
+    <div class="box-shadow register-wish pt-0 zone-bus" id="zonebatdau">
+        <!-- Bộ tìm kiếm -->
+        <div class="form-top">
+            <!--<div class="row">
+                <div class="col-12 col-lg-3 col-md-6 mb-15">
+                    <div class="form-item d-flex  form-add-info flex-grow-1">
+                        <div class="input-group no-icon">
+                            <input type="text" class="form-control" id="txtSearch" placeholder="Nhập từ khóa tìm kiếm">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-4 col-md-3 mb-15">
+                    <div class="d-flex align-items-center">
+                        <div class="btn btn-search btn-default min-w-auto px-4 ms-auto ms-lg-0" id="btnSearch">
+                            <i class="fal fa-search me-2"></i> Tìm kiếm
+                        </div>
+                        <div class="dropdown" id="zonebtnBaoCao_DeXuatHoSo"></div>
+                    </div>
+                </div>
+            </div>-->
+
+        </div>
+        <!-- Danh sách phiếu -->
+        <div class="container-fluid px-20">
+            <div class="d-flex align-items-center mt-4 flex-wrap mb-4">
+                <div class="group-title pl0">
+                    <p class="mb-0 pt-10">
+                        <i class="fa-solid fa-list-timeline"></i>
+                        <span class="lang" key="">Danh sách hồ sơ đề xuất</span>
+                    </p>
+                </div>
+                <!-- <p class="mb-0 color-dask-blue fw-bold pt10 "></p> -->
+                <div class="ms-auto aps-gap-10">
+                    <div class="btn btn-danger" id="btnDelete_DeXuatHoSo" style="min-width: unset">
+                        <i class="fal fa-trash"></i> Xóa
+                    </div>
+                    <div class="btn btn-success btnAdd" id="btnAdd_DeXuatHoSo">
+                        <i class="fal fa-plus"></i> Nhập hồ sơ đề xuất
+                    </div>
+                    <div class="btn btn-success" id="btnAdd_KiemTraDinhDanh">
+                        <i class="fal fa-paper-plane"></i> Kiểm tra định danh
+                    </div>
+                </div>
+
+            </div>
+            <table class="table transcrip-table tabs-scores h-auto tblDeXuatHoSo table-bordered table-noborder"
+                   id="tblDeXuatHoSo">
+                <thead>
+                    <tr>
+                        <th class="text-center w-50px" scope="col">STT</th>
+                        <th class="" scope="col">Họ và tên</th>
+                        <th class="text-center" scope="col">Ngày sinh</th>
+                        <th class="text-center" scope="col">Giới tính</th>
+                        <th class="text-center" scope="col">Tình trạng hồ sơ</th>
+                        <th class="text-center w-100px" scope="col">Hoàn thiện hồ sơ</th>
+                        <th class="text-center" scope="col">Hiệu lực</th>
+                        <th class="text-center" scope="col">Ngày tạo</th>
+                        <th class="text-center" scope="col">Người tạo</th>
+                        <th class="text-center w-50px" scope="col">Sửa</th>
+                        <th class="text-center" scope="col"><input type="checkbox" class="chkSystemSelectAll"></th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="fake-modal zone-bus" id="zoneEdit" style="display: none; padding-top: 15px">
+        <div class="box-shadow register-wish pt-0 position-relative modal-aps-add">
+            <div class="d-flex justify-content-between pt-3 px-20 box-header">
+                <div class="nav-content-left">
+                    <p class="link">
+                        <a>
+                            <span class="myModalLabel">
+                                <i class="fa-regular fa-file-circle-question fw-bold"></i>
+                            </span> Hồ sơ đề xuất
+                        </a>
+                    </p>
+                </div>
+                <div class="nav-content-right mt">
+                    <a class="d-block text-right fs-16 mt-5 color-fff btnClose"><i class="fal fa-times"></i></a>
+                </div>
+            </div>
+            <div class="form-top rounded-0 border-top mb-15">
+                <div class="row">
+                    <div class="col-12 col-md-8 col-lg-8">
+                        <div class="col-12 col-md-12 col-lg-12">
+                            <div class="form-item d-flex mb-0 form-add-info">
+                                <label class="form-label" style="width:200px !important">Họ</label>
+                                <div class="input-group">
+                                    <input class="form-control" id="txtHo" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-12 col-lg-12">
+                            <div class="form-item d-flex mb-0 form-add-info">
+                                <label class="form-label" style="width:200px !important">Tên đệm</label>
+                                <div class="input-group">
+                                    <input class="form-control" id="txtTenDem" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-12 col-lg-12">
+                            <div class="form-item d-flex mb-0 form-add-info">
+                                <label class="form-label" style="width:200px !important">Tên</label>
+                                <div class="input-group">
+                                    <input class="form-control" id="txtTen" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-12 col-lg-12">
+                            <div class="form-item d-flex mb-0 form-add-info">
+                                <label class="form-label" style="width:200px !important;">Tên đầy đủ</label>
+                                <div class="input-group">
+                                    <input class="form-control" id="txtHoVaTen" readonly="readonly" style=" background-color: #f5f6f8 !important"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-12 col-lg-12">
+                            <div class="form-item d-flex mb-0 form-add-info no-icon">
+                                <label class="form-label" style="width:200px !important">Chọn mức độ ngày sinh</label>
+                                <div class="input-group">
+                                    <select id="dropMucDoNgaySinh" class="select-opt">
+                                        <!--<option value="EXACT">Chính xác</option>
+                    <option value="MONTH_ONLY">Chỉ biết tháng/năm</option>
+                    <option value="YEAR_ONLY">Chỉ biết năm</option>
+                    <option value="UNKNOWN">Không biết</option>-->
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-12 col-lg-12">
+                            <div class="form-item d-flex mb-0 form-add-info">
+                                <label class="form-label" style="width:200px !important">Ngày sinh</label>
+                                <div class="input-group">
+                                    <input class="form-control" id="txtNgaySinh" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-12 col-lg-12">
+                            <div class="form-item d-flex mb-0 form-add-info">
+                                <label class="form-label" style="width:200px !important">Tháng sinh</label>
+                                <div class="input-group">
+                                    <input class="form-control" id="txtThangSinh" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-12 col-lg-12">
+                            <div class="form-item d-flex mb-0 form-add-info">
+                                <label class="form-label" style="width:200px !important">Năm sinh</label>
+                                <div class="input-group">
+                                    <input class="form-control" id="txtNamSinh" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-12 col-lg-12">
+                            <div class="form-item d-flex mb-0 form-add-info">
+                                <label class="form-label" style="width:200px !important">Giới tính</label>
+                                <div class="input-group">
+                                    <select id="dropGioiTinh" class="select-opt"></select>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="col-12 col-md-4 col-lg-4">
+                        <div class="sv-add-info-content sv-info-profile">
+                            <div class="row sv-info-base">
+                                <div class="col-12 sv-info-base-avata">
+                                    <div class="avata-img">
+                                        <img src="assets/images/avata-form.jpg" id="uploadPicture_SV">
+                                        <a href="#" class="upload-avata">
+                                            <i class="fal fa-camera color-dask-blue"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid px-20">
+                <div class="row">
+                    <div class="col-12 col-lg-6 mt-6 pl0">
+                        <div class="d-flex align-items-center w-100 justify-content-between">
+                            <span class="fw-bold text-success pull-left">Thông tin định danh</span>
+                        </div>
+                        <div class="mt-10 aps-table-select">
+                            <table class="table transcrip-table tabs-scores tblDapAn_Mau mt-10 table-bordered table-noborder"
+                                   id="tblDinhDanh">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center w-50px" scope="col">STT</th>
+                                        <th scope="col">Loại định danh </th>
+                                        <th scope="col">Số định danh </th>
+                                        <th scope="col">Ngày cấp</th>
+                                        <th scope="col">Nơi cấp</th>
+                                        <th class="text-center" scope="col">
+                                            Là thông tin chính
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6 mt-6">
+                        <div class="d-flex align-items-center w-100 justify-content-between">
+                            <span class="fw-bold text-success pull-left">Thông tin liên hệ</span>
+                        </div>
+                        <div class="mt-8 aps-table-select">
+                            <table class="table transcrip-table tabs-scores table-bordered table-noborder tblDapAn"
+                                   id="tblLienHe">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center w-50px" scope="col">STT</th>
+                                        <th scope="col">Loại liên hệ</th>
+                                        <th scope="col">Thông tin</th>
+                                        <th class="text-center" scope="col">
+                                            Là thông tin chính
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid px-20">
+                <hr />
+                <div class="d-flex align-items-center mt-4 flex-wrap mb-4">
+                    <div class="ms-auto aps-gap-10">
+                        <div class="btn btn-outline-secondary btnClose">
+                            <i class="fal fa-times"></i> Đóng
+                        </div>
+                        <div class="btn btn-primary" id="btnSave_DeXuatHoSo"><i class="fal fa-save"></i> Lưu</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="fake-modal zone-bus" id="zoneKiemTraDinhDanh" style="display: none;padding-top: 15px">
+        <div class="box-shadow register-wish pt-0 position-relative modal-aps-add">
+            <div class="d-flex justify-content-between pt-3 px-20 box-header">
+                <div class="nav-content-left">
+                    <p class="link">
+                        <a>
+                            <span class="myModalLabel">
+                                <i class="fa-regular fa-file-circle-question fw-bold"></i>
+                            </span> Kiểm tra định danh
+                        </a>
+                    </p>
+                </div>
+                <div class="nav-content-right mt">
+                    <a class="d-block text-right fs-16 mt-5 color-fff btnClose"><i class="fal fa-times"></i></a>
+                </div>
+            </div>
+
+            <div class="container-fluid px-20">
+                <div class="row">
+                    <div class="col-12 col-lg-12 mt-12 pl0">
+                        <div class="d-flex align-items-center w-100 justify-content-between">
+                            <span class="fw-bold text-success pull-left">Kiểm tra định danh</span>
+                        </div>
+                        <div class="d-flex align-items-center w-100 justify-content-between mt-8">
+                            <div class="col-12 col-lg-4 col-md-6 mb-15">
+                                <div class="form-item d-flex  form-add-info flex-grow-1">
+                                    <div class="input-group no-icon">
+                                        <select id="dropSearch_LoaiDinhDanh" class="select-opt form-select mr-10"
+                                                aria-label="Default select example"></select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="clear"></div>
+                            <div class="col-12 col-lg-4 col-md-6 mb-15">
+                                <div class="form-item d-flex  form-add-info flex-grow-1">
+                                    <div class="input-group no-icon">
+                                        <div class="input-group no-icon">
+                                            <input type="text" class="form-control" id="txtSoDinhDanh" placeholder="Nhập số định danh">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-4 col-md-6 mb-15">
+                                <button style="clear: both" class="btn-sm btn btn-success min-w-100p ml-15" id="btnSearch_KiemTra">
+                                    <i class="fal fa-search"></i> Kiểm tra
+                                </button>
+                            </div>
+                            <!-- <button class="btn-sm btn btn-outline-secondary min-w-auto px-3 ms-auto btnDelete_PhamVi"><i class="fal fa-trash me-1"></i> Xóa</button> -->
+                            
+                        </div>
+                        <div class="d-flex align-items-center w-100 justify-content-between">
+                            <span class="fw-bold text-success pull-left">Kết quả kiểm tra: <span id="lblKetQuaKiemTra"></span></span>
+                        </div>
+                        <div class="mt-10 aps-table-select">
+                            <table class="table transcrip-table tabs-scores tblDapAn_Mau mt-10 table-bordered table-noborder"
+                                   id="tblKiemTraDinhDanh">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center w-50px" scope="col">STT</th>
+                                        <th scope="col">Loại định danh</th>
+                                        <th scope="col">Số định danh</th>
+                                        <th scope="col">Ngày cấp</th>
+                                        <th scope="col">Nơi cấp</th>
+                                        <th scope="col">Họ tện</th>
+                                        <th scope="col">Ghi chú</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid px-20">
+                <hr />
+                <div class="d-flex align-items-center mt-4 flex-wrap mb-4">
+                    <div class="ms-auto aps-gap-10">
+                        <div class="btn btn-outline-secondary btnClose">
+                            <i class="fal fa-times"></i> Đóng
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    
+    <div class="fake-modal zone-bus" id="zoneChiTietHoSo" style="display: none; padding-top: 15px">
+        <div class="box-shadow register-wish pt-0 position-relative modal-aps-add">
+            <div class="d-flex justify-content-between pt-3 px-20 box-header">
+                <div class="nav-content-left">
+                    <p class="link">
+                        <a>
+                            <span class="myModalLabel">
+                                <i class="fa-regular fa-file-circle-info fw-bold"></i>
+                            </span> Chi tiết hồ sơ
+                        </a>
+                    </p>
+                </div>
+                <div class="nav-content-right mt">
+                    <a class="d-block text-right fs-16 mt-5 color-fff btnClose"><i class="fal fa-times"></i></a>
+                </div>
+            </div>
+            
+            <div class="container-fluid px-20">
+                <!-- Tabs Navigation -->
+                <ul class="nav nav-tabs mt-3" id="tabChiTietHoSo" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="tab1-tab" data-bs-toggle="tab" data-bs-target="#tab1" type="button" role="tab">
+                            Tab1 - Thông tin địa chỉ cá nhân
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tab2-tab" data-bs-toggle="tab" data-bs-target="#tab2" type="button" role="tab">
+                            Tab2
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tab3-tab" data-bs-toggle="tab" data-bs-target="#tab3" type="button" role="tab">
+                            Tab3
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tab4-tab" data-bs-toggle="tab" data-bs-target="#tab4" type="button" role="tab">
+                            Tab4
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tab5-tab" data-bs-toggle="tab" data-bs-target="#tab5" type="button" role="tab">
+                            Tab5
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tab6-tab" data-bs-toggle="tab" data-bs-target="#tab6" type="button" role="tab">
+                            Tab6
+                        </button>
+                    </li>
+                </ul>
+                
+                <!-- Tabs Content -->
+                <div class="tab-content mt-3" id="tabChiTietHoSoContent">
+                    <!-- Tab 1: Thông tin địa chỉ cá nhân -->
+                    <div class="tab-pane fade show active" id="tab1" role="tabpanel">
+                        <div class="d-flex align-items-center mt-3 flex-wrap mb-3">
+                            <div class="group-title pl0">
+                                <p class="mb-0">
+                                    <i class="fa-solid fa-map-marker-alt"></i>
+                                    <span>Thông tin địa chỉ cá nhân</span>
+                                </p>
+                            </div>
+                            <div class="ms-auto aps-gap-10">
+                                <div class="btn btn-success btn-sm" id="btnAdd_DiaChi">
+                                    <i class="fal fa-plus"></i> Thêm địa chỉ
+                                </div>
+                            </div>
+                        </div>
+                        <table class="table transcrip-table tabs-scores h-auto table-bordered table-noborder" id="tblDiaChi">
+                            <thead>
+                                <tr>
+                                    <th class="text-center" scope="col">Loại địa chỉ</th>
+                                    <th class="text-center" scope="col">Mã trạng thái</th>
+                                    <th class="text-center" scope="col">Quốc gia</th>
+                                    <th class="text-center" scope="col">Tỉnh/thành</th>
+                                    <th class="text-center" scope="col">Quận/Huyện</th>
+                                    <th class="text-center" scope="col">Phường/xã</th>
+                                    <th class="" scope="col">Địa chỉ chi tiết 1</th>
+                                    <th class="" scope="col">Địa chỉ chi tiết 2</th>
+                                    <th class="" scope="col">Địa chỉ đầy đủ</th>
+                                    <th class="text-center" scope="col">Mã bưu chính</th>
+                                    <th class="text-center" scope="col">Là địa chỉ chính</th>
+                                    <th class="text-center" scope="col">Ngày hiệu lực</th>
+                                    <th class="text-center" scope="col">Ngày hết hiệu lực</th>
+                                    <th class="text-center" scope="col">Hiệu lực</th>
+                                    <th class="text-center" scope="col">Ghi chú</th>
+                                    <th class="text-center w-50px" scope="col">Sửa</th>
+                                    <th class="text-center w-50px" scope="col">Xóa</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Tab 2 -->
+                    <div class="tab-pane fade" id="tab2" role="tabpanel">
+                        <div class="d-flex align-items-center mt-3 flex-wrap mb-3">
+                            <div class="group-title pl0">
+                                <p class="mb-0">
+                                    <i class="fa-solid fa-users"></i>
+                                    <span>Thông tin quan hệ gia đình</span>
+                                </p>
+                            </div>
+                            <div class="ms-auto aps-gap-10">
+                                <div class="btn btn-success btn-sm" id="btnAdd_GiaDinh">
+                                    <i class="fal fa-plus"></i> Thêm thành viên
+                                </div>
+                            </div>
+                        </div>
+                        <table class="table transcrip-table tabs-scores h-auto table-bordered table-noborder" id="tblGiaDinh">
+                            <thead>
+                                <tr>
+                                    <th class="text-center w-50px" scope="col">STT</th>
+                                    <th class="text-center" scope="col">Loại quan hệ</th>
+                                    <th class="text-center" scope="col">Mã trạng thái quan hệ</th>
+                                    <th class="" scope="col">Họ tên đầy đủ của thân nhân</th>
+                                    <th class="" scope="col">Họ</th>
+                                    <th class="" scope="col">Tên đệm</th>
+                                    <th class="" scope="col">Tên</th>
+                                    <th class="text-center" scope="col">Giới tính</th>
+                                    <th class="text-center" scope="col">Mức độ chính xác của ngày sinh</th>
+                                    <th class="text-center" scope="col">Ngày sinh đầy đủ</th>
+                                    <th class="text-center" scope="col">Ngày sinh</th>
+                                    <th class="text-center" scope="col">Tháng sinh</th>
+                                    <th class="text-center" scope="col">Năm sinh</th>
+                                    <th class="" scope="col">Nghề nghiệp</th>
+                                    <th class="text-center" scope="col">Ngày hiệu lực</th>
+                                    <th class="text-center" scope="col">Ngày hết hiệu lực</th>
+                                    <th class="text-center" scope="col">Hiệu lực</th>
+                                    <th class="" scope="col">Ghi chú</th>
+                                    <th class="text-center w-80px" scope="col">Chi tiết</th>
+                                    <th class="text-center w-50px" scope="col">Sửa</th>
+                                    <th class="text-center w-50px" scope="col">Xóa</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Tab 3: Thông tin tài khoản ngân hàng -->
+                    <div class="tab-pane fade" id="tab3" role="tabpanel">
+                        <div class="d-flex align-items-center mt-3 flex-wrap mb-3">
+                            <div class="group-title pl0">
+                                <p class="mb-0">
+                                    <i class="fa-solid fa-university"></i>
+                                    <span>Thông tin tài khoản ngân hàng</span>
+                                </p>
+                            </div>
+                            <div class="ms-auto aps-gap-10">
+                                <div class="btn btn-success btn-sm" id="btnAdd_TaiKhoanNH">
+                                    <i class="fal fa-plus"></i> Thêm tài khoản
+                                </div>
+                            </div>
+                        </div>
+                        <table class="table transcrip-table tabs-scores h-auto table-bordered table-noborder" id="tblTaiKhoanNH">
+                            <thead>
+                                <tr>
+                                    <th class="text-center w-50px" scope="col">STT</th>
+                                    <th class="text-center" scope="col">Loại tài khoản</th>
+                                    <th class="text-center" scope="col">Trạng thái</th>
+                                    <th class="" scope="col">Tên ngân hàng</th>
+                                    <th class="" scope="col">Mã ngân hàng</th>
+                                    <th class="" scope="col">Tên chi nhánh</th>
+                                    <th class="" scope="col">Mã chi nhánh</th>
+                                    <th class="" scope="col">Số tài khoản</th>
+                                    <th class="" scope="col">Tên chủ TK</th>
+                                    <th class="text-center" scope="col">Loại tiền tệ</th>
+                                    <th class="text-center" scope="col">TK chính</th>
+                                    <th class="text-center" scope="col">TK mặc định</th>
+                                    <th class="text-center" scope="col">Xác thực</th>
+                                    <th class="text-center" scope="col">Ngày hiệu lực</th>
+                                    <th class="text-center" scope="col">Ngày hết hiệu lực</th>
+                                    <th class="text-center" scope="col">Hiệu lực</th>
+                                    <th class="" scope="col">Ghi chú</th>
+                                    <th class="text-center w-80px" scope="col">Chi tiết</th>
+                                    <th class="text-center w-50px" scope="col">Sửa</th>
+                                    <th class="text-center w-50px" scope="col">Xóa</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Tab 4: Thông tin học vấn -->
+                    <div class="tab-pane fade" id="tab4" role="tabpanel">
+                        <div class="d-flex align-items-center mt-3 flex-wrap mb-3">
+                            <div class="group-title pl0">
+                                <p class="mb-0">
+                                    <i class="fa-solid fa-graduation-cap"></i>
+                                    <span>Thông tin học vấn</span>
+                                </p>
+                            </div>
+                            <div class="ms-auto aps-gap-10">
+                                <div class="btn btn-success btn-sm" id="btnAdd_HocVan">
+                                    <i class="fal fa-plus"></i> Thêm học vấn
+                                </div>
+                            </div>
+                        </div>
+                        <table class="table transcrip-table tabs-scores h-auto table-bordered table-noborder" id="tblHocVan">
+                            <thead>
+                                <tr>
+                                    <th class="text-center w-50px" scope="col">STT</th>
+                                    <th class="text-center" scope="col">Loại hình học vấn</th>
+                                    <th class="text-center" scope="col">Bậc đào tạo</th>
+                                    <th class="text-center" scope="col">Trạng thái học</th>
+                                    <th class="text-center" scope="col">Loại văn bằng</th>
+                                    <th class="" scope="col">Tên văn bằng</th>
+                                    <th class="" scope="col">Nhóm ngành</th>
+                                    <th class="" scope="col">Mã ngành</th>
+                                    <th class="" scope="col">Tên ngành</th>
+                                    <th class="" scope="col">Chuyên ngành</th>
+                                    <th class="" scope="col">Mã chuyên ngành</th>
+                                    <th class="" scope="col">Tên chuyên ngành</th>
+                                    <th class="" scope="col">Cơ sở đào tạo</th>
+                                    <th class="" scope="col">Mã cơ sở ĐT</th>
+                                    <th class="" scope="col">Tên cơ sở ĐT</th>
+                                    <th class="text-center" scope="col">Quốc gia</th>
+                                    <th class="text-center" scope="col">Năm nhập học</th>
+                                    <th class="text-center" scope="col">Ngày bắt đầu</th>
+                                    <th class="text-center" scope="col">Ngày tốt nghiệp</th>
+                                    <th class="text-center" scope="col">Năm tốt nghiệp</th>
+                                    <th class="text-center" scope="col">Xếp loại</th>
+                                    <th class="text-center" scope="col">GPA</th>
+                                    <th class="text-center" scope="col">Ngày cấp VB</th>
+                                    <th class="text-center" scope="col">Ngày hiệu lực</th>
+                                    <th class="text-center" scope="col">Ngày hết hiệu lực</th>
+                                    <th class="text-center" scope="col">Hiệu lực</th>
+                                    <th class="" scope="col">Ghi chú</th>
+                                    <th class="text-center w-80px" scope="col">Chi tiết</th>
+                                    <th class="text-center w-50px" scope="col">Sửa</th>
+                                    <th class="text-center w-50px" scope="col">Xóa</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Tab 5 -->
+                    <div class="tab-pane fade" id="tab5" role="tabpanel">
+                        <div class="alert alert-info mt-3">
+                            <i class="fa fa-info-circle me-2"></i>
+                            Tab 5 - Đang phát triển
+                        </div>
+                    </div>
+                    
+                    <!-- Tab 6 -->
+                    <div class="tab-pane fade" id="tab6" role="tabpanel">
+                        <div class="alert alert-info mt-3">
+                            <i class="fa fa-info-circle me-2"></i>
+                            Tab 6 - Đang phát triển
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="container-fluid px-20">
+                <hr />
+                <div class="d-flex align-items-center mt-4 flex-wrap mb-4">
+                    <div class="ms-auto aps-gap-10">
+                        <div class="btn btn-outline-secondary btnClose">
+                            <i class="fal fa-times"></i> Đóng
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Form Thêm/Sửa Địa chỉ -->
+    <div class="fake-modal zone-bus" id="zoneFormDiaChi" style="display: none; padding-top: 15px">
+        <div class="box-shadow register-wish pt-0 position-relative modal-aps-add">
+            <div class="d-flex justify-content-between pt-3 px-20 box-header">
+                <div class="nav-content-left">
+                    <p class="link">
+                        <a>
+                            <span class="myModalLabel">
+                                <i class="fa-solid fa-map-marker-alt fw-bold"></i>
+                            </span> <span id="lblTitleDiaChi">Thêm địa chỉ</span>
+                        </a>
+                    </p>
+                </div>
+                <div class="nav-content-right mt">
+                    <a class="d-block text-right fs-16 mt-5 color-fff btnCloseDiaChi"><i class="fal fa-times"></i></a>
+                </div>
+            </div>
+            
+            <div class="container-fluid px-20">
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Loại địa chỉ <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <select id="dropLoaiDiaChi" class="select-opt"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Trạng thái</label>
+                            <div class="input-group">
+                                <select id="dropTrangThaiDiaChi" class="select-opt"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Quốc gia</label>
+                            <div class="input-group">
+                                <select id="dropQuocGia" class="select-opt"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Tỉnh/Thành phố <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <select id="dropTinh" class="select-opt"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Quận/Huyện</label>
+                            <div class="input-group">
+                                <select id="dropQuan" class="select-opt"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Phường/Xã</label>
+                            <div class="input-group">
+                                <select id="dropPhuong" class="select-opt"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Địa chỉ chi tiết 1</label>
+                            <div class="input-group">
+                                <input class="form-control" id="txtDiaChiChiTiet1" placeholder="Số nhà, tên đường..." />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Địa chỉ chi tiết 2</label>
+                            <div class="input-group">
+                                <input class="form-control" id="txtDiaChiChiTiet2" placeholder="Tòa nhà, khu vực..." />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Địa chỉ đầy đủ</label>
+                            <div class="input-group">
+                                <textarea class="form-control" id="txtDiaChiDayDu" rows="2" readonly style="background-color: #f5f6f8 !important"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Mã bưu chính</label>
+                            <div class="input-group">
+                                <input class="form-control" id="txtMaBuuChinh" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Là địa chỉ chính</label>
+                            <div class="input-group">
+                                <input type="checkbox" id="chkDiaChiChinh" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Ngày hiệu lực</label>
+                            <div class="input-group">
+                                <input class="form-control" id="txtNgayHieuLuc" type="date" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Ngày hết hiệu lực</label>
+                            <div class="input-group">
+                                <input class="form-control" id="txtNgayHetHieuLuc" type="date" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Ghi chú</label>
+                            <div class="input-group">
+                                <textarea class="form-control" id="txtGhiChuDiaChi" rows="2"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="container-fluid px-20">
+                <hr />
+                <div class="d-flex align-items-center mt-4 flex-wrap mb-4">
+                    <div class="ms-auto aps-gap-10">
+                        <div class="btn btn-outline-secondary btnCloseDiaChi">
+                            <i class="fal fa-times"></i> Đóng
+                        </div>
+                        <div class="btn btn-primary" id="btnSave_DiaChi"><i class="fal fa-save"></i> Lưu</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Form Thêm/Sửa Thành viên gia đình -->
+    <div class="fake-modal zone-bus" id="zoneFormGiaDinh" style="display: none; padding-top: 15px">
+        <div class="box-shadow register-wish pt-0 position-relative modal-aps-add">
+            <div class="d-flex justify-content-between pt-3 px-20 box-header">
+                <div class="nav-content-left">
+                    <p class="link">
+                        <a>
+                            <span class="myModalLabel">
+                                <i class="fa-solid fa-users fw-bold"></i>
+                            </span> <span id="lblTitleGiaDinh">Thêm thành viên gia đình</span>
+                        </a>
+                    </p>
+                </div>
+                <div class="nav-content-right mt">
+                    <a class="d-block text-right fs-16 mt-5 color-fff btnCloseGiaDinh"><i class="fal fa-times"></i></a>
+                </div>
+            </div>
+            
+            <div class="container-fluid px-20">
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Loại quan hệ <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <select id="dropLoaiQuanHe" class="select-opt"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Trạng thái quan hệ</label>
+                            <div class="input-group">
+                                <select id="dropTrangThaiQuanHe" class="select-opt"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Họ tên đầy đủ</label>
+                            <div class="input-group">
+                                <input class="form-control" id="txtHoTenDayDuGD" readonly style="background-color: #f5f6f8 !important" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Họ <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input class="form-control" id="txtHoGD" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Tên đệm</label>
+                            <div class="input-group">
+                                <input class="form-control" id="txtTenDemGD" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Tên <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input class="form-control" id="txtTenGD" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Giới tính</label>
+                            <div class="input-group">
+                                <select id="dropGioiTinhGD" class="select-opt"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Mức độ chính xác ngày sinh</label>
+                            <div class="input-group">
+                                <select id="dropMucDoNgaySinhGD" class="select-opt"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Ngày sinh</label>
+                            <div class="input-group">
+                                <input class="form-control" id="txtNgaySinhGD" type="number" min="1" max="31" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Tháng sinh</label>
+                            <div class="input-group">
+                                <input class="form-control" id="txtThangSinhGD" type="number" min="1" max="12" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Năm sinh</label>
+                            <div class="input-group">
+                                <input class="form-control" id="txtNamSinhGD" type="number" min="1900" max="2100" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Nghề nghiệp</label>
+                            <div class="input-group">
+                                <input class="form-control" id="txtNgheNghiep" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Nơi làm việc</label>
+                            <div class="input-group">
+                                <input class="form-control" id="txtNoiLamViec" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Số điện thoại</label>
+                            <div class="input-group">
+                                <input class="form-control" id="txtSoDienThoaiGD" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Email</label>
+                            <div class="input-group">
+                                <input class="form-control" id="txtEmailGD" type="email" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Địa chỉ của thân nhân</label>
+                            <div class="input-group">
+                                <textarea class="form-control" id="txtDiaChiGD" rows="2"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Người phụ thuộc</label>
+                            <div class="input-group">
+                                <input type="checkbox" id="chkNguoiPhuThuoc" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Người liên hệ khẩn cấp</label>
+                            <div class="input-group">
+                                <input type="checkbox" id="chkLienHeKhanCap" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Quan hệ chính</label>
+                            <div class="input-group">
+                                <input type="checkbox" id="chkQuanHeChinh" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Ngày hiệu lực</label>
+                            <div class="input-group">
+                                <input class="form-control" id="txtNgayHieuLucGD" type="date" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Ngày hết hiệu lực</label>
+                            <div class="input-group">
+                                <input class="form-control" id="txtNgayHetHieuLucGD" type="date" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Ghi chú</label>
+                            <div class="input-group">
+                                <textarea class="form-control" id="txtGhiChuGD" rows="2"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="container-fluid px-20">
+                <hr />
+                <div class="d-flex align-items-center mt-4 flex-wrap mb-4">
+                    <div class="ms-auto aps-gap-10">
+                        <div class="btn btn-outline-secondary btnCloseGiaDinh">
+                            <i class="fal fa-times"></i> Đóng
+                        </div>
+                        <div class="btn btn-primary" id="btnSave_GiaDinh"><i class="fal fa-save"></i> Lưu</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Form Thêm/Sửa Tài khoản ngân hàng -->
+    <div class="fake-modal zone-bus" id="zoneFormTaiKhoanNH" style="display: none; padding-top: 15px">
+        <div class="box-shadow register-wish pt-0 position-relative modal-aps-add">
+            <div class="d-flex justify-content-between pt-3 px-20 box-header">
+                <div class="nav-content-left">
+                    <p class="link">
+                        <a>
+                            <span class="myModalLabel">
+                                <i class="fa-solid fa-university fw-bold"></i>
+                            </span> <span id="lblTitleTaiKhoanNH">Thêm tài khoản ngân hàng</span>
+                        </a>
+                    </p>
+                </div>
+                <div class="nav-content-right mt">
+                    <a class="d-block text-right fs-16 mt-5 color-fff btnCloseTaiKhoanNH"><i class="fal fa-times"></i></a>
+                </div>
+            </div>
+            
+            <div class="container-fluid px-20">
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Loại tài khoản <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <select id="dropLoaiTaiKhoan" class="select-opt"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Trạng thái tài khoản</label>
+                            <div class="input-group">
+                                <select id="dropTrangThaiTaiKhoan" class="select-opt"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Ngân hàng <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <select id="dropNganHang" class="select-opt"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Mã ngân hàng</label>
+                            <div class="input-group">
+                                <input class="form-control" id="txtMaNganHang" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Tên ngân hàng</label>
+                            <div class="input-group">
+                                <input class="form-control" id="txtTenNganHang" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Chi nhánh</label>
+                            <div class="input-group">
+                                <select id="dropChiNhanh" class="select-opt"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Mã chi nhánh</label>
+                            <div class="input-group">
+                                <input class="form-control" id="txtMaChiNhanh" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Tên chi nhánh</label>
+                            <div class="input-group">
+                                <input class="form-control" id="txtTenChiNhanh" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Số tài khoản <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input class="form-control" id="txtSoTaiKhoan" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Tên chủ tài khoản <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input class="form-control" id="txtTenChuTaiKhoan" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Loại tiền tệ</label>
+                            <div class="input-group">
+                                <select id="dropLoaiTienTe" class="select-opt"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Tài khoản chính</label>
+                            <div class="input-group">
+                                <input type="checkbox" id="chkTaiKhoanChinh" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">TK mặc định chi trả</label>
+                            <div class="input-group">
+                                <input type="checkbox" id="chkTaiKhoanMacDinh" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Đã xác thực</label>
+                            <div class="input-group">
+                                <input type="checkbox" id="chkDaXacThuc" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Ngày hiệu lực</label>
+                            <div class="input-group">
+                                <input class="form-control" id="txtNgayHieuLucTKNH" type="date" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Ngày hết hiệu lực</label>
+                            <div class="input-group">
+                                <input class="form-control" id="txtNgayHetHieuLucTKNH" type="date" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Ghi chú</label>
+                            <div class="input-group">
+                                <textarea class="form-control" id="txtGhiChuTKNH" rows="2"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="container-fluid px-20">
+                <hr />
+                <div class="d-flex align-items-center mt-4 flex-wrap mb-4">
+                    <div class="ms-auto aps-gap-10">
+                        <div class="btn btn-outline-secondary btnCloseTaiKhoanNH">
+                            <i class="fal fa-times"></i> Đóng
+                        </div>
+                        <div class="btn btn-primary" id="btnSave_TaiKhoanNH"><i class="fal fa-save"></i> Lưu</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Form Thêm/Sửa Học vấn -->
+    <div class="fake-modal zone-bus" id="zoneFormHocVan" style="display: none; padding-top: 15px">
+        <div class="box-shadow register-wish pt-0 position-relative modal-aps-add">
+            <div class="d-flex justify-content-between pt-3 px-20 box-header">
+                <div class="nav-content-left">
+                    <p class="link">
+                        <a>
+                            <span class="myModalLabel">
+                                <i class="fa-solid fa-graduation-cap fw-bold"></i>
+                            </span> <span id="lblTitleHocVan">Thêm học vấn</span>
+                        </a>
+                    </p>
+                </div>
+                <div class="nav-content-right mt">
+                    <a class="d-block text-right fs-16 mt-5 color-fff btnCloseHocVan"><i class="fal fa-times"></i></a>
+                </div>
+            </div>
+            
+            <div class="container-fluid px-20">
+                <div class="row">
+                    <!-- Thông tin chung -->
+                    <div class="col-12"><h6 class="text-success mt-2">Thông tin chung</h6></div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Loại hình học vấn</label>
+                            <div class="input-group">
+                                <select id="dropLoaiHinhHocVan" class="select-opt"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Bậc đào tạo</label>
+                            <div class="input-group">
+                                <select id="dropBacDaoTao" class="select-opt"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Trạng thái học</label>
+                            <div class="input-group">
+                                <select id="dropTrangThaiHoc" class="select-opt"></select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Thông tin văn bằng -->
+                    <div class="col-12"><h6 class="text-success mt-3">Thông tin văn bằng</h6></div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Loại văn bằng</label>
+                            <div class="input-group">
+                                <select id="dropLoaiVanBang" class="select-opt"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Tên văn bằng</label>
+                            <div class="input-group">
+                                <input class="form-control" id="txtTenVanBang" />
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Thông tin ngành học -->
+                    <div class="col-12"><h6 class="text-success mt-3">Thông tin ngành học</h6></div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Nhóm ngành</label>
+                            <div class="input-group">
+                                <select id="dropNhomNganh" class="select-opt"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Ngành</label>
+                            <div class="input-group">
+                                <select id="dropNganh" class="select-opt"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Mã ngành</label>
+                            <div class="input-group">
+                                <input class="form-control" id="txtMaNganh" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Tên ngành</label>
+                            <div class="input-group">
+                                <input class="form-control" id="txtTenNganh" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Chuyên ngành</label>
+                            <div class="input-group">
+                                <select id="dropChuyenNganh" class="select-opt"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Mã chuyên ngành</label>
+                            <div class="input-group">
+                                <input class="form-control" id="txtMaChuyenNganh" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Tên chuyên ngành</label>
+                            <div class="input-group">
+                                <input class="form-control" id="txtTenChuyenNganh" />
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Cơ sở đào tạo -->
+                    <div class="col-12"><h6 class="text-success mt-3">Cơ sở đào tạo</h6></div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Cơ sở đào tạo</label>
+                            <div class="input-group">
+                                <select id="dropCoSoDaoTao" class="select-opt"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Mã cơ sở ĐT</label>
+                            <div class="input-group">
+                                <input class="form-control" id="txtMaCoSoDaoTao" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Tên cơ sở ĐT</label>
+                            <div class="input-group">
+                                <input class="form-control" id="txtTenCoSoDaoTao" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Quốc gia</label>
+                            <div class="input-group">
+                                <select id="dropQuocGiaHV" class="select-opt"></select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Thời gian học tập -->
+                    <div class="col-12"><h6 class="text-success mt-3">Thời gian học tập</h6></div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Năm nhập học</label>
+                            <div class="input-group">
+                                <input class="form-control" id="txtNamNhapHoc" type="number" min="1900" max="2100" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Ngày bắt đầu học</label>
+                            <div class="input-group">
+                                <input class="form-control" id="txtNgayBatDauHoc" type="date" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Ngày tốt nghiệp</label>
+                            <div class="input-group">
+                                <input class="form-control" id="txtNgayTotNghiep" type="date" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Năm tốt nghiệp</label>
+                            <div class="input-group">
+                                <input class="form-control" id="txtNamTotNghiep" type="number" min="1900" max="2100" />
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Kết quả học tập -->
+                    <div class="col-12"><h6 class="text-success mt-3">Kết quả học tập</h6></div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Xếp loại tốt nghiệp</label>
+                            <div class="input-group">
+                                <select id="dropXepLoai" class="select-opt"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">GPA (Điểm TB)</label>
+                            <div class="input-group">
+                                <input class="form-control" id="txtGPA" type="number" step="0.01" min="0" max="10" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Ngày cấp văn bằng</label>
+                            <div class="input-group">
+                                <input class="form-control" id="txtNgayCapVanBang" type="date" />
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Thông tin khác -->
+                    <div class="col-12"><h6 class="text-success mt-3">Thông tin khác</h6></div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Ngày hiệu lực</label>
+                            <div class="input-group">
+                                <input class="form-control" id="txtNgayHieuLucHV" type="date" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Ngày hết hiệu lực</label>
+                            <div class="input-group">
+                                <input class="form-control" id="txtNgayHetHieuLucHV" type="date" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:200px !important">Ghi chú</label>
+                            <div class="input-group">
+                                <textarea class="form-control" id="txtGhiChuHV" rows="2"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="container-fluid px-20">
+                <hr />
+                <div class="d-flex align-items-center mt-4 flex-wrap mb-4">
+                    <div class="ms-auto aps-gap-10">
+                        <div class="btn btn-outline-secondary btnCloseHocVan">
+                            <i class="fal fa-times"></i> Đóng
+                        </div>
+                        <div class="btn btn-primary" id="btnSave_HocVan"><i class="fal fa-save"></i> Lưu</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="modules/kehoach/script/dexuathoso.js?v=1.0.0.0"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['DeXuatHoSo'] = new DeXuatHoSo();
+    $(document).ready(function () {
+        main_doc.DeXuatHoSo.init();
+    });
+</script>

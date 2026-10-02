@@ -1,0 +1,136 @@
+﻿<section class="content">
+    <div class="row">
+        <div class="box box-solid">
+            <div class="box-header with-border">
+                <h3 class="box-title"><i class="fa fa-hdd-o"></i> Danh sách phí theo loại phòng</h3>
+                <div class="pull-right">
+                    <a class="btn btn-primary btnAdd" id="btnAddnew_PTLP"><i class="fa fa-plus"></i> Thêm</a>
+                    <a id="btnRefresh_PTLP" class="btn btn-default"><i class="fa fa-refresh"></i> Tải lại</a>
+                </div>
+            </div>
+            <div class="box-body">
+                <div class="scroll-table-x">
+                    <table id="tblPTLP" class="table table-hover table-bordered">
+                        <thead>
+                            <tr>
+                                <th class="td-fixed td-center">Stt</th>
+                                <th class="td-left">Khoản thu</th>
+                                <th class="td-left">Loại phòng</th>
+                                <th class="td-right">Đơn giá</th>
+                                <th class="td-left">Đơn vị tính</th>
+                                <th class="td-center">Ngày áp dụng</th>
+                                <th class="td-fixed td-center">Sửa</th>
+                                <th class="td-fixed td-center">Xóa</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- load from js -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="myModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title"><span class="myModalLabel"><i class="fa fa-plus"></i> Thêm mới - </span> Phí theo phòng</h4>
+                </div>
+                <div class="modal-body" style="">
+                    <!--row 1-->
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <label style="font-weight: normal"><span class="lang" key="">Khoản thu</span></label>
+                        </div>
+                        <div class="col-sm-9">
+                            <select id="dropPTLP_KhoanThu" class="select-opt"></select>
+                        </div>
+                    </div>
+                    <!--row 2-->
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <label style="font-weight: normal"><span class="lang" key="">Ngày áp dụng</span></label>
+                        </div>
+                        <div class="col-sm-9">
+                            <input type="text" id="txtPTLP_NgayApDung" class="form-control input-datepicker" />
+                        </div>
+                    </div>
+                    <!--row 3-->
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <label style="font-weight: normal"><span class="lang" key="">Loại phòng</span></label>
+                        </div>
+                        <div class="col-sm-9">
+                            <select id="dropPTLP_LoaiPhong" class="select-opt"></select>
+                        </div>
+                    </div>
+                    <!--row 4-->
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <label style="font-weight: normal"><span class="lang" key="">Đơn giá</span></label>
+                        </div>
+                        <div class="col-sm-9">
+                            <input type="text" id="txtPTLP_DonGia" class="form-control" />
+                        </div>
+                    </div>
+                    <!--row 4-->
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <label style="font-weight: normal"><span class="lang" key="">Đơn vị tính</span></label>
+                        </div>
+                        <div class="col-sm-9">
+                            <select id="dropPTLP_DonViTinh" class="select-opt"></select>
+                        </div>
+                    </div>
+                </div>
+                <div id="notify"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times-circle"></i><span class="lang" key=""> Đóng</span></button>
+                    <a class="submit btn btn-primary" id="btnSave_PTLP"><i class="fa fa-save"></i><span class="lang" key=""> Lưu</span></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- page script -->
+<script src="modules/taichinh/script/phitheoloaiphong.js?v=1.0.0.0"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['PhiTheoLoaiPhong'] = new PhiTheoLoaiPhong();
+    $(document).ready(function () {
+        main_doc.PhiTheoLoaiPhong.init();
+    });
+</script>
+
+
+<!-- FIX 2026-08-26: Select2 trong modal — re-init voi dropdownParent = modal
+     de popup nam trong modal, khong lech / che noi dung. Universal handler,
+     an toan khi modal khong co select. -->
+<script>
+(function () {
+    if (typeof jQuery === 'undefined') return;
+    var $ = jQuery;
+    $(document).off('shown.bs.modal.__s2fix').on('shown.bs.modal.__s2fix', '.modal', function () {
+        var $modal = $(this);
+        $modal.find('select.select-opt, select[id^="drop"]').each(function () {
+            var $sel = $(this);
+            try {
+                if ($sel.hasClass('select2-hidden-accessible')) $sel.select2('destroy');
+            } catch (e) {}
+            $sel.select2({ dropdownParent: $modal, width: '100%' });
+        });
+    });
+})();
+</script>
+<style>
+    .modal .select2-container--open,
+    .modal .select2-container--open .select2-dropdown {
+        z-index: 100060 !important;
+    }
+    .modal .select2-results__options {
+        max-height: 220px !important;
+        overflow-y: auto !important;
+    }
+</style>

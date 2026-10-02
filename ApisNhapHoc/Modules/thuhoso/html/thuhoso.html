@@ -1,0 +1,431 @@
+﻿<style>
+    /**/
+
+    .title-sms {
+        font-weight: normal;
+        text-decoration: underline;
+        font-style: italic;
+        margin-bottom: 7px;
+    }
+
+    .nav-tabs>.pull-right>.btn-default {
+        background: #f1f1f1 !important;
+        padding-top: 3px !important;
+        padding-bottom: 3px !important;
+    }
+
+    .ul-li-btn:hover {
+        background: #eae9e9 !important;
+    }
+
+    .zone-print {
+        background: #fff;
+    }
+</style>
+<!-- Main content -->
+<section class="content aps-nhapHoc">
+    <div class="row aps-thuhoso">
+        <div class="col-sm-3 aps-box-l box-shadow pd0 aps-thuhoso-l radius-12">
+            <div class="box box-solid pd0">
+                <!--Box search-->
+                <div class="search box-search pd15">
+                    <select id="dropKeHoachNhapHoc_ThuHoSo" class="select-opt">
+                        <!-- gen fomr thuhoso.js -->
+                    </select>
+                    <div class="radio-box border-0 mt-10 pl0 pb0 mb-0">
+                        <div class="item-radio"><span class="color-888">Điều kiện: </span></div>
+                        <div class="item-radio mr-10"><input type="radio" class="rdThuHoSo" name="rdThuHoSo" value="1" checked="checked"> Đã nhập</div>
+                        <div class="item-radio mr-10"><input type="radio" class="rdThuHoSo ml-15" name="rdThuHoSo" value="0"> Chưa nhập</div>
+                        <div class="item-radio mr-10"><input type="radio" class="rdThuHoSo ml-15" name="rdThuHoSo" value="-1"> Toàn bộ</div>
+                    </div>
+                    <div class="search-result w-100">
+                        <div class="clear"></div>
+                        <div class="col-sm-12 item-search dropdown-100 mt-10 mb-5">
+                            <div class="dropdown w-100 mr-0" id="zonebtnTHS"></div>
+                        </div>
+                        <div class="col-sm-12 item-search dropdown-100 mb-5">
+                            <div class="dropdown w-100 mr-0" id="zonebtnTHS_Import"></div>
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                    <div class="input-group">
+                        <input id="txtKeyword_ThuHoSo" class="form-control" type="text"
+                            placeholder="Nhập từ khóa tìm kiếm: tên, số báo danh..." style="border-right:none">
+                        <span class="input-group-addon" style="padding:5px 10px 5px 0px; border-left: none">
+                            <a id="btnDel_Keyword_ThuHS" class="color-default opacity-5 poiter"
+                                title="Xóa nội dung tìm kiếm"><i class="fa fa-times"></i></a>
+                        </span>
+                        <span class="input-group-addon">
+                            <a href="#" id="btnSearch_NguoiHoc_ThuHS" class="btn-circle"><i
+                                    class="fa fa-search"></i></a>
+                        </span>
+                    </div>
+                </div>
+                <!-- box search-result -->
+                <div class="search-result pt-20 pb-20">
+                    <table id="tblNguoiHoc_ThuHoSo" class="table table-hover aps-table-phanlop">
+                        <tbody>
+                            <!--<tr class="tr-pointer detail-hs">
+                                    <td class="td-left td-img"><img src="" class="table-img" /></td>
+                                    <td class="td-middle">
+                                        <span class="">Chu Mạnh Quân</span><br />
+                                        <span class="td-font">124 900 290</span>
+                                    </td>
+                                    <td class="td-middle"><span class="detail_tc"><a href="#">Chọn</a></span></td>
+                                </tr>-->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-9 aps-box-r pl20 aps-thuhoso-r">
+            <!-- /.Hồ sơ -->
+            <div class="box box-solid pd0 aps-hoso">
+                <div class="box-header with-border bg-header">
+                    <h3 class="box-title color-blue"><i class="fa-light fa-user-graduate"></i> Hồ sơ</h3>
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body pd20">
+                    <div class="row profile-sv pd0">
+                        <div class="col-sm-7">
+                            <span class="bold fz20"><a>#1</a></span>
+                            <table class="table table-no-bordered table-form-add mb-5 mt-10">
+                                <tbody>
+                                    <tr>
+                                        <td class="td-left  aps-form-lable col-lg-3">Họ tên</td>
+                                        <td class="td-left text-blue">: <span id="lblHoTen_ThuHoSo"
+                                                class="bold ml-5"></span></td>
+                                        <td class="td-right aps-form-lable col-lg-2  pr10"> Ngày sinh</td>
+                                        <td class="td-left">: <span class="ml-5" id="lblNgaySinh_ThuHoSo">_/_/_</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="td-left  aps-form-lable col-lg-3">SBD</td>
+                                        <td class="td-left">: <span class="ml-5" id="lblSoBaoDanh_ThuHoSo"></span></td>
+                                        <td class="td-right  aps-form-lable  col-lg-2  pr10"> Điện thoại</td>
+                                        <td class="td-left">: <span class="ml-5" id="lblSoDienThoai_ThuHoSo"></span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="td-left  aps-form-lable col-lg-3">Quê quán</td>
+                                        <td class="td-left" colspan="3">: <span class="ml-5"
+                                                id="lblQueQuan_ThuHoSo"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="td-left  aps-form-lable col-lg-3">CMND/CCCD</td>
+                                        <td class="td-left" colspan="3">: <span class="ml-5" id="lblCMT"></span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-sm-5">
+                            <blockquote>
+                                <span class="bold"><a>#2</a></span>
+                                <table class="table table-no-bordered table-form-add mb-5 mt-10">
+                                    <tbody>
+                                        <tr>
+                                            <td class="td-left  aps-form-lable col-lg-4">Khu vực</td>
+                                            <td class="td-left">: <span class="ml-5" id="lblKhuVuc_ThuHoSo"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="td-left  aps-form-lable col-lg-4">Đối tượng</td>
+                                            <td class="td-left">: <span class="ml-5" id="lblDoiTuong_ThuHoSo"></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="td-left  aps-form-lable col-lg-4">% Miễn giảm</td>
+                                            <td class="td-left">: <span class="ml-5"
+                                                    id="lblPhanTramMienGiam_ThuHoSo"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="td-left  aps-form-lable col-lg-4">Ngành học</td>
+                                            <td class="td-left">: <span class="ml-5" id="lblNganhHoc_ThuHoSo"></span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </blockquote>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.box-body -->
+            </div>
+
+            <!-- /.Tài chính -->
+            <div class="box box-solid mt-20 pd0 aps-taichinh">
+                <div class="box-header with-border bg-header">
+                    <h3 class="box-title color-red" style="float: left"><i class="fa fa-money color-red"></i> Tài chính
+                    </h3>
+                    <!--<div class="col-sm-3 item-search">
+                            <select id="dropHinhThucThu" class="select-opt"></select>
+                        </div>
+                        <div class="col-sm-3 item-search">
+                            <input id="txtNgayThu" class="form-control input-datepicker" placeholder="Ngày thu" />
+                        </div>-->
+                    <div class="pull-right" id="zoneSign_DaThuTien"></div>
+                </div>
+
+                <!-- zoneInput_ThuTien -->
+                <div class="box-body pd20" id="zoneInput_ThuTien">
+                    <div class="zoneList-PhieuThu mt-10">
+                        <div class="pull-left">
+                            <span class="ml-5">Số phiếu đã thu:</span> <span id="listPhieuThu_ThuTien"></span>
+                        </div>
+                        <div class="pull-right">
+                            <span class="ml-5">Số phiếu đã hủy:</span> <span id="listPhieuThu_Huy_ThuTien"></span>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="aps-table-select">
+                        <table id="tblKhoanNhapHoc_ThuTien" class="table table-hover table-bordered mt-10 mb-5">
+                            <thead>
+                                <tr>
+                                    <th class="td-center td-fixed" rowspan="2">#</th>
+                                    <th class="td-left" rowspan="2">Tên phí</th>
+                                    <th class="td-center" colspan="4">Số tiền</th>
+                                    <th class="td-center" rowspan="2">Đơn vị</th>
+                                </tr>
+                                <tr>
+                                    <th class="td-right">Định mức</th>
+                                    <th class="td-right">Thực thu</th>
+                                    <th class="td-right">Đã thu</th>
+                                    <th class="td-right">Cần nộp</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!--Load from taichinh.js-->
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th class="td-right italic" colspan="2">Tổng</th>
+                                    <th class="td-right italic"><span id="lblTongDinhMuc_Chung_ThuTien"></span></th>
+                                    <th class="td-right italic"><span id="lblTongDinhMuc_ThuTien"></span></th>
+                                    <th class="td-right italic"><span id="lblTongDaThuThu_ThuTien"></span></th>
+                                    <th class="td-right italic"><span id="lblTongCanThu_ThuTien"></span></th>
+                                    <th class="td-center italic">vnđ</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+                <div class="box-header with-border" style="display: none">
+                    <h3 class="box-title" style="float: left"><i class="fa fa-money"></i> Tài chính</h3>
+                    <div class="col-sm-3 item-search">
+                        <select id="dropHinhThucThu" class="select-opt"></select>
+                    </div>
+                    <div class="col-sm-3 item-search">
+                        <input id="txtNgayThu" class="form-control input-datepicker" placeholder="Ngày thu" />
+                    </div>
+                    <!--<div class="pull-right" id="zoneSign_DaThuTien"> </div>-->
+                </div>
+                <!-- zoneEdit_PhieuPhu -->
+                <div class="box-body zone-bus" id="zoneEdit_PhieuDaThu" style="display: none">
+                    <div class="form-container">
+                        <div class="pull-left">
+                            <h3 class="color-active fc-title"><i class="fa fa-pencil"></i> Sửa số phiếu thu: <span
+                                    class="color-warning" id="lblEdit_PhieuDaThu"></span></h3>
+                        </div>
+                        <div class="pull-right">
+                            <a class="btn btn-default btnClose" href="#"><i class="fa fa-times"></i></a>
+                        </div>
+                        <div class="clear"></div>
+                        <div class="col-sm-12">
+                            <table id="tblEdit_PhieuDaThu" class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th class="td-center td-fixed">#</th>
+                                        <th class="td-left">Tên phí</th>
+                                        <th class="td-right">Số tiền đã thu</th>
+                                        <th class="td-right">Số tiền điều chỉnh</th>
+                                        <th class="td-right">Đơn vị</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- /.from ruttien.js -->
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th class="td-center td-fixed"></th>
+                                        <th class="td-center">Hình thức</th>
+                                        <th class="td-right"><select id="dropHinhThucThu_Edit"
+                                                class="select-opt"></select></th>
+                                        <th class="td-right">Ngày tạo</th>
+                                        <th class="td-right"><input id="txtNgayTao"
+                                                class="form-control input-datepicker" /></th>
+                                    </tr>
+                                    <tr>
+                                        <th class="td-center" colspan="2">Tổng</th>
+                                        <th class="td-right"><span id="lblTongDaThu_ThuTien"></span></th>
+                                        <th class="td-right"><span id="lblTongSua_ThuTien"></span></th>
+                                        <th class="td-right">vnđ</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- zoneEdit_PhieuPhu -->
+                <div class="box-body zone-bus" id="zoneEdit_PhieuXuatHoaDon" style="display: none">
+                    <div class="form-container">
+                        <div class="pull-left">
+                            <h3 class="color-active fc-title"><i class="fa fa-pencil"></i> Chọn khoản cần xuất hóa đơn
+                            </h3>
+                        </div>
+                        <div class="pull-right">
+                            <a class="btn btn-default btnClose" href="#"><i class="fa fa-times"></i></a>
+                        </div>
+                        <div class="clear"></div>
+                        <div class="col-sm-12">
+                            <div class="pull-right" style="padding-bottom: 5px">
+                                <a class="btn btn-primary" id="btnAddnewHoaDon" href="#"><i
+                                        class="fa fa-paper-plane"></i> Xuất</a>
+                            </div>
+                            <div class="clear"></div>
+                            <table id="tblEdit_PhieuXuatHoaDon" class="table table-hover table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th class="td-center td-fixed">#</th>
+                                        <th class="td-center">Tên phí</th>
+                                        <th class="td-center">Nội dung</th>
+                                        <th class="td-center" style="width: 50px">Số lượng</th>
+                                        <th class="td-center" style="width: 150px">Số tiền</th>
+                                        <th class="td-center td-fixed"><input type="checkbox"
+                                                id="chkSelectAll_PhieuXuatHoaDon"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- /.from ruttien.js -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- /.Túi hồ sơ -->
+            <div class="box box-solid mt-20 pd0 aps-tuiHoSo">
+                <div class="box-header with-border bg-header">
+                    <h3 class="box-title color-green"><i class="fa-light fa-address-book color-green"></i> Túi hồ sơ
+                    </h3>
+                </div>
+                <!-- /.box-danh sach Tui Ho So -->
+                <div class="box-body zone-bus-hoso pd20" id="zone_list_hoso" style="display: none">
+                    <table id="tblThuHoSo" class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th class="td-center td-fixed">#</th>
+                                <th class="td-left">Loại hồ sơ</th>
+                                <th class="td-center">Số lượng</th>
+                                <th class="td-center">Lịch sử</th>
+                                <th class="td-center">#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="td-center td-fixed">1</td>
+                                <td class="td-left">Giấy khai sinh</td>
+                                <td class="td-center">1</td>
+                                <td class="td-center"><a href="#"><i class="fa fa-eye"></i></a></td>
+                                <td class="td-center"><a href="#"><i class="fa fa-trash"></i></a></td>
+                            </tr>
+                            <tr>
+                                <td class="td-center td-fixed">2</td>
+                                <td class="td-left">Ảnh 3x4</td>
+                                <td class="td-center">4</td>
+                                <td class="td-center"><a href="#"><i class="fa fa-eye"></i></a></td>
+                                <td class="td-center"><a href="#"><i class="fa fa-trash"></i></a></td>
+                            </tr>
+                            <!-- load from thuhoso.js -->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.box-Nhap Tui Ho So -->
+                <div class="box-body zone-bus-hoso pd20" id="zone_input_hoso">
+                    <div class="pull-left d-none">
+                        <h3 class="fc-title"><i class="fa fa-pencil"></i> Thu hồ sơ</h3>
+                    </div>
+                    <!--<div class="pull-right">
+                            <a class="btn btn-default" href="#" id="btnClose_ThuHoSo"><i class="fa fa-times"></i></a>
+                            </div>-->
+                    <div class="clear"></div>
+                    <div class="aps-table-select">
+                        <table class="table table-hover table-bordered" id="tblFormInput_HoSo">
+                            <thead>
+                                <tr>
+                                    <!--<th class="td-center td-fixed">#</th>-->
+                                    <th class="td-left">Nhóm hồ sơ</th>
+                                    <th class="td-left">Loại hồ sơ</th>
+                                    <th class="td-right">Số lượng quy định</th>
+                                    <th class="td-right">Số lượng thực thu</th>
+                                    <th class="td-right">Files</th>
+                                    <th class="td-center td-fixed">Xóa</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- gen fomr thuhoso.js -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /.Hồ sơ -->
+    <div class="row">
+        <div class="pull-right">
+            <div class="btn-save btn-save-fixed zone-action-hoso" id="btnAdd_ThuHoSo" style="display: none">
+                <a href="#" style="color:white">
+                    <i class="fa fa-save"></i> <span>Thu hs</span>
+                </a>
+            </div>
+        </div>
+        <div class="pull-right">
+            <div class="btn-save btn-save-fixed zone-action-hoso" id="btnSave_ThuHoSo">
+                <a href="#" style="color:white">
+                    <i class="fa fa-save"></i> <span class="ml-5">Lưu</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Thêm mới Chi tiết-->
+<div class="modal fade" id="myModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+                <h4 class="modal-title"><span class="myModalLabel"><i class="fa fa-plus"></i> Thêm mới - </span> <span
+                        class="lang" key="">Chi tiết</span> </h4>
+            </div>
+            <div class="modal-body" id="modal_body">
+                <table id="tblQuanSoLop" class="table table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <th class="td-fixed">Stt</th>
+                            <th class="td-center"><span class="lang" key="">Loại dữ liệu</span></th>
+                            <th class="td-center"><span class="lang" key="">Kết quả</span></th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div id="notify"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times-circle-o"></i>
+                    <span class="lang" key="">Đóng</span></button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- page script -->
+<script src="/modules/thuhoso/scripts/thuhoso.js?v=1.0.2.7"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['ThuHoSo'] = new ThuHoSo();
+    $(document).ready(function () {
+        main_doc.ThuHoSo.init();
+    });
+</script>

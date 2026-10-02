@@ -1,0 +1,141 @@
+﻿
+<section class="content">
+    <div class="row ">
+        <!-- /.left-content -->
+        <div class="zone-bus" id="zonebatdau">
+            <div class="box box-solid">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><i class="fa fa-window-restore"></i> Tìm kiếm</h3>
+                </div>
+                <div class="box-body">
+                    <!-- Bộ tìm kiếm -->
+                    <div class="col-sm-3 item-search">
+                        <select id="dropSearch_DonViThanhVien_DanhSachPhep" class="select-opt">
+                            <!-- Load from js -->
+                        </select>
+                    </div>
+                    <div class="col-sm-3 item-search">
+                        <select id="dropSearch_ThanhVien_DanhSachPhep" class="select-opt"></select>
+                    </div>
+                    <div class="col-sm-3 item-search">
+                        <select id="dropSearch_NamApDung_DanhSachPhep" class="select-opt"></select>
+                    </div>
+                    <div class="clear"></div>
+                    <div class="col-sm-3 item-search">
+                        <input id="txtSearch_DanhSachPhep_TuKhoa" class="form-control" placeholder="Nhập từ khóa tìm kiếm" />
+                    </div>
+                    <div class="col-sm-3 item-search">
+                        <a class="btn btn-default btnSearch"><i class="fa fa-search"></i> <span class="lang" key="">Tìm kiếm</span></a>
+                    </div>
+                </div>
+            </div>
+            <div class="box box-solid">
+                <div class="box-header with-border">
+                    <h3 class="box-title">
+                        <i class="fa fa-building"></i> Danh sách phép
+                        <span class="pull-right badge bg-light-blue">
+                            <span id="lblHSLL_DanhSachPhep_Tong"></span>
+                        </span>
+                    </h3>
+                    <div class="box-tools pull-right">
+                        <a class="btn btn-primary" id="btnKeThua" href="#"><i class="fa fa-plus"></i> Kế thừa</a>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div>
+                        <table id="tblDanhSachPhep" class="table table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="td-fixed td-center">Stt</th>
+                                    <th class="td-center">Đơn vị</th>
+                                    <th class="td-center">Năm</th>
+                                    <th class="td-center">Mã</th>
+                                    <th class="td-center">Họ tên</th>
+                                    <th class="td-center">Ngày sinh</th>
+                                    <th class="td-center">Số ngày nghỉ quy định</th>
+                                    <th class="td-center">Số ngày nghỉ thâm niên</th>
+                                    <th class="td-center">Số ngày đã nghỉ</th>
+                                    <th class="td-center">Số ngày phép còn lại</th>
+                                    <th class="td-center td-fixed">
+                                        <input type="checkbox" id="chkSelectAll_DanhSachPhep">
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- load from js -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="myModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title"><span class="lang" key="">Kế thừa</span></h4>
+                </div>
+                <div class="modal-body" style="">
+                    <div style="width: 100%">
+                        <div style="width: 20%; float: left">
+                            <label style="font-weight: normal"><span class="lang" key="">Năm kế thừa</span></label>
+                        </div>
+                        <div style="width: 80%; float: left">
+                            <select id="dropNamKeThua" class="select-opt">
+                                <option value="">--Chọn loại vi phạm--</option>
+                            </select>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+                <div id="notify"></div>
+                <div class="modal-footer">
+                    <a class="submit btn btn-primary" id="btnSave_KeThua"><i class="fa fa-save"></i><span class="lang" key=""> Lưu kế thừa</span></a>
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times-circle"></i><span class="lang" key=""> Đóng</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script src="modules/chamcongphep/script/danhsachphep.js?v=1.0.0.0"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['DanhSachPhep'] = new DanhSachPhep();
+    $(document).ready(function () {
+        main_doc.DanhSachPhep.init();
+    });
+</script>
+
+
+<!-- FIX 2026-08-26: Select2 trong modal — re-init voi dropdownParent = modal
+     de popup nam trong modal, khong lech / che noi dung. Universal handler,
+     an toan khi modal khong co select. -->
+<script>
+(function () {
+    if (typeof jQuery === 'undefined') return;
+    var $ = jQuery;
+    $(document).off('shown.bs.modal.__s2fix').on('shown.bs.modal.__s2fix', '.modal', function () {
+        var $modal = $(this);
+        $modal.find('select.select-opt, select[id^="drop"]').each(function () {
+            var $sel = $(this);
+            try {
+                if ($sel.hasClass('select2-hidden-accessible')) $sel.select2('destroy');
+            } catch (e) {}
+            $sel.select2({ dropdownParent: $modal, width: '100%' });
+        });
+    });
+})();
+</script>
+<style>
+    .modal .select2-container--open,
+    .modal .select2-container--open .select2-dropdown {
+        z-index: 100060 !important;
+    }
+    .modal .select2-results__options {
+        max-height: 220px !important;
+        overflow-y: auto !important;
+    }
+</style>

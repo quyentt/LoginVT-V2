@@ -1,0 +1,211 @@
+<style>
+    /* ---- Layout cho filter ---- */
+    .tkdc-filter .item-search { padding-bottom: 8px; }
+    .tkdc-filter .item-search .control-label-mini {
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+        color: #555;
+        margin-bottom: 3px;
+    }
+    .tkdc-filter .select-opt { width: 100% !important; }
+    .tkdc-filter .box-footer-actions {
+        text-align: right;
+        padding-top: 6px;
+        border-top: 1px dashed #e1e1e1;
+        margin-top: 6px;
+    }
+    .tkdc-filter .box-footer-actions .btn { margin-left: 5px; }
+
+    /* ---- Bảng kết quả: scroll ngang + dọc, cột STT đứng yên ---- */
+    .tkdc-table-wrap {
+        position: relative;
+        width: 100%;
+        max-height: 520px;
+        overflow: auto;
+        border: 1px solid #e1e1e1;
+        border-radius: 3px;
+        background: #fff;
+    }
+    .tkdc-table-wrap table {
+        margin-bottom: 0;
+        min-width: 1100px;
+        white-space: nowrap;
+    }
+    .tkdc-table-wrap thead th {
+        position: sticky;
+        top: 0;
+        background: #f4f6f9;
+        color: #333;
+        border-bottom: 2px solid #d2d6de !important;
+        z-index: 2;
+        text-align: center;
+        vertical-align: middle;
+        font-weight: 600;
+    }
+    .tkdc-table-wrap td.td-stt,
+    .tkdc-table-wrap th.td-stt {
+        position: sticky;
+        left: 0;
+        background: #fff;
+        text-align: center;
+        width: 50px;
+        z-index: 1;
+        box-shadow: 1px 0 0 #e1e1e1;
+    }
+    .tkdc-table-wrap thead th.td-stt { z-index: 3; background: #f4f6f9; }
+    .tkdc-table-wrap tbody tr:hover td.td-stt { background: #f5f5f5; }
+    .tkdc-empty-row td {
+        text-align: center;
+        color: #888;
+        font-style: italic;
+        padding: 18px !important;
+    }
+
+    /* tránh select2 vỡ trong box */
+    .select2-container { z-index: 5; }
+</style>
+
+<div>
+    <section class="content MainPage" id="MainContent">
+
+        <!-- ============== BOX 1: BỘ LỌC ĐÀO TẠO ============== -->
+        <div class="row row-align">
+            <div class="col-lg-12">
+                <div class="box box-primary tkdc-filter">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">
+                            <i class="fa fa-filter"></i>
+                            <span class="lang" key="">Bộ lọc đào tạo</span>
+                        </h3>
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                                <i class="fa fa-minus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-sm-3 item-search">
+                                <label class="control-label-mini">Học kỳ</label>
+                                <select id="dropSearch_ThoiGian" class="select-opt" multiple="multiple">
+                                    <option value="">-- Chọn thời gian (học kỳ) --</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <label class="control-label-mini">Phạm vi thống kê</label>
+                                <select id="dropSearch_PhamVi" class="select-opt">
+                                    <option value="1">1. Trong kỳ này</option>
+                                    <option value="0">2. Đến kỳ này (lũy kế)</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <label class="control-label-mini">Hệ đào tạo</label>
+                                <select id="dropSearch_HeDaoTao" class="select-opt" multiple="multiple">
+                                    <option value="">-- Chọn hệ đào tạo --</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <label class="control-label-mini">Khóa đào tạo</label>
+                                <select id="dropSearch_KhoaDaoTao" class="select-opt" multiple="multiple">
+                                    <option value="">-- Chọn khóa đào tạo --</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3 item-search">
+                                <label class="control-label-mini">Khoa quản lý</label>
+                                <select id="dropSearch_KhoaQuanLy" class="select-opt" multiple="multiple">
+                                    <option value="">-- Chọn khoa quản lý --</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <label class="control-label-mini">Chương trình đào tạo</label>
+                                <select id="dropSearch_ChuongTrinh" class="select-opt" multiple="multiple">
+                                    <option value="">-- Chọn chương trình đào tạo --</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <label class="control-label-mini">Lớp quản lý</label>
+                                <select id="dropSearch_LopQuanLy" class="select-opt" multiple="multiple">
+                                    <option value="">-- Chọn lớp quản lý --</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <label class="control-label-mini">Ngành / chuyên ngành</label>
+                                <select id="dropSearch_NganhHoc" class="select-opt" multiple="multiple">
+                                    <option value="">-- Chọn ngành học --</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12 item-search">
+                                <label class="control-label-mini">Trạng thái người học</label>
+                                <select id="dropSearch_TrangThaiSV" class="select-opt" multiple="multiple">
+                                    <option value="">-- Chọn trạng thái người học --</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="box-footer-actions">
+                            <a id="btnResetFilter" class="btn btn-default">
+                                <i class="fa fa-undo"></i> <span class="lang" key="">Đặt lại</span>
+                            </a>
+                            <a id="btnThongKe" class="btn btn-primary">
+                                <i class="fa fa-calculator"></i> <span class="lang" key="">Thống kê</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============== BOX 2: KẾT QUẢ ============== -->
+        <div class="row row-align">
+            <div class="col-sm-12">
+                <div class="box box-solid">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">
+                            <i class="fa fa-list"></i>
+                            <span class="lang" key="">Kết quả thống kê điểm chữ</span>
+                        </h3>
+                        <div class="box-tools pull-right">
+                            <span class="badge bg-light-blue" title="Tổng số dòng">
+                                <i class="fa fa-database"></i> <span id="lblTongDong">0</span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="box-body">
+                        <div class="tkdc-table-wrap" id="wrapKetQuaThongKe">
+                            <table id="tblKetQuaThongKe" class="table table-hover table-bordered table-striped">
+                                <thead>
+                                    <tr id="theadKetQuaThongKe">
+                                        <th class="td-stt">Stt</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="tkdc-empty-row">
+                                        <td colspan="20">
+                                            <i class="fa fa-info-circle"></i>
+                                            Vui lòng chọn điều kiện và ấn "Thống kê" để xem kết quả
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tfoot></tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+</div>
+
+<script src="modules/thongke/script/thongkediemchu.js?v=1.0.0.2"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['ThongKeDiemChu'] = new ThongKeDiemChu();
+    $(document).ready(function () {
+        main_doc.ThongKeDiemChu.init();
+    });
+</script>

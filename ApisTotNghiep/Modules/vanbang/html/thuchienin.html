@@ -1,0 +1,268 @@
+﻿<style>
+    .checkbox-inline + .checkbox-inline, .radio-inline + .radio-inline {
+        margin-left: 0px;
+    }
+
+    @font-face {
+        font-family: "UTM HelvetIns";
+        src: url("App_Themes/Cms/fonts/HelvetIns.ttf") format("truetype");
+    }
+    /* Chế độ test — highlight và cho phép kéo các ô trên phôi */
+    body.che-do-test .phoi {
+        cursor: grab;
+        outline: 1px dashed rgba(0, 100, 255, 0.5);
+        background: rgba(255, 255, 0, 0.05);
+        user-select: none;
+    }
+
+        body.che-do-test .phoi:hover {
+            outline: 2px solid rgba(0, 100, 255, 0.9);
+            background: rgba(255, 255, 0, 0.2);
+        }
+
+        body.che-do-test .phoi.dragging {
+            cursor: grabbing;
+            opacity: 0.75;
+        }
+
+    #tblTestPhoi .kyhieu {
+        font-weight: bold;
+        color: #d9534f;
+        font-size: 14px;
+    }
+
+    #tblTestPhoi .tdPos {
+        font-family: monospace;
+        font-size: 11px;
+    }
+
+    /* Nút "In lần lượt" / "Tải file ảnh" bị rule global trong indexi.aspx
+       (".box-header .pull-right>.btn.btn-default" — vốn chỉ định cho header
+       màu xanh) ép background:transparent + color:#fff, mà header trang này
+       lại nền trắng -> chữ trắng trên nền trắng, nút biến mất hoàn toàn.
+       Rule đó dùng selector có #main-content-wrapper (1 ID) nên phải đè bằng
+       selector có ĐỘ ƯU TIÊN CAO HƠN (2 ID) mới thắng được, không sửa file
+       indexi.aspx dùng chung để tránh ảnh hưởng các trang khác. */
+    #zonebatdau .box-tools .btn {
+        display: inline-flex !important;
+        align-items: center;
+        gap: 6px;
+        border-radius: 6px !important;
+        padding: 7px 14px !important;
+        font-weight: 600 !important;
+        opacity: 1 !important;
+        min-width: 0;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+        transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+    }
+
+    #zonebatdau .box-tools .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    /* In lần lượt: CTA chính của toolbar -> filled xanh dương đậm */
+    #zonebatdau #btnThucHienIn {
+        background: #2563eb !important;
+        border: 1px solid #2563eb !important;
+        color: #ffffff !important;
+    }
+
+    #zonebatdau #btnThucHienIn:hover {
+        background: #1d4ed8 !important;
+        border-color: #1d4ed8 !important;
+        color: #ffffff !important;
+    }
+
+    #zonebatdau #btnThucHienIn i {
+        color: #ffffff !important;
+    }
+
+    /* Tải file ảnh: hành động phụ, cùng tone xanh dương nhưng dạng outline */
+    #zonebatdau #btnLuuAnh {
+        background: #ffffff !important;
+        border: 1px solid #2563eb !important;
+        color: #2563eb !important;
+    }
+
+    #zonebatdau #btnLuuAnh:hover {
+        background: #eff6ff !important;
+        border-color: #1d4ed8 !important;
+        color: #1d4ed8 !important;
+    }
+
+    #zonebatdau #btnLuuAnh i {
+        color: #2563eb !important;
+    }
+
+    /* Chế độ test: tone cam cảnh báo, tách biệt hẳn 2 nút trên */
+    #zonebatdau #btnCheDoTest {
+        border: 1px solid #d97706 !important;
+    }
+</style>
+<section class="content aps-TotNghiep">
+    <div class="row aps-thuchienin">
+        <div class="zone-bus" id="zonebatdau">
+            <!--Tìm kiếm-->
+            <div class="box box-solid box-search pd20 pb10">
+                <div class="box-body pd0">
+                    <div class="group-title d-none">
+                        <p class="titleSearchContent">
+                            <i class="fa fa-window-restore">
+                            </i> <span class="lang" key="">Tìm kiếm</span>
+                        </p>
+                    </div>
+                    <div class="area-search">
+                        <div id="search" class="inputSearch">
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_HeDaoTao" class="select-opt" style="width:100% !important">
+                                    <option id="" value=""> --Chọn hệ đào tạo-- </option>
+                                </select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_KhoaDaoTao" class="select-opt" style="width:100% !important">
+                                    <option id="" value=""> --Chọn khóa đào tạo-- </option>
+                                </select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_ChuongTrinh" class="select-opt" style="width:100% !important">
+                                    <option id="" value=""> --Chọn chương trình-- </option>
+                                </select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_Lop" class="select-opt" style="width:100% !important">
+                                    <option id="" value=""> --Chọn lớp-- </option>
+                                </select>
+                            </div>
+
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_PhanLoai" class="select-opt"></select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_KeHoach" class="select-opt"></select>
+                            </div>
+
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_DoiTuong" class="select-opt">
+                                    <option id="" value="-1"> Tất cả đối tượng </option>
+                                    <option id="" value="0"> Đối tượng trong trường</option>
+                                    <option id="" value="1"> Đối tượng ngoài trường</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_Phoi" class="select-opt"></select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <select id="dropMauPhoi_BanSao" class="select-opt"></select>
+                            </div>
+                            <div class="col-sm-6 item-search">
+                                <input id="txtSearch" class="form-control" placeholder="Nhập từ khóa tìm kiếm" />
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <a id="btnSearch" class="btn btn-default btn-search"><i class="fa fa-search"></i> <span class="lang" key="">Tìm kiếm</span></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="clear"></div>
+
+            <!--Danh sách kế hoạch-->
+            <div class="box box-solid aps-ds-kehoach pl20 pr20 mt-10 pb0">
+                <div class="box-header pd0 pb5">
+                    <h3 class="box-title pt5">
+                        <i class="fal fa-file-certificate"></i> Danh sách kế hoạch
+                        <span class="pull-right badge bg-light-blue ml-10">
+                            <span id="lblThucHienIn_Tong"></span>
+                        </span>
+                    </h3>
+                    <div class="box-tools pull-right right-0">
+                        <a class="btn btn-default" id="btnThucHienIn" href="#"><i class="fa fa-print"></i> In lần lượt</a>
+                        <a class="btn btn-default" id="btnLuuAnh" href="#"><i class="fa fa-print"></i> Tải file ảnh</a>
+                        <a class="btn btn-warning" id="btnCheDoTest" href="#"><i class="fa fa-flask"></i> Chế độ test</a>
+
+                    </div>
+                </div>
+                <div class="box-body pd0" style="display: none">
+                    <div class="aps-table-select mt-15 scroll-table-x">
+                        <table id="tblThucHienIn" class="table table-hover table-bordered table-noborder mb-15">
+                            <thead>
+                                <tr>
+                                    <th class="td-fixed td-center">Stt</th>
+                                    <th class="td-center"><span class="lang" key="">Ảnh cá nhân</span></th>
+                                    <th class="td-center"><span class="lang" key="">Mã số</span></th>
+                                    <th class="td-center"><span class="lang" key="">Họ tên</span></th>
+                                    <th class="td-center"><span class="lang" key="">Ngày sinh</span></th>
+                                    <th class="td-center"><span class="lang" key="">Giới tính</span></th>
+                                    <th class="td-center"><span class="lang" key="">Dân tộc</span></th>
+                                    <th class="td-center"><span class="lang" key="">Nơi sinh</span></th>
+                                    <th class="td-center"><span class="lang" key="">Ngành nghề</span></th>
+                                    <th class="td-center"><span class="lang" key="">Số hiệu bằng</span></th>
+                                    <th class="td-center"><span class="lang" key="">Số vào sổ cấp bằng</span></th>
+                                    <th class="td-center"><span class="lang" key="">Số quyết định</span></th>
+                                    <th class="td-center"><span class="lang" key="">Ngày quyết định</span></th>
+                                    <th class="td-center"><span class="lang" key="">Ngày ký bằng</span></th>
+                                    <th class="td-center"><span class="lang" key="">Ngày vào sổ cấp bằng</span></th>
+                                    <th class="td-fixed td-center">Sửa</th>
+                                    <th class="td-center td-fixed">
+                                        <input type="checkbox" id="chkSelectAll_ThucHienIn">
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- load from js -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="clear"></div>
+                <div id="zoneTestPhoi" class="box box-solid mb-10 zoneTestPhoi" style="display:none">
+                    <div class="box-header with-border">
+                        <h4 class="box-title"><i class="fa fa-flask"></i> Chế độ test — Nhập giá trị & Căn tọa độ các ô trên phôi</h4>
+                        <div class="box-tools pull-right">
+                            <label class="" style="font-weight:normal;padding-top:10px;margin-bottom: 0 !important;">
+                                <input type="checkbox" id="chkChiHienKyHieu" /> Chỉ hiện ký hiệu (1)(2)... để dễ căn
+                            </label>
+                            <a class="btn btn-warning btn-sm" id="btnResetToaDo" href="#"><i class="fa fa-crosshairs"></i> Reset tọa độ</a>
+                            <a class="btn btn-danger btn-sm" id="btnResetTestPhoi" href="#"><i class="fa fa-eraser"></i> Xóa giá trị test</a>
+                        </div>
+                    </div>
+                    <div class="box-body pd10">
+                        <div class="alert alert-info mb-10" style="padding:8px 12px">
+                            <b>Cách dùng:</b> Bật chế độ test → panel này liệt kê tất cả ô trên phôi với ký hiệu (1), (2)... Bạn có thể (a) kéo trực tiếp các ô trên phôi bên dưới để căn lại vị trí, (b) nhập giá trị test để ghi đè `eval(NOIDUNG)`. Mọi thứ lưu cục bộ trong trình duyệt theo user, không đụng vào server. Bạn tự chịu trách nhiệm về kết quả in.
+                        </div>
+                        <table id="tblTestPhoi" class="table table-hover table-bordered table-noborder mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="td-center" style="width:50px">Stt</th>
+                                    <th class="td-center" style="width:60px">Ký hiệu</th>
+                                    <th style="width:22%">Biểu thức NOIDUNG</th>
+                                    <th style="width:18%">Giá trị mẫu</th>
+                                    <th style="width:25%">Giá trị test</th>
+                                    <th class="td-center" style="width:130px">Tọa độ (T, L)</th>
+                                    <th class="td-center" style="width:80px">Xóa</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="clear"></div>
+                <div class="box-footer" id="zoneMotherPhoi"></div>
+                <div class="clear"></div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- page script -->
+<script src="modules/vanbang/script/thuchienin.js?v=1.0.0.0"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['ThucHienIn'] = new ThucHienIn();
+    $(document).ready(function () {
+        main_doc.ThucHienIn.init();
+    });
+</script>

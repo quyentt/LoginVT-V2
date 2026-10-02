@@ -1,0 +1,82 @@
+/* =========================================================================
+   5. OBJECTS — lưới
+   Tự viết, không dùng lưới của Bootstrap, để bộ giao diện độc lập hoàn toàn.
+   ========================================================================= */
+
+.ums-grid {
+    display: grid;
+    gap: var(--ums-sp-4);
+}
+
+/* Lưới thẻ tự xuống dòng — dùng cho danh sách vai trò, danh sách phân hệ */
+.ums-grid--cards { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+.ums-grid--tiles { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+
+/* Lưới cột cố định */
+.ums-grid--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.ums-grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.ums-grid--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+/* 12 phần — biểu mẫu có dòng 3 ô lẫn dòng 4 ô (hệ cũ col-sm-*). Ô khai
+   `cols: n` trong ums.crud → grid-column: span n. Màn hẹp: mỗi ô một dòng. */
+.ums-grid--12 { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+.ums-grid--12 > * { grid-column: span 6; }
+
+/* Hai cột lệch — nội dung chính + cột phụ */
+.ums-grid--main-aside { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); }
+
+/* Hàng ngang tự xuống dòng */
+.ums-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--ums-sp-2);
+}
+
+.ums-row--end { justify-content: flex-end; }
+.ums-row--between { justify-content: space-between; }
+.ums-row--top { align-items: flex-start; }
+
+/* Xếp dọc */
+.ums-stack { display: flex; flex-direction: column; gap: var(--ums-sp-3); }
+.ums-stack--tight { gap: var(--ums-sp-2); }
+
+@media (max-width: 1199px) {
+    .ums-grid--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .ums-grid--main-aside { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (max-width: 767px) {
+    .ums-grid--2,
+    .ums-grid--3,
+    .ums-grid--4 { grid-template-columns: minmax(0, 1fr); }
+    .ums-grid--12 > * { grid-column: 1 / -1 !important; }
+}
+
+/* =========================================================================
+   Thanh lọc
+   =========================================================================
+   Lưới chia đều 4 cột làm ô nút Tìm kiếm lọt thỏm trong một cột rộng bằng ô
+   nhập, để lại một khoảng trống lớn bên phải. Ở đây các ô nhập chia đều phần
+   còn lại, nút chỉ rộng bằng chính nó.
+   ========================================================================= */
+
+.ums-filter {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: var(--ums-sp-4);
+}
+
+.ums-filter > .ums-field {
+    flex: 1 1 200px;
+    min-width: 0;
+    margin-bottom: 0;
+}
+
+/* Ô chỉ chứa nút — không giãn */
+.ums-filter > .ums-field--fit { flex: 0 0 auto; }
+
+@media (max-width: 767px) {
+    .ums-filter { gap: var(--ums-sp-3); }
+    .ums-filter > .ums-field { flex: 1 1 100%; }
+}

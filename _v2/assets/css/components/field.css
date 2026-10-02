@@ -1,0 +1,387 @@
+/* =========================================================================
+   6. COMPONENTS — ô nhập và dòng biểu mẫu
+   ========================================================================= */
+
+/* ---------- Ô nhập ------------------------------------------------------- */
+.ums-input,
+.ums-select,
+.ums-textarea {
+    width: 100%;
+    height: var(--ums-control-h);
+    padding: 0 var(--ums-sp-3);
+    background: var(--ums-surface);
+    border: 1px solid var(--ums-line-2);
+    border-radius: var(--ums-r-1);
+    color: var(--ums-ink);
+    font-size: var(--ums-fz-14);
+    transition: border-color var(--ums-t), box-shadow var(--ums-t);
+}
+
+.ums-textarea {
+    height: auto;
+    min-height: 82px;
+    padding: var(--ums-sp-2) var(--ums-sp-3);
+    line-height: var(--ums-lh);
+    resize: vertical;
+}
+
+.ums-input:focus,
+.ums-select:focus,
+.ums-textarea:focus {
+    outline: none;
+    border-color: var(--ums-blue);
+    box-shadow: var(--ums-ring);
+}
+
+.ums-input[readonly] { background: var(--ums-surface-2); }
+
+/* =========================================================================
+   Ô CHỌN TRONG BẢNG — vẽ giống select2, nhưng là ô gốc
+   -------------------------------------------------------------------------
+   ums.ui.enhance KHÔNG gắn select2 cho ô chọn nằm trong .ums-table (bảng
+   trăm dòng là trăm khung select2: nặng, và khung xổ gắn ở body dễ lạc chỗ
+   khi bảng cuộn ngang). Ô gốc vốn đã dùng chung .ums-select nên khung, viền,
+   bo góc, cỡ chữ đã khớp; chỉ còn MŨI TÊN là khác — trình duyệt vẽ mũi tên
+   riêng của nó. Ở đây tắt mũi tên gốc và vẽ lại đúng tam giác xám của
+   select2 (8×5, #888, cách mép phải 10px) để nhìn không phân biệt được.
+   Áp cho CẢ ô đánh dấu data-no-s2 ở bất kỳ đâu (vd ô "Hiển thị" của thanh
+   phân trang): màn bỏ select2 cho một ô mà giao diện vẫn đồng bộ.
+   ========================================================================= */
+.ums-table select.ums-select,
+select.ums-select[data-no-s2] {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 28px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5' viewBox='0 0 8 5'%3E%3Cpath d='M0 0h8L4 5z' fill='%23888'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 8px 5px;
+}
+
+.ums-table select.ums-select:disabled,
+select.ums-select[data-no-s2]:disabled {
+    background-color: var(--ums-surface-3);
+    opacity: 1;
+}
+
+/* Firefox vẽ thêm viền chấm khi ô đang chọn — bỏ cho khớp select2 */
+.ums-table select.ums-select:-moz-focusring,
+select.ums-select[data-no-s2]:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--ums-ink); }
+.ums-input:disabled,
+.ums-select:disabled { background: var(--ums-surface-3); color: var(--ums-ink-3); }
+
+/* =========================================================================
+   Ô CHỌN TỆP — ums.ui.file
+   -------------------------------------------------------------------------
+   Nhìn như một ô nhập có nút ở đầu: cùng chiều cao, cùng viền, cùng bo
+   góc với .ums-input / select2 nên đứng cạnh nhau không lệch. Ô thật vẫn
+   nằm trong nhãn (ẩn bằng clip) để bàn phím và trình đọc màn hình vẫn dùng
+   được — không dùng display:none.
+   ========================================================================= */
+.ums-file {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: var(--ums-control-h);
+    /* Viền / bo góc / vòng focus GIỐNG HỆT .ums-input (người dùng 2026-09-26: "border phải giống các input khác") */
+    border: 1px solid var(--ums-line-2);
+    border-radius: var(--ums-r-1);
+    background: var(--ums-surface);
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color var(--ums-t), box-shadow var(--ums-t);
+}
+
+.ums-file:focus-within { border-color: var(--ums-blue); box-shadow: var(--ums-ring); }
+
+.ums-file__input {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+.ums-file__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ums-sp-2);
+    align-self: stretch;
+    padding: 0 var(--ums-sp-4);
+    border-right: 1px solid var(--ums-line-2);
+    background: var(--ums-surface-2);
+    color: var(--ums-navy);
+    font-size: var(--ums-fz-13);
+    font-weight: var(--ums-fw-semibold);
+    white-space: nowrap;
+}
+
+.ums-file:hover .ums-file__btn { background: var(--ums-surface-3); }
+.ums-file__btn > i { color: var(--ums-blue); }
+
+.ums-file__name {
+    flex: 1;
+    min-width: 0;
+    padding: 0 var(--ums-sp-3);
+    color: var(--ums-ink);
+    font-size: var(--ums-fz-14);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ums-file__name.is-empty { color: var(--ums-ink-3); }
+
+/* ---------- Tệp đính kèm của bản ghi (ums.files) -------------------------
+   Nút "Chọn tệp" + danh sách tệp: tệp đã lưu là liên kết mở tab mới, tệp
+   vừa tải lên mang nhãn "chưa lưu" (chỉ gắn vào bản ghi khi bấm Lưu). */
+.ums-files { display: grid; gap: var(--ums-sp-2); justify-items: start; }
+.ums-files__pick { cursor: pointer; }
+.ums-files__list { display: flex; flex-wrap: wrap; gap: var(--ums-sp-2); width: 100%; }
+.ums-files__item {
+    display: inline-flex; align-items: center; gap: var(--ums-sp-2);
+    max-width: 100%; min-height: 32px; padding: 2px 4px 2px 10px;
+    border: 1px solid var(--ums-line); border-radius: var(--ums-r-1);
+    background: var(--ums-surface-2); font-size: var(--ums-fz-13);
+}
+.ums-files__item.is-new { border-style: dashed; background: var(--ums-surface); }
+.ums-files__name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ums-ink); }
+a.ums-files__name { color: var(--ums-blue); text-decoration: none; }
+a.ums-files__name:hover { text-decoration: underline; }
+.ums-files__ic { color: var(--ums-ink-3); font-size: 16px; }
+.ums-files__ic--pdf { color: #d93025; }
+.ums-files__ic--doc { color: #2b579a; }
+.ums-files__ic--xls { color: #1e7145; }
+.ums-files__ic--img { color: #c2185b; }
+.ums-files__tag { font-size: var(--ums-fz-12); color: var(--ums-warn, #b45309); }
+.ums-files__del { width: 24px; height: 24px; }
+.ums-files__empty { color: var(--ums-ink-3); font-size: var(--ums-fz-13); }
+
+.ums-input.is-invalid { border-color: var(--ums-act-del); }
+.ums-input.is-invalid:focus { box-shadow: 0 0 0 3px rgba(223, 50, 43, .16); }
+
+.ums-input--sm { height: var(--ums-control-h-sm); font-size: var(--ums-fz-13); }
+
+/* Ô nhập có biểu tượng bên phải */
+.ums-inputwrap { position: relative; }
+
+.ums-inputwrap > i {
+    position: absolute;
+    right: var(--ums-sp-3);
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--ums-ink-3);
+    font-size: var(--ums-fz-14);
+    pointer-events: none;
+}
+
+/* flatpickr static:true chèn thêm .flatpickr-wrapper giữa — chừa chỗ cho
+   biểu tượng ở cả hai kiểu lồng nhau. */
+.ums-inputwrap > .ums-input,
+.ums-inputwrap > .flatpickr-wrapper > .ums-input { padding-right: 34px; }
+
+/* Ảnh đại diện (ums.files.avatar) — tỉ lệ 3:4 như ảnh hồ sơ 336×448 */
+.ums-avatar { position: relative; display: block; width: 100%; max-width: 168px; aspect-ratio: 3 / 4;
+    border: 1px solid var(--ums-line); border-radius: var(--ums-r-2); overflow: hidden; cursor: pointer; background: var(--ums-surface-2); }
+.ums-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ums-avatar__hint { position: absolute; left: 0; right: 0; bottom: 0; padding: 6px; text-align: center; font-size: var(--ums-fz-12);
+    color: #fff; background: rgba(15, 23, 42, .55); opacity: 0; transition: opacity var(--ums-t); }
+.ums-avatar:hover .ums-avatar__hint,
+.ums-avatar.is-empty .ums-avatar__hint { opacity: 1; }   /* ô trống: hiện sẵn "Đổi ảnh" cho biết bấm được */
+/* width/height auto: Font Awesome 7 ép biểu tượng rộng 1.25em cố định → hình người dạt trái */
+.ums-avatar__none { position: absolute; inset: 0; width: auto; height: auto; line-height: 1; display: none; place-items: center;
+    font-size: 64px; color: var(--ums-ink-3); }
+.ums-avatar.is-empty img { display: none; }
+.ums-avatar.is-empty .ums-avatar__none { display: grid; }
+
+/* Ô địa chỉ (ums.pat.diaChi): nút kính lúp bấm được, khác biểu tượng trang trí */
+.ums-diachi__btn {
+    position: absolute; right: 4px; top: 50%; transform: translateY(-50%);
+    width: 28px; height: 28px; display: grid; place-items: center;
+    border: 0; border-radius: var(--ums-r-1); background: transparent;
+    color: var(--ums-blue); cursor: pointer;
+}
+.ums-diachi__btn:hover { background: var(--ums-blue-l); }
+
+/* ---------- Dòng biểu mẫu: nhãn trên, ô dưới ----------------------------- */
+.ums-field { margin-bottom: var(--ums-sp-4); }
+.ums-field:last-child { margin-bottom: 0; }
+
+.ums-field__label {
+    display: block;
+    margin-bottom: var(--ums-sp-1);
+    color: var(--ums-ink-2);
+    font-size: var(--ums-fz-13);
+    font-weight: var(--ums-fw-semibold);
+}
+
+.ums-field__req { margin-left: 3px; color: var(--ums-act-del); font-style: normal; }
+.ums-field__hint { margin-top: var(--ums-sp-1); color: var(--ums-ink-3); font-size: var(--ums-fz-12); }
+.ums-field__error { margin-top: var(--ums-sp-1); color: var(--ums-act-del); font-size: var(--ums-fz-12); }
+
+/* Biến thể nhãn nằm trái */
+.ums-field--inline {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--ums-sp-3);
+}
+
+.ums-field--inline .ums-field__label {
+    flex: 0 0 var(--ums-label-w, 140px);
+    min-height: var(--ums-control-h);
+    display: flex;
+    align-items: center;
+    margin-bottom: 0;
+}
+
+.ums-field--inline .ums-field__control { flex: 1; min-width: 0; }
+
+/* ---------- Ô chọn ------------------------------------------------------- */
+/* =========================================================================
+   Ô ĐÁNH DẤU và Ô CHỌN MỘT — tự vẽ
+   -------------------------------------------------------------------------
+   Ô gốc của trình duyệt mỗi hệ điều hành một kiểu, không đổi được màu, và
+   trên Windows thì nhỏ và mờ. Tắt kiểu gốc (appearance:none) rồi tự vẽ để
+   khớp phần còn lại của giao diện: cùng màu xanh, cùng bo góc, cùng viền,
+   cùng vòng sáng khi focus như ô nhập.
+
+   Đặt ở TẦNG PHẦN TỬ (input[type=…]) chứ không bó trong .ums-check, để mọi
+   ô đánh dấu đều giống nhau — kể cả ô trong bảng (chọn dòng, chọn tất cả)
+   vốn là <input> trần.
+   ========================================================================= */
+input[type="checkbox"],
+input[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+    flex: 0 0 auto;
+    display: inline-grid;
+    place-content: center;
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    padding: 0;
+    background: var(--ums-surface);
+    border: 1.5px solid var(--ums-line-2);
+    border-radius: 4px;          /* ô nhỏ 18px — bo 6px nhìn tròn quá */
+    color: inherit;
+    vertical-align: -4px;
+    cursor: pointer;
+    transition: background var(--ums-t), border-color var(--ums-t), box-shadow var(--ums-t);
+}
+
+input[type="radio"] { border-radius: 50%; }
+
+/* Dấu tích / chấm tròn: vẽ sẵn, phóng to khi đánh dấu nên có chuyển động */
+input[type="checkbox"]::before,
+input[type="radio"]::before {
+    content: "";
+    width: 10px;
+    height: 10px;
+    background: #fff;
+    transform: scale(0);
+    transition: transform .12s ease-out;
+}
+
+input[type="checkbox"]::before {
+    clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+}
+
+input[type="radio"]::before { width: 8px; height: 8px; border-radius: 50%; }
+
+input[type="checkbox"]:hover:not(:disabled),
+input[type="radio"]:hover:not(:disabled) { border-color: var(--ums-check); }
+
+/* Ô vuông: tô KÍN màu, dấu tích trắng — như bộ mẫu */
+input[type="checkbox"]:checked {
+    background: var(--ums-check);
+    border-color: var(--ums-check);
+}
+
+/* Ô tròn: KHÔNG tô kín — viền màu dày hơn, chấm màu ở giữa, lòng trắng */
+input[type="radio"]:checked {
+    background: var(--ums-surface);
+    border-color: var(--ums-check);
+    border-width: 2px;
+}
+
+input[type="radio"]:checked::before { background: var(--ums-check); }
+
+input[type="checkbox"]:checked::before,
+input[type="radio"]:checked::before { transform: scale(1); }
+
+/* Đánh dấu một phần (chọn tất cả khi mới chọn vài dòng) → gạch ngang */
+input[type="checkbox"]:indeterminate {
+    background: var(--ums-check);
+    border-color: var(--ums-check);
+}
+input[type="checkbox"]:indeterminate::before {
+    clip-path: none;
+    width: 10px;
+    height: 2px;
+    border-radius: 1px;
+    transform: scale(1);
+}
+
+input[type="checkbox"]:focus-visible,
+input[type="radio"]:focus-visible {
+    outline: none;
+    border-color: var(--ums-check);
+    box-shadow: var(--ums-ring);
+}
+
+input[type="checkbox"]:disabled,
+input[type="radio"]:disabled {
+    background: var(--ums-surface-3);
+    border-color: var(--ums-line);
+    cursor: not-allowed;
+}
+input[type="checkbox"]:disabled:checked,
+input[type="radio"]:disabled:checked { background: var(--ums-ink-3); border-color: var(--ums-ink-3); }
+
+.ums-check {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ums-sp-2);
+    font-size: var(--ums-fz-14);
+    cursor: pointer;
+    user-select: none;
+}
+.ums-check input[type="checkbox"],
+.ums-check input[type="radio"] { vertical-align: 0; }
+
+/* Hai ô đánh dấu đứng CÙNG MỘT HÀNG thì cách nhau; đứng theo CỘT thì không.
+   Trước đây luật này không phân biệt, nên mọi danh sách dọc tự dựng (không
+   dùng .ums-checklist / .ums-checkgrid) đều bị thụt vào từ mục thứ hai — nhìn
+   như danh sách lồng nhau (đã gặp ở khung lọc "Trạng thái người học").
+   inline-flex chỉ nằm cùng hàng khi cha KHÔNG phải grid/flex-column, nên chỉ
+   cộng lề khi cha là khối thuần (block) hoặc .ums-row. */
+.ums-check + .ums-check { margin-left: var(--ums-sp-5); }
+
+:is(.ums-checklist, .ums-checkgrid, [class*="--stack"]) .ums-check + .ums-check,
+:is(div, span, fieldset):where([style*="grid"], [style*="flex-direction:column"]) > .ums-check + .ums-check { margin-left: 0; }
+
+/* Mọi khối xếp dọc bằng grid/flex-column: bỏ lề trái giữa các ô */
+.ums-checklist { display: flex; flex-direction: column; gap: var(--ums-sp-2); }
+.ums-checklist .ums-check + .ums-check { margin-left: 0; }
+
+/* Nhóm ô đánh dấu dài xếp hai cột — dùng trong biểu mẫu của ums.crud */
+/* Chia cột theo BỀ RỘNG CÓ THẬT: khung rộng thì bốn năm cột, khung hẹp tự
+   rút còn một. Trước đây cố định hai cột nên một danh sách 14 trạng thái
+   kéo dài bảy hàng, nhìn rối. */
+.ums-checkgrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: var(--ums-sp-2) var(--ums-sp-5);
+}
+.ums-checkgrid .ums-check + .ums-check { margin-left: 0; }
+
+@media (max-width: 767px) {
+    .ums-checkgrid { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (max-width: 767px) {
+    .ums-field--inline { display: block; }
+    .ums-field--inline .ums-field__label { min-height: 0; margin-bottom: var(--ums-sp-1); }
+}

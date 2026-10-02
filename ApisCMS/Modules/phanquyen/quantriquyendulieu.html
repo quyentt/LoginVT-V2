@@ -1,0 +1,539 @@
+<style>
+    /* Layout chính */
+    .data-permission-container {
+        padding: 0;
+        margin: 0;
+    }
+
+    .content-tab.no-tab {
+        margin-bottom: 10px;
+    }
+
+    .box-shadow {
+        padding: 15px;
+        margin-bottom: 15px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    /* Header Section */
+    .permission-header {
+        padding: 20px;
+        background: linear-gradient(135deg, #223771 0%, #3c5398 100%);
+        color: white;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+
+    .permission-header h3 {
+        margin: 0 0 10px 0;
+        font-size: 20px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .permission-header p {
+        margin: 0;
+        font-size: 13px;
+        opacity: 0.9;
+    }
+
+    /* Filter Section */
+    .filter-section {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .filter-group label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #223771;
+    }
+
+    .filter-group select,
+    .filter-group input {
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 13px;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+    }
+
+    .action-buttons .btn {
+        padding: 10px 20px;
+        font-size: 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 500;
+    }
+
+    /* Table Container */
+    .table-container {
+        overflow-x: auto;
+        overflow-y: auto;
+        max-height: calc(100vh - 180px);
+        min-height: 650px;
+        position: relative;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+    }
+
+    #tblPhanQuyenDuLieu {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 13px;
+        background: white;
+    }
+
+    /* Table Header */
+    #tblPhanQuyenDuLieu thead th {
+        background: linear-gradient(135deg, #223771 0%, #3c5398 100%);
+        color: white;
+        padding: 12px 8px;
+        font-weight: 600;
+        text-align: center;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        border: 1px solid #1a2a54;
+        white-space: nowrap;
+        min-width: 150px;
+        vertical-align: middle;
+    }
+
+    #tblPhanQuyenDuLieu thead th:first-child {
+        min-width: 250px;
+        left: 0;
+        z-index: 11;
+        text-align: left;
+    }
+
+    #tblPhanQuyenDuLieu thead th .header-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+    }
+
+    #tblPhanQuyenDuLieu thead th .header-title {
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    /* Table Body */
+    #tblPhanQuyenDuLieu tbody td {
+        padding: 12px 10px;
+        border: 1px solid #e0e0e0;
+        background: white;
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    #tblPhanQuyenDuLieu tbody td:first-child {
+        position: sticky;
+        left: 0;
+        background: #f8f9fa;
+        font-weight: 500;
+        z-index: 5;
+        text-align: left;
+    }
+
+    #tblPhanQuyenDuLieu tbody tr:hover td {
+        background: #f0f7ff;
+    }
+
+    #tblPhanQuyenDuLieu tbody tr:hover td:first-child {
+        background: #e3f2fd;
+    }
+
+    /* User Info Cell */
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .user-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 14px;
+        flex-shrink: 0;
+    }
+
+    .user-details {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .user-name {
+        font-weight: 600;
+        color: #223771;
+        font-size: 13px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .user-code {
+        font-size: 11px;
+        color: #666;
+    }
+
+    .user-dept {
+        font-size: 11px;
+        color: #999;
+        font-style: italic;
+    }
+
+    /* Checkbox Styles */
+    .permission-checkbox {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .permission-checkbox:hover {
+        transform: scale(1.15);
+    }
+
+    .permission-checkbox:checked {
+        accent-color: #4caf50;
+    }
+
+    .chkSelectAllCol {
+        width: 22px;
+        height: 22px;
+        cursor: pointer;
+    }
+
+    /* Function Selector */
+    .function-selector {
+        margin-top: 8px;
+        padding: 5px;
+        font-size: 11px;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        background: #fff;
+        width: 100%;
+        max-height: 70px;
+    }
+
+    .function-selector option {
+        padding: 3px;
+    }
+
+    /* Stats Bar */
+    .stats-bar {
+        display: flex;
+        gap: 20px;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 6px;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+    }
+
+    .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .stat-item i {
+        font-size: 18px;
+        color: #223771;
+    }
+
+    .stat-value {
+        font-size: 20px;
+        font-weight: 700;
+        color: #223771;
+    }
+
+    .stat-label {
+        font-size: 12px;
+        color: #666;
+    }
+
+    /* Legend */
+    .legend {
+        display: flex;
+        gap: 20px;
+        padding: 12px 15px;
+        background: #fff3cd;
+        border-left: 4px solid #ffc107;
+        border-radius: 4px;
+        margin-bottom: 15px;
+        font-size: 12px;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* Pagination */
+    .pagination-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 20px;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 6px;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .pagination-info {
+        font-size: 13px;
+        color: #555;
+    }
+
+    .pagination-controls {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .page-size-selector {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+    }
+
+    .page-size-selector select {
+        padding: 6px 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 13px;
+    }
+
+    .pagination-buttons {
+        display: flex;
+        gap: 5px;
+    }
+
+    .pagination-buttons .btn {
+        padding: 6px 12px;
+        font-size: 13px;
+        min-width: 36px;
+        height: 36px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .pagination-buttons .btn.active {
+        background: #223771;
+        color: white;
+        border-color: #223771;
+    }
+
+    .pagination-buttons .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    /* Loading Overlay */
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+    }
+
+    .loading-overlay.active {
+        display: flex;
+    }
+
+    .loading-spinner {
+        background: white;
+        padding: 30px;
+        border-radius: 8px;
+        text-align: center;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .filter-section {
+            grid-template-columns: 1fr;
+        }
+
+        .grid-header-cell,
+        .grid-cell {
+            min-width: 100px;
+            font-size: 11px;
+            padding: 8px 4px;
+        }
+
+        .grid-header-cell:first-child,
+        .grid-cell:first-child {
+            min-width: 150px;
+        }
+
+        .user-avatar {
+            width: 30px;
+            height: 30px;
+            font-size: 12px;
+        }
+    }
+</style>
+
+<div class="data-permission-container">
+    <div class="overlay"></div>
+    
+    <div class="content-tab no-tab">
+        <p class="link">
+            <a href="#">Phân quyền</a><i class="fal fa-angle-right"></i>
+            <a href="#">Quản trị quyền dữ liệu Cán bộ</a>
+        </p>
+    </div>
+
+    <!-- Header - HIDDEN -->
+    <div class="permission-header" style="display: none;">
+        <h3>
+            <i class="fa-solid fa-shield-halved"></i>
+            Quản trị quyền dữ liệu theo Cán bộ
+        </h3>
+        <p>Phân quyền truy cập dữ liệu cụ thể cho từng cán bộ - Giao diện dạng lưới trực quan</p>
+    </div>
+
+    <!-- Stats Bar - HIDDEN -->
+    <div class="stats-bar" style="display: none;">
+        <div class="stat-item">
+            <i class="fa-solid fa-user-tie"></i>
+            <div>
+                <div class="stat-value" id="lblSoLuongNhanSu">0</div>
+                <div class="stat-label">Tổng Nhân sự</div>
+            </div>
+        </div>
+        <div class="stat-item">
+            <i class="fa-solid fa-database"></i>
+            <div>
+                <div class="stat-value" id="totalDataTypes">0</div>
+                <div class="stat-label">Loại dữ liệu</div>
+            </div>
+        </div>
+        <div class="stat-item">
+            <i class="fa-solid fa-check-circle text-success"></i>
+            <div>
+                <div class="stat-value" id="totalPermissions">0</div>
+                <div class="stat-label">Quyền đã gán</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Legend - HIDDEN -->
+    <div class="legend" style="display: none;">
+        <div class="legend-item">
+            <i class="fa-solid fa-info-circle" style="color: #ffc107;"></i>
+            <span><strong>Lưu ý:</strong> Chỉ hiển thị nhân sự/cán bộ (không bao gồm sinh viên). Click "Xem chi tiết" để gán quyền dữ liệu cho từng chiều.</span>
+        </div>
+    </div>
+    
+    <!-- Calendar - HIDDEN -->
+    <div style="display: none;">
+        <div class="calendar-header">
+            <button id="btnPrevMonth" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-angle-left"></i></button>
+            <span id="thang">Tháng</span> <span id="nam">Năm</span>
+            <button id="btnNextMonth" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-angle-right"></i></button>
+        </div>
+        <div class="calendar-body">
+            <ul class="days"></ul>
+        </div>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="box-shadow">
+        <div class="filter-section">
+            <div class="filter-group">
+                <label><i class="fa-solid fa-search"></i> Tìm kiếm Nhân sự</label>
+                <div style="position: relative;">
+                    <input type="text" id="txtSearch_TuKhoa" class="form-control" placeholder="Nhập tên, mã nhân sự... (tự động tìm kiếm)" style="padding-right: 35px;">
+                    <i class="fa-solid fa-search" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #999; pointer-events: none;"></i>
+                </div>
+            </div>
+            <div class="filter-group">
+                <label><i class="fa-solid fa-building"></i> Khoa/Đơn vị</label>
+                <select id="ddlKhoa" class="form-select">
+                    <option value="">-- Tất cả --</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Action Buttons - HIDDEN -->
+        <div class="action-buttons" style="display: none;">
+            <button class="btn btn-primary" id="btnSearch">
+                <i class="fa-solid fa-search"></i> Tìm kiếm
+            </button>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="box-shadow">
+        <div class="table-container">
+            <table id="tblPhanQuyenDuLieu" class="table table-hover table-bordered">
+                <thead></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div id="paginationContainer"></div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <i class="fa-solid fa-spinner fa-spin fa-3x" style="color: #223771;"></i>
+            <p style="margin-top: 15px; font-weight: 600;">Đang tải dữ liệu...</p>
+        </div>
+    </div>
+</div>
+
+<script src="modules/phanquyen/script/quantriquyendulieu.js?v=1.0.0.1"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['PhanQuyenDuLieuNhanSu'] = new PhanQuyenDuLieuNhanSu();
+    $(document).ready(function () {
+        main_doc.PhanQuyenDuLieuNhanSu.init();
+    });
+</script>

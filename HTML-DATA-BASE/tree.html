@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quản lý sinh viên 360 - Danh mục Tree</title>
+    <link rel="stylesheet" href="../assets/css/styles.css" />
+    <style>
+        /* Chip hiển thị tên class */
+        .cls {
+            display: inline-block;
+            background: #eef1f4;
+            color: #c7254e;
+            font-family: "Consolas", "Courier New", monospace;
+            font-size: 13px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+
+        /* Khối code để copy */
+        .code-block {
+            color: #1e293b;
+            background-color: #f8f9fa;
+            font-family: "Consolas", "Courier New", monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 14px 16px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 10px 0 0;
+            white-space: pre;
+        }
+
+        .bd-example {
+            padding: 16px;
+            border: 1px dashed #d0d5dd;
+            border-radius: 6px;
+            margin-bottom: 4px;
+        }
+
+        .demo-label-code {
+            font-size: 12px;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            margin: 14px 0 2px;
+            display: block;
+        }
+
+        .box-comment .box-title {
+            font-size: 18px;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        .box-comment {
+            --bs-gutter-x: 20px;
+        }
+
+        .box-comment .box {
+            margin-bottom: 20px;
+        }
+
+        .box-comment .box-content.pd-20 {
+            padding: 20px;
+        }
+
+        /* ===== Tree dựng bằng Bootstrap (chỉ dùng trong trang demo này) ===== */
+        .tree-bs,
+        .tree-bs ul {
+            list-style: none;
+            padding-left: 0;
+            margin-bottom: 0;
+        }
+
+        .tree-bs ul {
+            padding-left: 22px;
+        }
+
+        .tree-bs .tree-bs-item {
+            border: none;
+            padding: 5px 6px;
+        }
+
+        .tree-bs .tree-bs-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #1e293b;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .tree-bs .tree-bs-toggle .tree-bs-caret {
+            transition: transform 0.2s ease;
+            font-size: 12px;
+            width: 12px;
+            color: #888;
+        }
+
+        .tree-bs .tree-bs-toggle.collapsed .tree-bs-caret {
+            transform: rotate(-90deg);
+        }
+
+        .tree-bs .tree-bs-leaf {
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding-left: 2px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header fixed-top">
+        <div class="top-nav">
+            <div class="sidebar-bars">
+                <i class="fa-light fa-bars-sort"> </i>
+            </div>
+            <div class="head-logo">
+                <a href="../index.html">
+                    <img class="logo-icon" src="../assets/images/logo/logo-icon.png" />
+                    <img class="logo-text" src="../assets/images/logo/logo-text.png" />
+                </a>
+            </div>
+            <div class="head-search-form">
+                <div class="head-search-toggle">
+                    <i class="fal fa-search"></i>
+                </div>
+                <div class="head-search-box">
+                    <div class="form">
+                        <input type="text" class="search-imput" placeholder="Tìm kiếm thông tin" />
+                        <button class="search-btn">
+                            <i class="fal fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="main-menu">
+                <ul class="list-unstyled">
+                    <li class="item">
+                        <a class="menu-link" href="../index.html">
+                            <i class="fal fa-home"></i>
+                            <span>Trang chủ</span>
+                        </a>
+                    </li>
+                    <li class="item">
+                        <a class="menu-link" href="../dashboard.html">
+                            <i class="fa-solid fa-bars-sort mr-5"></i>
+                            <span>Danh mục</span>
+                        </a>
+                    </li>
+
+                </ul>
+                <div class="menu-toggle">
+                    <i class="fal fa-bars"></i>
+                </div>
+            </div>
+            <div class="account-group">
+                <div class="dropdown">
+                    <div class="item" data-bs-toggle="dropdown">
+                        <img src="../assets/images/avatar.jpg" class="avatar" />
+                    </div>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#">Action</a></li>
+                        <li><a class="dropdown-item" href="#">Another action</a></li>
+                        <li><a class="dropdown-item" href="#">Something else here</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="main-wrap">
+        <div class="left-sidebar">
+            <div class="sidebar-menu">
+                <div class="accordion" id="sidebar-menu">
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" data-bs-toggle="collapse"
+                            data-bs-target="#sbComponents" href="javascrip:void(0)">
+                            <i class="fa-light fa-puzzle-piece item-icon"></i>
+                            <span>Components</span>
+                            <i class="fal fa-chevron-right item-arrow-icon"></i>
+                            <i class="fal fa-chevron-down item-arrow-icon down"></i>
+                        </a>
+                        <div class="sidebar-menu-sub collapse" id="sbComponents" data-bs-parent="#sidebar-menu">
+                            <div class="sidebar-menu-sub-content">
+                                <a href="components.html#accordion">Accordion</a>
+                                <a href="components.html#alerts">Alerts</a>
+                                <a href="components.html#badge">Badge</a>
+                                <a href="components.html#breadcrumb">Breadcrumb</a>
+                                <a href="components.html#buttons">Buttons</a>
+                                <a href="components.html#button-group">Button group</a>
+                                <a href="components.html#card">Card</a>
+                                <a href="components.html#carousel">Carousel</a>
+                                <a href="components.html#close">Close button</a>
+                                <a href="components.html#collapse">Collapse</a>
+                                <a href="components.html#dropdowns">Dropdowns</a>
+                                <a href="components.html#list-group">List group</a>
+                                <a href="components.html#modal">Modal</a>
+                                <a href="components.html#navs-tabs">Navs &amp; tabs</a>
+                                <a href="components.html#navbar">Navbar</a>
+                                <a href="components.html#offcanvas">Offcanvas</a>
+                                <a href="components.html#pagination">Pagination</a>
+                                <a href="components.html#popovers">Popovers</a>
+                                <a href="components.html#progress">Progress</a>
+                                <a href="components.html#spinners">Spinners</a>
+                                <a href="components.html#toasts">Toasts</a>
+                                <a href="components.html#tooltips">Tooltips</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" data-bs-toggle="collapse" data-bs-target="#sbUtilities"
+                            href="javascrip:void(0)">
+                            <i class="fa-light fa-screwdriver-wrench item-icon"></i>
+                            <span>Utilities</span>
+                            <i class="fal fa-chevron-right item-arrow-icon"></i>
+                            <i class="fal fa-chevron-down item-arrow-icon down"></i>
+                        </a>
+                        <div class="sidebar-menu-sub collapse" id="sbUtilities" data-bs-parent="#sidebar-menu">
+                            <div class="sidebar-menu-sub-content">
+                                <a href="utilities.html#background">Background</a>
+                                <a href="utilities.html#borders">Borders</a>
+                                <a href="utilities.html#colors">Colors</a>
+                                <a href="utilities.html#display">Display</a>
+                                <a href="utilities.html#flex">Flex</a>
+                                <a href="utilities.html#float">Float</a>
+                                <a href="utilities.html#interactions">Interactions</a>
+                                <a href="utilities.html#link">Link</a>
+                                <a href="utilities.html#object-fit">Object fit</a>
+                                <a href="utilities.html#opacity">Opacity</a>
+                                <a href="utilities.html#overflow">Overflow</a>
+                                <a href="utilities.html#position">Position</a>
+                                <a href="utilities.html#shadows">Shadows</a>
+                                <a href="utilities.html#sizing">Sizing</a>
+                                <a href="utilities.html#spacing">Spacing</a>
+                                <a href="utilities.html#text">Text</a>
+                                <a href="utilities.html#vertical-align">Vertical align</a>
+                                <a href="utilities.html#visibility">Visibility</a>
+                                <a href="utilities.html#zindex">Z-index</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" data-bs-toggle="collapse" data-bs-target="#sbHelpers"
+                            href="javascrip:void(0)">
+                            <i class="fa-light fa-wand-magic-sparkles item-icon"></i>
+                            <span>Helpers</span>
+                            <i class="fal fa-chevron-right item-arrow-icon"></i>
+                            <i class="fal fa-chevron-down item-arrow-icon down"></i>
+                        </a>
+                        <div class="sidebar-menu-sub collapse" id="sbHelpers" data-bs-parent="#sidebar-menu">
+                            <div class="sidebar-menu-sub-content">
+                                <a href="helpers.html#clearfix">Clearfix</a>
+                                <a href="helpers.html#colored-links">Colored links</a>
+                                <a href="helpers.html#ratio">Ratio</a>
+                                <a href="helpers.html#position">Position</a>
+                                <a href="helpers.html#visually-hidden">Visually hidden</a>
+                                <a href="helpers.html#stretched-link">Stretched link</a>
+                                <a href="helpers.html#text-truncation">Text truncation</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" data-bs-toggle="collapse" data-bs-target="#sbLayout"
+                            href="javascrip:void(0)">
+                            <i class="fa-light fa-table-layout item-icon"></i>
+                            <span>Layout</span>
+                            <i class="fal fa-chevron-right item-arrow-icon"></i>
+                            <i class="fal fa-chevron-down item-arrow-icon down"></i>
+                        </a>
+                        <div class="sidebar-menu-sub collapse" id="sbLayout" data-bs-parent="#sidebar-menu">
+                            <div class="sidebar-menu-sub-content">
+                                <a href="layout.html#breakpoints">Breakpoints</a>
+                                <a href="layout.html#containers">Containers</a>
+                                <a href="layout.html#grid">Grid</a>
+                                <a href="layout.html#columns">Columns</a>
+                                <a href="layout.html#gutters">Gutters</a>
+                                <a href="layout.html#utilities">Utilities</a>
+                                <a href="layout.html#zindex">Z-index</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" data-bs-toggle="collapse" data-bs-target="#sbForms"
+                            href="javascrip:void(0)">
+                            <i class="fa-light fa-file-user item-icon"></i>
+                            <span>Forms</span>
+                            <i class="fal fa-chevron-right item-arrow-icon"></i>
+                            <i class="fal fa-chevron-down item-arrow-icon down"></i>
+                        </a>
+                        <div class="sidebar-menu-sub collapse" id="sbForms" data-bs-parent="#sidebar-menu">
+                            <div class="sidebar-menu-sub-content">
+                                <a href="forms.html#overview">Overview</a>
+                                <a href="forms.html#form-control">Form control</a>
+                                <a href="forms.html#select">Select</a>
+                                <a href="forms.html#checks-radios">Checks &amp; radios</a>
+                                <a href="forms.html#input-group">Input group</a>
+                                <a href="forms.html#floating">Floating labels</a>
+                                <a href="forms.html#layout">Layout</a>
+                                <a href="forms.html#validation">Validation</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" data-bs-toggle="collapse" data-bs-target="#sbDatTen"
+                            href="javascrip:void(0)">
+                            <i class="fa-regular fa-tags item-icon"></i>
+                            <span>Đặt tên class</span>
+                            <i class="fal fa-chevron-right item-arrow-icon"></i>
+                            <i class="fal fa-chevron-down item-arrow-icon down"></i>
+                        </a>
+                        <div class="sidebar-menu-sub collapse" id="sbDatTen" data-bs-parent="#sidebar-menu">
+                            <div class="sidebar-menu-sub-content">
+                                <a href="dat-ten-class.htm#dtc-bocuc">Bố cục</a>
+                                <a href="dat-ten-class.htm#dtc-header">Header &amp; Footer</a>
+                                <a href="dat-ten-class.htm#dtc-dieuhuong">Điều hướng</a>
+                                <a href="dat-ten-class.htm#dtc-nut">Nút</a>
+                                <a href="dat-ten-class.htm#dtc-bieumau">Biểu mẫu</a>
+                                <a href="dat-ten-class.htm#dtc-the">Thẻ &amp; Hộp</a>
+                                <a href="dat-ten-class.htm#dtc-bang">Bảng</a>
+                                <a href="dat-ten-class.htm#dtc-vanban">Văn bản</a>
+                                <a href="dat-ten-class.htm#dtc-thanhphan">Thành phần</a>
+                                <a href="dat-ten-class.htm#dtc-trangthai">Trạng thái</a>
+                                <a href="dat-ten-class.htm#dtc-tienich">Tiện ích</a>
+                                <a href="dat-ten-class.htm#dtc-khoangcach">Khoảng cách</a>
+                                <a href="dat-ten-class.htm#dtc-hinhanh">Hình ảnh &amp; Media</a>
+                                <a href="dat-ten-class.htm#dtc-luoi">Lưới</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" href="color.html">
+                            <i class="fa-light fa-palette item-icon"></i>
+                            <span>Colors</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" href="button.html">
+                            <i class="fa-light fa-hand-pointer item-icon"></i>
+                            <span>Buttons</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" href="Modal.html">
+                            <i class="fa-light fa-window-restore item-icon"></i>
+                            <span>Modal</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" href="table.html">
+                            <i class="fa-light fa-table item-icon"></i>
+                            <span>Table</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" href="tabs.html">
+                            <i class="fa-light fa-folder-tree item-icon"></i>
+                            <span>Tabs</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-menu-item active">
+                        <a class="sidebar-menu-header collapsed" href="tree.html">
+                            <i class="fa-light fa-sitemap item-icon"></i>
+                            <span>Danh mục tree</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" href="icon.html">
+                            <i class="fa-light fa-icons item-icon"></i>
+                            <span>Icon</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" href="Header - title.html">
+                            <i class="fa-light fa-font item-icon"></i>
+                            <span>Header - title</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" href="Search.html">
+                            <i class="fa-light fa-magnifying-glass item-icon"></i>
+                            <span>Search</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" href="HTML-Form-ChucNangHSo.html">
+                            <i class="fa-light fa-id-card item-icon"></i>
+                            <span>Hồ sơ sinh viên</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" href="thong-tin-sinh-vien.html">
+                            <i class="fa-light fa-address-card item-icon"></i>
+                            <span>Thông tin sinh viên</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="main-content">
+            <!-- content -->
+            <div class="overlay"></div>
+            <div class="content-tab no-tab">
+                <div class="d-flex justify-content-between">
+                    <div class="nav-content-left">
+                        <p class="link">
+                            <a href="#">Danh mục Tree</a>
+                        </p>
+                    </div>
+                    <div class="nav-content-right">
+                        <a class="d-block text-right" href>
+                            <i class="fas fa-question-circle"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="row box-comment box-button-main">
+                <div class="col-7 pl-20">
+                    <!-- Header box -->
+                    <h3 class="pl-0">Các dạng cây (Tree) đang dùng trong hệ thống</h3>
+
+                    <!-- 1. jstree Cơ cấu tổ chức -->
+                    <div class="box box-solid box-shadow pd0 mb-20" id="tree-jstree">
+                        <div class="box-header with-border">
+                            <h3 class="box-title color-blue"><i class="fa-duotone fa-solid fa-sitemap mr-5"></i>
+                                Tree Cơ cấu tổ chức (jstree)</h3>
+                        </div>
+                        <div class="box-body column-1">
+                            <div class="box-content pd-20">
+                                <p class="color-888">Cây đơn vị hành chính dùng plugin <strong>jstree</strong>
+                                    (theme <code>jstree-default</code>). Mỗi node là <code>li.jstree-node</code>;
+                                    node có con thêm <code>jstree-open</code>/<code>jstree-closed</code> và một
+                                    <code>ul.jstree-children</code> lồng bên trong. Bọc cả cây trong
+                                    <code>.trees-coCau-toChuc</code> để nhóm nút thao tác (Chi tiết / Sửa / Xóa /
+                                    Thêm) tự hiện khi rê chuột vào dòng.
+                                </p>
+                                <span class="demo-label-code mt-0 mb-10">Giao diện</span>
+                                <div class="bd-example">
+                                    <div class="trees-coCau-toChuc">
+                                        <div class="jstree jstree-default" role="tree">
+                                            <ul class="jstree-container-ul jstree-children" role="group">
+                                                <li role="treeitem" title="Trường Đại học"
+                                                    class="jstree-node btnEvent jstree-open treeitem d-flex">
+                                                    <i class="jstree-icon jstree-ocl" role="presentation"></i>
+                                                    <div class="tree-list-title">
+                                                        <a class="jstree-anchor" href="#">
+                                                            <i class="jstree-icon jstree-themeicon fa fa-opera color-active jstree-themeicon-custom"
+                                                                role="presentation"></i>Trường Đại học</a>
+                                                        <div class="list-btn treeitem-btn aps-gap-10">
+                                                            <a class="btn btn-outline-info" href="#chitiet">Chi
+                                                                tiết</a>
+                                                            <a class="btn btn-outline-primary" href="#sua">Sửa</a>
+                                                            <a class="btn btn-outline-danger" href="#xoa">Xóa</a>
+                                                            <a class="btn btn-outline-success" href="#them">Thêm
+                                                                đơn vị con</a>
+                                                        </div>
+                                                    </div>
+                                                    <ul role="group" class="jstree-children pt-5">
+                                                        <li role="treeitem" title="Khoa CNTT"
+                                                            class="jstree-node btnEvent jstree-leaf d-flex treeitem-2">
+                                                            <i class="jstree-icon jstree-ocl"
+                                                                role="presentation"></i><a class="jstree-anchor"
+                                                                href="#"><i
+                                                                    class="jstree-icon jstree-themeicon fa fa-opera color-active jstree-themeicon-custom"
+                                                                    role="presentation"></i>Khoa CNTT</a>
+                                                            <div class="list-btn treeitem-btn-con aps-gap-10">
+                                                                <a class="btn btn-outline-info" href="#">Chi tiết</a>
+                                                                <a class="btn btn-outline-primary" href="#">Sửa</a>
+                                                                <a class="btn btn-outline-danger" href="#">Xóa</a>
+                                                            </div>
+                                                        </li>
+                                                        <li role="treeitem" title="Khoa Kinh tế"
+                                                            class="jstree-node btnEvent jstree-leaf jstree-last d-flex treeitem-2">
+                                                            <i class="jstree-icon jstree-ocl"
+                                                                role="presentation"></i><a class="jstree-anchor"
+                                                                href="#"><i
+                                                                    class="jstree-icon jstree-themeicon fa fa-opera color-active jstree-themeicon-custom"
+                                                                    role="presentation"></i>Khoa Kinh tế</a>
+                                                            <div class="list-btn treeitem-btn-con aps-gap-10">
+                                                                <a class="btn btn-outline-info" href="#">Chi tiết</a>
+                                                                <a class="btn btn-outline-primary" href="#">Sửa</a>
+                                                                <a class="btn btn-outline-danger" href="#">Xóa</a>
+                                                            </div>
+                                                        </li>
+                                                    </ul>
+                                                </li>
+                                                <li role="treeitem" title="Phòng Đào tạo"
+                                                    class="jstree-node btnEvent jstree-leaf jstree-last d-flex treeitem">
+                                                    <i class="jstree-icon jstree-ocl" role="presentation"></i>
+                                                    <div class="tree-list-title">
+                                                        <a class="jstree-anchor" href="#">
+                                                            <i class="jstree-icon jstree-themeicon fa fa-opera color-active jstree-themeicon-custom"
+                                                                role="presentation"></i>Phòng Đào tạo</a>
+                                                        <div class="list-btn treeitem-btn aps-gap-10">
+                                                            <a class="btn btn-outline-info" href="#">Chi tiết</a>
+                                                            <a class="btn btn-outline-primary" href="#">Sửa</a>
+                                                            <a class="btn btn-outline-danger" href="#">Xóa</a>
+                                                            <a class="btn btn-outline-success" href="#">Thêm đơn vị
+                                                                con</a>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="color-888 mt-10 mb-0"><i class="fa-light fa-circle-info mr-5"></i>Việc
+                                    đóng/mở node do plugin jstree xử lý bằng JS. Trang demo này chỉ hiển thị cấu
+                                    trúc &amp; giao diện tĩnh.</p>
+                                <span class="demo-label-code mb10">Code (rút gọn)</span>
+                                <pre class="code-block mt-0">&lt;div class="trees-coCau-toChuc"&gt;
+    &lt;div class="jstree jstree-default" role="tree"&gt;
+        &lt;ul class="jstree-container-ul jstree-children" role="group"&gt;
+            &lt;li role="treeitem" class="jstree-node jstree-open treeitem d-flex"&gt;
+                &lt;i class="jstree-icon jstree-ocl"&gt;&lt;/i&gt;
+                &lt;div class="tree-list-title"&gt;
+                    &lt;a class="jstree-anchor" href="#"&gt;
+                        &lt;i class="jstree-icon jstree-themeicon fa fa-opera"&gt;&lt;/i&gt;Trường Đại học&lt;/a&gt;
+                    &lt;div class="list-btn treeitem-btn aps-gap-10"&gt;
+                        &lt;a class="btn btn-outline-info"&gt;Chi tiết&lt;/a&gt; ...
+                    &lt;/div&gt;
+                &lt;/div&gt;
+                &lt;ul role="group" class="jstree-children"&gt;
+                    &lt;li class="jstree-node jstree-leaf treeitem-2"&gt;...&lt;/li&gt;
+                &lt;/ul&gt;
+            &lt;/li&gt;
+        &lt;/ul&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 1b. Danh sách danh mục (jstree phẳng) -->
+                    <div class="box box-solid box-shadow pd0 mb-20" id="tree-danhmuc">
+                        <div class="box-header with-border">
+                            <h3 class="box-title color-blue"><i class="fa-duotone fa-solid fa-newspaper mr-5"></i>
+                                Danh sách danh mục (jstree phẳng)</h3>
+                        </div>
+                        <div class="box-body column-1">
+                            <div class="box-content pd-20">
+                                <p class="color-888">Dạng cây 1 cấp (toàn node lá) dùng ở màn <strong>Danh mục dữ
+                                        liệu</strong>. Box bọc là <code>.aps-danhmucDL</code>; tiêu đề kèm
+                                    <strong>badge</strong> đếm tổng số mục, jstree render danh sách vào
+                                    <code>#zone_danhmuctenbang_dmdl</code>. Bấm chọn một mục để đổ dữ liệu sang bảng
+                                    bên phải.
+                                </p>
+                                <span class="demo-label-code mt-0 mb-10">Giao diện</span>
+                                <div class="bd-example">
+                                    <div class="box box-solid aps-danhmucDL pd15 mb-0">
+                                        <div class="box-header">
+                                            <h3 class="box-title mt-5">
+                                                <i class="fa-light fa-newspaper"></i> Danh sách danh mục
+                                            </h3>
+                                            <span class="pull-right badge bg-light-blue">
+                                                <span id="lblDanhMucTenBang_Tong">8</span>
+                                            </span>
+                                        </div>
+                                        <div class="box-body pd0">
+                                            <div id="zone_danhmuctenbang_dmdl" class="jstree jstree-default"
+                                                role="tree">
+                                                <ul class="jstree-container-ul jstree-children" role="group">
+                                                    <li role="treeitem" title="QLHLTL.TINHTRANGDANGKY"
+                                                        class="jstree-node btnEvent jstree-leaf">
+                                                        <i class="jstree-icon jstree-ocl" role="presentation"></i><a
+                                                            class="jstree-anchor" href="#"><i
+                                                                class="jstree-icon jstree-themeicon fa-duotone fa-solid fa-folder jstree-themeicon-custom"
+                                                                role="presentation"></i>QLHLTL.TINHTRANGDANGKY</a>
+                                                    </li>
+                                                    <li role="treeitem" title="THI.CONGBOLICHTHI"
+                                                        class="jstree-node btnEvent jstree-leaf">
+                                                        <i class="jstree-icon jstree-ocl" role="presentation"></i><a
+                                                            class="jstree-anchor" href="#"><i
+                                                                class="jstree-icon jstree-themeicon fa-duotone fa-solid fa-folder jstree-themeicon-custom"
+                                                                role="presentation"></i>THI.CONGBOLICHTHI</a>
+                                                    </li>
+                                                    <li role="treeitem" title="THI.PHACH.NGUYENTACSINHTHUTU"
+                                                        class="jstree-node btnEvent jstree-leaf">
+                                                        <i class="jstree-icon jstree-ocl" role="presentation"></i><a
+                                                            class="jstree-anchor" href="#"><i
+                                                                class="jstree-icon jstree-themeicon fa-duotone fa-solid fa-folder jstree-themeicon-custom"
+                                                                role="presentation"></i>THI.PHACH.NGUYENTACSINHTHUTU</a>
+                                                    </li>
+                                                    <li role="treeitem" title="THI.PHACH.QUYTACTAOPHACH"
+                                                        class="jstree-node btnEvent jstree-leaf">
+                                                        <i class="jstree-icon jstree-ocl" role="presentation"></i><a
+                                                            class="jstree-anchor" href="#"><i
+                                                                class="jstree-icon jstree-themeicon fa-duotone fa-solid fa-folder jstree-themeicon-custom"
+                                                                role="presentation"></i>THI.PHACH.QUYTACTAOPHACH</a>
+                                                    </li>
+                                                    <li role="treeitem" title="THI.PHACH.QUYTACTAOTUI"
+                                                        class="jstree-node btnEvent jstree-leaf">
+                                                        <i class="jstree-icon jstree-ocl" role="presentation"></i><a
+                                                            class="jstree-anchor" href="#"><i
+                                                                class="jstree-icon jstree-themeicon fa-duotone fa-solid fa-folder jstree-themeicon-custom"
+                                                                role="presentation"></i>THI.PHACH.QUYTACTAOTUI</a>
+                                                    </li>
+                                                    <li role="treeitem" title="THI.PHUCKHAO.LOAIXACNHAN"
+                                                        class="jstree-node btnEvent jstree-leaf">
+                                                        <i class="jstree-icon jstree-ocl" role="presentation"></i><a
+                                                            class="jstree-anchor" href="#"><i
+                                                                class="jstree-icon jstree-themeicon fa-duotone fa-solid fa-folder jstree-themeicon-custom"
+                                                                role="presentation"></i>THI.PHUCKHAO.LOAIXACNHAN</a>
+                                                    </li>
+                                                    <li role="treeitem" title="THI.PHUCKHAO.TINHTRANG"
+                                                        class="jstree-node btnEvent jstree-leaf">
+                                                        <i class="jstree-icon jstree-ocl" role="presentation"></i><a
+                                                            class="jstree-anchor" href="#"><i
+                                                                class="jstree-icon jstree-themeicon fa-duotone fa-solid fa-folder jstree-themeicon-custom"
+                                                                role="presentation"></i>THI.PHUCKHAO.TINHTRANG</a>
+                                                    </li>
+                                                    <li role="treeitem"
+                                                        title="THI.TINHTRANGVANGTHI_VIPHAMQUYCHE"
+                                                        class="jstree-node btnEvent jstree-leaf jstree-last">
+                                                        <i class="jstree-icon jstree-ocl" role="presentation"></i><a
+                                                            class="jstree-anchor" href="#"><i
+                                                                class="jstree-icon jstree-themeicon fa-duotone fa-solid fa-folder jstree-themeicon-custom"
+                                                                role="presentation"></i>THI.TINHTRANGVANGTHI_VIPHAMQUY...</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="demo-label-code mb10">Code (rút gọn)</span>
+                                <pre class="code-block mt-0">&lt;div class="box box-solid aps-danhmucDL pd15"&gt;
+    &lt;div class="box-header"&gt;
+        &lt;h3 class="box-title mt-5"&gt;
+            &lt;i class="fa-light fa-newspaper"&gt;&lt;/i&gt; Danh sách danh mục
+        &lt;/h3&gt;
+        &lt;span class="pull-right badge bg-light-blue"&gt;
+            &lt;span id="lblDanhMucTenBang_Tong"&gt;8&lt;/span&gt;
+        &lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div class="box-body pd0"&gt;
+        &lt;!-- jstree tự render danh sách node lá vào đây --&gt;
+        &lt;div id="zone_danhmuctenbang_dmdl" class="jstree jstree-default" role="tree"&gt;
+            &lt;ul class="jstree-container-ul jstree-children" role="group"&gt;
+                &lt;li role="treeitem" class="jstree-node jstree-leaf"&gt;
+                    &lt;i class="jstree-icon jstree-ocl"&gt;&lt;/i&gt;
+                    &lt;a class="jstree-anchor" href="#"&gt;
+                        &lt;i class="jstree-icon jstree-themeicon fa-duotone fa-folder"&gt;&lt;/i&gt;THI.CONGBOLICHTHI&lt;/a&gt;
+                &lt;/li&gt;
+            &lt;/ul&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. jstree container do JS render -->
+                    <div class="box box-solid box-shadow pd0 mb-20" id="tree-zone">
+                        <div class="box-header with-border">
+                            <h3 class="box-title color-blue">Tree Phân quyền / Danh mục dữ liệu (jstree động)</h3>
+                        </div>
+                        <div class="box-body column-1 color-888">
+                            <div class="box-content pd-20">
+                                <p>Các màn <strong>Phân quyền vai trò</strong>, <strong>Danh mục dữ liệu</strong>,
+                                    <strong>Quản trị quyền dữ liệu</strong>… dùng một <code>&lt;div&gt;</code> rỗng
+                                    làm vùng chứa (<code>zone</code>), jstree sẽ tự đổ dữ liệu và sinh markup khi
+                                    trang tải. Bạn chỉ cần đặt đúng id/class vùng chứa.
+                                </p>
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Vùng chứa (class / id)</th>
+                                            <th>Dùng ở màn</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code>.aps-vaitro-cn-l</code> · <code>#zone_vaitroungdung</code></td>
+                                            <td>Phân quyền chức năng theo vai trò</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>.aps-vaitro-nguoidung-l</code></td>
+                                            <td>Vai trò người dùng</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>.aps-function-l</code></td>
+                                            <td>Cây chức năng ứng dụng</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>#zone_danhmuctenbang_dmdl</code></td>
+                                            <td>Danh mục dữ liệu (tên bảng)</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <span class="demo-label-code">Code (vùng chứa rỗng)</span>
+                                <pre class="code-block">&lt;div class="col-sm-3 aps-box-l aps-vaitro-cn-l"&gt;
+    &lt;!-- jstree tự render cây vào trong div này --&gt;
+    &lt;div id="zone_vaitroungdung" class="jstree jstree-default" role="tree"&gt;&lt;/div&gt;
+&lt;/div&gt;</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. Sidebar accordion tree -->
+                    <div class="box box-solid box-shadow pd0" id="tree-sidebar">
+                        <div class="box-header with-border">
+                            <h3 class="box-title color-blue">Menu điều hướng dạng cây (sidebar accordion)</h3>
+                        </div>
+                        <div class="box-body column-1">
+                            <div class="box-content pd-20">
+                                <p class="color-888">Menu trái của hệ thống cũng là một dạng cây 2 cấp, dựng bằng
+                                    <code>.sidebar-menu</code> + Bootstrap <code>collapse</code>. Mục cha là
+                                    <code>.sidebar-menu-header</code> với <code>data-bs-toggle="collapse"</code>,
+                                    nhóm con nằm trong <code>.sidebar-menu-sub.collapse</code>.
+                                </p>
+                                <span class="demo-label-code">Code (rút gọn)</span>
+                                <pre class="code-block">&lt;div class="accordion" id="sidebar-menu"&gt;
+    &lt;div class="sidebar-menu-item"&gt;
+        &lt;a class="sidebar-menu-header collapsed" data-bs-toggle="collapse"
+            data-bs-target="#sbForms" href="javascrip:void(0)"&gt;
+            &lt;i class="fa-light fa-file-user item-icon"&gt;&lt;/i&gt;
+            &lt;span&gt;Forms&lt;/span&gt;
+            &lt;i class="fal fa-chevron-right item-arrow-icon"&gt;&lt;/i&gt;
+            &lt;i class="fal fa-chevron-down item-arrow-icon down"&gt;&lt;/i&gt;
+        &lt;/a&gt;
+        &lt;div class="sidebar-menu-sub collapse" id="sbForms" data-bs-parent="#sidebar-menu"&gt;
+            &lt;div class="sidebar-menu-sub-content"&gt;
+                &lt;a href="forms.html#overview"&gt;Overview&lt;/a&gt;
+                &lt;a href="forms.html#select"&gt;Select&lt;/a&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</pre>
+                                <p class="color-888 mt-10 mb-0"><i class="fa-light fa-arrow-left mr-5"></i>Xem trực
+                                    tiếp ở menu bên trái của trang này.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-5">
+                    <div class="box-content pt-0 pb-20 pr-10">
+                        <!-- Header box -->
+                        <h3 class="pl-0">Danh mục Tree với Bootstrap</h3>
+
+                        <!-- Demo tree Bootstrap -->
+                        <div class="box box-solid box-shadow pd0 mb-20" id="tree-bootstrap">
+                            <div class="box-header with-border">
+                                <h3 class="box-title color-blue"><i
+                                        class="fa-duotone fa-solid fa-folder-tree mr-5"></i>
+                                    Tree bằng Bootstrap</h3>
+                            </div>
+                            <div class="box-body column-1">
+                                <div class="box-content pd-20">
+                                    <p class="color-888">Bootstrap 5 <strong>không có</strong> component tree riêng.
+                                        Cách dựng phổ biến: lồng các danh sách và dùng <code>collapse</code> để
+                                        đóng/mở nhánh, kèm icon chevron xoay. Demo dưới đây bấm mở/đóng được ngay.</p>
+                                    <span class="demo-label-code">Giao diện</span>
+                                    <div class="bd-example">
+                                        <ul class="tree-bs">
+                                            <li class="tree-bs-item">
+                                                <a class="tree-bs-toggle" data-bs-toggle="collapse"
+                                                    href="#bsKhoaCNTT" role="button" aria-expanded="true">
+                                                    <i class="fa-solid fa-chevron-down tree-bs-caret"></i>
+                                                    <i class="fa-light fa-folder-tree"></i> Khoa CNTT
+                                                </a>
+                                                <ul class="collapse show" id="bsKhoaCNTT">
+                                                    <li class="tree-bs-item">
+                                                        <a class="tree-bs-toggle collapsed" data-bs-toggle="collapse"
+                                                            href="#bsK65" role="button" aria-expanded="false">
+                                                            <i class="fa-solid fa-chevron-down tree-bs-caret"></i>
+                                                            <i class="fa-light fa-folder"></i> Khóa 65
+                                                        </a>
+                                                        <ul class="collapse" id="bsK65">
+                                                            <li class="tree-bs-item">
+                                                                <span class="tree-bs-leaf"><i
+                                                                        class="fa-light fa-users"></i> Lớp
+                                                                    CNTT-K65A</span>
+                                                            </li>
+                                                            <li class="tree-bs-item">
+                                                                <span class="tree-bs-leaf"><i
+                                                                        class="fa-light fa-users"></i> Lớp
+                                                                    CNTT-K65B</span>
+                                                            </li>
+                                                        </ul>
+                                                    </li>
+                                                    <li class="tree-bs-item">
+                                                        <span class="tree-bs-leaf"><i
+                                                                class="fa-light fa-users"></i> Lớp CNTT-K66</span>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li class="tree-bs-item">
+                                                <span class="tree-bs-leaf"><i class="fa-light fa-folder"></i> Khoa
+                                                    Kinh tế</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <span class="demo-label-code">Code (rút gọn)</span>
+                                    <pre class="code-block">&lt;ul class="tree-bs"&gt;
+    &lt;li class="tree-bs-item"&gt;
+        &lt;a class="tree-bs-toggle" data-bs-toggle="collapse"
+            href="#bsKhoaCNTT" role="button" aria-expanded="true"&gt;
+            &lt;i class="fa-solid fa-chevron-down tree-bs-caret"&gt;&lt;/i&gt;
+            &lt;i class="fa-light fa-folder-tree"&gt;&lt;/i&gt; Khoa CNTT
+        &lt;/a&gt;
+        &lt;ul class="collapse show" id="bsKhoaCNTT"&gt;
+            &lt;li class="tree-bs-item"&gt;
+                &lt;span class="tree-bs-leaf"&gt;Lớp CNTT-K66&lt;/span&gt;
+            &lt;/li&gt;
+        &lt;/ul&gt;
+    &lt;/li&gt;
+&lt;/ul&gt;</pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Class & ý nghĩa -->
+                        <div class="box box-solid box-shadow box-header pd0">
+                            <div class="box-header with-border">
+                                <h3 class="box-title color-blue">
+                                    <i class="fa-duotone fa-solid fa-toggle-large-on"></i> Class &amp; ý nghĩa
+                                </h3>
+                            </div>
+                            <div class="box-body w-100">
+                                <div class="box-content pd-20 w-100">
+                                    <table class="table table-noborder table-hover w-100">
+                                        <thead>
+                                            <tr>
+                                                <th>Class / Thuộc tính</th>
+                                                <th>Ý nghĩa</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="2" class="color-blue fw-bold">1. Tree Bootstrap (dựng
+                                                    tay)</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>data-bs-toggle="collapse"</code></td>
+                                                <td>Bấm để mở/đóng một nhánh con.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>href="#id"</code> / <code>data-bs-target</code></td>
+                                                <td>Trỏ tới nhánh (<code>.collapse</code>) cần đóng/mở.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.collapse</code></td>
+                                                <td>Nhánh đang ẩn (mặc định đóng).</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.collapse.show</code></td>
+                                                <td>Nhánh đang mở sẵn khi tải trang.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.list-group</code> / <code>.list-group-item</code></td>
+                                                <td>Có thể dùng thay <code>&lt;ul&gt;</code> để mỗi node là một
+                                                    dòng có viền.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>aria-expanded</code></td>
+                                                <td>Báo trạng thái mở/đóng cho trợ năng; cũng dùng để xoay chevron.
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td colspan="2" class="color-blue fw-bold">2. Tree jstree (hệ thống
+                                                    dùng)</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.jstree.jstree-default</code></td>
+                                                <td>Vùng cây gốc, áp theme mặc định của jstree.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.jstree-container-ul</code></td>
+                                                <td><code>&lt;ul&gt;</code> bao toàn bộ node cấp 1.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.jstree-node</code></td>
+                                                <td>Một node (<code>&lt;li&gt;</code>) trong cây.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.jstree-leaf</code></td>
+                                                <td>Node lá — không có con.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.jstree-open</code> / <code>.jstree-closed</code></td>
+                                                <td>Node cha đang mở / đang đóng.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.jstree-last</code></td>
+                                                <td>Node cuối cùng trong nhóm.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.jstree-children</code></td>
+                                                <td><code>&lt;ul&gt;</code> chứa các node con (lồng nhau).</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.jstree-ocl</code></td>
+                                                <td>Icon mũi tên đóng/mở (open-close-leaf).</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.jstree-anchor</code></td>
+                                                <td>Thẻ bấm chứa tên node.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.jstree-themeicon</code></td>
+                                                <td>Icon đại diện cho node (gắn icon Font Awesome).</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td colspan="2" class="color-blue fw-bold">3. Class riêng của dự án
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.trees-coCau-toChuc</code></td>
+                                                <td>Bọc cả cây; bật hiện nút thao tác khi hover dòng.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.tree-list-title</code></td>
+                                                <td>Hàng chứa tên node + nhóm nút thao tác.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.treeitem</code> / <code>.treeitem-2</code></td>
+                                                <td>Node cấp cha / node cấp con.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.treeitem-btn</code> /
+                                                    <code>.treeitem-btn-con</code></td>
+                                                <td>Nhóm nút (Chi tiết / Sửa / Xóa / Thêm) ẩn, hiện khi hover.</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td colspan="2" class="color-blue fw-bold">4. Menu cây (sidebar)
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.sidebar-menu</code></td>
+                                                <td>Khối menu trái dạng cây.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.sidebar-menu-item</code></td>
+                                                <td>Một mục menu (cha hoặc đơn).</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.sidebar-menu-header</code></td>
+                                                <td>Dòng tiêu đề mục cha (bấm để mở nhóm con).</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>.sidebar-menu-sub</code></td>
+                                                <td>Nhóm mục con, dùng kèm <code>.collapse</code>.</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Lưu ý -->
+                        <div class="box box-solid box-shadow pd0 mb-20">
+                            <div class="box-header with-border">
+                                <h3 class="box-title color-blue"><i class="fa-duotone fa-solid fa-lightbulb mr-5"></i>
+                                    Lưu ý khi dùng</h3>
+                            </div>
+                            <div class="box-body column-1 color-888">
+                                <div class="box-content pd-20">
+                                    <ul class="pl-20" style="list-style: disc;">
+                                        <li class="mb-10">Tree thật của hệ thống chạy bằng plugin
+                                            <strong>jstree</strong> — markup do JS sinh ra, đừng viết tay toàn bộ.
+                                        </li>
+                                        <li class="mb-10">Khi cần tree nhẹ, không phụ thuộc plugin: dùng
+                                            <code>collapse</code> của Bootstrap như demo bên trên.</li>
+                                        <li class="mb-10">Mỗi nhánh <code>collapse</code> cần <code>id</code> riêng,
+                                            không trùng nhau trên cùng trang.</li>
+                                        <li>Chevron xoay bằng CSS dựa vào class <code>.collapsed</code> Bootstrap tự
+                                            thêm/bỏ trên nút bấm.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- -------------------------- -->
+        <!-- JS -->
+        <script src="../assets/bootstrap-5.3.2/js/bootstrap.bundle.js"></script>
+        <script src="../assets/swiper-slide/swiper-bundle.min.js"></script>
+        <script src="../assets/js/jquery-3.7.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="../assets/js/customs.js"></script>
+        <script>
+            $(window).on("load", function () {
+                // $("#ketQua_nhapHoc").modal("show");
+            });
+        </script>
+</body>
+
+</html>

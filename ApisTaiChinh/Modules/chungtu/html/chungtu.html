@@ -1,0 +1,1243 @@
+﻿<style>
+    .table-hoadon {
+        text-align: center;
+    }
+
+    .table-hoadon td {
+        font-size: 11pt;
+        font-family: 'Times New Roman';
+        border: 1px solid black;
+    }
+
+    .table-hoadon th {
+        font-size: 11pt;
+        font-family: 'Times New Roman';
+        text-align: center;
+    }
+
+    .table-hoadon {
+        width: 100%;
+        border: 1px solid black;
+    }
+
+    .row_add {
+        max-height: 25px;
+        height: 25px;
+        text-align: left;
+    }
+
+    .dropdown-menu {
+        border-radius: 0px;
+        margin: 1px 0 0;
+    }
+
+    table label {
+        margin-bottom: 0px !important
+    }
+
+    table input {
+        border: none;
+    }
+
+    .ns-title {
+        font-size: 16px !important;
+    }
+
+    .ns-value {
+        font-size: 16px !important;
+    }
+
+    .activeOnSearch,
+    .activeSelect {
+        background-color: #f1f1f1;
+    }
+
+    #zoneMainContent fieldset {
+        border: 1px solid #cfd4d8;
+        margin: 0;
+        min-width: 0;
+        padding: 10px;
+    }
+
+    #zoneMainContent legend {
+        color: black;
+        border: none !important;
+        /*border-bottom: 1px solid #cfd4d8 !important;*/
+        opacity: 0.8;
+        margin-bottom: 0px !important;
+    }
+
+
+    .fieldset {
+        border: 1px solid #cfd4d8;
+        margin: 0;
+        min-width: 0;
+        padding: 10px;
+    }
+
+    .legend {
+        color: black;
+        border: none !important;
+        /*border-bottom: 1px solid #cfd4d8 !important;*/
+        opacity: 0.8;
+        margin-bottom: 0px !important;
+    }
+
+    #zoneChungTu {
+        padding-left: 20%
+    }
+
+    .btnChiTietKhoanThu,
+    .btnChiTietKhoanThu,
+    .actionThuTien_PhieuThu,
+    .actionKhoiDongHoaDon,
+    .anouChuaHoTro_PhieuThu {
+        cursor: pointer;
+    }
+
+    .table-hoadon input {
+        width: 100%;
+        text-align: center;
+    }
+
+
+    .progress {
+        margin-bottom: 5px;
+    }
+
+    #zoneSinhVien {
+        font-size: 24px
+    }
+
+    .inputsotien {
+        text-align: right;
+        font-size: 20px;
+        padding-right: 10px;
+        border: 1px #f1f1f1 solid;
+    }
+
+    .inputnoidung {
+        text-align: left;
+        border: 1px #f1f1f1 solid;
+        height: 32px;
+        width: 100%;
+    }
+
+    @media only screen and (max-width: 1600px) {
+        #lblNangCao {
+            display: none;
+        }
+    }
+
+    .lbsymbolHD {
+        font-size: 13px;
+        font-family: 'Times New Roman', Times, serif;
+        cursor: pointer;
+    }
+
+    .activeLien {
+        background: rgba(0, 0, 0, 0) -moz-linear-gradient(center top, #bbbbbb 0%, #efefef 100%) repeat scroll 0 0 !important;
+    }
+
+    /* ============================================================
+       Action bar #zoneActionChungTu — reskin theo pattern thutien.html:
+       Hủy (đỏ, order:-1 tách trái) — HDDT Nháp/Xuất HĐĐT (teal) — In (xanh CTA) — Liên HĐ (xanh lá) — Đóng (grey outline)
+       Gap 10px, height 38px, radius 4, chống Bootstrap gradient/background của .btn-*.
+       ============================================================ */
+    #zoneActionChungTu {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        align-items: center !important;
+        gap: 10px !important;
+        width: 100% !important;
+        padding: 10px 0;
+    }
+    #zoneActionChungTu .aps-btn,
+    #zoneActionChungTu > div,
+    #zoneActionChungTu > a {
+        display: inline-flex !important;
+        margin: 0 !important;
+        align-items: center;
+    }
+    #zoneActionXuatHoaDon {
+        display: inline-flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+    }
+    #zoneActionXuatHoaDon:empty {
+        display: none;
+    }
+    #zoneActionChungTu .btn {
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 6px;
+        height: 38px;
+        padding: 6px 14px !important;
+        font-size: 13px !important;
+        font-weight: 500 !important;
+        line-height: 1 !important;
+        border-radius: 4px !important;
+        white-space: nowrap;
+        background-image: none !important;
+        text-decoration: none !important;
+        margin: 0 !important;
+    }
+    #zoneActionChungTu .btn i {
+        font-size: 14px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: transparent !important;
+        border: none !important;
+        line-height: 1 !important;
+    }
+    /* Reset wrapper cứng của các btn được prepend/append từ JS (HDDT Nháp, Xuất HĐĐT động) */
+    #zoneActionChungTu > [id^="btn"],
+    #zoneActionChungTu > [class*="btnXuat_HDDT"] {
+        background: transparent !important;
+        background-color: transparent !important;
+        border: none !important;
+        border-radius: 0 !important;
+        padding: 0 !important;
+        height: auto !important;
+    }
+
+    /* Hủy chứng từ — destructive: đỏ solid, tách trái */
+    #zoneActionChungTu .btn-danger,
+    #zoneActionChungTu #btnHuy_ChungTu .btn {
+        background-color: #dc3545 !important;
+        border: 1px solid #dc3545 !important;
+        color: #fff !important;
+    }
+    #zoneActionChungTu .btn-danger:hover,
+    #zoneActionChungTu #btnHuy_ChungTu .btn:hover {
+        background-color: #c82333 !important;
+        border-color: #bd2130 !important;
+        color: #fff !important;
+    }
+    #zoneActionChungTu #btnHuy_ChungTu {
+        order: -1;
+        margin-right: auto !important;
+    }
+
+    /* In chứng từ — CTA chính: xanh dương filled, cao hơn 1 tí */
+    #zoneActionChungTu #btnIn_ChungTu,
+    #zoneActionChungTu .btn-primary {
+        background-color: #2563eb !important;
+        border: 1px solid #2563eb !important;
+        color: #fff !important;
+        height: 42px !important;
+        padding: 8px 20px !important;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        box-shadow: 0 1px 2px rgba(37, 99, 235, 0.25);
+    }
+    #zoneActionChungTu #btnIn_ChungTu:hover,
+    #zoneActionChungTu .btn-primary:hover {
+        background-color: #1d4ed8 !important;
+        border-color: #1d4ed8 !important;
+        color: #fff !important;
+    }
+
+    /* Liên HĐ — xanh lá (btn-warning trong template) đổi sang success để rõ nghĩa nhóm phụ */
+    #zoneActionChungTu #btnLienHoaDon,
+    #zoneActionChungTu .btn-warning {
+        background-color: #28a745 !important;
+        border: 1px solid #28a745 !important;
+        color: #fff !important;
+    }
+    #zoneActionChungTu #btnLienHoaDon:hover,
+    #zoneActionChungTu .btn-warning:hover {
+        background-color: #218838 !important;
+        border-color: #1e7e34 !important;
+        color: #fff !important;
+    }
+
+    /* HDDT Nháp / Xuất hóa đơn điện tử động (.btnXuat_HDDT do JS prepend vào #zoneActionXuatHoaDon):
+       teal solid — nhóm hóa đơn điện tử phụ, khác tone với In/Liên/Hủy để dễ nhận */
+    #zoneActionXuatHoaDon .btn,
+    #zoneActionXuatHoaDon .btnXuat_HDDT,
+    #zoneActionXuatHoaDon a.btnXuat_HDDT,
+    #zoneActionXuatHoaDon #btnHDDTNhap,
+    #zoneActionXuatHoaDon #btnHDDTNhap .btn {
+        background: #0891b2 !important;
+        background-color: #0891b2 !important;
+        background-image: none !important;
+        border: 1px solid #0891b2 !important;
+        color: #fff !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        height: 38px !important;
+        padding: 6px 14px !important;
+        font-size: 13px !important;
+        font-weight: 500 !important;
+        border-radius: 4px !important;
+        white-space: nowrap;
+        text-decoration: none !important;
+    }
+    #zoneActionXuatHoaDon .btn:hover,
+    #zoneActionXuatHoaDon .btnXuat_HDDT:hover,
+    #zoneActionXuatHoaDon a.btnXuat_HDDT:hover,
+    #zoneActionXuatHoaDon #btnHDDTNhap:hover,
+    #zoneActionXuatHoaDon #btnHDDTNhap .btn:hover {
+        background: #0e7490 !important;
+        background-color: #0e7490 !important;
+        border-color: #0e7490 !important;
+        color: #fff !important;
+    }
+    #zoneActionXuatHoaDon i,
+    #zoneActionXuatHoaDon .btn i {
+        color: #fff !important;
+        background: transparent !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* Đóng — grey outline, tách phải, không tranh chú ý */
+    #zoneActionChungTu #btnClose_ChungTu,
+    #zoneActionChungTu .btn-outline-danger {
+        background-color: #fff !important;
+        border: 1px solid #ced4da !important;
+        color: #495057 !important;
+        margin-left: 16px !important;
+    }
+    #zoneActionChungTu #btnClose_ChungTu:hover,
+    #zoneActionChungTu .btn-outline-danger:hover {
+        background-color: #f1f3f5 !important;
+        border-color: #adb5bd !important;
+        color: #212529 !important;
+    }
+
+    /* Wrapper Liên hóa đơn */
+    #btnLienHoaDon {
+        position: relative;
+    }
+    #zoneLienHoaDon {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        z-index: 999;
+        min-width: 200px;
+    }
+
+    /* ============================================================
+       Nút "Xuất hóa đơn" (D) ở góc trên bảng tab 4 & 5 (#btnAddnew_HoaDon, #btnAddnew_HoaDon_DaNop):
+       thống nhất style xanh CTA, cao 38, radius 4, icon nhỏ.
+       ============================================================ */
+    #btnAddnew_HoaDon,
+    #btnAddnew_HoaDon_DaNop {
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        height: 38px !important;
+        padding: 6px 16px !important;
+        font-size: 13px !important;
+        font-weight: 600 !important;
+        line-height: 1 !important;
+        border-radius: 4px !important;
+        background-color: #2563eb !important;
+        background-image: none !important;
+        border: 1px solid #2563eb !important;
+        color: #fff !important;
+        text-decoration: none !important;
+        white-space: nowrap;
+        box-shadow: 0 1px 2px rgba(37, 99, 235, 0.25);
+        width: auto !important;
+    }
+    #btnAddnew_HoaDon:hover,
+    #btnAddnew_HoaDon_DaNop:hover {
+        background-color: #1d4ed8 !important;
+        border-color: #1d4ed8 !important;
+        color: #fff !important;
+    }
+    #btnAddnew_HoaDon i,
+    #btnAddnew_HoaDon_DaNop i {
+        font-size: 14px !important;
+        color: #fff !important;
+        margin: 0 !important;
+    }
+
+    /* ============================================================
+       Preview hóa đơn/chứng từ #MauIn_ChungTu — reskin trên SCREEN.
+       (Print flow đã có CSS riêng trong _printChungTuCustom).
+       Đồng bộ pattern với #MauInPhieuThu bên thutien.html.
+       ============================================================ */
+    #MauIn_ChungTu {
+        font-family: 'Times New Roman', 'Cambria', serif;
+        font-size: 13pt;
+        line-height: 1.55;
+        color: #000;
+        background: #f8fafc;
+        padding: 24px 30px;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    /* Center block-level children trong card + limit max-width cho giống 1 tờ giấy A5 landscape */
+    #MauIn_ChungTu > table,
+    #MauIn_ChungTu > div,
+    #MauIn_ChungTu > p,
+    #MauIn_ChungTu > center,
+    #MauIn_ChungTu > h1,
+    #MauIn_ChungTu > h2,
+    #MauIn_ChungTu > h3,
+    #MauIn_ChungTu > h4,
+    #MauIn_ChungTu > span,
+    #MauIn_ChungTu > br {
+        max-width: 900px;
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    #MauIn_ChungTu p,
+    #MauIn_ChungTu div,
+    #MauIn_ChungTu span,
+    #MauIn_ChungTu td,
+    #MauIn_ChungTu th,
+    #MauIn_ChungTu label,
+    #MauIn_ChungTu b,
+    #MauIn_ChungTu strong {
+        font-family: 'Times New Roman', 'Cambria', serif;
+    }
+    /* Table info SV: cell padding thoáng */
+    #MauIn_ChungTu table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+    #MauIn_ChungTu table td,
+    #MauIn_ChungTu table th {
+        vertical-align: top;
+        padding: 4px 8px;
+        line-height: 1.55;
+    }
+    /* Value cạnh label: inline nowrap → không xuống dòng lệch cột */
+    #MauIn_ChungTu [class*="txtHoTen_BenB_"],
+    #MauIn_ChungTu [class*="txtMa_BenB_"],
+    #MauIn_ChungTu [class*="txtNgaySinh_BenB_"],
+    #MauIn_ChungTu [class*="txtMaSoThue"],
+    #MauIn_ChungTu .txtHoTenPTC_PT_Edit,
+    #MauIn_ChungTu .txtMaNCSPTC_PT_Edit,
+    #MauIn_ChungTu .txtNgaySinhPTC_PT_Edit {
+        display: inline !important;
+        white-space: nowrap !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    /* Lớp/Ngành/Khóa: inline, word-break keep-all */
+    #MauIn_ChungTu [class*="txtLop_BenB_"],
+    #MauIn_ChungTu [class*="txtNganh_BenB_"],
+    #MauIn_ChungTu [class*="txtKhoa_BenB_"],
+    #MauIn_ChungTu .txtLopPTC_PT_Edit,
+    #MauIn_ChungTu .txtNganhPTC_PT_Edit,
+    #MauIn_ChungTu .txtKhoaPTC_PT_Edit,
+    #MauIn_ChungTu .txtLopInline_Injected {
+        display: inline !important;
+        vertical-align: baseline;
+        word-break: keep-all;
+        overflow-wrap: normal;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    /* Paragraph: line-height thoáng */
+    #MauIn_ChungTu p {
+        line-height: 1.7;
+        margin: 4px 0;
+        word-break: keep-all;
+    }
+    /* Số tổng + viết bằng chữ */
+    #MauIn_ChungTu [class*="txtTongTienChungTu_"],
+    #MauIn_ChungTu [class*="txtTongTienBangChu_"] {
+        font-weight: bold;
+        word-break: keep-all;
+    }
+    /* Title (HÓA ĐƠN BÁN HÀNG / PHIẾU THU TIỀN) */
+    #MauIn_ChungTu h1,
+    #MauIn_ChungTu h2,
+    #MauIn_ChungTu h3,
+    #MauIn_ChungTu h4 {
+        text-align: center;
+        text-transform: uppercase;
+        font-weight: bold;
+        margin: 8px 0 4px;
+    }
+    /* Trailing "-" khi ngành/khóa rỗng: ẩn dấu gạch lẻ */
+    #MauIn_ChungTu [class*="txtLop_BenB_"]:empty::after,
+    #MauIn_ChungTu [class*="txtNganh_BenB_"]:empty::after,
+    #MauIn_ChungTu [class*="txtKhoa_BenB_"]:empty::after {
+        content: "";
+    }
+    /* Bảng "Nội dung thu" (khoản thu) — border đen rõ trên nền xám nhạt */
+    #MauIn_ChungTu table.table-hoadon,
+    #MauIn_ChungTu table[class*="table-hoadon"] {
+        border: 1.5px solid #000;
+        background: #fff;
+    }
+    #MauIn_ChungTu table.table-hoadon td,
+    #MauIn_ChungTu table.table-hoadon th {
+        border: 1px solid #000;
+        padding: 4px 8px;
+    }
+    #MauIn_ChungTu table.table-hoadon th {
+        text-align: center;
+        font-weight: bold;
+        background: #f1f5f9;
+    }
+</style>
+<div id="MainContent">
+    <section class="content aps-chungtu">
+        <div class="row aps-chungtu-in">
+            <!-- /.left-content -->
+            <div class="col-lg-3 aps-chungtu-l" id="zoneTimKiemDoiTuong">
+                <div class="box box-solid box-shadow pd0">
+                    <div class="box-body pd0">
+                        <!-- /.search -->
+                        <div class="dropdown  box box-search pd15">
+                            <div class="input-group w-100 aps-search">
+                                <input type="text" id="txtTuKhoa_Search" class="form-control"
+                                    placeholder="Nhập từ khóa tìm kiếm">
+                                <span class="input-group-addon dropdown-toggle poiter" data-toggle="dropdown"
+                                    id="advancedSearch" title="Kéo xuống">
+                                    <i class="fa fa-chevron-down"></i>
+                                </span>
+                                <span class="input-group-addon poiter btn-search" id="btnSeachDoiTuong"
+                                    title="Tìm kiếm">
+                                    <i class="fa fa fa-search"></i>
+                                </span>
+
+                                <!-- /.search-body -->
+                                <div class="dropdown-menu aps-form pd15">
+                                    <div class="aps-form-input" style="width: 100%;">
+                                        <select id="dropSearch_HeDaoTao_CT" class="select-opt"
+                                            style="width: 100% !important">
+                                            <option value="">--Chọn hệ đào tạo-- </option>
+                                        </select>
+                                    </div>
+                                    <div class="aps-form-input" style="width: 100%;">
+                                        <select id="dropSearch_KhoaDaoTao_CT" class="select-opt"
+                                            style="width: 100% !important">
+                                            <option value="">--Chọn khóa đào tạo-- </option>
+                                        </select>
+                                    </div>
+                                    <div class="aps-form-input" style="width: 100%;">
+                                        <select id="dropSearch_ChuongTrinh_CT" class="select-opt"
+                                            style="width: 100% !important">
+                                            <option value="">--Chọn chương trình-- </option>
+                                        </select>
+                                    </div>
+                                    <div class="aps-form-input" style="width: 100%;">
+                                        <select id="dropSearch_Lop_CT" class="select-opt"
+                                            style="width: 100% !important">
+                                            <option value="">--Chọn lớp-- </option>
+                                        </select>
+                                    </div>
+
+                                    <div class="aps-state mt-20" style="width: 100%;">
+                                        <div class="group-title">
+                                            <p class="titleSearchContent" data-toggle="collapse"
+                                                data-target="#DSTrangThaiSV">
+                                                <i class="fa-light fa-user-check bold"></i>
+                                                <span class="lang" key="">Trạng thái sinh viên</span>
+                                            </p>
+                                        </div>
+                                        <div class="area-search">
+                                            <div style="padding-left: 20px" id="DSTrangThaiSV_CT"
+                                                class="inputSearch collapse in DSTrangThaiSV">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="box-footer w-100">
+                                        <a id="btnSearch_CT" class="btn btn-default btnSearch"><i
+                                                class="fa fa-search"></i><span class="lang" key="">Tìm kiếm</span></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /.search-footer -->
+                            <div id="search-result" class="dropdown-menu" style="width: 100%; display: none">
+                                <div id="search-content">
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.rerult search -->
+                        <div class="zoneInfomation_MainContent box-nguoidung pd0">
+                            <div class="box">
+                                <!-- /.box-body -->
+                                <div class="box-footer aps-nguoidung-table pd0"
+                                    style="padding-bottom: 10px !important;">
+                                    <table id="tbldata_DoiTuong_CT" class="table tbldata_HSSV mb-0 table-bordered">
+                                        <tbody class="poiter"></tbody>
+                                    </table>
+                                </div>
+                                <!-- /.box-footer-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.right-content -->
+            <div id="zoneThongTinDoiTuong" class="col-sm-9 beforeActive aps-chungtu-r pl20" style="display: none">
+                <!-- /.right-content -UP -->
+                <div class="box box-solid  box-shadow pd20">
+                    <div class="box-body pd0">
+                        <!-- /.Thong tin sinh vien -->
+                        <div id="zoneDoiTuong_CT" class="header pull-left">
+                            <span class="label label-success" id="txtTinhTrang">[TinhTrang SinhVien]</span>
+                            <span id="txtTen_Ma_NS_SDT_CT" class="txtTen_Ma_NS_SDT">[HOTEN-MASO-SDT]</span><br>
+                            <p class="pt10 pl10"><span id="lbSoTienDaChon_CT" style="color: red" class="fz18"></span>
+                            </p>
+                        </div>
+                        <div class="pull-right">
+                            <a class="btn btn-default" id="btnClose_DoiTuong_CT"><i class="fa fa-times-circle"></i>
+                                <span class="lang" key=""> Đóng</span></a>
+                        </div>
+                        <div class="clear"></div>
+                        <!-- /.Tab-content -->
+                        <div class="nav-tabs-custom aps-tabs-custom mt-15" style="margin-bottom:0px;">
+                            <ul class="nav nav-tabs" style="font-weight: bold">
+                                <li class="tablinks active" name="zoneThongTinBoSungTab1">
+                                    <a href="#tab_1" data-toggle="tab" aria-expanded="true">
+                                        <i class="fa-light fa-circle-dollar-to-slot"></i><br> Tình hình học phí</a>
+                                </li>
+                                <li class="tablinks" name="zoneThongTinBoSungTab2">
+                                    <a href="#tab_2" data-toggle="tab" aria-expanded="false">
+                                        <i class="fa-light fa-receipt"></i><br>Xuất phiếu thu</a>
+                                </li>
+                                <li class="tablinks" name="zoneThongTinBoSungTab3">
+                                    <a href="#tab_3" data-toggle="tab" aria-expanded="false">
+                                        <i class="fa-light fa-file-invoice-dollar"></i><br>Xuất biên lai</a>
+                                </li>
+                                <li class="tablinks" name="zoneThongTinBoSungTab4">
+                                    <a href="#tab_4" data-toggle="tab" aria-expanded="false">
+                                        <i class="fa-light fa-file-invoice"></i><br>Xuất hóa đơn</a>
+                                </li>
+                            </ul>
+                            <div class="tab-content pd0 mt-20" style="padding: 0 !important;">
+                                <!--Tình hình học phí-->
+                                <div class="tab-pane active" id="tab_1">
+                                    <div class="zone-content">
+                                        <div class="box-content zoneThongTinBoSung" id="zoneThongTinBoSungTab1">
+                                            <!--Khoản phải nộp-->
+                                            <div class="col-lg-3 col-lg-6 poiter btnDetail_KhoanPhaiNop">
+                                                <div class="box box-solid">
+                                                    <div class="box-body">
+                                                        <!-- small box -->
+                                                        <div class="small-box bg-green d-flex">
+                                                            <div class="icon">
+                                                                <i class="fa-thin fa-sack-dollar"></i>
+                                                            </div>
+                                                            <div class="small-box-r">
+                                                                <div class="inner">
+                                                                    <h4><span class="txtTongTien_KhoanPhaiNop">0</span>
+                                                                    </h4>
+                                                                    <p>Khoản phải nộp</p>
+                                                                </div>
+                                                                <a class="small-box-footer">Chi tiết <i
+                                                                        class="fa fa-arrow-circle-right"></i></a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Khoản được miễn-->
+                                            <div class="col-lg-3 col-lg-6">
+                                                <!-- small box -->
+                                                <div class="box box-solid">
+                                                    <div class="box-body">
+                                                        <div class="small-box bg-green poiter btnDetail_KhoanDuocMien">
+                                                            <div class="icon">
+                                                                <i class="fa-thin fa-badge-dollar"></i>
+                                                            </div>
+                                                            <div class="small-box-r">
+                                                                <div class="inner">
+                                                                    <h4><span class="txtTongTien_KhoanDuocMien">0</span>
+                                                                    </h4>
+                                                                    <p>Khoản được miễn</p>
+                                                                </div>
+                                                                <a class="small-box-footer">Chi tiết <i
+                                                                        class="fa fa-arrow-circle-right"></i></a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Khoản đã nộp -->
+                                            <div class="col-lg-3 col-lg-6">
+                                                <!-- small box -->
+                                                <div class="box box-solid">
+                                                    <div class="box-body">
+                                                        <div class="small-box bg-green poiter btnDetail_KhoanDaNop">
+                                                            <div class="icon">
+                                                                <i class="fa-thin fa-circle-dollar"></i>
+                                                            </div>
+                                                            <div class="small-box-r">
+                                                                <div class="inner">
+                                                                    <h4><span class="txtTongTien_KhoanDaNop">0</span>
+                                                                    </h4>
+                                                                    <p>Khoản đã nộp</p>
+                                                                </div>
+                                                                <a class="small-box-footer">Chi tiết <i
+                                                                        class="fa fa-arrow-circle-right"></i></a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Khoản đã rút-->
+                                            <div class="col-lg-3 col-lg-6">
+                                                <!-- small box -->
+                                                <div class="box box-solid">
+                                                    <div class="box-body">
+                                                        <div class="small-box bg-green poiter btnDetail_KhoanDaRut">
+                                                            <div class="icon">
+                                                                <i class="fa-thin fa-money-from-bracket"></i>
+                                                            </div>
+                                                            <div class="small-box-r">
+                                                                <div class="inner">
+                                                                    <h4><span class="txtTongTien_KhoanDaRut">0</span>
+                                                                    </h4>
+                                                                    <p>Khoản đã rút</p>
+                                                                </div>
+                                                                <a class="small-box-footer">Chi tiết <i
+                                                                        class="fa fa-arrow-circle-right"></i></a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Tổng nợ riêng các khoản -->
+                                            <div class="col-lg-3 col-lg-6">
+                                                <!-- small box -->
+                                                <div class="box box-solid">
+                                                    <div class="box-body">
+                                                        <div class="small-box bg-red poiter btnDetail_NoRiengTungKhoan">
+                                                            <div class="icon">
+                                                                <i class="fa-thin fa-hand-holding-dollar"></i>
+                                                            </div>
+                                                            <div class="small-box-r">
+                                                                <div class="inner">
+                                                                    <h4><span
+                                                                            class="txtTongTien_NoRiengTungKhoan">0</span>
+                                                                    </h4>
+                                                                    <p>Tổng nợ riêng các khoản</p>
+                                                                </div>
+                                                                <a class="small-box-footer">Chi tiết <i
+                                                                        class="fa fa-arrow-circle-right"></i></a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Tổng nợ chung các khoản -->
+                                            <div class="col-lg-3 col-lg-6">
+                                                <!-- small box -->
+                                                <div class="box box-solid">
+                                                    <div class="box-body">
+                                                        <div class="small-box bg-red poiter btnDetail_NoChungCacKhoan">
+                                                            <div class="icon">
+                                                                <i class="fa-thin fa-hands-holding-dollar"></i>
+                                                            </div>
+                                                            <div class="small-box-r">
+                                                                <div class="inner">
+                                                                    <h4><span
+                                                                            class="txtTongTien_NoChungCacKhoan">0</span>
+                                                                    </h4>
+                                                                    <p>Tổng nợ chung các khoản</p>
+                                                                </div>
+                                                                <a class="small-box-footer">Chi tiết <i
+                                                                        class="fa fa-arrow-circle-right"></i></a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Tổng dư riêng các khoản -->
+                                            <div class="col-lg-3 col-lg-6">
+                                                <!-- small box -->
+                                                <div class="box box-solid">
+                                                    <div class="box-body">
+                                                        <div class="small-box bg-aqua poiter btnDetail_DuRiengCacKhoan">
+                                                            <div class="icon">
+                                                                <i class="fa-thin fa-square-dollar"></i>
+                                                            </div>
+                                                            <div class="small-box-r">
+                                                                <div class="inner">
+                                                                    <h4><span class="txtTongTien_DuRieng">0</span></h4>
+                                                                    <p>Tổng dư riêng các khoản</p>
+                                                                </div>
+                                                                <a class="small-box-footer">Chi tiết <i
+                                                                        class="fa fa-arrow-circle-right"></i></a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Tổng dư chung các khoản -->
+                                            <div class="col-lg-3 col-lg-6">
+                                                <!-- small box -->
+                                                <div class="box box-solid">
+                                                    <div class="box-body">
+                                                        <div class="small-box bg-aqua poiter btnDetail_DuChungCacKhoan">
+                                                            <div class="icon">
+                                                                <i class="fa-thin fa-circle-dollar-to-slot"></i>
+                                                            </div>
+                                                            <div class="small-box-r">
+                                                                <div class="inner">
+                                                                    <h4><span class="txtTongTien_DuChung">0</span></h4>
+                                                                    <p>Tổng dư chung các khoản</p>
+                                                                </div>
+                                                                <a class="small-box-footer">Chi tiết <i
+                                                                        class="fa fa-arrow-circle-right"></i></a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Danh sách phiếu đã thu -->
+                                            <div class="col-lg-3 col-lg-6">
+                                                <!-- small box -->
+                                                <div class="box box-solid">
+                                                    <div class="box-body">
+                                                        <div class="small-box bg-yellow poiter btnDetail_PhieuDaThu">
+                                                            <div class="icon">
+                                                                <i class="fa-thin fa-file-invoice-dollar"></i>
+                                                            </div>
+                                                            <div class="small-box-r">
+                                                                <div class="inner">
+                                                                    <h4><span class="txtTongTien_PhieuDaThu">0</span>
+                                                                    </h4>
+                                                                    <p>Danh sách phiếu đã thu</p>
+                                                                </div>
+                                                                <a class="small-box-footer">Chi tiết <i
+                                                                        class="fa fa-arrow-circle-right"></i></a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Danh sách phiếu đã rút -->
+                                            <div class="col-lg-3 col-lg-6">
+                                                <!-- small box -->
+                                                <div class="box box-solid">
+                                                    <div class="box-body">
+                                                        <div class="small-box bg-yellow poiter btnDetail_PhieuDaRut">
+                                                            <div class="icon">
+                                                                <i class="fa-thin fa-file-invoice"></i>
+                                                            </div>
+                                                            <div class="small-box-r">
+                                                                <div class="inner">
+                                                                    <h4><span class="txtTongTien_PhieuDaRut">0</span>
+                                                                    </h4>
+                                                                    <p>Danh sách phiếu đã rút</p>
+                                                                </div>
+                                                                <a class="small-box-footer">Chi tiết <i
+                                                                        class="fa fa-arrow-circle-right"></i></a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Danh sách phiếu hóa đơn -->
+                                            <div class="col-lg-3 col-lg-6">
+                                                <!-- small box -->
+                                                <div class="box box-solid">
+                                                    <div class="box-body">
+                                                        <div class="small-box bg-yellow poiter btnDetail_PhieuHoaDon">
+                                                            <div class="icon">
+                                                                <i class="fa-thin fa-receipt"></i>
+                                                            </div>
+                                                            <div class="small-box-r">
+                                                                <div class="inner">
+                                                                    <h4><span class="txtTongTien_PhieuHoaDon">0</span>
+                                                                    </h4>
+                                                                    <p>Danh sách phiếu hóa đơn</p>
+                                                                </div>
+                                                                <a class="small-box-footer">Chi tiết <i
+                                                                        class="fa fa-arrow-circle-right"></i></a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- ./col -->
+                                            <div class="clear"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="tab-pane" id="tab_2">
+                                    <div class="row row-tab row-align">
+                                        <div>
+                                            <div class="pull-right">
+                                                <a id="btnAddnew_PhieuThu" class="btn btn-primary btnVietPhieu">
+                                                    <i class="fa-light fa-receipt"></i> <span class="lang" key="">Xuất
+                                                        phiếu thu</span></a>
+                                            </div>
+                                            <div class="clear"></div>
+                                        </div>
+                                        <div class="zone-content mt-10">
+                                            <table id="tbldata_PhieuThu" style="border-bottom: 0 !important;"
+                                                class="table table-hover table-bordered tablecenter tbldata_PhieuThu table-noborder">
+                                                <thead>
+                                                    <tr>
+                                                        <th style="width:40px">Stt</th>
+                                                        <th style="width: 100px"><span class="lang" key="">Học kỳ</span>
+                                                        </th>
+                                                        <th style="width: 30px"><span class="lang" key="">Đợt</span>
+                                                        </th>
+                                                        <th><span class="lang" key="">Khoản thu</span></th>
+                                                        <th><span class="lang" key="">Nội dung</span></th>
+                                                        <th style="width: 100px"><span class="lang" key="">Số
+                                                                tiền</span></th>
+                                                        <th class="td-center" style="width: 80px"><span class="lang"
+                                                                key="">Ngày tạo</span></th>
+                                                        <th class="td-center" style="width: 95px"><span class="lang"
+                                                                key="">Tách khoản</span></th>
+                                                        <th style="width:40px; text-align:center">
+                                                            <input type="checkbox" name="chkSelectAll_PhieuThu"
+                                                                id='chkSelectAll_PhieuThu' />
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody></tbody>
+                                                <tfoot class="total-amount"></tfoot>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="tab-pane" id="tab_3">
+                                    <div class="row row-tab row-align">
+                                        <div>ss
+                                            <div class="pull-right">
+                                                <a id="btnAddnew_BienLai" class="btn btn-primary"><i
+                                                        class="fa-light fa-file-invoice-dollar"></i> <span class="lang"
+                                                        key="">Xuất biên lai</span></a>
+                                            </div>
+                                            <div class="clear"></div>
+                                        </div>
+                                        <div class="zone-content mt-10">
+                                            <table id="tbldata_BienLai" style="border-bottom: 0 !important;"
+                                                class="table table-hover table-bordered tablecenter tbldata_BienLai table-noborder">
+                                                <thead>
+                                                    <tr>
+                                                        <th style="width:40px">Stt</th>
+                                                        <th style="width: 100px"><span class="lang" key="">Học kỳ</span>
+                                                        </th>
+                                                        <th style="width: 30px"><span class="lang" key="">Đợt</span>
+                                                        </th>
+                                                        <th><span class="lang" key="">Khoản thu</span></th>
+                                                        <th><span class="lang" key="">Nội dung</span></th>
+                                                        <th style="width: 100px"><span class="lang" key="">Số
+                                                                tiền</span></th>
+                                                        <th class="td-center" style="width: 80px"><span class="lang"
+                                                                key="">Ngày tạo</span></th>
+                                                        <th class="td-center" style="width: 95px"><span class="lang"
+                                                                key="">Tách khoản</span></th>
+                                                        <th style="width:40px; text-align:center">
+                                                            <input type="checkbox" name="chkSelectAll_BienLai"
+                                                                id='chkSelectAll_BienLai' />
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody></tbody>
+                                                <tfoot class="total-amount"></tfoot>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="tab-pane" id="tab_4">
+                                    <div class="row row-tab row-align">
+                                        <div>
+                                            <div class="pull-right">
+                                                <a id="btnAddnew_HoaDon" class="btn btn-primary"><i
+                                                        class="fa-light fa-file-invoice"></i><span class="lang"
+                                                        key="">Xuất hóa đơn</span></a>
+                                            </div>
+                                            <div class="clear"></div>
+                                        </div>
+                                        <div class="zone-content mt-10">
+                                            <table id="tbldata_HoaDon" style="border-bottom: 0 !important;"
+                                                class="table table-hover table-bordered tablecenter tbldata_HoaDon table-noborder">
+                                                <thead>
+                                                    <tr>
+                                                        <th style="width:40px">Stt</th>
+                                                        <th style="width: 100px"><span class="lang" key="">Học kỳ</span>
+                                                        </th>
+                                                        <th style="width: 30px"><span class="lang" key="">Đợt</span>
+                                                        </th>
+                                                        <th><span class="lang" key="">Khoản thu</span></th>
+                                                        <th><span class="lang" key="">Nội dung</span></th>
+                                                        <th style="width: 100px"><span class="lang" key="">Số
+                                                                tiền</span></th>
+                                                        <th class="td-center" style="width: 80px"><span class="lang"
+                                                                key="">Ngày tạo</span></th>
+                                                        <th class="td-center" style="width: 95px"><span class="lang"
+                                                                key="">Tách khoản</span></th>
+                                                        <th style="width:40px; text-align:center">
+                                                            <input type="checkbox" name="chkSelectAll_HoaDon"
+                                                                id='chkSelectAll_HoaDon' />
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody></tbody>
+                                                <tfoot class="total-amount"></tfoot>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="tab-pane" id="tab_5">
+                                    <div class="row row-tab row-align">
+                                        <div>
+                                            <div class="pull-right">
+                                                <a style="width: 150px" id="btnAddnew_HoaDon_DaNop"
+                                                    class="btn btn-primary"><i class="fa fa-send"></i> <span
+                                                        class="lang" key="">Xuất hóa đơn</span></a>
+                                            </div>
+                                            <div class="clear"></div>
+                                        </div>
+                                        <div class="zone-content">
+                                            <table id="tbldata_HoaDon_DaNop" style="border-bottom: 0 !important;"
+                                                class="table table-hover table-bordered tablecenter tbldata_HoaDon_DaNop table-noborder">
+                                                <thead>
+                                                    <tr>
+                                                        <th style="width:40px">Stt</th>
+                                                        <th style="width: 100px"><span class="lang" key="">Học kỳ</span>
+                                                        </th>
+                                                        <th style="width: 30px"><span class="lang" key="">Đợt</span>
+                                                        </th>
+                                                        <th><span class="lang" key="">Khoản thu</span></th>
+                                                        <th><span class="lang" key="">Nội dung</span></th>
+                                                        <th style="width: 100px"><span class="lang" key="">Số
+                                                                tiền</span></th>
+                                                        <th class="td-center" style="width: 80px"><span class="lang"
+                                                                key="">Ngày tạo</span></th>
+                                                        <th class="td-right" style="width: 95px"><span class="lang"
+                                                                key="">Tách khoản</span></th>
+                                                        <th style="width:40px; text-align:center">
+                                                            <input type="checkbox" name="chkSelectAll_HoaDon_DaNop"
+                                                                id='chkSelectAll_HoaDon_DaNop' />
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody></tbody>
+                                                <tfoot class="total-amount"></tfoot>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box-body aps-info pd0">
+                        <div class="head aps-info-in border-bottom pb-10">
+                            <div class="pull-left">
+                                <div class="aps-lable">
+                                    <i class="fa fa-memo-circle-info bold"></i>
+                                    <span>Thông tin</span>
+                                </div>
+                                <div class="progress progress-xxs mt-5">
+                                    <div role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
+                                        style="width: 100%">
+                                        <span class="sr-only"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="pull-right">
+                                <span class="clearfix noco-phieuthu">
+                                </span>
+                                <div class="progress progress-xxs">
+                                    <div class="progress-bar progress-bar-default progress-bar-striped"
+                                        role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
+                                        style="width: 100%">
+                                        <span class="sr-only"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="clear"></div>
+                        </div>
+
+                        <div class="box-content zoneThongTinBoSung" id="zoneKhoan_ChiTiet" style="display: none">
+                            <div class="form-container">
+                                <div class="form-container-header form-container-header-bg">
+                                    <div class="pull-left">
+                                        <h4 class="color-blue fz20"><i class="fa-solid fa-list"></i> Danh sách</h4>
+                                    </div>
+                                    <div class="pull-right">
+                                        <a class="btn btn-default pointer btnClose"><i
+                                                class="fa fa-times-circle"></i></a>
+                                    </div>
+                                    <div class="clear"></div>
+                                </div>
+                                <div class="form-container-body" style="padding-top: 10px !important;">
+                                    <div class="table-responsive aps-table-select">
+                                        <div class="scroll-table-x">
+                                            <table id="tblChiTietKhoan" style="border-bottom: 0 !important;"
+                                                class="table table-hover mb-0 tblChiTietKhoan table-bordered table-noborder ">
+                                                <thead>
+                                                    <!--Load from js-->
+                                                </thead>
+                                                <tbody>
+                                                    <!--Load from js-->
+                                                </tbody>
+                                                <tfoot class="total-amount">
+                                                    <!--Load from js-->
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="clear"></div>
+                                </div>
+                                <div class="form-container-footer mt0">
+                                    <div class="col-sm-12">
+                                        <div class="pull-right">
+                                            <a class="btn btn-default pointer btnClose"><i
+                                                    class="fa fa-times-circle"></i> Đóng</a>
+                                        </div>
+                                    </div>
+                                    <div class="clear"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Tách khoản -->
+            <div id="zoneThongTinTachKhoan" class="col-sm-9 beforeActive aps-chungtu-r pl20" style="display: none">
+                <div class="box box-solid pd0">
+                    <div class="form-container">
+                        <div class="form-container-header" style="padding: 10px !important;">
+                            <div class="pull-left pl10 mt-3">
+                                <h4 class="color-fff"><i class="fa-light fa-money-check-dollar-pen"></i> Tách khoản
+                                </h4>
+                            </div>
+                            <div class="pull-right">
+                                <a class="btn btn-default pointer btnCloseKhoanCanTach bg-transparent border-0 pd0"
+                                    style="background: transparent !important;padding: 10px !important;">
+                                    <i class="fa fa-times-circle color-fff"></i></a>
+                            </div>
+                            <div class="clear"></div>
+                        </div>
+                        <div class="form-container-body" style="padding: 20px !important;">
+                            <div class="table-responsive">
+                                <div class="scroll-table-x">
+                                    <table id="tblChiTietKhoan_TachKhoan" style="border-bottom: 0 !important;"
+                                        class="table table-hover table-bordered tablecenter table-noborder">
+                                        <thead>
+                                            <tr>
+                                                <th style="width:40px">Stt</th>
+                                                <th style="width: 100px"><span class="lang" key="">Học kỳ</span></th>
+                                                <th style="width: 30px"><span class="lang" key="">Đợt</span></th>
+                                                <th><span class="lang" key="">Khoản thu</span></th>
+                                                <th><span class="lang" key="">Nội dung</span></th>
+                                                <th style="width: 120px"><span class="lang" key="">Số tiền trước</span>
+                                                </th>
+                                                <th style="width: 100px"><span class="lang" key="">Số tiền sau</span>
+                                                </th>
+                                                <th style="width:40px; text-align:center">
+                                                    Xóa
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                        <tfoot class="total-amount"></tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="clear"></div>
+                            <div class="aps-choose-tach mt-10">
+                                <div class="group-title pl0">
+                                    <p class="titleSearchContent" data-toggle="collapse" data-target="#DSKhoanThu">
+                                        <i class="fa-solid fa-money-check-dollar-pen"></i>
+                                        <span class="lang" key=""> Chọn khoản cần tách</span>
+                                    </p>
+                                </div>
+                                <div class="clear"></div>
+                                <div class="area-search">
+                                    <div id="DSKhoanThu" style="padding-left: 25px" class="inputSearch collapse in">
+                                        <div id="zoneLoaiKhoanThu"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="clear"></div>
+                        </div>
+                        <div class="form-container-footer">
+                            <div class="col-sm-12">
+                                <div class="pull-right">
+                                    <a class="btn btn-default pointer btnCloseKhoanCanTach ml-10"><i
+                                            class="fa fa-times-circle"></i> Đóng</a>
+                                    <a class="btn btn-success pointer" id="btnThucHienTachKhoan"><i
+                                            class="fa-light fa-money-check-dollar-pen"></i> Tách khoản</a>
+                                </div>
+                            </div>
+                            <div class="clear"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Đang gửi -->
+            <div id="zoneChungTu" class="col-sm-9 beforeActive aps-chungtu-r pl20" style="width: 100%; display: block">
+                <div class="nH">
+                    <div class="b8 UC" aria-live="assertive" aria-atomic="true" style="text-align: left" role="alert">
+                        <div class="J-J5-Ji">
+                            <div class="UD"></div>
+                            <div class="vh" id="top_notifications_ChungTu" style="font-size: 300%;height: 74px;">
+                                <span><span id="link_enable_notifications_ChungTu" class="lang" key="">
+                                        Đang gửi</span> ...</span>
+                            </div>
+                            <div class="UB"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Zone render hóa đơn preview (JS .load() template vào đây) — đặt ĐỘC LẬP trên action bar -->
+                <div id="MauIn_ChungTu" class="MauIn_ChungTu"></div>
+                <!-- Action bar 5 nút — nằm dưới hóa đơn preview -->
+                <div class="aps-list-btn d-flex mt-20 w-100" id="zoneActionChungTu">
+                    <!-- Destructive: Hủy (đỏ, tách trái tự động qua CSS order:-1 + margin-right:auto) -->
+                    <div id="btnHuy_ChungTu" class="aps-btn">
+                        <a class="btn btn-danger"><i class="fa fa-trash-o"></i>
+                            Hủy <span class="lbLoaiChungTu">chứng từ</span></a>
+                    </div>
+                    <!-- HDDT Nháp / Xuất hóa đơn điện tử động (JS prepend) -->
+                    <div id="zoneActionXuatHoaDon"></div>
+                    <!-- Xem trước — mở popup print preview không auto-print, cho user check trước -->
+                    <div class="aps-btn">
+                        <a class="btn" id="btnPreview_ChungTu"
+                            style="background:#64748b !important; border:1px solid #64748b !important; color:#fff !important;">
+                            <i class="fa fa-eye"></i> Xem trước</a>
+                    </div>
+                    <!-- CTA chính: In chứng từ -->
+                    <div class="aps-btn">
+                        <a class="btn btn-primary" id="btnIn_ChungTu">
+                            <i class="fa fa-print"></i> In <span class="lbLoaiChungTu">chứng từ</span></a>
+                    </div>
+                    <!-- Liên hóa đơn (dropdown liên) -->
+                    <div class="aps-btn" id="btnLienHoaDon_Wrapper">
+                        <a title="Liên Hóa đơn" class="btn btn-warning" id="btnLienHoaDon">
+                            <i class="fa fa-copy"></i> Liên HĐ</a>
+                        <div id="zoneLienHoaDon"></div>
+                    </div>
+                    <!-- Đóng: grey outline, cách nhóm action bằng margin-left:16 (từ CSS) -->
+                    <div class="aps-btn">
+                        <a class="btn btn-outline-danger" id="btnClose_ChungTu">
+                            <i class="fa fa-times"></i> Đóng</a>
+                    </div>
+                </div>
+            </div>
+            <div class="clear"></div>
+        </div>
+    </section>
+</div>
+<!-- page script -->
+<script src="modules/chungtu/scripts/chungtu.js?v=1.0.0.0"></script>
+<script src="modules/chungtu/scripts/n2vi.min.js"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['ChungTu'] = new ChungTu();
+    $(document).ready(function () {
+        main_doc.ChungTu.init();
+    });
+</script>

@@ -1,0 +1,141 @@
+/* =========================================================================
+   Sơ đồ cây kiểu sơ đồ tổ chức — ums.pat.soDo (patterns.js)
+   Cha ở trên, các con dàn ngang bên dưới; đường nối vẽ bằng ::before/::after
+   của <li> (nửa trái + nửa phải của thanh ngang) và ::before của <ul> con
+   (đoạn dọc từ cha xuống). Rộng hơn khung → .ums-sodo cuộn ngang.
+   ========================================================================= */
+.ums-sodo {
+    overflow-x: auto;
+    padding: var(--ums-sp-5) var(--ums-sp-4);
+}
+
+.ums-sodo__khung {
+    width: max-content;
+    min-width: 100%;
+}
+
+.ums-sodo ul {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    margin: 0;
+    padding: 22px 0 0;
+    list-style: none;
+}
+
+.ums-sodo__khung > ul { padding-top: 0; gap: var(--ums-sp-5); }
+
+.ums-sodo li {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 22px var(--ums-sp-2) 0;
+}
+
+/* Thanh ngang nối các con: mỗi <li> vẽ nửa trái (::before) và nửa phải (::after) */
+.ums-sodo li::before,
+.ums-sodo li::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 50%;
+    width: 50%;
+    height: 22px;
+    border-top: 1px solid var(--ums-line-2);
+}
+.ums-sodo li::after {
+    right: auto;
+    left: 50%;
+    border-left: 1px solid var(--ums-line-2);
+}
+.ums-sodo li:first-child::before,
+.ums-sodo li:last-child::after { border: 0; }
+.ums-sodo li:last-child::before {
+    border-right: 1px solid var(--ums-line-2);
+    border-radius: 0 var(--ums-r-1) 0 0;
+}
+.ums-sodo li:first-child::after { border-radius: var(--ums-r-1) 0 0 0; }
+.ums-sodo li:only-child::before { display: none; }
+.ums-sodo li:only-child::after { border-radius: 0; }
+
+/* Đoạn dọc từ cha xuống thanh ngang của các con */
+.ums-sodo ul ul::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    height: 22px;
+    border-left: 1px solid var(--ums-line-2);
+}
+
+/* Tầng trên cùng: các gốc đứng riêng, không nối với nhau */
+.ums-sodo__khung > ul > li { padding-top: 0; }
+.ums-sodo__khung > ul > li::before,
+.ums-sodo__khung > ul > li::after { display: none; }
+
+/* Một ô */
+.ums-sodo__nut {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    min-width: 116px;
+    max-width: 190px;
+    padding: var(--ums-sp-2) var(--ums-sp-3);
+    border: 1px solid var(--ums-line-2);
+    border-radius: var(--ums-r-2);
+    background: var(--ums-surface);
+    color: var(--ums-ink);
+    font: inherit;
+    font-size: var(--ums-fz-13);
+    line-height: 1.35;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color .15s, box-shadow .15s;
+}
+/* Mục có con in đậm; MÀU theo tầng (is-cap-N do pat.soDo gắn).
+   QUY ƯỚC MÀU TẦNG (người dùng 2026-09-25) — dùng cho MỌI sơ đồ / cây phân cấp:
+     tầng 1  is-cap-0  navy đậm, chữ trắng (chỉ tầng gốc)
+     tầng 2  is-cap-1  xanh dương nhạt
+     tầng 3  is-cap-2  xanh lá nhạt
+     tầng 4  is-cap-3  vàng nhạt
+     tầng 5  is-cap-4  tím nhạt
+     tầng 6  is-cap-5  hồng đào nhạt
+     tầng 7+ lặp lại is-cap-1 → is-cap-5 (tầng 1 không lặp để gốc luôn nổi bật)
+   Thêm tầng màu mới: thêm is-cap-6… ở đây VÀ đổi số 5 trong lopCap (patterns.js pat.soDo). */
+.ums-sodo__nut.is-cha { font-weight: var(--ums-fw-semibold); }
+.ums-sodo__nut.is-cap-0 { background: var(--ums-navy); border-color: var(--ums-navy); color: #fff; }
+.ums-sodo__nut.is-cap-1 { background: var(--ums-blue-l); border-color: #b9cffb; color: var(--ums-navy); }
+.ums-sodo__nut.is-cap-2 { background: var(--ums-ok-bg); border-color: #b5e2cf; color: #0d5e44; }
+.ums-sodo__nut.is-cap-3 { background: var(--ums-warn-bg); border-color: #f0d9a3; color: #6e4c00; }
+.ums-sodo__nut.is-cap-4 { background: #f1ebfd; border-color: #d4c3f5; color: #4c2a8c; }
+.ums-sodo__nut.is-cap-5 { background: #fdeee6; border-color: #f4cdb8; color: #8a3d12; }
+/* Chữ phụ / ô điểm trên nền đậm của tầng 1 */
+.ums-sodo__nut.is-cap-0 .ums-sodo__ma { color: rgba(255, 255, 255, .72); }
+.ums-sodo__nut.is-cap-0 .ums-sodo__diem { background: rgba(255, 255, 255, .18); color: #fff; }
+.ums-sodo__nut.is-cap-0 .ums-sodo__diem.is-am { background: var(--ums-bad-bg); color: var(--ums-bad); }
+.ums-sodo__nut.is-cap-0:hover { border-color: var(--ums-blue); background: var(--ums-navy-l); }
+.ums-sodo__nut:hover { border-color: var(--ums-blue); box-shadow: var(--ums-ring); }
+.ums-sodo__nut:focus-visible { outline: 2px solid var(--ums-blue); outline-offset: 2px; }
+
+/* Phần phụ trong ô (mã, điểm) — màn tự đặt */
+.ums-sodo__ma { color: var(--ums-ink-3); font-size: var(--ums-fz-11); font-weight: var(--ums-fw-regular); }
+.ums-sodo__diem {
+    display: inline-block;
+    min-width: 28px;
+    padding: 1px var(--ums-sp-2);
+    border-radius: var(--ums-r-pill);
+    background: var(--ums-blue-l);
+    color: var(--ums-blue-d);
+    font-size: var(--ums-fz-12);
+    font-weight: var(--ums-fw-semibold);
+}
+.ums-sodo__diem.is-am { background: var(--ums-bad-bg); color: var(--ums-bad); }
+
+/* Kéo chuột để cuộn ngang (ui.js panInit, như bảng) */
+.ums-sodo.is-scrollable { cursor: grab; }
+.ums-sodo.is-panning { cursor: grabbing; user-select: none; }
+
+/* Tầng nền nhạt: ô điểm nền trắng cho nổi (tầng 2 cùng màu xanh nhạt với ô điểm mặc định) */
+.ums-sodo__nut:not(.is-cap-0) .ums-sodo__diem:not(.is-am) { background: var(--ums-surface); box-shadow: inset 0 0 0 1px var(--ums-line); }

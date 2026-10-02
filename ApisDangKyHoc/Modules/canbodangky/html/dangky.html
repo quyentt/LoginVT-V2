@@ -1,0 +1,690 @@
+﻿<style>
+    section .table>tbody>tr>td,
+    .table>tbody>tr>th,
+    .table>tfoot>tr>td,
+    .table>tfoot>tr>th,
+    .table>thead>tr>td,
+    .table>thead>tr>th {
+        border-top: 1px solid #f1f1f1;
+        border-left: 1px solid #f1f1f1;
+        padding: 0px;
+    }
+
+    .box-hocphan {
+        background-color: #fff !important;
+        /*width: 24.637%;*/
+        float: left;
+        text-align: center;
+        cursor: pointer;
+        vertical-align: middle !important;
+        padding: 10px;
+        margin: 2px
+    }
+
+    .box>.box-body {
+        padding: 1px !important;
+    }
+
+    .btn-white,
+    .zone-box .btn-white {
+        background-color: #fff !important;
+        color: #333 !important;
+        border: 1px solid #ddd !important;
+        -webkit-box-shadow: 1px 1px 1px 1px #ccc;
+        -moz-box-shadow: 1px 1px 1px 1px #ccc;
+        box-shadow: 1px 1px 1px 1px #ccc;
+        height: 30px;
+        margin-left: 5px;
+        margin-bottom: 5px;
+    }
+
+    .zone-box .btn-white:hover,
+    .zone-box .btn-white:focus {
+        background-color: #f5f5f5 !important;
+        color: #333 !important;
+    }
+
+    .zone-box .btn-primary,
+    .zone-box .btnSelectInList.btn-primary {
+        background-color: rgb(0, 123, 255,0.1)  !important;
+        color:rgb(0, 123, 255)  !important;
+        border: 1px solid rgb(0, 123, 255) !important;
+        -webkit-box-shadow: 1px 1px 1px 1px #ccc;
+        -moz-box-shadow: 1px 1px 1px 1px #ccc;
+        box-shadow: 1px 1px 1px 1px #ccc;
+        margin-left: 5px;
+        margin-bottom: 5px;
+        height: 30px;
+        font-weight: 600;
+    }
+
+    .zone-box .btn-primary:hover,
+    .zone-box .btn-primary:focus,
+    .zone-box .btn-primary:active {
+        background-color: #f0f7ff !important;
+        color: #333 !important;
+        border-color: #0062cc !important;
+    }
+
+    .zone-box {
+        padding: 0px;
+    }
+
+    div.gallery {
+        border: 1px solid #ccc;
+        float: left;
+        width: 100%;
+        height: 262px;
+    }
+
+    .popover {
+        max-width: 100%;
+        /* Max Width of the popover (depending on the container!) */
+    }
+
+    /*div.box-hocphan:hover {
+        border: 1px solid #f1f1f1;
+        box-shadow: 2px 2px 10px 2px grey;
+        -webkit-box-shadow: 2px 2px 2px 2px #ccc;
+        -moz-box-shadow: 2px 2px 2px 2px #ccc;
+        box-shadow: 2px 2px 2px 2px #ccc;
+        position: absolute;
+    }*/
+
+    .viewDaDangKy {
+        width: 110%;
+        overflow: hidden !important;
+        display: inline-block;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .tenhocphan {
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .row-select {
+        padding-top: 5px;
+        padding-left: 10px;
+    }
+
+    .dropdown-menu.dropdown-menu-lg {
+        min-width: 22rem
+    }
+
+    .dropdown-menu .dropdown-menu-header,
+    .dropdown-menu .menu-header-image,
+    .dropdown-menu .dropdown-menu-header-inner {
+        border-top-left-radius: .25rem;
+        border-top-right-radius: .25rem
+    }
+
+    .dropdown-menu-header {
+        color: #fff;
+        margin-top: -.65rem;
+        margin-bottom: .65rem;
+        position: relative;
+        z-index: 6
+    }
+
+    .dropdown-menu-header .dropdown-menu-header-inner {
+        margin: -1px -1px 0;
+        padding: 1.5rem .5rem;
+        position: relative
+    }
+
+    .dropdown-menu-header .menu-header-image {
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 100%;
+        z-index: 8;
+        opacity: .25;
+        filter: grayscale(80%);
+        background-size: cover
+    }
+
+    .dropdown-menu-header .menu-header-content {
+        text-align: center;
+        position: relative;
+        z-index: 10
+    }
+
+    .dropdown-menu-header .menu-header-content.text-left {
+        padding-left: .5rem
+    }
+
+    .dropdown-menu-header .menu-header-content.btn-pane-right {
+        padding-left: .5rem;
+        padding-right: .5rem;
+        display: flex;
+        align-content: center;
+        align-items: center;
+        text-align: left
+    }
+
+    .dropdown-menu-header .menu-header-content.btn-pane-right .menu-header-btn-pane {
+        margin: 0 0 0 auto
+    }
+
+    .dropdown-menu-header .menu-header-content .menu-header-btn-pane {
+        margin-top: 10px;
+        margin-bottom: 3px
+    }
+
+    .dropdown-menu-header+.grid-menu {
+        margin-top: -.65rem
+    }
+
+    .dropdown-menu-rounded .menu-header-image,
+    .dropdown-menu-rounded .dropdown-menu-header-inner {
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px
+    }
+</style>
+<!-- Main content -->
+<section class="content aps-canbo-dangky">
+    <div class="row zone-bus" id="zonebatdau">
+        <!-- Tìm kiếm -->
+        <div class="box box-solid box-search pt20 pl20 pr20 pt10">
+            <div class="box-header with-border d-none">
+                <h3 class="box-title"><i class="fa fa-window-restore"></i> Tìm kiếm</h3>
+            </div>
+            <div class="box-body ">
+                <!-- Bộ tìm kiếm -->
+                <div class="row d-flex mb-0">
+                    <div class="col-sm-3 item-search">
+                        <select id="dropSearch_HeDaoTao" class="select-opt" style="width:100% !important">
+                            <option id="" value=""> --Chọn hệ đào tạo-- </option>
+                        </select>
+                    </div>
+                    <div class="col-sm-3 item-search">
+                        <select id="dropSearch_KhoaDaoTao" class="select-opt" style="width:100% !important">
+                            <option id="" value=""> --Chọn khóa đào tạo-- </option>
+                        </select>
+                    </div>
+                    <div class="col-sm-3 item-search">
+                        <select id="dropSearch_ChuongTrinh" class="select-opt" style="width:100% !important">
+                            <option id="" value=""> --Chọn chương trình-- </option>
+                        </select>
+                    </div>
+                    <div class="col-sm-3 item-search" style="padding-right: 0 !important;">
+                        <select id="dropSearch_Lop" class="select-opt" style="width:100% !important">
+                            <option id="" value=""> --Chọn lớp-- </option>
+                        </select>
+                    </div>
+
+                </div>
+                <div class="row mb-0">
+                    <div class="col-sm-3 item-search">
+                        <select id="dropSearch_DinhHuong" class="select-opt" style="width:100% !important"></select>
+                    </div>
+                    <div class="col-sm-3 item-search">
+                        <select id="dropSearch_NhomDinhHuong" class="select-opt" style="width:100% !important"></select>
+                    </div>
+                    <div class="col-sm-3 item-search">
+                        <input id="txtSearch_TuKhoa" class="form-control" placeholder="Nhập từ khóa tìm kiếm" />
+                    </div>
+                    <div class="col-sm-3 item-search d-flex">
+                        <a class="btn btn-default btn-search" id="btnSearchSinhVien">
+                            <i class="fa fa-search"></i><span class="lang" key="">Tìm kiếm</span></a>
+                        <div class="dropdown" id="zonebtnBaoCao_DangKyHoc_Import">
+                            <button class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown">
+                                <i class="far fa-upload"></i>Import <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu form-container">
+                                <li><a class="btnImportWithProce" name="IMPORTWITHPROC_DANGKY_NGUOIHOC"
+                                        title="Người học" href="#"> 1. Người học</a></li>
+                                <li><a class="btnImportWithProce" name="IMPORTWITHPROC_DKLHP" title="lớp học phần"
+                                        href="#"> 2. Đăng ký theo lớp học phần</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-sm-3 item-search"></div>
+                </div>
+                <!-- Chọn trạng thái sinh viên -->
+                <div class="col-sm-12 item-search chosse-status-student mt-0">
+                    <div class="group-title">
+                        <p class="titleSearchContent line-20">
+                            <i class="far fa-user-graduate"></i>
+                            <span class="lang" key="">Chọn trạng thái sinh viên</span>
+                        </p>
+                    </div>
+                    <div class="area-search">
+                        <div id="DSTrangThaiSV_LHD" style="padding-left: 25px"
+                            class="inputSearch collapse in DSTrangThaiSV_LHD">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Danh sách sinh viên -->
+        <div class="box box-solid box-reg-sv pd20">
+            <div class="box-header pd0" style="display: flex !important; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                <h3 class="box-title color-blue line-38" style="margin: 0; display: inline-flex; align-items: center; gap: 8px;">
+                    <i class="far fa-address-book line-38"></i> Danh sách sinh viên
+                    <span class="badge bg-light-blue" style="margin: 0 !important; vertical-align: middle;">
+                        <span id="lblSinhVien"></span>
+                    </span>
+                </h3>
+                <div class="pull-right d-flex" style="display: flex !important; gap: 8px; float: none !important; align-items: center;">
+                    <a id="btnDelete_Import" class="btn btn-danger" style="display: inline-flex !important; align-items: center; gap: 4px; background-color: #dc2626 !important; color: #fff !important; border: 1px solid #b91c1c !important; font-weight: 600;"><i class="fa fa-trash"></i>Xóa dữ liệu import</a>
+                    <a id="btnAddnew" class="btn btn-primary btnSave" style="display: inline-flex !important; align-items: center; gap: 4px;"><i class="far fa-user-edit"></i>Đăng ký</a>
+                    <a id="btnSearch_Import" class="btn btn-success" style="display: inline-flex !important; align-items: center; gap: 4px;"><i class="fa fa-search"></i>Tìm theo import</a>
+                </div>
+            </div>
+            <div class="box-body mt-10">
+                <div class="aps-table-select scroll-table-x">
+                    <table id="tblSinhVien" class="table table-hover table-bordered table-noborder tblSinhVien mb-5">
+                        <thead>
+                            <tr>
+                                <th class="td-fixed td-center w-50px">Stt</th>
+                                <th class="td-left">Mã số</th>
+                                <th class="td-left">Họ tên</th>
+                                <th class="td-left">Lớp</th>
+                                <th class="td-left">Chương trình</th>
+                                <th class="td-left">Định hướng</th>
+                                <th class="td-left">Nhóm định hướng</th>
+                                <th class="td-center">Trạng thái</th>
+                                <th class="td-center td-fixed">
+                                    <input type="checkbox" id="chkSelectAll_SinhVien">
+                                </th>
+                                <th class="td-center">Kết quả</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- load from js -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row zone-bus aps-canbo-dangky-add" id="zonehocphan" style="display: none">
+        <!-- /.left-content -->
+        <div class="col-lg-3 aps-canbo-dangky-add-l">
+            <div class="aps-info-sv">
+                <!-- Widget: user widget style 1 -->
+                <div class="box box-solid box-widget widget-user-2">
+                    <!-- Add the bg color to the header using any of the bg-* classes -->
+                    <div class="widget-user-header menu-header-image">
+                        <div class="widget-user-image col-sm-4">
+                            <img id="txtAnhCaNhan" class="img-circle"
+                                src="http://localhost:51981/Upload/Avatar/no-avatar.png" alt="User Avatar">
+                        </div>
+
+                        <!-- /.widget-user-image -->
+                        <div class="col-sm-8">
+                            <h3><span id="lblTenSinhVien"></span></h3>
+                            <h5>Mã số: <span id="lblMaSo"><!--20146290--></span></h5>
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                    <div class="aps-list-tt mt-20">
+                        <p class="poiter" id="btnViewSoDu" href="#"><i
+                                class="fa-light fa-sack-dollar color-red bold"></i> Số dư tài khoản hiện tại: <span
+                                id="lblSoDuTaiKhoan" class="color-red"></span></p>
+                        <p class="poiter" id="btnViewDuPhatSinh"><i
+                                class="fa-light fa-money-from-bracket color-red bold"></i> Số phát sinh thêm trong đợt:
+                            <span id="lblSoDuPhatSinh" class="color-red"></span>
+                        </p>
+                        <p class="poiter" id="btnViewDaDangKy"><i class="fa-light fa-screen-users color-green bold"></i>
+                            Tổng lớp đã đăng ký: <span class="badge bg-green" id="lblSoNguoiDangKy">0</span></p>
+                        <p class="poiter" href="#"><i class="fa-light fa-book-open-reader color-blue bold"></i> Số tín
+                            chỉ đã đăng ký: <span id="lblSoTinDaDangKy" class="color-blue"></span></p>
+                        <p class="poiter" href="#"><i
+                                class="fa-light fa-album-collection-circle-user color-blue bold"></i> Số tín chỉ tối đa
+                            <span id="lblSoTinToiDa" class="color-blue"></span>
+                        </p>
+                        <p class="poiter" href="#"><i
+                                class="fa-light fa-rectangle-history-circle-user color-blue bold"></i> Số tín chỉ tối
+                            thiểu: <span id="lblSoTinToiThieu" class="color-blue"></span></p>
+                    </div>
+                </div>
+                <!-- /.widget-user -->
+                <div class="box box-solid box-show-bang" style="margin-top: 10px; display: none">
+                    <div class="box-header with-border">
+                        <h3 class="box-title" title="Các hiện thị giao diện đăng ký">
+                            <i class="fa fa-filter"></i> Cách hiển thị
+                        </h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="row">
+                            <input type="radio" class="rdLoaiHienThi" name="rdLoaiHienThi" value="BANG">
+                            Bảng
+                            <input type="radio" class="rdLoaiHienThi" name="rdLoaiHienThi" value="KHOI"
+                                checked="checked">
+                            Khối
+                        </div>
+                    </div>
+                </div>
+                <!-- /.widget-user -->
+                <div class="box box-solid aps-filter-search" style="margin-top: 10px;">
+                    <div class="box-header pb10 pl0 pr0" style="margin-bottom: 10px">
+                        <h3 class="box-title line-20" title="Bộ lọc tìm kiếm">
+                            <i class="fa-light fa-magnifying-glass"></i> Bộ lọc tìm kiếm
+                        </h3>
+                    </div>
+                    <div class="box-body mt20">
+                        <div class="bs-item bold">
+                            Giảng viên
+                            <div id="DSGiangVien" style="margin-left: 20px" class="mt-5"></div>
+                        </div>
+                    </div>
+                    <div class="box-body mt-10">
+                        <div class="bs-item bold">
+                            Thứ học
+                            <div id="DSThuHoc" style="margin-left: 20px" class="mt-5"></div>
+                        </div>
+                    </div>
+                    <div class="box-body mt-10">
+                        <div class="bs-item bold">
+                            Phương án đăng ký
+                            <div class="filter-plan-reg-list mt-5" id="DSPhuongAn"></div>
+                        </div>
+                    </div>
+                    <div class="box-body mt-10">
+                        <div class="bs-item" style="margin-left: 20px">
+                            <div class="col-lg-6 checkbox-inline user-check-print">
+                                <input style="float: left" type="checkbox" id="dLocTrung" />
+                                <span><b>Lọc trùng</b></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box-body">
+                        <div class="pull-left">
+                            <div class="dropdown" id="zonebtnBaoCao_DangKyHoc">
+                            </div>
+                        </div>
+                        <div class="pull-right">
+                            <a class="btn btn-primary" id="btnSearch">
+                                <i class="fa fa-search"></i><span class="lang" key="">Tìm kiếm</span></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="box box-solid" style="margin-top: 3px; padding-left: 5px; display: none">
+                    <div class="box-header with-border">
+                        <h3 class="box-title" title="Tổng bài báo trong nước"></h3>
+                    </div>
+                </div>
+                <!-- /.widget-user -->
+                <div class="box box-solid" style="margin-top: 3px; padding-left: 5px; display: none">
+                    <div class="box-header with-border">
+                        <h3 class="box-title" title="Tổng bài báo trong nước">
+                            <i class="fa fa-filter"></i> Gói đăng ký
+                        </h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="col-sm-6">
+                            <a id="btnAddnew" class="btn btn-default"> Gói kỳ 1 năm nhất</a>
+                        </div>
+                        <div class="col-sm-6">
+                            <a id="btnAddnew" class="btn btn-default"> Gói 6 học phần</a>
+                        </div>
+                        <div class="col-sm-6">
+                            <a id="btnAddnew" class="btn btn-default"> Gói 8 học phần</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.right-content -->
+        <div class="col-lg-9 aps-canbo-dangky-add-r pd20" id="zoneDangKy">
+            <div class="col-lg-12" style="margin-left: 4px;">
+                <!--<div class="box-header with-border" style="text-align: center">
+                        <h3 class="box-title"><i class="fa fa-pencil"></i> Năm học: 2019_1</h3>
+                    </div>-->
+                <div class="aps-canbo-dangky-add-item aps-ctdt">
+                    <div class="col-sm-12 box-view">
+                        <!-- 1. Noi dung bai bao -->
+                        <div class="row zone-box">
+                            <div class="row">
+                                <div class="col-sm-2 row-select">
+                                    <div class="group-title-name">
+                                        <b>Chương trình đào tạo </b><span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4 row-select" id="zoneChuongTrinh">
+                                </div>
+                                <div class="pull-right" style="padding-right: 10px; margin-top: 2px">
+                                    <a class="btn btn-white btnCloseSinhVien" href="#" title="Close"><i
+                                            class="fa fa-times"></i></a>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="aps-canbo-dangky-add-item aps-kehoach">
+                    <div class="col-sm-12 box-view">
+                        <!-- 1. Noi dung bai bao -->
+                        <div class="row zone-box">
+                            <div class="row box-plan">
+                                <div class="col-sm-2 row-select">
+                                    <div class="group-title-name">
+                                        <b>Kế hoạch</b><span class="title-colon">:</span>
+                                    </div>
+
+                                </div>
+                                <div class="col-sm-10">
+                                    <div class="row row-select zoneKeHoach w-100" id="zoneKeHoach" style="float: left">
+                                    </div>
+                                    <div class="row plan-time w-100">
+                                        <div class="group-title-name"
+                                            style="width: 80px;  float: left;height: 20px !important;line-height: 20px !important; margin-right: 10px;margin-left: 8px;">
+                                            <b>Thời gian</b><span class="title-colon">:</span>
+                                        </div>
+                                        <div class="active" style="float: left;">
+                                            <span style="color: green" id="zoneThoiGian"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="aps-canbo-dangky-add-item aps-hocphan">
+                    <div class="col-sm-12 box-view">
+                        <!-- 1. Noi dung bai bao -->
+                        <div class="row zone-box">
+                            <div class="row">
+                                <div class="row-select col-sm-2">
+                                    <div class="group-title-name">
+                                        <b>Học phần</b><span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-10 row-select zoneDSHocPhan" id="zoneDSHocPhan">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="clear"></div>
+            <div id="zoneLopHocPhan" class="zoneLopHocPhan"></div>
+        </div>
+    </div>
+
+    <div class="row zone-bus form-container" id="zonechonmonhocphan" style="display: none">
+        <div class="box box-solid form-container">
+            <div class="box-header with-border">
+                <h3 class="box-title">.. <i class="fa fa-pencil"></i> ĐỂ HOÀN THÀNH QUÁ TRÌNH ĐĂNG KÝ HỌC HỌC PHẦN <span
+                        id="lblHocPhanDaChon" class="active"></span>, BẠN CẦN CHỌN ĐỦ CÁC NHÓM LỚP SAU</h3>
+                <div class="pull-right">
+                    <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times"></i></a>
+                </div>
+            </div>
+            <div class="box-body zone-box">
+                <div id="btnChonLopAll" class="col-lg-3"></div>
+                <div id="zoneThuocTinh"></div>
+
+                <div id="btnDangKyNhomLop" class="col-lg-3 ">
+                    <div class="box-hocphan" style="width: 98%">
+                        <div class="gallery" style="text-align:center">
+                            <div style="font-size: 25px; vertical-align: middle">Đăng ký</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="box-header with-border" style="text-align: center">
+                <h3 class="box-title"> DANH SÁCH CÁC LỚP HỌC PHẦN THẢO LUẬN / THỰC HÀNH</h3>
+            </div>
+            <div class="box-body zone-box" id="zoneTHTL">
+            </div>
+            <div class="box-footer">
+                <div class="pull-right">
+                    <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times-circle"></i>
+                        Đóng</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row zone-bus form-container" id="zoneketquahocphan" style="display: none">
+        <div class="box box-solid form-container">
+            <div class="box-header with-border">
+                <h3 class="box-title" style="text-align: center">KẾT QUẢ ĐĂNG KÝ HỌC </h3>
+                <div class="pull-right">
+                    <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times"></i></a>
+                </div>
+            </div>
+            <div class="box-body zone-box" id="zoneKetQuaDangKy">
+            </div>
+            <div class="box-footer">
+                <div class="pull-right">
+                    <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times-circle"></i>
+                        Đóng</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- -----Open modal -->
+<div class="aps-all-button ml-20 aps-gap-10 btn-show mt-10 pl20" style="display: none !important;">
+    <button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#myModal">
+        Danh sách học phần</button>
+    <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#myModalChiTietLich">
+        Danh sách phạm vi</button>
+        <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#phuongan_dangky">
+            Chi tiết quân số lớp</button>
+</div>
+<!-- ---------- -->
+<!-- Danh sách học phần -->
+<div class="modal fade modal-ds-hocphan" id="myModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 95%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+                <h4 class="modal-title"><span class="myModalLabel1"><i class="fa-solid fa-books"></i> 
+                    Danh sách học phần</span> </h4>
+            </div>
+            <div class="modal-body" id="modal_body">
+                <div class="box-body zone-box" id="zoneDoiLichDangKy">
+                </div>
+            </div>
+            <div id="notify"></div>
+            <div class="modal-footer">
+                <div class="pull-left aps-list-btn"> <a id="btnDelete_LopHocPhan" class="btn btn-soft-danger"><i
+                            class="fa fa eraser"></i> Xóa</a></div>
+                <div class="pull-right aps-list-btn">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        <i class="fa-regular fa-xmark"></i>
+                        <span class="lang" key="">Đóng</span></button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Chi tiết quân số lớp -->
+<div class="modal fade myModalChiTietLich" id="myModalChiTietLich" role="dialog" aria-labelledby="myModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" style="width: 95%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+                <h4 class="modal-title"><span class="myModalLabel1"><i class="fa fa-plus"></i>Chi tiết - </span> <span
+                        class="lang" key="" id="lblChiTietHocPhan">Chi tiết quân số lớp</span> </h4>
+            </div>
+            <div class="modal-body" id="modal_body">
+                <div class="clear"></div>
+                <div class="scroll-table-x aps-table-select">
+                    <table id="tblLichHoc" class="table table-hover table-bordered table-noborder tblLichHoc">
+                        <thead>
+                            <tr>
+                                <th class="td-center w-50px td-fix"><span class="lang" key="">Stt</span></th>
+                                <th class="td-left"><span class="lang" key="">Buổi học</span></th>
+                                <th class="td-center"><span class="lang" key="">Ngày bắt đầu</span></th>
+                                <th class="td-center"><span class="lang" key="">Ngày kết thúc</span></th>
+                                <th class="td-center"><span class="lang" key="">Thứ học</span></th>
+                                <th class="td-center"><span class="lang" key="">Số tiết</span></th>
+                                <th class="td-center"><span class="lang" key="">Tiết bắt đầu</span></th>
+                                <th class="td-center"><span class="lang" key="">Tiết kết thúc</span></th>
+                                <th class="td-center"><span class="lang" key="">Giờ, phút bắt đầu</span></th>
+                                <th class="td-center"><span class="lang" key="">Giờ, phút kết thúc</span></th>
+                                <th class="td-center"><span class="lang" key="">Phòng học</span></th>
+                                <th class="td-left"><span class="lang" key="">Giảng viên</span></th>
+                                <th class="td-left"><span class="lang" key="">Kiểu học</span></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <div id="notify"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times-circle-o"></i>
+                    <span class="lang" key="">Đóng</span></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade phuongan_dangky" id="phuongan_dangky" role="dialog" aria-labelledby="myModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" style="width: 95%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+                <h4 class="modal-title"><span class="myModalLabel1"><i class="fa fa-plus"></i> Chi tiết - </span> <span
+                        class="lang" key="" id="zoomfileLabel_PhuongAn">Chi tiết quân số lớp</span> </h4>
+            </div>
+            <div class="modal-body" id="modal_body">
+                <div class="scroll-table-x aps-table-select">
+                <table id="tblPhuongAnDangKy" class="table table-hover table-bordered table-noborder tblPhuongAnDangKy">
+                    <thead>
+                        <tr>
+                            <th class="td-center td-fix"><span class="lang" key="">Stt</span></th>
+                            <th class="td-center"><span class="lang" key="">Mã lớp</span></th>
+                            <th class="td-center"><span class="lang" key="">Tên lớp</span></th>
+                            <th class="td-center"><span class="lang" key="">Số dự kiến</span></th>
+                            <th class="td-center"><span class="lang" key="">Số đã đăng ký</span></th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table></div>
+            </div>
+            <div id="notify"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times-circle-o"></i>
+                    <span class="lang" key="">Đóng</span></button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- page script -->
+<script src="modules/canbodangky/script/dangky.js?v=1.0.3.3"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['DangKy'] = new DangKy();
+    $(document).ready(function () {
+        main_doc.DangKy.init();
+    });
+</script>

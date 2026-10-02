@@ -1,0 +1,22 @@
+/* Dữ liệu mẫu cho mucphinienche — chỉ dùng ở chế độ dựng thử. */
+(function () {
+    var B = ums.dmhsB;
+    B.demoChung();
+    var SV = [
+        { ID: 'HS1', QLSV_NGUOIHOC_ID: 'NH0000000000000000000000000000001', DAOTAO_TOCHUCCHUONGTRINH_ID: 'CT0000000000000000000000000000001', QLSV_NGUOIHOC_MASO: 'BIT220101', QLSV_NGUOIHOC_HODEM: 'Nguyễn Văn', QLSV_NGUOIHOC_TEN: 'An', DAOTAO_LOPQUANLY_TEN: 'KTPM01-K67', DAOTAO_CHUONGTRINH_TEN: 'Kỹ thuật phần mềm' },
+        { ID: 'HS2', QLSV_NGUOIHOC_ID: 'NH0000000000000000000000000000002', DAOTAO_TOCHUCCHUONGTRINH_ID: 'CT0000000000000000000000000000001', QLSV_NGUOIHOC_MASO: 'BIT220102', QLSV_NGUOIHOC_HODEM: 'Trần Thị', QLSV_NGUOIHOC_TEN: 'Bình', DAOTAO_LOPQUANLY_TEN: 'KTPM01-K67', DAOTAO_CHUONGTRINH_TEN: 'Kỹ thuật phần mềm' },
+        { ID: 'HS3', QLSV_NGUOIHOC_ID: 'NH0000000000000000000000000000003', DAOTAO_TOCHUCCHUONGTRINH_ID: 'CT0000000000000000000000000000001', QLSV_NGUOIHOC_MASO: 'BIT220103', QLSV_NGUOIHOC_HODEM: 'Lê Hoàng', QLSV_NGUOIHOC_TEN: 'Cường', DAOTAO_LOPQUANLY_TEN: 'KTPM01-K67', DAOTAO_CHUONGTRINH_TEN: 'Kỹ thuật phần mềm' }
+    ];
+    function key(r) { return r.QLSV_NGUOIHOC_ID + r.DAOTAO_TOCHUCCHUONGTRINH_ID; }
+    ums.demo.add({
+        'PKG_TAICHINH_THUCHI3.LayDSThoiGian_MucPhi_SV_Tien': [{ ID: 'TG1', THOIGIAN: '2025_2026_1' }, { ID: 'TG2', THOIGIAN: '2025_2026_2' }],
+        'PKG_TAICHINH_THUCHI3.LayDSTaiChinh_SV_SoTien': SV.map(function (r) {
+            var o = {}; Object.keys(r).forEach(function (k) { o[k] = r[k]; }); o.PHAMVIAPDUNG_ID = key(r); return o;
+        }),
+        'PKG_TAICHINH_THUCHI3.LayDSTC_MucPhi_SV_DuLieu': [
+            { ID: 'NC1', PHAMVIAPDUNG_ID: key(SV[0]), DAOTAO_THOIGIANDAOTAO_ID: 'TG1', TONGSOTIEN: 9600000 },
+            { ID: 'NC2', PHAMVIAPDUNG_ID: key(SV[1]), DAOTAO_THOIGIANDAOTAO_ID: 'TG1', TONGSOTIEN: 9600000 }
+        ],
+        'pkg_hosohocvien.LayDanhSachHoSoNhieuNganh': function (o) { return o.strLopQuanLy_Id === 'L1' ? SV : []; }
+    });
+})();

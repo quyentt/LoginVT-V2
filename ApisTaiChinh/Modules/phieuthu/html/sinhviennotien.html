@@ -1,0 +1,635 @@
+﻿<style>
+    .todo-list {
+        overflow: unset;
+    }
+
+    .checkbox-inline+.checkbox-inline,
+    .radio-inline+.radio-inline {
+        margin-left: 0px;
+    }
+
+    .dr-progress {
+        font-size: 16px;
+        margin-left: 10px;
+        border-radius: 0.25em;
+        font-weight: 700;
+    }
+
+    .dr-progress-content {
+        border-radius: 0.25em;
+        padding: 0.2em 0.6em 0.3em;
+    }
+
+    .w3-light {
+        margin-top: -5px;
+        margin-bottom: -10px;
+        font-weight: 700;
+        margin-left: 10px
+    }
+
+    .w3-light-grey,
+    .w3-hover-light-grey:hover,
+    .w3-light-gray,
+    .w3-hover-light-gray:hover {
+        background-color: #f1f1f1 !important;
+        color: #000 !important;
+    }
+
+    .w3-container,
+    .w3-panel {
+        padding: 0.01em 16px;
+    }
+
+    .w3-green,
+    .w3-hover-green:hover {
+        background-color: #4caf50 !important;
+        color: #fff !important;
+    }
+
+    .w3-round,
+    .w3-round-medium {
+        border-radius: 4px;
+    }
+
+    .w3-round-xlarge {
+        border-radius: 16px;
+    }
+
+    .box {
+        margin-bottom: 5px
+    }
+
+    .callsuccess {
+        color: green;
+        font-weight: bold;
+    }
+
+
+    .table-hoadon td {
+        font-size: 11pt;
+        font-family: 'Times New Roman';
+        border: 1px solid black;
+    }
+
+    .table-hoadon th {
+        font-size: 11pt;
+        font-family: 'Times New Roman';
+    }
+
+    .table-hoadon {
+        text-align: center;
+        width: 100%;
+        border: 1px solid black;
+    }
+
+    .tr-bg {
+        background: #f1f1f1 !important;
+    }
+
+    dropdown-menu>li>a:hover {
+        background-color: gray !important;
+    }
+</style>
+<!-- Danh sách còn nợ phí -->
+<section class="content aps-phieuthu">
+    <div id="MainContent" class="aps-notien">
+        <div class="box box-solid box-shadow pd0 mb-20">
+            <div class="row box-search pd20" style="padding-bottom: 10px !important;">
+                <!--Search zone-->
+                <div class="box-body pd0">
+                    <div class="group-title d-none">                        
+                        <p>
+                            <i class="fa fa-window-restore">
+                            </i> <span class="lang" key="">Tìm kiếm 2</span>
+                        </p>
+                    </div>
+                    <div class="area-search pd0">
+                        <div id="search" class="inputSearch collapse in">
+                            <!-- Bộ tìm kiếm -->
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_HeDaoTao_NT" class="select-opt" style="width:100% !important">
+                                    <option id="" value=""> --Chọn hệ đào tạo-- </option>
+                                </select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_KhoaDaoTao_NT" class="select-opt" style="width:100% !important">
+                                    <option id="" value=""> --Chọn khóa đào tạo-- </option>
+                                </select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_ChuongTrinh_NT" class="select-opt" style="width:100% !important">
+                                    <option id="" value=""> --Chọn chương trình-- </option>
+                                </select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_Lop_NT" class="select-opt" style="width:100% !important">
+                                    <option id="" value=""> --Chọn lớp-- </option>
+                                </select>
+                            </div>
+                            <div class="col-sm-3 item-search" style="display: none">
+                                <select id="dropSearch_NguoiThu_NT" class="select-opt" style="width:100% !important">
+                                    <option id="" value=""> --Chọn người thu-- </option>
+                                </select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_HocKy_NT" class="select-opt" style="width:100% !important">
+                                    <option id="" value=""> --Chọn học kỳ-- </option>
+                                </select>
+                            </div>
+                            <div class="col-sm-3 item-search" style="display: none">
+                                <select id="dropSearch_KyThucHien_NT" class="select-opt" style="width:100% !important">
+                                    <option id="" value="1"> Trong kỳ này </option>
+                                    <option id="" value="0"> Đến kỳ này </option>
+                                </select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_NamNhapHoc_IHD" class="select-opt" style="width:100% !important"
+                                    multiple="multiple"></select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_KhoaQuanLy_IHD" class="select-opt" style="width:100% !important"
+                                    multiple="multiple"></select>
+                            </div>
+                            <div class="col-sm-3 item-search pr0" style="padding-right: 0 !important;">
+                                <select id="dropSearch_SoLuong_NT" class="select-opt" style="width:100% !important">
+                                    <option id="" value="10">10 luồng cùng chạy</option>
+                                    <option id="" value="1">1 luồng chạy</option>
+                                    <option id="" value="2">2 luồng chạy</option>
+                                    <option id="" value="30">30 luồng cùng chạy</option>
+                                    <option id="" value="50">50 luồng cùng chạy</option>
+                                    <option id="" value="100">100 luồng cùng chạy</option>
+                                    <option id="" value="200">200 luồng cùng chạy</option>
+                                    <option id="" value="500">500 luồng cùng chạy</option>
+                                    <option id="" value="1000">1000 luồng cùng chạy</option>
+                                </select>
+                            </div>
+                            <div class="clear"></div>
+                            <div class="col-sm-2 item-search">
+                                <input id="txtSearch_TuNgay_NT" class="form-control input-datepicker"
+                                    placeholder="Từ ngày dd/mm/yyyy" />
+                            </div>
+                            <div class="col-sm-2 item-search">
+                                <input id="txtSearch_DenNgay_NT" class="form-control input-datepicker"
+                                    placeholder="Đến ngày dd/mm/yyyy" />
+                            </div>
+                            <div class="col-sm-5 item-search">
+                                <input id="txtSearch_NT" class="form-control" placeholder="Nhập từ khóa tìm kiếm" />
+                            </div>
+                            <div class="clear"></div>
+                            <div class="col-sm-12 item-search d-flex flex-wrap" style="gap: 10px; margin-top: 10px;">
+                                <a id="btnSearch_NT" class="btn btn-default btn-search"><i class="fa fa-search"></i>
+                                    <span class="lang" key="">Tìm kiếm</span></a>
+                                <div class="dropdown" id="zonebtnBaoCao_SVNT">
+                                    <a class="btn btn-success dropdown-toggle" data-toggle="dropdown">
+                                        <i class="fa fa fa-file-excel-o"></i> Xuất báo cáo <span class="caret"></span>
+                                    </a>
+                                    <ul class="dropdown-menu form-container">
+                                        <li><a class="btnBaoCao_LHD" name="ThongKe_TongHopNoHocPhi" href="#"> Xuất BC
+                                                tổng hợp nợ</a></li>
+                                        <li><a class="btnBaoCao_LHD" name="ThongKe_TongHopNoHocPhiRieng" href="#"> Xuất
+                                                BC tổng hợp nợ riêng</a></li>
+
+                                    </ul>
+                                </div>
+                                <a id="btnSearch_TongHopDuLieu" class="btn btn-warning">
+                                    <i class="fa-solid fa-circle-dollar-to-slot"></i>
+                                    <span class="lang" key="">Tổng hợp dữ liệu</span>
+                                </a>
+                                <a id="btnGuiEmail_NT" class="btn btn-primary" title="Gửi email báo nợ cho các sinh viên đã chọn">
+                                    <i class="fa fa-envelope"></i>
+                                    <span class="lang" key="">Gửi Email</span>
+                                </a>
+                                <a id="btnXoaNo_NT" class="btn btn-danger" title="Xóa nợ (Không hạch toán công nợ) cho các bản ghi đã chọn">
+                                    <i class="fa fa-trash"></i>
+                                    <span class="lang" key="">Xóa nợ</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row box-select"><!--Search zone-->
+                <div class="col-lg-8 box-select-khoanno">
+                    <div class="box box-solid">
+                        <div class="box-body">
+                            <div class="group-title pl5 pt0">
+                                <p class="titleSearchContent" data-target="#DSKhoanThu">
+                                    <i class="fal fa-usd-circle"></i>
+                                    <span class="lang" key="">Chọn khoản nợ</span>
+                                </p>
+                            </div>
+                            <div class="area-search">
+                                <div id="DSKhoanThu" style="padding-left: 25px" class="inputSearch collapse in">
+                                    <div id="zoneLoaiKhoanPhi"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 box-select-trangthai">
+                    <div class="box box-solid">
+                        <div class="box-body">
+                            <div class="group-title  pl5 pr5 pt0">
+                                <p class="titleSearchContent color-red" data-target="#DSTrangThaiSV_LHD">
+                                    <i class="fal fa-user-graduate"></i>
+                                    <span class="lang color-red" key="">Chọn trạng thái sinh viên</span>
+                                </p>
+                            </div>
+                            <div class="area-search">
+                                <div style="padding-left: 25px" id="DSTrangThaiSV_LHD" class="inputSearch collapse in">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row box-shadow pd0 mb-20 aps-dssv-notien">
+            <div class="box box-solid box-KhoanThu pd0" id="mainKhoanThu">
+                <div class="box-body pd0">
+                    <div class="nav-tabs-custom">
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a href="#tab_khoanthu_chuaxuat" data-toggle="tab"
+                                    aria-expanded="true">1. <span class="lang" key="">Sinh viên nợ tiền</span></a></li>
+                        </ul>
+                        <div class="tab-content mt-20">
+                            <!-- Danh sách khoản thu -->
+                            <div class="tab-pane active" id="tab_khoanthu_chuaxuat">
+                                <div class="row row-tab row-align">
+                                    <div class="clear"></div>
+                                    <div class="zone-content-table scroll-table-x">
+                                        <table id="tbldata_KhoanThu_ChuaXuat_NT" class="table table-hover tbldata_KhoanThu_ChuaXuat_NT table-noborder">
+                                            <thead>
+                                                <tr>
+                                                    <th class="td-center"><input type="checkbox" id="chkSelectAll_GuiEmail_NT" title="Chọn tất cả"/></th>
+                                                    <th class="td-fixed td-center">Stt</th>
+                                                    <th class="td-left"><span class="lang" key="">Mã số</span></th>
+                                                    <th class="td-left"><span class="lang" key="">Họ tên</span></th>
+                                                    <th class="td-left"><span class="lang" key="">Lớp</span></th>
+                                                    <th class="td-center"><span class="lang" key="">Học kỳ</span></th>
+                                                    <th class="td-left"><span class="lang" key="">Khoản thu</span></th>
+                                                    <th class="td-left"><span class="lang" key="">Nội dung</span></th>
+                                                    <th class="td-right"><span class="lang" key="">Số tiền</span></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td colspan="9" class="td-center">Hãy ấn nút tìm kiếm để tải danh
+                                                        sách</td>
+                                                </tr>
+                                            </tbody>
+                                            <tfoot></tfoot>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.box-Nhap Tui Ho So -->
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- page script -->
+<div id="DSPhieuRut" style="display:none" class="DSPhieuRut"></div>
+
+<!-- Modal chọn phạm vi gửi email -->
+<div class="modal fade scope-modal" id="myModalChonPhamVi_NT" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" style="max-width: 560px; margin-top: 8vh;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+                <div class="scope-title-wrap">
+                    <div class="scope-icon-round primary"><i class="fa fa-envelope"></i></div>
+                    <div>
+                        <h4 class="scope-title">Chọn phạm vi gửi Email</h4>
+                        <div class="scope-subtitle">Nhắc nộp học phí cho sinh viên còn nợ</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="scope-info">
+                    <i class="fa fa-info-circle" style="margin-right: 6px;"></i>
+                    Email sẽ được gửi <b>tự động</b> đến địa chỉ email của từng sinh viên trong danh sách.
+                </div>
+                <div class="scope-label">Bạn muốn gửi email cho</div>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <a id="btnPhamVi_DaChon_NT" class="scope-option primary">
+                        <div class="scope-opt-icon primary"><i class="fa fa-check-square"></i></div>
+                        <div class="scope-opt-body">
+                            <div class="scope-opt-title">Chỉ sinh viên đã tick chọn</div>
+                            <div class="scope-opt-desc"><span id="lblSoLuongDaChon_NT">0</span> SV trên trang này</div>
+                        </div>
+                        <i class="fa fa-angle-right scope-opt-arrow"></i>
+                    </a>
+                    <a id="btnPhamVi_TatCa_NT" class="scope-option success">
+                        <div class="scope-opt-icon success"><i class="fa fa-list"></i></div>
+                        <div class="scope-opt-body">
+                            <div class="scope-opt-title">Toàn bộ sinh viên khớp bộ lọc</div>
+                            <div class="scope-opt-desc">Tất cả các trang</div>
+                        </div>
+                        <i class="fa fa-angle-right scope-opt-arrow"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a class="btn-scope-huy" data-dismiss="modal"><i class="fa fa-times"></i> Hủy</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========== Shared style cho các modal chọn phạm vi ========== -->
+<style>
+    .scope-modal .modal-content {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+        overflow: hidden;
+    }
+    .scope-modal .modal-header {
+        background: #fff !important;
+        border-bottom: 1px solid #f0f0f0;
+        padding: 20px 24px !important;
+    }
+    .scope-modal .modal-header .close {
+        opacity: 0.5;
+        font-size: 24px;
+        margin-top: 4px;
+    }
+    .scope-modal .modal-header .close:hover { opacity: 1; }
+    .scope-modal .scope-title-wrap {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+    .scope-modal .scope-icon-round {
+        width: 46px; height: 46px;
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0;
+    }
+    .scope-modal .scope-icon-round i { font-size: 20px; }
+    .scope-modal .scope-icon-round.primary { background: #dbeafe; }
+    .scope-modal .scope-icon-round.primary i { color: #2563eb; }
+    .scope-modal .scope-icon-round.danger { background: #fee2e2; }
+    .scope-modal .scope-icon-round.danger i { color: #dc2626; }
+    .scope-modal .scope-title { margin: 0; font-weight: 600; color: #1f2937; font-size: 17px; }
+    .scope-modal .scope-subtitle { font-size: 12px; color: #6b7280; margin-top: 2px; }
+    .scope-modal .modal-body { padding: 20px 24px !important; }
+    .scope-modal .scope-warn {
+        background: #fef2f2;
+        border-left: 3px solid #dc2626;
+        padding: 12px 14px;
+        border-radius: 4px;
+        margin-bottom: 18px;
+        font-size: 13px;
+        color: #7f1d1d;
+        line-height: 1.5;
+    }
+    .scope-modal .scope-info {
+        background: #eff6ff;
+        border-left: 3px solid #2563eb;
+        padding: 12px 14px;
+        border-radius: 4px;
+        margin-bottom: 18px;
+        font-size: 13px;
+        color: #1e3a8a;
+        line-height: 1.5;
+    }
+    .scope-modal .scope-label {
+        font-size: 12px;
+        color: #6b7280;
+        margin-bottom: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .scope-modal .scope-option {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 16px;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        text-decoration: none !important;
+        color: inherit !important;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        background: #fff;
+    }
+    .scope-modal .scope-option:not(.disabled):hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    .scope-modal .scope-option.primary:not(.disabled):hover { border-color: #2563eb; background: #eff6ff; }
+    .scope-modal .scope-option.warning:not(.disabled):hover { border-color: #f59e0b; background: #fffbeb; }
+    .scope-modal .scope-option.success:not(.disabled):hover { border-color: #16a34a; background: #f0fdf4; }
+    .scope-modal .scope-option.danger:not(.disabled):hover { border-color: #dc2626; background: #fef2f2; }
+    .scope-modal .scope-opt-icon {
+        width: 42px; height: 42px;
+        border-radius: 8px;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0;
+    }
+    .scope-modal .scope-opt-icon.primary { background: #dbeafe; color: #2563eb; }
+    .scope-modal .scope-opt-icon.warning { background: #fef3c7; color: #d97706; }
+    .scope-modal .scope-opt-icon.success { background: #dcfce7; color: #16a34a; }
+    .scope-modal .scope-opt-icon.danger { background: #fecaca; color: #dc2626; }
+    .scope-modal .scope-opt-icon i { font-size: 18px; }
+    .scope-modal .scope-opt-body { flex: 1; min-width: 0; }
+    .scope-modal .scope-opt-title { font-weight: 600; color: #1f2937; font-size: 14px; }
+    .scope-modal .scope-opt-desc { font-size: 12px; color: #6b7280; margin-top: 3px; }
+    .scope-modal .scope-opt-arrow { color: #9ca3af; font-size: 18px; }
+    .scope-modal .modal-footer {
+        border-top: 1px solid #f0f0f0;
+        padding: 14px 24px !important;
+        background: #fafafa;
+    }
+    .scope-modal .btn-scope-huy {
+        padding: 7px 20px;
+        border-radius: 6px;
+        border: 1px solid #d1d5db;
+        background: #fff;
+        color: #4b5563;
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: none;
+    }
+    .scope-modal .btn-scope-huy:hover { background: #f9fafb; border-color: #9ca3af; color: #4b5563; text-decoration: none; }
+</style>
+
+<!-- Modal chọn phạm vi Xóa nợ -->
+<div class="modal fade scope-modal" id="myModalChonPhamVi_XoaNo_NT" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" style="max-width: 560px; margin-top: 8vh;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+                <div class="scope-title-wrap">
+                    <div class="scope-icon-round danger"><i class="fa fa-trash"></i></div>
+                    <div>
+                        <h4 class="scope-title">Chọn phạm vi Xóa nợ</h4>
+                        <div class="scope-subtitle">Không hạch toán công nợ</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="scope-warn">
+                    <i class="fa fa-exclamation-triangle" style="margin-right: 6px;"></i>
+                    Thao tác này <b>không thể hoàn tác</b>. Vui lòng kiểm tra kỹ trước khi xác nhận.
+                </div>
+                <div class="scope-label">Chọn phạm vi thực hiện</div>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <a id="btnPhamVi_DaChon_XoaNo_NT" class="scope-option warning">
+                        <div class="scope-opt-icon warning"><i class="fa fa-check-square"></i></div>
+                        <div class="scope-opt-body">
+                            <div class="scope-opt-title">Chỉ bản ghi đã tick chọn</div>
+                            <div class="scope-opt-desc"><span id="lblSoLuongDaChon_XoaNo_NT">0</span> bản ghi trên trang này</div>
+                        </div>
+                        <i class="fa fa-angle-right scope-opt-arrow"></i>
+                    </a>
+                    <a id="btnPhamVi_TatCa_XoaNo_NT" class="scope-option danger">
+                        <div class="scope-opt-icon danger"><i class="fa fa-list"></i></div>
+                        <div class="scope-opt-body">
+                            <div class="scope-opt-title">Toàn bộ bản ghi khớp bộ lọc</div>
+                            <div class="scope-opt-desc">Tất cả các trang — sẽ hỏi xác nhận lại</div>
+                        </div>
+                        <i class="fa fa-angle-right scope-opt-arrow"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a class="btn-scope-huy" data-dismiss="modal"><i class="fa fa-times"></i> Hủy</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Gửi Email báo nợ -->
+<div class="modal fade" id="myModalGuiEmail_NT" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-1800" style="width: 95%; max-width: 1800px; margin: 2vh auto;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h3 class="box-title"><i class="fa fa-envelope"></i> Gửi Email báo nợ học phí</h3>
+            </div>
+            <div class="modal-body pd0">
+                <div class="row aps-add-new pd20">
+                    <div class="row aps-form mb-0">
+                        <div class="row aps-form-item">
+                            <div class="col-sm-12">
+                                <label style="font-weight: bold">Tiêu đề <span style="color:red">*</span></label>
+                                <textarea id="txtTieuDeEmail_NT" class="form-control" rows="3" style="resize: vertical; min-height: 70px;" placeholder="VD: [THÔNG BÁO] Nộp học phí học kỳ 1 năm học 2026-2027. Hạn nộp: 03/08/2026">[THÔNG BÁO] Nhắc nộp các khoản phí còn nợ</textarea>
+                                <small class="text-muted"><i class="fa fa-info-circle"></i> Anh/chị có thể ghi <b>thời hạn nộp</b> ngay trong tiêu đề (VD: "Hạn nộp: dd/mm/yyyy") — nội dung tự sinh sẽ không có thời gian.</small>
+                            </div>
+                            <div class="clear"></div>
+                        </div>
+                        <div class="row aps-form-item">
+                            <div class="col-sm-12">
+                                <label style="font-weight: bold">Nội dung</label>
+                                <div class="alert alert-info pd10" style="margin-bottom: 0">
+                                    <i class="fa fa-info-circle"></i>
+                                    Nội dung email sẽ được hệ thống <b>tự sinh</b> theo từng sinh viên: bao gồm <b>Họ tên, Mã SV, Lớp, Học kỳ, Khoản thu, Số tiền còn nợ</b>.
+                                    <br/><i>(Sau này sẽ hỗ trợ nội dung dạng công thức — người dùng chỉ cần gõ tiêu đề.)</i>
+                                </div>
+                            </div>
+                            <div class="clear"></div>
+                        </div>
+                        <div class="row aps-form-item">
+                            <div class="col-sm-12">
+                                <div class="d-flex align-items-center" style="margin-bottom: 5px; gap: 10px; flex-wrap: wrap;">
+                                    <label style="font-weight: bold; margin: 0">Danh sách sinh viên sẽ gửi (<span id="lblSoLuongGuiEmail_NT">0</span>)</label>
+                                    <div style="margin-left:auto">
+                                        <label style="font-weight: normal; margin: 0">Hiển thị</label>
+                                        <select id="dropPageSize_GuiEmail_NT" class="form-control" style="display:inline-block; width:auto; margin: 0 5px;">
+                                            <option value="50">50</option>
+                                            <option value="100" selected>100</option>
+                                            <option value="200">200</option>
+                                            <option value="500">500</option>
+                                        </select>
+                                        <label style="font-weight: normal; margin: 0">/trang</label>
+                                    </div>
+                                </div>
+                                <div style="max-height: 55vh; overflow-y: auto; overflow-x: auto; border: 1px solid #ddd;">
+                                    <table id="tblPreviewGuiEmail_NT" class="table table-hover table-bordered mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th class="td-center">Stt</th>
+                                                <th class="td-left">Mã SV</th>
+                                                <th class="td-left">Họ tên</th>
+                                                <th class="td-left">Lớp</th>
+                                                <th class="td-left">Email</th>
+                                                <th class="td-left">Khoản thu</th>
+                                                <th class="td-left" style="min-width: 320px;">Nội dung email</th>
+                                                <th class="td-right">Số tiền</th>
+                                                <th class="td-center">Trạng thái</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                                <div id="zonePagination_GuiEmail_NT" class="d-flex justify-content-between align-items-center" style="margin-top: 8px; flex-wrap: wrap; gap: 10px;"></div>
+                            </div>
+                            <div class="clear"></div>
+                        </div>
+                        <div class="row aps-form-item">
+                            <div class="col-sm-12">
+                                <div id="zonePercent_GuiEmail_NT"></div>
+                            </div>
+                            <div class="clear"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="d-flex justify-content-between w-100">
+                    <div></div>
+                    <div>
+                        <a class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Đóng</a>
+                        <a id="btnConfirmGuiEmail_NT" class="btn btn-success"><i class="fa fa-envelope"></i> Gửi Email</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="modules/phieuthu/scripts/sinhviennotien.js?v=1.0.0.38"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['SinhVienNoTien'] = new SinhVienNoTien();
+    $(document).ready(function () {
+        main_doc.SinhVienNoTien.init();
+    });
+</script>
+<!-- FIX 2026-08-26: Select2 trong modal — re-init voi dropdownParent = modal
+     de popup nam trong modal, khong lech / che noi dung. Universal handler,
+     an toan khi modal khong co select. -->
+<script>
+(function () {
+    if (typeof jQuery === 'undefined') return;
+    var $ = jQuery;
+    $(document).off('shown.bs.modal.__s2fix').on('shown.bs.modal.__s2fix', '.modal', function () {
+        var $modal = $(this);
+        $modal.find('select.select-opt, select[id^="drop"]').each(function () {
+            var $sel = $(this);
+            try {
+                if ($sel.hasClass('select2-hidden-accessible')) $sel.select2('destroy');
+            } catch (e) {}
+            $sel.select2({ dropdownParent: $modal, width: '100%' });
+        });
+    });
+})();
+</script>
+<style>
+    .modal .select2-container--open,
+    .modal .select2-container--open .select2-dropdown {
+        z-index: 100060 !important;
+    }
+    .modal .select2-results__options {
+        max-height: 220px !important;
+        overflow-y: auto !important;
+    }
+</style>

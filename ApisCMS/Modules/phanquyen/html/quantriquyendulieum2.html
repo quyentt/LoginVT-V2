@@ -1,0 +1,531 @@
+<style>
+    /* Compact Layout Styles */
+    .one-door.study-space {
+        padding: 0;
+        margin: 0;
+    }
+
+    .content-tab.no-tab {
+        margin-bottom: 10px;
+    }
+
+    .box-shadow {
+        padding: 15px;
+        margin-bottom: 15px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    /* Search Bar Section */
+    .search-bar-section {
+        padding: 20px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .search-bar-header .title-text {
+        font-size: 18px;
+        font-weight: 600;
+        color: #223771;
+        margin-bottom: 5px;
+    }
+
+    .search-bar-subtitle {
+        font-size: 12px;
+        color: #666;
+        margin: 0;
+        font-style: italic;
+    }
+
+    .search-bar-info {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 15px;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 6px;
+        border-left: 3px solid #223771;
+    }
+
+    .info-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 13px;
+        color: #555;
+    }
+
+    .info-item i {
+        font-size: 16px;
+        color: #223771;
+        width: 20px;
+        text-align: center;
+    }
+
+    .search-bar-controls {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 10px;
+        padding-top: 15px;
+        border-top: 2px solid #e9ecef;
+    }
+
+    .search-bar-controls .form-control,
+    .search-bar-controls .form-select {
+        width: 100%;
+        font-size: 14px;
+        min-height: 38px;
+        padding: 8px 12px;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .search-bar-controls .form-control:focus,
+    .search-bar-controls .form-select:focus {
+        border-color: #223771;
+        box-shadow: 0 0 0 2px rgba(34, 55, 113, 0.1);
+        outline: none;
+    }
+
+    .search-bar-controls input[placeholder*="bảng"] {
+        border-color: #28a745;
+        background: linear-gradient(135deg, #f8fff9 0%, #e8f5e8 100%);
+    }
+
+    .search-bar-controls input[placeholder*="bảng"]:focus {
+        border-color: #28a745;
+        box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.1);
+    }
+
+    .search-bar-controls .btn {
+        width: 100%;
+        white-space: nowrap;
+        min-height: 38px;
+        padding: 10px 16px;
+        font-size: 14px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 500;
+    }
+
+    .search-bar-controls .btn i {
+        margin-right: 8px;
+    }
+
+    /* Calendar Compact */
+    .calendar-compact {
+        background: white;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .calendar-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 15px;
+        background: linear-gradient(135deg, #223771 0%, #3c5398 100%);
+        color: white;
+    }
+
+    .calendar-title {
+        font-size: 16px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .calendar-header .btn {
+        color: white;
+        border-color: rgba(255,255,255,0.3);
+        padding: 5px 10px;
+        font-size: 13px;
+    }
+
+    .calendar-header .btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: white;
+    }
+
+    .calendar-body {
+        padding: 15px;
+        flex: 1;
+    }
+
+    .weekdays-compact {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        list-style: none;
+        padding: 0;
+        margin: 0 0 8px 0;
+        gap: 4px;
+    }
+
+    .weekdays-compact li {
+        text-align: center;
+        font-weight: 600;
+        font-size: 14px;
+        padding: 6px 2px;
+        color: #666;
+        background: #f8f9fa;
+        border-radius: 4px;
+    }
+
+    .calendar-body .days {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        gap: 4px;
+    }
+
+    .calendar-body .days li {
+        text-align: center;
+        padding: 8px 4px;
+        font-size: 14px;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: all 0.2s;
+        background: #f8f9fa;
+        border: 1px solid transparent;
+    }
+
+    .calendar-body .days li.poiter {
+        background: white;
+        border-color: #e1e1e1;
+    }
+
+    .calendar-body .days li.poiter:hover {
+        background: #e3f2fd;
+        border-color: #2196f3;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 6px rgba(33, 150, 243, 0.3);
+    }
+
+    .calendar-body .days li.active {
+        background: var(--orange, #ff6b35) !important;
+        color: white !important;
+        font-weight: bold;
+        border-color: var(--orange, #ff6b35) !important;
+        box-shadow: 0 3px 8px rgba(255, 107, 53, 0.4);
+    }
+
+    .calendar-body .days li.day-of-other-month {
+        color: #ccc;
+        cursor: default;
+        background: transparent;
+    }
+
+    /* Table Search Bar */
+    .table-search-bar {
+        border-bottom: 2px solid #dee2e6;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    }
+
+    .table-search-bar input:focus {
+        border-color: #28a745 !important;
+        box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.15) !important;
+        outline: none;
+    }
+
+    .table-search-bar .btn-outline-secondary {
+        border-color: #6c757d;
+        color: #6c757d;
+        transition: all 0.2s;
+    }
+
+    .table-search-bar .btn-outline-secondary:hover {
+        background: #6c757d;
+        color: white;
+    }
+
+    /* Table Styles */
+    .table-container {
+        overflow-x: auto;
+        overflow-y: auto;
+        max-height: calc(100vh - 250px);
+        min-height: 600px;
+        position: relative;
+        /* Đảm bảo thanh cuộn luôn hiển thị */
+        scrollbar-width: auto; /* Firefox */
+        -webkit-overflow-scrolling: touch; /* iOS */
+    }
+
+    /* Tùy chỉnh thanh cuộn cho Webkit browsers (Chrome, Safari, Edge) */
+    .table-container::-webkit-scrollbar {
+        width: 12px;
+        height: 12px;
+    }
+
+    .table-container::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 6px;
+    }
+
+    .table-container::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #223771 0%, #3c5398 100%);
+        border-radius: 6px;
+        border: 2px solid #f1f1f1;
+    }
+
+    .table-container::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(135deg, #1a2a54 0%, #2d4373 100%);
+    }
+
+    .table-container::-webkit-scrollbar-corner {
+        background: #f1f1f1;
+    }
+
+    #tblPhanQuyenDuLieu {
+        width: 100%;
+        min-width: 1200px; /* Đảm bảo bảng có chiều rộng tối thiểu để kích hoạt thanh cuộn ngang */
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 13px;
+    }
+
+    #tblPhanQuyenDuLieu thead th {
+        background: linear-gradient(135deg, #223771 0%, #3c5398 100%);
+        color: white;
+        padding: 12px 8px;
+        font-weight: 600;
+        text-align: center;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        border: 1px solid #1a2a54;
+        white-space: nowrap;
+        min-width: 120px;
+    }
+
+    #tblPhanQuyenDuLieu thead th:first-child {
+        min-width: 150px;
+        left: 0;
+        z-index: 11;
+    }
+
+    #tblPhanQuyenDuLieu tbody td {
+        padding: 10px 8px;
+        border: 1px solid #e0e0e0;
+        background: white;
+        vertical-align: middle;
+    }
+
+    #tblPhanQuyenDuLieu tbody td:first-child {
+        position: sticky;
+        left: 0;
+        background: #f8f9fa;
+        font-weight: 500;
+        z-index: 5;
+    }
+
+    #tblPhanQuyenDuLieu tbody tr:hover td {
+        background: #f0f7ff;
+    }
+
+    .td-center {
+        text-align: center !important;
+    }
+
+    /* Checkbox Styles */
+    input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+    }
+
+    input[type="checkbox"]:hover {
+        transform: scale(1.1);
+    }
+
+    /* Search Highlight */
+    .search-highlight {
+        background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%) !important;
+        border-left: 3px solid #f39c12 !important;
+        animation: searchPulse 0.5s ease-in-out;
+    }
+
+    .search-highlight td {
+        background: transparent !important;
+    }
+
+    @keyframes searchPulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.02); }
+        100% { transform: scale(1); }
+    }
+
+    /* Search Result Info */
+    .search-result-info {
+        animation: slideDown 0.3s ease-out;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+        .search-bar-section {
+            padding: 15px;
+        }
+
+        #tblPhanQuyenDuLieu {
+            font-size: 12px;
+        }
+
+        #tblPhanQuyenDuLieu thead th,
+        #tblPhanQuyenDuLieu tbody td {
+            padding: 8px 6px;
+            min-width: 100px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .calendar-body .days li {
+            font-size: 12px;
+            padding: 6px 2px;
+        }
+
+        .weekdays-compact li {
+            font-size: 14px;
+            padding: 5px 1px;
+        }
+    }
+</style>
+
+<div class="one-door study-space">
+    <div class="overlay"></div>
+    <div class="content-tab no-tab">
+        <p class="link">
+            <a href="#">Phân quyền</a><i class="fal fa-angle-right"></i>
+            <a href="#">Quản trị quyền dữ liệu</a>
+        </p>
+    </div>
+
+    <!-- Top Section: Search Bar + Calendar -->
+    <div class="row mb-3">
+        <!-- Search Bar - Left Side -->
+        <div class="col-12 col-lg-12 mb-3 mb-lg-0">
+            <div class="box-shadow">
+                <div class="search-bar-section">
+                    <div class="search-bar-header">
+                        <p class="color-dask-blue title-text" style="margin: 0;">
+                            <i class="fa-solid fa-user-shield pr5 fw-bold"></i>Quản trị quyền dữ liệu
+                        </p>
+                        <p class="search-bar-subtitle">
+                            Phân quyền truy cập dữ liệu theo vai trò hệ thống
+                        </p>
+                    </div>
+                    <div class="search-bar-info">
+                        <div class="info-item">
+                            <i class="fa-solid fa-users-cog text-primary"></i>
+                            <span>Quản lý quyền truy cập theo <strong id="lblSoLuongVaiTro">0</strong> vai trò hệ thống</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fa-solid fa-database text-success"></i>
+                            <span>Phân quyền theo hệ đào tạo, khóa, chương trình, lớp</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fa-solid fa-check-circle text-info"></i>
+                            <span>Chọn nhanh theo cột hoặc dòng</span>
+                        </div>
+                    </div>
+                    <div class="search-bar-controls">
+                        <select class="form-select" id="ddlDimension">
+                            <option value="">-- Chọn chiều dữ liệu --</option>
+                        </select>
+                        <input type="text" class="form-control" id="txtSearch_TuKhoa" placeholder="Nhập từ khóa tìm kiếm...">
+                        <button class="btn btn-primary" id="btnSearch">
+                            <i class="fa-solid fa-search"></i> Tìm kiếm
+                        </button>
+                        <button class="btn btn-success" id="btnLuuPhanQuyen">
+                            <i class="fa-solid fa-save"></i> Lưu phân quyền
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Calendar - Right Side - HIDDEN -->
+        <div class="col-12 col-lg-5" style="display: none;">
+            <div class="box-shadow p-0">
+                <div class="calendar-compact">
+                    <div class="calendar-header">
+                        <button class="btn btn-sm btn-outline-light" id="btnPrevMonth">
+                            <i class="fal fa-chevron-left"></i>
+                        </button>
+                        <div class="calendar-title">
+                            <i class="fa-solid fa-calendar-range"></i>
+                            <span id="thang"></span> - <span id="nam"></span>
+                        </div>
+                        <button class="btn btn-sm btn-outline-light" id="btnNextMonth">
+                            <i class="fal fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div class="calendar-body">
+                        <ul class="weekdays-compact">
+                            <li>T2</li>
+                            <li>T3</li>
+                            <li>T4</li>
+                            <li>T5</li>
+                            <li>T6</li>
+                            <li>T7</li>
+                            <li>CN</li>
+                        </ul>
+                        <ul class="days"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table Section - Full Width -->
+    <div class="row">
+        <div class="col-12">
+            <div class="box-shadow">
+                <!-- Info box - HIDDEN -->
+                <div style="display: none; margin-bottom: 15px; padding: 10px; background: #e3f2fd; border-left: 4px solid #2196f3; border-radius: 4px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fa-solid fa-info-circle" style="color: #2196f3; font-size: 18px;"></i>
+                        <div>
+                            <strong style="color: #1976d2;">Hướng dẫn:</strong>
+                            <span style="color: #555; margin-left: 10px;">Bảng có <span id="lblSoLuongVaiTro" style="font-weight: 700; color: #d32f2f;">0</span> cột vai trò. Kéo ngang để xem tất cả các cột.</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table id="tblPhanQuyenDuLieu" class="table table-hover table-bordered">
+                        <thead></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div id="paginationContainer"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="modules/phanquyen/script/quantriquyendulieum2.js?v=1.0.0.3"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['PhanQuyenDuLieuM2'] = new PhanQuyenDuLieuM2();
+    $(document).ready(function () {
+        main_doc.PhanQuyenDuLieuM2.init();
+    });
+</script>

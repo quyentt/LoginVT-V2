@@ -1,0 +1,425 @@
+﻿
+<section class="content">
+    <div class="row">
+        <!-- /.left-content -->
+        <div class="col-lg-3">
+            <div class="box box-solid">
+                <div class="box-body">
+                    <!-- Bộ tìm kiếm -->
+                    <div class="bs-item input-group">
+                        <input type="text" id="txtSearch_CapNhat_TuKhoa" class="form-control" placeholder="Nhập từ khóa tìm kiếm">
+                        <span class="input-group-addon poiter btnExtend_Search" title="Kéo xuống">
+                            <i class="fa fa-angle-double-down"></i>
+                        </span>
+                    </div>
+                    <div class="bs-item pull-right">
+                        <a id="btnSearchCapNhat_NhanSu" class="btn btn-default"><i class="fa fa-search"></i> <span class="lang" key="">Tìm kiếm</span></a>
+                    </div>
+                    <div class="box-sub-search" style="display: none">
+                        <div class="bss-item">
+                            <i>Chọn điều kiện tìm kiếm:</i>
+                        </div>
+                        <div class="bss-item">
+                            <select id="dropSearch_CapNhat_CCTC" class="select-opt">
+                                <option value="">--Chọn Khoa/Viện/Phòng ban--</option>
+                                <!-- Load from js -->
+                            </select>
+                        </div>
+                        <div class="bss-item">
+                            <select id="dropSearch_CapNhat_BoMon" class="select-opt">
+                                <option value="">-- Bộ môn --</option>
+                                <!-- Load from js -->
+                            </select>
+                        </div>
+                        <div class="bss-item">
+                            <select id="dropSearch_CapNhat_TinhTrangLamViec" class="select-opt">
+                                <option value="">-- Chọn tình trạng làm việc--</option>
+                                <!-- Load from js -->
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="box box-solid">
+                <div class="box-header with-border">
+                    <h3 class="box-title" title="Danh sách cán bộ">
+                        <i class="fa fa-hdd-o"></i> Danh sách cán bộ
+                    </h3>
+                    <span class="pull-right badge bg-light-blue">
+                        <span id="lbl_NhanSu_Tong"></span>
+                    </span>
+                </div>
+                <div class="box-body">
+                    <table id="tblCapNhat_DanhSachGiamTruGiaCanh" class="table table-hover">
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div class="box-body">
+                    <a id="btnKeThua" class="btn btn-warning"><i class="fa fa-paper-plane"></i> <span class="lang" key="">Kế thừa sang năm khác</span></a>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-9" id="zoneEdit" style="display: none">
+            <div class="box box-solid zonecontent" id="zone_main">
+                <div class="col-sm-12">
+                    <div class="box box-solid">
+                        <div class="box-header with-border" style="text-align: center">
+                            <a style="font-weight: bold; font-size: 32px"> <span class="color-active" id="lblCanBo"></span> - Mã cán bộ: <span class="color-active" id="lblMaCanBo"></span></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="nav-tabs-custom">
+                    <ul class="nav nav-tabs">
+                        <li class="active">
+                            <a href="#tab_2" data-toggle="tab" aria-expanded="true">
+                                <span class="lang" key="">Danh sách giảm trừ gia cảnh</span>
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <!-- Tab_2: Tieu su ban than (Tieu su ban than, quan he gia dinh, ...) -->
+                        <div class="tab-pane active" id="tab_2">
+                            <div class="row row-align">
+                                <div class="box-group" id="danhsachgiamtrugiacanh">
+                                    <!-- Tieu su ban than -->
+                                    <div class="panel bg-default">
+                                        <div id="key_danhsachgiamtrugiacanh" class="box-header with-border btnGetData">
+                                            <h3 class="box-title">
+                                                <a data-toggle="collapse" data-parent="#key_danhsachgiamtrugiacanh" href="#qt_danhsachgiamtrugiacanh" aria-expanded="true" class="collapsed">
+                                                    <span class="lang" key="">Danh sách giảm trừ gia cảnh</span>
+                                                </a>
+                                            </h3>
+                                            <div class="pull-right">
+                                                <a id="key_danhsachgiamtrugiacanh" class="btn btn-default btnAdd">
+                                                    <i class="fa fa-plus cl-active"></i>
+                                                    Thêm mới
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div id="qt_danhsachgiamtrugiacanh" class="panel-collapse collapse in" aria-expanded="true">
+                                            <div class="box-body">
+                                                <div class="zone-content scroll-table-x bg-none">
+                                                    <table id="tbl_DanhSachGiamTruGiaCanh" class="table table-hover table-bordered">
+                                                        <thead>
+                                                            <tr>
+                                                                <th rowspan="3" class="td-fixed td-center">Stt</th>
+                                                                <th rowspan="3" class="td-center">Họ tên người nộp thuế</th>
+                                                                <th rowspan="3" class="td-center">MST của người nộp thuế</th>
+                                                                <th rowspan="3" class="td-center">Họ tên người phụ thuộc</th>
+                                                                <th rowspan="3" class="td-center">Ngày sinh người phụ thuộc</th>
+                                                                <th rowspan="3" class="td-center">MST của người phụ thuộc</th>
+                                                                <th rowspan="3" class="td-center">Mã quốc tịch của người phụ thuộc</th>
+                                                                <th rowspan="3" class="td-center">Quốc tịch của người phụ thuộc</th>
+                                                                <th rowspan="3" class="td-center">CMND/Hộ chiếu của người phụ thuộc</th>
+                                                                <th rowspan="3" class="td-center">Mã quan hệ với người nộp thuế</th>
+                                                                <th rowspan="3" class="td-center">Quan hệ với người nộp thuế</th>
+                                                                <th colspan="10" class="td-center">Thông tin trên giấy khai sinh của người phụ thuộc (Nếu người phụ thuộc không có MST, CMND và Hộ chiếu)</th>
+                                                                <th colspan="2" class="td-center">Thời gian tính giảm trừ</th>
+                                                                <th rowspan="3" class="td-fixed td-center">Sửa</th>
+                                                                <th rowspan="3" class="td-fixed td-center">Xóa</th>
+                                                            </tr>
+                                                            <tr>
+                                                                <th rowspan="2" class="td-center">Số</th>
+                                                                <th rowspan="2" class="td-center">Quyển số</th>
+                                                                <th colspan="8" class="td-center">Nơi đăng ký</th>
+                                                            </tr>
+                                                            <tr>
+                                                                <th class="td-center">Mã quốc gia</th>
+                                                                <th class="td-center">Quốc gia</th>
+                                                                <th class="td-center">Mã Tỉnh/Thành phố</th>
+                                                                <th class="td-center">Tỉnh/Thành phố</th>
+                                                                <th class="td-center">Mã Quận/Huyện</th>
+                                                                <th class="td-center">Quận/Huyện</th>
+                                                                <th class="td-center">Mã Phường/Xã</th>
+                                                                <th class="td-center">Phường/Xã</th>
+                                                                <th class="td-center">Từ tháng</th>
+                                                                <th class="td-center">Đến tháng</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody></tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--Qua trinh suc khoe-->
+            <div class="box box-solid form-container zonecontent" id="zone_input_DanhSachGiamTruGiaCanh" style="display: none">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><span class="myModalLabel"> <i class="fa fa-pencil"></i></span> Danh sách giảm trừ gia cảnh</h3>
+                    <div class="pull-right title-note">
+                        <a class="btn btn-default btnCloseInput" href="#" title="Close"><i class="fa fa-times"></i></a>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="col-sm-12 box-view">
+                        <div class="row zone-box">
+                            <div class="group-title-name">
+                                <span class="badge bg-blue"> Mã số thuế của nhân sự </span>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Mã số thuế<span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-10">
+                                    <input id="txtNS_MaSoThue" class="form-control form-border-bottom" />
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="row zone-box">
+                            <div class="group-title-name">
+                                <span class="badge bg-blue"> Thông tin người phụ thuộc </span>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Họ tên<span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-10">
+                                    <input id="txtNguoiPhuThuoc_HoTen" class="form-control form-border-bottom" />
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="row">
+                                    <div class="col-sm-2">
+                                        <div class="group-title-name">
+                                            Ngày sinh<span class="title-colon">:</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <input id="txtNguoiPhuThuoc_NgaySinh" class="form-control form-border-bottom " />
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="group-title-name">
+                                            Tháng sinh<span class="title-colon">:</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <input id="txtNguoiPhuThuoc_ThangSinh" class="form-control form-border-bottom " />
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="group-title-name">
+                                            Năm sinh<span class="title-colon">:</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <input id="txtNguoiPhuThuoc_NamSinh" class="form-control form-border-bottom " />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-2">
+                                        <div class="group-title-name">
+                                            CMND<span class="title-colon">:</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <input id="txtNguoiPhuThuoc_CMND" class="form-control form-border-bottom" />
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="group-title-name">
+                                            Thẻ căn cước<span class="title-colon">:</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <input id="txtNguoiPhuThuoc_TheCanCuoc" class="form-control form-border-bottom" />
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="group-title-name">
+                                            Hộ chiếu<span class="title-colon">:</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <input id="txtNguoiPhuThuoc_HoChieu" class="form-control form-border-bottom" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-2">
+                                        <div class="group-title-name">
+                                            Quốc tịch<span class="title-colon">:</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <select id="dropQuocTich" class="select-opt">
+                                            <option value="">-- Chọn quốc tịch--</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="group-title-name">
+                                            Quan hệ với người nộp thuế<span class="title-colon">:</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <select id="dropQuanHeVoiNguoiNopThue" class="select-opt">
+                                            <option value="">-- Chọn quan hệ--</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="group-title-name">
+                                            Mã số thuế người phụ thuộc<span class="title-colon">:</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <input id="txtNguoiPhuThuoc_MaSoThue" class="form-control form-border-bottom" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row zone-box">
+                            <div class="group-title-name">
+                                <span class="badge bg-blue">Thông tin trên giấy khai sinh của người phụ thuộc (Nếu người phụ thuộc không có MST, CMND và Hộ chiếu)</span>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Giấy khai sinh số<span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <input id="txtGiayKhaiSinh_So" class="form-control form-border-bottom" />
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Giấy khai sinh quyển<span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <input id="txtGiayKhaiSinh_Quyen" class="form-control form-border-bottom" />
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Quốc gia<span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <select id="dropGiayKhaiSinh_QuocGia" class="select-opt">
+                                        <option value="">-- Chọn quốc gia--</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="group-title-name">
+                                        Nơi sinh:<span class="title-colon"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Tỉnh/ Thành phố<span class="title-colon"></span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <select id="dropGiayKhaiSinh_TinhThanh" class="select-opt">
+                                        <option value="">-- Chọn Tỉnh/Thành phố--</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Quận/ Huyện<span class="title-colon"></span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <select id="dropGiayKhaiSinh_QuanHuyen" class="select-opt">
+                                        <option value="">-- Chọn Quận/ Huyện--</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Phường/ Xã:<span class="title-colon"></span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <select id="dropGiayKhaiSinh_PhuongXa" class="select-opt">
+                                        <option value="">-- Chọn Phường/Xã--</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row zone-box">
+                            <!-- Row Thong tin co ban -->
+                            <div class="group-title-name">
+                                <span class="badge bg-blue"> Thời gian tính giảm trừ </span>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-1">
+                                    <div class="group-title-name">
+                                        Từ tháng<span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-1">
+                                    <input id="txtThoiGian_TuThang" class="form-control form-border-bottom" />
+                                </div>
+                                <div class="col-sm-1">
+                                    <div class="group-title-name">
+                                        Năm<span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-1">
+                                    <input id="txtThoiGian_TuNam" class="form-control form-border-bottom" />
+                                </div>
+                                <div class="col-sm-1">
+                                    <div class="group-title-name">
+                                        Đến tháng<span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-1">
+                                    <input id="txtThoiGian_DenThang" class="form-control form-border-bottom" />
+                                </div>
+                                <div class="col-sm-1">
+                                    <div class="group-title-name">
+                                        Năm<span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-1">
+                                    <input id="txtThoiGian_DenNam" class="form-control form-border-bottom" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        File đính kèm<span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-10">
+                                    <div id="txtThongTinDinhKem"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="box-footer">
+                    <div class="pull-right">
+                        <a class="btn btn-default" id="btnSaveRe_DSGiamTruGiaCanh"><i class="fa fa-save"></i><span class="lang" key=""> Lưu và nhập tiếp</span></a>
+                        <a class="btn btn-primary" id="btnSave_DSGiamTruGiaCanh"><i class="fa fa-check"></i> <span class="lang" key="">Lưu</span></a>
+                        <a class="btn btn-default btnCloseInput" id=""><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- page script -->
+<script src="modules/luong/script/danhsachgiamtrugiacanh.js?v=1.0.0.0"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['DSGiamtruGiaCanh'] = new DSGiamtruGiaCanh();
+    $(document).ready(function () {
+        main_doc.DSGiamtruGiaCanh.init();
+    });
+</script>
+

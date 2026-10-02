@@ -1,0 +1,490 @@
+﻿<style>
+
+    .btn-white {
+        background-color: #fff;
+        -webkit-box-shadow: 1px 1px 1px 1px #ccc;
+        -moz-box-shadow: 1px 1px 1px 1px #ccc; /* Firefox 3.5 - 3.6 */
+        box-shadow: 1px 1px 1px 1px #ccc;
+        height: 26px;
+
+    }
+
+    .lbTinhTrang {
+        float: right;
+        font-weight: bold;
+        border: 4px solid;
+        opacity: 0.5;
+        color: red;
+        -ms-transform: rotate(10deg); /* IE 9 */
+        -webkit-transform: rotate(10deg); /* Safari 3-8 */
+        transform: rotate(10deg);
+
+    }
+</style>
+<section class="content aps-congcanbo">
+    <div class="row aps-hoinghihoithao">
+        <!-- /.left-content -->
+        <div class="col-lg-3 aps-hoinghihoithao-l box-shadow aps-box-l">
+            <div class="box box-solid box-search pd15">
+                <div class="box-body pd0">
+                    <!-- Bộ tìm kiếm -->
+                    <div class="bss-item pd0">
+                        <select id="dropSearch_NamDanhGia_DT" class="select-opt">
+                            <option value="">--Tất cả năm đánh giá--</option>
+                        </select>
+                    </div>
+                    <div class="bs-item input-group mt-10">
+                        <input type="text" id="txtSearch_TuKhoa" class="form-control"
+                               placeholder="Nhập từ khóa tìm kiếm">
+                        <span class="input-group-addon poiter btnExtend_Search" title="Search">
+                            <i class="fa fa-search"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="box box-solid pd15 aps-hoinghihoithao-list">
+                <div class="box-header pd0">
+                    <h3 class="box-title" title="Danh sách hội nghị/hội thảo">
+                        <i class="fa-solid fa-list-timeline"></i> Danh sách hội nghị/hội thảo
+                    </h3>
+                    <span class="badge bg-light-blue pull-right" style="margin-top:5px !important;">
+                        <span id="lblHNHT_Tong"></span>
+                    </span>
+                </div>
+                <div class="box-body pd0 mt-5">
+                    <table id="tblHNHT" class="table table-hover">
+                        <tbody>
+                        <!-- Load from js -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- /.right-content -->
+        <div class="col-lg-9 aps-hoinghihoithao-r pl20 aps-box-r">
+            <!-- box- Notify_HNHT -->
+            <div class="box box-solid zone-bus pd0" id="zone_notify_hnht">
+                <div class="box-header with-border bg-blue">
+                    <h3 class="box-title color-white" style="color: #fff !important;">
+                        <i class="fa fa-info-circle"></i> Thông tin chung </h3>
+                </div>
+                <div class="box-body pd20">
+                    <div class="col-sm-12">
+                        <p>Hôm nay bạn có sản phẩm mới không?
+                            <a class="btn btnAdd btn-outline-primary ml-10" href="#"><i class="fa fa-plus"></i> Thêm mới</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <!-- box- Edit_HNHT -->
+            <div class="box box-solid form-container zone-bus zone_input_hnht" id="zone_input_hnht">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><span class="myModalLabel"><i class="fa fa-plus"></i> Thêm mới - </span> Hội
+                        nghị hội thảo</h3>
+                    <div class="pull-right">
+                        <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times"></i></a>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="col-sm-12 box-view aps-add-new pd20 pt10">
+                        <!--1. Thong tin bai bao -->
+                        <div class="row aps-form">
+                            <!--row aps-lable-name-->
+                            <div class="row aps-lable-name">
+                                <p class="group-group-title-name border-0 mb-0">
+                                    <span class="badge bg-blue" style="color:#3380db !important">
+                                        Thông tin hội nghị hội thảo</span>
+                                </p>
+                            </div>
+                            <!--row 2-->
+                            <div class="row aps-form-item">
+                                <div class="col-sm-2 aps-form-lable">Tên hội nghị <span class="color-red">(*)</span>
+                                </div>
+                                <div class="col-sm-8 aps-form-input">
+                                    <input type="text" id="txtHNHT_TenHoiNghiHoiThao" class="form-control"/>
+                                </div>
+                                <div class="col-sm-2 aps-form-btn pl15">
+                                    <a class="btn btn-outline-primary btnSearchHNHT_BaiBao ml-10" id="">
+                                        <i class="fa fa-search color-active"></i> Tìm hội nghị</a>
+                                </div>
+                            </div>
+
+                            <!--row 3-->
+                            <div class="row aps-form-item">
+                                <div class="col-sm-2 aps-form-lable">Đơn vị tổ chức <span class="color-red">(*)</span>
+                                </div>
+                                <div class="col-sm-4 aps-form-input">
+                                    <select id="dropHNHT_DonViToChuc" class="select-opt">
+                                        <option value="">--- Chọn đơn vị tổ chức --</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-2 aps-form-lable text-right pr15">Đơn vị tổ chức khác</div>
+                                <div class="col-sm-4 aps-form-input">
+                                    <input id="txtHNHT_DonViKhac" class="form-control"/>
+                                </div>
+                            </div>
+                            <!--row 4-->
+                            <div class="row aps-form-item">
+                                <div class="col-sm-2 aps-form-lable">Địa điểm tổ chức</div>
+                                <div class="col-sm-4 aps-form-input">
+                                    <input id="txtHNHT_DiaDiem" class="form-control"/>
+                                </div>
+                                <div class="col-sm-2 aps-form-lable text-right pr15">Thời gian tổ chức</div>
+                                <div class="col-sm-4 aps-form-input">
+                                    <input id="txtHNHT_ThoiGianToChuc" class="form-control input-datepicker"
+                                           placeholder="dd/mm/yyyy"/>
+                                </div>
+                            </div>
+                            <!--row 5-->
+                            <div class="row aps-form-item">
+                                <div class="col-sm-2 aps-form-lable">Phạm vi/Cấp</div>
+                                <div class="col-sm-4 aps-form-input">
+                                    <select id="dropHNHT_PhamVi" class="select-opt">
+                                        <option value="">--- Chọn phạm vi --</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-2 aps-form-lable text-right pr15">Lĩnh vực/Ngành</div>
+                                <div class="col-sm-4 aps-form-input">
+                                    <select id="dropHNHT_LinhVuc_Nganh" class="select-opt">
+                                        <option value="">--- Chọn Lĩnh vực/Ngành --</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <!--row 6-->
+                            <div class="row aps-form-item">
+                                <div class="col-sm-2 aps-form-lable">Chủ đề hội nghị hội thảo</div>
+                                <div class="col-sm-4 aps-form-input">
+                                    <input type="text" id="txtHNHT_TenBaoCao" class="form-control"/>
+                                </div>
+                                <div class="col-sm-2 aps-form-lable text-right pr15">Mục tiêu</div>
+                                <div class="col-sm-4 aps-form-input">
+                                    <input id="txtHNHT_MucTieu" class="form-control"/>
+                                </div>
+                            </div>
+                            <!--row 7-->
+                            <div class="row aps-form-item">
+                                <div class="col-sm-2 aps-form-lable">Nội dung</div>
+                                <div class="col-sm-10 aps-form-input">
+                                    <textarea id="txtHNHT_NoiDung" class="form-control min-h-68"></textarea>
+                                </div>
+                            </div>
+                            <!--row 8-->
+                            <div class="row aps-form-item">
+                                <div class="col-sm-2 aps-form-lable">Năm tổ chức</div>
+                                <div class="col-sm-4 aps-form-input">
+                                    <input id="txtHNHT_NamHoanThanh" class="form-control"/>
+                                </div>
+                                <div class="col-sm-2 aps-form-lable text-right pr15">Tháng tổ chức</div>
+                                <div class="col-sm-4 aps-form-input">
+                                    <input id="txtHNHT_NamBaoCao" class="form-control"/>
+                                </div>
+                            </div>
+                            <!--row 2-->
+                            <div class="row aps-form-item">
+                                <div class="col-sm-2 aps-form-lable">
+                                    Mã sản phẩm <span class="color-red">(*)</span>
+                                </div>
+                                <div class="col-sm-4 aps-form-input">
+                                    <input id="txtHNHT_MaSanPham" class="form-control"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--2. Dai bieu tham du -->
+                        <div class="row aps-form mt-25">
+                            <!--row aps-lable-name-->
+                            <div class="row aps-lable-name">
+                                <p class="group-group-title-name border-0 mb-0">
+                                    <span class="badge bg-blue" style="color:#198754 !important">Số đại biểu tham dự</span>
+                                </p>
+                            </div>
+                            <!--row 2-->
+                            <div class="row aps-form-item">
+                                <div class="col-sm-2 aps-form-lable">Quốc tế</div>
+                                <div class="col-sm-4 aps-form-input">
+                                    <input type="text" id="txtHNHT_SoDaiBieuQuocTe" class="form-control"/>
+                                </div>
+                                <div class="col-sm-2 aps-form-lable text-right pr10">Trong nước</div>
+                                <div class="col-sm-4 aps-form-input">
+                                    <input type="text" id="txtHNHT_SoDaiBieuTrongNuoc" class="form-control"/>
+                                </div>
+                            </div>
+
+                            <!--row 3-->
+                            <div class="row aps-form-item">
+                                <div class="col-sm-2 aps-form-lable">Số lượng báo cáo</div>
+                                <div class="col-sm-4 aps-form-input">
+                                    <input type="text" id="txtHNHT_SoLuongBaoCao" class="form-control"/>
+                                </div>
+                                <div class="col-sm-2 aps-form-lable text-right pr10">Số người báo cáo</div>
+                                <div class="col-sm-4 aps-form-input">
+                                    <input type="text" id="txtHNHT_SoLuongNguoiBaoCao" class="form-control"/>
+                                </div>
+                            </div>
+                            <!--row 4-->
+                            <div class="row aps-form-item">
+                                <div class="col-sm-2 aps-form-lable">Thành phần tham gia</div>
+                                <div class="col-sm-4 aps-form-input">
+                                    <input type="text" id="txtHNHT_ThanhPhanThamGia"  class="form-control">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3. Đơn vị hợp tác -->
+                        <div class="row aps-form mt-25">
+                            <!--row aps-lable-name-->
+                            <div class="row">
+                                <p class="group-group-title-name border-0 mb-0">
+                                    <span class="badge bg-blue" style="color:#FF0000 !important">Nguồn kinh phí</span>
+                                </p>
+                            </div>
+                            <!--row 2-->
+                            <div class="row aps-form-table">
+                                <table id="tblInput_HNHT_KinhPhi" class="table mr-0 tblInput_HNHT_KinhPhi">
+                                    <tbody></tbody>
+                                    <tfoot>
+                                    <tr>
+                                        <td class="color-666">
+                                            Tên nguồn
+                                        </td>
+                                        <td>
+                                            <select id="dropHNHT_KinhPhi_Nguon" class="select-opt">
+                                                <option>Chọn nguồn kinh phí</option>
+                                            </select>
+                                        </td>
+                                        <td class="color-666">
+                                            Số tiền<span class="title-colon">:</span>
+                                        </td>
+                                        <td>
+                                            <input id="txtHNHT_KinhPhi_SoTien"
+                                                   class="form-control inputsotien"/>
+                                        </td>
+                                        <td class="color-666">
+                                            Đơn vị<span class="title-colon">:</span>
+                                        </td>
+                                        <td class="td-fixed td-center">
+                                            <select id="dropHNHT_KinhPhi_DonViTienTe" class="select-opt">
+                                                <!-- Load from js -->
+                                            </select>
+                                        </td>
+                                        <td class="td-fixed td-center"><a class="btn poiter btn-add-row" id="btnAdd_HNHT_KinhPhi"><i
+                                                class="fa fa-plus"></i> Thêm</a></td>
+                                    </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- 4. Minh chung -->
+                        <div class="row aps-form mt-25">
+                            <!--row aps-lable-name-->
+                            <div class="row aps-lable-name">
+                                <p class="group-group-title-name border-0 mb-0">
+                                    <span class="badge bg-blue" style="color:#d54b07 !important">Nội dung minh chứng</span>
+                                </p>
+                            </div>
+                            <!--row 2-->
+                            <div class="row aps-form-item">
+                                <div class="col-sm-2 aps-form-lable">Nội dung</div>
+                                <div class="col-sm-10 aps-form-input">
+                                    <textarea id="txtHNHT_NoiDungMinhChung" class="form-control min-h-68"></textarea>
+                                </div>
+                            </div>
+                            <!--row 3-->
+                            <div class="row aps-form-item">
+                                <div class="col-sm-2 aps-form-lable">File đính kèm</div>
+                                <div class="col-sm-10 mt-5">
+                                    <div id="txtHNHT_FileDinhKem" class="mt-5"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 5. Thanh vien tham gia -->
+                        <div class="row aps-form mt-25">
+                            <!--row aps-lable-name-->
+                            <div class="row">
+                                <p class="group-group-title-name border-0 mb-0">
+                                    <span class="badge bg-blue" style="color:#ff0081 !important">Thành viên tham gia</span>
+                                </p>
+                            </div>
+                            <!--row 2-->
+                            <div class="row aps-form-table">
+                                <table id="tblInput_HNHT_ThanhVien" class="table table-hover mr-0 mb-0 tblInput_HNHT_ThanhVien table-border">
+                                    <thead>
+                                    <tr>
+                                        <td class="td-fixed td-center">#</td>
+                                        <td class="td-center">Hình ảnh</td>
+                                        <td>Họ tên</td>
+                                        <td style="width: 250px">Vai trò</td>
+                                        <td class="td-center td-fixed">Xóa</td>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <!-- load from js -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!--row 2-->
+                            <div class="row aps-form-btn mt-10">
+                                <div class="pull-right">
+                                    <a class="btn btn-outline-primary btnSearchHNHT_NhanSu" id="">
+                                        <i class="fa fa-plus mr-0"></i>Thêm thành viên</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 6. Sản phẩm thuộc đề tài-->
+                        <div class="row aps-form mt-25">
+                            <!--row aps-lable-name-->
+                            <div class="row aps-lable-name">
+                                <p class="group-group-title-name border-0 mb-0">
+                                    <span class="badge bg-blue" style="color:#e300ff !important">Sản phẩm thuộc đề tài</span>
+                                </p>
+                            </div>
+                            <!--row 2-->
+                            <div class="row aps-form-item">
+                                <div class="col-sm-2 aps-form-lable">Tên đề tài</div>
+                                <div class="col-sm-4 aps-form-input">
+                                    <select id="dropHNHT_DeTai" class="select-opt">
+                                        <option value="">--- Chọn đề tài--</option>
+                                    </select>
+                                </div>
+                                <div  class="col-sm-6 aps-form-note mt-10 pl15" style="font-style: italic; font-size: 13px">
+                                    <b>Chú ý: </b> Nếu sản phẩm không thuộc đề tài nào thì bỏ qua mục này
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box-footer">
+                        <div class="pull-right d-flex">
+                            <!--<a class="btn btn-default btnReWrite" href="#" title="Xóa trắng toàn bộ thông tin nhập"><i class="fa fa fa-eraser"></i> Nhập tiếp</a>-->
+                            <a class="btn btn-default btnClose" href="#" title="Close">
+                                <i class="fa fa-times-circle"></i> Đóng</a>
+                            <a id="btnSave_HNHT" class="btn btn-primary"><i class="fa fa-save"></i> Lưu</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<div class="modal fade aps-modal-nhansu" id="modal_nhansu" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <!-- load from js -->
+</div>
+<div class="modal fade aps-modal-nhansu" id="modal_TimBaiBao" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width:80%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+                <h4 class="modal-title modal-name"><i class="fa fa-search"></i> Tìm kiếm hội nghị hội thảo</h4>
+            </div>
+            <div class="modal-body" id="modalContent">
+                <!--row 2-->
+                <div class="row aps-form-item">
+                    <div class="col-sm-3">
+                        <div class="box box-solid">
+                            <div class="box-body">
+                                <div class="search">
+                                    <div class="item-modal">
+                                        <p class="group-title"><i class="fa fa-ellipsis-v"></i><i
+                                                class="fa fa-ellipsis-v"></i> Tìm kiếm</p>
+                                    </div>
+                                    <div class="item-modal">
+                                        <input id="txtSearchModal_HNHT_TuKhoa" class="form-control"
+                                               placeholder="Nhập từ khóa tìm kiếm"/>
+                                    </div>
+                                    <div class="item-modal">
+                                        <select id="dropSearchModal_HNHT_DonVi" class="select-opt"
+                                                style="width:100% !important">
+                                            <option value=""> -- Chọn đơn vị --</option>
+                                        </select>
+                                    </div>
+                                    <div class="item-modal">
+                                        <select id="dropSearchModal_HNHT_LinhVuc" class="select-opt"
+                                                style="width:100% !important">
+                                            <option value=""> -- Chọn lĩnh vực--</option>
+                                        </select>
+                                    </div>
+                                    <div class="item-modal">
+                                        <a class="btn btn-default" href="#" id="btnSearch_Modal_HNHT"><i
+                                                class="fa fa-search fa-customer"></i> Tìm kiếm</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-9">
+                        <div class="box box-solid">
+                            <div class="box-body">
+                                <div class="item-modal">
+                                    <p class="group-title"><i class="fa fa-ellipsis-v"></i><i
+                                            class="fa fa-ellipsis-v"></i> Danh sách</p>
+                                </div>
+                                <div class="scroll-table-x">
+                                    <table id="tblModal_HNHT" class="table">
+                                        <thead>
+                                        <tr>
+                                            <th class="td-fixed td-center">Stt</th>
+                                            <th class="td-left">Tên hội nghị</th>
+                                            <th class="td-left">Tên báo cáo</th>
+                                            <th class="td-left">Lĩnh vực</th>
+                                            <th class="td-fixed td-center">#</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" id="btnCancel"><i
+                        class="fa fa-times-circle"></i> Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- page script -->
+<script src="modules/sanphamkhoahoc/script/hoinghihoithao.js?v=1.0.0.4"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['HoiNghiHoiThao'] = new HoiNghiHoiThao();
+    $(document).ready(function () {
+        main_doc.HoiNghiHoiThao.init();
+    });
+</script>
+<!-- FIX 2026-08-26: Select2 trong modal — re-init voi dropdownParent = modal
+     de popup nam trong modal, khong lech / che noi dung. Universal handler,
+     an toan khi modal khong co select. -->
+<script>
+(function () {
+    if (typeof jQuery === 'undefined') return;
+    var $ = jQuery;
+    $(document).off('shown.bs.modal.__s2fix').on('shown.bs.modal.__s2fix', '.modal', function () {
+        var $modal = $(this);
+        $modal.find('select.select-opt, select[id^="drop"]').each(function () {
+            var $sel = $(this);
+            try {
+                if ($sel.hasClass('select2-hidden-accessible')) $sel.select2('destroy');
+            } catch (e) {}
+            $sel.select2({ dropdownParent: $modal, width: '100%' });
+        });
+    });
+})();
+</script>
+<style>
+    .modal .select2-container--open,
+    .modal .select2-container--open .select2-dropdown {
+        z-index: 100060 !important;
+    }
+    .modal .select2-results__options {
+        max-height: 220px !important;
+        overflow-y: auto !important;
+    }
+</style>

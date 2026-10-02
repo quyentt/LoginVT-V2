@@ -1,0 +1,235 @@
+<style>
+/* ========= STYLE RIÊNG cho trang Khai báo thông tin =========
+   Chỉ thêm những gì project chưa có (console PL/SQL, badge variants,
+   mono code…). Phần còn lại dùng class chung của hệ thống. */
+.kbtt-tabs{display:flex;gap:6px;border-bottom:1px solid #e4e8f1;padding:0 0 0 0;margin:0;list-style:none}
+.kbtt-tabs li{margin:0}
+.kbtt-tabs .nav-link{display:flex;align-items:center;gap:8px;padding:10px 14px;border:0;border-bottom:3px solid transparent;
+  font-size:13.5px;font-weight:600;color:#65718c;background:transparent;cursor:pointer;border-radius:0;transition:.15s}
+.kbtt-tabs .nav-link .ix{width:24px;height:22px;display:grid;place-items:center;font-size:11px;font-weight:700;color:#8893b4;background:#eef1f7;border-radius:6px}
+.kbtt-tabs .nav-link:hover{color:#3b4ee0}
+.kbtt-tabs .nav-link.active{color:#3b4ee0;border-bottom-color:#3b4ee0}
+.kbtt-tabs .nav-link.active .ix{background:#eef0ff;color:#3b4ee0}
+
+.kbtt-subview{display:inline-flex;background:#eceffa;border-radius:10px;padding:4px;gap:4px}
+.kbtt-subview button{padding:6px 14px;border-radius:7px;font-size:13px;font-weight:600;color:#65718c;border:0;background:transparent}
+.kbtt-subview button.on{background:#fff;color:#3b4ee0;box-shadow:0 1px 2px rgba(16,23,41,.08)}
+
+.kbtt-mono{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;color:#1c2740}
+.kbtt-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;font-size:11.5px;font-weight:600;white-space:nowrap}
+.kbtt-b-brand{background:#eef0ff;color:#2c3bb8}
+.kbtt-b-teal{background:#e6f7f4;color:#0d9488}
+.kbtt-b-amber{background:#fdf4e1;color:#c2820a}
+.kbtt-b-green{background:#e6f6ee;color:#1f9d6b}
+.kbtt-b-rose{background:#fdeef2;color:#d8456b}
+.kbtt-b-gray{background:#eef1f7;color:#5b6781}
+.kbtt-dot::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.kbtt-dash{color:#909bb4}
+.kbtt-tags{display:flex;gap:5px;flex-wrap:wrap}
+.kbtt-cellname b{font-weight:600}
+.kbtt-cellname .sub{color:#65718c;font-size:12px;margin-top:2px}
+
+.kbtt-pills{display:flex;flex-wrap:wrap;gap:8px}
+.kbtt-pill{padding:7px 13px;border-radius:999px;border:1px solid #e4e8f1;font-size:12.5px;font-weight:600;color:#65718c;background:#fff;cursor:pointer}
+.kbtt-pill.on{background:#3b4ee0;color:#fff;border-color:#3b4ee0}
+
+.kbtt-switch{display:inline-flex;align-items:center;gap:10px}
+.kbtt-tog{width:42px;height:24px;border-radius:999px;background:#cfd6e6;position:relative;transition:.18s;flex:none;cursor:pointer}
+.kbtt-tog::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.18s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.kbtt-tog.on{background:#3b4ee0}
+.kbtt-tog.on::after{left:21px}
+
+.kbtt-help{font-size:11.5px;color:#65718c;line-height:1.45;display:block;margin-top:4px}
+.kbtt-req{color:#d8456b;margin-left:3px}
+
+.kbtt-note{background:#fdf4e1;border:1px solid #f3e3b8;color:#8a6a13;border-radius:10px;padding:11px 13px;font-size:12.3px;line-height:1.5;margin-bottom:16px}
+
+/* Row action buttons */
+.kbtt-rowact{display:inline-flex;gap:6px;justify-content:center;align-items:center}
+.kbtt-rowact .btn{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;
+  font-size:12.5px;font-weight:600;border:1px solid transparent;line-height:1;transition:.15s;white-space:nowrap}
+.kbtt-rowact .btn i{font-size:12.5px}
+.kbtt-btn-detail{background:#eef0ff;color:#2c3bb8;border-color:#dce0fa}
+.kbtt-btn-detail:hover{background:#3b4ee0;color:#fff;border-color:#3b4ee0;box-shadow:0 4px 10px rgba(59,78,224,.25)}
+.kbtt-btn-delete{background:#fdeef2;color:#d8456b;border-color:#fbd8e1}
+.kbtt-btn-delete:hover{background:#d8456b;color:#fff;border-color:#d8456b;box-shadow:0 4px 10px rgba(216,69,107,.25)}
+
+/* ========= Modal (override BS3 thiếu các class BS5) ========= */
+.modal_chi_tiet_khaibao.modal{padding-right:0!important}
+.modal_chi_tiet_khaibao .modal-dialog{max-width:1080px;width:calc(100% - 30px);margin:30px auto!important;display:flex;align-items:center;min-height:calc(100% - 60px)}
+.modal_chi_tiet_khaibao .modal-content{width:100%;border:0;border-radius:14px;box-shadow:0 24px 60px rgba(15,23,42,.22);overflow:hidden}
+.modal_chi_tiet_khaibao .modal-header{background:linear-gradient(90deg,#3b4ee0 0%,#5d6ef0 100%);padding:14px 22px!important;border:0!important;border-radius:0!important}
+.modal_chi_tiet_khaibao .modal-header-wrap{display:flex;align-items:center;justify-content:space-between;width:100%;gap:12px}
+.modal_chi_tiet_khaibao .modal-header-wrap .title{color:#fff;font-size:16px;font-weight:600;display:flex;align-items:center;gap:9px;letter-spacing:.1px}
+.modal_chi_tiet_khaibao .modal-header-wrap .title i{font-size:16px}
+.modal_chi_tiet_khaibao .modal-header-wrap > button{appearance:none;-webkit-appearance:none;width:32px;height:32px;border-radius:8px;border:0;background:rgba(255,255,255,.16);color:#fff;font-size:0;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:.15s;padding:0}
+.modal_chi_tiet_khaibao .modal-header-wrap > button::before{content:"\f00d";font-family:"Font Awesome 6 Pro","Font Awesome 5 Pro","FontAwesome";font-weight:300;font-size:15px}
+.modal_chi_tiet_khaibao .modal-header-wrap > button:hover{background:rgba(255,255,255,.28)}
+.modal_chi_tiet_khaibao .modal-body{padding:22px 26px;background:#f8fafc;max-height:calc(100vh - 220px);overflow-y:auto}
+.modal_chi_tiet_khaibao .modal-footer{padding:14px 22px!important;border-top:1px solid #e4e8f1!important;background:#fff}
+.modal_chi_tiet_khaibao .modal-footer .pull-right{display:flex;gap:10px;width:100%;justify-content:flex-end;align-items:center}
+.modal_chi_tiet_khaibao .modal-footer #btnDelete_KhaiBao{margin-right:auto}
+.modal_chi_tiet_khaibao .modal-footer .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:13.5px;font-weight:500;border:1px solid transparent}
+
+/* Section header trong form */
+.kbtt-section{display:flex;align-items:center;gap:9px;background:#eef0ff;color:#2c3bb8;border-left:4px solid #3b4ee0;border-radius:8px;padding:9px 14px;font-size:13.5px;font-weight:600;margin:0 0 14px}
+.kbtt-section i{font-size:14px}
+.kbtt-section + .kbtt-section{margin-top:18px}
+.kbtt-group{background:#fff;border:1px solid #e6e9f2;border-radius:12px;padding:14px 16px;margin-bottom:16px}
+.kbtt-group .kbtt-row + .kbtt-row{margin-top:12px}
+
+/* Row label-input */
+.kbtt-row{display:flex;align-items:flex-start;gap:14px}
+.kbtt-row.full{flex-direction:column;gap:6px}
+.kbtt-row .kbtt-lbl{flex:0 0 200px;padding-top:9px;font-size:13.2px;color:#1c2740;font-weight:500;line-height:1.35}
+.kbtt-row.full .kbtt-lbl{flex:none;padding-top:0}
+.kbtt-row .kbtt-ctrl{flex:1;min-width:0}
+
+/* Inputs đẹp hơn */
+.modal_chi_tiet_khaibao .form-control,
+.modal_chi_tiet_khaibao .form-select{height:38px;border:1px solid #d8deea;border-radius:8px;padding:6px 12px;font-size:13.5px;background:#fff;color:#1c2740;box-shadow:none;transition:.15s;width:100%}
+.modal_chi_tiet_khaibao textarea.form-control{height:auto;min-height:86px;padding:9px 12px;line-height:1.5;resize:vertical}
+.modal_chi_tiet_khaibao .form-control:focus,
+.modal_chi_tiet_khaibao .form-select:focus{border-color:#3b4ee0;box-shadow:0 0 0 3px rgba(59,78,224,.12);outline:0}
+.modal_chi_tiet_khaibao .form-control::placeholder{color:#a3aac0}
+
+/* Select wrapper */
+.modal_chi_tiet_khaibao .custom-select{position:relative}
+.modal_chi_tiet_khaibao .custom-select > i{position:absolute;right:12px;top:50%;transform:translateY(-50%);pointer-events:none;color:#65718c;font-size:12px}
+.modal_chi_tiet_khaibao .custom-select select{appearance:none;-webkit-appearance:none;-moz-appearance:none;padding-right:32px;background-image:none}
+
+/* Help text căn theo control */
+.modal_chi_tiet_khaibao .kbtt-help{margin-top:5px}
+.modal_chi_tiet_khaibao .kbtt-req{font-weight:700}
+
+/* Scrollbar gọn */
+.modal_chi_tiet_khaibao .modal-body::-webkit-scrollbar{width:8px}
+.modal_chi_tiet_khaibao .modal-body::-webkit-scrollbar-thumb{background:#cfd6e6;border-radius:8px}
+.modal_chi_tiet_khaibao .modal-body::-webkit-scrollbar-track{background:transparent}
+</style>
+
+<section class="content">
+    <div class="box-content pt-0 pl20 pr20">
+
+        <!-- Khai báo Form động -->
+        <div class="box box-solid box-shadow pd0 aps-khaiBao-thongTin">
+
+            <!-- Tab nav: 7 module metadata -->
+            <div class="box-header pt15 pl20 pr20 pb0">
+                <ul id="ulKhaiBao_Tabs" class="kbtt-tabs"></ul>
+            </div>
+
+            <!-- Subview pills (chỉ hiện với module có subviews) + ngữ cảnh -->
+            <div class="pl20 pr20 pt15" id="divKhaiBao_SubviewWrap" style="display:none;">
+                <div id="divKhaiBao_Subview" class="kbtt-subview"></div>
+            </div>
+            <div class="pl20 pr20 pt10" id="divKhaiBao_ContextWrap" style="display:none;">
+                <span class="kbtt-badge kbtt-b-gray">Đang cấu hình cho</span>
+                <span class="kbtt-badge kbtt-b-brand"><b id="lblKhaiBao_Context"></b></span>
+            </div>
+
+            <!-- Filter -->
+            <div class="form-top box-search">
+                <div class="row">
+                    <div class="col-lg-9 col-sm-9 item-search">
+                        <input id="txtSearchKhaiBao_TuKhoa" class="form-control" placeholder="Nhập từ khóa tìm kiếm">
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-ms-6 item-search pl0">
+                        <div class="d-flex align-items-center">
+                            <a id="btnSearchKhaiBao" class="btn btn-default btn-search"><i class="fa fa-search"></i>
+                                <span class="lang">Tìm kiếm</span></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Title + Thêm mới -->
+            <div class="box box-solid mt-15 aps-list-khaiBao">
+                <div class="box-header d-flex pt20 pl20 pr20 pb0">
+                    <h3 class="box-title line-38" style="padding: 0 !important">
+                        <i class="fa-light fa-database line-38"></i> <span id="lblKhaiBao_Title">Danh sách</span>
+                        <span class="pull-right badge bg-light-blue ml-15">
+                            <span id="lblKhaiBao_Tong">0</span>
+                        </span>
+                    </h3>
+                    <div class="box-list-btn pull-right d-flex">
+                        <a id="btnAddKhaiBao" class="btn btn-primary" href="javascript:void(0)" data-toggle="modal" data-target="#chi-tiet-khaibao">
+                            <i class="fa-regular fa-plus"></i> <span id="lblKhaiBao_BtnAdd">Thêm mới</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Note (chỉ hiện với module có .note) -->
+                <div id="divKhaiBao_Note" class="pl20 pr20 mt-10" style="display:none;">
+                    <div class="kbtt-note" id="lblKhaiBao_Note"></div>
+                </div>
+
+                <!-- Bảng danh sách: thead/tbody do JS render theo module -->
+                <div class="box-body pl20 pr20 pb10 mt-10">
+                    <div class="aps-table-select scroll-table-x pb-0 mb-20">
+                        <table id="tblKhaiBao" class="table table-hover table-bordered table-noborder">
+                            <thead>
+                                <tr id="trKhaiBao_Header"></tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Modal: Chi tiết (dùng chung cho Thêm mới / Sửa / Xem) -->
+<div class="modal fade modal_chi_tiet_khaibao" id="chi-tiet-khaibao">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-1200">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-header-wrap">
+                    <div class="title">
+                        <i class="fa-regular fa-pen-to-square" id="iconKhaiBao_Modal"></i>
+                        <span id="lblKhaiBao_ModalTitle">Chi tiết</span>
+                    </div>
+                    <button type="button" data-dismiss="modal" aria-label="Close"></button>
+                </div>
+            </div>
+
+            <div class="modal-body aps-add-new">
+                <div class="aps-form mb-0">
+                    <!-- Note (nếu module có) -->
+                    <div class="kbtt-note" id="divKhaiBao_ModalNote" style="display:none;"></div>
+
+                    <!-- Body form: JS render theo SCHEMA -->
+                    <div id="divKhaiBao_FormBody"></div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <div class="pull-right d-flex">
+                    <button class="btn btn-default" data-dismiss="modal">
+                        <i class="fal fa-times"></i><span>Đóng</span>
+                    </button>
+                    <button id="btnDelete_KhaiBao" class="btn btn-danger d-none">
+                        <i class="fa fa-trash"></i><span>Xóa</span>
+                    </button>
+                    <button id="btnEditMode_KhaiBao" class="btn btn-warning d-none">
+                        <i class="fa-regular fa-pen-to-square"></i><span>Chuyển sang sửa</span>
+                    </button>
+                    <button id="btnSave_KhaiBao" class="btn btn-primary">
+                        <i class="fas fa-save"></i><span>Lưu</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- page script -->
+<script src="modules/tuyensinh/script/khaibaothongtin.js?v=1.0.0.1"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['KhaiBaoThongTin'] = new KhaiBaoThongTin();
+    $(document).ready(function () {
+        main_doc.KhaiBaoThongTin.init();
+    });
+</script>

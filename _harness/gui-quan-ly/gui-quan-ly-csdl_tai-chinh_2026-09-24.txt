@@ -1,0 +1,84 @@
+﻿GỬI QUẢN LÝ CSDL — CÁC VIỆC CẦN XỬ LÝ TRÊN HỆ THỐNG ĐANG CHẠY
+Ngày 24/09/2026 · Hệ thống: con98.api-apis.com/qtdhgit (kiểm thử trực tiếp vai trò Tài chính, 57 màn)
+
+Giao diện mới đã được kiểm thử trực tiếp trên hệ thống thật (chỉ xem, không sửa dữ liệu). Các việc dưới đây
+là thông tin chưa được khai hoặc lỗi CSDL — giao diện cũ cũng bị y hệt, không phải do giao diện mới.
+Mỗi việc ghi rõ ai làm: "Anh:" là phần CSDL / cấu hình; "Nghiệp vụ Tài chính:" là phần phòng Tài chính
+xác nhận hoặc tự khai. Việc nào không dùng thì báo lại để bỏ khỏi danh sách.
+Phần trong ngoặc là chi tiết kỹ thuật (lời gọi, thủ tục, mã lỗi).
+Tổng: 17 việc.
+
+==================== CẤU HÌNH / DỮ LIỆU HỆ THỐNG (CSDL, CÓ PHẦN NGHIỆP VỤ XÁC NHẬN) (16 việc)
+
+1. Cấu hình cổng thanh toán VietinBank (VTB) đang ghi cứng tên đơn vị "DHLAMNGHIEP", mã merchant "0500465853" — trông như cấu hình của trường khác. Rủi ro: tiền sinh viên nộp có thể không về tài khoản của trường. Nghiệp vụ Tài chính: xác nhận với ngân hàng thông tin tài khoản / merchant đúng của trường. Anh: thay cấu hình trước khi cho sinh viên dùng.
+   Màn: Cổng cán bộ → Thanh toán online (thông tin sinh viên)
+   Tình trạng: Chưa xử lý
+
+2. Ô "Phân loại chứng từ" không có lựa chọn nào. Nguyên nhân: danh mục TAICHINH.PHANLOAICHUNGTU chưa được tạo trên hệ thống. Nghiệp vụ Tài chính: cho biết danh sách giá trị cần dùng, hoặc xác nhận ô này không dùng. Anh: tạo danh mục và nạp giá trị khớp với cách thủ tục Tài chính đọc (giá trị lưu dạng mã, thủ tục dùng để xử lý — đặt tuỳ ý sẽ không khớp). (Tạo danh mục: Quản trị hệ thống → Danh mục → Danh mục tên bảng; nhập giá trị: → Danh mục dữ liệu.)
+   Màn: Tài chính → Báo cáo → Báo cáo tài chính
+   Tình trạng: Chưa xử lý
+
+3. Ô "Tình trạng báo cáo lưu" không có lựa chọn nào. Nguyên nhân: danh mục TAICHINH.BC.TINHTRANGBCLUU chưa được tạo trên hệ thống. Nghiệp vụ Tài chính: cho biết danh sách giá trị cần dùng, hoặc xác nhận ô này không dùng. Anh: tạo danh mục và nạp giá trị khớp với cách thủ tục Tài chính đọc (giá trị lưu dạng mã, thủ tục dùng để xử lý — đặt tuỳ ý sẽ không khớp). (Tạo danh mục: Quản trị hệ thống → Danh mục → Danh mục tên bảng; nhập giá trị: → Danh mục dữ liệu.)
+   Màn: Tài chính → Báo cáo → Báo cáo tài chính
+   Tình trạng: Chưa xử lý
+
+4. Chưa cấu hình kết nối phần mềm kế toán (đối tác kế toán, bảng dữ liệu chuyển sang) → các ô liên quan kế toán trống, chưa chuyển số liệu sang kế toán được. Trong menu không có màn nào để khai. Nghiệp vụ Tài chính: xác nhận có dùng kết nối kế toán không. Anh: nếu có thì cấu hình đối tác và bảng dữ liệu chuyển sang. (TC_KeToan/LayDSAPI_DoiTac, LayDSTenBangDuLieu trả 0.)
+   Màn: Tài chính → Báo cáo → Báo cáo tài chính
+   Tình trạng: Chưa xử lý
+
+5. Bấm "Lưu" hệ thống biên lai thì màn báo lỗi CSDL nhưng máy chủ vẫn tạo bản ghi → bấm lại là sinh thêm bản ghi rác (24/09/2026 đã sinh 3 bản ghi chỉ có Mẫu số "01" khi thử với các ô số để trống). Anh: sửa thủ tục (lỗi thì không được để lại bản ghi), cho biết ô nào bắt buộc, xoá các bản ghi rác. Bản cũ gửi đúng các tham số như bản mới. (TC_BienLai/ThemMoi → "ORA-00001: unique constraint (QTDHDA.SYS_C0023805) violated" — có thể ở bước sinh số theo quyển khi Số phiếu/quyển, Độ dài, Số khởi tạo = 0; chưa kiểm vì phải ghi dữ liệu.)
+   Màn: Tài chính → Khai báo chung hệ thống → Khai báo hệ thống biên lai
+   Tình trạng: Chưa xử lý
+
+6. Ô "Mô hình phân bổ hoá đơn" không có lựa chọn nào. Nguyên nhân: danh mục TAICHINH.PHANBOHOADON chưa được tạo trên hệ thống. Nghiệp vụ Tài chính: cho biết danh sách giá trị cần dùng, hoặc xác nhận ô này không dùng. Anh: tạo danh mục và nạp giá trị khớp với cách thủ tục Tài chính đọc (giá trị lưu dạng mã, thủ tục dùng để xử lý — đặt tuỳ ý sẽ không khớp). (Tạo danh mục: Quản trị hệ thống → Danh mục → Danh mục tên bảng; nhập giá trị: → Danh mục dữ liệu.)
+   Màn: Tài chính → Khai báo chung hệ thống → Kế hoạch hoạt động tài chính
+   Tình trạng: Chưa xử lý
+
+7. Ô "Mô hình phân bổ biên lai" không có lựa chọn nào. Nguyên nhân: danh mục TAICHINH.PHANBOBIENLAI chưa được tạo trên hệ thống. Nghiệp vụ Tài chính: cho biết danh sách giá trị cần dùng, hoặc xác nhận ô này không dùng. Anh: tạo danh mục và nạp giá trị khớp với cách thủ tục Tài chính đọc (giá trị lưu dạng mã, thủ tục dùng để xử lý — đặt tuỳ ý sẽ không khớp). (Tạo danh mục: Quản trị hệ thống → Danh mục → Danh mục tên bảng; nhập giá trị: → Danh mục dữ liệu.)
+   Màn: Tài chính → Khai báo chung hệ thống → Kế hoạch hoạt động tài chính
+   Tình trạng: Chưa xử lý
+
+8. Ô "Mô hình phân bổ phiếu thu" không có lựa chọn nào. Nguyên nhân: danh mục TAICHINH.MOHINH_PHIEUTHU đã có nhưng chưa có giá trị nào. Nghiệp vụ Tài chính: cho biết danh sách giá trị cần dùng, hoặc xác nhận ô này không dùng. Anh: tạo danh mục và nạp giá trị khớp với cách thủ tục Tài chính đọc (giá trị lưu dạng mã, thủ tục dùng để xử lý — đặt tuỳ ý sẽ không khớp). (Tạo danh mục: Quản trị hệ thống → Danh mục → Danh mục tên bảng; nhập giá trị: → Danh mục dữ liệu.)
+   Màn: Tài chính → Khai báo chung hệ thống → Kế hoạch hoạt động tài chính
+   Tình trạng: Chưa xử lý
+
+9. Không thêm được mức phí: bấm "Thêm mới" → điền đủ → "Lưu" thì máy chủ từ chối "Du lieu khai khong hop le" (bản cũ cũng không lưu được — chỉ quay rồi im, không tạo bản ghi). Nghi vấn: ô ẩn "Nghiệp vụ áp dụng" tự lấy mục được đánh dấu mặc định trong danh mục QLTC.NVAP, nhưng trên hệ thống không mục nào được đánh dấu → gửi rỗng. Nghiệp vụ Tài chính: xác nhận nghiệp vụ áp dụng đúng cho màn này. Anh: đánh dấu mặc định (THONGTIN8 = CHON) cho nghiệp vụ đó — màn "theo niên chế" nhiều khả năng là DINHMUCTHEONIENCHE_PHI "Tính phí theo niên chế" — ở Quản trị hệ thống → Danh mục dữ liệu → QLTC.NVAP; nếu vẫn lỗi thì kiểm tra điều kiện thủ tục đang từ chối. (TC_MucPhi_SoTien/ThemMoi; thử 24/09/2026 với Đại học chính quy / Khoá 17 / Đợt học / Lệ phí tổ chức Lễ tốt nghiệp / 2025_2026_1,20 / Học phí / 1.000.000.)
+   Màn: Tài chính → Khai báo đầu vào cho niên chế → Khai định mức phí - áp dụng theo chương trình học
+   Tình trạng: Chưa xử lý
+
+10. Mở màn là báo lỗi CSDL, danh sách "thông tin đã khai phân bổ" không hiện. Anh: sửa thủ tục. (TC_PhanBo_DoanhThu/LayDSTC_BC_PhanBo_DacThu → "ORA-24338: statement handle not executed" khi mọi ô lọc để trống — thủ tục không mở con trỏ ở nhánh tham số rỗng.)
+   Màn: Tài chính → Tính học phí, lệ phí, miễn giảm → Khai báo phân bổ Doanh thu
+   Tình trạng: Chưa xử lý
+
+11. Ô "Mẫu import" trống → chưa nhập miễn giảm từ tệp Excel được. Nguyên nhân: chưa có mẫu import / tài khoản chưa được phân quyền mẫu cho chức năng này. Anh: tạo mẫu và phân quyền (Quản trị hệ thống → Danh mục → Danh mục import; → Phân quyền import). (SYS_Import_PhanQuyen/LayDanhSach trả 0.)
+   Màn: Tài chính → Import dữ liệu từ file → Nhập danh sách phần trăm miễn theo file
+        Tài chính → Import dữ liệu từ file → Nhập danh sách số tiền miễn theo file
+   Tình trạng: Chưa xử lý
+
+12. Chưa có khoản thu nào thu qua máy POS → danh sách trống. Trong menu không có màn nào để khai. Nghiệp vụ Tài chính: xác nhận có thu qua máy POS không, khoản thu nào. Anh: nếu có thì cấu hình các khoản thu qua POS. (TC_ThongTinChung/LayDSCacKhoanThuQuaPos trả 0.)
+   Màn: Tài chính → Thu tiền, xuất hóa đơn, biên lai → Danh sách thu tiền qua thiết bị POS
+   Tình trạng: Chưa xử lý
+
+13. Ô "Đơn vị / đối tác" không có lựa chọn nào. Nguyên nhân: danh mục QLTC.DHV chưa được tạo trên hệ thống. Nghiệp vụ Tài chính: cho biết danh sách giá trị cần dùng, hoặc xác nhận ô này không dùng. Anh: tạo danh mục và nạp giá trị khớp với cách thủ tục Tài chính đọc (giá trị lưu dạng mã, thủ tục dùng để xử lý — đặt tuỳ ý sẽ không khớp). (Tạo danh mục: Quản trị hệ thống → Danh mục → Danh mục tên bảng; nhập giá trị: → Danh mục dữ liệu.)
+   Màn: Tài chính → Thu tiền, xuất hóa đơn, biên lai → Thu tiền mặt cho đối tác đào tạo
+   Tình trạng: Chưa xử lý
+
+14. Ô "Tình trạng người học" không có lựa chọn nào. Nguyên nhân: danh mục QLSV.TNH chưa được tạo trên hệ thống. Nghiệp vụ Tài chính: cho biết danh sách giá trị cần dùng, hoặc xác nhận ô này không dùng. Anh: tạo danh mục và nạp giá trị khớp với cách thủ tục Tài chính đọc (giá trị lưu dạng mã, thủ tục dùng để xử lý — đặt tuỳ ý sẽ không khớp). (Tạo danh mục: Quản trị hệ thống → Danh mục → Danh mục tên bảng; nhập giá trị: → Danh mục dữ liệu.)
+   Màn: Tài chính → Thu tiền, xuất hóa đơn, biên lai → Thu tiền mặt cho đối tác đào tạo
+   Tình trạng: Chưa xử lý
+
+15. Danh sách người học của đối tác trống → không chọn được người nộp, chưa thu tiền cho đối tác đào tạo được. Nghiệp vụ Tài chính: xác nhận có thu tiền cho đối tác đào tạo không. Anh: nếu có thì nạp dữ liệu người học của đối tác. (PKG_CORE_NGUOIHOC_01.LayDSNguoiHoc_All_DoiTac trả 0.)
+   Màn: Tài chính → Thu tiền, xuất hóa đơn, biên lai → Thu tiền mặt cho đối tác đào tạo
+   Tình trạng: Chưa xử lý
+
+16. Ô "Chương trình đào tạo" luôn trống vì lỗi CSDL → không lọc công nợ theo chương trình được. Anh: sửa cho khớp tham số giữa lớp API và thủ tục. (CM_ChuongTrinhDaoTao/LayDanhSach → "PLS-00306: wrong number or types of arguments in call to LAYDSKS_DAOTAO_TOCHUCCT" — lớp API gọi thủ tục chưa khớp tham số mới.)
+   Màn: Tài chính → Thống kê → Thống kê công, nợ
+   Tình trạng: Chưa xử lý
+
+==================== NGHIỆP VỤ TÀI CHÍNH TỰ KHAI (1 việc)
+
+17. Chưa khai hệ thống biên lai (mẫu số, ký hiệu, dải số) → không chọn được mẫu biên lai, chưa xuất / tra cứu biên lai được. Nghiệp vụ Tài chính: khai theo thông tin biên lai trường đã đăng ký, ở Tài chính → Khai báo chung hệ thống → Khai báo hệ thống biên lai → "Thêm mới". (TC_BienLai/LayDanhSach trả 0.)
+   Màn: Tài chính → Tra cứu hóa đơn - phiếu thu - biên lai → Biên lai
+        Tài chính → Khai báo chung hệ thống → Khai báo hệ thống biên lai
+        Tài chính → Khai báo chung hệ thống → Kế hoạch hoạt động tài chính
+   Tình trạng: Chưa xử lý

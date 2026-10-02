@@ -1,0 +1,1485 @@
+<style>
+    .kmp-link-xem {
+        color: #1976d2;
+        text-decoration: underline;
+        cursor: pointer;
+    }
+    .kmp-link-xem:hover {
+        color: #0d47a1;
+    }
+    #tbldata_HSNH thead th {
+        white-space: normal;
+        vertical-align: middle;
+        text-align: center;
+    }
+    #tbldata_HSNH td {
+        vertical-align: middle;
+    }
+    /* ============ Filter section ============ */
+    .aps-khaimucphi-search .filter-label {
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+        color: #4a5568;
+        margin-bottom: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+    .aps-khaimucphi-search .item-search .form-control,
+    .aps-khaimucphi-search .item-search .select-opt,
+    .aps-khaimucphi-search .item-search .btn-search {
+        height: 38px;
+        line-height: 20px;
+    }
+    .aps-khaimucphi-search .btn-search {
+        width: 100%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    /* ============ List header (title + buttons) ============ */
+    .aps-khaimucphi-list .list-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0;
+        padding: 10px 14px;
+        background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+        border: 1px solid #e2e8f0;
+        border-radius: 8px 8px 0 0;
+        border-bottom: 2px solid #cbd5e1;
+    }
+    .aps-khaimucphi-list .list-header .titleSearchContent {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+        color: #1a56db;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .aps-khaimucphi-list .list-header .btn-group-actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    /* ============ Bảng chính Nhóm định mức đẹp hơn ============ */
+    .aps-khaimucphi-list .aps-table-select {
+        border: 1px solid #e2e8f0;
+        border-top: none;
+        border-radius: 0 0 8px 8px;
+        overflow: hidden;
+    }
+    #tbldata_HSNH {
+        margin: 0;
+        border-collapse: separate;
+        border-spacing: 0;
+        border: none;
+    }
+    #tbldata_HSNH thead th {
+        background: #eff6ff;
+        color: #1e3a8a;
+        font-weight: 600;
+        vertical-align: middle;
+        text-align: center;
+        border-bottom: 2px solid #bfdbfe;
+        padding: 12px 8px;
+        white-space: normal;
+        font-size: 13px;
+    }
+    #tbldata_HSNH tbody td {
+        vertical-align: middle;
+        padding: 10px 8px;
+        font-size: 13px;
+    }
+    #tbldata_HSNH tbody tr:hover {
+        background: #fafbff;
+    }
+
+    /* ============ Link "Xem" / "Chi tiết" thành pill-button ============ */
+    .kmp-link-xem {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        padding: 5px 12px;
+        font-size: 12px;
+        font-weight: 500;
+        border-radius: 4px;
+        text-decoration: none !important;
+        background: #f3f4f6;
+        color: #4b5563;
+        border: 1px solid #e5e7eb;
+        transition: all .15s;
+    }
+    .kmp-link-xem:hover {
+        background: #dbeafe;
+        color: #1e40af;
+        border-color: #93c5fd;
+    }
+    .kmp-link-xem.lnkChiTietNhom {
+        background: #2563eb;
+        color: #fff;
+        border-color: #2563eb;
+    }
+    .kmp-link-xem.lnkChiTietNhom:hover {
+        background: #1d4ed8;
+        color: #fff;
+    }
+
+    /* ============ Textarea Ghi chú to hơn ============ */
+    .kmp-textarea-large {
+        width: 100% !important;
+        min-height: 180px !important;
+        font-size: 14px;
+        line-height: 1.5;
+        padding: 12px 14px;
+        resize: vertical;
+    }
+
+    /* ============ Nested modal (stacked) z-index cao hơn parent ============ */
+    #modalThemNganhDauRa_HSNH,
+    #modalThemDoiTuong_HSNH,
+    #modalKhoanThuEdit_HSNH {
+        z-index: 1085 !important;
+    }
+    /* Backdrop: JS handler xử lý dynamic, không dùng nth-of-type
+       vì body có nhiều div khác → chỉ số không đoán được */
+    /* Select2 dropdown phải trên modal (đè z-index 1085 của modal con) */
+    body > .select2-container--open,
+    .select2-container--open {
+        z-index: 10500 !important;
+    }
+    /* Bootstrap Select dropdown, datepicker, tooltip khi nằm trong modal */
+    .bootstrap-datetimepicker-widget.dropdown-menu {
+        z-index: 10500 !important;
+    }
+    /* System alert / confirm modal phải TRÊN mọi modal khác (backdrop set qua JS) */
+    #myModalAlert,
+    .modal-alert,
+    .modal-confirm {
+        z-index: 20000 !important;
+    }
+
+    /* ============ Empty state ============ */
+    .kmp-empty-state {
+        text-align: center;
+        padding: 30px 12px;
+        color: #94a3b8;
+    }
+    .kmp-empty-state i {
+        font-size: 42px;
+        color: #cbd5e1;
+        margin-bottom: 8px;
+    }
+    .kmp-empty-state p {
+        margin: 0;
+        font-size: 13px;
+    }
+    /* Force modal full toàn màn hình cho 6 modal xem/list (đè CSS theme) */
+    #modalXem_HSNH .modal-dialog,
+    #modalKhoanThu_HSNH .modal-dialog,
+    #modalDauVao_HSNH .modal-dialog,
+    #modalThemNganhDauRa_HSNH .modal-dialog,
+    #modalNganhDauRa_HSNH .modal-dialog,
+    #modalMucPhiDaGan_HSNH .modal-dialog,
+    #modalDSNHTT_HSNH .modal-dialog {
+        max-width: 100vw !important;
+        width: 100vw !important;
+        margin: 0 !important;
+        height: 100vh !important;
+        min-height: 100vh !important;
+    }
+    #modalXem_HSNH .modal-content,
+    #modalKhoanThu_HSNH .modal-content,
+    #modalDauVao_HSNH .modal-content,
+    #modalThemNganhDauRa_HSNH .modal-content,
+    #modalNganhDauRa_HSNH .modal-content,
+    #modalMucPhiDaGan_HSNH .modal-content,
+    #modalDSNHTT_HSNH .modal-content {
+        height: 100vh !important;
+        min-height: 100vh !important;
+        max-height: 100vh !important;
+        border-radius: 0 !important;
+        border: none !important;
+        background-color: #ffffff !important;
+        display: flex !important;
+        flex-direction: column !important;
+        overflow: hidden !important;
+    }
+    /* Header + footer cố định (không co, không cuộn) — luôn thấy khi cuộn body */
+    #modalXem_HSNH .modal-header,
+    #modalKhoanThu_HSNH .modal-header,
+    #modalDauVao_HSNH .modal-header,
+    #modalThemNganhDauRa_HSNH .modal-header,
+    #modalNganhDauRa_HSNH .modal-header,
+    #modalMucPhiDaGan_HSNH .modal-header,
+    #modalDSNHTT_HSNH .modal-header,
+    #modalXem_HSNH .modal-footer,
+    #modalKhoanThu_HSNH .modal-footer,
+    #modalDauVao_HSNH .modal-footer,
+    #modalThemNganhDauRa_HSNH .modal-footer,
+    #modalNganhDauRa_HSNH .modal-footer,
+    #modalMucPhiDaGan_HSNH .modal-footer,
+    #modalDSNHTT_HSNH .modal-footer {
+        flex-shrink: 0 !important;
+    }
+    /* Body chiếm hết không gian còn lại + tự cuộn (min-height:0 để flex scroll đúng) */
+    #modalXem_HSNH .modal-body,
+    #modalKhoanThu_HSNH .modal-body,
+    #modalDauVao_HSNH .modal-body,
+    #modalThemNganhDauRa_HSNH .modal-body,
+    #modalNganhDauRa_HSNH .modal-body,
+    #modalMucPhiDaGan_HSNH .modal-body,
+    #modalDSNHTT_HSNH .modal-body {
+        overflow: auto !important;
+        background-color: #ffffff !important;
+        flex: 1 1 auto !important;
+        min-height: 0 !important;
+    }
+    /* Ép nền trắng cho tất cả rows để tránh striped/backdrop lộ qua khi cuộn */
+    #modalThemNganhDauRa_HSNH .table,
+    #modalNganhDauRa_HSNH .table {
+        --bs-table-bg: #ffffff;
+        --bs-table-striped-bg: #ffffff;
+        --bs-table-striped-color: inherit;
+        background-color: #ffffff;
+    }
+    #modalThemNganhDauRa_HSNH .table > :not(caption) > * > *,
+    #modalNganhDauRa_HSNH .table > :not(caption) > * > * {
+        background-color: #ffffff;
+        box-shadow: none;
+    }
+    /* Hover row: nền xám cực nhẹ + chữ ĐEN ĐẬM để không bị chìm khi rê chuột */
+    #modalThemNganhDauRa_HSNH .table-hover > tbody > tr:hover > *,
+    #modalNganhDauRa_HSNH .table-hover > tbody > tr:hover > * {
+        --bs-table-hover-color: #0f172a;
+        --bs-table-hover-bg: #f1f5f9;
+        --bs-table-color-state: #0f172a;
+        --bs-table-bg-state: #f1f5f9;
+        background-color: #f1f5f9 !important;
+        color: #0f172a !important;
+        box-shadow: none !important;
+    }
+    /* Badge tên+mã nhóm gắn cạnh tiêu đề modal — luôn thấy đang xem nhóm nào */
+    .kmp-title-nhom {
+        display: inline-block;
+        margin-left: 10px;
+        padding: 2px 10px;
+        background: rgba(255, 255, 255, 0.22);
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #ffffff;
+        vertical-align: middle;
+    }
+    .kmp-title-nhom:empty { display: none; }
+
+    /* Sub-title Nhóm: bên trong modal-body — ẩn vì info đã lên title badge (tránh trùng lặp) */
+    #lblNhomInfo_KhoanThu,
+    #lblNhomInfo_DauVao,
+    #lblNhomInfo_NganhDauRa,
+    #lblNhomInfo_ThemNganhDauRa {
+        display: none;
+    }
+
+    /* Dòng SUM ở footer bảng — nền nhấn nhẹ, chữ đậm */
+    .kmp-sum-row td {
+        background-color: #e0e7ff !important;
+        font-weight: 700 !important;
+        border-top: 2px solid #6366f1 !important;
+        color: #1e3a8a !important;
+    }
+    .kmp-sum-row .kmp-sum-value {
+        color: #0f172a;
+        font-size: 14px;
+    }
+    /* Sticky tfoot: dính đáy scroll-container (bảng nằm trong div.aps-table-select overflow) */
+    #tblMucPhiDaGan_HSNH tfoot tr.kmp-sum-row td {
+        position: sticky;
+        bottom: 0;
+        z-index: 5;
+    }
+    /* Sum row ở ĐẦU bảng DSNHTT — nổi bật + sticky top (dưới header row nếu cả 2 cùng sticky) */
+    #tblDSNHTT_HSNH thead tr.kmp-sum-row-top th {
+        background-color: #e0e7ff !important;
+        color: #1e3a8a !important;
+        font-weight: 700 !important;
+        border-bottom: 2px solid #6366f1 !important;
+        font-size: 14px;
+        padding: 8px;
+    }
+    #tblDSNHTT_HSNH thead tr.kmp-sum-row-top .kmp-sum-value {
+        color: #0f172a;
+    }
+
+    /* Paging bar (đặt trong modal-footer) — gọn gàng cạnh nút Đóng/Lưu */
+    .kmp-paging-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+    .kmp-paging-bar .pagination { margin: 0; }
+    /* Modal footer flex cho cả row: cho phép paging bar giữa + buttons phải/trái */
+    #modalThemNganhDauRa_HSNH .modal-footer,
+    #modalNganhDauRa_HSNH .modal-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+    /* Modal chi tiết phải nộp — kích thước lớn (không fullscreen) */
+    #modalPhaiNop_ChiTiet_HSNH .modal-dialog {
+        max-width: 90vw !important;
+        width: 90vw !important;
+    }
+    #modalPhaiNop_ChiTiet_HSNH .modal-body {
+        max-height: 75vh;
+        overflow: auto;
+    }
+
+    /* ============ Fake scroll-x trên đầu bảng rộng — sync 2 chiều với scroll dưới ============ */
+    .kmp-scroll-top {
+        overflow-x: auto;
+        overflow-y: hidden;
+        height: 14px;
+        margin-bottom: 4px;
+        border: 1px solid #e2e8f0;
+        border-radius: 4px;
+        background: #f8fafc;
+    }
+    .kmp-scroll-top-inner {
+        height: 1px;
+    }
+</style>
+
+<!-- Main content -->
+<section class="content aps-nhaphoc">
+    <div class="aps-khaimucphi box-shadow row">
+
+        <!-- Filter -->
+        <div class="col-lg-12 aps-khaimucphi-search">
+            <div class="box box-solid box-search pd20">
+                <div class="box-body pd0">
+                    <div class="area-search">
+                        <div id="search_HSNH" class="inputSearch row">
+                            <div class="col-sm-5 item-search mb-0">
+                                <label class="filter-label"><i class="fa-solid fa-clipboard-list"></i> Kế hoạch nhập học</label>
+                                <select class="select-opt" id="dropKeHoachNhapHoc_HSNH">
+                                    <!-- load from khaimucphinhaphoc.js -->
+                                </select>
+                            </div>
+                            <div class="col-sm-4 item-search mb-0">
+                                <label class="filter-label"><i class="fa-solid fa-magnifying-glass"></i> Từ khóa</label>
+                                <input id="txtKeyword_HSNH" class="form-control"
+                                    placeholder="Nhập từ khóa tìm kế hoạch nhập học..." />
+                            </div>
+                            <div class="col-sm-3 item-search mb-0">
+                                <label class="filter-label">&nbsp;</label>
+                                <a id="btnXem_HSNH" class="btn btn-primary btn-search">
+                                    <i class="fa fa-eye"></i><span>Xem</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Danh sách Nhóm định mức -->
+        <div class="col-lg-12 aps-khaimucphi-list" style="position: relative;">
+            <div class="box box-solid pt10">
+                <div class="box-body pd0">
+                    <div id="zone_list_HSNH" class="box-body pd0">
+                        <div class="list-header">
+                            <div class="group-title">
+                                <p class="titleSearchContent">
+                                    <i class="fa-solid fa-layer-group"></i>
+                                    <span>Nhóm định mức</span>
+                                    <span class="badge bg-primary" id="lblTong_NhomDinhMuc">0</span>
+                                </p>
+                            </div>
+                            <div class="btn-group-actions">
+                                <a id="btnDSNhapHocThuTien_HSNH" class="btn btn-info">
+                                    <i class="fa-solid fa-list-ul"></i>&nbsp;Danh sách nhập học &amp; thu tiền
+                                </a>
+                                <a id="btnRefresh_HSNH" class="btn btn-warning">
+                                    <i class="fa fa-refresh"></i>&nbsp;Tải lại
+                                </a>
+                                <a id="btnGenMucPhi_HSNH" class="btn btn-primary">
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i>&nbsp;Tạo mức phí nhập học cho kế hoạch
+                                </a>
+                                <a id="btnXemMucPhiDaGan_HSNH" class="btn btn-info">
+                                    <i class="fa-solid fa-list-check"></i>&nbsp;Xem mức phí đã gán cho thí sinh
+                                </a>
+                                <a id="btnAdd_NhomDinhMuc_HSNH" class="btn btn-success btnAddNew">
+                                    <i class="fa fa-plus-circle"></i>&nbsp;Thêm nhóm
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="aps-table-select">
+                        <table id="tbldata_HSNH"
+                            class="table table-condensed table-hover table-bordered table-noborder">
+                            <thead>
+                                <tr>
+                                    <th class="td-fixed td-center" style="width:50px">STT</th>
+                                    <th class="td-left" style="width:120px">Mã nhóm</th>
+                                    <th class="td-left" style="width:200px">Tên nhóm</th>
+                                    <th class="td-left" style="width:200px">Ghi chú</th>
+                                    <th class="td-center" style="width:170px">Cấu hình các khoản thu của nhóm</th>
+                                    <th class="td-center" style="width:190px">Cấu hình ngành đầu ra nhận mức theo nhóm</th>
+                                    <th class="td-center" style="width:230px">Cấu hình các trường hợp đầu vào cho từng sinh viên hoặc cho đối tượng</th>
+                                    <th class="td-center" style="width:140px">Ngày tạo</th>
+                                    <th class="td-left" style="width:160px">Người tạo</th>
+                                    <th class="td-fixed td-center" style="width:90px">Chọn</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- load from khaimucphinhaphoc.js -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- Modal xem cấu hình chi tiết (dùng chung cho 4 nút Xem/Chi tiết) -->
+<div class="modal fade" id="modalXem_HSNH" role="dialog" aria-labelledby="modalXem_HSNH_Label" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header" style="display:flex; align-items:center; justify-content:center; position:relative; padding-right:60px; padding-left:60px;">
+                <h4 class="modal-title modal-name" id="modalXem_HSNH_Label" style="margin:0; text-align:center;">
+                    <a><i class="fa-solid fa-file-magnifying-glass"></i>
+                    <span id="modalXem_HSNH_Title">Chi tiết</span></a>
+                </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                    style="position:absolute; right:14px; top:50%; transform:translateY(-50%); margin:0; padding:0; border:none; background:rgba(255,255,255,0.18); color:#fff; opacity:1; width:34px; height:34px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:18px; line-height:1; transition:background 0.15s;"
+                    onmouseover="this.style.background='rgba(255,255,255,0.32)'" onmouseout="this.style.background='rgba(255,255,255,0.18)'">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row pd0">
+                    <div class="col-sm-12">
+                        <div class="italic color-666 mb-10" id="modalXem_HSNH_SubTitle"></div>
+                        <div class="aps-table-select">
+                            <table id="tbldata_XemChiTiet_HSNH"
+                                class="table table-condensed table-hover table-bordered table-noborder">
+                                <thead>
+                                    <tr>
+                                        <th class="td-center" style="width:40px">STT</th>
+                                        <!-- gen columns from khaimucphinhaphoc.js -->
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- gen rows from khaimucphinhaphoc.js -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-default" href="#" data-dismiss="modal">
+                    <i class="fa fa-times-circle"></i> Đóng
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Cấu hình các khoản thu của nhóm -->
+<div class="modal fade" id="modalKhoanThu_HSNH" role="dialog" aria-labelledby="modalKhoanThu_HSNH_Label"
+    aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header" style="display:flex; align-items:center; justify-content:center; position:relative; padding-right:60px; padding-left:60px;">
+                <h4 class="modal-title modal-name" id="modalKhoanThu_HSNH_Label" style="margin:0; text-align:center;">
+                    <a><i class="fa-solid fa-money-check-dollar"></i>
+                    <span>Cấu hình các khoản thu của nhóm</span>
+                    <span class="kmp-title-nhom" id="titleNhom_KhoanThu"></span></a>
+                </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                    style="position:absolute; right:14px; top:50%; transform:translateY(-50%); margin:0; padding:0; border:none; background:rgba(255,255,255,0.18); color:#fff; opacity:1; width:34px; height:34px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:18px; line-height:1; transition:background 0.15s;"
+                    onmouseover="this.style.background='rgba(255,255,255,0.32)'" onmouseout="this.style.background='rgba(255,255,255,0.18)'">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="italic color-666 mb-10" id="lblNhomInfo_KhoanThu"></div>
+                <div class="d-flex" style="justify-content: flex-end; margin-bottom: 10px;">
+                    <a class="btn btn-success btnAddNew" id="btnAdd_KhoanThu_HSNH" href="#">
+                        <i class="fa fa-plus-circle"></i>&nbsp;Thêm mới khoản thu
+                    </a>
+                </div>
+                <div class="aps-table-select" style="overflow-x: auto;">
+                    <table id="tblKhoanThu_HSNH"
+                        class="table table-condensed table-hover table-bordered table-noborder"
+                        style="min-width: 1760px;">
+                        <thead>
+                            <tr>
+                                <th class="td-center" style="width:40px">STT</th>
+                                <th class="td-left" style="width:200px">Tên khoản thu</th>
+                                <th class="td-left" style="width:130px">Mã khoản thu</th>
+                                <th class="td-left" style="width:150px">Thuộc nhóm</th>
+                                <th class="td-left" style="width:160px">Cơ sở đào tạo</th>
+                                <th class="td-right" style="width:120px">Định mức thu</th>
+                                <th class="td-center" style="width:80px">Đơn vị tính</th>
+                                <th class="td-center" style="width:160px">Bắt buộc / không bắt buộc</th>
+                                <th class="td-center" style="width:170px">Tự động sinh phải thu sau khi thu</th>
+                                <th class="td-center" style="width:100px">Thứ tự hiển thị</th>
+                                <th class="td-left" style="width:170px">Kiểu tự động sinh phải thu</th>
+                                <th class="td-center" style="width:150px">Cho phép miễn giảm</th>
+                                <th class="td-left" style="width:180px">Ghi chú</th>
+                                <th class="td-fixed td-center" style="width:80px">Chọn</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- load from khaimucphinhaphoc.js -->
+                        </tbody>
+                        <tfoot id="tfootSum_KhoanThu_HSNH" style="display:none;">
+                            <tr class="kmp-sum-row">
+                                <td class="td-center" colspan="5">Tổng cộng</td>
+                                <td class="td-right kmp-sum-value" id="sumDinhMuc_KhoanThu">0</td>
+                                <td colspan="8"></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-default" href="#" data-dismiss="modal">
+                    <i class="fa fa-times-circle"></i> Đóng
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Thêm mới đối tượng vào nhóm đầu vào -->
+<div class="modal fade" id="modalThemDoiTuong_HSNH" role="dialog"
+    aria-labelledby="modalThemDoiTuong_HSNH_Label" aria-hidden="true">
+    <div class="modal-dialog modal-lg" style="max-width: 700px;">
+        <div class="modal-content">
+            <div class="modal-header" style="display:flex; align-items:center; justify-content:center; position:relative; padding-right:60px; padding-left:60px;">
+                <h4 class="modal-title modal-name" id="modalThemDoiTuong_HSNH_Label" style="margin:0; text-align:center;">
+                    <a><i class="fa-solid fa-users-cog"></i>
+                    <span>Thêm mới đối tượng</span></a>
+                </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                    style="position:absolute; right:14px; top:50%; transform:translateY(-50%); margin:0; padding:0; border:none; background:rgba(255,255,255,0.18); color:#fff; opacity:1; width:34px; height:34px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:18px; line-height:1; transition:background 0.15s;"
+                    onmouseover="this.style.background='rgba(255,255,255,0.32)'" onmouseout="this.style.background='rgba(255,255,255,0.18)'">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-noborder table-form-add">
+                    <tbody>
+                        <tr>
+                            <td class="aps-form-lable" style="width: 30%;">
+                                Đối tượng <span style="color:red">*</span>
+                            </td>
+                            <td class="aps-form-input">
+                                <select class="select-opt" id="dropDoiTuong_ThemDT_HSNH"></select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="aps-form-lable" style="vertical-align: top !important;">Ghi chú</td>
+                            <td class="aps-form-input">
+                                <textarea class="form-control" id="txtGhiChu_ThemDT_HSNH" rows="4"
+                                    placeholder="Ghi chú..."></textarea>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <div class="pull-right d-flex" style="gap: 8px;">
+                    <a class="btn btn-default" href="#" data-dismiss="modal">
+                        <i class="fa fa-times-circle"></i>&nbsp;Đóng
+                    </a>
+                    <a class="btn btn-primary" href="#" id="btnSave_ThemDoiTuong_HSNH">
+                        <i class="fa-solid fa-floppy-disk"></i>&nbsp;Lưu
+                    </a>
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Cấu hình các trường hợp đầu vào (SV / đối tượng) -->
+<div class="modal fade" id="modalDauVao_HSNH" role="dialog" aria-labelledby="modalDauVao_HSNH_Label"
+    aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header" style="display:flex; align-items:center; justify-content:center; position:relative; padding-right:60px; padding-left:60px;">
+                <h4 class="modal-title modal-name" id="modalDauVao_HSNH_Label" style="margin:0; text-align:center;">
+                    <a><i class="fa-solid fa-users"></i>
+                    <span>Cấu hình các trường hợp đầu vào (SV / đối tượng)</span>
+                    <span class="kmp-title-nhom" id="titleNhom_DauVao"></span></a>
+                </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                    style="position:absolute; right:14px; top:50%; transform:translateY(-50%); margin:0; padding:0; border:none; background:rgba(255,255,255,0.18); color:#fff; opacity:1; width:34px; height:34px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:18px; line-height:1; transition:background 0.15s;"
+                    onmouseover="this.style.background='rgba(255,255,255,0.32)'" onmouseout="this.style.background='rgba(255,255,255,0.18)'">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="italic color-666 mb-10" id="lblNhomInfo_DauVao"></div>
+                <div class="d-flex" style="justify-content: flex-end; gap: 8px; margin-bottom: 10px;">
+                    <a class="btn btn-warning" id="btnAdd_NguoiHoc_DauVao_HSNH" href="#">
+                        <i class="fa fa-user-plus"></i>&nbsp;Thêm mới người học
+                    </a>
+                    <a class="btn btn-warning" id="btnAdd_DoiTuong_DauVao_HSNH" href="#">
+                        <i class="fa fa-users-cog"></i>&nbsp;Thêm mới đối tượng
+                    </a>
+                </div>
+                <div class="aps-table-select" style="overflow-x: auto;">
+                    <table id="tblDauVao_HSNH"
+                        class="table table-condensed table-hover table-bordered table-noborder"
+                        style="min-width: 1200px;">
+                        <thead>
+                            <tr>
+                                <th class="td-center" style="width:40px">STT</th>
+                                <th class="td-left" style="width:120px">Mã số</th>
+                                <th class="td-left" style="width:220px">Họ tên</th>
+                                <th class="td-left" style="width:180px">Đối tượng</th>
+                                <th class="td-left" style="width:200px">Ghi chú</th>
+                                <th class="td-center" style="width:100px">Hiệu lực</th>
+                                <th class="td-center" style="width:100px">Đang dùng</th>
+                                <th class="td-fixed td-center" style="width:60px">
+                                    <input type="checkbox" id="chkSelectAll_DauVao_HSNH" />
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- load from khaimucphinhaphoc.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="pull-left">
+                    <a class="btn btn-danger" href="#" id="btnDelete_DauVao_HSNH">
+                        <i class="fa fa-trash"></i>&nbsp;Xóa mục đã chọn
+                    </a>
+                </div>
+                <div class="pull-right d-flex" style="gap: 8px;">
+                    <a class="btn btn-default" href="#" data-dismiss="modal">
+                        <i class="fa fa-times-circle"></i>&nbsp;Đóng
+                    </a>
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Thêm mới ngành đầu ra vào nhóm (chọn từ danh sách kế hoạch đầu ra) -->
+<div class="modal fade" id="modalThemNganhDauRa_HSNH" role="dialog"
+    aria-labelledby="modalThemNganhDauRa_HSNH_Label" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header" style="display:flex; align-items:center; justify-content:center; position:relative; padding-right:60px; padding-left:60px;">
+                <h4 class="modal-title modal-name" id="modalThemNganhDauRa_HSNH_Label" style="margin:0; text-align:center;">
+                    <a><i class="fa-solid fa-plus-circle"></i>
+                    <span>Thêm mới ngành đầu ra vào nhóm</span>
+                    <span class="kmp-title-nhom" id="titleNhom_ThemNganhDauRa"></span></a>
+                </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                    style="position:absolute; right:14px; top:50%; transform:translateY(-50%); margin:0; padding:0; border:none; background:rgba(255,255,255,0.18); color:#fff; opacity:1; width:34px; height:34px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:18px; line-height:1; transition:background 0.15s;"
+                    onmouseover="this.style.background='rgba(255,255,255,0.32)'" onmouseout="this.style.background='rgba(255,255,255,0.18)'">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="italic color-666 mb-10" id="lblNhomInfo_ThemNganhDauRa"></div>
+                <div class="pd10" style="background: #fff59d; text-align: center; font-weight: 700;
+                    color: #b71c1c; border: 1px solid #e0d97b; padding: 6px; margin-bottom: 10px;">
+                    Danh sách các chương trình đầu ra
+                </div>
+                <div class="row" style="margin-bottom: 10px;">
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" id="txtTuKhoa_ThemNganhDauRa_HSNH"
+                            placeholder="Nhập từ khóa lọc..." />
+                    </div>
+                    <div class="col-sm-4">
+                        <a class="btn btn-default btn-search" id="btnLoc_ThemNganhDauRa_HSNH" href="#">
+                            <i class="fa fa-search"></i>&nbsp;Lọc
+                        </a>
+                    </div>
+                </div>
+                <div class="aps-table-select" style="overflow-x: auto;">
+                    <table id="tblThemNganhDauRa_HSNH"
+                        class="table table-condensed table-hover table-bordered table-noborder"
+                        style="min-width: 1400px;">
+                        <thead>
+                            <tr>
+                                <th class="td-center" style="width:40px">STT</th>
+                                <th class="td-left" style="width:120px">Hệ</th>
+                                <th class="td-left" style="width:100px">Khóa</th>
+                                <th class="td-left" style="width:200px">Ngành đào tạo</th>
+                                <th class="td-left" style="width:200px">Ngành tuyển sinh</th>
+                                <th class="td-left" style="width:180px">Khoa quản lý</th>
+                                <th class="td-left" style="width:250px">Chương trình</th>
+                                <th class="td-left" style="width:200px">Ghi chú</th>
+                                <th class="td-fixed td-center" style="width:60px">
+                                    <input type="checkbox" id="chkSelectAll_ThemNganhDauRa_HSNH" />
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- load from khaimucphinhaphoc.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div id="paging_ThemNganhDauRa_HSNH" class="kmp-paging-bar" style="display:none;">
+                    <div class="text-muted small">
+                        Trang <b><span id="pgCur_ThemNganh">1</span>/<span id="pgTotal_ThemNganh">1</span></b>
+                        &nbsp;·&nbsp; Tổng: <b><span id="pgSum_ThemNganh">0</span></b>
+                        &nbsp;·&nbsp; Đã tick: <b><span id="pgChecked_ThemNganh">0</span></b>
+                    </div>
+                    <div class="d-flex align-items-center" style="gap:8px;">
+                        <label class="small text-muted mb-0">Hiển thị</label>
+                        <select id="pgSize_ThemNganh" class="form-select form-select-sm" style="width:auto;">
+                            <option value="10">10</option>
+                            <option value="20" selected>20</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                            <option value="-1">Tất cả</option>
+                        </select>
+                        <ul id="pgList_ThemNganh" class="pagination pagination-sm m-0"></ul>
+                    </div>
+                </div>
+                <div class="d-flex" style="gap: 8px;">
+                    <a class="btn btn-default" href="#" data-dismiss="modal">
+                        <i class="fa fa-times-circle"></i>&nbsp;Đóng
+                    </a>
+                    <a class="btn btn-primary" href="#" id="btnSave_ThemNganhDauRa_HSNH">
+                        <i class="fa-solid fa-floppy-disk"></i>&nbsp;Lưu
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Cấu hình ngành đầu ra nhận mức theo nhóm -->
+<div class="modal fade" id="modalNganhDauRa_HSNH" role="dialog"
+    aria-labelledby="modalNganhDauRa_HSNH_Label" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header" style="display:flex; align-items:center; justify-content:center; position:relative; padding-right:60px; padding-left:60px;">
+                <h4 class="modal-title modal-name" id="modalNganhDauRa_HSNH_Label" style="margin:0; text-align:center;">
+                    <a><i class="fa-solid fa-graduation-cap"></i>
+                    <span>Cấu hình ngành đầu ra nhận mức theo nhóm</span>
+                    <span class="kmp-title-nhom" id="titleNhom_NganhDauRa"></span></a>
+                </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                    style="position:absolute; right:14px; top:50%; transform:translateY(-50%); margin:0; padding:0; border:none; background:rgba(255,255,255,0.18); color:#fff; opacity:1; width:34px; height:34px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:18px; line-height:1; transition:background 0.15s;"
+                    onmouseover="this.style.background='rgba(255,255,255,0.32)'" onmouseout="this.style.background='rgba(255,255,255,0.18)'">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="italic color-666 mb-10" id="lblNhomInfo_NganhDauRa"></div>
+                <div class="d-flex" style="justify-content: flex-end; margin-bottom: 10px;">
+                    <a class="btn btn-success btnAddNew" id="btnAdd_NganhDauRa_HSNH" href="#">
+                        <i class="fa fa-plus-circle"></i>&nbsp;Thêm ngành
+                    </a>
+                </div>
+                <div class="aps-table-select" style="overflow-x: auto;">
+                    <table id="tblNganhDauRa_HSNH"
+                        class="table table-condensed table-hover table-bordered table-noborder"
+                        style="min-width: 1400px;">
+                        <thead>
+                            <tr>
+                                <th class="td-center" style="width:40px">STT</th>
+                                <th class="td-left" style="width:120px">Hệ</th>
+                                <th class="td-left" style="width:100px">Khóa</th>
+                                <th class="td-left" style="width:200px">Ngành đào tạo</th>
+                                <th class="td-left" style="width:200px">Ngành tuyển sinh</th>
+                                <th class="td-left" style="width:180px">Khoa quản lý</th>
+                                <th class="td-left" style="width:250px">Chương trình</th>
+                                <th class="td-left" style="width:200px">Ghi chú</th>
+                                <th class="td-fixed td-center" style="width:60px">
+                                    <input type="checkbox" id="chkSelectAll_NganhDauRa_HSNH" />
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- load from khaimucphinhaphoc.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div>
+                    <a class="btn btn-danger" href="#" id="btnDelete_NganhDauRa_HSNH">
+                        <i class="fa fa-trash"></i>&nbsp;Xóa mục đã chọn
+                    </a>
+                </div>
+                <div id="paging_NganhDauRa_HSNH" class="kmp-paging-bar" style="display:none;">
+                    <div class="text-muted small">
+                        Trang <b><span id="pgCur_Nganh">1</span>/<span id="pgTotal_Nganh">1</span></b>
+                        &nbsp;·&nbsp; Tổng: <b><span id="pgSum_Nganh">0</span></b>
+                        &nbsp;·&nbsp; Đã tick: <b><span id="pgChecked_Nganh">0</span></b>
+                    </div>
+                    <div class="d-flex align-items-center" style="gap:8px;">
+                        <label class="small text-muted mb-0">Hiển thị</label>
+                        <select id="pgSize_Nganh" class="form-select form-select-sm" style="width:auto;">
+                            <option value="10">10</option>
+                            <option value="20" selected>20</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                            <option value="-1">Tất cả</option>
+                        </select>
+                        <ul id="pgList_Nganh" class="pagination pagination-sm m-0"></ul>
+                    </div>
+                </div>
+                <div class="d-flex" style="gap: 8px;">
+                    <a class="btn btn-default" href="#" data-dismiss="modal">
+                        <i class="fa fa-times-circle"></i>&nbsp;Đóng
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Thêm mới / Xem-Chỉnh sửa Khoản thu -->
+<div class="modal fade" id="modalKhoanThuEdit_HSNH" role="dialog"
+    aria-labelledby="modalKhoanThuEdit_HSNH_Label" aria-hidden="true">
+    <div class="modal-dialog modal-lg" style="max-width: 1100px;">
+        <div class="modal-content">
+            <div class="modal-header" style="display:flex; align-items:center; justify-content:center; position:relative; padding-right:60px; padding-left:60px;">
+                <h4 class="modal-title modal-name" id="modalKhoanThuEdit_HSNH_Label" style="margin:0; text-align:center;">
+                    <a><i class="fa-solid fa-money-check-dollar"></i>
+                    <span id="modalKhoanThuEdit_HSNH_Title">Thêm mới khoản thu</span></a>
+                </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                    style="position:absolute; right:14px; top:50%; transform:translateY(-50%); margin:0; padding:0; border:none; background:rgba(255,255,255,0.18); color:#fff; opacity:1; width:34px; height:34px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:18px; line-height:1; transition:background 0.15s;"
+                    onmouseover="this.style.background='rgba(255,255,255,0.32)'" onmouseout="this.style.background='rgba(255,255,255,0.18)'">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="hdId_KhoanThu_HSNH" value="" />
+                <table class="table table-noborder table-form-add">
+                    <tbody>
+                        <tr>
+                            <td class="aps-form-lable" style="width: 30%;">
+                                Chọn khoản thu cần thêm <span style="color:red">*</span>
+                            </td>
+                            <td class="aps-form-input">
+                                <select class="select-opt" id="dropKhoanThu_KhoanThu_HSNH"></select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="aps-form-lable">Tên hiển thị</td>
+                            <td class="aps-form-input">
+                                <input type="text" class="form-control" id="txtTenHienThi_KhoanThu_HSNH"
+                                    placeholder="Nếu không khai thì hệ thống lấy theo tên khoản" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="aps-form-lable">Định mức thu <span style="color:red">*</span></td>
+                            <td class="aps-form-input">
+                                <input type="number" class="form-control" id="txtDinhMuc_KhoanThu_HSNH"
+                                    placeholder="Nhập số tiền định mức" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="aps-form-lable">Đơn vị tính</td>
+                            <td class="aps-form-input">
+                                <select class="select-opt" id="dropDonVi_KhoanThu_HSNH"></select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="aps-form-lable">Cơ sở đào tạo</td>
+                            <td class="aps-form-input">
+                                <select class="select-opt" id="dropCoSoDaoTao_KhoanThu_HSNH">
+                                    <option value="">Áp dụng cho tất cả cơ sở</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="aps-form-lable">Bắt buộc / Không bắt buộc</td>
+                            <td class="aps-form-input">
+                                <label style="display:inline-flex;align-items:center;gap:8px;">
+                                    <input type="checkbox" id="chkBatBuoc_KhoanThu_HSNH" />
+                                    <span class="italic color-666">Bắt buộc (1) / Không bắt buộc (0)</span>
+                                </label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="aps-form-lable">Tự động sinh phải thu sau khi thu</td>
+                            <td class="aps-form-input">
+                                <label style="display:inline-flex;align-items:center;gap:8px;">
+                                    <input type="checkbox" id="chkTuDongSinh_KhoanThu_HSNH" checked />
+                                    <span class="italic color-666">Có (1) / Không (0)</span>
+                                </label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="aps-form-lable">Thứ tự hiển thị</td>
+                            <td class="aps-form-input">
+                                <input type="number" class="form-control" id="txtThuTu_KhoanThu_HSNH"
+                                    placeholder="Số thứ tự" value="0" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="aps-form-lable">Kiểu tự động sinh phải thu</td>
+                            <td class="aps-form-input">
+                                <select class="select-opt" id="dropKieuTuDong_KhoanThu_HSNH"></select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="aps-form-lable">Cho phép miễn giảm</td>
+                            <td class="aps-form-input">
+                                <label style="display:inline-flex;align-items:center;gap:8px;">
+                                    <input type="checkbox" id="chkChoPhepMienGiam_KhoanThu_HSNH" />
+                                    <span class="italic color-666">Cho phép (1) / Không (0)</span>
+                                </label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="aps-form-lable" style="vertical-align: top !important;">Ghi chú</td>
+                            <td class="aps-form-input">
+                                <textarea class="form-control kmp-textarea-large" id="txtGhiChu_KhoanThu_HSNH" rows="8"
+                                    placeholder="Ghi chú..."></textarea>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <div class="pull-left" id="zoneDelete_KhoanThu_HSNH" style="display:none">
+                    <a class="btn btn-danger" href="#" id="btnDelete_KhoanThu_HSNH">
+                        <i class="fa fa-trash"></i>&nbsp;Xóa
+                    </a>
+                </div>
+                <div class="pull-right d-flex" style="gap: 8px;">
+                    <a class="btn btn-default" href="#" data-dismiss="modal">
+                        <i class="fa fa-times-circle"></i>&nbsp;Đóng
+                    </a>
+                    <a class="btn btn-primary" href="#" id="btnSave_KhoanThu_HSNH">
+                        <i class="fa-solid fa-floppy-disk"></i>&nbsp;Lưu
+                    </a>
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Thêm mới / Xem-Chỉnh sửa nhóm định mức -->
+<div class="modal fade" id="modalNhom_HSNH" role="dialog" aria-labelledby="modalNhom_HSNH_Label" aria-hidden="true">
+    <div class="modal-dialog modal-lg" style="max-width: 1100px;">
+        <div class="modal-content">
+            <div class="modal-header" style="display:flex; align-items:center; justify-content:center; position:relative; padding-right:60px; padding-left:60px;">
+                <h4 class="modal-title modal-name" id="modalNhom_HSNH_Label" style="margin:0; text-align:center;">
+                    <a><i class="fa-solid fa-layer-group"></i>
+                    <span id="modalNhom_HSNH_Title">Thêm mới nhóm</span></a>
+                </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                    style="position:absolute; right:14px; top:50%; transform:translateY(-50%); margin:0; padding:0; border:none; background:rgba(255,255,255,0.18); color:#fff; opacity:1; width:34px; height:34px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:18px; line-height:1; transition:background 0.15s;"
+                    onmouseover="this.style.background='rgba(255,255,255,0.32)'" onmouseout="this.style.background='rgba(255,255,255,0.18)'">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="hdId_Nhom_HSNH" value="" />
+                <input type="hidden" id="hdKeHoachId_Nhom_HSNH" value="" />
+                <table class="table table-noborder table-form-add">
+                    <tbody>
+                        <tr>
+                            <td class="aps-form-lable" style="width: 25%;">Mã nhóm <span style="color:red">*</span></td>
+                            <td class="aps-form-input">
+                                <input type="text" class="form-control" id="txtMa_Nhom_HSNH" placeholder="Nhập mã nhóm" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="aps-form-lable">Tên nhóm <span style="color:red">*</span></td>
+                            <td class="aps-form-input">
+                                <input type="text" class="form-control" id="txtTen_Nhom_HSNH" placeholder="Nhập tên nhóm" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="aps-form-lable">Số thứ tự</td>
+                            <td class="aps-form-input">
+                                <input type="number" class="form-control" id="txtPriority_Nhom_HSNH"
+                                    placeholder="Số thứ tự" value="100" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="aps-form-lable">Hiệu lực</td>
+                            <td class="aps-form-input">
+                                <label style="display:inline-flex;align-items:center;gap:8px;">
+                                    <input type="checkbox" id="chkHieuLuc_Nhom_HSNH" checked />
+                                    <span class="italic color-666">Đang hiệu lực (1) / Không hiệu lực (0)</span>
+                                </label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="aps-form-lable" style="vertical-align: top !important;">Ghi chú</td>
+                            <td class="aps-form-input">
+                                <textarea class="form-control kmp-textarea-large" id="txtGhiChu_Nhom_HSNH" rows="8"
+                                    placeholder="Ghi chú..."></textarea>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <div class="pull-left" id="zoneDelete_Nhom_HSNH" style="display:none">
+                    <a class="btn btn-danger" href="#" id="btnDelete_Nhom_HSNH">
+                        <i class="fa fa-trash"></i>&nbsp;Xóa
+                    </a>
+                </div>
+                <div class="pull-right d-flex" style="gap: 8px;">
+                    <a class="btn btn-default" href="#" data-dismiss="modal">
+                        <i class="fa fa-times-circle"></i>&nbsp;Đóng
+                    </a>
+                    <a class="btn btn-primary" href="#" id="btnSave_Nhom_HSNH">
+                        <i class="fa-solid fa-floppy-disk"></i>&nbsp;Lưu
+                    </a>
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Tiến trình tạo mức phí nhập học cho kế hoạch -->
+<div class="modal fade" id="modalGenMucPhi_HSNH" role="dialog" data-backdrop="static" data-keyboard="false"
+    aria-labelledby="modalGenMucPhi_HSNH_Label" aria-hidden="true">
+    <div class="modal-dialog modal-lg" style="max-width: 800px;">
+        <div class="modal-content">
+            <div class="modal-header" style="display:flex; align-items:center; justify-content:center; position:relative; padding-right:60px; padding-left:60px;">
+                <h4 class="modal-title modal-name" id="modalGenMucPhi_HSNH_Label" style="margin:0; text-align:center;">
+                    <a><i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <span id="lblTitle_GenMucPhi_HSNH">Tạo mức phí nhập học cho kế hoạch</span></a>
+                </h4>
+                <button type="button" class="close" id="btnCloseX_GenMucPhi_HSNH"
+                    data-dismiss="modal" aria-label="Close"
+                    style="position:absolute; right:14px; top:50%; transform:translateY(-50%); margin:0; padding:0; border:none; background:rgba(255,255,255,0.18); color:#fff; opacity:1; width:34px; height:34px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:18px; line-height:1; transition:background 0.15s;"
+                    onmouseover="if(!this.disabled)this.style.background='rgba(255,255,255,0.32)'" onmouseout="if(!this.disabled)this.style.background='rgba(255,255,255,0.18)'" disabled>
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="italic color-666 mb-10" id="lblStatus_GenMucPhi_HSNH">Đang chuẩn bị...</div>
+                <div class="progress" style="height:24px; margin-bottom:12px;">
+                    <div id="barGenMucPhi_HSNH"
+                         class="progress-bar progress-bar-striped progress-bar-animated"
+                         role="progressbar" style="width:0%; background-color:#2563eb;">0%</div>
+                </div>
+                <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
+                    <span class="label" style="background:#e2e8f0; color:#334155; padding:6px 10px; border-radius:4px;">
+                        Tổng: <b id="lblTotal_GenMucPhi_HSNH">0</b>
+                    </span>
+                    <span class="label" style="background:#dcfce7; color:#166534; padding:6px 10px; border-radius:4px;">
+                        Thành công: <b id="lblOk_GenMucPhi_HSNH">0</b>
+                    </span>
+                    <span class="label" style="background:#fee2e2; color:#991b1b; padding:6px 10px; border-radius:4px;">
+                        Lỗi: <b id="lblFail_GenMucPhi_HSNH">0</b>
+                    </span>
+                </div>
+                <div id="zoneLog_GenMucPhi_HSNH"
+                     style="max-height:220px; overflow-y:auto; font-size:12px; background:#f8fafc;
+                            border:1px solid #e2e8f0; border-radius:4px; padding:8px; display:none;">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="pull-right d-flex" style="gap: 10px;">
+                    <a class="btn btn-default" href="#" id="btnDong_GenMucPhi_HSNH" data-dismiss="modal" style="pointer-events:none; opacity:0.5;">
+                        <i class="fa fa-times-circle"></i>&nbsp;Đóng
+                    </a>
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Danh sách mức phí đã gán cho thí sinh -->
+<div class="modal fade" id="modalMucPhiDaGan_HSNH" role="dialog"
+    aria-labelledby="modalMucPhiDaGan_HSNH_Label" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header" style="display:flex; align-items:center; justify-content:center; position:relative; padding-right:60px; padding-left:60px;">
+                <h4 class="modal-title modal-name" id="modalMucPhiDaGan_HSNH_Label" style="margin:0; text-align:center;">
+                    <a><i class="fa-solid fa-list-check"></i>
+                    <span>Mức phí đã gán cho thí sinh</span>
+                    <span class="badge bg-primary ms-2" id="lblTong_MucPhiDaGan_HSNH">0</span></a>
+                </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                    style="position:absolute; right:14px; top:50%; transform:translateY(-50%); margin:0; padding:0; border:none; background:rgba(255,255,255,0.18); color:#fff; opacity:1; width:34px; height:34px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:18px; line-height:1; transition:background 0.15s;"
+                    onmouseover="this.style.background='rgba(255,255,255,0.32)'" onmouseout="this.style.background='rgba(255,255,255,0.18)'">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row" style="margin-bottom: 10px;">
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" id="txtTuKhoa_MucPhiDaGan_HSNH"
+                            placeholder="Tìm theo CCCD / Mã số / Họ tên / Ngành / Chương trình..." />
+                    </div>
+                    <div class="col-sm-3">
+                        <select class="form-control" id="dropDaNhapHoc_MucPhiDaGan_HSNH">
+                            <option value="0">Tất cả tình trạng</option>
+                            <option value="1">Đã nhập học</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-3">
+                        <a class="btn btn-primary btn-search" id="btnLoc_MucPhiDaGan_HSNH" href="#" style="width:100%;">
+                            <i class="fa fa-search"></i>&nbsp;Tìm
+                        </a>
+                    </div>
+                </div>
+                <div class="row" style="margin-bottom: 10px;">
+                    <div class="col-sm-3">
+                        <input type="text" class="form-control" id="txtTongTu_MucPhiDaGan_HSNH"
+                            placeholder="Tổng phí từ (VD: 15.000.000)..."
+                            inputmode="numeric" autocomplete="off" />
+                    </div>
+                    <div class="col-sm-3">
+                        <input type="text" class="form-control" id="txtTongDen_MucPhiDaGan_HSNH"
+                            placeholder="Tổng phí đến (VD: 20.000.000)..."
+                            inputmode="numeric" autocomplete="off" />
+                    </div>
+                    <div class="col-sm-3">
+                        <a class="btn btn-warning" id="btnLocTien_MucPhiDaGan_HSNH" href="#" style="width:100%;">
+                            <i class="fa fa-filter"></i>&nbsp;Lọc theo tổng phí
+                        </a>
+                    </div>
+                    <div class="col-sm-3">
+                        <a class="btn btn-default" id="btnResetTien_MucPhiDaGan_HSNH" href="#" style="width:100%;">
+                            <i class="fa fa-times"></i>&nbsp;Xóa lọc tổng phí
+                        </a>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-end align-items-center" style="margin-bottom: 10px; gap: 10px; flex-wrap: wrap;">
+                    <a class="btn btn-success" id="btnXuatExcel_MucPhiDaGan_HSNH" href="javascript:void(0);"
+                        title="Xuất Excel toàn bộ danh sách đang hiển thị theo bộ lọc (Ctrl+G)"
+                        style="background:#1e8e3e;border-color:#1e8e3e;color:#fff;font-weight:500;">
+                        <i class="fa-solid fa-file-excel" style="color:#fff;"></i>&nbsp;Xuất Excel
+                    </a>
+                </div>
+                <!-- Thanh scroll-x giả trên đầu — sync với scroll dưới -->
+                <div class="kmp-scroll-top" id="scrollTop_MucPhiDaGan_HSNH">
+                    <div class="kmp-scroll-top-inner" style="width: 2200px;"></div>
+                </div>
+                <div class="aps-table-select" id="scrollBottom_MucPhiDaGan_HSNH" style="overflow-x: auto;">
+                    <table id="tblMucPhiDaGan_HSNH"
+                        class="table table-condensed table-hover table-bordered table-noborder"
+                        style="min-width: 2200px;">
+                        <thead>
+                            <tr>
+                                <th class="td-center" style="width:40px">STT</th>
+                                <th class="td-left" style="width:130px">CCCD</th>
+                                <th class="td-left" style="width:110px">Mã số</th>
+                                <th class="td-left" style="width:200px">Họ tên</th>
+                                <th class="td-center" style="width:80px">Giới tính</th>
+                                <th class="td-center" style="width:110px">Ngày sinh</th>
+                                <th class="td-left" style="width:200px">Ngành nhập học</th>
+                                <th class="td-left" style="width:220px">Chương trình nhập học</th>
+                                <th class="td-left" style="width:150px">Lớp chính thức</th>
+                                <th class="td-left" style="width:240px">Thông tin mức phí nhập học</th>
+                                <th class="td-right" style="width:150px">Tổng phí phải nộp</th>
+                                <th class="td-right" style="width:150px">Tổng phí đã nộp</th>
+                                <th class="td-left" style="width:180px">Ghi chú</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- load from khaimucphinhaphoc.js -->
+                        </tbody>
+                        <tfoot id="tfootSum_MucPhiDaGan_HSNH">
+                            <tr class="kmp-sum-row">
+                                <td class="td-center" colspan="10">Tổng cộng (theo bộ lọc)</td>
+                                <td class="td-right kmp-sum-value" id="sumTongPhi_MucPhiDaGan">0</td>
+                                <td class="td-right kmp-sum-value" id="sumTongDaNop_MucPhiDaGan">0</td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <div id="paging_MucPhiDaGan_HSNH"
+                     class="d-flex justify-content-between align-items-center mt-2 flex-wrap"
+                     style="gap:10px; display:none !important;">
+                    <div class="text-muted small">
+                        Trang <b><span id="pgCur_MucPhiDaGan">1</span>/<span id="pgTotal_MucPhiDaGan">1</span></b>
+                        &nbsp;·&nbsp; Tổng: <b><span id="pgSum_MucPhiDaGan">0</span></b>
+                    </div>
+                    <div class="d-flex align-items-center" style="gap:8px;">
+                        <label class="small text-muted mb-0">Hiển thị</label>
+                        <select id="pgSize_MucPhiDaGan" class="form-control" style="width:auto; height:30px; padding:2px 6px;">
+                            <option value="20">20</option>
+                            <option value="50" selected>50</option>
+                            <option value="100">100</option>
+                            <option value="200">200</option>
+                            <option value="-1">Tất cả</option>
+                        </select>
+                        <ul id="pgList_MucPhiDaGan" class="pagination pagination-sm m-0" style="margin:0;"></ul>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="pull-right d-flex" style="gap: 10px;">
+                    <a class="btn btn-default" href="#" data-dismiss="modal">
+                        <i class="fa fa-times-circle"></i>&nbsp;Đóng
+                    </a>
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Chi tiết các khoản phải nộp của thí sinh (khi bấm "Sửa" cột Tổng phí) -->
+<div class="modal fade" id="modalPhaiNop_ChiTiet_HSNH" role="dialog"
+    aria-labelledby="modalPhaiNop_ChiTiet_HSNH_Label" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable" style="max-width: 1200px;">
+        <div class="modal-content">
+            <div class="modal-header" style="display:flex; align-items:center; justify-content:center; position:relative; padding-right:60px; padding-left:60px;">
+                <h4 class="modal-title modal-name" id="modalPhaiNop_ChiTiet_HSNH_Label" style="margin:0; text-align:center;">
+                    <a><i class="fa-solid fa-money-check-dollar"></i>
+                    <span>Chi tiết các khoản phải nộp của thí sinh</span></a>
+                </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                    style="position:absolute; right:14px; top:50%; transform:translateY(-50%); margin:0; padding:0; border:none; background:rgba(255,255,255,0.18); color:#fff; opacity:1; width:34px; height:34px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:18px; line-height:1; transition:background 0.15s;"
+                    onmouseover="this.style.background='rgba(255,255,255,0.32)'" onmouseout="this.style.background='rgba(255,255,255,0.18)'">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="italic color-666 mb-10" id="lblSVInfo_PhaiNop_HSNH"></div>
+                <div class="aps-table-select" style="overflow-x: auto;">
+                    <table id="tblPhaiNop_ChiTiet_HSNH"
+                        class="table table-condensed table-hover table-bordered table-noborder"
+                        style="min-width: 1100px;">
+                        <thead>
+                            <tr>
+                                <th class="td-center" style="width:40px">STT</th>
+                                <th class="td-left" style="min-width:220px">Tên khoản phải nộp</th>
+                                <th class="td-left" style="width:130px">Mã khoản</th>
+                                <th class="td-right" style="width:130px">Số tiền phải nộp</th>
+                                <th class="td-right" style="width:130px">Đã nộp</th>
+                                <th class="td-right" style="width:130px">Còn phải nộp</th>
+                                <th class="td-center" style="width:110px">Đơn vị</th>
+                                <th class="td-left" style="width:180px">Ghi chú</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- load from khaimucphinhaphoc.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="pull-right d-flex" style="gap: 10px;">
+                    <a class="btn btn-default" href="#" data-dismiss="modal">
+                        <i class="fa fa-times-circle"></i>&nbsp;Đóng
+                    </a>
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Danh sách thí sinh nhập học & thu tiền (server-side paging) -->
+<div class="modal fade" id="modalDSNHTT_HSNH" role="dialog"
+    aria-labelledby="modalDSNHTT_HSNH_Label" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header" style="display:flex; align-items:center; justify-content:center; position:relative; padding-right:60px; padding-left:60px;">
+                <h4 class="modal-title modal-name" id="modalDSNHTT_HSNH_Label" style="margin:0; text-align:center;">
+                    <a><i class="fa-solid fa-list-ul"></i>
+                    <span>Danh sách nhập học &amp; thu tiền</span>
+                    <span class="badge bg-primary ms-2" id="lblTong_DSNHTT_HSNH">0</span></a>
+                </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                    style="position:absolute; right:14px; top:50%; transform:translateY(-50%); margin:0; padding:0; border:none; background:rgba(255,255,255,0.18); color:#fff; opacity:1; width:34px; height:34px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:18px; line-height:1; transition:background 0.15s;"
+                    onmouseover="this.style.background='rgba(255,255,255,0.32)'" onmouseout="this.style.background='rgba(255,255,255,0.18)'">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row" style="margin-bottom: 10px;">
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" id="txtTuKhoa_DSNHTT_HSNH"
+                            placeholder="Tìm theo CCCD / Mã số / Họ tên..." />
+                    </div>
+                    <div class="col-sm-3">
+                        <select class="form-control" id="dropDaNhapHoc_DSNHTT_HSNH">
+                            <option value="0">Tất cả tình trạng</option>
+                            <option value="1">Đã nhập học</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-3">
+                        <a class="btn btn-primary btn-search" id="btnLoc_DSNHTT_HSNH" href="#" style="width:100%;">
+                            <i class="fa fa-search"></i>&nbsp;Tìm
+                        </a>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-end align-items-center" style="margin-bottom: 10px; gap: 10px; flex-wrap: wrap;">
+                    <a class="btn btn-success" id="btnXuatExcel_DSNHTT_HSNH" href="javascript:void(0);"
+                        title="Xuất Excel toàn bộ danh sách theo bộ lọc hiện tại (Ctrl+G)"
+                        style="background:#1e8e3e;border-color:#1e8e3e;color:#fff;font-weight:500;">
+                        <i class="fa-solid fa-file-excel" style="color:#fff;"></i>&nbsp;Xuất Excel
+                    </a>
+                </div>
+                <!-- Thanh scroll-x giả trên đầu — sync với scroll dưới -->
+                <div class="kmp-scroll-top" id="scrollTop_DSNHTT_HSNH">
+                    <div class="kmp-scroll-top-inner" style="width: 2200px;"></div>
+                </div>
+                <div class="aps-table-select" id="scrollBottom_DSNHTT_HSNH" style="overflow-x: auto;">
+                    <table id="tblDSNHTT_HSNH"
+                        class="table table-condensed table-hover table-bordered table-noborder"
+                        style="min-width: 2340px;">
+                        <thead>
+                            <!-- Sum row ở đầu bảng (2 cột tiền cuối) — sticky top cùng header khi cuộn -->
+                            <tr class="kmp-sum-row-top">
+                                <th class="td-center" colspan="10">Tổng cộng (toàn bộ)</th>
+                                <th class="td-right kmp-sum-value" id="sumTongPhaiNop_DSNHTT">0</th>
+                                <th class="td-right kmp-sum-value" id="sumDaNop_DSNHTT">0</th>
+                                <th></th>
+                                <!-- Sếp yêu cầu ẨN cột "Còn phải nộp" — comment giữ code, mở lại sau khi có info miễn giảm
+                                <th></th>
+                                -->
+                            </tr>
+                            <tr>
+                                <th class="td-center" style="width:40px">STT</th>
+                                <th class="td-left" style="width:130px">CCCD</th>
+                                <th class="td-left" style="width:110px">Mã số</th>
+                                <th class="td-left" style="width:200px">Họ tên</th>
+                                <th class="td-left" style="width:130px">Số điện thoại</th>
+                                <th class="td-center" style="width:80px">Giới tính</th>
+                                <th class="td-center" style="width:110px">Ngày sinh</th>
+                                <th class="td-left" style="width:200px">Ngành nhập học</th>
+                                <th class="td-left" style="width:220px">Chương trình nhập học</th>
+                                <th class="td-left" style="width:150px">Lớp chính thức</th>
+                                <!-- ẨN cột "Đã nhập học" — sếp bảo user hay thắc mắc; comment giữ code
+                                <th class="td-center" style="width:110px">Đã nhập học</th>
+                                -->
+                                <th class="td-right" style="width:140px">Tổng phải nộp</th>
+                                <th class="td-right" style="width:130px">Đã nộp</th>
+                                <!-- ẨN cột "Còn phải nộp" — sẽ mở lại sau khi có info miễn giảm
+                                <th class="td-right" style="width:130px">Còn phải nộp</th>
+                                -->
+                                <th class="td-center" style="width:130px">Ngày nộp</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- load from khaimucphinhaphoc.js -->
+                        </tbody>
+                    </table>
+                </div>
+                <div id="paging_DSNHTT_HSNH"
+                     class="d-flex justify-content-between align-items-center mt-2 flex-wrap"
+                     style="gap:10px; display:none !important;">
+                    <div class="text-muted small">
+                        Trang <b><span id="pgCur_DSNHTT">1</span>/<span id="pgTotal_DSNHTT">1</span></b>
+                        &nbsp;·&nbsp; Tổng: <b><span id="pgSum_DSNHTT">0</span></b>
+                    </div>
+                    <div class="d-flex align-items-center" style="gap:8px;">
+                        <label class="small text-muted mb-0">Hiển thị</label>
+                        <select id="pgSize_DSNHTT" class="form-control" style="width:auto; height:30px; padding:2px 6px;">
+                            <option value="20">20</option>
+                            <option value="50" selected>50</option>
+                            <option value="100">100</option>
+                            <option value="200">200</option>
+                            <option value="-1">Tất cả</option>
+                        </select>
+                        <ul id="pgList_DSNHTT" class="pagination pagination-sm m-0" style="margin:0;"></ul>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="pull-right d-flex" style="gap: 10px;">
+                    <a class="btn btn-default" href="#" data-dismiss="modal">
+                        <i class="fa fa-times-circle"></i>&nbsp;Đóng
+                    </a>
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- XLSX (SheetJS) — phục vụ Xuất Excel cho các bảng modal. Load 1 lần, idempotent + 3 CDN fallback -->
+<script>
+    (function loadXLSX() {
+        if (typeof XLSX !== 'undefined') return;
+        var cdnList = [
+            'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',
+            'https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js',
+            'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js'
+        ];
+        var i = 0;
+        function tryNext() {
+            if (i >= cdnList.length) { console.error('[XLSX] không load được từ tất cả CDN'); return; }
+            var s = document.createElement('script');
+            s.src = cdnList[i]; s.crossOrigin = 'anonymous';
+            s.onload = function () { console.log('[XLSX] loaded từ', cdnList[i]); };
+            s.onerror = function () { console.warn('[XLSX] fail', cdnList[i]); i++; tryNext(); };
+            document.head.appendChild(s);
+        }
+        tryNext();
+    })();
+</script>
+
+<!-- page script -->
+<script src="/modules/taichinh/scripts/khaimucphinhaphoc.js?v=1.0.0.58"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['KhaiMucPhi'] = new KhaiMucPhi();
+    $(document).ready(function () {
+        main_doc.KhaiMucPhi.init();
+    });
+</script>
+<!-- FIX 2026-08-26: Select2 trong modal — re-init voi dropdownParent = modal
+     de popup nam trong modal, khong lech / che noi dung. Universal handler,
+     an toan khi modal khong co select. -->
+<script>
+(function () {
+    if (typeof jQuery === 'undefined') return;
+    var $ = jQuery;
+    $(document).off('shown.bs.modal.__s2fix').on('shown.bs.modal.__s2fix', '.modal', function () {
+        var $modal = $(this);
+        $modal.find('select.select-opt, select[id^="drop"]').each(function () {
+            var $sel = $(this);
+            try {
+                if ($sel.hasClass('select2-hidden-accessible')) $sel.select2('destroy');
+            } catch (e) {}
+            $sel.select2({ dropdownParent: $modal, width: '100%' });
+        });
+    });
+})();
+</script>
+<style>
+    .modal .select2-container--open,
+    .modal .select2-container--open .select2-dropdown {
+        z-index: 100060 !important;
+    }
+    .modal .select2-results__options {
+        max-height: 220px !important;
+        overflow-y: auto !important;
+    }
+</style>

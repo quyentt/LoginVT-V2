@@ -1,0 +1,1365 @@
+﻿/*----------------------------------------------
+--Author: 
+--Phone: 
+--Date of created: 15/1/2018
+----------------------------------------------*/
+function ThongTinSach() { }
+ThongTinSach.prototype = {
+    dtSach: [],
+    dtSach_Full: [],
+    strSach_Id: '',
+    dtVaiTro: [],
+    arrNhanSu_Id: [],
+    dtXacNhan: [],
+    bcheckTimKiem: false,
+
+    init: function () {
+        var me = main_doc.ThongTinSach;
+        /*------------------------------------------
+        --Discription: Initial
+        -------------------------------------------*/
+        me.getList_XacNhan();
+        /*------------------------------------------
+        --Discription: [0] Action common
+        --Order: 
+        -------------------------------------------*/
+        $(".btnClose").click(function () {
+            me.toggle_notify();
+        });
+        $(".btnAddnew").click(function () {
+            me.rewrite();
+            me.toggle_form();
+            edu.extend.getDetail_HS(me.genHTML_NhanSu);
+        });
+        $(".btnReWrite").click(function () {
+
+            me.rewrite();
+        });
+        $(".btnExtend_Search").click(function () {
+            me.getList_TTS();
+        });
+        $("#txtSearch_TuKhoa").keypress(function (e) {
+            if (e.which === 13) {
+                e.preventDefault();
+                me.getList_TTS();
+            }
+        });
+        $(".btnExtend").click(function () {
+            edu.util.toggle("box-sub-search");
+        });
+        /*------------------------------------------
+       --Discription: [1] Action Sach
+       --Order:
+       -------------------------------------------*/
+        $("#btnSave_TTS").click(function () {
+            if (edu.util.checkValue(me.strSach_Id)) {
+                me.update_Sach();
+            }
+            else {
+                me.save_Sach();
+            }
+        });
+        $("#tblTTS").delegate(".btnEdit", "click", function (e) {
+            e.stopImmediatePropagation()
+            var strId = this.id;
+            strId = edu.util.cutPrefixId(/edit_/g, strId);
+            if (edu.util.checkValue(strId)) {
+                me.toggle_form();
+                me.strSach_Id = strId;
+                me.getDetail_TTS(strId, constant.setting.ACTION.EDIT);
+                me.getList_DeTai_ThanhVien();
+                edu.util.setOne_BgRow(strId, "tblTTS");
+                edu.system.viewFiles("txtTTS_FileDinhKem", strId, "NCKH_Files");
+            }
+            else {
+                edu.system.alert(edu.constant.getting("NOTIFY", "SELECT_F"));
+            }
+        });
+        $("#tblTTS").delegate(".btnDelete", "click", function (e) {
+            e.stopImmediatePropagation()
+            var strId = this.id;
+            strId = edu.util.cutPrefixId(/delete_/g, strId);
+            if (edu.util.checkValue(strId)) {
+                edu.system.confirm(edu.constant.getting("NOTIFY", "CF_DELETE"));
+                $("#btnYes").click(function (e) {
+                    me.delete_TTS(strId);
+                });
+            }
+            else {
+                edu.system.alert(edu.constant.getting("NOTIFY", "SELECT_F"));
+            }
+        });
+        $("#tblTTS").delegate(".btnxacnhan_small", "click", function (e) {
+            var strId = this.id;
+            if (edu.util.checkValue(strId)) {
+                var strSanPham = $(this).attr("name");
+                var strSanPham_Id = $(this).attr("sanpham_id");
+                var strXacNhan = $(this).find("a").attr("title");
+                var confirm = 'Xác nhận <i class="cl-danger">' + strXacNhan + '</i> cho sản phẩm <i class="cl-danger">' + strSanPham + '</i> !';
+                confirm += '<div class="clear"></div>';
+                confirm += '<input id="txtMota_XacNhan_small" class="form-control" placeholder="Mô tả xác nhận"/>';
+                edu.system.confirm(confirm, "q");
+                $("#btnYes").click(function (e) {
+                    edu.extend.save_XacNhanSanPham(strSanPham_Id, strId, edu.util.getValById("txtMota_XacNhan_small"));
+                    setTimeout(function () {
+                        me.getList_TTS();
+                    }, 500);
+                });
+            }
+            else {
+                edu.system.alert(edu.constant.getting("NOTIFY", "SELECT_F"));
+            }
+        });
+        $("#btnXacNhan_TTS").click(function () {
+            $("#modal_XacNhan").modal("show");
+            var strTenSanPham = edu.util.objGetDataInData(me.strSach_Id, me.dtSach, "ID")[0]["TENSACH"];
+            $("#txtTenSanPham").html(strTenSanPham);
+            $("#txtNoiDungXacNhanSanPham").val("");
+            edu.extend.getList_XacNhanSanPham(me.strSach_Id, "tblModal_XacNhan");
+        });
+        $("#zoneBtnXacNhan").delegate('.btnxacnhan', 'click', function () {
+            var strTinhTrang = this.id;
+            var strMoTa = edu.util.getValById("txtNoiDungXacNhanSanPham");
+            edu.extend.save_XacNhanSanPham(me.strSach_Id, strTinhTrang, strMoTa);
+            setTimeout(function () {
+                me.toggle_notify();
+                me.getList_TTS();
+            }, 500);
+        });
+        /*------------------------------------------
+        --Discription: [2] Action NhanSu
+        --Order: 
+        -------------------------------------------*/
+        $(".btnSearchTTS_NhanSu").click(function () {
+            edu.extend.genModal_NhanSu();
+            edu.extend.getList_NhanSu("SEARCH");
+        });
+        $(".btnSearchTCQG_NhanSu_NgoaiTruong").click(function () {
+            edu.extend.genModal_NhanSu_NgoaiTruong();
+            edu.extend.getList_NhanSu_NgoaiTruong("SEARCH");
+        });
+        $("#modal_nhansu").delegate('.btnSelect', 'click', function () {
+            var id = this.id;
+            var strNhanSu_Id = edu.util.cutPrefixId(/slnhansu/g, id);
+            me.genHTML_NhanSu(strNhanSu_Id);
+        });
+        $("#tblInput_TTS_ThanhVien, #tblInput_TTS_ThanhVien_NgoaiTruong").delegate('.btnDeletePoiter', 'click', function () {
+            var id = this.id;
+            var strcheck = $(this).attr("name");
+            var strNhanSu_Id = edu.util.cutPrefixId(/remove_nhansu/g, id);
+            if (!edu.util.checkValue(strcheck)) {
+                me.removeHTML_NhanSu(strNhanSu_Id);
+            }
+            else {
+                edu.system.confirm(edu.constant.getting("NOTIFY", "CF_DELETE"));
+                $("#btnYes").click(function (e) {
+                    me.delete_DeTai_ThanhVien(strNhanSu_Id);
+                });
+            }
+        });
+        $(".btnSearchTTS_BaiBao").click(function () {
+            $("#modal_TimBaiBao").modal("show");
+            me.getList_TTS_Full();
+            setTimeout(function () {
+                $("#txtSearchModal_TTS_TuKhoa").focus();
+            }, 500);
+        });
+        $("#btnSearch_Modal_TTS").click(function () {
+            me.getList_TTS_Full();
+        });
+        $("#txtSearchModal_TTS_TuKhoa").keypress(function (e) {
+            if (e.which === 13) {
+                e.preventDefault();
+                me.getList_TTS_Full();
+            }
+        });
+        $("#modal_TimBaiBao").delegate(".btnChonTTS", "click", function () {
+            var strId = this.id;
+            strId = edu.util.cutPrefixId(/edit_/g, strId);
+            if (edu.util.checkValue(strId)) {
+                me.rewrite();
+                me.toggle_form();
+                me.getDetail_TTS_Full(strId);
+                edu.system.viewFiles("txtTTS_FileDinhKem", strId, "NCKH_Files");
+                me.bcheckTimKiem = true;
+                edu.extend.getDetail_HS(me.genHTML_NhanSu);
+            }
+            else {
+                edu.system.alert(edu.constant.getting("NOTIFY", "SELECT_F"));
+            }
+        }); $("#modal_nhansu").delegate('.btnSelect_NgoaiTruong', 'click', function () {
+            var id = this.id;
+            var strNhanSu_Id = edu.util.cutPrefixId(/slnhansu/g, id);
+            me.genHTML_NhanSu_NgoaiTruong(strNhanSu_Id);
+        });
+        $("#dropSearch_DonViThanhVien_TTS").on("select2:select", function () {
+            me.getList_HS();
+        });
+
+        /*------------------------------------------
+        --Discription: [2] Action Report
+        --Order: 
+        -------------------------------------------*/
+        edu.system.getList_MauImport("zonebtnBaoCao_TTS", function (addKeyValue) {
+            addKeyValue("strTuKhoa", edu.util.getValById("txtSearch_TuKhoa"));
+            addKeyValue("iTrangThai", 1);
+            addKeyValue("strCanBoNhap_Id", "");
+            addKeyValue("strThuocLinhVucNao_Id", edu.util.getValById("dropSearch_LinhVuc_TTS"));
+            addKeyValue("strNCKH_QuanLyDeTai_Id", edu.util.getValById("dropSearch_DeTai_TTS"));
+            addKeyValue("strPhanLoaiSach_Id", edu.util.getValById("dropSearch_PhanLoaiSach_TTS"));
+            addKeyValue("strnckh_detai_thanhvien_id", edu.util.getValById("dropSearch_ThanhVienDangKy_TTS"));
+            addKeyValue("strVaiTro_Id", "");
+            addKeyValue("strLoaiHocVi_Id", "");
+            addKeyValue("strLoaiChucDanh_Id", "");
+            addKeyValue("strLanXuatBan_Id", "");
+            addKeyValue("strDonViCuaThanhVien_Id", edu.util.getValById("dropSearch_DonViThanhVien_TTS"));
+            addKeyValue("strTinhTrangXacNhan_Id", edu.util.getValById("dropSearch_TinhTrang_TTS"));
+            addKeyValue("strNhanSu_TDKT_KeHoach_Id", edu.util.getValById("dropSearch_NamDanhGia_DT"));
+            addKeyValue("strDaoTao_CoCauToChuc_Id", edu.util.getValById("dropSearch_DonViThanhVien_TTS"));
+        });
+
+        $(".btnDownloadAllFile").click(function () {
+            var arrFile = [];
+            var arrFileName = [];
+            $(".upload-file").each(function () {
+                var url = $(this).attr("name");
+                arrFile.push(url);
+                arrFileName.push($(this).attr("title"));
+            });
+            $(".upload-img").each(function () {
+                var url = $(this).attr("name");
+                arrFile.push(url);
+                arrFileName.push("");
+            });
+            me.save_GopFile(arrFile, arrFileName);
+        });
+    },
+    /*------------------------------------------
+    --Discription: [0] Common
+    -------------------------------------------*/
+    page_load: function () {
+        var me = main_doc.ThongTinSach;
+        edu.system.page_load();
+        edu.util.toggle("box-sub-search");
+        edu.system.loadToCombo_DanhMucDuLieu("NCKH.TTS.LANXUATBAN", "dropTTS_LanXuatBan");
+        edu.system.loadToCombo_DanhMucDuLieu(constant.setting.CATOR.NCKH.VTVS, "dropSearch_VaiTro_TTS");
+        edu.system.loadToCombo_DanhMucDuLieu(constant.setting.CATOR.NCKH.LVNC, "dropSearch_LinhVuc_TTS,dropTTS_LinhVuc,dropSearchModal_TTS_LinhVuc");
+        edu.system.loadToCombo_DanhMucDuLieu(constant.setting.CATOR.NCKH.PHLS, "dropSearch_PhanLoaiSach_TTS,dropTTS_LoaiSach");
+        var obj = {
+            strMaBangDanhMuc: constant.setting.CATOR.NCKH.VTVS,
+            strTenCotSapXep: "",
+            iTrangThai: 1
+        };
+        edu.system.getList_DanhMucDulieu(obj, "", "", me.cbGetList_VaiTro);
+        me.toggle_notify();
+        me.getList_HS();
+        me.getList_DeTai();
+        //me.getList_TTS();
+        me.getList_CoCauToChuc();
+        me.getList_NamDanhGia();
+        setTimeout(function () {
+            me.rewrite();
+        }, 300);
+    },
+    toggle_detail: function () {
+        edu.util.toggle_overide("zone-bus", "zone_detail_TTS");
+    },
+    toggle_form: function () {
+        edu.util.toggle_overide("zone-bus", "zone_input_TTS");
+    },
+    toggle_notify: function () {
+        edu.util.toggle_overide("zone-bus", "zone_notify_TTS");
+    },
+    rewrite: function () {
+        //reset id
+        var me = main_doc.ThongTinSach;
+        //
+        me.bcheckTimKiem = false;
+        me.strSach_Id = "";
+        me.arrNhanSu_Id = [];
+        var arrId = ["txtTTS_Ten", "txtTTS_NhaXuatBan", "txtTTS_ISSN", "txtTTS_NamXuatBan", "txtTTS_ThangXuatBan", "dropTTS_LinhVuc", "dropTTS_LoaiSach", "txtTTS_SoTacGia", "txtTTS_SoTrangViet", "txtTTS_TongSoTrang", "txtTTS_TrichDanPubmed", "txtTTS_NoiDungMinhChung", "txtTTS_FileDinhKem", "tblInput_TTS_ThanhVien", "dropTTS_DeTai"];
+        edu.util.resetValByArrId(arrId);
+        $("#tblInput_TTS_ThanhVien tbody").html("");
+        $("#tblInput_TTS_ThanhVien_NgoaiTruong tbody").html("");
+        edu.system.viewFiles("txtTTS_FileDinhKem", "");
+    },
+    /*------------------------------------------
+    --Discription: [1] AcessDB Sach
+    -------------------------------------------*/
+    getList_TTS: function () {
+        var me = main_doc.ThongTinSach;
+        var obj_list = {
+            'action': 'NCKH_Sach/LayDanhSach',
+
+            'strTuKhoa': edu.util.getValById("txtSearch_TuKhoa"),
+            'iTrangThai': 1,
+            'strCanBoNhap_Id': '',
+            'strDaoTao_CoCauToChuc_Id': edu.util.getValById("dropSearch_DonViThanhVien_TTS"),
+            'strThuocLinhVucNao_Id': edu.util.getValById("dropSearch_LinhVuc_TTS"),
+            'strNCKH_QuanLyDeTai_Id': edu.util.getValById("dropSearch_DeTai_TTS"),
+            'strPhanLoaiSach_Id': edu.util.getValById("dropSearch_PhanLoaiSach_TTS"),
+            'strnckh_detai_thanhvien_id': edu.util.getValById("dropSearch_ThanhVienDangKy_TTS"),
+            'strVaiTro_Id': "",
+            'strLoaiHocVi_Id': '',
+            'strLoaiChucDanh_Id': '',
+            'strLanXuatBan_Id': '',
+            'strDonViCuaThanhVien_Id': edu.util.getValById("dropSearch_DonViThanhVien_TTS"),
+            'strTinhTrangXacNhan_Id': edu.util.getValById("dropSearch_TinhTrang_TTS"),
+            'strNhanSu_TDKT_KeHoach_Id': edu.util.getValById("dropSearch_NamDanhGia_DT"),
+            'pageIndex': edu.system.pageIndex_default,
+            'pageSize': edu.system.pageSize_default
+        };
+        edu.system.makeRequest({
+            success: function (data) {
+                if (data.Success) {
+                    var dtResult = [];
+                    var iPager = 0;
+                    if (edu.util.checkValue(data.Data)) {
+                        dtResult = data.Data;
+                        iPager = data.Pager;
+                        me.dtSach = dtResult;
+                    }
+                    me.genTable_TTS(dtResult, iPager);
+                }
+                else {
+                    edu.system.alert("NCKH_Sach/LayDanhSach: " + data.Message, "w");
+                }
+            },
+            error: function (er) {
+                edu.system.alert("NCKH_Sach/LayDanhSach (er): " + JSON.stringify(er), "w");
+            },
+            type: "GET",
+            action: obj_list.action,
+            
+            contentType: true,
+            
+            data: obj_list,
+            fakedb: [
+
+            ]
+        }, false, false, false, null);
+    },
+    getList_TTS_Full: function () {
+        var me = main_doc.ThongTinSach;
+        var obj_list = {
+            'action': 'NCKH_Sach/LayDanhSach',
+
+            'strTuKhoa': edu.util.getValById("txtSearchModal_TTS_TuKhoa"),
+            'iTrangThai': 1,
+            'strCanBoNhap_Id': '',
+            'strThuocLinhVucNao_Id': edu.util.getValById("dropSearchModal_TTS_LinhVuc"),
+            'strNCKH_QuanLyDeTai_Id': '',
+            'strPhanLoaiSach_Id': "",
+            'strnckh_detai_thanhvien_id': '',
+            'strVaiTro_Id': "",
+            'strLoaiHocVi_Id': '',
+            'strLoaiChucDanh_Id': '',
+            'strLanXuatBan_Id': '',
+            'strDonViCuaThanhVien_Id': edu.util.getValById("dropSearchModal_TTS_DonVi"),
+            'strTinhTrangXacNhan_Id': "",
+            'strNhanSu_TDKT_KeHoach_Id': "",
+            'pageIndex': edu.system.pageIndex_default,
+            'pageSize': edu.system.pageSize_default
+        };
+        edu.system.makeRequest({
+            success: function (data) {
+                if (data.Success) {
+                    var dtResult = [];
+                    var iPager = 0;
+                    if (edu.util.checkValue(data.Data)) {
+                        dtResult = data.Data;
+                        iPager = data.Pager;
+                        me.dtSach_Full = dtResult;
+                    }
+                    me.genTable_TTS_Full(dtResult, iPager);
+                }
+                else {
+                    edu.system.alert("NCKH_Sach/LayDanhSach: " + data.Message, "w");
+                }
+            },
+            error: function (er) {
+                edu.system.alert("NCKH_Sach/LayDanhSach (er): " + JSON.stringify(er), "w");
+            },
+            type: "GET",
+            action: obj_list.action,
+            
+            contentType: true,
+            
+            data: obj_list,
+            fakedb: [
+            ]
+        }, false, false, false, null);
+    },
+    save_Sach: function () {
+        var me = main_doc.ThongTinSach;
+        //--Edit
+        var obj_save = {
+            'action': 'NCKH_Sach/ThemMoi',
+
+            'strId': '',
+            'strTyLeThamGia': "",
+            'strTenSach': edu.util.getValById("txtTTS_Ten"),
+            'strThuocLinhVucNao_Id': edu.util.getValById("dropTTS_LinhVuc"),
+            'strNCKH_DeTai_ThanhVien_Id': "",
+            'strVaiTro_Id': "",
+            'strNhaXuatBan': edu.util.getValById("txtTTS_NhaXuatBan"),
+            'strNCKH_QuanLyDeTai_Id': edu.util.getValById("dropTTS_DeTai"),
+            'strNamXuatBan': edu.util.getValById("txtTTS_NamXuatBan"),
+            'dSoTacGia_n': edu.util.getValById("txtTTS_SoTacGia"),
+            'dSoDongChuBien_n': "",
+            'dSoTrangSach_n': edu.util.getValById("txtTTS_TongSoTrang"),
+            'dSoTrangThamGiaViet_n': edu.util.getValById("txtTTS_SoTrangViet"),
+            'strPhanLoaiSach_Id': edu.util.getValById("dropTTS_LoaiSach"),
+            'strNamHoanThanh': "",
+            'strFileMinhChung': "",
+            'strThongTinMinhChung': edu.util.getValById("txtTTS_NoiDungMinhChung"),
+            'strMaSanPham': "",
+            'strThangXuatBan': edu.util.getValById("txtTTS_ThangXuatBan"),
+            'strChiSo_ISBN': edu.util.getValById("txtTTS_ISSN"),
+            'dSoTinChi': edu.util.getValById("txtTTS_SoTinChi"),
+            'strTap': "",
+            'strLanXuatBan_Id': edu.util.getValById("dropTTS_LanXuatBan"),
+            'iTrangThai': 1,
+            'iThuTu': "",
+            'strCanBoNhap_Id': edu.system.userId,
+            'strTenSachTrichDan': edu.util.getValById("txtTTS_TrichDanPubmed")
+        };
+        edu.system.makeRequest({
+            success: function (data) {
+                if (data.Success) {
+                    if (data.Id != undefined) {
+                        var strSach_Id = data.Id;
+                        $("#tblInput_TTS_ThanhVien tbody tr").each(function () {
+                            var strNhanSu_Id = this.id.replace(/rm_row/g, '');
+                            me.save_DeTai_ThanhVien(strNhanSu_Id, strSach_Id);
+                        });
+                        $("#tblInput_TTS_ThanhVien_NgoaiTruong tbody tr").each(function () {
+                            var strNhanSu_Id = this.id.replace(/rm_row/g, '');
+                            me.save_DeTai_ThanhVien(strNhanSu_Id, strSach_Id);
+                        });
+                        if (me.bcheckTimKiem) {
+                            var x = $("#zoneFileDinhKemtxtTTS_FileDinhKem .btnDelUploadedFile");
+                            for (var i = 0; i < x.length; i++) {
+                                x[i].classList.remove("btnDelUploadedFile");
+                                x[i].name = "";
+                                x[i].classList.add("btnDeleteFileUptxtTTS_FileDinhKem");
+                            }
+                        }
+                        edu.system.saveFiles("txtTTS_FileDinhKem", strSach_Id, "NCKH_Files");
+                        edu.system.confirm('Thêm mới thành công!. Bạn có muốn tiếp tục thêm mới không?');
+                        $("#btnYes").click(function (e) {
+                            me.rewrite();
+                            $('#myModalAlert').modal('hide');
+                        });
+                    }
+                    setTimeout(function () {
+                        me.getList_TTS();
+                    }, 50);
+                }
+                else {
+                    edu.system.alert(obj_save.action + ": " + data.Message);
+                }
+            },
+            error: function (er) {
+                edu.system.alert(obj_save.action + " (er): " + JSON.stringify(er), "w");
+            },
+            type: 'POST',
+            
+            contentType: true,
+            
+            action: obj_save.action,
+            data: obj_save,
+            fakedb: [
+            ]
+        }, false, false, false, null);
+    },
+    update_Sach: function () {
+        var me = main_doc.ThongTinSach;
+        //--Edit
+        var obj_save = {
+            'action': 'NCKH_Sach/CapNhat',
+            
+            'strId': me.strSach_Id,
+            'strTyLeThamGia': "",
+            'strTenSach': edu.util.getValById("txtTTS_Ten"),
+            'strThuocLinhVucNao_Id': edu.util.getValById("dropTTS_LinhVuc"),
+            'strNCKH_DeTai_ThanhVien_Id': "",
+            'strVaiTro_Id': "",
+            'strNhaXuatBan': edu.util.getValById("txtTTS_NhaXuatBan"),
+            'strNCKH_QuanLyDeTai_Id': edu.util.getValById("dropTTS_DeTai"),
+            'strNamXuatBan': edu.util.getValById("txtTTS_NamXuatBan"),
+            'dSoTacGia_n': edu.util.getValById("txtTTS_SoTacGia"),
+            'dSoDongChuBien_n': "",
+            'dSoTrangSach_n': edu.util.getValById("txtTTS_TongSoTrang"),
+            'dSoTrangThamGiaViet_n': edu.util.getValById("txtTTS_SoTrangViet"),
+            'strPhanLoaiSach_Id': edu.util.getValById("dropTTS_LoaiSach"),
+            'strNamHoanThanh': "",
+            'strFileMinhChung': "",
+            'strThongTinMinhChung': edu.util.getValById("txtTTS_NoiDungMinhChung"),
+            'strMaSanPham': "",
+            'strThangXuatBan': edu.util.getValById("txtTTS_ThangXuatBan"),
+            'strChiSo_ISBN': edu.util.getValById("txtTTS_ISSN"),
+            'dSoTinChi': edu.util.getValById("txtTTS_SoTinChi"),
+            'strTap': "",
+            'strLanXuatBan_Id': edu.util.getValById("dropTTS_LanXuatBan"),
+            'iTrangThai': 1,
+            'iThuTu': "",
+            'strCanBoNhap_Id': edu.system.userId,
+            'strTenSachTrichDan': edu.util.getValById("txtTTS_TrichDanPubmed")
+        };
+        edu.system.makeRequest({
+            success: function (data) {
+                if (data.Success) {
+                    edu.system.alert("Cập nhật thành công!");
+                    var strSach_Id = me.strSach_Id;
+                    me.getList_TTS();
+                    $("#tblInput_TTS_ThanhVien tbody tr").each(function () {
+                        var strNhanSu_Id = this.id.replace(/rm_row/g, '');
+                        me.save_DeTai_ThanhVien(strNhanSu_Id, strSach_Id);
+                    });
+                    $("#tblInput_TTS_ThanhVien_NgoaiTruong tbody tr").each(function () {
+                        var strNhanSu_Id = this.id.replace(/rm_row/g, '');
+                        me.save_DeTai_ThanhVien(strNhanSu_Id, strSach_Id);
+                    });
+                    edu.system.saveFiles("txtTTS_FileDinhKem", strSach_Id, "NCKH_Files");
+                }
+                else {
+                    edu.system.alert(obj_save.action + ": " + data.Message);
+                }
+            },
+            error: function (er) {
+                edu.system.alert(obj_save.action + " (er): " + JSON.stringify(er), "w");
+            },
+            type: 'POST',
+            
+            contentType: true,
+            
+            action: obj_save.action,
+            data: obj_save,
+            fakedb: [
+            ]
+        }, false, false, false, null);
+    },
+    getDetail_TTS: function (strId, strAction) {
+        var me = main_doc.ThongTinSach;
+        edu.util.objGetDataInData(strId, me.dtSach, "ID", me.viewEdit_TTS);
+    },
+    getDetail_TTS_Full: function (strId, strAction) {
+        var me = main_doc.ThongTinSach;
+        edu.util.objGetDataInData(strId, me.dtSach_Full, "ID", me.viewEdit_TTS);
+    },
+    delete_TTS: function (strIds) {
+        var me = main_doc.ThongTinSach;
+        //--Edit
+        var obj_delete = {
+            'action': 'NCKH_Sach/Xoa',
+            
+            'strIds': strIds
+        };
+        var obj = {};
+        edu.system.makeRequest({
+            success: function (data) {
+                if (data.Success) {
+                    obj = {
+                        content: "Xóa thành công!",
+                        code: ""
+                    };
+                    edu.system.afterComfirm(obj);
+                    me.getList_TTS();
+                }
+                else {
+                    obj = {
+                        content: "NCKH_ThongTinSach/Xoa: " + data.Message,
+                        code: ""
+                    };
+                    edu.system.afterComfirm(obj);
+                }
+            },
+            error: function (er) {
+                var obj = {
+                    content: "NCKH_ThongTinSach/Xoa (er): " + JSON.stringify(er),
+                    code: "w"
+                };
+                edu.system.afterComfirm(obj);
+                
+            },
+            type: 'POST',
+            action: obj_delete.action,
+            
+            contentType: true,
+            
+            data: obj_delete,
+            fakedb: [
+            ]
+        }, false, false, false, null);
+    },
+    /*------------------------------------------
+    --Discription: [1] GenHTML Sach
+    --ULR:  Modules
+    -------------------------------------------*/
+    genTable_TTS: function (data, iPager) {
+        var me = main_doc.ThongTinSach;
+        edu.util.viewHTMLById("lblTTS_Tong", iPager);
+
+        var jsonForm = {
+            strTable_Id: "tblTTS",
+            aaData: data,
+            bPaginate: {
+                strFuntionName: "main_doc.ThongTinSach.getList_TTS()",
+                iDataRow: iPager
+            },
+            colPos: {
+                center: [0, 2, 3, 4, 5, 6, 7, 9, 10],
+                fix: [0]
+            },
+            aoColumns: [
+                {
+                    "mRender": function (nRow, aData) {
+
+                        return '<a class="btnEdit poiter" id="' + aData.ID + '">' + edu.util.returnEmpty(aData.TENSACH) + '</a>';
+                    }
+                },
+                {
+                    "mDataProp": "NAMXUATBAN"
+                },
+                {
+                    "mDataProp": "THANGXUATBAN"
+                },
+                {
+                    "mDataProp": "PHANLOAISACH"
+                },
+                {
+                    "mDataProp": "SOTINCHI"
+                },
+                {
+                    "mDataProp": "SOTACGIA_N"
+                },
+                {
+                    "mDataProp": "VAITRO_TEN"
+                },
+                {
+                    "mDataProp": "TENSACHTRICHDAN"
+                },
+                {
+                    "mRender": function (nRow, aData) {
+                        return '<div id="txtTTS_FileDinhKem' + aData.ID + '"></div>';
+                    }
+                }
+                ,
+                {
+                    "mRender": function (nRow, aData) {
+                        var row = "";
+                        row += '<div style="margin-left: auto; margin-right: auto; width: ' + ((me.dtXacNhan.length - 1) * 40) + 'px">';
+                        for (var i = 0; i < me.dtXacNhan.length; i++) {
+                            if (me.dtXacNhan[i].MA == "XNKKCHUAKHAI") continue;
+                            row += '<div id="' + me.dtXacNhan[i].ID + '" name="' + aData.TENSACH + '" sanpham_id="' + aData.ID + '" class="btn-large btnxacnhan_small">';
+                            row += '<a class="btn" title="' + me.dtXacNhan[i].TEN + '"><i style="' + me.dtXacNhan[i].THONGTIN2 + '" class="' + me.dtXacNhan[i].THONGTIN1 + '"></i></a>';
+                            row += '</div>';
+                        }
+                        return row;
+                    }
+                },
+                {
+                    "mRender": function (nRow, aData) {
+                        var row = "";
+                        if (edu.util.checkValue(aData.KETQUAXACNHAN_TEN)) {
+                            row += '<div style="margin-left: auto; margin-right: auto; width: 100px">';
+                            row += '<div class="btn-large" style="width: 100px">';
+                            row += '<a title="' + aData.KETQUAXACNHAN_TEN + '"><i style="' + aData.KETQUAXACNHAN_THONGTIN2 + '" class="' + aData.KETQUAXACNHAN_THONGTIN1 + '"></i> ' + aData.KETQUAXACNHAN_TEN + '</a>';
+                            row += '</div>';
+                            row += '</div>';
+                        }
+                        return row;
+                    }
+                },
+                {
+                    "mDataProp": "KETQUAXACNHAN_NOIDUNG"
+                },
+            ]
+        };
+        edu.system.loadToTable_data(jsonForm);
+        for (var i = 0; i < data.length; i++) {
+            console.log(data[i].ID);
+            edu.system.viewFiles("txtTTS_FileDinhKem" + data[i].ID, data[i].ID, "NCKH_Files");
+        }
+        /*III. Callback*/
+    },
+    genTable_TTS_Full: function (data, iPager) {
+        var me = main_doc.ThongTinSach;
+
+        var jsonForm = {
+            strTable_Id: "tblModal_TTS",
+            aaData: data,
+            bPaginate: {
+                strFuntionName: "main_doc.ThongTinSach.getList_TTS_Full()",
+                iDataRow: iPager
+            },
+            aoColumns: [
+                {
+                    "mDataProp": "TENSACH"
+                },
+                {
+                    "mDataProp": "PHANLOAISACH"
+                },
+                {
+                    "mDataProp": "THUOCLINHVUCNAO"
+                }
+                , {
+                    "mRender": function (nRow, aData) {
+                        return '<span><a class="btn btn-primary btnChonTTS" data-dismiss="modal" id="' + aData.ID + '">Chọn sách</span>';
+                    }
+                }
+            ]
+        };
+        edu.system.loadToTable_data(jsonForm);
+        /*III. Callback*/
+    },
+    viewEdit_TTS: function (data) {
+        var me = main_doc.ThongTinSach;
+        var dt = data[0];
+        edu.util.viewHTMLById("lblTTS_NguoiNhap", dt.CANBONHAP_Id);
+        //View - Thong tin
+        edu.util.viewValById("txtTTS_NhaXuatBan", dt.NHAXUATBAN);
+        edu.util.viewValById("txtTTS_Ten", dt.TENSACH);
+        edu.util.viewValById("txtTTS_ISSN", dt.CHISO_ISBN);
+        edu.util.viewValById("txtTTS_NamXuatBan", dt.NAMXUATBAN);
+        edu.util.viewValById("txtTTS_ThangXuatBan", dt.THANGXUATBAN);
+        edu.util.viewValById("dropTTS_LinhVuc", dt.THUOCLINHVUCNAO_ID);
+        edu.util.viewValById("dropTTS_LoaiSach", dt.PHANLOAISACH_ID);
+        edu.util.viewValById("txtTTS_SoTacGia", dt.SOTACGIA_N);
+        edu.util.viewValById("txtTTS_SoTrangViet", dt.SOTRANGTHAMGIAVIET_N);
+        edu.util.viewValById("txtTTS_TongSoTrang", dt.SOTRANGSACH_N);
+        edu.util.viewValById("txtTTS_TrichDanPubmed", dt.TENSACHTRICHDAN);
+        edu.util.viewValById("dropTTS_LanXuatBan", dt.LANXUATBAN_ID);
+        edu.util.viewValById("txtTTS_SoTinChi", dt.SOTINCHI);
+        //View - Noi dung minh chung
+        edu.util.viewValById("txtTTS_NoiDungMinhChung", dt.THONGTINMINHCHUNG);
+        edu.util.viewValById("dropTTS_DeTai", dt.NCKH_QUANLYDETAI_ID);
+    },
+    viewDetail_TTS: function (data) {
+        var me = main_doc.ThongTinSach;
+        var dt = data[0];
+        edu.util.viewHTMLById("lblTTS_NguoiNhap", dt.CANBONHAP_Id);
+        //View - Thong tin
+        edu.util.viewValById("txtTTS_NhaXuatBan", dt.NHAXUATBAN);
+        edu.util.viewValById("txtTTS_Ten", dt.TENSACH);
+        edu.util.viewValById("txtTTS_ISSN", dt.CHISO_ISBN);
+        edu.util.viewValById("txtTTS_NamXuatBan", dt.NAMXUATBAN);
+        edu.util.viewValById("txtTTS_ThangXuatBan", dt.THANGXUATBAN);
+        edu.util.viewValById("dropTTS_LinhVuc", dt.THUOCLINHVUCNAO_ID);
+        edu.util.viewValById("dropTTS_LoaiSach", dt.PHANLOAISACH_ID);
+        edu.util.viewValById("txtTTS_SoTacGia", dt.SOTACGIA_N);
+        edu.util.viewValById("txtTTS_SoTrangViet", dt.SOTRANGTHAMGIAVIET_N);
+        edu.util.viewValById("txtTTS_TongSoTrang", dt.SOTRANGSACH_N);
+        edu.util.viewValById("txtTTS_TrichDanPubmed", dt.TENSACHTRICHDAN);
+        //View - Noi dung minh chung
+        edu.util.viewValById("txtTTS_NoiDungMinhChung", dt.THONGTINMINHCHUNG);
+        edu.util.viewValById("dropTTS_DeTai", dt.NCKH_QUANLYDETAI_ID);
+    },
+    /*------------------------------------------
+    --Discription: [2] AccessDB DeTai_ThanhVien
+    --ULR:  Modules
+    -------------------------------------------*/
+    save_DeTai_ThanhVien: function (strNhanSu_Id, strSach_Id) {
+        var me = this;
+        var strVaiTro_Id = $("#vaitro_" + strNhanSu_Id).val();
+        var dTyLe = $("#tyle_" + strNhanSu_Id).val();
+        var obj_notify;
+        //--Edit
+        var obj_save = {
+            'action': 'NCKH_ThanhVien/ThemMoi',
+
+            'strSanPham_Id': strSach_Id,
+            'strThanhVien_Id': strNhanSu_Id,
+            'strVaiTro_Id': strVaiTro_Id,
+            'dTyLeThamGia': dTyLe,
+            'strNguoiThucHien_Id': edu.system.userId,
+        };
+        edu.system.makeRequest({
+            success: function (data) {
+                if (data.Success) {
+                }
+                else {
+                    obj_notify = {
+                        renderPlace: "slnhansu" + strNhanSu_Id,
+                        type: "w",
+                        title: obj_save + ": " + data.Message
+                    };
+                    edu.system.notifyLocal(obj_notify);
+                }
+            },
+            error: function (er) {
+                obj_notify = {
+                    renderPlace: "slnhansu" + strNhanSu_Id,
+                    type: "w",
+                    title: obj_save + " (er): " + JSON.stringify(er)
+                };
+                edu.system.notifyLocal(obj_notify);
+            },
+            type: 'POST',
+            
+            contentType: true,
+            
+            action: obj_save.action,
+            data: obj_save,
+            fakedb: [
+            ]
+        }, false, false, false, null);
+    },
+    getList_DeTai_ThanhVien: function () {
+        var me = this;
+        var obj_list = {
+            'action': 'NCKH_ThanhVien/LayDanhSach',
+
+            'strSanPham_Id': me.strSach_Id,
+            'pageIndex': 1,
+            'pageSize': 100
+        };
+        edu.system.makeRequest({
+            success: function (data) {
+                if (data.Success) {
+                    var dtResult = [];
+                    var iPager = 0;
+                    if (edu.util.checkValue(data.Data)) {
+                        dtResult = data.Data;
+                    }
+                    me.genTable_DeTai_ThanhVien(dtResult);
+                    me.genTable_TTS_ThanhVien_NgoaiTruong(dtResult);
+                }
+                else {
+                    edu.system.alert(obj_list.action + ": " + data.Message, "w");
+                }
+            },
+            error: function (er) {
+                edu.system.alert(obj_list.action + " (er): " + JSON.stringify(er), "w");
+            },
+            type: "GET",
+            action: obj_list.action,
+            
+            contentType: true,
+            
+            data: obj_list,
+            fakedb: [
+
+            ]
+        }, false, false, false, null);
+    },
+    delete_DeTai_ThanhVien: function (strNhanSu_Id) {
+        var me = this;
+        //--Edit
+        var obj = {};
+        var obj_delete = {
+            'action': 'NCKH_ThanhVien/Xoa',
+            
+            'strSanPham_Id': me.strSach_Id,
+            'strThanhVien_Id': strNhanSu_Id
+        };
+        //default
+        
+        edu.system.makeRequest({
+            success: function (data) {
+                if (data.Success) {
+                    obj = {
+                        content: "Xóa thành công!",
+                        code: ""
+                    };
+                    edu.system.afterComfirm(obj);
+                    me.getList_DeTai_ThanhVien();
+                }
+                else {
+                    obj = {
+                        content: "NCKH_DeTai_ThanhVien/Xoa: " + data.Message,
+                        code: ""
+                    };
+                    edu.system.afterComfirm(obj);
+                }
+            },
+            error: function (er) {
+                var obj = {
+                    content: "NCKH_DeTai_ThanhVien/Xoa (er): " + JSON.stringify(er),
+                    code: "w"
+                };
+                edu.system.afterComfirm(obj);
+            },
+            type: 'POST',
+            action: obj_delete.action,
+            
+            contentType: true,
+            
+            data: obj_delete,
+            fakedb: [
+            ]
+        }, false, false, false, null);
+    },
+    /*------------------------------------------
+    --Discription: [2] GenHTML ThanhVien/NhanSu
+    --ULR:  Modules
+    -------------------------------------------*/
+    genTable_DeTai_ThanhVien: function (data) {
+        var me = this;
+        //3. create html
+        me.arrNhanSu_Id = [];
+        $("#tblInput_TTS_ThanhVien tbody").html("");
+        for (var i = 0; i < data.length; i++) {
+            if (data[i].LATHANHVIENCUATRUONG == 1) continue;
+            var html = "";
+            html += "<tr id='rm_row" + data[i].ID + "'>";
+            html += "<td class='td-center'>" + (i + 1) + "</td>";
+            html += "<td class='td-center'><img class='table-img' src='" + edu.system.getRootPathImg(data[i].ANH) + "'></td>";
+            html += "<td class='td-left'><span>" + data[i].HOTEN + "</span> - <span>" + data[i].MACANBO + "</span></td>";
+            html += "<td><select id='vaitro_" + data[i].ID + "'></select></td>";
+            html += "<td><input class='form-control' id='tyle_" + data[i].ID + "' value='" + data[i].TYLETHAMGIA + "'></input></td>";
+            html += "</tr>";
+            //4. fill into tblNhanSu
+            $("#tblInput_TTS_ThanhVien tbody").append(html);
+            //5. create data danhmucvaitro
+            me.arrNhanSu_Id.push(data[i].ID);
+            var placeRender = "vaitro_" + data[i].ID;
+            me.genCombo_VaiTro(placeRender);
+            edu.util.viewValById(placeRender, data[i].VAITRO_ID);
+        }
+    },
+    genHTML_NhanSu: function (strNhanSu_Id) {
+        var me = main_doc.ThongTinSach;
+        //[1] add to arrNhanSu_Id
+        if (edu.util.arrEqualVal(me.arrNhanSu_Id, strNhanSu_Id)) {
+            obj_notify = {
+                renderPlace: "slnhansu" + strNhanSu_Id,
+                type: "w",
+                title: "Đã tồn tại!"
+            };
+            edu.system.notifyLocal(obj_notify);
+            return false;
+        }
+        else {
+            obj_notify = {
+                renderPlace: "slnhansu" + strNhanSu_Id,
+                type: "s",
+                title: "Đã chọn!"
+            };
+            edu.system.notifyLocal(obj_notify);
+            me.arrNhanSu_Id.push(strNhanSu_Id);
+        }
+        //2. get id and get val
+        var $hinhanh = "#sl_hinhanh" + strNhanSu_Id;
+        var $hoten = "#sl_hoten" + strNhanSu_Id;
+        var $ma = "#sl_ma" + strNhanSu_Id;
+        var valHinhAnh = $($hinhanh).attr("src");
+        var valHoTen = $($hoten).text();
+        var valMa = $($ma).text();
+        console.log(1111111);
+        //3. create html
+        var html = "";
+        html += "<tr id='rm_row" + strNhanSu_Id + "'>";
+        html += "<td class='td-center'>--</td>";
+        html += "<td class='td-center'><img class='table-img' src='" + valHinhAnh + "'></td>";
+        html += "<td class='td-left'><span>" + valHoTen + "</span> - <span>" + valMa + "</span></td>";
+        html += "<td><select id='vaitro_" + strNhanSu_Id + "'></select></td>";
+        html += "<td><input class='form-control' id='tyle_" + strNhanSu_Id + "'></input></td>";
+        html += "<td class='td-center'><a id='remove_nhansu" + strNhanSu_Id + "' class='btnDeletePoiter'><i class='fa fa-trash'></i></a></td>";
+        html += "</tr>";
+        //4. fill into tblNhanSu
+        $("#tblInput_TTS_ThanhVien tbody").append(html);
+        //5. create data danhmucvaitro
+        var placeRender = "vaitro_" + strNhanSu_Id;
+        me.genCombo_VaiTro(placeRender);
+    },
+    removeHTML_NhanSu: function (strNhanSu_Id) {
+        var me = this;
+        var $remove_row = "#rm_row" + strNhanSu_Id;
+        console.log("$remove_row: " + $remove_row);
+        $($remove_row).remove();
+        edu.util.arrExcludeVal(me.arrNhanSu_Id, strNhanSu_Id);
+        if (me.arrNhanSu_Id.length === 0) {
+            $("#tblInput_TTS_ThanhVien tbody").html("");
+            $("#tblInput_TTS_ThanhVien tbody").html('<tr><td colspan="6">Không tìm thấy dữ liệu!</td></tr>');
+        }
+    },
+    genTable_TTS_ThanhVien_NgoaiTruong: function (data) {
+        var me = this;
+        //3. create html
+        $("#tblInput_TTS_ThanhVien_NgoaiTruong tbody").html("");
+        for (var i = 0; i < data.length; i++) {
+            if (data[i].LATHANHVIENCUATRUONG == 0) continue;
+            console.log(data[i]);
+            var html = "";
+            html += "<tr id='rm_row" + data[i].ID + "'>";
+            html += "<td class='td-center'>" + (i + 1) + "</td>";
+            html += "<td class='td-left'><span>" + data[i].HOTEN + "</span></td>";
+            html += "<td><select id='vaitro_" + data[i].ID + "'></select></td>";
+            html += "<td class='td-center'><a id='remove_nhansu" + data[i].ID + "' name='true' class='btnDeletePoiter'><i class='fa fa-trash'></i></a></td>";
+            html += "</tr>";
+            //4. fill into tblNhanSu
+            $("#tblInput_TTS_ThanhVien_NgoaiTruong tbody").append(html);
+            //5. create data danhmucvaitro
+            me.arrNhanSu_Id.push(data[i].ID);
+            var placeRender = "vaitro_" + data[i].ID;
+            me.genCombo_VaiTro(placeRender);
+            edu.util.viewValById(placeRender, data[i].VAITRO_ID);
+        }
+    },
+    genHTML_NhanSu_NgoaiTruong: function (strNhanSu_Id) {
+        var me = this;
+        //[1] add to arrNhanSu_Id
+        if (edu.util.arrEqualVal(me.arrNhanSu_Id, strNhanSu_Id)) {
+            obj_notify = {
+                renderPlace: "slnhansu" + strNhanSu_Id,
+                type: "w",
+                title: "Đã tồn tại!"
+            };
+            edu.system.notifyLocal(obj_notify);
+            return false;
+        }
+        else {
+            obj_notify = {
+                renderPlace: "slnhansu" + strNhanSu_Id,
+                type: "s",
+                title: "Đã chọn!"
+            };
+            edu.system.notifyLocal(obj_notify);
+            me.arrNhanSu_Id.push(strNhanSu_Id);
+        }
+        //3. create html
+        var html = "";
+        html += "<tr id='rm_row" + strNhanSu_Id + "'>";
+        html += "<td class='td-center'>--</td>";
+        html += "<td class='td-left'><span>" + edu.util.getHTMLById("sl_hoten" + strNhanSu_Id) + "</span></td>";
+        html += "<td><select id='vaitro_" + strNhanSu_Id + "'></select></td>";
+        html += "<td class='td-center'><a id='remove_nhansu" + strNhanSu_Id + "' class='btnDeletePoiter'><i class='fa fa-trash'></i></a></td>";
+        html += "</tr>";
+        //4. fill into tblNhanSu
+        $("#tblInput_TTS_ThanhVien_NgoaiTruong tbody").append(html);
+        //5. create data danhmucvaitro
+        var placeRender = "vaitro_" + strNhanSu_Id;
+        me.genCombo_VaiTro(placeRender);
+    },
+    /*------------------------------------------
+    --Discription: [3] AcessDB DanhMucDuLieu -->VaiTro
+    --ULR:  Modules
+    -------------------------------------------*/
+    cbGetList_VaiTro: function (data, iPager) {
+        var me = main_doc.ThongTinSach;
+        me.dtVaiTro = data;
+    },
+    genCombo_VaiTro: function (place) {
+        var me = this;
+        var obj = {
+            data: me.dtVaiTro,
+            renderInfor: {
+                id: "ID",
+                parentId: "",
+                name: "TEN",
+                code: "MA"
+            },
+            renderPlace: [place],
+            title: "Chọn vai trò"
+        };
+        edu.system.loadToCombo_data(obj);
+
+    },
+    /*------------------------------------------
+    --Discription: [1] AcessDB GetList_DeTai
+    -------------------------------------------*/
+    getList_DeTai: function () {
+        var me = this;
+
+        //--Edit
+        var obj_list = {
+            'action': 'NCKH_DeTai/LayDanhSach',
+
+            'iTinhTrang': -1,
+            'iTrangThai': -1,
+            'strCanBoNhapDeTai_Id': "",
+            'strThanhVien_Id': "",
+            'strTuKhoaText': "",
+            'dTuKhoaNumber': -1,
+            'strNCKH_DeCuong_Id': "",
+            'strCapQuanLy_Id': "",
+            'strDaoTao_CoCauToChuc_Id': "",
+            'strLinhVucNghienCuu_Id': "",
+            'strNguonKinhPhi_Id': "",
+            'strThietKeNghienCuu_Id': "",
+            'strNCKH_ThanhVien_Id': "",
+            'strDonVi_Id_CuaThanhVien_Id': "",
+            'strLoaiChucDanh_Id': "",
+            'strLoaiHocVi_Id': "",
+            'strTinhTrang_Id': "",
+            'strPhanLoaiDeTai_Id': "",
+            'strTinhTrangXacNhan_Id': "",
+            'strNhanSu_TDKT_KeHoach_Id': "",
+            'pageIndex': 1,
+            'pageSize': 10000000
+        };
+        edu.system.makeRequest({
+            success: function (data) {
+                if (data.Success) {
+                    var dtResult = [];
+                    var iPager = 0;
+                    if (edu.util.checkValue(data.Data)) {
+                        dtResult = data.Data;
+                        iPager = data.Pager;
+                    }
+                    me.genCombo_DeTai(dtResult, iPager);
+                }
+                else {
+                    edu.system.alert("NCKH_DeTai/LayDanhSach: " + data.Message, "w");
+                }
+            },
+            error: function (er) {
+                edu.system.alert("NCKH_DeTai/LayDanhSach (er): " + JSON.stringify(er), "w");
+            },
+            type: "GET",
+            action: obj_list.action,
+            
+            contentType: true,
+            
+            data: obj_list,
+            fakedb: [
+
+            ]
+        }, false, false, false, null);
+    },
+    genCombo_DeTai: function (data) {
+        var me = this;
+        var obj = {
+            data: data,
+            renderInfor: {
+                id: "ID",
+                parentId: "",
+                name: "TENDETAITIENGVIET",
+                code: "MADETAI",
+                order: "unorder"
+            },
+            renderPlace: ["dropTTS_DeTai", "dropSearch_DeTai_TTS"],
+            title: "Chọn đề tài"
+        };
+        edu.system.loadToCombo_data(obj);
+    },
+    getList_CoCauToChuc: function () {
+        var me = main_doc.ThongTinSach;
+        var obj = {
+            strCCTC_Loai_Id: "",
+            strCCTC_Cha_Id: "",
+            iTrangThai: 1
+        };
+        edu.system.getList_CoCauToChuc(obj, "", "", me.genComBo_CCTC);
+    },
+    genComBo_CCTC: function (data) {
+        var obj = {
+            data: data,
+            renderInfor: {
+                id: "ID",
+                parentId: "",
+                name: "TEN",
+                code: "MA"
+            },
+            renderPlace: ["dropSearchModal_TTS_DonVi", "dropSearch_DonViThanhVien_TTS"],
+            type: "",
+            title: "Chọn đơn vị"
+        };
+        edu.system.loadToCombo_data(obj);
+    },
+    /*------------------------------------------
+    --Discription: [1] AcessDB GetList_DeTai
+    -------------------------------------------*/
+    getList_HS: function () {
+        var me = this;
+        var obj_list = {
+            'action': 'NS_HoSoV2/LayDanhSach',
+
+            'strTuKhoa': "",
+            'pageIndex': 1,
+            'pageSize': 1000000,
+            'strDaoTao_CoCauToChuc_Id': edu.util.getValById("dropSearch_DonViThanhVien_TTS"),
+            'strNguoiThucHien_Id': "",
+            'dLaCanBoNgoaiTruong': 0
+        };
+        edu.system.makeRequest({
+            success: function (data) {
+                if (data.Success) {
+                    me.genComBo_HS(data.Data, data.Pager);
+                }
+                else {
+                    console.log(data.Message);
+                }
+            },
+            error: function (er) {  },
+            type: "GET",
+            action: obj_list.action,
+            
+            contentType: true,
+            
+            data: obj_list,
+            fakedb: [
+            ]
+        }, false, false, false, null);
+
+    },
+    genComBo_HS: function (data) {
+        var obj = {
+            data: data,
+            renderInfor: {
+                id: "ID",
+                parentId: "",
+                name: "TEN",
+                code: "MA",
+                Render: function (nrow, aData) {
+                    return "<option id='" + edu.system.getRootPathImg(aData.ANH) + "'class='table-img' value='" + aData.ID + "'>" + aData.HOTEN + " - " + edu.util.returnEmpty(aData.MASO) + "</option>";
+                }
+            },
+            renderPlace: ["dropSearch_ThanhVienDangKy_TTS"],
+            type: "",
+            title: "Chọn thành viên"
+        };
+        edu.system.loadToCombo_data(obj);
+    },
+
+    /*------------------------------------------
+    --Discription: [1] GEN html xác nhận
+    -------------------------------------------*/
+    getList_XacNhan: function () {
+        var me = this;
+        var obj_list = {
+            'action': 'NCKH_XacNhanTheoNguoiDung/LayDMXacNhanTheoNguoiDung',
+            'strChucNang_Id': edu.system.strChucNang_Id,
+            'strNguoiThucHien_Id': edu.system.userId,
+        };
+        edu.system.makeRequest({
+            success: function (data) {
+                if (data.Success) {
+                    var dtReRult = data.Data;
+                    me.loadBtnXacNhan(dtReRult);
+                    me.page_load();
+                }
+                else {
+                    edu.system.alert(obj_list.action + " : " + data.Message, "s");
+                }
+            },
+            error: function (er) {
+
+                edu.system.alert(obj_list.action + " (er): " + JSON.stringify(er), "w");
+            },
+            type: 'GET',
+            action: obj_list.action,
+
+            contentType: true,
+            data: obj_list,
+            fakedb: [
+            ]
+        }, false, false, false, null);
+    },
+    loadBtnXacNhan: function (data) {
+        main_doc.ThongTinSach.dtXacNhan = data;
+        console.log(data);
+        var row = "";
+        row += '<div style="margin-left: auto; margin-right: auto; width: ' + ((data.length-1) * 90) + 'px">';
+        for (var i = 0; i < data.length; i++) {
+            if (data[i].MA == "XNKKCHUAKHAI") continue;
+            row += '<div id="' + data[i].ID + '" class="btn-large btnxacnhan">';
+            row += '<a class="btn"><i style="' + data[i].THONGTIN2 + '" class="' + data[i].THONGTIN1 + ' fa-4x"></i></a>';
+            row += '<a class="color-active bold">' + data[i].TEN + '</a>';
+            row += '</div>';
+        }
+        row += '</div>';
+        $("#zoneBtnXacNhan").html(row);
+    },
+
+    /*------------------------------------------
+    --Discription: [4] GenHTML Tiến độ đề tài
+    --ULR:  Modules
+    -------------------------------------------*/
+    getList_NamDanhGia: function () {
+        var me = this;
+        var obj_list = {
+            'action': 'NCKH_TinhDiem_KeHoach/LayDanhSach',
+            'strTuKhoa': edu.util.getValById('txtAAAA'),
+            'strNguoiThucHien_Id': edu.system.userId,
+            'pageIndex': 1,
+            'pageSize': 1000000,
+        };
+        edu.system.makeRequest({
+            success: function (data) {
+                if (data.Success) {
+                    var dtReRult = data.Data;
+                    me.genComBo_NamDanhGia(dtReRult);
+                }
+                else {
+                    edu.system.alert(obj_list.action + " : " + data.Message, "s");
+                }
+            },
+            error: function (er) {
+                
+                edu.system.alert(obj_list.action + " (er): " + JSON.stringify(er), "w");
+            },
+            type: 'GET',
+            action: obj_list.action,
+            
+            contentType: true,
+            data: obj_list,
+            fakedb: [
+
+            ]
+        }, false, false, false, null);
+    },
+    genComBo_NamDanhGia: function (data) {
+        var obj = {
+            data: data,
+            renderInfor: {
+                id: "ID",
+                parentId: "",
+                name: "MOTA",
+                code: "MA"
+            },
+            renderPlace: ["dropSearch_NamDanhGia_DT"],
+            type: "",
+            title: "Tất cả kế hoạch đánh giá"
+        };
+        edu.system.loadToCombo_data(obj);
+        if (data.length > 0) {
+            edu.util.viewValById("dropSearch_NamDanhGia_DT", data[0].ID);
+        }
+        this.getList_TTS();
+    },
+
+    /*------------------------------------------
+    --Discription: [2] AccessDB DeTai_ThanhVien
+    --ULR:  Modules
+    -------------------------------------------*/
+    save_GopFile: function (arrUrl, arrFileName) {
+        var me = this;
+        var obj_notify;
+        //--Edit
+        var obj_save = {
+            'action': 'NCKH_Files/GopFile',
+
+            'arrTuKhoa': arrUrl,
+            'arrDuLieu': arrFileName,
+            'strNguoiThucHien_Id': edu.system.userId,
+        };
+        edu.system.makeRequest({
+            success: function (data) {
+                if (data.Success) {
+                    if (data.Data) {
+                        window.open(edu.system.rootPathUpload + "/" + data.Data);
+                    }
+                }
+            },
+            error: function (er) {
+                obj_notify = {
+                    renderPlace: "slnhansu" + strNhanSu_Id,
+                    type: "w",
+                    title: obj_save + " (er): " + JSON.stringify(er)
+                };
+                edu.system.notifyLocal(obj_notify);
+            },
+            type: 'POST',
+
+            contentType: true,
+
+            action: obj_save.action,
+            data: obj_save,
+            fakedb: [
+            ]
+        }, false, false, false, null);
+    },
+};

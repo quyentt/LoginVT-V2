@@ -1,0 +1,485 @@
+/* =========================================================================
+   5. OBJECTS — khung ứng dụng
+   =========================================================================
+   Thanh trên cố định + cột trái cố định + vùng nội dung cuộn.
+   Toàn bộ điều hướng nằm trong một trang: chọn chức năng chỉ thay nội dung,
+   không rời trang.
+   ========================================================================= */
+
+.ums-app {
+    min-height: 100vh;
+}
+
+/* ---------- Thanh trên --------------------------------------------------- */
+.ums-topbar {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: var(--ums-z-topbar);
+    height: var(--ums-topbar-h);
+    transition: transform var(--ums-t);
+    display: flex;
+    align-items: center;
+    gap: var(--ums-sp-4);
+    padding: 0 var(--ums-sp-5);
+    background: var(--ums-navy);
+    color: var(--ums-on-dark);
+}
+
+.ums-topbar__toggle {
+    display: flex;
+    align-items: center;
+    gap: var(--ums-sp-2);
+    height: 34px;
+    padding: 0 var(--ums-sp-2);
+    border-radius: var(--ums-r-1);
+    color: var(--ums-on-dark);
+    font-size: var(--ums-fz-15);
+}
+
+.ums-topbar__toggle:hover { background: rgba(255, 255, 255, .12); }
+.ums-topbar__toggle > i { font-size: var(--ums-fz-18); }
+
+.ums-topbar__brand {
+    display: flex;
+    align-items: center;
+    gap: var(--ums-sp-2);
+    font-size: var(--ums-fz-16);
+    font-weight: var(--ums-fw-bold);
+    letter-spacing: .3px;
+}
+
+.ums-topbar__logo {
+    width: 32px;
+    height: 32px;
+    display: grid;
+    place-items: center;
+    border-radius: var(--ums-r-1);
+    background: var(--ums-logo-bg, var(--ums-blue));
+    font-size: var(--ums-fz-15);
+}
+
+.ums-topbar__spacer { flex: 1; }
+
+/* ---------- Tìm MÀN HÌNH trong mọi vai trò (app.js timMan) ----------------------------------- */
+/* Nút Menu + logo: tối thiểu bằng cột trái (trừ đệm trái của thanh và khoảng cách) → ô tìm bắt đầu THẲNG MÉP cột trái
+   khi logo ngắn; logo dài thì ô tìm lùi theo (người dùng 2026-09-26) */
+.ums-topbar__left { flex: 0 0 auto; display: flex; align-items: center; gap: var(--ums-sp-4);
+    min-width: calc(var(--ums-sidebar-w) - var(--ums-sp-5) - var(--ums-sp-4)); }
+.ums-gsearch { position: relative; flex: 0 1 440px; min-width: 200px; }
+.ums-gsearch__icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--ums-on-dark-2); font-size: var(--ums-fz-14); pointer-events: none; }
+.ums-gsearch__input {
+    width: 100%; height: 36px; padding: 0 64px 0 36px; border: 1px solid rgba(255, 255, 255, .18); border-radius: var(--ums-r-2);
+    background: rgba(255, 255, 255, .1); color: var(--ums-on-dark); font: inherit; font-size: var(--ums-fz-14); outline: 0;
+    transition: background var(--ums-t), border-color var(--ums-t);
+}
+.ums-gsearch__input::placeholder { color: var(--ums-on-dark-2); }
+.ums-gsearch__input:focus { background: #fff; border-color: #fff; color: var(--ums-ink); }
+.ums-gsearch__input:focus ~ .ums-gsearch__kbd { display: none; }
+.ums-gsearch:focus-within .ums-gsearch__icon { color: var(--ums-ink-3); }
+.ums-gsearch__kbd { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); padding: 1px 6px; border: 1px solid rgba(255, 255, 255, .25);
+    border-radius: 4px; color: var(--ums-on-dark-2); font: 11px/1.4 inherit; pointer-events: none; }
+.ums-gsearch__list {
+    position: absolute; left: 0; right: 0; top: calc(100% + 6px); z-index: 20; max-height: min(70vh, 520px); overflow-y: auto;
+    padding: 4px; border: 1px solid var(--ums-line); border-radius: var(--ums-r-2); background: #fff; color: var(--ums-ink);
+    box-shadow: 0 12px 32px rgba(15, 30, 70, .22);
+}
+.ums-gsearch__item { display: flex; flex-direction: column; gap: 2px; width: 100%; padding: 8px 10px; border-radius: var(--ums-r-1); text-align: left; }
+.ums-gsearch__item:hover, .ums-gsearch__item.is-active { background: var(--ums-surface-3); }
+.ums-gsearch__ten { font-size: var(--ums-fz-14); font-weight: var(--ums-fw-semibold); color: var(--ums-ink); }
+.ums-gsearch__ten mark { background: #fff1b8; color: inherit; padding: 0 1px; border-radius: 2px; }
+.ums-gsearch__sub { font-size: var(--ums-fz-12); color: var(--ums-ink-3); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.ums-gsearch__sub i { margin-right: 2px; }
+.ums-gsearch__nhom { color: var(--ums-ink-3); opacity: .85; }
+/* Dòng của vai trò ĐANG DÙNG: tô nền xanh nhạt + vạch trái */
+.ums-gsearch__item.is-tai { background: #eef4ff; box-shadow: inset 3px 0 0 var(--ums-blue); }
+.ums-gsearch__item.is-tai:hover, .ums-gsearch__item.is-tai.is-active { background: #dfeaff; }
+.ums-gsearch__item.is-tai + .ums-gsearch__item:not(.is-tai) { margin-top: 4px; }
+.ums-gsearch__dang { margin-left: 4px; padding: 0 6px; border-radius: 999px; background: var(--ums-blue); color: #fff; font-size: 10.5px; }
+.ums-gsearch__state--tai { padding: 4px 12px 8px; font-size: var(--ums-fz-12); }
+.ums-gsearch__more { display: flex; align-items: center; gap: 6px; width: 100%; margin-top: 2px; padding: 8px 10px; border-top: 1px solid var(--ums-line);
+    border-radius: 0 0 var(--ums-r-1) var(--ums-r-1); color: var(--ums-blue); font-size: var(--ums-fz-13); font-weight: var(--ums-fw-semibold); text-align: left; }
+.ums-gsearch__more:hover { background: var(--ums-surface-3); }
+.ums-gsearch__state { padding: 10px 12px; font-size: var(--ums-fz-13); color: var(--ums-ink-3); }
+/* Màn hẹp: ô tìm là lối tìm DUY NHẤT (cột trái không còn ô tìm) — giữ ô, bỏ chữ thương hiệu + phím tắt, danh sách trải ngang màn */
+@media (max-width: 767px) {
+    .ums-topbar__brand { display: none; }
+    .ums-topbar__left { min-width: 0; }
+    .ums-gsearch { flex: 1 1 auto; min-width: 0; margin-left: 0; }
+    .ums-gsearch__kbd { display: none; }
+    .ums-gsearch__input { padding-right: 12px; }
+    .ums-gsearch__list { position: fixed; left: 8px; right: 8px; top: calc(var(--ums-topbar-h) + 4px); }
+}
+
+.ums-topbar__tools {
+    position: relative;        /* mốc cho menu người dùng thả xuống */
+    display: flex;
+    align-items: center;
+    gap: var(--ums-sp-3);
+}
+
+.ums-topbar__divider {
+    width: 1px;
+    height: 26px;
+    background: rgba(255, 255, 255, .22);
+}
+
+.ums-topbar__icon {
+    position: relative;
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border-radius: var(--ums-r-1);
+    color: var(--ums-on-dark-2);
+    font-size: var(--ums-fz-16);
+}
+
+.ums-topbar__icon:hover { background: rgba(255, 255, 255, .12); color: var(--ums-on-dark); }
+
+.ums-topbar__dot {
+    position: absolute;
+    top: 6px;
+    right: 7px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #ff7a45;
+    border: 2px solid var(--ums-navy);
+}
+
+.ums-topbar__user {
+    display: flex;
+    align-items: center;
+    gap: var(--ums-sp-2);
+    padding: 3px var(--ums-sp-2) 3px 3px;
+    border-radius: var(--ums-r-pill);
+    font-size: var(--ums-fz-14);
+}
+
+.ums-topbar__user:hover { background: rgba(255, 255, 255, .12); }
+
+/* ---------- Menu người dùng (vỏ cũ: .box-acc-user) ----------------------- */
+.ums-usermenu {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    z-index: var(--ums-z-pop);
+    min-width: 232px;
+    padding: var(--ums-sp-2);
+    background: var(--ums-surface);
+    border: 1px solid var(--ums-line);
+    border-radius: var(--ums-r-2);
+    box-shadow: var(--ums-sh-3);
+}
+
+.ums-usermenu[hidden] { display: none; }
+
+.ums-usermenu__item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: var(--ums-sp-3);
+    padding: var(--ums-sp-2) var(--ums-sp-3);
+    border: 0;
+    border-radius: var(--ums-r-1);
+    background: none;
+    color: var(--ums-ink);
+    font: inherit;
+    font-size: var(--ums-fz-14);
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.ums-usermenu__item > i { width: 18px; color: var(--ums-ink-3); text-align: center; }
+.ums-usermenu__item:hover { background: var(--ums-surface-2); }
+.ums-usermenu__sep { height: 1px; margin: var(--ums-sp-2) 0; background: var(--ums-line); }
+.ums-usermenu__item--out,
+.ums-usermenu__item--out > i { color: var(--ums-act-del); }
+.ums-usermenu__item--out:hover { background: var(--ums-bad-bg); }
+
+.ums-topbar__avatar {
+    width: 30px;
+    height: 30px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .2);
+    font-size: var(--ums-fz-13);
+}
+
+/* ---------- Cột trái ------------------------------------------------------ */
+.ums-sidebar {
+    position: fixed;
+    left: 0;
+    top: var(--ums-topbar-h);
+    bottom: 0;
+    z-index: var(--ums-z-sidebar);
+    width: var(--ums-sidebar-w);
+    display: flex;
+    flex-direction: column;
+    background: var(--ums-navy);
+    color: var(--ums-on-dark);
+    transition: transform var(--ums-t), top var(--ums-t);
+}
+
+/* Nằm NGOÀI vùng cuộn — thanh "Vai trò" đang dùng luôn thấy được */
+.ums-sidebar__top {
+    flex: 0 0 auto;
+    padding: var(--ums-sp-3) var(--ums-sp-4);
+}
+
+/* Vùng cuộn: thanh trượt do JS vẽ, xem components/scroll.css */
+.ums-sidebar__body {
+    flex: 1;
+    min-height: 0;
+    padding: 0 0 var(--ums-sp-6);
+}
+
+.ums-sidebar__foot {
+    padding: var(--ums-sp-3) var(--ums-sp-5);
+    border-top: 1px solid rgba(255, 255, 255, .12);
+    color: var(--ums-on-dark-2);
+    font-size: var(--ums-fz-12);
+}
+
+/* ---------- Vùng nội dung ------------------------------------------------- */
+.ums-main {
+    margin-left: var(--ums-sidebar-w);
+    padding-top: var(--ums-topbar-h);
+    min-height: 100vh;
+    transition: margin-left var(--ums-t);
+}
+
+/* Thu cột trái trên màn hình rộng — bấm nút Menu ở thanh trên.
+   Màn hình hẹp dùng kiểu ngăn kéo, xử lý ở khối thu hẹp bên dưới. */
+@media (min-width: 992px) {
+    .ums-app.is-nav-collapsed .ums-sidebar { transform: translateX(-100%); }
+    .ums-app.is-nav-collapsed .ums-main { margin-left: 0; }
+}
+
+.ums-page {
+    padding: var(--ums-sp-6) var(--ums-sp-6) var(--ums-sp-8);
+}
+
+.ums-page__greet {
+    color: var(--ums-ink-2);
+    font-size: var(--ums-fz-14);
+    font-style: italic;
+}
+
+.ums-page__title {
+    margin: var(--ums-sp-1) 0 var(--ums-sp-5);
+    color: var(--ums-navy);
+    font-size: var(--ums-fz-20);
+    font-weight: var(--ums-fw-bold);
+    line-height: 1.3;
+}
+
+/* Trong đầu trang, tiêu đề Bỏ HẾT lề trên dưới. Canh giữa của flex lấy HỘP
+   KỂ CẢ LỀ làm chuẩn, nên chỉ cần lề trên 4px là chữ bị đẩy xuống 2px so với
+   dòng chữ nhỏ bên cạnh — đúng chỗ "tiêu đề chưa center". */
+.ums-page__head > .ums-page__title { margin: 0; }
+
+.ums-page__actions {
+    margin-left: auto;
+    display: flex;
+    gap: var(--ums-sp-2);
+}
+
+/* Tiêu đề nhóm trong danh sách */
+.ums-section {
+    display: flex;
+    align-items: baseline;
+    gap: var(--ums-sp-2);
+    margin: var(--ums-sp-6) 0 var(--ums-sp-3);
+}
+
+.ums-section:first-child { margin-top: 0; }
+
+.ums-section__name {
+    color: var(--ums-navy);
+    font-size: var(--ums-fz-16);
+    font-weight: var(--ums-fw-bold);
+}
+
+.ums-section__count {
+    color: var(--ums-ink-3);
+    font-size: var(--ums-fz-13);
+}
+
+/* ---------- Màn che khi thu hẹp -------------------------------------------- */
+.ums-veil {
+    position: fixed;
+    inset: var(--ums-topbar-h) 0 0 0;
+    z-index: var(--ums-z-veil);
+    background: rgba(27, 44, 91, .45);
+    display: none;
+}
+
+/* ---------- Thu hẹp --------------------------------------------------------- */
+@media (max-width: 1199px) {
+    .ums-app { --ums-sidebar-w: 248px; }
+}
+
+@media (max-width: 991px) {
+    .ums-sidebar { transform: translateX(-105%); }
+    .ums-app.is-nav-open .ums-sidebar { transform: none; }
+    .ums-app.is-nav-open .ums-veil { display: block; }
+    .ums-main { margin-left: 0; }
+}
+
+@media (max-width: 767px) {
+    .ums-topbar { gap: var(--ums-sp-2); padding: 0 var(--ums-sp-3); }
+    .ums-topbar__toggle span { display: none; }
+    .ums-page { padding: var(--ums-sp-4) var(--ums-sp-3) var(--ums-sp-6); }
+    .ums-page__title { font-size: var(--ums-fz-18); }
+}
+
+/* =========================================================================
+   THANH TRÊN TỰ ẨN
+   =========================================================================
+   Kéo xuống thì thanh trên trượt lên khuất, kéo ngược lên thì hiện lại —
+   lấy lại chiều cao màn hình khi đang đọc bảng dài.
+
+   Cột trái trượt lên theo để không hở một dải nền ở phía trên nó.
+   Vùng nội dung giữ nguyên đệm trên, nên nội dung KHÔNG nhảy.
+   ========================================================================= */
+
+.ums-app { --ums-stick-top: var(--ums-topbar-h); }
+
+.ums-app.is-head-hidden { --ums-stick-top: 0px; }
+.ums-app.is-head-hidden .ums-topbar { transform: translateY(-100%); }
+.ums-app.is-head-hidden .ums-sidebar { top: 0; }
+
+/* Đang mở ngăn kéo cột trái thì luôn giữ thanh trên */
+.ums-app.is-nav-open.is-head-hidden .ums-topbar { transform: none; }
+.ums-app.is-nav-open.is-head-hidden .ums-sidebar { top: var(--ums-topbar-h); }
+
+/* Người dùng bật "giảm chuyển động" thì bỏ hiệu ứng trượt */
+@media (prefers-reduced-motion: reduce) {
+    .ums-topbar, .ums-sidebar, .ums-main { transition: none; }
+}
+
+/* =========================================================================
+   THANH THAO TÁC DÍNH ĐỈNH
+   =========================================================================
+   Nguyên tắc: ở đâu có NÚT THAO TÁC thì ở đó dính lại khi cuộn — nhập một
+   biểu mẫu dài rồi phải kéo ngược lên tìm nút Lưu là việc không nên có.
+
+   Nút thao tác của một màn hình nằm ở một trong hai chỗ:
+     · .ums-page__actions  — cạnh tiêu đề màn hình  (danh sách, báo cáo)
+     · .ums-panel__tools   — trong đầu khung        (biểu mẫu Thêm/Sửa)
+
+   Cả hai đều được dính, nhưng KHÔNG BAO GIỜ cùng lúc: nếu tiêu đề màn hình
+   đang dính thì đầu khung thôi, tránh hai thanh chồng nhau ăn hết màn hình.
+
+   Màn hình KHÔNG có nút thì không dính — dính lại chẳng để làm gì, chỉ tốn
+   chiều cao.
+
+   Điều kiện viết bằng `:has()` nên tự cập nhật khi nút bị ẩn/hiện lúc chạy
+   (ví dụ kehoachmua: chuyển từ danh sách sang biểu mẫu thì khối nút màn hình
+   bị ẩn, lúc đó đầu khung nhận vai trò dính). Trình duyệt không hỗ trợ
+   `:has()` sẽ bỏ qua cả khối: mất tính năng dính chứ không vỡ bố cục.
+   ========================================================================= */
+
+.ums-page__head {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--ums-sp-3);
+    margin-bottom: var(--ums-sp-4);
+}
+
+/* Dòng "Số liệu tính đến …" ở đầu màn thống kê — đứng sau tiêu đề, trước
+   cụm nút. Thay dòng "Thời gian: …" viết cứng của bản gốc. */
+.ums-page__when {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ums-sp-2);
+    color: var(--ums-ink-2);
+    font-size: var(--ums-fz-13);
+    line-height: 1.3;
+}
+.ums-page__when > i { color: var(--ums-ink-3); }
+.ums-page__when b { color: var(--ums-navy); }
+
+/* Vì sao có thêm :not([hidden] *) — nhiều màn tự dựng đặt CẢ đầu trang bên
+   trong vùng danh sách (vd sothangkhonghoc: .ums-page__head nằm trong
+   [data-z="list"]). Mở biểu mẫu thì vùng đó bị ẩn, nhưng bản thân khối
+   .ums-page__actions KHÔNG mang [hidden] — chỉ tổ tiên mang. Luật cũ chỉ soi
+   chính nó nên vẫn tưởng đầu trang đang giữ chỗ dính, và thanh nút của biểu
+   mẫu không bao giờ dính được. :not([hidden] *) loại luôn mọi thứ nằm trong
+   một vùng đang ẩn. */
+
+/* ---------- 1. Đầu khung + nút — NHÓM NÀO CUỘN TỚI THÌ NHÓM ẤY CHIẾM CHỖ -- */
+/* Cả đầu trang lẫn đầu khung đều dính ở CÙNG một mốc. Cái nào đứng sau trong
+   trang thì vẽ đè lên cái trước, nên cuộn tới nhóm nào là thanh của nhóm ấy
+   thay chỗ thanh đang đứng — như tiêu đề từng mục trong danh bạ điện thoại.
+   Muốn vậy đầu khung phải ĐỤC (có nền riêng) và z-index cao hơn đầu trang. */
+/* Thanh nào có nút để BẤM TRONG LÚC LÀM VIỆC thì thanh đó đáng dính. Đầu
+   khung ("Danh sách … Lưu", hay thanh Lưu/Đóng của biểu mẫu) luôn thắng đầu
+   trang: người dùng cuộn tới dòng thứ 200 của bảng sửa trực tiếp thì thứ cần
+   trong tầm tay là Lưu, không phải nút Import hay menu Báo cáo vốn chỉ bấm
+   một lần lúc đầu. (Quyết định 2026-09-21, sau khi đo màn lophocphan: trước
+   đó đầu trang dính còn thanh Lưu trôi mất.)
+   Chỉ tính nút thật (.ums-btn) — đầu khung chỉ có nút biểu tượng như In, hay
+   chỉ có chữ chú thích, thì không đáng chiếm một thanh dính.
+   :not([hidden] *) để vùng đang ẩn không tính. */
+.ums-panel__head:has(.ums-panel__tools .ums-btn):not([hidden] *) {
+    position: sticky;
+    top: var(--ums-stick-top);
+    z-index: 60;
+    background: var(--ums-surface);
+    transition: box-shadow var(--ums-t);
+}
+
+.ums-app.is-stuck .ums-panel__head:has(.ums-panel__tools .ums-btn):not([hidden] *) {
+    box-shadow: 0 4px 12px -6px rgba(15, 23, 42, .25);
+}
+
+/* Menu thả xuống ĐANG MỞ (Xuất báo cáo ▾, Import ▾…) nằm trong đầu trang (z 50) hay đầu khung (z 60): nâng chính thanh đó lên
+   trên mọi đầu khung dính khác, không thì menu bị khung bên dưới che (người dùng 2026-09-27: "dropdown khi bật bị nằm dưới"). */
+.ums-page__head:has(.ums-drop.is-open),
+.ums-panel__head:has(.ums-drop.is-open) { z-index: 80 !important; }   /* thắng luật dính (độ ưu tiên cao hơn) */
+
+/* ---------- 2. Tiêu đề màn hình + nút ------------------------------------ */
+/* Chỉ dính khi trong trang KHÔNG có đầu khung nào đang mở mang nút — để hai
+   thanh không bao giờ cùng dính, tốn chiều cao mà chẳng thêm gì. */
+.ums-page__head:has(.ums-page__actions:not([hidden]):not([hidden] *) > *) {
+    position: sticky;
+    top: var(--ums-stick-top);
+    z-index: 50;
+    /* Đã có 12px đệm dưới rồi nên lề chỉ cần 12px nữa — để 20px thìkhoảng hở
+       giữa tên màn và khung đầu tiên rộng hẳn một dòng trống. */
+    margin: 0 calc(-1 * var(--ums-sp-6)) var(--ums-sp-3);
+    padding: var(--ums-sp-3) var(--ums-sp-6);
+    background: var(--ums-bg);
+    border-bottom: 1px solid transparent;
+    transition: box-shadow var(--ums-t), border-color var(--ums-t);
+}
+
+/* Chỉ kẻ viền và đổ bóng khi đã thật sự dính, để lúc ở đầu trang vẫn phẳng */
+.ums-app.is-stuck .ums-page__head:has(.ums-page__actions:not([hidden]):not([hidden] *) > *) {
+    border-bottom-color: var(--ums-line);
+    box-shadow: 0 4px 12px -6px rgba(15, 23, 42, .25);
+}
+
+/* ---------- 3. Mỗi lúc chỉ MỘT nút "Đóng" -------------------------------- */
+/* Người dùng 2026-09-29 (màn Đề xuất hồ sơ: "Chi tiết hồ sơ … [Đóng]" + khung "Thêm thành viên gia đình [Đóng] [Lưu]"):
+   hai nút cùng chữ, bấm nhầm nút ngoài là thoát cả khung chi tiết, mất dữ liệu đang nhập. Khi một khung BÊN TRONG đang mở
+   và có nút Đóng của riêng nó thì nút Đóng của tầng NGOÀI tự ẩn; đóng khung trong thì hiện lại. ẨN chứ không khoá: nút xám
+   cạnh một nút cùng chữ chỉ làm người dùng thắc mắc. Dòng tên ("Chi tiết hồ sơ: …") vẫn giữ để biết đang làm cho ai.
+   Hộp thoại không tính — nó che trang, không bấm nhầm được. Lớp ums-btn--dong do ui.btn('close') gắn; nút Đóng viết tay
+   (biểu tượng fa-xmark, vài màn Tài chính) nhận qua :has(> .fa-xmark). */
+.ums-page:has(.ums-panel__head:not([hidden]):not([hidden] *) .ums-panel__tools :is(.ums-btn--dong, .ums-btn:has(> .fa-xmark)):not([hidden]))
+    .ums-page__head .ums-page__actions :is(.ums-btn--dong, .ums-btn:has(> .fa-xmark)),
+.ums-panel:has(.ums-panel .ums-panel__head:not([hidden]):not([hidden] *) .ums-panel__tools :is(.ums-btn--dong, .ums-btn:has(> .fa-xmark)):not([hidden]))
+    > .ums-panel__head .ums-panel__tools :is(.ums-btn--dong, .ums-btn:has(> .fa-xmark)) { display: none; }
+
+@media (max-width: 767px) {
+    .ums-page__head:has(.ums-page__actions:not([hidden]):not([hidden] *) > *) {
+        margin: 0 calc(-1 * var(--ums-sp-3)) var(--ums-sp-4);
+        padding: var(--ums-sp-2) var(--ums-sp-3);
+    }
+}

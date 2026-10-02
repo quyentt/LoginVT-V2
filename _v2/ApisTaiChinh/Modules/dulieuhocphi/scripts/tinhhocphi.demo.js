@@ -1,0 +1,9 @@
+/* Dữ liệu mẫu cho tinhhocphi — chỉ dùng ở chế độ dựng thử.
+   Danh mục đào tạo, kết quả tính phí, sinh viên: xem _chung.demo.js */
+ums.demo.add({
+    'PKG_TAICHINH_THUCHI2.LayDSTC_NghiepVu_Chot_Phi': [
+        { ID: 'NVC1', QLSV_NGUOIHOC_MASO: 'BIT220263', QLSV_NGUOIHOC_HODEM: 'Nguyễn Văn', QLSV_NGUOIHOC_TEN: 'An', DAOTAO_CHUONGTRINH_TEN: 'Công nghệ thông tin', DAOTAO_CHUONGTRINH_MA: '7480201', NGHIEPVUAPDUNG_TEN: 'Tính phí học kỳ', TAICHINH_CACKHOANTHU_TEN: 'Học phí', THOIGIAN: 'HK1 2025-2026', PHANTRAM: 100 },
+        { ID: 'NVC2', QLSV_NGUOIHOC_MASO: 'BBA220561', QLSV_NGUOIHOC_HODEM: 'Phạm Thu', QLSV_NGUOIHOC_TEN: 'Dung', DAOTAO_CHUONGTRINH_TEN: 'Quản trị kinh doanh', DAOTAO_CHUONGTRINH_MA: '7340101', NGHIEPVUAPDUNG_TEN: 'Tính phí học kỳ', TAICHINH_CACKHOANTHU_TEN: 'Học phí', THOIGIAN: 'HK1 2025-2026', PHANTRAM: 50 },
+        { ID: 'NVC3', QLSV_NGUOIHOC_MASO: 'BAC230118', QLSV_NGUOIHOC_HODEM: 'Vũ Minh', QLSV_NGUOIHOC_TEN: 'Đức', DAOTAO_CHUONGTRINH_TEN: 'Kế toán', DAOTAO_CHUONGTRINH_MA: '7340301', NGHIEPVUAPDUNG_TEN: 'Tính phí học lại', TAICHINH_CACKHOANTHU_TEN: 'Học phí học lại', THOIGIAN: 'HK1 2025-2026', PHANTRAM: 100 }
+    ]
+});

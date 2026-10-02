@@ -1,0 +1,266 @@
+﻿<!-- Main content -->
+<section class="content aps-cms">
+    <div class="row box-solid box-shadow aps-category-export aps-danhmucexport">
+        <!-- /.left-content -->
+        <div class="col-sm-3 aps-box-l aps-category-export-l">
+            <div class="box box-solid box-search pd15 pb5">
+                <div class="box-body pd0">
+                    <!-- Bộ tìm kiếm -->
+                    <div class="bs-item pd0 mb-8">
+                        <select id="dropSearch_UngDung_DMEP" class="select-opt">
+                            <option value="">-- Chọn ứng dụng --</option>
+                            <!-- Load from js -->
+                        </select>
+                    </div>
+                    <div class="bs-item pd0 input-group mb-8">
+                        <input type="text" id="txtSearch_Keyword_DMTB_DMEP" class="form-control"
+                               placeholder="Nhập từ khóa tìm kiếm">
+                        <span class="input-group-addon poiter btnExtend_Search">
+                            <i class="fa fa-search"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="box box-solid  aps-list-ds pd5 mt-10">
+                <div class="box-header pl15 pr15">
+                    <h3 class="box-title pt0 mt-0" title="Danh sách">
+                        <i class="fa-light fa-file-export"></i> Danh sách
+                    </h3>
+                    <span class="pull-right badge bg-light-blue">
+                        <span id="btnAddFunc_DMEP" class="poiter" style="margin-right: 10px"> <i class="fa fa-plus"></i></span>
+                        <span id="lblDanhMucTenBang_Tong"></span>
+                    </span>
+                </div>
+                <div class="box-body">
+                    <div id="zone_danhmuctenbang_DMEP">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.right-content -->
+        <div class="col-sm-9 aps-box-r aps-category-export-r">
+            <div class="box box-solid" style="padding-left: 20px !important;padding-right: 20px !important;">
+                <div class="box-header with-border pb10"
+                     style="padding-top: 5px !important;min-height: 55px !important;margin-bottom: 20px !important;">
+                    <h3 class="box-title" style="margin-top: 10px !important;"><i class="fa-light fa-database"></i> Dữ
+                        liệu</h3>
+                    <div class="pull-right">
+                        <div style="float:left; margin-left: 2px">
+                            <a id="btnAddParam_DMEP" class="btn btn-primary btnAdd"><i class="fa fa-plus-circle"></i>
+                                <span class="lang" key="">Tạo mới tham số</span></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="aps-table-select">
+                        <table id="tbldata_DMEP" class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th class="td-center td-fixed">Stt</th>
+                                <th class="td-left">Tên</th>
+                                <th class="td-left">Tham số dưới db</th>
+                                <th class="td-left">Dữ liệu mặc định</th>
+                                <th class="td-left">Kiểu chữ(0), Kiểu số(1)</th>
+                                <th class="td-left">In(0), Out(1), InOut(10)</th>
+                                <th class="td-center td-fixed">Sửa</th>
+                                <th class="td-center td-fixed"></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td colspan='10' style='text-align:center'>Vui lòng chọn tên bảng để bắt đầu nhập dữ
+                                    liệu!
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="modal fade" id="myModalParam" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-860">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+                <h4 class="modal-title"><span class="myModalLabel"><i class="fa fa-plus"></i> Thêm mới - </span> <span
+                        class="lang" key="">Tham số</span></h4>
+                <input type="hidden" value="" id="txtId"/>
+            </div>
+            <div class="modal-body" id="modal_body">
+                <div class="aps-form">
+                    <div class="row aps-form-item">
+                        <div class="col-sm-3 aps-form-lable">Tên tham số</div>
+                        <div class="col-sm-9 aps-form-input">
+                            <input id="txtTenThamSo" class="form-control" type="text">
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                    <div class="row aps-form-item">
+                        <div class="col-sm-3 aps-form-lable">
+                            Mã Cột file excel<span class="color-red">(*)</span>
+                        </div>
+                        <div class="col-sm-9 aps-form-input">
+                            <input id="txtMaCotExcel" class="form-control" type="text">
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                    <div class="row aps-form-item">
+                        <div class="col-sm-3 aps-form-lable">Mã DataBase<span class="color-red">(*)</span></div>
+                        <div class="col-sm-9 aps-form-input">
+                            <input id="txtMaDataBase" class="form-control" type="text">
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                    <div class="row aps-form-item">
+                        <div class="col-sm-3 aps-form-lable">Dữ liệu mặc định</div>
+                        <div class="col-sm-9 aps-form-input">
+                            <input id="txtDulieuMacDinh" class="form-control" type="text">
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                    <div class="row aps-form-item">
+                        <div class="col-sm-3 aps-form-lable">Key(1), Validate(10)</div>
+                        <div class="col-sm-9 aps-form-input">
+                            <input id="txtKeyChinh" placeholder="" class="form-control" type="text">
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                    <div class="row aps-form-item">
+                        <div class="col-sm-3 aps-form-lable">Kiểu số(0), Kiểu chữ(1)</div>
+                        <div class="col-sm-9 aps-form-input">
+                            <input id="txtKieuDuLieu" class="form-control" type="text">
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                    <div class="row aps-form-item">
+                        <div class="col-sm-3 aps-form-lable">In(0), Out(1), InOut(10)</div>
+                        <div class="col-sm-9 aps-form-input">
+                            <input id="txtKieuDauVao" class="form-control" type="text">
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                    <div class="row aps-form-item">
+                        <div class="col-sm-3 aps-form-lable">Tên gói</div>
+                        <div class="col-sm-9 aps-form-input">
+                            <input id="txtTenGoi" class="form-control" type="text">
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+            </div>
+            <div id="notify"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <i class="fa fa-times-circle-o"></i> <span class="lang" key="">Đóng</span></button>
+                <a class="submit btn btn-primary" id="btnSaveParam_DMEP">
+                    <i class="fal fa-save"></i><span class="lang" key=""> Lưu</span></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="myModalFunc" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 600px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="myModalLabel"><span class="lang" key=""> <i class="fa fa-file-excel-o"></i> Tạo hàm Export</span>
+                </h4>
+                <input type="hidden" value="" id="txtId"/>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div style="width:100%">
+                            <div style="width:20%; float:left">
+                                <label style="font-weight:normal">Chọn ứng dụng</label>
+                            </div>
+                            <div style="width:80%; float:left">
+                                <select id="dropUngDung_DMEP" class="select-opt">
+                                    <option value="">-- Chọn ứng dụng --</option>
+                                    <!-- Load from js -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="clear"></div>
+                        <div style="width:100%">
+                            <div style="width:20%; float:left">
+                                <label style="font-weight:normal">Tên hàm</label>
+                            </div>
+                            <div style="width:80%; float:left">
+                                <input id="txtTenHamExport" class="form-control" type="text">
+                            </div>
+                        </div>
+                        <div class="clear"></div>
+                        <div style="width:100%">
+                            <div style="width:20%; float:left">
+                                <label style="font-weight:normal">Mã hàm</label>
+                            </div>
+                            <div style="width:80%; float:left">
+                                <input id="txtMaHamExport" class="form-control" type="text">
+                            </div>
+                        </div>
+                        <div class="clear"></div>
+                        <div style="width:100%">
+                            <textarea id="txtSQLSoure" style="width: 100%; height: 300px; background-color: #f1f1f1"
+                                      placeholder="create or replace package pkg_htqte_thongtin is                                   procedure Sua_SinhVienQuocTe(ParamTruong_Id varchar2)                         Chú ý: Nếu nhập trường này phải có tên package và 1 procedure như ví dụ trên"></textarea>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+            </div>
+            <div id="notify"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times-circle-o"></i>
+                    <span class="lang" key="">Đóng</span></button>
+                <a class="submit btn btn-primary" id="btnSaveFunc_DMEP"><i class="fa fa-check-circle"></i><span
+                        class="lang" key=""> Lưu</span></a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- page script -->
+<script src="modules/danhmuc/script/danhmucexport.js?v=1.0.0.4"></script>
+<script src="modules/danhmuc/script/cutsouresql.js?v=1.0.0.4"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['DanhMucExport'] = new DanhMucExport();
+    $(document).ready(function () {
+        main_doc.DanhMucExport.init();
+    });
+</script>
+<!-- FIX 2026-08-26: Select2 trong modal — re-init voi dropdownParent = modal
+     de popup nam trong modal, khong lech / che noi dung. Universal handler,
+     an toan khi modal khong co select. -->
+<script>
+(function () {
+    if (typeof jQuery === 'undefined') return;
+    var $ = jQuery;
+    $(document).off('shown.bs.modal.__s2fix').on('shown.bs.modal.__s2fix', '.modal', function () {
+        var $modal = $(this);
+        $modal.find('select.select-opt, select[id^="drop"]').each(function () {
+            var $sel = $(this);
+            try {
+                if ($sel.hasClass('select2-hidden-accessible')) $sel.select2('destroy');
+            } catch (e) {}
+            $sel.select2({ dropdownParent: $modal, width: '100%' });
+        });
+    });
+})();
+</script>
+<style>
+    .modal .select2-container--open,
+    .modal .select2-container--open .select2-dropdown {
+        z-index: 100060 !important;
+    }
+    .modal .select2-results__options {
+        max-height: 220px !important;
+        overflow-y: auto !important;
+    }
+</style>

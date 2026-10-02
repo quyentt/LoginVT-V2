@@ -1,0 +1,102 @@
+/* =========================================================================
+   Kế hoạch chương trình / chuongtrinhhocphan / cthp — kiểu riêng của màn
+   (danh sách + vùng xem dùng css của Tài chính: ApisTaiChinh/Modules/hoatdong/css/cthp.css)
+   ========================================================================= */
+
+/* Khung đầu "Nội dung học phần theo chương trình: …" chỉ có tiêu đề + Đóng, không thân */
+#cthp .khct-dau > .ums-panel__body { display: none; }
+#cthp .khct-dau > .ums-panel__head { border-bottom: 0; }
+
+/* Vùng soạn: HAI CỘT như gốc (col-sm-9 | col-sm-3), cột phải thu gọn được */
+#cthp .khct-cols {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
+    gap: var(--ums-sp-4);
+    align-items: start;
+}
+#cthp .khct-cols.is-thu { grid-template-columns: minmax(0, 1fr); }
+#cthp .khct-cols.is-thu > .khct-cols__phai { display: none; }
+#cthp .khct-cols__phai > .ums-panel + .ums-panel { margin-top: var(--ums-sp-4); }
+@media (max-width: 1199px) {
+    #cthp .khct-cols { grid-template-columns: minmax(0, 1fr); }
+    #cthp .khct-thu { display: none; }
+}
+
+/* Khung "Danh sách học phần": gốc có 8 nút + ô kỳ trên đầu khung cột 9/12 — tiêu đề một hàng, nhóm nút
+   xuống hàng dưới (canh phải, tự xuống dòng) thay vì bóp tiêu đề / tràn sang cột phải */
+#cthp .khct-hp > .ums-panel__head { flex-wrap: wrap; row-gap: var(--ums-sp-2); }
+#cthp .khct-hp > .ums-panel__head > .ums-panel__tools { flex: 1 1 100%; flex-wrap: wrap; justify-content: flex-end; }
+
+/* Pull 29/9 — đầu khung hai hàng như gốc: hàng 1 tiêu đề + hai ô "mô hình", hàng 2 nhóm nút
+   ("Xóa học phần" dạt trái, vạch ngăn giữa nhóm kỳ dự kiến và nhóm còn lại) */
+#cthp .khct-mohinh { display: flex; flex-wrap: wrap; gap: var(--ums-sp-2); margin-left: auto; }
+#cthp .khct-mohinh__o {
+    margin: 0;
+    padding: 3px 10px;
+    font-size: var(--ums-fz-12, 12px);
+    background: var(--ums-surface-2);
+    border: 1px solid var(--ums-line);
+    border-radius: var(--ums-r-pill);
+}
+#cthp .khct-mohinh__o b { color: var(--ums-ink-3); }
+#cthp .khct-mohinh__o:has(input:checked) { background: var(--ums-blue-l); border-color: var(--ums-blue); }
+#cthp .khct-mohinh__o:has(input:checked) b { color: var(--ums-blue-d); }
+#cthp .khct-mohinh__o:has(input:disabled) { cursor: progress; opacity: .7; }
+#cthp .khct-trai { margin-right: auto; display: inline-flex; }
+#cthp .khct-sep { width: 1px; height: 22px; background: var(--ums-line-2); }
+
+/* Ô "Học kỳ dự kiến" trong nhóm nút đầu khung (gốc: rộng 200px, đứng trước Import) */
+#cthp .khct-ky { width: 200px; }
+#cthp .khct-bc:empty { display: none; }
+
+/* Ô lọc nhanh trong bảng học phần */
+#cthp .khct-loc {
+    display: flex;
+    align-items: center;
+    gap: var(--ums-sp-2);
+    padding: var(--ums-sp-3) var(--ums-sp-4);
+    border-bottom: 1px solid var(--ums-line);
+}
+#cthp .khct-loc > .fa-magnifying-glass { color: var(--ums-muted, #6b7280); }
+#cthp .khct-loc > .ums-input { flex: 1 1 auto; }
+
+/* Cây khối / định hướng ở cột phải: chữ số liệu phụ nhạt hơn, khối có NHOM nền cam (gốc) */
+#cthp .khct-cay .ums-master__item { white-space: normal; text-align: left; }
+#cthp .khct-cay__so { color: var(--ums-blue); font-size: var(--ums-fz-12, 12px); }
+#cthp .khct-cay .ums-master__item.is-active .khct-cay__so { color: inherit; }
+#cthp .khct-cay .ums-master__item.khct-cay__nhom { background: #ffe8c2; }
+#cthp .khct-cay .ums-master__item.khct-cay__nhom:hover { background: #ffdca3; }
+
+/* Vùng con (chọn học phần, khối, sửa học phần, định hướng…) */
+#cthp .khct-pad { padding: var(--ums-sp-4) var(--ums-sp-5); }
+#cthp .khct-pad--cach { padding-top: var(--ums-sp-8); }
+#cthp .khct-nhomhang { align-items: center; margin-top: var(--ums-sp-8); }
+
+#cthp .khct-nhomhang > .ums-legend { margin: 0; }
+#cthp .khct-them { align-items: flex-end; }
+#cthp .khct-them .ums-field { flex: 1 1 160px; }
+
+/* Hai danh sách "Xác định học phần … ▶ Danh sách kết quả …" (gốc: hai ô 48% + mũi tên đỏ) */
+#cthp .khct-ghep {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 40px minmax(0, 1fr);
+    gap: var(--ums-sp-2);
+    align-items: start;
+}
+#cthp .khct-ghep__mui { align-self: center; text-align: center; color: var(--ums-act-del, #dc2626); font-size: 28px; }
+#cthp .khct-ghep__tim { display: flex; flex-wrap: wrap; gap: var(--ums-sp-2); padding: var(--ums-sp-3) var(--ums-sp-4); border-bottom: 1px solid var(--ums-line); }
+#cthp .khct-ghep__tim > .ums-input { flex: 1 1 220px; }
+#cthp .khct-ghep__nut { display: flex; flex-wrap: wrap; gap: var(--ums-sp-2); }
+#cthp .khct-nangcao { padding: var(--ums-sp-3) var(--ums-sp-4); border-bottom: 1px solid var(--ums-line); background: var(--ums-surface-2); }
+#cthp .khct-ghep tr.khct-keo { cursor: grab; }
+#cthp .khct-ghep tr.is-dich > td { box-shadow: inset 0 2px 0 var(--ums-blue); }
+@media (max-width: 991px) {
+    #cthp .khct-ghep { grid-template-columns: minmax(0, 1fr); }
+    #cthp .khct-ghep__mui { transform: rotate(90deg); }
+}
+
+/* Ô số trong bảng (thứ tự học phần) */
+#cthp .khct-so, .ums-dialog .khct-so { width: 90px; text-align: center; }
+
+/* Hộp Kế thừa: ô "Kỳ kế thừa" gọn */
+.ums-dialog .khct-kt-fill { width: 260px; }

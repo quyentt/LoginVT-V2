@@ -1,0 +1,284 @@
+﻿<style>
+    /* Sticky thead — tieu de cot dinh top khi scroll page (bang van rong 2000px scroll ngang) */
+    .aps-ruthocphan .aps-hocphan-darut table.tblRutHocPhan thead th,
+    .aps-ruthocphan .aps-ketqua-dangky table.tblHocPhan thead th {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        background: #f0f3fd;
+    }
+    /* Scroll ngang gia o TREN bang — sync voi scroll duoi, luon nam trong tam nhin */
+    .aps-ruthocphan .scroll-x-top {
+        overflow-x: auto;
+        overflow-y: hidden;
+        height: 14px;
+        margin-bottom: 4px;
+    }
+    .aps-ruthocphan .scroll-x-top > div {
+        height: 1px;
+    }
+    /* Sticky bot scroll — thanh scroll cua bang dinh cuoi viewport khi bang trong tam nhin */
+    .aps-ruthocphan .scroll-table-x {
+        overflow-x: auto;
+    }
+    /* Header khong wrap — chu dai "So tien phai nop sau khi rut" hien 1 dong, cot tu dan rong */
+    .aps-ruthocphan table.tblRutHocPhan thead th,
+    .aps-ruthocphan table.tblHocPhan thead th {
+        white-space: nowrap !important;
+    }
+    /* Can giua doc cho moi cell — dong cao thap khac nhau (text wrap 3 dong)
+       nen checkbox / input cot cuoi bi lech neu vertical-align top */
+    .aps-ruthocphan table.tblRutHocPhan tbody td,
+    .aps-ruthocphan table.tblHocPhan tbody td {
+        vertical-align: middle !important;
+    }
+    .aps-ruthocphan table.tblRutHocPhan tbody td.td-center input[type="checkbox"],
+    .aps-ruthocphan table.tblHocPhan tbody td.td-center input[type="checkbox"] {
+        display: inline-block;
+        margin: 0;
+        vertical-align: middle;
+    }
+    /* Cot dau (Stt) va cot cuoi (checkbox): ep width 50px o CA th va td de header
+       thang hang voi body. HTML chi set w-50px o th -> td auto -> lech. */
+    .aps-ruthocphan table.tblRutHocPhan th:first-child,
+    .aps-ruthocphan table.tblRutHocPhan td:first-child,
+    .aps-ruthocphan table.tblHocPhan th:first-child,
+    .aps-ruthocphan table.tblHocPhan td:first-child,
+    .aps-ruthocphan table.tblRutHocPhan th:last-child,
+    .aps-ruthocphan table.tblRutHocPhan td:last-child,
+    .aps-ruthocphan table.tblHocPhan th:last-child,
+    .aps-ruthocphan table.tblHocPhan td:last-child {
+        width: 50px !important;
+        min-width: 50px !important;
+        max-width: 50px !important;
+        text-align: center !important;
+    }
+</style>
+<section class="content aps-dangkyhoc">
+    <div class="row aps-ruthocphan">
+        <div class="col-lg-12">
+            <!-- box Notify_VBSC -->
+            <div class="zone-bus aps-ruthocphan-search">
+                <!-- box search-->
+                <div class="box box-solid box-search pd0">
+                    <div class="box-header d-none">
+                        <h3 class="box-title"><i class="fa fa-search"></i> Tìm kiếm</h3>
+                    </div>
+                    <div class="box-body aps-search  pd20 pb10">
+                        <div class="bss-item row mb-0">
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_DotDangKy" class="select-opt"></select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_HeDaoTao" class="select-opt"></select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <input id="txtSearch_TuKhoa" class="form-control" placeholder="Thông tin người học" />
+                            </div>
+                            <div class="col-sm-3 item-search item-search-button d-flex aps-gap-10">
+                                <a class="btn btn-default btn-search" id="btnSearch"
+                                    style="border-radius: 5px !important;">
+                                    <i class="fa fa-search"></i> <span class="lang" key="">Tìm kiếm</span>
+                                </a>
+
+                                <div class="dropdown" id="zonebtnBaoCao_RHP_Import">
+                                    <button class="btn btn-success dropdown-toggle" type="button"
+                                        data-toggle="dropdown">
+                                        <i class="fa-solid fa-upload"></i> Import <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu form-container">
+                                        <li><a class="btnImportWithProce" name="IMPORTWITHPROC_RHP" title="Rút học phần"
+                                                href="#"> 1. Import Rút học phần</a></li>
+                                        <li><a class="btnImportWithProce" name="IMPORTWITHPROC_HRHP" title=" Hủy Rút"
+                                                href="#"> 2. Import Hủy Rút học phần</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Học phần đã rút -->
+                <div class="box box-solid pd20 aps-hocphan-darut">
+                    <div class="box-header pd0">
+                        <h3 class="box-title color-blue line-38">
+                            <i class="fal fa-book-reader line-38"></i> Học phần đã rút
+                            <span class="badge bg-light-blue mt-10">
+                                <span id="lblRutHocPhan_Tong"></span>
+                            </span>
+                        </h3>
+
+                        <div class="pull-right d-flex">
+                            <a id="btnDelete_RutHocPhan" class="btn btn-soft-primary">
+                                <i class="far fa-redo"></i>Khôi phục</a>
+                            <a class="btn btn-primary btnSave" id="btnSave_RutHocPhan" href="#">
+                                <i class="fal fa-save"></i>Lưu</a>
+                        </div>
+                    </div>
+                    <div class="box-body pd0 mt-5">
+                        <div class="col-sm-12 mt-5">
+                            <div class="scroll-x-top" data-sync="tblRutHocPhan">
+                                <div style="width: 2000px;"></div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 scroll-table-x aps-table-select" id="scrollWrap_tblRutHocPhan">
+                            <table id="tblRutHocPhan"
+                                class="table table-hover table-bordered table-noborder tblRutHocPhan"
+                                style="min-width: 2000px;">
+                                <thead>
+                                    <tr>
+                                        <th class="td-fixed td-center w-50px">Stt</th>
+                                        <th class="td-left">Mã số</th>
+                                        <th class="td-left">Họ tên</th>
+                                        <th class="td-left">Lớp</th>
+                                        <th class="td-left">Chương trình</th>
+                                        <th class="td-left">Khóa</th>
+                                        <th class="td-left">Trạng thái</th>
+                                        <th class="td-left">Thời gian</th>
+                                        <th class="td-left">Học phần rút</th>
+                                        <th class="td-left">Lớp học phần rút</th>
+                                        <th class="td-center">% Mức phí</th>
+                                        <th class="td-left">Số tiền phải nộp sau khi rút</th>
+                                        <th class="td-center">Ngày rút</th>
+                                        <th class="td-left">Kiểu học</th>
+                                        <th class="td-center">Số tín chỉ học tập</th>
+                                        <th class="td-center">Số tín chỉ tính phí</th>
+                                        <th class="td-left">Cán bộ thực hiện</th>
+                                        <th class="td-left">Ghi chú</th>
+                                        <th class="td-center td-fixed w-50px"><input type="checkbox" id="chkSelectAll">
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kết quả đã đăng ký -->
+                <div class="box box-solid pd20 aps-ketqua-dangky pt0">
+                    <div class="box-header pd0">
+                        <h3 class="box-title color-green line-38">
+                            <i class="far fa-address-book color-green line-38"></i> Kết quả đã đăng ký
+                            <!--<span class="badge bg-light-blue mt-10">
+                                <span id="lblRutHocPhan_Tong"></span>
+                            </span>-->
+                        </h3>
+
+                        <div class="pull-right">
+                            <a class="btn btn-primary btnAdd" href="#"><i
+                                    class="fa-solid fa-money-simple-from-bracket"></i>Thực hiện rút</a>
+                        </div>
+                    </div>
+                    <div class="box-body pd0 mt-5">
+                        <div class="col-sm-12 mt-5">
+                            <div class="scroll-x-top" data-sync="tblHocPhan">
+                                <div style="width: 2000px;"></div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 scroll-table-x aps-table-select" id="scrollWrap_tblHocPhan">
+                            <table id="tblHocPhan" class="table table-hover table-bordered table-noborder tblHocPhan"
+                                style="min-width: 2000px;">
+                                <thead>
+                                    <tr>
+                                        <th class="td-fixed td-center w-50px">Stt</th>
+                                        <th class="td-left">Mã số</th>
+                                        <th class="td-left">Họ tên</th>
+                                        <th class="td-left">Lớp</th>
+                                        <th class="td-left">Chương trình</th>
+                                        <th class="td-left">Khóa</th>
+                                        <th class="td-left">Trạng thái</th>
+                                        <th class="td-left">Thời gian</th>
+                                        <th class="td-left">Học phần</th>
+                                        <th class="td-left">Lớp học phần</th>
+                                        <th class="td-center">Đã nhập điểm</th>
+                                        <th class="td-center">Đã điểm danh</th>
+                                        <th class="td-left">Kiểu học</th>
+                                        <th class="td-center">Số tín chỉ học tập</th>
+                                        <th class="td-center">Số tín chỉ tính phí</th>
+                                        <th class="td-center td-fixed w-50px"><input type="checkbox"
+                                                id="chkSelectAll_HocPhan">
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- ---------- -->
+<div class="aps-all-button ml-20 aps-gap-10 btn-show mt-10 pl20" style="display: none  !important;">
+    <button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#myModal">
+        Rút học phần</button>
+</div>
+<!-- ---------- -->
+<div class="modal fade myModal" id="myModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-860 modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+                <h3 class="box-title mt-2"><span class="myModalLabel">
+                        <i class="fa-solid fa-money-simple-from-bracket"></i></span>Rút học phần</h3>
+            </div>
+            <div class="modal-body" id="modal_body">
+                <div class="aps-table-select scroll-table-x">
+                    <table id="tblXacNhan" class="table table-hover table-bordered table-noborder tblXacNhan">
+                        <thead>
+                            <tr>
+                                <th class="td-fixed td-center">Stt</th>
+                                <th class="td-left">Học phần</th>
+                                <th class="td-left">Phần trăm phải đóng</th>
+                                <th class="td-left">Ghi chú</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="clear"></div>
+            <div id="notify"></div>
+            <div class="modal-footer">
+                <div class="pull-right d-flex">
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><i
+                            class="fa fa-times-circle-o"></i><span class="lang" key="">Đóng</span></button>
+                    <a class="submit btn btn-primary" id="btnSave_XacNhan" data-dismiss="modal">
+                        <i class="fa fa-check-circle"></i><span class="lang" key="">Xác nhận</span></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- page script -->
+<script src="modules/kehoachdangky/script/ruthocphan.js?v=1.0.0.2"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['RutHocPhan'] = new RutHocPhan();
+    $(document).ready(function () {
+        main_doc.RutHocPhan.init();
+        // Sync scroll-x-top (thanh scroll gia o tren) voi scrollWrap (thanh that o duoi bang)
+        $(".aps-ruthocphan .scroll-x-top").each(function () {
+            var $top = $(this);
+            var tblId = $top.data("sync");
+            var $wrap = $("#scrollWrap_" + tblId);
+            if (!$wrap.length) return;
+            var syncing = false;
+            $top.on("scroll", function () {
+                if (syncing) return;
+                syncing = true;
+                $wrap.scrollLeft($top.scrollLeft());
+                syncing = false;
+            });
+            $wrap.on("scroll", function () {
+                if (syncing) return;
+                syncing = true;
+                $top.scrollLeft($wrap.scrollLeft());
+                syncing = false;
+            });
+        });
+    });
+</script>

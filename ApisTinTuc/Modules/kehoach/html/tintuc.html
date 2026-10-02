@@ -1,0 +1,713 @@
+﻿<style>
+    .checkbox-inline + .checkbox-inline, .radio-inline + .radio-inline {
+        margin-left: 0px;
+    }
+
+    /* Style cho row sinh viên có thể click */
+    #tblSinhVien_PhamVi tbody tr.row-sinhvien:hover {
+        background-color: #f5f5f5 !important;
+    }
+
+    #tblSinhVien_PhamVi tbody tr.row-sinhvien {
+        transition: background-color 0.2s;
+    }
+
+    /* Sticky footer cho các form Thêm/Sửa, Phạm vi, Gửi Email
+       => Nút Đóng/Lưu luôn thấy khi cuộn */
+    #zoneEdit > .box-footer,
+    #zonePhamVi > .box-footer,
+    #zoneSendEmail > .box-footer {
+        position: sticky;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: #fff;
+        border-top: 1px solid #e0e0e0;
+        box-shadow: 0 -3px 12px rgba(0, 0, 0, 0.08);
+        z-index: 100;
+        padding: 12px 20px;
+        margin-top: 0;
+        border-bottom-left-radius: 12px;
+        border-bottom-right-radius: 12px;
+    }
+
+    /* Chừa khoảng trắng nhỏ cuối box-body để nội dung cuối không bị footer đè */
+    #zoneEdit > .box-body,
+    #zonePhamVi > .box-body,
+    #zoneSendEmail > .box-body {
+        padding-bottom: 15px;
+    }
+
+    /* Đảm bảo sticky hoạt động: cha không được overflow hidden */
+    #zoneEdit,
+    #zonePhamVi,
+    #zoneSendEmail {
+        overflow: visible !important;
+    }
+
+    /* Đảm bảo nút xóa luôn hiển thị */
+    #btnXoaTinTuc {
+        display: inline-block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        margin-right: 5px !important;
+    }
+
+    /* Fullscreen mode cho CKEditor nội dung tin tức */
+    body.tintuc-editor-fullscreen {
+        overflow: hidden !important;
+    }
+    .tintuc-editor-wrap.is-fullscreen {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        z-index: 100000 !important;
+        background: #fff !important;
+        padding: 12px 16px 16px !important;
+        overflow: auto !important;
+        box-shadow: 0 0 0 100vmax rgba(15, 23, 42, 0.4);
+    }
+    .tintuc-editor-wrap.is-fullscreen .cke_chrome,
+    .tintuc-editor-wrap.is-fullscreen .cke {
+        width: 100% !important;
+    }
+    /* Che select2 (z-index 99999) và dropdown body-appended khi fullscreen */
+    body.tintuc-editor-fullscreen .select2-container,
+    body.tintuc-editor-fullscreen > .select2-container,
+    body.tintuc-editor-fullscreen .select2-container--open,
+    body.tintuc-editor-fullscreen .select2-dropdown {
+        display: none !important;
+    }
+</style>
+<section class="content aps-tintuc">
+    <div class="row aps-tintuc-detail">
+        <div class="zone-bus" id="zonebatdau">
+            <!--Box search-->
+            <div class="box box-solid box-search pd20">
+                <div class="box-body pd0">
+                    <div class="group-title d-none">
+                        <p class="titleSearchContent">
+                            <i class="fa fa-window-restore">
+                            </i> <span class="lang" key="">Tìm kiếm</span>
+                        </p>
+                    </div>
+                    <div class="area-search">
+                        <div id="search" class="inputSearch">
+                            <div class="col-sm-3 item-search">
+                                <input type="text" id="txtSearch_TieuDe" class="form-control" placeholder="Tìm theo tiêu đề...">
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <input type="text" id="txtSearch_TuNgay" class="form-control input-datepicker" placeholder="Từ ngày">
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <input type="text" id="txtSearch_DenNgay" class="form-control input-datepicker" placeholder="Đến ngày">
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_DonVi" class="select-opt"></select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_UngDung" class="select-opt"></select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_ChuyenMuc" class="select-opt"></select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_TinhTrang" class="select-opt"></select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <a id="btnSearch" class="btn btn-default btn-search"><i class="fa fa-search"></i> <span class="lang" key="">Tìm kiếm</span></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="clear"></div>
+            <!--Danh sách danh mục-->
+            <div class="box box-solid aps-danhsach pd20">
+                <div class="box-header">
+                    <h3 class="box-title">
+                        <i class="fa-light fa-newspaper"></i> Danh sách
+                        <span class="pull-right badge bg-light-blue ml-15">
+                            <span id="lblTinTuc_Tong"></span>
+                        </span>
+                    </h3>
+                    <div class="box-tools pull-right right-0">
+                        <a id="btnXoaTinTuc" class="btn btn-danger" style="margin-right: 5px;"><i class="fa fa-trash"></i> Xóa</a>
+                        <a class="btn btnAdd btn-primary" href="#"><i class="fa fa-plus"></i> Thêm mới</a>
+                    </div>
+                </div>
+                <div class="box-body pd0">
+                    <div class="aps-table-select mt-15">
+                        <table id="tblTinTuc" class="table table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="td-fixed td-center">Stt</th>
+                                    <th class="td-center">Tiêu đề</th>
+                                    <th class="td-center">Chuyên mục</th>
+                                    <!--<th class="td-center">Học kỳ</th>-->
+                                    <th class="td-center">Ngày bắt đầu đăng</th>
+                                    <th class="td-center">Ngày hết hạn đăng</th>
+                                    <th class="td-center">Thông tin từ đơn vị</th>
+                                    <th class="td-center">Hiển thị cho ứng dụng</th>
+                                    <th class="td-center">Mục ưu tiên</th>
+                                    <th class="td-center">Ngày tạo</th>
+                                    <th class="td-center">Người tạo</th>
+                                    <th class="td-center">Phạm vi áp dụng</th>
+                                    <th class="td-center">Gửi Email</th>
+                                    <th class="td-center">Duyệt</th>
+                                    <th class="td-fixed td-center">Sửa</th>
+                                    <!--<th class="td-center td-fixed">
+                                        <input type="checkbox" id="chkSelectAll_TinTuc">
+                                    </th>-->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- load from js -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Thêm mới Tin tức-->
+        <div class="box box-solid zone-bus form-container add-absolue add-news" id="zoneEdit" style="display: none">
+            <div class="box-header with-border">
+                <h3 class="box-title"><span class="myModalLabel"><i class="fa fa-plus"></i> Thêm mới - </span> Tin tức</h3>
+                <div class="pull-right">
+                    <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times"></i></a>
+                </div>
+            </div>
+            <div class="box-body" style="background-color: #f4f6f9; padding: 15px;">
+                <div class="row">
+                    <!-- LEFT: Nội dung chính -->
+                    <div class="col col-lg-9 col-sm-9">
+
+                        <!-- Section 1: Thông tin cơ bản -->
+                        <div class="box box-solid" style="border-top: 3px solid #3c8dbc; margin-bottom: 15px; border-radius: 4px;">
+                            <div class="box-header with-border" style="padding: 10px 15px;">
+                                <h4 class="box-title" style="margin: 0; font-size: 15px; color: #3c8dbc; font-weight: 600;">
+                                    <i class="fa fa-info-circle"></i> Thông tin cơ bản
+                                </h4>
+                            </div>
+                            <div class="box-body" style="padding: 15px;">
+                                <div class="row" style="margin-bottom: 12px;">
+                                    <div class="col-sm-12">
+                                        <label style="font-weight: 600; margin-bottom: 5px;">Tiêu đề <span style="color: red;">*</span></label>
+                                        <input id="txtTieuDe" class="form-control" placeholder="Nhập tiêu đề tin tức..." />
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-bottom: 12px;">
+                                    <div class="col-sm-12">
+                                        <label style="font-weight: 600; margin-bottom: 5px;">Chuyên mục</label>
+                                        <div style="display: flex; gap: 6px; align-items: stretch;">
+                                            <div style="flex: 1; min-width: 0;">
+                                                <select id="dropChuyenMuc" class="select-opt" style="width: 100%;"></select>
+                                            </div>
+                                            <a id="btnQuickAdd_ChuyenMuc" class="btn btn-primary" title="Quản lý chuyên mục" style="flex-shrink: 0;">
+                                                <i class="fa fa-cog"></i> Quản lý
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-6" style="margin-bottom: 12px;">
+                                        <label style="font-weight: 600; margin-bottom: 5px;"><i class="fa fa-calendar text-blue"></i> Ngày bắt đầu đăng</label>
+                                        <input id="txtNgayBatDau" class="form-control input-datepicker" placeholder="dd/mm/yyyy" />
+                                    </div>
+                                    <div class="col-sm-6" style="margin-bottom: 12px;">
+                                        <label style="font-weight: 600; margin-bottom: 5px;"><i class="fa fa-calendar-times-o text-red"></i> Ngày hết hạn đăng</label>
+                                        <input id="txtNgayHetHan" class="form-control input-datepicker" placeholder="dd/mm/yyyy" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section 2: Phân loại & Hiển thị -->
+                        <div class="box box-solid" style="border-top: 3px solid #00c0ef; margin-bottom: 15px; border-radius: 4px;">
+                            <div class="box-header with-border" style="padding: 10px 15px;">
+                                <h4 class="box-title" style="margin: 0; font-size: 15px; color: #00c0ef; font-weight: 600;">
+                                    <i class="fa fa-share-alt"></i> Phân loại & Phạm vi hiển thị
+                                </h4>
+                            </div>
+                            <div class="box-body" style="padding: 15px;">
+                                <div class="row">
+                                    <div class="col-sm-6" style="margin-bottom: 5px;">
+                                        <label style="font-weight: 600; margin-bottom: 5px;"><i class="fa fa-building-o"></i> Tin tức từ đơn vị</label>
+                                        <select id="dropDonVi" class="select-opt"></select>
+                                    </div>
+                                    <div class="col-sm-6" style="margin-bottom: 5px;">
+                                        <label style="font-weight: 600; margin-bottom: 5px;"><i class="fa fa-mobile"></i> Hiển thị ở ứng dụng</label>
+                                        <select id="dropUngDung" class="select-opt"></select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section 3: Nội dung + File đính kèm -->
+                        <div class="box box-solid" style="border-top: 3px solid #00a65a; margin-bottom: 0; border-radius: 4px;">
+                            <div class="box-header with-border" style="padding: 10px 15px;">
+                                <h4 class="box-title" style="margin: 0; font-size: 15px; color: #00a65a; font-weight: 600;">
+                                    <i class="fa fa-file-text-o"></i> Nội dung tin tức
+                                </h4>
+                                <div class="pull-right">
+                                    <a id="btnMaximize_NoiDung" class="btn btn-xs btn-default" title="Phóng to editor để soạn thảo thoải mái" href="#">
+                                        <i class="fa fa-expand"></i> <span id="lblBtnMaximize_NoiDung">Phóng to</span>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="box-body" style="padding: 15px;">
+                                <div class="row" style="margin-bottom: 15px;">
+                                    <div class="col-sm-12">
+                                        <label style="font-weight: 600; margin-bottom: 5px;">Nội dung chi tiết</label>
+                                        <div id="wrapEditor_NoiDung" class="tintuc-editor-wrap">
+                                            <textarea name="editor_NoiDung" id="editor_NoiDung"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <label style="font-weight: 600; margin-bottom: 5px;"><i class="fa fa-paperclip"></i> File đính kèm</label>
+                                        <textarea name="txtFileDinhKem" id="txtFileDinhKem"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- RIGHT: Sidebar (Ảnh + Ưu tiên) -->
+                    <div class="col col-lg-3 col-sm-3">
+                        <div class="box box-solid" style="border-top: 3px solid #f39c12; margin-bottom: 15px; border-radius: 4px;">
+                            <div class="box-header with-border" style="padding: 10px 15px;">
+                                <h4 class="box-title" style="margin: 0; font-size: 15px; color: #f39c12; font-weight: 600;">
+                                    <i class="fa fa-image"></i> Ảnh trang bìa
+                                </h4>
+                            </div>
+                            <div class="box-body" style="padding: 15px;">
+                                <div id="uploadPicture_TinTuc"></div>
+                            </div>
+                        </div>
+
+                        <div class="box box-solid" style="border-top: 3px solid #dd4b39; margin-bottom: 0; border-radius: 4px;">
+                            <div class="box-body" style="padding: 12px 15px;">
+                                <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; color: #dd4b39; margin: 0; cursor: pointer;">
+                                    <input type="checkbox" id="ckhTinUuTien" checked="checked" style="margin: 0; width: 16px; height: 16px;" />
+                                    <span><i class="fa fa-star"></i> Đánh dấu là tin ưu tiên</span>
+                                </label>
+                                <p style="margin: 6px 0 0 24px; color: #999; font-size: 12px;">Tin ưu tiên sẽ được hiển thị nổi bật trên trang tin tức.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="box-footer">
+                <div class="pull-right">
+                    <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times-circle"></i> Đóng</a>
+                    <a id="btnSave_TinTuc" class="btn btn-primary"><i class="fa fa-save"></i> Lưu</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Phạm vi áp dụng - Danh sách phạm vi hiển thị tin tức -->
+        <div class="box box-solid zone-bus form-container add-absolue aps-phamvi" id="zonePhamVi" style="display: none">
+            <div class="box-header with-border">
+                <h3 class="box-title"><span class="myModalLabel1"><i class="fa fa-users"></i> </span> Phạm vi áp dụng</h3>
+                <div class="pull-right">
+                    <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times"></i></a>
+                </div>
+            </div>
+            <div class="box-body">
+                <div class="col-sm-12 box-view aps-add-new pd20">
+                    <div class="row aps-form">
+                        <div class="row">
+                            <div class="col-sm-12 mb-10">
+                                <h4 style="margin: 0 0 10px 0; color: #3c8dbc; font-weight: 600;">
+                                    <i class="fa fa-list"></i> Danh sách phạm vi áp dụng
+                                </h4>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <table id="tblInput_DTSV_SinhVien" class="table table-hover table-bordered mr-0 mb-10">
+                                <thead>
+                                    <tr>
+                                        <th class="td-fixed td-center">Stt</th>
+                                        <th class="td-center">Phân cấp áp dụng</th>
+                                        <th class="td-center">Tên phạm vi</th>
+                                        <th class="td-center">Trạng thái sinh viên áp dụng</th>
+                                        <th class="td-center">Ngày tạo</th>
+                                        <th class="td-fixed td-center">Xóa</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- load from js -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="row mt-10">
+                            <div class="pull-left">
+                                <div id="ApDungChoHe"></div>
+                                <div id="ApDungChoKhoa"></div>
+                                <div id="ApDungChoChuongTrinh"></div>
+                                <div id="ApDungChoLop"></div>
+                            </div>
+                            <div class="col-sm-12 text-right">
+                                <a class="btn btn-primary btnSearchDTSV_SinhVien" href="#"><i class="fa fa-plus"></i> Thêm thành viên</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="box-footer">
+                <div class="pull-right">
+                    <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times-circle"></i> Đóng</a>
+                    <a id="btnSave_PhamVi" class="btn btn-primary"><i class="fa fa-save"></i> Lưu</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modal Gửi Email -->
+        <div class="box box-solid zone-bus form-container add-absolue" id="zoneSendEmail" style="display: none">
+            <div class="box-header with-border">
+                <h3 class="box-title"><i class="fa fa-envelope"></i> Gửi Email Thông Báo Tin Tức</h3>
+                <div class="pull-right">
+                    <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times"></i></a>
+                </div>
+            </div>
+            <div class="box-body">
+                <div class="col-sm-12 box-view aps-add-new pd20">
+                    <!-- Thông tin tin tức -->
+                    <div class="row aps-form">
+                        <div class="row">
+                            <div class="col-sm-12 mb-10">
+                                <h4 style="margin: 0 0 10px 0; color: #3c8dbc; font-weight: 600;">
+                                    <i class="fa fa-info-circle"></i> Thông tin tin tức
+                                </h4>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="alert alert-info">
+                                    <strong>Tiêu đề:</strong> <span id="lblEmailTieuDe"></span><br>
+                                    <strong>Chuyên mục:</strong> <span id="lblEmailChuyenMuc"></span><br>
+                                    <strong>Ngày đăng:</strong> <span id="lblEmailNgayDang"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bộ lọc sinh viên -->
+                    <div class="row aps-form mt-20">
+                        <div class="row">
+                            <div class="col-sm-12 mb-10">
+                                <h4 style="margin: 0 0 10px 0; color: #00a65a; font-weight: 600;">
+                                    <i class="fa fa-filter"></i> Chọn đối tượng nhận email
+                                </h4>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSendEmail_HeDaoTao" class="select-opt" multiple="multiple"></select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSendEmail_KhoaDaoTao" class="select-opt" multiple="multiple"></select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSendEmail_ChuongTrinh" class="select-opt" multiple="multiple"></select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSendEmail_Lop" class="select-opt" multiple="multiple"></select>
+                            </div>
+                        </div>
+                        <div class="row mt-10">
+                            <div class="col-sm-3 item-search">
+                                <input type="text" id="txtSendEmail_Search" class="form-control" placeholder="Nhập mã SV, họ tên...">
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <a id="btnSendEmail_Search" class="btn btn-primary"><i class="fa fa-search"></i> Tìm kiếm</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Danh sách sinh viên -->
+                    <div class="row aps-form mt-20">
+                        <div class="row">
+                            <div class="col-sm-12 mb-10">
+                                <h4 style="margin: 0 0 10px 0; color: #f39c12; font-weight: 600;">
+                                    <i class="fa fa-users"></i> Danh sách sinh viên
+                                    <span class="pull-right" style="font-size: 14px; color: #3c8dbc; font-weight: normal;">
+                                        Đã chọn: <strong id="lblSoLuongSinhVien">0</strong> sinh viên
+                                    </span>
+                                </h4>
+                            </div>
+                        </div>
+                        <!-- Các nút thao tác -->
+                        <div class="row mb-10">
+                            <div class="col-sm-12">
+                                <a id="btnSendEmail_ImportExcel" class="btn btn-info"><i class="fa fa-file-excel-o"></i> Import Excel</a>
+                                <a id="btnSendEmail_SelectAll" class="btn btn-default"><i class="fa fa-check-square-o"></i> Chọn tất cả</a>
+                                <a id="btnSendEmail_UnselectAll" class="btn btn-default"><i class="fa fa-square-o"></i> Bỏ chọn tất cả</a>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <table id="tblSendEmail_SinhVien" class="table table-hover table-bordered mr-0 mb-10">
+                                <thead>
+                                    <tr>
+                                        <th class="td-fixed td-center">Stt</th>
+                                        <th class="td-center">Mã SV</th>
+                                        <th class="td-center">Họ tên</th>
+                                        <th class="td-center">Email</th>
+                                        <th class="td-center">Lớp</th>
+                                        <th class="td-center">Khóa</th>
+                                        <th class="td-center">Hệ</th>
+                                        <th class="td-center">Trạng thái</th>
+                                        <th class="td-center td-fixed">
+                                            <input type="checkbox" id="chkSendEmail_SelectAll">
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="9" class="text-center">Vui lòng chọn bộ lọc và click "Tìm kiếm"</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="box-footer">
+                <div class="pull-right">
+                    <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times-circle"></i> Đóng</a>
+                    <a id="btnConfirmSendEmail" class="btn btn-success"><i class="fa fa-envelope"></i> Gửi Email</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Modal Import Excel -->
+<div class="modal fade" id="modalImportExcel_SinhVien" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><i class="fa fa-file-excel-o"></i> Import Excel để chọn sinh viên</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="alert alert-info">
+                            <strong>Hướng dẫn:</strong>
+                            <ul>
+                                <li>File Excel cần có cột <strong>Email</strong> hoặc <strong>MaSV</strong></li>
+                                <li>Hệ thống sẽ tự động check sinh viên có trong danh sách</li>
+                                <li>Định dạng: .xlsx, .xls, .csv</li>
+                                <li>Có thể kéo thả file vào vùng bên dưới</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <label>Chọn file Excel hoặc CSV:</label>
+                        <div id="dropZone_ImportExcel" style="border: 2px dashed #ccc; border-radius: 5px; padding: 30px; text-align: center; background-color: #f9f9f9; cursor: pointer; transition: all 0.3s;">
+                            <i class="fa fa-cloud-upload" style="font-size: 48px; color: #999; margin-bottom: 10px;"></i>
+                            <p style="margin: 10px 0; color: #666;">Kéo thả file vào đây hoặc click để chọn file</p>
+                            <p style="margin: 5px 0; font-size: 12px; color: #999;">Hỗ trợ: .xlsx, .xls, .csv</p>
+                            <input type="file" id="fileImportExcel_SinhVien" class="form-control" accept=".xlsx,.xls,.csv" style="display: none;" />
+                        </div>
+                        <div id="selectedFileName" style="margin-top: 10px; color: #0066cc; font-weight: bold;"></div>
+                    </div>
+                </div>
+                <div class="row mt-10">
+                    <div class="col-sm-12">
+                        <div id="importResult" style="display:none;" class="alert"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a id="btnDownloadTemplate_SinhVien" class="btn btn-default pull-left"><i class="fa fa-download"></i> Tải file mẫu</a>
+                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Đóng</button>
+                <a id="btnProcessImport_SinhVien" class="btn btn-primary"><i class="fa fa-check"></i> Xử lý Import</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Quản lý Chuyên mục tin tức -->
+<div class="modal fade" id="modalQuickAdd_ChuyenMuc" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #3c8dbc; color: #fff; border-bottom: 3px solid #367fa9;">
+                <button type="button" class="close" data-dismiss="modal" style="color: #fff; opacity: 0.9;">&times;</button>
+                <h4 class="modal-title"><i class="fa fa-tags"></i> Quản lý chuyên mục tin tức</h4>
+            </div>
+            <div class="modal-body" style="background-color: #f4f6f9; padding: 15px;">
+                <!-- Section: Danh sách -->
+                <div class="box box-solid" style="margin-bottom: 15px; border-top: 3px solid #3c8dbc;">
+                    <div class="box-header with-border" style="padding: 10px 15px;">
+                        <h4 class="box-title" style="margin: 0; color: #3c8dbc; font-weight: 600; font-size: 15px;">
+                            <i class="fa fa-list"></i> Danh sách chuyên mục
+                            <span class="badge bg-light-blue" style="margin-left: 8px;">
+                                <span id="lblQuickAdd_ChuyenMuc_Tong">0</span>
+                            </span>
+                        </h4>
+                        <div class="pull-right">
+                            <a id="btnQuickAdd_ChuyenMuc_Refresh" class="btn btn-xs btn-default" title="Tải lại danh sách"><i class="fa fa-refresh"></i> Tải lại</a>
+                        </div>
+                    </div>
+                    <div class="box-body" style="padding: 0; max-height: 320px; overflow-y: auto;">
+                        <table id="tblQuickAdd_ChuyenMuc" class="table table-hover table-bordered" style="margin-bottom: 0;">
+                            <thead style="background-color: #ecf0f5;">
+                                <tr>
+                                    <th class="td-center" style="width: 50px;">Stt</th>
+                                    <th style="width: 150px;">Mã</th>
+                                    <th>Tên</th>
+                                    <th>Mô tả</th>
+                                    <th class="td-center" style="width: 60px;">Sửa</th>
+                                    <th class="td-center" style="width: 60px;">Xóa</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td colspan="6" class="text-center" style="padding: 20px; color: #999;">Đang tải...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Section: Form Thêm/Sửa -->
+                <div class="box box-solid" style="border-top: 3px solid #00a65a;">
+                    <div class="box-header with-border" style="padding: 10px 15px;">
+                        <h4 class="box-title" style="margin: 0; color: #00a65a; font-weight: 600; font-size: 15px;">
+                            <i class="fa fa-plus-circle"></i>
+                            <span id="lblQuickAdd_ChuyenMuc_FormTitle">Thêm chuyên mục mới</span>
+                        </h4>
+                    </div>
+                    <div class="box-body" style="padding: 15px;">
+                        <input type="hidden" id="txtQuickAdd_ChuyenMuc_Id" />
+                        <div class="row">
+                            <div class="col-sm-4" style="margin-bottom: 10px;">
+                                <label style="font-weight: 600;">Mã <span style="color: red;">*</span></label>
+                                <input type="text" id="txtQuickAdd_ChuyenMuc_Ma" class="form-control" placeholder="VD: TB_CHUNG" />
+                            </div>
+                            <div class="col-sm-8" style="margin-bottom: 10px;">
+                                <label style="font-weight: 600;">Tên <span style="color: red;">*</span></label>
+                                <input type="text" id="txtQuickAdd_ChuyenMuc_Ten" class="form-control" placeholder="VD: Thông báo chung" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <label style="font-weight: 600;">Mô tả</label>
+                                <textarea id="txtQuickAdd_ChuyenMuc_MoTa" class="form-control" rows="2" placeholder="Mô tả ngắn về chuyên mục (không bắt buộc)"></textarea>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top: 12px;">
+                            <div class="col-sm-12 text-right">
+                                <a id="btnQuickAdd_ChuyenMuc_Reset" class="btn btn-default"><i class="fa fa-eraser"></i> Làm mới</a>
+                                <a id="btnQuickAdd_ChuyenMuc_Save" class="btn btn-primary" style="margin-left: 10px;"><i class="fa fa-save"></i> <span id="lblQuickAdd_ChuyenMuc_BtnSave">Thêm mới</span></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times-circle"></i> Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- aps-modal_nhansu -->
+<div class="modal fade aps-modal_nhansu" id="modal_sinhvien" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <!-- load from js -->
+</div>
+<!-- Thư viện XLSX để đọc file Excel - Thử nhiều CDN -->
+<script>
+    // Hàm load XLSX từ nhiều nguồn
+    (function loadXLSX() {
+        var cdnList = [
+            'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',
+            'https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js',
+            'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js'
+        ];
+        
+        var currentIndex = 0;
+        
+        function tryLoadScript() {
+            if (currentIndex >= cdnList.length) {
+                console.error('Failed to load XLSX from all CDN sources');
+                alert('Không thể tải thư viện XLSX. Vui lòng kiểm tra kết nối mạng!');
+                return;
+            }
+            
+            var script = document.createElement('script');
+            script.src = cdnList[currentIndex];
+            script.crossOrigin = 'anonymous';
+            
+            script.onload = function() {
+                console.log('XLSX loaded successfully from: ' + cdnList[currentIndex]);
+            };
+            
+            script.onerror = function() {
+                console.warn('Failed to load XLSX from: ' + cdnList[currentIndex]);
+                currentIndex++;
+                tryLoadScript();
+            };
+            
+            document.head.appendChild(script);
+        }
+        
+        tryLoadScript();
+    })();
+</script>
+<script src="modules/kehoach/script/tintuc.js?v=1.0.0.10"></script>
+<script>
+
+    CKEDITOR.replace('ckeditor', {
+        on: {
+            focus: onFocus,
+            blur: onBlur,
+
+
+            pluginsLoaded: function (evt) {
+                var doc = CKEDITOR.document, ed = evt.editor;
+                if (!ed.getCommand('bold'))
+                    doc.getById('exec-bold').hide();
+                if (!ed.getCommand('link'))
+                    doc.getById('exec-link').hide();
+            }
+        }
+    });
+    function Focus() {
+        CKEDITOR.instances.editor1.focus();
+    }
+
+    function onFocus() {
+        document.getElementById('eMessage').innerHTML = '<b>' + this.name + ' is focused </b>';
+    }
+
+    function onBlur() {
+        document.getElementById('eMessage').innerHTML = this.name + ' lost focus';
+    }
+
+</script>
+
+<script type="text/javascript">
+    function OpenNewWindow(bigurl, width, height) {
+        var newWindow = window.open("", "pictureViewer", "location=no, directories=no, fullscreen=no, menubar=no, status=no, toolbar=no, width=" + width + ", height=" + height + ", scrollbars=no");
+        newWindow.document.writeln("<html>");
+        newWindow.document.writeln("<body style='margins: 0 0 0 0;'>");
+        newWindow.document.writeln("<a href='javascript:window.close();'>");
+        newWindow.document.writeln("<img src='" + bigurl + "' alt='Click to close' id='bigImage' border='0'/>");
+        newWindow.document.writeln("</a>");
+        newWindow.document.writeln("</body></html>");
+        newWindow.document.close();
+    };
+
+    var main_doc = {};
+    main_doc['TinTuc'] = new TinTuc();
+    $(document).ready(function () {
+        main_doc.TinTuc.init();
+    });
+</script>

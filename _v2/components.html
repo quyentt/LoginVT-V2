@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Thư viện component — UMS</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+
+    <style>
+        body { padding-top: var(--ums-topbar-h); }
+        .doc { max-width: 1180px; margin: 0 auto; padding: var(--ums-sp-6) var(--ums-sp-5) var(--ums-sp-8); }
+        .doc h2 { margin: var(--ums-sp-7) 0 var(--ums-sp-1); color: var(--ums-navy); }
+        .doc h2:first-child { margin-top: 0; }
+        .doc__hint { margin-bottom: var(--ums-sp-3); color: var(--ums-ink-2); font-size: var(--ums-fz-13); }
+        .doc__demo { padding: var(--ums-sp-4); background: var(--ums-surface); border: 1px solid var(--ums-line); border-radius: var(--ums-r-2); }
+        .doc__demo--top { border-radius: var(--ums-r-2) var(--ums-r-2) 0 0; }
+        .doc__code {
+            margin: 0; padding: var(--ums-sp-3) var(--ums-sp-4);
+            background: #16233d; color: #d7e0f5;
+            border-radius: 0 0 var(--ums-r-2) var(--ums-r-2);
+            font: 12.5px/1.6 var(--ums-font-mono); overflow-x: auto; white-space: pre;
+        }
+        .doc__code code { background: none; color: inherit; padding: 0; }
+        .doc__nav { display: flex; flex-wrap: wrap; gap: var(--ums-sp-2); margin-bottom: var(--ums-sp-6); }
+        .doc__nav a { padding: 5px var(--ums-sp-3); background: var(--ums-surface); border: 1px solid var(--ums-line); border-radius: var(--ums-r-pill); color: var(--ums-ink-2); font-size: var(--ums-fz-13); }
+        .doc__nav a:hover { border-color: var(--ums-blue); color: var(--ums-blue); }
+        .doc__tree { font-family: var(--ums-font-mono); font-size: var(--ums-fz-13); line-height: 1.75; color: var(--ums-ink-2); white-space: pre; }
+        .doc__swatch { height: 62px; padding: var(--ums-sp-2); display: grid; place-items: end start; border-radius: var(--ums-r-1); color: #fff; font-size: var(--ums-fz-11); font-weight: var(--ums-fw-semibold); }
+    </style>
+</head>
+
+<body>
+
+    <header class="ums-topbar">
+        <a class="ums-topbar__brand" href="index.html">
+            <span class="ums-topbar__logo"><i class="fa-light fa-graduation-cap"></i></span>
+            <span>QTDH</span>
+        </a>
+        <span class="ums-u-hide-sm" style="color:var(--ums-on-dark-2)">Thư viện component — chép khuôn từ đây, đừng dựng mới</span>
+        <span class="ums-topbar__spacer"></span>
+        <a class="ums-btn ums-btn--ghost" href="index.html"><i class="fa-light fa-arrow-left"></i> Về bản dựng</a>
+    </header>
+
+    <div class="doc">
+
+        <div class="doc__nav">
+            <a href="#khuon" style="border-color:var(--ums-blue);color:var(--ums-blue);font-weight:var(--ums-fw-semibold)">Khuôn màn hình</a><a href="#cautruc">Cấu trúc</a><a href="#mau">Màu</a><a href="#nut">Nút</a><a href="#nhan">Nhãn</a>
+            <a href="#chip">Chip lọc</a><a href="#the">Thẻ</a><a href="#bang">Bảng</a><a href="#nhap">Ô nhập</a>
+            <a href="#khung">Khung</a><a href="#api">API JS</a>
+        </div>
+
+        <h2 id="khuon">0. Khuôn màn hình — CHÉP TỪ ĐÂY</h2>
+        <p class="doc__hint">
+            <b>Không dựng mới nếu đã có khuôn tương tự.</b> Trước khi viết một màn,
+            tìm khuôn giống nhất ở mục này (hoặc bảng tra nhanh trong
+            <code>_v2/BO-CUC.md</code>) rồi chép về sửa. Mấy khuôn dưới đây đều đã
+            đo trên trình duyệt thật; dựng tay lại là lặp đúng những lỗi vặt đã sửa,
+            liệt kê ở cuối mục.
+        </p>
+        <p class="doc__hint">
+            Chọn khuôn theo <b>BẢN GỐC</b>, không theo ý thích: bản gốc một cột thì
+            màn mới một cột, bản gốc hai cột thì màn mới hai cột
+            (<code>BO-CUC.md</code> luật 0). Mở
+            <code>ApisTaiChinh/Modules/&lt;module&gt;/html/&lt;tên&gt;.html</code> của bản gốc mà đếm vùng.
+        </p>
+
+        <h3 class="ums-u-mt-5">A · Bản gốc MỘT cột — danh sách đầy trang</h3>
+        <p class="doc__hint">Thanh lọc ngang, bảng đầy trang, biểu mẫu thay chỗ danh sách khi thêm/sửa.</p>
+        <pre class="doc__code" style="border-radius:var(--ums-r-2)"><code>ums.crud({
+    root: document.getElementById('&lt;id trong html&gt;'),
+    title: 'Khai báo các khoản thu',      // tiêu đề trang
+    formTitle: 'khoản thu',               // "Thêm &lt;formTitle&gt;" / "Sửa &lt;formTitle&gt;"
+    icon: 'fa-coins',
+
+    filters: [{ key: 'q', type: 'text', label: 'Nhập mã, tên…' }],
+
+    list: {
+        paged: true,                      // phân trang ở MÁY CHỦ như bản gốc
+        call: function (f) {
+            return { action: 'TC_KhoanThu/LayDanhSach', method: 'GET',
+                     versionAPI: 'v1.0', strTuKhoa: f.q };
+        }
+    },
+
+    columns: [ { title: 'Mã', prop: 'MA', cls: 'is-nowrap' }, … ],
+    fields:  [ { key: 'strMa', col: 'MA', label: 'Mã', required: true }, … ],
+
+    save:   function (v, row) { v.action = row ? '…/CapNhat' : '…/ThemMoi';
+                                v.strId = row ? row.ID : ''; return v; },
+    remove: function (ids) { return ids.map(function (id) {
+                                return { action: '…/Xoa', strId: id }; }); }
+});</code></pre>
+
+        <h3 class="ums-u-mt-5">B · Bản gốc HAI cột — danh sách trái, nội dung phải</h3>
+        <p class="doc__hint">
+            Y như khuôn A, chỉ thêm khối <code>master</code>. Phần nạp / lọc / phân trang /
+            lưu / xoá dùng lại nguyên của <code>ums.crud</code> — <b>đừng viết tay lại</b>.
+            Cột trái tự có ô tìm chuẩn, danh sách và phân trang; cột phải là khung
+            "Thông tin chung", đổi chỗ cho biểu mẫu khi thêm/sửa.
+        </p>
+        <pre class="doc__code" style="border-radius:var(--ums-r-2)"><code>ums.crud({
+    … y như khuôn A …
+
+    master: {
+        title: 'Danh sách hóa đơn',       // đầu khung cột trái
+        icon: 'fa-file-invoice-dollar',
+        // width: '320px',                // mặc định 320px
+        // empty: '…',                    // câu dẫn ở cột phải lúc chưa chọn gì
+        item: function (r) {              // MỘT mục — chép đúng dòng bản gốc vẽ
+            return '&lt;b&gt;Mẫu số: ' + ums.ui.esc(r.MAUSO || '') + '&lt;/b&gt;' +
+                '&lt;span class="ums-master__item__sub"&gt;Năm áp dụng: ' +
+                ums.ui.esc(r.NAMAPDUNG || '') + '&lt;/span&gt;';
+        }
+    }
+});</code></pre>
+
+        <h3 class="ums-u-mt-5">C · Không hợp A/B</h3>
+        <p class="doc__hint">
+            Lưới nhập, bảng xoay, hai cột tự dựng, lưới thẻ, xem/in chứng từ, chọn sinh
+            viên, nhóm ô đánh dấu, báo cáo/import, hàng đợi… <b>đều đã có sẵn</b>. Tra
+            <code>_v2/BO-CUC.md</code> mục "Bảng tra nhanh" trước khi viết dòng đầu tiên.
+        </p>
+
+        <h3 class="ums-u-mt-5">Lỗi vặt đã gặp — đừng lặp lại</h3>
+        <p class="doc__hint">
+            Mỗi dòng dưới đây là một lỗi đã thật sự xảy ra rồi phải đo lại mới ra. Dùng
+            đúng khuôn ở trên thì không gặp cái nào.
+        </p>
+        <div class="doc__demo" style="border-radius:var(--ums-r-2)">
+            <table class="ums-table ums-table--lined ums-table--tight">
+                <thead>
+                    <tr><th>Triệu chứng</th><th>Vì sao</th><th>Làm đúng</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><b>Cột phải tụt xuống so với cột trái một đoạn</b> (khung bên phải như bị đẩy xuống)</td>
+                        <td>Hai <code>.ums-panel</code> nằm hai CỘT của một lưới vẫn dính luật <code>.ums-panel + .ums-panel { margin-top }</code> — trong lưới thì khoảng cách đã do <code>gap</code> lo.</td>
+                        <td>Đặt lớp <code>ums-cols</code> (hoặc dùng <code>.ums-grid</code> / <code>.ums-master</code>) cho vùng chứa; panel.css đã tự bỏ lề trên cho các vùng đó và cho lớp kết thúc bằng <code>-cols</code> / <code>-layout</code>.</td>
+                    </tr>
+                    <tr>
+                        <td><b>Cùng một hành động mà mỗi màn một biểu tượng</b> ("Chi tiết" lúc con mắt, lúc tờ giấy, lúc cây bút, lúc không có gì)</td>
+                        <td>Mỗi màn tự chọn biểu tượng theo cảm tính.</td>
+                        <td>Gọi <code>ums.ui.btn('view' | 'edit' | 'history' | 'confirm' | …)</code> / <code>ums.ui.iconBtn(kind)</code> — chữ vẫn truyền theo bản gốc, biểu tượng do tầng chung quyết. Kiểm bằng <code>python _harness/kiem-icon-chuan.py</code>.</td>
+                    </tr>
+                    <tr>
+                        <td><b>Nút / biểu tượng hành động trong ô bảng nhìn "không màu"</b></td>
+                        <td>Dùng kiểu trung tính (<code>ums-iconbtn</code> trần, <code>ums-btn--ghost</code>, <code>ums-btn--quiet</code>) nên nút hành động xám như chữ thường.</td>
+                        <td>Trong bảng, các kiểu đó nay tự mang màu xanh hành động (button.css). Nút mang màu riêng (lưu / cảnh báo / xoá) thì khai kiểu đúng của nó.</td>
+                    </tr>
+                    <tr>
+                        <td><b>Hai nút thả xuống (Xuất báo cáo · Import) dính vào nhau</b></td>
+                        <td>Vùng chứa không phải flex có <code>gap</code>, mà <code>.ums-drop</code> là <code>inline-flex</code> nên không tự chừa khoảng.</td>
+                        <td>Đã chừa ở tầng chung: <code>.ums-drop + .ums-drop { margin-left }</code> (report.css) — màn hình không phải làm gì.</td>
+                    </tr>
+                    <tr>
+                        <td><b>Nút "Xoá" ở chân hộp thoại nằm sát nút Lưu</b></td>
+                        <td>Chân hộp xếp theo thứ tự DOM, mà nút Đóng luôn được dựng trước các nút của màn.</td>
+                        <td>Nút xoá ở chân hộp có <code>order: -1</code> + <code>margin-right: auto</code> (dialog.css) nên luôn nằm hẳn bên trái.</td>
+                    </tr>
+                    <tr>
+                        <td><b>Dải tab đứng trần trên nền trang, lệch với các vùng khác</b></td>
+                        <td>Chỉ có gạch chân, không có nền — trong khi mọi vùng nội dung đều là khung trắng.</td>
+                        <td>Dải tab KHÔNG nằm trong <code>.ums-panel</code> nay tự là khung trắng có viền (tabs.css).</td>
+                    </tr>
+                    <tr>
+                        <td><b>Bảng trong khung danh sách bị thụt vào (lề kép)</b></td>
+                        <td>Quên <code>flush: true</code> khi gọi <code>ums.pat.panel</code>, nên thân khung còn đệm trong khi bảng đã có lề riêng.</td>
+                        <td>Khung chỉ chứa bảng / danh sách thì luôn <code>flush: true</code>.</td>
+                    </tr>
+                    <tr>
+                        <td><b>Đặt <code>background</code> / <code>position</code> cho <code>.ums-panel__head</code> mà không ăn</b></td>
+                        <td>Luật "đầu khung dính đỉnh" ở <code>objects/shell.css</code> viết bằng <code>:has()</code> nên đặc hiệu tới 0,4,0 — đè luật hai lớp của màn.</td>
+                        <td>Viết đủ bốn lớp (vd <code>.dky-masonry .ums-panel.dky-mon > .ums-panel__head</code>) hoặc đổi ở chính shell.css.</td>
+                    </tr>
+                    <tr>
+                        <td><b>Vùng thu gọn kẹt nửa chừng khi đo bằng headless</b></td>
+                        <td>Trạng thái cuối chỉ đặt trong <code>animation.onfinish</code>; dưới <code>--virtual-time-budget</code> sự kiện kết thúc có khi không tới.</td>
+                        <td>Luôn chốt thêm <code>setTimeout</code> bằng thời lượng hiệu ứng (xem <code>ums.ui.truot</code> / <code>ums.ui.moDetails</code>).</td>
+                    </tr>
+                    <tr>
+                        <td><b>Mở được nhiều nhóm thu gọn cùng lúc, nhảy giật khi mở</b></td>
+                        <td>Tự gắn <code>classList.toggle</code> cho nhóm, hoặc để <code>&lt;details&gt;</code> chạy mặc định của trình duyệt.</td>
+                        <td>Menu cột trái và mọi <code>&lt;details&gt;&lt;summary&gt;</code> đã đi qua tầng chung: trượt 220ms + đàn xếp theo <code>behavior.accordion</code> (bật/tắt ở Cài đặt giao diện). Muốn để trình duyệt tự lo thì đặt <code>data-tu-mo</code> trên thẻ.</td>
+                    </tr>
+                    <tr>
+                        <td><b>Dấu tích / biểu tượng thành ô rỗng sau khi tô đậm chữ</b></td>
+                        <td>Font Awesome chọn KIỂU biểu tượng bằng <code>font-weight</code> (300 light · 400 regular · 900 solid). Đặt <code>font-weight: 600</code> cho khối cha là glyph không còn.</td>
+                        <td>Chỉ đổi màu, đừng đặt font-weight lên phần tử bọc biểu tượng; cần chữ đậm thì đặt riêng cho thẻ chữ.</td>
+                    </tr>
+                    <tr>
+                        <td><b>Thẻ rê chuột có thanh cuộn nhưng không kéo được</b></td>
+                        <td><code>ums.ui.hoverCard</code> đặt <code>pointer-events: none</code> (thẻ chỉ để đọc) nên chuột không vào được trong thẻ.</td>
+                        <td>Không cho cuộn trong thẻ: cắt bớt danh sách (vd 8 dòng) rồi ghi "… còn N mục — bấm để xem đầy đủ".</td>
+                    </tr>
+                    <tr>
+                        <td><b>Chọn được Khoá khi chưa chọn Hệ; xoá Hệ mà Khoá cũ vẫn nằm đó</b> (cũng vậy với Thời gian → Kế hoạch, Đơn vị tính → Thời gian…)</td>
+                        <td>Bản gốc nạp sẵn danh sách con và chỉ bắt <code>select2:select</code> (không bắt lúc xoá). <code>pat.fill</code> giữ giá trị cũ nếu nó còn trong danh sách mới — bỏ Hệ thì danh sách Khoá là tất cả, khoá cũ vẫn khớp. Gặp ở 32 màn Tài chính, 2026-09-21</td>
+                        <td>Một dòng SAU các trình xử lý: <code>ums.pat.chain([he, khoa, ct, lop])</code> (thêm <code>{ phatLai: false }</code> nếu màn đã nghe lúc xoá / nghe <code>change</code>). Các bộ nối tầng chung đã có sẵn. Kiểm bằng <code>_harness/do-phu-thuoc.html</code>. Chi tiết: <code>CHUYEN-DOI.md</code> mục 1 luật 6</td>
+                    </tr>
+                    <tr>
+                        <td>Đổi ô chọn mà màn hình đứng im (không nạp lại, không đổ ô phụ thuộc)</td>
+                        <td>select2 bắn <code>change</code> bằng jQuery, mà jQuery.trigger KHÔNG sinh sự kiện DOM thật — đo được: native=0, jquery=1</td>
+                        <td>Đã chữa ở tầng chung: <code>ums.ui.select2</code> bắn thêm một <code>change</code> thật (không làm jQuery chạy hai lần). Cả <code>addEventListener</code> lẫn <code>jQuery(…).on</code> đều chạy đúng một lần</td>
+                    </tr>
+                    <tr>
+                        <td>Khung lọc ở cột trái thuụt vào, ô lọc hẹp hơn ô tìm ngay trên</td>
+                        <td>Màn tự thêm <code>margin</code>/<code>padding</code> ngang, trong khi <code>.ums-master__filter</code> đã có lề — lề kép 32px</td>
+                        <td>Không đặt lề ngang cho khối bên trong khung lọc; lề do khung lo</td>
+                    </tr>
+                    <tr>
+                        <td>Danh sách trạng thái ở cột trái chia hai cột, tên dài bị bẻ đôi, lại có thanh cuộn riêng</td>
+                        <td>Dùng lưới hai cột của biểu mẫu rộng cho cột 320px, kèm <code>max-height</code></td>
+                        <td>Trong <code>.ums-master__side</code>, <code>.ums-checkgrid</code> luôn MỘT CỘT và không cuộn bên trong (đã là luật chung)</td>
+                    </tr>
+                    <tr>
+                        <td>Hai màn cùng việc "lọc nâng cao" mà hai kiểu: màn này nút chữ dưới ô tìm, màn kia biểu tượng ở đầu khung</td>
+                        <td>Mỗi màn tự đặt chỗ cho nút mở khung lọc</td>
+                        <td>Đặt ở <code>.ums-panel__tools</code> của cột trái: kính lúp (tìm) + thanh trượt (lọc nâng cao)</td>
+                    </tr>
+                    <tr>
+                        <td>Vào lần đầu trên host thì trang trơ chữ / mất hết biểu tượng, F5 mới chuẩn</td>
+                        <td>Vỏ nạp tệp CSS chỉ gồm <code>@import</code> — trình duyệt coi là tải xong rồi vẽ trang ngay trong khi 38 tệp con còn đang về</td>
+                        <td>Vỏ <code>.aspx</code> nạp bản GỘP; sửa CSS xong chạy <code>python _harness\gop-css.py</code></td>
+                    </tr>
+                    <tr>
+                        <td>Ô chọn tệp hiện "Choose file / No file chosen", thấp hơn ô bên cạnh</td>
+                        <td>Để nguyên <code>&lt;input type="file"&gt;</code> — trình duyệt tự vẽ, CSS không đổi được chữ</td>
+                        <td>Dùng <code>ums.ui.file({ key, accept })</code> — nút "Chọn tệp" + tên tệp, cao bằng ô nhập; tên tệp do <code>ums.ui.enhance</code> tự cập nhật</td>
+                    </tr>
+                    <tr>
+                        <td>Nút nào cũng xám (ghost) — nhìn không ra việc chính</td>
+                        <td>Chuyển màn thì bỏ màu của bản gốc (btn-primary / success / warning)</td>
+                        <td>Chép đúng màu và biểu tượng bản gốc: <code>primary</code> · <code>save</code> (xanh lá) · <code>warn</code> (hổ phách) · <code>danger</code>; đổi biểu tượng bằng <code>ums.ui.btn(kind, { icon })</code></td>
+                    </tr>
+                    <tr>
+                        <td>Khung chi tiết đóng bằng mũi tên ← ở góc trái, khác mọi màn khác</td>
+                        <td>Chép mũi tên "quay lại" của bản gốc, (kể cả <code>ums.crud</code> có <code>back()</code> từng tự vẽ mũi tên)</td>
+                        <td>Một lối đóng duy nhất: <code>ums.ui.btn('close')</code> đặt <b>ĐẦU TIÊN — ngoài cùng bên trái</b> nhóm nút (<code>.ums-panel__tools</code> / <code>.ums-page__actions</code>), trước Lưu / Thêm / Xoá. Chân hộp thoại theo luật riêng (Xoá dạt trái).</td>
+                    </tr>
+                    <tr>
+                        <td>Ô chọn "Hiển thị 30" ở đầu khung — chọn số khác không nạp thêm dòng</td>
+                        <td>Số dòng mỗi trang tự dựng bằng <code>&lt;select&gt;</code>, lại đặt ngoài thanh phân trang</td>
+                        <td>Truyền <code>page.sizes</code> + <code>page.onSize</code> cho <code>ums.ui.pager</code> — chữ “Hiển thị” + ô chọn ở đầu thanh phân trang, đúng khuôn bản gốc. Ô mang <code>data-no-s2</code> (không bọc select2) nhưng được vẽ giống hệt select2</td>
+                    </tr>
+                    <tr>
+                        <td>Nút của bản gốc bị đổi chữ hoặc biến mất ("Xuất báo cáo" → "Báo cáo", thiếu "Đồng bộ hóa đơn điện tử")</td>
+                        <td>Chức năng hỏng ở bản gốc (lỗi biến, href="#") nên bị bỏ; hoặc lấy chữ của vỏ <code>index</code> trong khi màn chạy ở <code>indexi</code></td>
+                        <td>Giữ đủ nút và đúng chữ của bản gốc. Nút không có xử lý thì để <code>disabled</code>, không xoá</td>
+                    </tr>
+                    <tr>
+                        <td>Hai ô chọn chia nhau một dòng trong cột trái, tên bị cắt còn “Đại học c…”</td>
+                        <td>Cột trái chỉ rộng 320px; bản gốc luôn có <code>&lt;div class="clear"&gt;</code> giữa hai <code>&lt;select&gt;</code> của khung lọc</td>
+                        <td>Mỗi ô một dòng — <code>.ums-master__side .ums-filter &gt; .ums-field</code> đã đặt <code>flex: 1 1 100%</code>, không đè lại</td>
+                    </tr>
+                    <tr>
+                        <td>Thiếu nút “Truy/xuất” ngang hàng “Thêm mới” so với bản gốc</td>
+                        <td>Bản gốc hay có menu “Truy/xuất” chết (mục trỏ <code>href="#"</code>, không .js nào gắn xử lý) nên dễ bị bỏ khi chuyển</td>
+                        <td>Đặt <code>&lt;span data-z="report"&gt;</code> trong <code>.ums-page__actions</code> rồi <code>ums.report.mount</code> — mẫu lấy theo quyền chức năng, không khai mẫu thì không hiện</td>
+                    </tr>
+                    <tr>
+                        <td>Ô tìm cột trái trông khác các ô nhập khác (bo tròn hơn, có bóng, thấp hơn)</td>
+                        <td>Màn tự dựng <code>.ums-filter</code> + nút tìm riêng</td>
+                        <td>Để <code>ums.crud({master})</code> hoặc <code>ums.pat.master({side:{search}})</code> vẽ — chúng dùng <code>.ums-searchbar--sm</code></td>
+                    </tr>
+                    <tr>
+                        <td>Cụm lọc thụt vào 16px so với ô tìm ngay trên</td>
+                        <td>Bọc thêm <code>.ums-master__search</code> / <code>.ums-panel__body</code> bên trong <code>.ums-master__filter</code> (đã có lề)</td>
+                        <td>Không bọc thêm lớp có lề; lề ngang do khung lo</td>
+                    </tr>
+                    <tr>
+                        <td>Dãy số phân trang dạt trái, hoặc rớt xuống dòng riêng</td>
+                        <td>Đè <code>margin-left</code> của <code>.ums-pager__list</code>, hoặc đệm chân cột cộng thêm vào đệm sẵn có của <code>.ums-pager</code></td>
+                        <td>Để nguyên <code>ums.ui.pager</code>; không thêm đệm bao quanh</td>
+                    </tr>
+                    <tr>
+                        <td>Biểu tượng của khối rỗng / khối lỗi dạt sát mép trái</td>
+                        <td>FA7 đặt <code>width: 1.25em</code>, gặp <code>display:block</code> thì khối chỉ rộng bằng icon nên nằm bên trái</td>
+                        <td><code>margin-inline: auto</code> (đã có sẵn ở <code>.ums-empty</code> / <code>.ums-fail</code>)</td>
+                    </tr>
+                    <tr>
+                        <td>Cuộn giữa biểu mẫu dài thì mất nút Lưu</td>
+                        <td>Đầu trang còn nút nên nó giữ chỗ dính, đầu khung biểu mẫu không được dính. Màn tự dựng hay đặt CẢ đầu trang bên trong vùng danh sách — ẩn vùng đó thì khối nút không mang <code>[hidden]</code>, chỉ tổ tiên mang, nên luật cũ vẫn tưởng đầu trang đang giữ chỗ</td>
+                        <td><code>ums.crud</code> tự giấu nút đầu trang; màn dựng bằng <code>ums.pat.master</code> gọi <code>m.formMode(true/false)</code>. Luật CSS nay dùng <code>:not([hidden] *)</code> nên vùng đang ẩn không còn tính — màn tự dựng cũng đúng mà không phải khai gì</td>
+                    </tr>
+                    <tr>
+                        <td>Hai nút "Thêm mới" trên cùng một màn</td>
+                        <td>Đặt thêm một nút trong khung giới thiệu</td>
+                        <td>Chỉ một nút, ở <code>.ums-page__actions</code>; khung giới thiệu chỉ ghi câu dẫn</td>
+                    </tr>
+                    <tr>
+                        <td>Ô chọn danh mục hiện "-- Chọn --" thay vì tên danh mục</td>
+                        <td>Bỏ mất nhãn <code>CHUNG_TENDANHMUC_TEN</code> mà quản trị nhập</td>
+                        <td><code>ums.pat.dmTitle(rows)</code>; <code>ums.crud</code> đã tự dùng khi màn không khai <code>placeholder</code></td>
+                    </tr>
+                    <tr>
+                        <td>Màn hẹp: bảng bóp chữ thành một từ một dòng</td>
+                        <td>Bảng <code>width:100%</code> nên không bao giờ tràn để cuộn</td>
+                        <td>Dựng bảng bằng <code>ums.ui.table</code> — đã có <code>.ums-tablewrap</code> và bề rộng tối thiểu</td>
+                    </tr>
+                    <tr>
+                        <td>Mở ô chọn thì cả trang mọc thanh cuộn ngang</td>
+                        <td><code>.select2-container{width:100%!important}</code> trúng cả khung xổ gắn ở <code>&lt;body&gt;</code></td>
+                        <td>Luật đã giới hạn bằng <code>:not(:has(.select2-dropdown))</code> — đừng viết lại luật rộng hơn</td>
+                    </tr>
+                    <tr>
+                        <td>Ô bảng hiện ra chữ <code>&lt;br&gt;</code> thay vì xuống dòng</td>
+                        <td>Nhiều cột của hệ cũ chứa sẵn thẻ <code>&lt;br&gt;</code> trong DỮ LIỆU (vd <code>THOIGIANCHITIET</code> của lớp học phần). Bản gốc trả thẳng vào HTML nên xuống dòng; bản mới escape hết nên hiện nguyên chữ</td>
+                        <td>Đã xử ở tầng chung: ô không có hàm <code>render</code> riêng đi qua <code>ums.ui.escBr</code> — escape như thường rồi trả lại ĐÚNG thẻ <code>&lt;br&gt;</code>, thẻ khác vẫn bị chặn. Viết <code>render</code> riêng mà dữ liệu có <code>&lt;br&gt;</code> thì gọi <code>ums.ui.escBr(...)</code> thay cho <code>ums.ui.esc(...)</code></td>
+                    </tr>
+                    <tr>
+                        <td>Mở ô ngày trong hộp thoại: lịch bung ra lệch chỗ, tràn khỏi màn, hoặc bị cắt mất nửa dưới</td>
+                        <td>flatpickr gắn vào hộp thoại bằng <code>appendTo</code> vẫn tính toạ độ theo vị trí ô trên TRANG, trong khi hộp thoại là <code>position: fixed</code>; thêm nữa vùng nội dung hộp thoại có thanh cuộn riêng nên lịch dài hơn chỗ còn lại thì bị cắt</td>
+                        <td><code>ums.ui.datepicker</code> đã tự xử: trong <code>&lt;dialog&gt;</code> thì dùng <code>static: true</code> (đặt lịch ngay dưới ô, không tính toạ độ) và cuộn lịch vào tầm nhìn khi mở. Chế độ này bọc ô bằng <code>.flatpickr-wrapper</code> — CSS đã cho lớp bọc đó <code>display:block;width:100%</code>, nếu không ô co lại và biểu tượng lịch văng ra ngoài</td>
+                    </tr>
+                    <tr>
+                        <td>Máy chủ trả <b>400</b> ở lời gọi danh mục, ô chọn rỗng ("Không tìm thấy kết quả")</td>
+                        <td>Gửi thêm tham số kiểu số với giá trị RỖNG (<code>dTrangThai: ''</code>) — bản gốc không hề có khoá đó, máy chủ ràng buộc kiểu nên từ chối cả lời gọi</td>
+                        <td>Chép ĐÚNG bộ tham số bản gốc: không cần thì <b>bỏ hẳn khoá</b>, đừng gửi rỗng. <code>ums.api.call</code> nay tự bỏ khoá có giá trị <code>undefined</code>; muốn gửi rỗng thật thì truyền <code>''</code></td>
+                    </tr>
+                    <tr>
+                        <td>Bỏ mất nút / cột mà bản gốc có, vì ở bản gốc nó "không làm gì"</td>
+                        <td>Bản gốc có nút Import, cột ô đánh dấu… nhưng chưa nối trình xử lý nên bấm không ra gì — lúc chuyển tưởng thừa rồi cắt</td>
+                        <td>Giữ đúng bản gốc rồi nối vào cơ chế dùng chung (<code>ums.report.importChung</code>, cột chọn như các bảng khác), và ghi rõ trong chú thích đầu tệp là đã cho nó việc gì</td>
+                    </tr>
+                    <tr>
+                        <td>Bảng nhiều dòng có ô chọn thì ì, khung xổ lạc chỗ khi cuộn ngang</td>
+                        <td>Gắn select2 cho từng ô chọn trong bảng — trăm dòng là trăm khung, khung xổ lại gắn ở <code>&lt;body&gt;</code></td>
+                        <td><code>ums.ui.enhance</code> đã tự bỏ qua ô chọn trong <code>.ums-table</code>; ô gốc được vẽ giống hệt select2. Cần select2 thật thì đánh dấu <code>data-s2</code></td>
+                    </tr>
+                    <tr>
+                        <td>Mở ô ngày thì đầu lịch vỡ: mọc nút ×, danh sách tháng đè lên bảng ngày, mất ô NĂM</td>
+                        <td><code>ums.ui.enhance</code> gắn select2 vào MỌI <code>&lt;select&gt;</code>, trúng cả ô chọn tháng là ruột của flatpickr; khung select2 rộng 100% đẩy ô năm ra khỏi khung</td>
+                        <td>Đã bỏ qua mọi <code>&lt;select&gt;</code> bên trong <code>.flatpickr-calendar</code>. Thư viện bên thứ ba tự lo ô chọn của nó — đừng gắn select2 vào</td>
+                    </tr>
+                    <tr>
+                        <td>Thiếu ô "Nhập từ khóa tìm kiếm" mà bản gốc có</td>
+                        <td>Bản gốc có ô nhưng procedure không nhận từ khoá (gõ gì cũng ra y nguyên) nên lúc chuyển tưởng thừa rồi bỏ</td>
+                        <td>Giữ ô như bản gốc; lọc trên danh sách đã tải bằng <code>ums.pat.loc(rows, q, cols)</code> qua <code>list.rows</code> — không đổi chữ ký procedure</td>
+                    </tr>
+                    <tr>
+                        <td>Mỗi màn một kiểu nhóm ô đánh dấu, ô "Tất cả" không ăn</td>
+                        <td>Tự dựng, mỗi bản một tên thuộc tính riêng</td>
+                        <td><code>ums.pat.checks(host, rows, {…})</code></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+
+        <h2 id="cautruc">1. Cấu trúc</h2>
+        <p class="doc__hint">
+            Sắp theo ITCSS, độ đặc hiệu tăng dần. Trang chỉ nạp <b>một</b> tệp CSS.
+            Toàn bộ class mang tiền tố <code>ums-</code>, <b>không dùng lại class nào</b> của
+            giao diện hiện hành và <b>không nạp Bootstrap</b>.
+        </p>
+        <div class="doc__demo">
+            <div class="doc__tree">_v2/assets/css/
+├─ main.css               điểm vào duy nhất, chỉ chứa @import
+├─ settings/   tokens     biến — không sinh ra CSS
+├─ generic/    reset · fonts
+├─ elements/   base       thẻ HTML trần
+├─ objects/    shell · grid   khung và lưới, không mang màu thương hiệu
+├─ components/ nav · searchbar · chip · tile · panel · button
+│              field · table · pager · tabs · stat · crumb
+├─ vendor/     select2 · flatpickr
+└─ utilities/  utilities  đặt cuối, luôn ghi đè được</div>
+        </div>
+
+        <h2 id="mau">2. Màu</h2>
+        <p class="doc__hint">Khai báo trong <code>settings/tokens.css</code>. Không tệp nào khác được viết mã màu.</p>
+        <div class="doc__demo"><div class="ums-grid ums-grid--tiles" id="dSwatch"></div></div>
+
+        <h2 id="nut">3. Nút</h2>
+        <div class="doc__demo doc__demo--top">
+            <div class="ums-row ums-u-mb-4" id="dBtn"></div>
+            <div class="ums-row" id="dIconBtn"></div>
+        </div>
+        <pre class="doc__code"><code>ums.ui.btn('add', { text: 'Mở kế hoạch mới' })
+ums.ui.iconBtn('edit', row.ID)
+ums.ui.actions(row.ID, ['view','edit','del'])</code></pre>
+
+        <h2 id="nhan">4. Nhãn trạng thái</h2>
+        <div class="doc__demo doc__demo--top"><div class="ums-row" id="dBadge"></div></div>
+        <pre class="doc__code"><code>ums.ui.badge('Đang mở đăng ký', 'ok')   // ok | warn | bad | mute | info</code></pre>
+
+        <h2 id="chip">5. Chip lọc</h2>
+        <div class="doc__demo doc__demo--top"><div id="dChip"></div></div>
+        <pre class="doc__code"><code>ums.ui.chips([{ key:'all', label:'Tất cả', count:48 }, …], 'all')</code></pre>
+
+        <h2 id="the">6. Thẻ vai trò &amp; thẻ số liệu</h2>
+        <div class="doc__demo doc__demo--top">
+            <div class="ums-grid ums-grid--cards ums-u-mb-4" id="dTile"></div>
+            <div class="ums-grid ums-grid--4" id="dStat"></div>
+        </div>
+        <pre class="doc__code"><code>ums.ui.tile({ name:'Tài chính', group:'Tài chính', icon:'fa-light fa-wallet', tone:'amber' })
+// tone: blue | green | purple | amber | red | slate</code></pre>
+
+        <h2 id="bang">7. Bảng</h2>
+        <p class="doc__hint">
+            Sinh cả <code>&lt;table&gt;</code>, <code>&lt;thead&gt;</code>, <code>&lt;tbody&gt;</code> và phân trang,
+            nên đổi giao diện bảng cho toàn hệ thống chỉ cần sửa một hàm.
+        </p>
+        <div class="doc__demo doc__demo--top" style="padding:0"><div id="dTable"></div></div>
+        <pre class="doc__code"><code>ums.ui.table({
+  el: '#dTable',
+  rows: DATA,
+  page: { index: 1, size: 10, total: 240, onChange: reload },
+  columns: [
+    { title: 'Mã',         prop: 'MA', cls: 'is-nowrap' },
+    { title: 'Tên',        render: r =&gt; ums.ui.cell(r.TEN, r.MOTA) },
+    { title: 'Tình trạng', cls: 'is-center', render: r =&gt; ums.ui.badge(r.TTTEN, r.TT) },
+    { title: 'Thao tác',   cls: 'is-actions', render: r =&gt; ums.ui.actions(r.ID) }
+  ]
+})</code></pre>
+
+        
+        <p class="doc__hint ums-u-mt-5"><b>Ô đánh dấu và ô chọn một</b> — tự vẽ, không dùng ô gốc
+            của trình duyệt. Chỉ cần <code>&lt;input type="checkbox"&gt;</code> trần là đã đúng kiểu,
+            kể cả ô trong bảng. Bọc trong <code>.ums-check</code> khi có nhãn chữ.</p>
+        <div class="doc__demo doc__demo--top">
+            <label class="ums-check"><input type="checkbox" checked> Đã đánh dấu</label>
+            <label class="ums-check"><input type="checkbox"> Chưa đánh dấu</label>
+            <label class="ums-check"><input type="checkbox" disabled> Khoá</label>
+            <label class="ums-check"><input type="radio" name="dm" checked> Chọn một</label>
+            <label class="ums-check"><input type="radio" name="dm"> Chọn hai</label>
+        </div>
+        <pre class="doc__code"><code>&lt;label class="ums-check"&gt;&lt;input type="checkbox" checked&gt; Đã đánh dấu&lt;/label&gt;
+&lt;label class="ums-check"&gt;&lt;input type="radio" name="dm"&gt; Chọn một&lt;/label&gt;
+
+&lt;!-- nhóm nhiều ô + ô "Tất cả": ums.pat.checks(host, rows, {…}) --&gt;</code></pre>
+
+<h2 id="nhap">8. Ô nhập</h2>
+        <div class="doc__demo doc__demo--top"><div id="dField" style="max-width:600px"></div></div>
+        <pre class="doc__code"><code>ums.ui.field('Tên kế hoạch', '&lt;input class="ums-input"&gt;', { required: true, inline: true, labelWidth: '150px' })
+ums.ui.select2('#khoa', { placeholder: 'Chọn khoa' })
+ums.ui.datepicker('#tungay')</code></pre>
+
+        <h2 id="khung">9. Khung nội dung</h2>
+        <div class="doc__demo">
+            <div class="ums-panel" style="margin:0">
+                <div class="ums-panel__head">
+                    <div class="ums-panel__title"><i class="fa-light fa-list-ul"></i> Tiêu đề khung</div>
+                    <div class="ums-panel__tools">
+                        <button type="button" class="ums-iconbtn"><i class="fa-light fa-ellipsis"></i></button>
+                    </div>
+                </div>
+                <div class="ums-panel__body">Nội dung.</div>
+                <div class="ums-panel__foot ums-u-muted ums-u-fz13">Chân khung</div>
+            </div>
+        </div>
+
+        <h2 id="api">10. Toàn bộ API JS</h2>
+        <pre class="doc__code"><code>ums.ui.btn(kind, opts)          // add save search close excel print
+ums.ui.iconBtn(kind, id)        // view edit del
+ums.ui.actions(id, kinds)
+ums.ui.badge(text, tone)
+ums.ui.chips(list, activeKey)
+ums.ui.tile(cfg)
+ums.ui.table(cfg)
+ums.ui.pager(page, shown)
+ums.ui.cell(title, sub)         // ô hai dòng
+ums.ui.meter(value, max, label) // ô có thanh tỉ lệ
+ums.ui.options(data, cfg)
+ums.ui.field(label, control, opts)
+ums.ui.select2(sel, opts) · ums.ui.datepicker(sel, opts) · ums.ui.chart(canvas, cfg)
+ums.ui.money(n) · ums.ui.empty(msg) · ums.ui.esc(s)</code></pre>
+
+    </div>
+
+    <script src="assets/vendor/jquery/jquery-3.7.1.min.js"></script>
+    <script src="assets/vendor/select2/select2.min.js"></script>
+    <script src="assets/vendor/flatpickr/flatpickr.min.js"></script>
+    <script src="assets/vendor/flatpickr/l10n/vn.js"></script>
+    <script src="assets/js/ui.js"></script>
+    <script>
+        (function () {
+            var ui = ums.ui;
+
+            var TOKENS = ['navy', 'navy-d', 'blue', 'blue-d', 'g-blue', 'g-green',
+                'g-purple', 'g-amber', 'g-red', 'g-slate', 'act-add', 'act-save', 'act-edit', 'act-del'];
+            document.getElementById('dSwatch').innerHTML = TOKENS.map(function (t) {
+                return '<div class="doc__swatch" style="background:var(--ums-' + t + ')">--ums-' + t + '</div>';
+            }).join('');
+
+            document.getElementById('dBtn').innerHTML =
+                ui.btn('close') + ui.btn('add') + ui.btn('save') + ui.btn('search') + ui.btn('excel');
+            document.getElementById('dIconBtn').innerHTML = ui.actions('1');
+
+            document.getElementById('dBadge').innerHTML =
+                ui.badge('Đang mở đăng ký', 'ok') + ui.badge('Sắp hết hạn', 'warn') +
+                ui.badge('Đã đóng', 'bad') + ui.badge('Đang soạn', 'mute') + ui.badge('Đang xử lý', 'info');
+
+            document.getElementById('dChip').innerHTML = ui.chips([
+                { key: 'all', label: 'Tất cả', count: 48 },
+                { key: 'a', label: 'Cổng người dùng', count: 6 },
+                { key: 'b', label: 'Học vụ', count: 14 },
+                { key: 'c', label: 'Đào tạo', count: 11 }
+            ], 'all');
+
+            document.getElementById('dTile').innerHTML =
+                ui.tile({ name: 'Cổng cán bộ', group: 'Cổng người dùng', icon: 'fa-light fa-briefcase', tone: 'blue' }) +
+                ui.tile({ name: 'Quản lý điểm', group: 'Học vụ', icon: 'fa-light fa-pen-to-square', tone: 'green' }) +
+                ui.tile({ name: 'Nhập học', group: 'Đào tạo', icon: 'fa-light fa-user-plus', tone: 'purple' }) +
+                ui.tile({ name: 'Tài chính', group: 'Tài chính', icon: 'fa-light fa-wallet', tone: 'amber' });
+
+            document.getElementById('dStat').innerHTML = [
+                { v: '48.230', l: 'Triệu đồng đã thu', i: 'fa-sack-dollar', m: 'green' },
+                { v: '7.560', l: 'Triệu đồng còn nợ', i: 'fa-hourglass-half', m: 'amber' },
+                { v: '86,4%', l: 'Tỷ lệ hoàn thành', i: 'fa-chart-pie', m: '' },
+                { v: '317', l: 'Sinh viên còn nợ', i: 'fa-user-clock', m: 'red' }
+            ].map(function (s) {
+                return '<div class="ums-stat' + (s.m ? ' ums-stat--' + s.m : '') + '">' +
+                    '<div class="ums-stat__icon"><i class="fa-light ' + s.i + '"></i></div>' +
+                    '<div><div class="ums-stat__value">' + s.v + '</div>' +
+                    '<div class="ums-stat__label">' + s.l + '</div></div></div>';
+            }).join('');
+
+            ui.table({
+                el: '#dTable',
+                rows: [
+                    { ID: '1', MA: 'KH-BHYT-2526', TEN: 'Kế hoạch mua BHYT 2025-2026', MOTA: 'Toàn bộ sinh viên chính quy', TT: 'ok', TTTEN: 'Đang mở đăng ký', TIEN: 5725600000 },
+                    { ID: '2', MA: 'KH-DPHUC-K19', TEN: 'Đồng phục khoá 19', MOTA: '', TT: 'bad', TTTEN: 'Đã đóng', TIEN: 535000000 },
+                    { ID: '3', MA: 'KH-GT-HK2', TEN: 'Giáo trình học kỳ 2', MOTA: '', TT: 'mute', TTTEN: 'Đang soạn', TIEN: 0 }
+                ],
+                page: { index: 1, size: 3, total: 24, onChange: function () { } },
+                columns: [
+                    { title: 'Mã', prop: 'MA', cls: 'is-nowrap' },
+                    { title: 'Tên kế hoạch', render: function (r) { return ui.cell(r.TEN, r.MOTA); } },
+                    { title: 'Tình trạng', cls: 'is-center', render: function (r) { return ui.badge(r.TTTEN, r.TT); } },
+                    { title: 'Thành tiền', cls: 'is-right is-nowrap', render: function (r) { return '<b>' + ui.money(r.TIEN) + '</b>'; } },
+                    { title: 'Thao tác', cls: 'is-actions', width: '120px', render: function (r) { return ui.actions(r.ID); } }
+                ]
+            });
+
+            document.getElementById('dField').innerHTML =
+                '<div class="ums-legend">Thông tin chung</div>' +
+                ui.field('Mã kế hoạch', '<input class="ums-input" value="KH-BHYT-2526">', { required: true, inline: true, labelWidth: '150px' }) +
+                ui.field('Loại kế hoạch', '<select class="ums-select" id="docSel"><option>Bảo hiểm y tế</option><option>Đồng phục</option></select>', { required: true, inline: true, labelWidth: '150px' }) +
+                ui.field('Từ ngày', '<div class="ums-inputwrap"><input class="ums-input" id="docDate" value="01/09/2026" readonly><i class="fa-light fa-calendar"></i></div>', { inline: true, labelWidth: '150px' }) +
+                ui.field('Ghi chú', '<textarea class="ums-textarea"></textarea>', { inline: true, labelWidth: '150px', hint: 'Tối đa 500 ký tự' });
+
+            ui.select2('#docSel');
+            ui.datepicker('#docDate');
+        })();
+    </script>
+</body>
+
+</html>

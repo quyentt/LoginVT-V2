@@ -1,0 +1,132 @@
+/* =========================================================================
+   6. COMPONENTS — khung nội dung
+   Thay cho .box của giao diện cũ, tên và định nghĩa đều mới.
+   ========================================================================= */
+
+.ums-panel {
+    background: var(--ums-surface);
+    border: 1px solid var(--ums-line);
+    border-radius: var(--ums-r-2);
+    box-shadow: var(--ums-sh-1);
+}
+
+.ums-panel + .ums-panel { margin-top: var(--ums-sp-4); }
+
+/* … TRỪ khi hai khung nằm trong một khung XẾP CỘT (grid / flex): ở đó khoảng
+   cách đã do `gap` lo, cộng thêm lề trên là cột phải bị tụt xuống một đoạn so
+   với cột trái (đã gặp ở nhiều màn). Màn tự dựng lưới thì đặt lớp `ums-cols`
+   cho vùng chứa, hoặc dùng sẵn .ums-grid / .ums-master / .ums-stack. */
+.ums-cols > .ums-panel + .ums-panel,
+.ums-grid > .ums-panel + .ums-panel,
+.ums-master > .ums-panel + .ums-panel,
+[class$="-cols"] > .ums-panel + .ums-panel,
+[class$="-layout"] > .ums-panel + .ums-panel,
+[class$="__cols"] > .ums-panel + .ums-panel { margin-top: 0; }
+
+.ums-panel__head {
+    display: flex;
+    align-items: center;
+    gap: var(--ums-sp-3);
+    min-height: 54px;
+    padding: var(--ums-sp-3) var(--ums-sp-5);
+    border-bottom: 1px solid var(--ums-line);
+}
+
+/* Bo góc trên theo khung: đầu khung có nền riêng khi dính đỉnh, không bo
+   thì nền vuông đè lên góc bo của khung. */
+.ums-panel > .ums-panel__head:first-child {
+    border-radius: var(--ums-r-2) var(--ums-r-2) 0 0;
+}
+
+/* Tiêu đề khung đồng màu với biểu tượng đứng trước nó — trước đây chữ
+   xanh than còn biểu tượng xanh dương, nhìn như hai thứ rời nhau. Biểu tượng
+   thừa kế màu nên đổi một chỗ là cả hai đổi theo. */
+.ums-panel__title {
+    display: flex;
+    align-items: center;
+    gap: var(--ums-sp-2);
+    color: var(--ums-blue);
+    font-size: var(--ums-fz-15);
+    font-weight: var(--ums-fw-bold);
+}
+
+.ums-panel__title > i { color: inherit; }
+
+.ums-panel__tools {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: var(--ums-sp-2);
+}
+
+/* Đầu khung chỉ có nút (pat.panel title: false + tools) — nút dạt phải, không cao như khi có tiêu đề */
+.ums-panel__head--chinut { min-height: 0; padding-bottom: 0; border-bottom: 0; }
+.ums-panel__head--chinut > .ums-panel__tools { margin-left: auto; }
+/* Thân sát viền (bảng) ngay dưới đầu khung chỉ-nút: đầu khung đã bỏ lề dưới → nút dính tiêu đề bảng
+   (đo 0px, người dùng bắt 2026-09-25 ở họ màn "áp dụng" QLD). Trả khoảng cách bằng lề trên của đầu khung. */
+.ums-panel__head--chinut + .ums-panel__body--flush { margin-top: var(--ums-sp-3); }
+
+.ums-panel__body { padding: var(--ums-sp-5); }
+.ums-panel__body--flush { padding: 0; }
+
+.ums-panel__foot {
+    display: flex;
+    flex-wrap: wrap;            /* khung nửa trang nhiều nút thì xuống dòng, không tràn */
+    align-items: center;
+    gap: var(--ums-sp-2);
+    padding: var(--ums-sp-3) var(--ums-sp-5);
+    border-top: 1px solid var(--ums-line);
+}
+
+/* Tiêu đề nhóm bên trong biểu mẫu / khung xem
+   -------------------------------------------------------------------------
+   Biểu mẫu dài gồm nhiều nhóm (thông tin chung, người nộp, chi tiết khoản
+   thu…). Trước đây tiêu đề nhóm cùng màu chữ thường nên cuộn xuống không
+   biết đang ở nhóm nào. Nay: chữ màu nhấn + một VẠCH MÀU bên trái — đủ để
+   mắt bám được mốc nhóm mà không phải đổ nền (in ra vẫn sạch). */
+.ums-legend {
+    display: flex;
+    align-items: center;
+    gap: var(--ums-sp-2);
+    margin-bottom: var(--ums-sp-3);
+    padding: 2px 0 2px var(--ums-sp-3);
+    border-left: 3px solid var(--ums-blue);
+    /* KHÔNG gạch chân (người dùng 2026-09-26: "bỏ gạch chân title cho đỡ rối") — vạch trái đủ làm mốc nhóm */
+    color: var(--ums-blue);
+    font-size: var(--ums-fz-13);
+    font-weight: var(--ums-fw-bold);
+    letter-spacing: .3px;
+    text-transform: uppercase;
+}
+
+/* Khoảng cách giữa các KHỐI (người dùng chốt 2026-09-26): tiêu đề nhóm đứng sau một khối khác (bảng, lưới ô…)
+   luôn cách khối trên một khoảng rõ (--ums-khoi-gap = 40px; lần đầu 24px bị chê "quá thấp") — không để tiêu đề khối sau dính đáy bảng khối trước. */
+:not(input, script, style, template, [hidden]) + .ums-legend,
+.ums-legend.ums-legend--cach { margin-top: var(--ums-khoi-gap, 40px); }
+/* Lưới nhiều KHỐI (mỗi ô bắt đầu bằng tiêu đề nhóm — khung chi tiết chỉ xem, biểu mẫu chia khối): tiêu đề đứng đầu ô nên luật
+   trên không áp → dùng khe lưới: dọc bằng khoảng cách khối, ngang đủ rộng để hai cột không dính (người dùng 2026-09-27:
+   "các box quá sát nhau") */
+.ums-grid:has(> * > .ums-legend:first-child) { row-gap: var(--ums-khoi-gap, 40px); column-gap: var(--ums-sp-8); }
+
+/* Nhóm mang ý nghĩa riêng thì đổi màu vạch và chữ theo ý nghĩa đó */
+.ums-legend--ok { border-left-color: var(--ums-act-save); color: #15803d; }
+.ums-legend--warn { border-left-color: var(--ums-act-edit); color: #9a6a00; }
+.ums-legend--bad { border-left-color: var(--ums-act-del); color: var(--ums-act-del); }
+
+/* Trạng thái rỗng */
+.ums-empty {
+    padding: var(--ums-sp-8) var(--ums-sp-4);
+    text-align: center;
+    color: var(--ums-ink-3);
+}
+
+/* Font Awesome 7 đặt width: var(--fa-width, 1.25em) cho icon, nên để
+   display:block thì khối chỉ rộng 1.25em và dạt sát trái — text-align:center
+   của khối cha không kéo được khối con. Phải tự căn bằng margin. */
+.ums-empty > i {
+    display: block;
+    margin-inline: auto;
+    margin-bottom: var(--ums-sp-2);
+    font-size: 30px;
+    opacity: .6;
+}

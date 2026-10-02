@@ -1,0 +1,301 @@
+<style>
+    #btntindaluu {
+        background-color: var(--orange);
+        color: white;
+    }
+
+    .file-data span {
+        max-width: unset;
+        align-items: center;
+        display: flex
+    }
+
+    /* ====== Hardcode thông báo ====== */
+    .hardcode-thongbao {
+        margin-bottom: 24px;
+    }
+    .hardcode-thongbao summary {
+        list-style: none;
+        cursor: pointer;
+        outline: none;
+    }
+    .hardcode-thongbao summary::-webkit-details-marker { display: none; }
+    .hardcode-thongbao summary::marker { display: none; }
+
+    .hardcode-card {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 18px 22px;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        transition: all 0.25s ease;
+        border: 1px solid #eef2f7;
+    }
+    .hardcode-card:hover {
+        box-shadow: 0 6px 22px rgba(37, 99, 235, 0.15);
+        transform: translateY(-2px);
+        border-color: #c7d8f7;
+    }
+
+    .hardcode-icon {
+        flex-shrink: 0;
+        width: 56px;
+        height: 56px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #4f8bf9, #2563eb);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-size: 22px;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    }
+
+    .hardcode-body {
+        flex: 1;
+        min-width: 0;
+    }
+    .hardcode-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #1a202c;
+        line-height: 1.45;
+        margin: 0 0 8px 0;
+    }
+    .hardcode-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+        font-size: 13px;
+        color: #6c757d;
+    }
+    .hardcode-meta i { margin-right: 5px; color: #2563eb; }
+
+    .hardcode-arrow {
+        flex-shrink: 0;
+        color: #94a3b8;
+        font-size: 14px;
+        transition: transform 0.25s ease, color 0.25s ease;
+    }
+    .hardcode-thongbao[open] .hardcode-arrow {
+        transform: rotate(90deg);
+        color: #2563eb;
+    }
+    .hardcode-thongbao[open] .hardcode-card {
+        border-radius: 12px 12px 0 0;
+        border-color: #2563eb;
+        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
+    }
+    .hardcode-thongbao[open] .hardcode-card:hover {
+        transform: none;
+    }
+
+    .hardcode-detail {
+        background: #fff;
+        padding: 28px 32px;
+        border-radius: 0 0 12px 12px;
+        border: 1px solid #2563eb;
+        border-top: none;
+        animation: fadeInDown 0.3s ease;
+    }
+    .hardcode-detail-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #c92a2a;
+        text-align: center;
+        text-transform: uppercase;
+        line-height: 1.5;
+        margin-bottom: 20px;
+    }
+    .hardcode-detail p {
+        margin-bottom: 12px;
+        line-height: 1.75;
+        color: #2d3748;
+        font-size: 14.5px;
+    }
+    .hardcode-highlight {
+        background: #fff8e1;
+        padding: 14px 18px;
+        border-left: 4px solid #f59e0b;
+        border-radius: 6px;
+        margin-top: 18px;
+        line-height: 1.7;
+        color: #5a3e00;
+    }
+
+    @keyframes fadeInDown {
+        from { opacity: 0; transform: translateY(-8px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Ẩn empty state "Hiện tại chưa có tin tức nào" */
+    #zonetintuc > div[style*="text-align:center"] {
+        display: none !important;
+    }
+</style>
+<div class="one-door study-space">
+    <div class="content-tab no-tab content-search">
+        <div class="d-flex justify-content-between">
+            <div class="nav-content-left">
+                <p class="link"><a href="#">Tin tức</a><i class="fal fa-angle-right"></i><a href="#">Toàn bộ</a></p>
+            </div>
+
+            <div class="nav-content-right">
+                <a class="d-block text-right" href=""><i class="fas fa-question-circle"></i></a>
+            </div>
+        </div>
+        <div class="news-search-form">
+            <div class="form-group search-input">
+                <label for="search_input" class="form-label btnSearchIcon"><i class="fal fa-search"></i></label>
+                <input class="form-control" id="txtSearch_TuKhoa" placeholder="Tìm kiếm thông tin">
+
+            </div>
+            <div class="form-group date-input">
+                <label for="txtSearch_TuNgay" class="form-label"><i class="fal fa-calendar-alt"></i></label>
+                <input class="form-control input-datepicker" id="txtSearch_TuNgay" placeholder="Từ ngày" value="">
+
+            </div>
+            <div class="form-group date-input">
+                <label for="txtSearch_DenNgay" class="form-label"><i class="fal fa-calendar-alt"></i></label>
+                <input class="form-control input-datepicker" id="txtSearch_DenNgay" placeholder="Đến ngày" value="">
+
+            </div>
+            <button class="btn btnSearch" id="">Tìm kiếm</button>
+        </div>
+        <div class="nav-news" id="zoneDonVi">
+            <a class="active nav-new-item" href="#">Toàn bộ</a>
+        </div>
+    </div>
+
+    <div class="news-page container-fluid">
+        <div class="row">
+            <div class="col-12 col-lg-9">
+                <details class="hardcode-thongbao" id="hardcode_thongbao">
+                    <summary>
+                        <div class="hardcode-card">
+                            <div class="hardcode-icon"><i class="fal fa-bullhorn"></i></div>
+                            <div class="hardcode-body">
+                                <div class="hardcode-title">THÔNG BÁO Về việc điều chỉnh thời hạn đăng ký học lại và hạn nộp học phí đối với các lớp học riêng, Kỳ 3 (hè) năm học 2025 - 2026</div>
+                                <div class="hardcode-meta">
+                                    <span><i class="fas fa-caret-right"></i>Phòng Quản lý đào tạo và Đảm bảo chất lượng</span>
+                                    <span><i class="fal fa-calendar-alt"></i>16/05/2026</span>
+                                </div>
+                            </div>
+                            <div class="hardcode-arrow"><i class="fas fa-chevron-right"></i></div>
+                        </div>
+                    </summary>
+                    <div class="hardcode-detail">
+                        <p class="hardcode-detail-title">THÔNG BÁO VỀ VIỆC ĐIỀU CHỈNH THỜI GIAN ĐĂNG KÝ HỌC LẠI VÀ NỘP HỌC PHÍ ĐỐI VỚI CÁC LỚP HỌC RIÊNG, KỲ 3- NĂM HỌC 2025-2026</p>
+                        <p>Kính gửi: <strong>Các bạn sinh viên,</strong></p>
+                        <p style="text-align: justify;">Do số lượng đăng ký lớp mở riêng nhiều và cần thêm thời gian rà soát sĩ số các lớp học riêng để mở lớp và tính học phí đối với các lớp học riêng, Phòng Quản lý đào tạo và Đảm bảo chất lượng thông báo đến sinh viên về việc điều chỉnh thời gian đăng ký học lại và nộp phí đối với các lớp học riêng kỳ 3 (hè) năm học 2025 - 2026 như sau:</p>
+                        <div class="hardcode-highlight">
+                            <strong>Hạn đăng ký và nộp học phí trên cổng sinh viên:</strong> Đến hết ngày <strong>22/05/2026</strong>.
+                        </div>
+                    </div>
+                </details>
+                <details class="hardcode-thongbao" id="hardcode_thongbao_2">
+                    <summary>
+                        <div class="hardcode-card">
+                            <div class="hardcode-icon"><i class="fal fa-bullhorn"></i></div>
+                            <div class="hardcode-body">
+                                <div class="hardcode-title">THÔNG BÁO VỀ VIỆC HOÀN THÀNH HỌC PHÍ HỌC KỲ 3 (HỌC KỲ HÈ), NĂM HỌC 2025-2026</div>
+                                <div class="hardcode-meta">
+                                    <span><i class="fas fa-caret-right"></i>Phòng Quản lý đào tạo và Đảm bảo chất lượng</span>
+                                    <span><i class="fal fa-calendar-alt"></i>01/06/2026</span>
+                                </div>
+                            </div>
+                            <div class="hardcode-arrow"><i class="fas fa-chevron-right"></i></div>
+                        </div>
+                    </summary>
+                    <div class="hardcode-detail">
+                        <p class="hardcode-detail-title">THÔNG BÁO VỀ VIỆC HOÀN THÀNH HỌC PHÍ HỌC KỲ 3 (HỌC KỲ HÈ), NĂM HỌC 2025-2026</p>
+                        <p style="text-align: justify;">Căn cứ Quyết định số 173/QĐ-ĐHCNĐA ngày 28/04/2025 về việc ban hành Kế hoạch đào tạo năm học 2025 - 2026;</p>
+                        <p style="text-align: justify;">Nhà Trường thông báo tới sinh viên các Khoa/Viện đã đăng ký tín chỉ về việc hoàn thành học phí học kỳ 3 (học kỳ hè) năm học 2025 – 2026 như sau:</p>
+                        <p style="text-align: justify;"><strong>1.</strong> Thời hạn hoàn thành học phí đối với các lớp tín chỉ đã đăng ký: ngày <strong>03/06/2026</strong>.</p>
+                        <p style="text-align: justify;"><strong>2.</strong> Thời gian Trường thực hiện rút tín chỉ đối với SV không hoàn thành học phí đúng hạn: ngày <strong>04/06/2026</strong>.</p>
+                        <p style="text-align: justify;"><strong>3.</strong> Đối với lớp học bổ sung (lớp riêng): Sau khi rút tín chỉ đối với sinh viên không hoàn thành học phí, Trường thực hiện tính lại học phí trên số lượng sinh viên đã nộp học phí, sinh viên đã nộp học phí cần phải nộp học phí bổ sung sau khi tính lại. Thời hạn hoàn thành nộp học phí bổ sung: ngày <strong>05/06/2026</strong>.</p>
+                        <p style="text-align: justify;"><strong>4.</strong> Rà soát hủy lớp học bổ sung (lớp riêng): Trường thực hiện hủy lớp học bổ sung (lớp riêng) đối với các lớp đã mở có sinh viên không hoàn thành học phí sau khi tính lại. Thời hạn hủy lớp: ngày <strong>06/06/2026</strong>. Nếu lớp bổ sung (lớp riêng) do SV vẫn có nguyện vọng học, Khoa/Viện/CVHT tập hợp gửi P.QLĐT&ĐBCL để thực hiện tính lại học phí, SV hoàn thành học phí bổ sung trước ngày <strong>08/06/2026</strong>.</p>
+                        <div class="hardcode-highlight">
+                            Sau khi thực hiện rút tín chỉ do SV không hoàn thành học phí theo các mốc thời gian trên, Trường không xử lý đăng ký lại tín chỉ đã rút đối với SV trong học kỳ 3 (học kỳ hè) năm học 2025 – 2026.
+                            <br><br>
+                            Nhà trường thông báo đến Sinh viên để SV thực hiện đảm bảo quyền lợi và tiến độ học tập.
+                        </div>
+                    </div>
+                </details>
+                <div class="row news-list zone-bus" id="zonetintuc">
+
+                </div>
+                <div class="box-shadow news-detail zone-bus" id="newsdetail" style="display: none">
+                    <h4 class="title" id="newstitle"></h4>
+
+                    <div class="meta">
+                        <a class="cate-link" href=""><i class="fas fa-caret-right me-1"></i><span
+                                id="newscoso"></span></a>
+                        <p class="mb-0 ms4"><i class="fal fa-calendar-alt me-1"></i><span id="newsngay"></span></p>
+                    </div>
+                    <div class="news-content" id="newscontent">
+                    </div>
+
+                    <div class="news-content txtFileDinhKem" id="txtFileDinhKem">
+                    </div>
+                    <div class="line"></div>
+                    <div class="group-btn">
+                        <a href="#" class="btnClose"><i class="fal fa-chevron-left me-1"></i> Quay lại</a>
+                        <a class="color-orange" id="btnLuuDanhDau" href="#">Lưu đánh dấu<i
+                                class="fal fa-bookmark ms-2"></i></a>
+                        <a id="btntindaluu" href="#" styles="display: none">Đã lưu<i
+                                class="fal fa-bookmark ms-2"></i></a>
+                    </div>
+                    <div class="comments mt-3">
+                        <p class="fs-18 fst-italic fw-bold text-decoration-underline mb-5">Ý kiến cá nhân</p>
+                        <div class="news-search-form">
+                            <div class="form-group date-input" style="max-width: unset">
+
+                                <textarea class="form-control txtNoiDungTinNhan" rows="3" id="txtNoiDungTinNhan"
+                                    placeholder="Bạn nghĩ gì về tin này?"></textarea>
+                                <label for="start_date_input" id="btnGuiTin" class="form-label"
+                                    style="top:20px; right: 15px; cursor: pointer;">Gửi</label>
+
+                            </div>
+                        </div>
+                        <div class="commented">
+                            <div class="com-label  position-relative">
+                                <div class="group d-flex align-items-center bg-white pe-4">
+                                    <img src="assets/images/comment-icon.png">
+                                    <span class="fs-18 fw-bold ms-2" id="lblTongBinhLuan">Bình luận (0)</span>
+                                </div>
+                            </div>
+                            <div id="commented">
+
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+            <div class="col-12 col-lg-3 block-news" id="zonetindadanhdau" style="display: none">
+                <div class="box-shadow">
+                    <div class="dashboad-cate-title">
+                        <span class="icon"></span>
+                        <span>Tin đã đánh dấu</span>
+                    </div>
+                    <div class="row news-list" id="tindanhdau">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="modules/tintuc/script/tintuc.js?v=1.0.1.4"></script>
+<script src="modules/tintuc/script/crypto-js.js"></script>
+<script type="text/javascript">
+    //var main_doc = {};
+    if (!main_doc) var main_doc = {};
+    main_doc['TinTuc'] = new TinTuc();
+    $(document).ready(function () {
+        main_doc.TinTuc.init();
+    });
+</script>

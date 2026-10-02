@@ -1,0 +1,172 @@
+/* =========================================================================
+   6. COMPONENTS — nút
+   ========================================================================= */
+
+.ums-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ums-sp-2);
+    height: var(--ums-control-h);
+    padding: 0 var(--ums-sp-4);
+    border: 1px solid transparent;
+    border-radius: var(--ums-r-1);
+    font-size: var(--ums-fz-14);
+    font-weight: var(--ums-fw-medium);
+    line-height: 1;
+    white-space: nowrap;
+    transition: background var(--ums-t), border-color var(--ums-t), color var(--ums-t);
+}
+
+.ums-btn:disabled,
+.ums-btn.is-disabled { opacity: .5; pointer-events: none; }
+
+.ums-btn--sm { height: var(--ums-control-h-sm); padding: 0 var(--ums-sp-3); font-size: var(--ums-fz-13); }
+.ums-btn--block { width: 100%; }
+
+/* Nền đặc */
+.ums-btn--primary { background: var(--ums-blue); color: #fff; }
+.ums-btn--primary:hover { background: var(--ums-blue-d); }
+
+.ums-btn--navy { background: var(--ums-navy); color: #fff; }
+.ums-btn--navy:hover { background: var(--ums-navy-l); }
+
+.ums-btn--add { background: var(--ums-act-add); color: #fff; }
+.ums-btn--add:hover { background: #157347; }
+
+.ums-btn--save { background: var(--ums-act-save); color: #fff; }
+.ums-btn--save:hover { background: #16a34a; }
+
+/* btn-warning của bản gốc — việc "xem/tải lại/tải tệp lỗi", không phải cảnh báo */
+.ums-btn--warn { background: var(--ums-act-edit); color: #fff; }
+.ums-btn--warn:hover { background: #b87c00; }
+
+.ums-btn--danger { background: var(--ums-act-del); color: #fff; }
+.ums-btn--danger:hover { background: #c02a24; }
+
+/* =========================================================================
+   NÚT VIỀN — thay cho nút trắng khi việc có tính chất rõ ràng
+   -------------------------------------------------------------------------
+   Màn cũ đầy nút trắng giống hệt nhau nên nhìn không ra việc nào là gì.
+   Chia theo ĐỘNG TÁC, không theo sở thích từng màn:
+
+       out-primary   xem · tìm · tải lại · mở danh sách
+       out-success   thêm một mục phụ (thêm dòng, thêm thành viên…)
+       out-info      in · xuất · gửi · import
+       out-warn      việc cần cân nhắc (sinh số, chốt số…)
+       out-danger    xoá · huỷ · gỡ
+
+   Giữ ghost (trắng) cho việc TRUNG TÍNH: Đóng, Viết lại, Thử lại.
+   ========================================================================= */
+/* Nền nhạt CÙNG THÔNG MÀU với viền, không để trắng — đo từ bộ nút mẫu
+   người dùng gửi (#e7f0ff cho viền xanh, #e9f6ed cho viền xanh lá). Nền trắng
+   làm nút viền trông vẫn "trống", đúng thứ đang muốn tránh. */
+.ums-btn--out-primary { background: var(--ums-blue-l); border-color: var(--ums-blue); color: var(--ums-blue); }
+.ums-btn--out-primary:hover { background: #d6e4ff; }
+
+.ums-btn--out-success { background: #e9f6ed; border-color: var(--ums-act-save); color: #15803d; }
+.ums-btn--out-success:hover { background: #d8efe1; }
+
+.ums-btn--out-info { background: #e6f7fd; border-color: #22a2d6; color: #0e7fa8; }
+.ums-btn--out-info:hover { background: #d2eefa; }
+
+.ums-btn--out-warn { background: var(--ums-warn-bg); border-color: var(--ums-act-edit); color: #9a6a00; }
+.ums-btn--out-warn:hover { background: #f9e8c2; }
+
+.ums-btn--out-danger { background: #fdecec; border-color: var(--ums-act-del); color: var(--ums-act-del); }
+.ums-btn--out-danger:hover { background: #f9d8d8; }
+
+/* Viền / nền nhạt */
+.ums-btn--ghost {
+    background: var(--ums-surface);
+    border-color: var(--ums-line-2);
+    color: var(--ums-ink-2);
+}
+
+.ums-btn--ghost:hover { background: var(--ums-surface-2); border-color: var(--ums-ink-3); color: var(--ums-ink); }
+
+.ums-btn--quiet { background: transparent; color: var(--ums-ink-2); }
+.ums-btn--quiet:hover { background: var(--ums-surface-3); color: var(--ums-ink); }
+
+/* Nút HÀNH ĐỘNG nằm trong Ô BẢNG luôn mang màu đã quy định, không để trung
+   tính như chữ: kiểu mờ (ghost / quiet) trong bảng hiện màu xanh hành động.
+   Nút mang màu riêng (lưu, cảnh báo, xoá…) giữ nguyên màu của nó. */
+.ums-table td > .ums-btn--ghost,
+.ums-table td > .ums-btn--quiet,
+.ums-table td .ums-btn--ghost,
+.ums-table td .ums-btn--quiet { border-color: var(--ums-blue); background: var(--ums-blue-l); color: var(--ums-blue); }
+.ums-table td .ums-btn--ghost:hover,
+.ums-table td .ums-btn--quiet:hover { background: #d6e4ff; border-color: var(--ums-blue); color: var(--ums-blue); }
+.ums-table td .ums-btn--ghost[disabled],
+.ums-table td .ums-btn--quiet[disabled] { border-color: var(--ums-line-2); background: var(--ums-surface); color: var(--ums-ink-3); }
+
+/* =========================================================================
+   Nút "Xoá đã chọn" — đổi hẳn vẻ khi đã có dòng được chọn
+   -------------------------------------------------------------------------
+   Chưa chọn gì: nút mờ, im lặng, không hút mắt (và disabled nên không bấm
+   được). Chọn rồi: viền đỏ, chữ đỏ đậm, nền hồng rất nhạt — đang cầm dao
+   thì phải thấy rõ con dao. Chữ nút cũng đổi thành "Xoá N dòng đã chọn".
+   ========================================================================= */
+.ums-btn--delsel {
+    background: transparent;
+    border-color: transparent;
+    color: var(--ums-ink-3);
+}
+
+.ums-btn--delsel:not(:disabled) {
+    background: #fdecec;
+    border-color: var(--ums-act-del);
+    color: var(--ums-act-del);
+    font-weight: var(--ums-fw-semibold);
+}
+
+.ums-btn--delsel:not(:disabled):hover { background: var(--ums-act-del); color: #fff; }
+
+/* Nút TẢI LẠI chuẩn (ui.btn('reload') chữ mặc định): chỉ biểu tượng, nhẹ như "Xoá đã chọn".
+   THỨ TỰ trong nhóm nút (người dùng 2026-09-26): các nút chức năng → Xoá đã chọn → Tải lại (cuối cùng) —
+   đặt bằng order nên màn không phải tự sắp. */
+.ums-btn--tailai {
+    min-width: var(--ums-control-h);
+    padding: 0;
+    justify-content: center;
+    background: transparent;
+    border-color: var(--ums-line-2);
+    color: var(--ums-ink-2);
+}
+.ums-btn--tailai:hover { background: var(--ums-surface-3); color: var(--ums-blue); }
+.ums-btn--delsel { order: 90; }
+.ums-btn--tailai { order: 99; }
+/* Lưới an toàn: nút ↻ tự vẽ dạng .ums-iconbtn trong nhóm nút của KHUNG / đầu trang cũng xếp CUỐI (trừ đầu cột trái — ở đó ↻ đứng
+   trước nút Bộ lọc nâng cao theo luật cột trái) */
+:is(.ums-panel__tools, .ums-page__actions) > .ums-iconbtn:has(> .fa-rotate-right):not(.ums-master__side *) { order: 99; }
+/* chân hộp thoại giữ quy ước riêng: Xoá dạt trái (dialog.css) */
+.ums-dialog__foot > .ums-btn--delsel { order: 0; }
+
+/* Nút chỉ có biểu tượng, dùng trong ô bảng */
+.ums-iconbtn {
+    width: var(--ums-control-h-sm);
+    height: var(--ums-control-h-sm);
+    display: inline-grid;
+    place-items: center;
+    border: 1px solid transparent;
+    border-radius: var(--ums-r-1);
+    color: var(--ums-ink-2);
+    font-size: var(--ums-fz-14);
+    transition: all var(--ums-t);
+}
+
+.ums-iconbtn:hover { background: var(--ums-surface-3); }
+.ums-iconbtn + .ums-iconbtn { margin-left: var(--ums-sp-1); }
+
+/* Biểu tượng hành động nằm trong BẢNG: không khai kiểu thì mặc định màu xanh
+   (hành động chính), đúng luật "nút hành động phải mang màu đã quy định".
+   Nút biểu tượng ở đầu khung / hộp thoại (Đóng, Tải lại) vẫn trung tính. */
+.ums-table .ums-iconbtn:not([class*="ums-iconbtn--"]) { color: var(--ums-blue); }
+.ums-table .ums-iconbtn:not([class*="ums-iconbtn--"]):hover { background: var(--ums-blue-l); }
+
+.ums-iconbtn--view { color: var(--ums-blue); }
+.ums-iconbtn--view:hover { background: var(--ums-blue-l); }
+.ums-iconbtn--edit { color: var(--ums-act-edit); }
+.ums-iconbtn--edit:hover { background: var(--ums-warn-bg); }
+.ums-iconbtn--del { color: var(--ums-act-del); }
+.ums-iconbtn--del:hover { background: var(--ums-bad-bg); }

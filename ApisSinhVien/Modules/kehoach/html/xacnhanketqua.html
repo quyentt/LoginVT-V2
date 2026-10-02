@@ -1,0 +1,393 @@
+﻿<style>
+    /* ===== Xác nhận kết quả — fix hover trắng + contrast text ===== */
+    /* 1) Bỏ hover trắng chữ (override rule global .aps-table-select tr:hover td label) */
+    .aps-xacnhanketqua .aps-table-select .table tbody tr:hover td label,
+    .aps-xacnhanketqua .aps-table-select .table tbody tr:hover td span,
+    .aps-xacnhanketqua .aps-table-select .table tbody tr:hover td a,
+    .aps-xacnhanketqua .aps-table-select .table tbody tr:hover td {
+        color: #0f172a !important;
+    }
+
+    /* 2) Nền hover dịu, không quá sáng */
+    .aps-xacnhanketqua .aps-table-select .table.table-hover > tbody > tr:hover > td {
+        background-color: #eef2ff !important;
+    }
+
+    /* 3) Value trong ô — đậm & rõ (theo chuẩn contrast global) */
+    .aps-xacnhanketqua #tblKetQua tbody td,
+    .aps-xacnhanketqua #tblKetQua tbody td label,
+    .aps-xacnhanketqua #tblKetQua tbody td span {
+        color: #0f172a !important;
+        font-weight: 600;
+        opacity: 1;
+        font-style: normal;
+    }
+
+    /* 4) Header bảng — đậm */
+    .aps-xacnhanketqua #tblKetQua thead th {
+        color: #0f172a !important;
+        font-weight: 700;
+        background-color: #f1f5f9;
+    }
+
+    /* 5) Mã / lớp cột đầu — giữ đen chắc */
+    .aps-xacnhanketqua #tblKetQua tbody td:nth-child(-n+4) {
+        color: #0f172a !important;
+        font-weight: 600;
+    }
+
+    /* 6) Modal Xuất Excel — title CENTER, close × sát phải (override global space-between) */
+    #modal_ExportExcel .modal-header {
+        position: relative !important;
+        justify-content: center !important;
+    }
+    #modal_ExportExcel .modal-header .modal-title {
+        margin: 0 auto !important;
+        text-align: center !important;
+    }
+    #modal_ExportExcel .modal-header .close {
+        position: absolute !important;
+        right: 15px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        margin: 0 !important;
+        text-shadow: none !important;
+        padding: 0 8px !important;
+    }
+</style>
+
+<!-- Main content -->
+<section class="content MainPage aps-sinhvien" id="MainContent">
+    <div class="row aps-xacnhanketqua">
+        <!--Search zone-->
+        <div class="col-lg-12 box box-solid box-shadow pd0">
+            <!--Box search-->
+            <div class="box box-solid box-search pd20 pb10">
+                <div class="box-body pd0">
+                    <div class="group-title d-none">
+                        <p>
+                            <i class="fa fa-window-restore">
+                            </i> <span class="lang" key="">Tìm kiếm 1</span>
+                        </p>
+                    </div>
+                    <div class="area-search">
+                        <div id="search" class="inputSearch collapse in">
+                            <!-- Bộ tìm kiếm -->
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_HeDaoTao_IHD" class="select-opt" style="width:100% !important">
+                                    <option id="" value=""> --Chọn hệ đào tạo-- </option>
+                                </select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_KhoaDaoTao_IHD" class="select-opt" style="width:100% !important">
+                                    <option id="" value=""> --Chọn khóa đào tạo-- </option>
+                                </select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_ChuongTrinh_IHD" class="select-opt"
+                                    style="width:100% !important">
+                                    <option id="" value=""> --Chọn chương trình-- </option>
+                                </select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_Lop_IHD" class="select-opt" style="width:100% !important">
+                                    <option id="" value=""> --Chọn lớp-- </option>
+                                </select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_NamNhapHoc_IHD" class="select-opt"
+                                    style="width:100% !important"></select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_KhoaQuanLy_IHD" class="select-opt"
+                                    style="width:100% !important"></select>
+                            </div>
+
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_KeHoach" class="select-opt"
+                                    style="width:100% !important"></select>
+                            </div>
+                            <div class="clear"></div>
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_TruongThongTin" class="select-opt" style="width:100% !important"
+                                    multiple="multiple"></select>
+                            </div>
+                            <div class="col-sm-6 item-search aps-gap-10">
+                                <a id="btnSearch" class="btn btn-default btn-search">
+                                    <i class="fa fa-search"></i> <span class="lang" key="">Tìm kiếm</span></a>
+
+                                <div class="dropdown" id="zonebtnBaoCao_XNKQ">
+                                </div>
+                                <div class="dropdown" id="zonebtnBaoCao_XNKQ_Import"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Danh sách -->
+            <div class="box box-solid aps-xacnhanketqua-list pd20">
+                <div class="box-header pd0">
+                    <h3 class="box-title"><span id="lblForm_KhoiTao_NO">
+                            <i class="fa-solid fa-list-timeline"></i> Danh sách</span> </h3>
+                    <div class="pull-right">
+                        <a class="btn btn-default btnClose d-none" href="#" title="Close"><i
+                                class="fa fa-times"></i></a>
+                        <a class="btn btn-primary btnDownloadAllFile"><i class="fa-light fa-upload"></i>
+                            <span class="lang" key="">Tải file</span></a>
+                        <a id="btnXuatExcel" class="btn btn-success"
+                            style="background:#1d6f42;border-color:#1d6f42"><i
+                                class="fa-solid fa-file-excel"></i>
+                            <span class="lang" key="">Xuất Excel</span></a>
+                        <a id="btnImport" class="btn btn-success"><i class="fa fa-cloud-upload"></i>
+                            <span class="lang" key="">Import trường thông tin</span></a>
+                        <a id="btnXacNhan" class="btn btn-primary"><i class="fa-solid fa-circle-check"></i>
+                            <span class="lang" key="">Xác nhận</span></a>
+                    </div>
+                </div>
+                <div class="box-body pd0">
+                    <div id="divprogessquanso"></div>
+                    <div id="divprogessdata"></div>
+                    <div class="pull-right"></div>
+                    <div class="clear"></div>
+                    <div class="row aps-xacnhanketqua-table mt-10">
+                        <div class="col-sm-12 scroll-table-x aps-table-select">
+                            <table id="tblKetQua" class="table table-hover table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th class="td-center td-fixed">Stt</th>
+                                        <th class="td-center">Lớp</th>
+                                        <th class="td-center">Mã số</th>
+                                        <th class="td-center">Họ tên</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="box-footer"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="modal fade modal_XacNhan" id="modal_XacNhan" role="dialog" aria-labelledby="myModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" style="width: 800px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+                <h4 class="modal-title modal-name" id="myModalLabel"><span style="float: left"><i
+                            class="fa fa-wrench"></i> Duyệt hồ sơ: </span><span id="txtHoSoDuTuyen"></span></h4>
+            </div>
+            <div class="modal-body">
+                <div class="aps-add-new pd10">
+                    <!-- 1. Nội dung xác nhận -->
+                    <div class="row aps-form">
+                        <div class="row aps-lable text-left">
+                            <p class="group-group-title-name border-0 mb-0">
+                                <span class="badge bg-blue">Nội dung</span>
+                            </p>
+                        </div>
+                        <div class="row aps-form-item">
+                            <div class="col-sm-12 aps-form-input">
+                                <input id="txtNoiDungXacNhan" class="form-control form-border-bottom" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. Chọn xác nhận -->
+                    <div class="row aps-form mt-20">
+                        <div class="row aps-lable text-left">
+                            <p class="group-group-title-name border-0 mb-0">
+                                <span class="badge bg-blue">Chọn xác nhận</span>
+                            </p>
+                        </div>
+                        <div class="row zoneBtnXacNhan" id="zoneBtnXacNhan">
+                            <div style="margin-left: auto; margin-right: auto; width: 270px">
+                                <div id="btnClose_HDBL" class="btn-large">
+                                    <a class="btn"><i style="color: #337ab7"
+                                            class="fa fa-angle-double-down fa-4x"></i></a>
+                                    <a class="color-active bold lbsymbolHD">Đóng</a>
+                                </div>
+                                <div id="btnClose_HDBL" class="btn-large">
+                                    <a class="btn"><i style="color: #337ab7"
+                                            class="fa fa-angle-double-down fa-4x"></i></a>
+                                    <a class="color-active bold lbsymbolHD">Đóng</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. Lịch sử xác nhận -->
+                    <div class="row aps-form mt-20">
+                        <div class="row aps-lable text-left mb-0">
+                            <p class="group-group-title-name border-0 mb-0">
+                                <span class="badge bg-blue">Lịch sử xác nhận</span>
+                            </p>
+                        </div>
+                        <div class="row aps-form-table">
+                            <table id="tblModal_XacNhan" class="table tblModal_XacNhan">
+                                <thead>
+                                    <tr>
+                                        <th class="td-fixed td-center">Stt</th>
+                                        <th class="td-left">Tình trạng duyệt</th>
+                                        <th class="td-left">Nội dung</th>
+                                        <th class="td-left">Người xác nhận</th>
+                                        <th class="td-center" style="width: 100px">Ngày</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="notify"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" id="btnCancel"><i
+                        class="fa fa-times-circle"></i> Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="myModalTruongTT" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 1080px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+                <h4 class="modal-title"><span class="lang" key="">Kết quả import</span> - <span
+                        class="SinhVienDaChon"></span></h4>
+            </div>
+            <div class="modal-body pd0" id="modal_body">
+                <div class="aps-table-select pd20">
+                    <table id="tblTruongTT" class="table table-hover table-bordered tblTruongTT">
+                        <thead>
+                            <tr>
+                                <th class="td-fixed">Stt</th>
+                                <th class="td-center"><span class="lang" key="">Mã số</span></th>
+                                <th class="td-center"><span class="lang" key="">Thời gian thực hiện</span></th>
+                                <th class="td-center"><span class="lang" key="">Người thực hiện</span></th>
+                                <th class="td-center"><span class="lang" key="">Trường thông tin</span></th>
+                                <th class="td-center"><span class="lang" key="">Giá trị cập nhật</span></th>
+                                <th class="td-center"><span class="lang" key="">Lỗi</span></th>
+                                <th class="td-center"><span class="lang" key="">Ghi chú</span></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div id="notify"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        <i class="fa fa-times-circle-o"></i> <span class="lang" key="">Đóng</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal cấu hình + tiến độ Xuất Excel -->
+<div class="modal fade" id="modal_ExportExcel" role="dialog" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog" style="width: 640px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" style="color:#0f172a;font-weight:700">
+                    <i class="fa-solid fa-file-excel" style="color:#1d6f42"></i>
+                    <span class="lang" key="">Xuất Excel dữ liệu hồ sơ</span>
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div style="padding: 0 15px 10px; color:#0f172a">
+                    <p style="margin:6px 0"><strong>Kế hoạch:</strong>
+                        <span id="lblExport_KeHoach">—</span></p>
+                    <p style="margin:6px 0"><strong>Trường thông tin xuất:</strong>
+                        <span id="lblExport_TruongTT">—</span></p>
+                    <p style="margin:6px 0"><strong>Tổng SV theo bộ lọc:</strong>
+                        <span id="lblExport_TongSV">— (bấm "Đếm" để kiểm tra)</span>
+                        <a class="btn btn-default btn-xs" id="btnExport_Dem" style="margin-left:8px">
+                            <i class="fa fa-refresh"></i> Đếm</a>
+                    </p>
+                </div>
+                <div style="padding: 10px 15px; border-top:1px solid #e5e7eb; color:#0f172a">
+                    <label style="font-weight:700"><span class="lang" key="">Số lượng SV cần xuất</span></label>
+                    <div style="margin-top:8px">
+                        <label style="margin-right:15px;font-weight:500;cursor:pointer">
+                            <input type="radio" name="exportQty" value="100"> 100</label>
+                        <label style="margin-right:15px;font-weight:500;cursor:pointer">
+                            <input type="radio" name="exportQty" value="500"> 500</label>
+                        <label style="margin-right:15px;font-weight:500;cursor:pointer">
+                            <input type="radio" name="exportQty" value="1000"> 1.000</label>
+                        <label style="margin-right:15px;font-weight:500;cursor:pointer">
+                            <input type="radio" name="exportQty" value="5000"> 5.000</label>
+                        <label style="font-weight:500;cursor:pointer">
+                            <input type="radio" name="exportQty" value="all" checked> Tất cả</label>
+                    </div>
+                    <p style="margin-top:8px;color:#64748b;font-size:12px">
+                        Mẹo: xuất ít trước để đo tốc độ, rồi xuất tất cả.
+                    </p>
+                </div>
+                <div id="zoneExport_Progress" style="padding:10px 15px; display:none; border-top:1px solid #e5e7eb">
+                    <label style="font-weight:700;color:#0f172a">Tiến độ xuất</label>
+                    <div class="progress" style="height:25px;margin:6px 0">
+                        <div id="barExport_Progress"
+                             class="progress-bar progress-bar-success progress-bar-striped active"
+                             role="progressbar"
+                             style="width:0%;line-height:25px;font-weight:600">0%</div>
+                    </div>
+                    <p id="lblExport_ProgressLog" style="margin:0;color:#334155;font-size:13px">Đang chuẩn bị…</p>
+                </div>
+            </div>
+            <div class="modal-footer" style="display:flex;gap:10px;align-items:center">
+                <button type="button" class="btn btn-danger" id="btnExport_Huy" style="display:none">
+                    <i class="fa fa-stop-circle"></i> <span class="lang" key="">Hủy xuất</span>
+                </button>
+                <div style="margin-left:auto;display:flex;gap:10px">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" id="btnExport_Close">
+                        <i class="fa fa-times-circle"></i> <span class="lang" key="">Đóng</span>
+                    </button>
+                    <button type="button" class="btn btn-success" id="btnExport_Start"
+                            style="background:#1d6f42;border-color:#1d6f42">
+                        <i class="fa-solid fa-file-excel"></i> <span class="lang" key="">Xuất Excel</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- XLSX (SheetJS) — phục vụ Xuất Excel dữ liệu hồ sơ. Load 1 lần, idempotent. -->
+<script>
+    (function loadXLSX() {
+        if (typeof XLSX !== 'undefined') return;
+        var cdnList = [
+            'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',
+            'https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js',
+            'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js'
+        ];
+        var i = 0;
+        function tryNext() {
+            if (i >= cdnList.length) { console.error('[XLSX] không load được từ tất cả CDN'); return; }
+            var s = document.createElement('script');
+            s.src = cdnList[i]; s.crossOrigin = 'anonymous';
+            s.onload = function () { console.log('[XLSX] loaded từ', cdnList[i]); };
+            s.onerror = function () { console.warn('[XLSX] fail', cdnList[i]); i++; tryNext(); };
+            document.head.appendChild(s);
+        }
+        tryNext();
+    })();
+</script>
+
+<!-- js -->
+<script src="modules/kehoach/script/xacnhanketqua.js?v=1.0.0.35"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['XacNhanKetQua'] = new XacNhanKetQua();
+    $(document).ready(function () {
+        main_doc.XacNhanKetQua.init();
+    });
+</script>

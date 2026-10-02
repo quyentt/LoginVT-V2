@@ -1,0 +1,432 @@
+<!-- Main content — pattern cu (box-search + col-sm-3) tuong thich CA index.aspx + indexi.aspx.
+     Da GO link "assets/css-new/styles.css" vi no import BS5.3 + main.css conflict voi indexi.aspx
+     (dung BS5.0.2 + reskin dask-blue) -> break header/sidebar khi navigate qua lai skin. -->
+<style>
+    .lbTinhTrang {
+        float: right;
+        font-weight: bold;
+        border: 4px solid;
+        opacity: 0.5;
+        color: red;
+        -ms-transform: rotate(10deg);
+        -webkit-transform: rotate(10deg);
+        transform: rotate(10deg);
+    }
+    .btnxacnhan_small {
+        width: 35px;
+        -webkit-box-shadow: 1px 1px 1px 1px #ccc;
+        -moz-box-shadow: 1px 1px 1px 1px #ccc;
+        box-shadow: 1px 1px 1px 1px #ccc;
+    }
+    /* ═══ Page-scoped fix — ep hien wrapper .myTab-item.show + card mo (khong co
+         inline display:none). Panel #zone_nhapchuyencan co inline display:none van
+         phai giu (chi hien khi JS bat), nen dung [style*="display:none"] excluder. ═══ */
+    .aps-nhaptheolop .myTab-item.show,
+    .aps-nhaptheolop .card.today-card:not([style*="display:none"]):not([style*="display: none"]),
+    .aps-nhaptheolop .card.today-card:not([style*="display:none"]):not([style*="display: none"]) > .card-body,
+    .aps-nhaptheolop .myTab-content,
+    .aps-nhaptheolop .function-content,
+    .aps-nhaptheolop .feature-content {
+        display: block !important;
+        visibility: visible !important;
+        height: auto !important;
+        opacity: 1 !important;
+        overflow: visible !important;
+    }
+    /* An breadcrumb noi bo (duplicate voi app-shell breadcrumb) */
+    .aps-nhaptheolop > .content-tab {
+        display: none !important;
+    }
+    /* Card header + tab header — style don gian, khong ke thua css-new */
+    .aps-nhaptheolop .card.today-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        padding: 0;
+    }
+    .aps-nhaptheolop .card.today-card > .card-header {
+        padding: 12px 16px;
+        border-bottom: 1px solid #e2e8f0;
+        background: #f8fafc;
+    }
+    .aps-nhaptheolop .card.today-card > .card-body {
+        padding: 16px;
+    }
+    .aps-nhaptheolop .myTab-header-link {
+        color: #0f172a;
+        font-weight: 600;
+        font-size: 15px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .aps-nhaptheolop .myTab-header-link.active {
+        color: #223771;
+    }
+    /* Filter box (pattern cu — box-search + col-sm-3 item-search) */
+    .aps-nhaptheolop .box-search {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        margin-bottom: 12px;
+    }
+    .aps-nhaptheolop .box-search .row {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+    .aps-nhaptheolop .item-search {
+        padding:0 5px !important;
+    }
+    .aps-nhaptheolop .item-search .form-control,
+    .aps-nhaptheolop .item-search select {
+        min-height: 38px;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        padding: 6px 10px;
+    }
+    .aps-nhaptheolop .item-search .select2-container {
+        width: 100% !important;
+    }
+    .aps-nhaptheolop .btn-search {
+        background: #223771 !important;
+        color: #fff !important;
+        border: 1px solid #223771 !important;
+        border-radius: 6px !important;
+        padding: 8px 16px !important;
+        font-weight: 600 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        height: 38px;
+    }
+    .aps-nhaptheolop .btn-search:hover {
+        background: #1c2e5f !important;
+    }
+</style>
+
+<div class="one-door mt-0 aps-chuyencan aps-nhaptheolop" id="MainContent">
+    <div class="content-tab no-tab">
+        <div class="d-flex justify-content-between">
+            <div class="nav-content-left">
+                <p class="link">
+                    <a href="#">Chuyên cần</a>
+                    <i class="fal fa-angle-right"></i>
+                    <a href="#">Nhập chuyên cần theo danh sách học</a>
+                </p>
+            </div>
+            <div class="nav-content-right">
+                <a class="d-block text-right" href="javascript:void(0)"><i class="fas fa-question-circle"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="function-content w-100">
+        <div class="feature-content has-tabs">
+            <div class="card today-card today-card-1 mb-40" id="zone_notify_detai">
+                <div class="card-header">
+                    <div class="myTab-header">
+                        <div class="myTab-header-item">
+                            <a href="javascript:void(0)" class="myTab-header-link active" data-myTab="danhsachhoc">
+                                <i class="fa-solid fa-list-timeline mr-5"></i> Danh sách học
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="myTab-content">
+                        <div class="myTab-item show" id="danhsachhoc">
+                            <!-- Filter row — pattern cu (box-search + col-sm-3 item-search) giong dangky.html
+                                 de dam bao render dung tren moi skin (index.aspx + indexi.aspx) -->
+                            <div class="box box-solid box-search pt15 pl15 pr15 pt10 pb10">
+                                <div class="box-body pd0">
+                                    <div class="row d-flex mb-0">
+                                        <div class="col-sm-3 item-search">
+                                            <select id="dropSearch_LoaiDanhSach" class="select-opt" style="width:100% !important">
+                                                <option value="">--Chọn loại danh sách--</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-3 item-search">
+                                            <select id="dropSearch_ThoiGian" class="select-opt" style="width:100% !important">
+                                                <option value="">--Chọn thời gian--</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-3 item-search">
+                                            <select id="dropSearch_LopQuanLy" class="select-opt" style="width:100% !important">
+                                                <option value="">--Chọn lớp quản lý--</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-3 item-search">
+                                            <select id="dropSearch_HocPhan" class="select-opt" style="width:100% !important">
+                                                <option value="">--Chọn học phần--</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row d-flex mb-0">
+                                        <div class="col-sm-3 item-search">
+                                            <input id="txtSearch_TuKhoa" type="text" class="form-control"
+                                                   placeholder="Nhập mã số hoặc tên" />
+                                        </div>
+                                        <div class="col-sm-6 item-search d-flex" style="gap: 8px;">
+                                            <a id="btnSearch" class="btn btn-default btn-search" href="javascript:void(0)">
+                                                <i class="fa fa-search"></i><span>Tìm kiếm</span>
+                                            </a>
+                                            <div class="dropdown" id="zonebtnBaoCao_NTL_Import"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Danh sach lop hoc -->
+                            <div class="color-blue mb-5 mt-10">
+                                <i class="fa-light fa-list-timeline fw-bold mr-5"></i>
+                                Danh sách lớp học phần
+                            </div>
+                            <div class="table-wrap aps-table-select aps-nhaptheolop-table">
+                                <div class="table-responsive fs-14 no-swiper aps-table-select">
+                                    <table id="tblLopHoc"
+                                           class="table table-border table-bordered tblLopHoc mb-0 table-noborder table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th class="td-fixed td-center bg-th">Stt</th>
+                                                <th class="td-left bg-th" style="min-width: 130px;">Loại danh sách</th>
+                                                <th class="td-left bg-th">Mã danh sách</th>
+                                                <th class="td-left bg-th">Tên danh sách</th>
+                                                <th class="td-left bg-th" style="min-width: 104px;">Mã học phần</th>
+                                                <th class="td-left bg-th">Tên học phần</th>
+                                                <th class="td-center bg-th" style="min-width: 86px;">Số lượng</th>
+                                                <th class="td-center bg-th">Thời gian</th>
+                                                <th class="td-center bg-th" style="min-width: 76px;">Hiển thị</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- Load from JS -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel Danh sach chuyen can (an mac dinh, hien khi user chon 1 danh sach) -->
+            <div class="card today-card today-card-1 mb-40 aps_nhapchuyencan" id="zone_nhapchuyencan" style="display:block">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center w-100">
+                        <div class="myTab-header">
+                            <div class="myTab-header-item">
+                                <a href="javascript:void(0)" class="myTab-header-link active">
+                                    <!-- <i class="fa-solid fa-list-timeline mr-5"></i> -->
+                                    <span id="lblForm_KhoiTao_NO">Danh sách</span>
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Nut Dong panel — an theo yeu cau, giu code de mo lai khi can
+                        <div class="ms-auto">
+                            <a class="btn btnClose btn-close-custom" href="javascript:void(0)" title="Đóng">
+                                <i class="fa-light fa-xmark"></i> <span>Đóng</span>
+                            </a>
+                        </div>
+                        -->
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-end flex-wrap flex-md-nowrap col-12 filter-4-item mb-10">
+                        <div class="flex-grow-1">
+                            <div class="row">
+                                <div class="col-12 col-md-6 mb-10 col-xxl-3 pl-0">
+                                    <div class="input-label-left">
+                                        <label class="mt-5 pl-0" style="padding-left: 0 !important;">Ngày khởi tạo</label>
+                                        <input id="txtSearch_TuNgay_KhoiTao" type="text"
+                                               class="form-control input-datepicker"
+                                               placeholder="dd/mm/yyyy" />
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6 mb-10 col-xxl-3">
+                                    <div class="input-label-left">
+                                        <label class="mt-5">Kiểu chuyên cần</label>
+                                        <div class="custom-select">
+                                            <select id="dropSearch_KieuChuyenCan_IHD"
+                                                    class="select-opt form-select" style="width:100% !important"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 mb-10">
+                                    <div id="divprogessquanso"></div>
+                                    <div id="divprogessdata"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex-shrink-0 d-flex align-items-center gap-2 flex-wrap">
+                            <a id="btnKhoiTao" class="btn btn-soft-red mb-10" href="javascript:void(0)">
+                                <i class="fa-light fa-calendar-day mr-5"></i> Khởi tạo ngày chuyên cần
+                            </a>
+                            <a id="btnCongBo" class="btn btn-soft-primary mb-10" href="javascript:void(0)">
+                                <i class="fa-light fa-check-circle mr-5"></i> Xác nhận
+                            </a>
+                            <div class="dropdown mb-10" id="zonebtnBaoCao_NTL"></div>
+                        </div>
+                    </div>
+
+                    <div class="color-blue mb-10 mt-10">
+                        <i class="fa-light fa-users fw-bold mr-5"></i>
+                        Danh sách sinh viên
+                    </div>
+                    <div class="table-wrap aps-table-select">
+                        <div class="table-responsive fs-14 no-swiper aps-table-select">
+                            <table id="tblNhapChuyenCan"
+                                   class="table table-border table-bordered aps-tblNhapChuyenCan mb-0 table-noborder">
+                                <thead>
+                                    <tr>
+                                        <th class="td-fixed td-center w-50px bg-th">Stt</th>
+                                        <th class="td-left bg-th">Hệ đào tạo</th>
+                                        <th class="td-left bg-th">Khóa học</th>
+                                        <th class="td-left bg-th">Khoa quản lý</th>
+                                        <th class="td-left bg-th">Chương trình</th>
+                                        <th class="td-left bg-th">Mã số</th>
+                                        <th class="td-left bg-th">Họ tên</th>
+                                        <th class="td-left bg-th">Ngày sinh</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                                <tfoot></tfoot>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end mt-20">
+                        <a id="btnSaveChuyenCan" class="btn btn-primary" href="javascript:void(0)">
+                            <i class="fa-light fa-save mr-5"></i> Lưu
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toolbar bottom (hidden mac dinh, mo qua BS5 modal) -->
+<div class="aps-all-button ml-20 aps-gap-10 btn-show mt-20" style="display:none !important;">
+    <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#modal_XacNhan">
+        Xác nhận
+    </button>
+</div>
+
+<!-- Modal Xac nhan — Bootstrap 5 -->
+<div class="modal fade aps_modal_XacNhan" id="modal_XacNhan" tabindex="-1"
+     aria-labelledby="myModalLabel_XacNhan" aria-hidden="true">
+    <div class="modal-dialog modal-860 modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title modal-name" id="myModalLabel_XacNhan">
+                    <i class="fa-light fa-check-circle mr-5"></i>
+                    <span class="loaiXacNhan" title="">Xác nhận</span>
+                    <span id="txtTenSanPham" class="lblLichHoc_HP ms-2"></span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body">
+                <!-- 1. Noi dung xac nhan -->
+                <div class="row zone-box bg-none border-0 pd0">
+                    <div class="row aps-add-new">
+                        <p class="group-group-title-name border-0 mb-0">
+                            <span class="badge">Nội dung <span class="loaiXacNhan" title="">Xác nhận</span></span>
+                        </p>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <input id="txtNoiDungXacNhanSanPham" type="text" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Chon xac nhan -->
+                <div class="row zone-box bg-none border-0 pd0 mt-20">
+                    <div class="row aps-add-new"
+                         style="border-bottom: 1px solid #e1e1e1 !important; margin-bottom: 0 !important;">
+                        <p class="group-group-title-name border-0"
+                           style="border-bottom: 0 !important; margin-bottom: 0 !important;">
+                            <span class="badge pd0">Chọn <span class="loaiXacNhan" title="">Xác nhận</span></span>
+                        </p>
+                    </div>
+                    <div class="row zoneBtnXacNhan mb-20" id="zoneBtnXacNhan">
+                        <div id="btnClose_HDBL" class="btn-large">
+                            <a class="btn" href="javascript:void(0)"><i style="color:#337ab7" class="fa-solid fa-circle-xmark fa-2x"></i></a>
+                            <a class="color-active bold lbsymbolHD" href="javascript:void(0)">Đóng</a>
+                        </div>
+                        <div id="btnClose_HDBL" class="btn-large">
+                            <a class="btn" href="javascript:void(0)"><i style="color:#337ab7" class="fa-solid fa-circle-xmark fa-2x"></i></a>
+                            <a class="color-active bold lbsymbolHD" href="javascript:void(0)">Đóng</a>
+                        </div>
+                        <div id="btnClose_HDBL" class="btn-large">
+                            <a class="btn" href="javascript:void(0)"><i style="color:#337ab7" class="fa-solid fa-circle-xmark fa-2x"></i></a>
+                            <a class="color-active bold lbsymbolHD" href="javascript:void(0)">Đóng</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Lich su xac nhan -->
+                <div class="row zone-box bg-none border-0 pd0">
+                    <div class="row aps-add-new">
+                        <p class="group-group-title-name border-0 mb-0">
+                            <span class="badge">Lịch sử <span class="loaiXacNhan" title="">Xác nhận</span></span>
+                        </p>
+                    </div>
+                    <div class="row aps-table-select">
+                        <table id="tblModal_XacNhan"
+                               class="table tblModal_XacNhan mb-0 mr-0 table-bordered table-noborder">
+                            <thead>
+                                <tr>
+                                    <th class="td-fixed td-center w-50px bg-th">Stt</th>
+                                    <th class="td-left bg-th"><span class="loaiXacNhan" title="">Xác nhận</span></th>
+                                    <th class="td-left bg-th">Người xác nhận</th>
+                                    <th class="td-left bg-th">Ngày</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div id="notify"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-bs-dismiss="modal" id="btnCancel">
+                    <i class="fa-regular fa-xmark"></i> Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="modules/nhapchuyencan/script/nhaptheolop.js?v=1.0.0.26"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['NhapTheoLop'] = new NhapTheoLop();
+    $(document).ready(function () {
+        main_doc.NhapTheoLop.init();
+
+        // FIX 2026-08-26: Select2 trong modal — re-init voi dropdownParent = modal
+        $(document).on('shown.bs.modal', '.modal', function () {
+            var $modal = $(this);
+            $modal.find('select.select-opt, select[id^="drop"]').each(function () {
+                var $sel = $(this);
+                try {
+                    if ($sel.hasClass('select2-hidden-accessible')) $sel.select2('destroy');
+                } catch (e) {}
+                $sel.select2({ dropdownParent: $modal, width: '100%' });
+            });
+        });
+    });
+</script>
+<style>
+    .modal .select2-container--open,
+    .modal .select2-container--open .select2-dropdown {
+        z-index: 100060 !important;
+    }
+    .modal .select2-results__options {
+        max-height: 220px !important;
+        overflow-y: auto !important;
+    }
+</style>

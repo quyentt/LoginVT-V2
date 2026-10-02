@@ -1,0 +1,195 @@
+﻿<style>
+    .checkbox-inline + .checkbox-inline, .radio-inline + .radio-inline {
+        margin-left: 0px;
+    }
+</style>
+<section class="content aps-xetHocBong">
+    <div class="row aps-phanbohocbong">
+        <div class="zone-bus" id="zonebatdau">
+            <!--Search zone-->
+            <div class="box box-solid box-search pd20 pb10">
+                <div class="box-body pd0">
+                    <div class="group-title d-none">
+                        <p class="titleSearchContent">
+                            <i class="fa fa-window-restore">
+                            </i> <span class="lang" key="">Tìm kiếm</span>
+                        </p>
+                    </div>
+                    <div class="area-search">
+                        <div id="search" class="inputSearch">
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_QuyHocBong" class="select-opt"></select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_ThoiGianDaoTao" class="select-opt"></select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <input id="txtSearch" class="form-control" placeholder="Nhập từ khóa tìm kiếm" />
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <a id="btnSearch" class="btn btn-default btn-search"><i class="fa fa-search"></i> <span class="lang" key="">Tìm kiếm</span></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="clear"></div>
+            <!-- Danh sách phân bổ -->
+            <div class="box box-solid aps-list-phanbo mt-20" style="margin-top: 15px !important;">
+                <div class="box-header pl20">
+                     <h3 class="box-title pl0 mt-10 pt5">
+                        <i class="fa-light fa-list-tree"></i> Danh sách phân bổ
+                        <span class="pull-right badge bg-light-blue ml-10">
+                            <span id="lblPhanBoHocBong_Tong"></span>
+                        </span>
+                    </h3>
+                    <div class="box-tools pull-right pr10">
+                        <a id="btnXoaPhanBoHocBong" class="btn btn-danger"><i class="fa fa-trash"></i> Xóa</a>
+                        <a class="btn btn-primary" id="btnThucHienPhanBo" href="#"><i class="fa-light fa-list-tree"></i> Thực hiện phân bổ</a>
+                        <a class="btn btnAdd btn-primary" href="#"><i class="fa fa-plus"></i> Thêm mới</a>
+                    </div>
+                </div>
+                <div class="box-body pd20 pt15">
+                    <div class="table-select2 aps-table-select">
+                        <table id="tblPhanBoHocBong" class="table table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="td-fixed td-center">Stt</th>
+                                    <th class="td-center">Phạm vi phân bổ</th>
+                                    <th class="td-center">Số lượng</th>
+                                    <th class="td-center">Số lượng phân bổ</th>
+                                    <th class="td-center td-fixed">
+                                        <input type="checkbox" id="chkSelectAll_PhanBoHocBong">
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- load from js -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thêm mới Phân bổ -->
+        <div class="box box-solid zone-bus form-container add-absolue aps-add-phabo" id="zoneEdit" style="display: none">
+            <div class="box-header with-border">
+                <h3 class="box-title"><span class="myModalLabel"><i class="fa fa-plus"></i> Thêm mới - </span> Phân bổ</h3>
+                <div class="pull-right">
+                    <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times"></i></a>
+                </div>
+            </div>
+            <div class="box-body pd0">
+                <div class="col-sm-12 box-view aps-add-new pd20">
+                    <div class="col col-lg-8 col-sm-8 ">
+                        <!-- 1. Noi dung bai bao -->
+                        <div class="row aps-form mt-10">
+                            <div class="row aps-lable-name">
+                                <p class="group-group-title-name border-0 mb-5">
+                                    <span class="badge bg-blue"> Thông tin phân bổ</span>
+                                </p>
+                            </div>
+                            <!--row 2-->
+                            <div class="row aps-form-item">
+                                <div class="col-sm-4 aps-form-lable">Số lượng phân bổ</div>
+                                <div class="col-sm-8 aps-form-input">
+                                    <input id="txtSoLuongPhanBo" class="form-control" value="0" />
+                                </div>
+                            </div>
+                            <!--row 2-->
+                            <div class="row aps-form-item">
+                                <div class="col-sm-4 aps-form-lable">Số tiền phân bổ</div>
+                                <div class="col-sm-8 aps-form-input">
+                                    <input id="txtSoTienPhanBo" class="form-control" value="0" />
+                                </div>
+                            </div>
+                            <!--row 2-->
+                            <div class="row aps-form-item">
+                                <div class="col-sm-4 aps-form-lable">Cách lưu</div>
+                                <div class="col-sm-8 aps-form-input">
+                                    <select id="dropCachLuu" class="select-opt">
+                                        <option value="0"> Từng bản ghi</option>
+                                        <option value="1"> Gộp nhóm</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2. Chọn phạm vi các lớp phân bổ -->
+                        <div class="row aps-form mt-20">
+                            <!--row 2-->
+                            <div class="row aps-lable-name">
+                                <p class="group-group-title-name border-0 mb-5">
+                                    <span class="badge bg-blue"> Chọn phạm vi các lớp phân bổ</span>
+                                </p>
+                            </div>
+                            <!--row 2-->
+                            <div class="row aps-form-item">
+                                <div class="col-sm-4 aps-form-lable">Hệ</div>
+                                <div class="col-sm-8 aps-form-input">
+                                    <select id="dropHeDaoTao" class="select-opt"></select>
+                                </div>
+                            </div>
+                            <!--row 2-->
+                            <div class="row aps-form-item">
+                                <div class="col-sm-4 aps-form-lable">Khóa</div>
+                                <div class="col-sm-8 aps-form-input">
+                                    <select id="dropKhoaDaoTao" class="select-opt"></select>
+                                </div>
+                            </div>
+
+                            <!--row 2-->
+                            <div class="row aps-form-item">
+                                <div class="col-sm-4 aps-form-lable">Chương trình</div>
+                                <div class="col-sm-8 aps-form-input">
+                                    <select id="dropChuongTrinh" class="select-opt"></select>
+                                </div>
+                            </div>
+                            <!--row 2-->
+                            <div class="row aps-form-item mb-10">
+                                <table id="tblDanhSachLop" class="table mr-0 mb-0">
+                                    <thead>
+                                        <tr>
+                                            <td class="td-fixed td-center">Stt</td>
+                                            <td class="td-left">Mã lớp</td>
+                                            <td class="td-left">Tên lớp</td>
+                                            <td class="td-left">Chương trình</td>
+                                            <td class="td-left">Khóa</td>
+                                            <td class="td-left">Hệ</td>
+                                            <th class="td-center td-fixed">
+                                                <input type="checkbox" id="chkSelectAll_Lop">
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col col-lg-4 col-sm-4">
+                        <div class="aps-img text-center pl20 pr20">
+                            <img src="Upload/images/img-kehoach.png" class="img-sp" style="max-height: 500px; width: auto">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="box-footer">
+                <div class="pull-right">
+                    <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times-circle"></i> Đóng</a>
+                    <a id="btnSave_PhanBoHocBong" class="btn btn-primary"><i class="fa fa-save"></i> Lưu</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- page script -->
+<script src="modules/thietlap/script/PhanBoHocBong.js?v=1.0.0.0"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['PhanBoHocBong'] = new PhanBoHocBong();
+    $(document).ready(function () {
+        main_doc.PhanBoHocBong.init();
+    });
+</script>

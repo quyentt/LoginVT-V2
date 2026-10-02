@@ -1,0 +1,742 @@
+﻿<style>
+    .tilePhong {
+        width: 49px;
+        height: 30px;
+        position: absolute;
+        vertical-align: middle;
+        margin-top: 30px;
+        margin-left: -69px;
+        border: 0px none;
+        background: rgba(0, 0, 0, 0) none repeat scroll 0% 0% !important;
+        font: bold 18px Arial;
+        text-align: center;
+        color: rgb(0, 192, 239);
+        padding: 0px;
+        -moz-appearance: none;
+    }
+
+    .box-mini {
+        background: #f7f7f7;
+        padding: 5px;
+        cursor: pointer;
+        width: 99%
+    }
+
+    .box-room, .box-floor {
+        padding: 5px;
+    }
+
+    .floor {
+        padding: 20px;
+        color: #441527;
+    }
+
+    .room {
+        padding: 10px;
+    }
+
+    .box-room:hover {
+    }
+
+    .hopdong-hinhthucthu {
+        width: 300px;
+    }
+
+    .hopdong-soluong {
+        width: 200px;
+    }
+
+    .td-fix {
+        width: 50px !important;
+    }
+</style>
+<section class="content">
+    <div class="row">
+        <!-- box List ToaNha -->
+        <div class="zone-dangky" id="zone_dangky_toanha">
+            <div class="box box-solid">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><i class="fa fa-window-restore"></i> Tìm phòng</h3>
+                </div>
+                <div class="box-body">
+                    <!-- Bộ tìm kiếm -->
+                    <div class="col-sm-3 item-search">
+                        <select id="dropSearch_DangKy_Phong_Loai" class="select-opt" style="width:100% !important">
+                            <option id="" value=""> --Chọn loại phòng-- </option>
+                        </select>
+                    </div>
+                    <div class="col-sm-3 item-search">
+                        <select id="dropSearch_DangKy_Phong_TinhChat" class="select-opt" style="width:100% !important">
+                            <option id="" value=""> --Chọn tính chất-- </option>
+                        </select>
+                    </div>
+                    <div class="col-sm-3 item-search">
+                        <select id="dropSearch_DangKy_Phong_LoaiDoiTuong" class="select-opt" style="width:100% !important"></select>
+                    </div>
+                    <div class="clear"></div>
+                    <div class="col-sm-3 item-search">
+                        <input id="txtSearch_DangKy_Phong_TuKhoa" class="form-control" placeholder="Nhập từ khóa tìm kiếm" />
+                    </div>
+                    <div class="col-sm-3 item-search">
+                        <a id="btnSearchDangKy_Phong" class="btn btn-default"><i class="fa fa-search"></i> <span class="lang" key="">Tìm kiếm</span></a>
+                    </div>
+                </div>
+            </div>
+            <div class="box box-solid">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><i class="fa fa-search"></i> Vui lòng tìm phòng cần xác nhận đăng ký</h3>
+                </div>
+                <div class="box-body">
+                    <div id="zoneBox_ToaNha">
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+
+        <!-- box List Phong-->
+        <div class="box box-solid form-container zone-dangky" id="zone_dangky_phong">
+            <div class="box-header with-border">
+                <h3 class="box-title">
+                    <i class="fa fa-hotel"></i> Danh sách phòng
+                    (<span id="lblDangKy_Phong_Tong"></span>)
+                </h3>
+                <div class="pull-right">
+                    <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times"></i></a>
+                </div>
+            </div>
+            <div class="box-body">
+                <div class="col-sm-12">
+                    <div id="zoneDangKy_Phong">
+
+                    </div>
+
+                </div>
+            </div>
+            <div class="box-footer">
+                <div class="pull-right">
+                    <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times-circle"></i> Đóng</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row zone-dangky" id="zoneNguoiO" style="display: none">
+        <!-- /.left-content -->
+        <div class="col-sm-3">
+
+            <div class="box box-solid">
+                <div class="box-body">
+                    <!-- Bộ tìm kiếm -->
+                    <div class="bs-item input-group">
+                        <input type="text" id="txtSearch_KhoiTao_TuKhoa" class="form-control" placeholder="Nhập mã phòng cần đổi">
+                        <span class="input-group-addon poiter btnExtend_Search" title="Kéo xuống">
+                            <i class="fa fa-exchange"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <!-- Widget: user widget style 1 -->
+            <div class="box box-widget widget-user-2">
+                <!-- Add the bg color to the header using any of the bg-* classes -->
+                <div class="widget-user-header">
+                    <div class="widget-user-image col-sm-3" id="txtSoNguoiDangO">
+                        <input type="text" class="knob" value="80%" data-width="50" data-height="50" data-fgColor="#3c8dbc">
+                    </div>
+
+                    <!-- /.widget-user-image -->
+                    <div class="col-sm-9">
+                        <h3>Phòng: <span id="lblTenPhong">B6 102</span></h3>
+                        <h5>Tính chất: <span id="lblTinhChat">Nữ</span></h5>
+                    </div>
+                </div>
+                <div class="clear"></div>
+                <div class="box-footer no-padding">
+                    <ul class="nav nav-stacked">
+                        <li><a href="#">Tòa nhà <span class="pull-right badge bg-blue" id="lblToaNha"></span></a></li>
+                        <li><a href="#">Số người đang ở <span class="pull-right badge bg-aqua" id="lblSoNguoiDangO"></span></a></li>
+                        <li><a href="#">Số điện <span id="lblNgaySoDienGanNhat"></span> <span class="pull-right badge bg-aqua" id="lblSoDienGanNhat"></span></a></li>
+                        <li><a href="#">Số nước <span id="lblNgaySoNuocGanNhat"></span><span class="pull-right badge bg-aqua" id="lblSoNuocGanNhat"></span></a></li>
+                        <li><a href="#">Loại <span class="pull-right badge bg-aqua" id="lblLoaiPhongO"></span></a></li>
+                        <li><a href="#">Diện tích sử dụng <span class="pull-right badge bg-aqua" id="lblDienTichSuDung"></span></a></li>
+                        <li><a href="#">Tầng thứ <span class="pull-right badge bg-aqua" id="lblTangThu"></span></a></li>
+                        <li><a href="#">Số giường <span class="pull-right badge bg-aqua" id="lblSoGiuong"></span></a></li>
+                        <li><a href="#">Tình trạng <span class="pull-right badge bg-aqua" id="lblTinhTrangPhongO"></span></a></li>
+                        <li><a href="#">Bao phòng <span class="pull-right badge bg-aqua" id="lblBaoPhong"></span></a></li>
+                        <li><a href="#">Đơn giá cả phòng <span class="pull-right badge bg-aqua" id="lblDonGiaCaPhong"></span></a></li>
+                        <li><a href="#">Đơn giá phòng từng người <span class="pull-right badge bg-aqua" id="lblDonGiaPhongTungNguoi"></span></a></li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.widget-user -->
+        </div>
+        <!-- /.right-content -->
+        <div class="col-sm-9 zone-nguoio" id="dadangky">
+            <!-- /.right-content -UP -->
+            <div class="box box-solid">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><i class="fa fa-address-card"></i> Danh sách người đăng ký</h3>
+                    <div class="box-tools pull-right">
+                        <!--<a id="btnAddNew_NguoiO" class="btn btn-default color-active"><i class="fa fa-plus"></i> Thêm</a>-->
+                        <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times"></i> Đóng</a>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="scroll-table-x" id="zoneHoSo">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-9 zone-nguoio" id="selectnguoio" style="display: none">
+            <div class="box box-solid">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><i class="fa fa-address-card"></i> Danh sách người ở</h3>
+                    <div class="box-tools pull-right">
+                        <a class="btn btn-default btnCloseSelectNguoiO" href="#" title="Close"><i class="fa fa-times"></i> Đóng</a>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="scroll-table-x" id="zoneHoSoNguoiO">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-9 zone-nguoio" id="edithoso" style="display: none">
+            <div class="box box-solid">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><i class="fa fa-address-card"></i> Chỉnh sửa hồ sơ: <i class="cl-active lblHoTenNguoiO"></i></h3>
+                    <div class="box-tools pull-right">
+                        <a class="btn btn-default btnCloseSelectNguoiO" href="#" title="Close"><i class="fa fa-times"></i> Đóng</a>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="col-sm-12 box-view">
+                        <!-- 1) Nhóm thông tin cơ bản -->
+                        <div class="row">
+                            <p class="group-title-name">
+                                1) Nhóm thông tin cơ bản
+                            </p>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div id="txtNO_Anh"></div>
+                            </div>
+                            <div class="col-sm-10">
+                                <!-- Row - Ho ten/Ma so -->
+                                <div class="row sub-row">
+                                    <div class="col-sm-2">
+                                        <div class="title-name">
+                                            Họ đệm <span class="title-colon">:</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <input type="text" id="txtNO_Ho" placeholder="Nhập họ" class="form-control form-border-bottom" />
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="title-name">
+                                            Tên <span class="title-colon">:</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <input type="text" id="txtNO_Ten" placeholder="Nhập tên" class="form-control form-border-bottom" />
+                                    </div>
+                                </div>
+                                <!-- Row - Bi danh/Ngay sinh -->
+                                <div class="row sub-row">
+                                    <div class="col-sm-2">
+                                        <div class="title-name">
+                                            Mã số <span class="title-colon">:</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <input type="text" id="txtNO_MaSo" class="form-control form-border-bottom" />
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="title-name">
+                                            Sinh ngày <span class="title-colon">:</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-1">
+                                        <input type="text" id="txtNO_NgaySinh" class="form-control form-border-bottom" placeholder="dd" />
+                                    </div>
+                                    <div class="col-sm-1">
+                                        <input type="text" id="txtNO_ThangSinh" class="form-control form-border-bottom" placeholder="mm" />
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <input type="text" id="txtNO_NamSinh" class="form-control form-border-bottom" placeholder="yyyy" />
+                                    </div>
+                                </div>
+                                <div class="row sub-row">
+                                    <div class="col-sm-2">
+                                        <div class="title-name">
+                                            Khóa<span class="title-colon">:</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <select id="dropNO_KhoaDaoTao" class="select-opt">
+                                            <option id="" value="">--Chọn khóa đào tạo-- </option>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="title-name">
+                                            Lớp<span class="title-colon">:</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <select id="dropNO_LopDaoTao" class="select-opt">
+                                            <option id="" value="">--Chọn lớp đào tạo-- </option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <!-- Row - Email/SDT ca nhan -->
+                                <div class="row sub-row">
+                                    <div class="col-sm-2">
+                                        <div class="title-name">
+                                            Giới tính <span class="title-colon">:</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <select id="dropNO_GioiTinh" class="select-opt">
+                                            <option id="" value="">--Chọn giới tính-- </option>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="title-name">
+                                            Email <span class="title-colon">:</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <input type="text" id="txtNO_Email" placeholder="client@mail.com" class="form-control form-border-bottom" />
+                                    </div>
+                                </div>
+                                <div class="row sub-row">
+                                    <div class="col-sm-2">
+                                        <div class="title-name">
+                                            Dân tộc<span class="title-colon">:</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <select id="dropNO_DanToc" class="select-opt">
+                                            <option id="" value="">--Chọn dân tộc-- </option>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="title-name">
+                                            Tôn giáo<span class="title-colon">:</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <select id="dropNO_TonGiao" class="select-opt">
+                                            <option id="" value="">--Chọn tôn giáo-- </option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row sub-row">
+                                    <div class="col-sm-2">
+                                        <div class="title-name">
+                                            SĐT Cá nhân<span class="title-colon">:</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <input type="text" id="txtNO_DienThoaiCaNhan" placeholder="035 789 567" class="form-control form-border-bottom" />
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="title-name">
+                                            Số điện thoại gia đình<span class="title-colon">:</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <input type="text" id="txtNO_SDTGiaDinh" class="form-control form-border-bottom" placeholder="091 775 754" />
+                                    </div>
+                                </div>
+                                <div class="row sub-row">
+                                    <div class="col-sm-2">
+                                        <div class="title-name">
+                                            Số căn cước <span class="title-colon">:</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <input type="text" id="txtNO_SoCanCuoc" class="form-control form-border-bottom" placeholder="091 775 754" />
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="title-name">
+                                            Số tài khoản<span class="title-colon">:</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <input type="text" id="txtNO_SoTaiKhoan" class="form-control form-border-bottom" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Row - Email/SDT ca nhan -->
+
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    Quốc tịch<span class="title-colon">:</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <select id="dropNO_QuocTich" class="select-opt">
+                                    <option id="" value="">--Chọn quốc tịch-- </option>
+                                </select>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    Loại đối tượng<span class="title-colon">:</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <select id="dropNO_LoaiDoiTuong" class="select-opt">
+                                    <option id="" value="">--Chọn loại đối tượng-- </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    Quê quán<span class="title-colon">:</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-10">
+                                <input type="text" id="txtNO_QueQuan" class="form-control form-border-bottom" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    Hộ khẩu thường trú<span class="title-colon">:</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-10">
+                                <input type="text" id="txtNO_HoKhauThuongTru" class="form-control form-border-bottom" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    Địa chỉ liên hệ <span class="title-colon">:</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-10">
+                                <input type="text" id="txtNO_DiaChiLienHe" class="form-control form-border-bottom" />
+                            </div>
+                        </div>
+                        <!-- Row - Ho khau thuong tru -->
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    Ghi chú <span class="title-colon">:</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-10">
+                                <input type="text" id="txtNO_GhiChu" class="form-control form-border-bottom" />
+                            </div>
+                        </div>
+
+                        <!-- 2) Nhóm thông tin đào tạo-->
+                        <div class="row">
+                            <p class="group-title-name">
+                                2) Thông tin đào tạo
+                            </p>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    Ngành<span class="title-colon">:</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-10">
+                                <select id="dropNO_NganhDT" class="select-opt">
+                                    <option id="" value="">--Chọn ngành đào tạo-- </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    Trình độ<span class="title-colon">:</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <select id="dropNO_TrinhDoDT" class="select-opt">
+                                    <option id="" value="">--Chọn trình độ đào tạo-- </option>
+                                </select>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    Diện đào tạo<span class="title-colon">:</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <select id="dropNO_DienDT" class="select-opt">
+                                    <option id="" value="">--Chọn diện đào tạo-- </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- 2) Nhóm thông tin đào tạo-->
+                        <div class="row">
+                            <p class="group-title-name">
+                                3) Thông tin lưu học sinh
+                            </p>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    Số hộ chiếu<span class="title-colon">:</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <input type="text" id="txtNO_SoHoChieu" class="form-control form-border-bottom" />
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    Hạn visa<span class="title-colon">:</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <input type="text" id="txtNO_HanViSa" class="form-control form-border-bottom" />
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    Thời gian đến<span class="title-colon">:</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <input type="text" id="txtNO_ThoiGianDen" class="form-control form-border-bottom" placeholder="10/10/2018" />
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    Thời gian đi<span class="title-colon">:</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <input type="text" id="txtNO_ThoiGianDi" class="form-control form-border-bottom" placeholder="10/10/2022" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="box-footer">
+                    <div class="td-center">
+                        <a id="btnKhoiTao_Update" class="btn btn-warning" style="margin:3px"><i class="fa fa-save"></i><span class="lang" key=""> Cập nhật</span></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-9 zone-nguoio" id="edithopdong" style="display: none">
+            <div class="box box-solid">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><i class="fa fa-address-card"></i> Tạo hợp đồng: <i class="cl-active lblHoTenNguoiO"></i></h3>
+                    <div class="box-tools pull-right">
+                        <a class="btn btn-default btnCloseSelectNguoiO" href="#" title="Close"><i class="fa fa-times"></i> Đóng</a>
+                    </div>
+                </div><div class="box-body">
+                    <div class="col-sm-12 box-view">
+                        <!-- Row: Thong tin hop dong -->
+                        <div class="row">
+                            <p class="group-title-name">
+                                1) Thông tin hợp đồng
+                            </p>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    Số hợp đồng<span class="title-colon">:</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <input type="text" id="txtHopDong_So" class="form-control form-border-bottom" />
+                            </div>
+                            <!--<div class="col-sm-2">
+                                <div class="title-name">
+                                    Tình trạng <span class="title-colon">:</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <select id="dropHopDong_TinhTrang" class="select-opt"></select>
+                            </div>-->
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    Ngày ký<span class="title-colon">:</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <input type="text" id="txtHopDong_NgayKy" class="form-control form-border-bottom" placeholder="dd/mm/yyyy" />
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    Ngày kết thúc <span class="title-colon">:</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <input type="text" id="txtHopDong_NgayKetThuc" class="form-control form-border-bottom" placeholder="dd/mm/yyyy" />
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    Số chỗ thuê <span class="title-colon">:</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <input type="text" id="txtHopDong_SoChoThue" class="form-control form-border-bottom" value="1" />
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    Bao phòng <span class="title-colon">:</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <select id="dropHopDong_BaoPhong" class="select-opt">
+                                    <option value="0">Không</option>
+                                    <option value="1">Có</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    Số tháng<span class="title-colon">:</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <input type="text" id="txtHopDong_SoThang" class="form-control form-border-bottom" />
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    Số tiền/tháng <span class="title-colon">:</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <input type="text" id="txtHopDong_SoTien_Thang" class="form-control form-border-bottom inputsotien" />
+                            </div>
+                        </div>
+                        <div class="clear"> </div>
+                        <div>
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    Tổng tiền thuê<span class="title-colon">:</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <input type="text" id="txtHopDong_TongTien" class="form-control form-border-bottom inputsotien" placeholder="2,400,000" />
+                            </div>
+                            <div class="col-sm-6">
+                                <a id="btnDangKy_TinhTien" class="btn btn-default" style="margin:3px"><i class="fa fa-bitcoin"></i><span class="lang" key=""> Tính tiền</span></a>
+                            </div>
+                        </div>
+                        <!-- Row: Thong tin dang ky -->
+                        <div class="row">
+                            <p class="group-title-name">
+                                2) Thông tin người đăng ký
+                            </p>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    Người đăng ký <span class="title-colon">:</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <span id="lblHopDong_NguoiDangKy" class="cl-active"></span>
+                                (<span id="lblHopDong_MaSo" class="italic"></span>)
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    Phòng đăng ký <span class="title-colon">:</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <span id="lblHopDong_PhongDangKy"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    Ngày vào <span class="title-colon">:</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <input type="text" id="txtHopDong_NgayVao" class="form-control form-border-bottom" placeholder="dd/mm/yyyy" />
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    Ngày ra <span class="title-colon">:</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <input type="text" id="txtHopDong_NgayRa" class="form-control form-border-bottom datepicker" placeholder="dd/mm/yyyy" />
+                            </div>
+                        </div>
+                        <!-- Row: Chinh sach -->
+                        <div class="row">
+                            <p class="group-title-name">
+                                3) Chính sách ưu đãi
+                            </p>
+                        </div>
+                        <div class="row">
+                            <table id="tblHopDong_ChinhSach" class="table table-hover table-bordered">
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                        <!-- Row: Mien giam -->
+                        <div class="row">
+                            <p class="group-title-name">
+                                4) Nội dung miễn giảm
+                            </p>
+                        </div>
+                        <div class="row">
+                            <table id="tblHopDong_MienGiam" class="table table-hover table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <td class="td-fix" style="text-align: center;">1</td>
+                                        <td><input type="text" id="txtMG_NoiDungMienGiam" class="form-control" placeholder="Nội dung miễn giảm"></td>
+                                        <td class="hopdong-soluong"><input type="text" id="txtMG_PhanTramMienGiam" class="form-control" placeholder="Phần trăm miễn giảm"></td>
+                                        <td class="hopdong-hinhthucthu"><select id="dropMG_HinhThucMienGiam" class="select-opt"></select></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="box-footer">
+                    <div id="" class="td-center">
+                        <a id="btnDangKy_Save" class="btn btn-primary" style="margin:3px"><i class="fa fa-save"></i><span class="lang" key=""> Lưu</span></a>
+                        <a class="btnHopDong_BaoCao btn btn-default" name="HopDongSinhVien" style="margin:3px; display: none"><i class="fa fa-print"></i><span class="lang" key="">1. In hợp đồng sinh viên</span></a>
+                        <a class="btnHopDong_BaoCao btn btn-default" name="HopDongLuuHocSinh" style="margin:3px; display: none"><i class="fa fa-print"></i><span class="lang" key="">2. In hợp đồng lưu học sinh</span></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="modal fade" id="modal_sinhvien" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <!-- load from js -->
+</div>
+<!-- page script -->
+<script src="modules/xacnhandangkyphong/script/xacnhandangkyphong.js?v=1.0.0.0"></script>
+<script src="modules/xacnhandangkyphong/script/jquery.knob.min.js?v=1.0.0.0"></script>
+<script src="modules/xacnhandangkyphong/script/n2vi.min.js?v=1.0.0.0"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['XacNhanDangKy'] = new XacNhanDangKy();
+    $(document).ready(function () {
+        main_doc.XacNhanDangKy.init();
+    });
+</script>

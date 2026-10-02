@@ -1,0 +1,129 @@
+﻿<section class="content aps-chuyencan">
+    <div class="row aps-khongdiemdanh">
+        <div class="col-lg-12">
+            <!-- box Notify_VBSC -->
+            <div class="box box-solid zone-bus box-shadow pd0">
+                <!--Search zone-->
+                <div class="box box-solid box-search pd20 pb10">
+                    <div class="box-header with-border d-none">
+                        <h3 class="box-title"><i class="fa fa-window-restore"></i> Tìm kiếm</h3>
+                    </div>
+                    <div class="box-body pd0">
+                        <div class="bss-item">
+                            <!--<div class="col-sm-3 item-search">
+                                    <select id="dropSearch_ThoiGian" class="select-opt"></select>
+                                </div>
+                                <div class="col-sm-3 item-search">
+                                    <select id="dropSearch_HoatDong" class="select-opt"></select>
+                                </div>
+                                <div class="col-sm-3 item-search">
+                                    <select id="dropSearch_DiaDiem" class="select-opt"></select>
+                                </div>
+                                <div class="col-sm-3 item-search">
+                                    <select id="dropSearch_PhamVi" class="select-opt"></select>
+                                </div>
+                                <div class="clear"></div>
+                                <div class="col-sm-3 item-search">
+                                    <select id="dropSearch_MoHinhHoc" class="select-opt"></select>
+                                </div>-->
+                            <div class="col-sm-5 item-search">
+                                <input id="txtSearch_TuKhoa" class="form-control" placeholder="Nhập từ khóa tìm kiếm" />
+                            </div>
+                            <div class="col-sm-6 item-search d-flex">
+                                <a class="btn btn-default btn-search mr-10" id="btnSearch"><i class="fa fa-search"></i>
+                                    <span class="lang" key="">Tìm kiếm</span></a>
+                                <div class="item-search-dropdowm">
+                                    <div class="dropdown" id="zonebtnKDD"></div>
+                                    <div class="dropdown" id="zonebtnKDD_Import">
+                                        <button class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown">
+                                            <i class="fa-light fa-file-import"></i> Import <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu form-container" style="width: 360px">
+                                            <li><a class="btnImportWithProce" name="IMPORTWITHPROC_CCTGN"
+                                                    title="Chuyên cần" href="#"> 1. Import chuyên cần tự ghi nhận</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+                <!-- box danh sach -->
+                <div class="box box-solid aps-khongdiemdanh-list pl20 pr20 pt20">
+                    <div class="box-header pd0">
+                        <h3 class="box-title color-blue mt-10">
+                            <i class="fa-light fa-list-timeline"></i> Danh sách
+                            <span class="badge bg-light-blue">
+                                <span id="lblKhongDiemDanh_Tong"></span>
+                            </span>
+                        </h3>
+
+                        <div class="pull-right">                         
+                            <a id="btnDelete_KhongDiemDanh" class="btn btn-danger"><i class="fa fa-trash"></i> Xóa</a>
+                            <a class="btn btn-primary" id="btnSave_KhongDiemDanh" href="#"><i class="fal fa-save"></i>Lưu</a>
+                            <a class="btn btn-primary btnAdd" href="#"><i class="fa fa-plus"></i> Thêm</a>
+                        </div>
+                    </div>
+                    <div class="box-body pd0 mt-10">
+                        <div class="col-sm-12 aps-table-select aps-khongdiemdanh-table mb-20">
+                            <table id="tblKhongDiemDanh" class="table table-hover table-bordered mb-0 tblKhongDiemDanh table-noborder">
+                                <thead>
+                                    <tr>
+                                        <th class="td-fixed td-center">Stt</th>
+                                        <th class="td-center">Mã số</th>
+                                        <th class="td-center">Họ đệm</th>
+                                        <th class="td-center">Tên</th>
+                                        <th class="td-center">Lớp</th>
+                                        <th class="td-center">Lý do</th>
+                                        <th class="td-center td-fixed"><input type="checkbox" id="chkSelectAll"></th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="modal fade aps-modal-nhansu" id="modal_sinhvien" role="dialog" aria-labelledby="myModalLabel"
+    aria-hidden="true">
+    <!-- load from js -->
+</div>
+<!-- page script -->
+<script src="modules/nhapchuyencan/script/KhongDiemDanh.js?v=1.0.0.2"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['KhongDiemDanh'] = new KhongDiemDanh();
+    $(document).ready(function () {
+        main_doc.KhongDiemDanh.init();
+
+        // FIX 2026-08-26: Select2 trong modal — re-init voi dropdownParent = modal
+        $(document).on('shown.bs.modal', '.modal', function () {
+            var $modal = $(this);
+            $modal.find('select.select-opt, select[id^="drop"]').each(function () {
+                var $sel = $(this);
+                try {
+                    if ($sel.hasClass('select2-hidden-accessible')) $sel.select2('destroy');
+                } catch (e) {}
+                $sel.select2({ dropdownParent: $modal, width: '100%' });
+            });
+        });
+    });
+</script>
+<style>
+    .modal .select2-container--open,
+    .modal .select2-container--open .select2-dropdown {
+        z-index: 100060 !important;
+    }
+    .modal .select2-results__options {
+        max-height: 220px !important;
+        overflow-y: auto !important;
+    }
+</style>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8">
+    <base href="/">
+    <title>Đo khung giao diện đang chạy (index.aspx)</title>
+    <style>
+        html, body { margin: 0; }
+        iframe { width: 1600px; height: 900px; border: 0; position: absolute; left: -9999px; }
+        #out { font: 12px/1.5 Consolas, monospace; white-space: pre; padding: 12px; background: #111; color: #ddd; }
+    </style>
+</head>
+
+<body>
+    <iframe id="fr" src="/index.aspx"></iframe>
+    <pre id="out">đang tải index.aspx…</pre>
+
+    <script>
+        var PROPS = [
+            'font-family', 'font-size', 'font-weight', 'line-height', 'color',
+            'background-color', 'background-image',
+            'border-bottom-width', 'border-bottom-color', 'border-right-width', 'border-right-color',
+            'border-top-left-radius',
+            'padding-top', 'padding-right', 'padding-bottom', 'padding-left',
+            'height', 'width', 'min-height', 'box-shadow'
+        ];
+
+        var TARGETS = [
+            ['body', 'body'],
+            ['header', '.header'],
+            ['top-nav', '.top-nav'],
+            ['logo', '.head-logo'],
+            ['main-menu', '.main-menu'],
+            ['main-menu a', '.main-menu .menu-link'],
+            ['left-sidebar', '.left-sidebar'],
+            ['sidebar-menu', '.sidebar-menu'],
+            ['sidebar item', '.sidebar-menu-item'],
+            ['sidebar item active', '.sidebar-menu-item.active'],
+            ['sidebar header', '.sidebar-menu-header'],
+            ['content wrapper', '#main-content-wrapper'],
+            ['card', '.card'],
+            ['card-header', '.card-header'],
+            ['btn', '.btn'],
+            ['form-control', '.form-control']
+        ];
+
+        function dump(doc, win) {
+            var lines = [];
+            TARGETS.forEach(function (t) {
+                var el = doc.querySelector(t[1]);
+                lines.push('=== ' + t[0] + '   (' + t[1] + ')');
+                if (!el) { lines.push('   KHONG TIM THAY'); return; }
+                var cs = win.getComputedStyle(el);
+                PROPS.forEach(function (p) {
+                    var v = (cs.getPropertyValue(p) || '').trim();
+                    if (v && v !== 'none' && v !== 'normal' && v !== '0px' && v !== 'rgba(0, 0, 0, 0)' && v !== 'auto') {
+                        lines.push('   ' + p + ': ' + v);
+                    }
+                });
+                var r = el.getBoundingClientRect();
+                lines.push('   __box: ' + Math.round(r.width) + ' x ' + Math.round(r.height));
+            });
+
+            // Biến màu gốc khai báo ở :root
+            var root = win.getComputedStyle(doc.documentElement);
+            var vars = ['--color-main', '--color-link', '--color-bg-main', '--color-border',
+                '--color-text', '--color-text-gray', '--color-bg-light-sky', '--color-dask-link',
+                '--color-add', '--color-edit', '--color-delete', '--color-save', '--color-orange'];
+            lines.push('=== biến màu :root');
+            vars.forEach(function (v) {
+                var val = root.getPropertyValue(v);
+                if (val) lines.push('   ' + v + ': ' + val.trim());
+            });
+
+            document.getElementById('out').textContent = lines.join('\n');
+        }
+
+        var fr = document.getElementById('fr');
+        fr.addEventListener('load', function () {
+            setTimeout(function () {
+                try {
+                    dump(fr.contentDocument, fr.contentWindow);
+                } catch (e) {
+                    document.getElementById('out').textContent = 'LOI: ' + e.message;
+                }
+            }, 2500);
+        });
+    </script>
+</body>
+
+</html>

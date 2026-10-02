@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Giảng viên</title>
+
+    <style>
+        * { box-sizing: border-box; }
+
+        .main-content,
+        section.content.aps-congcanbo {
+            max-width: none !important;
+            width: 100% !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        .dashboard-giang-vien {
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        /* Breadcrumb */
+        .dashboard-giang-vien .content-tab.no-tab {
+            margin-bottom: 10px;
+            background: white;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .dashboard-giang-vien .content-tab.no-tab .link {
+            margin: 0;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .dashboard-giang-vien .content-tab.no-tab .link a {
+            color: #64748b;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .dashboard-giang-vien .content-tab.no-tab .link a:hover {
+            color: #f59e0b;
+        }
+
+        /* Header */
+        .gv-header {
+            padding: 30px 20px;
+            background: linear-gradient(135deg, #fbbf24 0%, #f97316 100%);
+            color: white;
+            margin: 0 0 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gv-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .gv-header h3 {
+            margin: 0 0 10px 0;
+            font-size: 28px;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+        }
+
+        .gv-header p {
+            margin: 0;
+            font-size: 16px;
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+        }
+
+        .gv-header-stats {
+            display: flex;
+            gap: 30px;
+            font-size: 14px;
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+            margin-top: 14px;
+            flex-wrap: wrap;
+        }
+
+        .gv-header-stat {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.12);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        /* KPI cards */
+        .gv-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+            padding: 0 20px 20px 20px;
+        }
+
+        /* Filters */
+        .gv-filter-card {
+            margin: 0 20px 20px 20px;
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0;
+        }
+
+        .gv-filter-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .gv-filter-title {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 700;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .gv-filter-subtitle {
+            margin: 2px 0 0 0;
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .gv-filter-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .gv-filter-field label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            color: #334155;
+            margin-bottom: 6px;
+        }
+
+        .gv-filter-field select {
+            width: 100%;
+            height: 40px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            padding: 0 12px;
+            color: #0f172a;
+            background: #fff;
+            outline: none;
+        }
+
+        .gv-filter-field select:focus {
+            border-color: #fb923c;
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.12);
+        }
+
+        .gv-filter-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 14px;
+        }
+
+        .gv-btn {
+            height: 38px;
+            border-radius: 10px;
+            padding: 0 14px;
+            font-weight: 700;
+            font-size: 13px;
+            border: 1px solid transparent;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .gv-btn-primary {
+            background: #f97316;
+            color: #fff;
+            border-color: #f97316;
+        }
+
+        .gv-btn-primary:hover { background: #ea580c; border-color: #ea580c; }
+
+        .gv-btn-secondary {
+            background: #fff;
+            color: #0f172a;
+            border-color: #e2e8f0;
+        }
+
+        .gv-btn-secondary:hover { background: #f8fafc; }
+
+        .gv-stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 22px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gv-stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .gv-stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--card-color);
+        }
+
+        .gv-stat-card.orange { --card-color: #f97316; }
+        .gv-stat-card.yellow { --card-color: #f59e0b; }
+        .gv-stat-card.blue { --card-color: #3b82f6; }
+        .gv-stat-card.green { --card-color: #10b981; }
+        .gv-stat-card.red { --card-color: #ef4444; }
+
+        .gv-stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 14px;
+        }
+
+        .gv-stat-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            background: var(--card-color);
+        }
+
+        .gv-stat-trend {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .gv-stat-trend.up { background: #dcfce7; color: #166534; }
+        .gv-stat-trend.down { background: #fef2f2; color: #dc2626; }
+        .gv-stat-trend.stable { background: #f1f5f9; color: #475569; }
+
+        /* Semantic trend (tách tốt/xấu khỏi hướng tăng/giảm) */
+        .gv-stat-trend.good { background: #dcfce7; color: #166534; }
+        .gv-stat-trend.bad { background: #fef2f2; color: #dc2626; }
+        .gv-stat-trend.warn { background: #fef3c7; color: #92400e; }
+        .gv-stat-trend.neutral { background: #dbeafe; color: #1e40af; }
+
+        .gv-stat-value {
+            font-size: 30px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 6px;
+            line-height: 1;
+        }
+
+        .gv-stat-label {
+            font-size: 14px;
+            color: #64748b;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .gv-stat-subtext {
+            font-size: 13px;
+            color: #94a3b8;
+            margin: 0;
+        }
+
+        /* Layout */
+        .gv-main-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            padding: 0 20px 20px 20px;
+            min-height: 520px;
+        }
+
+        .gv-charts {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            min-width: 0;
+        }
+
+        .gv-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .gv-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .gv-card-header {
+            margin-bottom: 18px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .gv-card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .gv-card-subtitle {
+            font-size: 14px;
+            color: #64748b;
+            margin: 0;
+        }
+
+        .gv-canvas {
+            height: 320px;
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            padding: 10px;
+        }
+
+        .gv-canvas canvas {
+            max-height: 320px !important;
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        /* Sidebar (đã bỏ cho dashboard cấp phòng) */
+        .gv-sidebar { display: none; }
+
+        .gv-profile {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+            padding: 18px;
+            border-radius: 14px;
+            border: 1px solid #fed7aa;
+            background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+        }
+
+        .gv-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 999px;
+            background: #f97316;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 26px;
+        }
+
+        .gv-name {
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0;
+        }
+
+        .gv-dept {
+            font-size: 13px;
+            color: #475569;
+            margin: 0;
+        }
+
+        .gv-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .gv-list-item {
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid #fed7aa;
+            background: linear-gradient(90deg, #fff7ed 0%, #ffedd5 100%);
+        }
+
+        .gv-list-item-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 4px;
+        }
+
+        .gv-time {
+            font-size: 12px;
+            font-weight: 700;
+            color: #ea580c;
+        }
+
+        .gv-room {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .gv-subject {
+            font-size: 13px;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0 0 2px 0;
+        }
+
+        .gv-class {
+            font-size: 12px;
+            color: #475569;
+            margin: 0;
+        }
+
+        .gv-quick {
+            border-radius: 12px;
+            padding: 18px;
+            border: 1px solid #fed7aa;
+            background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+        }
+
+        .gv-quick-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(249, 115, 22, 0.15);
+            font-size: 13px;
+            color: #0f172a;
+        }
+
+        .gv-quick-row:last-child { border-bottom: none; }
+
+        .fade-in { animation: fadeIn 0.6s ease forwards; }
+        .slide-up { animation: slideUp 0.8s ease forwards; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 1200px) {
+            .gv-main-grid { grid-template-columns: 1fr; }
+            .gv-sidebar { min-width: 0; max-width: none; width: 100%; }
+            .gv-filter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+
+        @media (max-width: 768px) {
+            .gv-stats-grid { grid-template-columns: 1fr; padding: 0 15px 15px 15px; }
+            .gv-main-grid { padding: 0 15px 15px 15px; }
+            .gv-header { padding: 20px 15px; }
+            .gv-header-stats { flex-direction: column; gap: 10px; }
+            .gv-filter-card { margin: 0 15px 15px 15px; }
+            .gv-filter-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<section class="content aps-congcanbo">
+    <div class="row dashboard-giang-vien">
+        <!-- Breadcrumb -->
+        <div class="content-tab no-tab">
+            <p class="link">
+                <a href="#">Dashboard</a><i class="fal fa-angle-right"></i>
+                <a href="#">Giảng viên</a>
+            </p>
+        </div>
+
+        <!-- Header -->
+        <div class="gv-header">
+            <h3>
+                <i class="fa-solid fa-chalkboard-user"></i>
+                Dashboard Giảng viên
+            </h3>
+            <p>📚 Quản lý giảng dạy và nghiên cứu khoa học (layout demo)</p>
+            <div class="gv-header-stats">
+                <div class="gv-header-stat">
+                    <i class="fa-solid fa-clock"></i>
+                    <span>Cập nhật: <span id="lastUpdateTime">--</span></span>
+                </div>
+                <div class="gv-header-stat">
+                    <i class="fa-solid fa-database"></i>
+                    <span>Nguồn: Hệ thống GV</span>
+                </div>
+                <div class="gv-header-stat">
+                    <i class="fa-solid fa-shield-check"></i>
+                    <span>Trạng thái: <span id="systemStatus">Đang tải...</span></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="gv-stats-grid fade-in" id="statsCards">
+            <!-- Render by JS -->
+        </div>
+
+        <!-- Filters (global) -->
+        <div class="gv-filter-card fade-in">
+            <div class="gv-filter-header">
+                <div>
+                    <p class="gv-filter-title"><i class="fa-solid fa-filter" style="color:#f97316;"></i> Bộ lọc chung</p>
+                    <p class="gv-filter-subtitle">Áp dụng cho toàn bộ KPI/biểu đồ/trang</p>
+                </div>
+            </div>
+
+            <div class="gv-filter-grid">
+                <div class="gv-filter-field">
+                    <label for="yearFilter">Năm học</label>
+                    <select id="yearFilter"></select>
+                </div>
+
+                <div class="gv-filter-field">
+                    <label for="semesterFilter">Học kỳ / Đợt thi</label>
+                    <select id="semesterFilter"></select>
+                </div>
+
+                <div class="gv-filter-field">
+                    <label for="levelFilter">Bậc đào tạo</label>
+                    <select id="levelFilter"></select>
+                </div>
+
+                <div class="gv-filter-field">
+                    <label for="unitFilter">Đơn vị</label>
+                    <select id="unitFilter"></select>
+                </div>
+            </div>
+
+            <div class="gv-filter-actions">
+                <button type="button" class="gv-btn gv-btn-secondary" id="btnFilterReset">
+                    <i class="fa-solid fa-rotate-left"></i>
+                    Đặt lại
+                </button>
+                <button type="button" class="gv-btn gv-btn-primary" id="btnFilterApply">
+                    <i class="fa-solid fa-check"></i>
+                    Áp dụng
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="gv-main-grid">
+            <!-- Charts -->
+            <div class="gv-charts">
+                <div class="gv-card slide-up">
+                    <div class="gv-card-header">
+                        <h3 class="gv-card-title">
+                            <i class="fa-solid fa-triangle-exclamation" style="color: #ef4444;"></i>
+                            Danh sách rủi ro (chốt theo học kỳ)
+                        </h3>
+                        <p class="gv-card-subtitle">Các lớp học phần có nguy cơ chậm tiến độ hoặc chưa nhập đủ điểm quá trình</p>
+                    </div>
+                    <div style="overflow:auto;">
+                        <table class="gv-risk-table" style="width:100%; border-collapse:separate; border-spacing:0;">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:left; padding:12px; font-size:12px; color:#64748b; font-weight:800; border-bottom:1px solid #e2e8f0;">Tên lớp học phần</th>
+                                    <th style="text-align:left; padding:12px; font-size:12px; color:#64748b; font-weight:800; border-bottom:1px solid #e2e8f0; width:170px;">Mức rủi ro</th>
+                                    <th style="text-align:left; padding:12px; font-size:12px; color:#64748b; font-weight:800; border-bottom:1px solid #e2e8f0;">Nguyên nhân chính</th>
+                                </tr>
+                            </thead>
+                            <tbody id="riskTableBody">
+                                <!-- Render by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="gv-card slide-up">
+                    <div class="gv-card-header">
+                        <h3 class="gv-card-title">
+                            <i class="fa-solid fa-clock" style="color: #f97316;"></i>
+                            Tiến độ giảng dạy của học phần theo từng tuần
+                        </h3>
+                        <p class="gv-card-subtitle">Tỷ lệ hoàn thành giảng dạy (%) theo tuần (Kế hoạch vs Thực hiện)</p>
+                    </div>
+                    <div class="gv-canvas">
+                        <canvas id="teachingChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="gv-card slide-up">
+                    <div class="gv-card-header">
+                        <h3 class="gv-card-title">
+                            <i class="fa-solid fa-star" style="color: #f59e0b;"></i>
+                            Mức độ hoàn thành khối lượng giảng dạy theo năm học
+                        </h3>
+                        <p class="gv-card-subtitle">Giờ chuẩn thực hiện (cột) & tỷ lệ hoàn thành định mức % (đường) trong 5 năm gần nhất</p>
+                    </div>
+                    <div class="gv-canvas">
+                        <canvas id="evaluationChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="gv-card slide-up">
+                    <div class="gv-card-header">
+                        <h3 class="gv-card-title">
+                            <i class="fa-solid fa-flask" style="color: #10b981;"></i>
+                            Phân loại kết quả học tập theo học kỳ / năm học
+                        </h3>
+                        <p class="gv-card-subtitle">Tỷ lệ sinh viên (%) theo thang điểm TKHP (Xuất sắc → Yếu kém)</p>
+                    </div>
+                    <div class="gv-canvas">
+                        <canvas id="researchChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Chart.js v2.9.4 (giống các dashboard khác) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+<script>
+    if (typeof Chart === 'undefined') {
+        console.warn('⚠️ Chart.js không load được từ CDN chính, thử CDN dự phòng...');
+        var script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js';
+        script.onload = function() {
+            console.log('✅ Chart.js loaded từ CDN dự phòng');
+            if (typeof main_doc !== 'undefined' && main_doc.DashboardGiangVien) {
+                main_doc.DashboardGiangVien.initCharts();
+            }
+        };
+        script.onerror = function() {
+            console.error('❌ Không thể load Chart.js từ cả 2 CDN');
+        };
+        document.head.appendChild(script);
+    }
+</script>
+
+<script src="modules/Dashboardv2/script/giang-vien.js?v=1.0.0"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['DashboardGiangVien'] = new DashboardGiangVien();
+
+    $(document).ready(function () {
+        $('.main-content').css({ 'max-width': 'none', 'width': '100%' });
+        $('section.content.aps-congcanbo').css({ 'max-width': 'none', 'width': '100%', 'padding': '0', 'margin': '0' });
+        main_doc.DashboardGiangVien.init();
+    });
+</script>
+</body>
+</html>

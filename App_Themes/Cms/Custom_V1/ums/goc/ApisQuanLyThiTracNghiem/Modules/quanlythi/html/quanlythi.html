@@ -1,0 +1,2318 @@
+﻿<section class="content">
+    <!-- /.left-content -->
+    <!-- /.right-content -->
+    <style>
+        @-webkit-keyframes my {
+            0% {
+                color: red;
+            }
+
+            50% {
+                color: #fff;
+            }
+
+            100% {
+                color: red;
+            }
+        }
+
+        @-moz-keyframes my {
+            0% {
+                color: red;
+            }
+
+            50% {
+                color: #fff;
+            }
+
+            100% {
+                color: red;
+            }
+        }
+
+        @-o-keyframes my {
+            0% {
+                color: red;
+            }
+
+            50% {
+                color: #fff;
+            }
+
+            100% {
+                color: red;
+            }
+        }
+
+        @keyframes my {
+            0% {
+                color: red;
+            }
+
+            50% {
+                color: #fff;
+            }
+
+            100% {
+                color: red;
+            }
+        }
+
+        .cssGianLan {
+            font-size: 24px;
+            font-weight: bold;
+            -webkit-animation: my 700ms infinite;
+            -moz-animation: my 700ms infinite;
+            -o-animation: my 700ms infinite;
+            animation: my 700ms infinite;
+            cursor: pointer;
+        }
+    </style>
+    <!-- Style keo tha-->
+    <style>
+
+        .question {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
+
+        .question-text {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .draggable-word {
+            display: inline-block;
+            padding: 6px 10px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            margin: 2px;
+            cursor: move;
+            font-size: 13px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+            .draggable-word:hover {
+                background: #45a049;
+                transform: translateY(-1px);
+            }
+
+            .draggable-word.ui-draggable-dragging {
+                opacity: 0.8;
+                transform: rotate(3deg);
+            }
+
+            .draggable-word.used {
+                background: #9E9E9E;
+                color: #fff;
+                cursor: not-allowed;
+                opacity: 0.6;
+            }
+
+                .draggable-word.used:hover {
+                    background: #9E9E9E;
+                    transform: none;
+                }
+
+        .answer-slot {
+            display: inline-block;
+            min-width: 100px;
+            height: 35px;
+            border: 2px dashed #ccc;
+            border-radius: 4px;
+            margin: 2px;
+            padding: 6px 10px;
+            text-align: center;
+            background: #f0f0f0;
+            vertical-align: middle;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+            .answer-slot.highlight {
+                border-color: #2196F3;
+                background: #E3F2FD;
+            }
+
+            .answer-slot.filled {
+                border-color: #4CAF50;
+                background: #E8F5E8;
+                cursor: move;
+            }
+
+            .answer-slot.correct {
+                border-color: #4CAF50;
+                background: #C8E6C9;
+                color: #2E7D32;
+            }
+
+            .answer-slot.incorrect {
+                border-color: #F44336;
+                background: #FFCDD2;
+                color: #C62828;
+            }
+
+        .answers-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f0f8ff;
+            border-radius: 8px;
+            border-left: 4px solid #2196F3;
+        }
+
+        .answers-title {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #2196F3;
+            font-size: 16px;
+        }
+
+        .answer-item {
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .answer-label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .drop-zone {
+            min-height: 50px;
+            border: 2px dashed #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 5px 0;
+            background: #f9f9f9;
+            text-align: center;
+            color: #666;
+        }
+
+            .drop-zone.highlight {
+                border-color: #2196F3;
+                background: #E3F2FD;
+            }
+
+            .drop-zone.filled {
+                border-color: #4CAF50;
+                background: #E8F5E8;
+            }
+
+            .drop-zone.correct {
+                border-color: #4CAF50;
+                background: #C8E6C9;
+                color: #2E7D32;
+            }
+
+            .drop-zone.incorrect {
+                border-color: #F44336;
+                background: #FFCDD2;
+                color: #C62828;
+            }
+
+        .word-in-answer {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #4CAF50;
+            color: white;
+            border-radius: 3px;
+            margin: 2px;
+            cursor: move;
+            font-size: 12px;
+        }
+    </style>
+    <div class="col-lg-12">
+        <!-- box Notify_GT -->
+        <div class="box box-solid form-container zone-bus" id="zoneChiTiet" style="display: none">
+            <div class="box-header with-border">
+                <h3 class="box-title"><span class="myModalLabel"> <i class="fa fa-pencil"></i></span> Phòng thi </h3>
+                <div class="pull-right title-note">
+                    <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times"></i></a>
+                </div>
+                <div class="box-title col-sm-12">
+                    <div class="row zone-box">
+                        <div class="row">
+                            <p class="group-title-name">
+                                <span class="badge bg-blue">Thông tin phòng thi</span>
+                            </p>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-1">
+                                <div class="group-title-name">
+                                    <span class="lang" key="">Đơn vị:</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <label id="lblDonVi_ChiTiet" style="color: #0073b7"></label>
+                            </div>
+                            <div class="col-sm-1">
+                                <div class="group-title-name">
+                                    <span class="lang" key="">Đợt thi:</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <label id="lblDotThi_ChiTiet" style="color: #0073b7"></label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-1">
+                                <div class="group-title-name">
+                                    Phòng thi: <span class="title-colon">:</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <label id="lblPhongThi_ChiTiet" style="color: #0073b7"></label>
+                            </div>
+                            <div class="col-sm-1">
+                                <div class="group-title-name">
+                                    Môn thi: <span class="title-colon">:</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <label id="lblMonThi_ChiTiet" style="color: #0073b7"></label>
+                            </div>
+                            <div class="col-sm-1">
+                                <div class="group-title-name">
+                                    Ngày thi<span class="title-colon">:</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <label id="lblNgayThi_ChiTiet" style="color: #0073b7"></label>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row zone-box">
+                        <div class="row">
+                            <p class="group-title-name">
+                                <span class="badge bg-blue">Thông tin đề thi</span>
+                            </p>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-1">
+                                <div class="group-title-name">
+                                    <span class="lang" key="">Kiểu tạo đề:</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-5">
+                                <label id="lblKieuTaoDe_ChiTiet" style="color: #0073b7"></label>
+                            </div>
+                            <div class="col-sm-1">
+                                <div class="group-title-name">
+                                    <span class="lang" key="">Cấu trúc đề:</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-5">
+                                <label id="lblCauTrucDe_ChiTiet" style="color: #0073b7"></label>
+                            </div>
+                        </div>
+
+                        <div class="row">
+
+                            <div class="col-sm-1">
+                                <div class="group-title-name">
+                                    Trạng Thái: <span class="title-colon">:</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-5">
+                                <label id="lblTrangThai_ChiTiet" style="color: #0073b7"></label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-1">
+                                <div class="group-title-name">
+                                    Tổng số câu hỏi:
+                                </div>
+                            </div>
+                            <div class="col-sm-5">
+                                <label id="lblTongSoCau_ChiTiet" style="color: #0073b7"></label>
+                            </div>
+                            <div class="col-sm-1">
+                                <div class="group-title-name">
+                                    <span class="lang" key="">Đề thi:</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-5">
+                                <label id="lblDeThi_ChiTiet" style="color: #0073b7"></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12">
+                    <div class="row zone-box">
+                        <div>
+                            <div class="row">
+                                <div class="pull-left">
+                                    <select id="drpBaoCao" data-placeholder="Chọn loại báo cáo..." class="chosen-select">
+                                        <option value="">Chọn loại báo cáo</option>
+                                        <option value="BAOCAODIEM">Báo cáo điểm</option>
+                                        <option value="BAOCAODIEMCAUHOI">Báo cáo điểm chi tiết</option>
+                                        <!-- <option value="THONGKETYLESUDUNGCAUHOI">Thống kê tỷ lệ sử dụng câu hỏi</option>-->
+                                    </select>
+                                    <a id="btnTaiFile" class="btn btn-default"><i class="fa fa-download"></i> Tải file</a>
+                                    <a id="btnCall_Import_DMIP" class="btn btn-default"><i class="fa fa fa-file-excel-o"></i> <span class="lang" key="">Import DS Thí sinh</span></a>
+                                    <a id="btnAdd_ThiSinh" class="btnAdd btn btn-primary"><i class="fa fa-plus-circle"></i>Thêm thí sinh</a>
+                                </div>
+                                <div class="pull-right">
+                                    <a class="btn btn-default btnClose" id=""><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="pull-left">
+                                <div style="width: 220px; float: left">
+                                    <select id="drpExamstructPart" class="select-opt"></select>
+                                </div>
+                            </div>
+                            <div class="pull-right">
+                                <a id="btnAdd_TaoDeThi" class="btnAdd btn btn-primary"><i class="fa fa-tags"></i>Tạo đề cho phòng thi</a>
+                                <a id="btnAdd_TaoDeTuDeThiThuCong" class="btnAdd btn btn-primary"><i class="fa fa-tags"></i>Tạo đề cho phòng thi từ đề thi thủ công</a>
+
+                                <a id="btnAdd_TinhHuongThi" class="btnAdd btn btn-primary"><i class="fa fa-eject"></i>Xử lý TS</a>
+                                <a id="btnAdd_CongNhanDiem" class="btnAdd btn btn-primary"><i class="fa fa-save"></i>Công nhận điểm</a>
+                                <a id="btnAdd_ChuyenDuLieuDiem" class="btnAdd btn btn-primary"><i class="fa fa-save"></i>Chuyển lại dữ liệu</a>
+
+                                <a id="btn_Refresh" class="btnAdd btn btn-primary"><i class="fa fa-refresh"></i>Refresh</a>
+                                <a id="btn_XemKetQuaDiem" class="btnAdd btn btn-primary"><i class="fa fa-refresh"></i>Xem kết quả điểm</a>
+                                <a id="btn_XemKetQuaDiem_DangTest" class="btnAdd btn btn-primary"><i class="fa fa-refresh"></i>Xem kết quả điểm(đang test)</a>
+                                <a id="btnDelete_ThiSinh" class="btn btn-default"><i class="fa fa-trash"></i> Xóa</a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="box-body">
+                <div class="col-sm-12 scroll-table-x">
+                    <table id="tblChiTietPhongThi" class="table table-hover table-bordered">
+                        <thead>
+                            <tr>
+                                <th class="td-fixed td-center">Stt</th>
+                                <th class="td-center">Mã thí sinh</th>
+                                <th class="td-center"> Họ và tên</th>
+                                <th class="td-center"> Ngày sinh </th>
+                                <th class="td-center"> Số báo danh </th>
+                                <th class="td-center"> Đề </th>
+                                <th class="td-center"> Điểm </th>
+                                <th class="td-center"> Điểm công nhận </th>
+                                <th class="td-center"> Tình trạng </th>
+                                <th class="td-center"> T/g BĐ làm bài </th>
+                                <th class="td-center"> Máy đã đăng nhập </th>
+                                <th class="td-center"> Ghi chú </th>
+                                <th class="td-center"> Xem kết quả </th>
+                                <th class="td-fixed td-center">
+                                    <input type="checkbox" id="chkSelectAll_ChiTietPhongThi">
+                                </th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- load from js -->
+                        </tbody>
+                        <tfoot></tfoot>
+                    </table>
+                </div>
+            </div>
+            <div class="box-footer">
+                <div class="pull-right">
+                    <a class="btn btn-default btnClose" id=""><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="box box-solid form-container zone-bus" id="zoneImport" style="display: none">
+            <div class="box box-solid">
+                <div class="box-header with-border">
+                    <div class="pull-left">
+                        <h3>Import danh sách thi</h3>
+
+                    </div>
+                    <div class="pull-right">
+                        <a class="btn btn-default btnCloseSubDetail" href="#" title="Close"><i class="fa fa-times"></i></a>
+
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="nav-tabs-custom">
+                        <ul class="nav nav-tabs">
+                            <li class="active">
+                                <a href="#tab_1" data-toggle="tab" aria-expanded="true">
+                                    <span class="lang" key="">
+                                        1) Kết quả import thành công
+                                        <span class="pull-right badge bg-light-blue">
+                                            <span id="tblImport_ThanhCong_Tong"></span>
+                                        </span>
+                                    </span>
+                                </a>
+                            </li>
+                            <li class="">
+                                <a href="#tab_2" data-toggle="tab" aria-expanded="true">
+                                    <span class="lang" key="">
+                                        2) Kết quả import lỗi
+                                        <span class="pull-right badge bg-light-blue">
+                                            <span id="tblImport_ThatBai_Tong"></span>
+                                        </span>
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="tab-content" style="padding-top: 2px">
+                            <!--  Kết quả Import thành công-->
+                            <div class="tab-pane active" id="tab_1">
+                                <div class="row row-align">
+                                    <table id="tblImport_ThanhCong" class="table table-hover table-bordered">
+
+                                        <tbody>
+                                            <!-- load from js -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <!--  Kết quả Import không thành công-->
+                            <div class="tab-pane" id="tab_2">
+                                <div class="row row-align">
+                                    <table id="tblImport_ThatBai" class="table table-hover table-bordered">
+                                        <tbody>
+                                            <!-- load from js -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="box-footer">
+                    <div class="pull-right">
+                        <a class="btn btn-default btnCloseSubDetail" href="#" title="Close"><i class="fa fa-times"></i> Close</a>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="modal fade zone-bus" id="myModal_Upload" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="myModalLabel"><span class="lang" key=""> <i class="fa fa-file-excel-o"></i> Import dữ liệu</span></h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="col-sm-4">
+                                    - Chọn file Import:
+                                </div>
+                                <div class="col-sm-6">
+                                    <div id="txtFile_DMIP">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="notify_import"></div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times-circle-o"></i> <span class="lang" key="">Đóng</span></button>
+                        <a id="btnFileMau" class="btn btn-default"><i class="fa fa-download"></i> Tải file mẫu</a>
+                        <a class="submit btn btn-primary" id="btnImport_DMIP"><i class="fa fa-cloud-upload"></i><span class="lang" key=""> Import dữ liệu file Excel</span></a>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="box box-solid form-container zone-bus" id="zoneImportPhongThi" style="display: none">
+            <div class="box-header with-border">
+                <h3 class="box-title"><span class="myModalLabel"> <i class="fa fa-pencil"></i></span>Chi tiết Phòng thi </h3>
+                <div class="pull-right title-note">
+                    <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times"></i></a>
+                </div>
+            </div>
+            <div class="box-body">
+                <div class="row zone-box">
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <div class="group-title-name">
+                                <span class="lang" key="">Đơn vị</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <label id="lblDonVi" style="color: #0073b7"></label>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="group-title-name">
+                                <span class="lang" key="">Đợt thi</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <label id="lblDotThi" style="color: #0073b7"></label>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="area-search">
+                            <div id="search" class="inputSearch">
+                                <div class="col-sm-3 item-search">
+                                    <select id="dropSearch_ThoiGian" class="select-opt" style="width:100% !important">
+                                        <option id="" value=""> --Chọn thời gian-- </option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-3 item-search">
+                                    <select id="dropSearch_LoaiDiem" class="select-opt" style="width:100% !important">
+                                        <option id="" value=""> --Chọn loại diểm-- </option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-3 item-search">
+                                    <select id="dropSearch_HinhThuc" class="select-opt" style="width:100% !important">
+                                        <option id="" value=""> --Chọn hình thức-- </option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-3 item-search">
+                                    <select id="dropSearch_DotThi" class="select-opt" style="width:100% !important">
+                                        <option id="" value=""> --Chọn đợt thi-- </option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-3 item-search">
+                                    <select id="dropSearch_MonThi" class="select-opt" style="width:100% !important">
+                                        <option id="" value=""> --Chọn môn thi-- </option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-3 item-search">
+                                    <input id="txtSearch" class="form-control" placeholder="Nhập từ khóa tìm kiếm" />
+                                </div>
+                                <div class="col-sm-3 item-search">
+                                    <a id="btnSearch_ImportPhongThi" class="btn btn-default"><i class="fa fa-search"></i> <span class="lang" key="">Tìm kiếm</span></a>
+                                    <a id="btnAdd_ImportPhongThi" class="btnAdd btn btn-primary"><i class="fa fa-plus-circle"></i>Thêm phòng thi</a>
+                                </div>
+                                <div class="col-sm-3 item-search">
+                                    <div class="dropdown" id="zonebtnBaoCao_NhapDiem">
+
+                                    </div>
+                                </div>
+                                <div class="col-sm-3 item-search">
+                                    <div class="dropdown" id="zonebtnBaoCao_NhapDiem_Import">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box-body">
+
+                        <div class="col-sm-12 scroll-table-x">
+                            <table id="tblImportPhongThi" class="table table-hover table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th class="td-fixed td-center">Stt</th>
+                                        <th class="td-center">Mã DS Thi</th>
+                                        <th class="td-center">Ngày thi</th>
+                                        <th class="td-center"> Ca thi </th>
+                                        <th class="td-center"> Phòng thi </th>
+                                        <th class="td-center">SLTS đủ ĐK thi </th>
+                                        <th class="td-center">SLTS đã import </th>
+                                        <th class="td-center">Mật khẩu phòng thi</th>
+                                        <th class="td-center">
+                                            Cách tính điểm theo số câu
+                                            <br />
+                                            (Không check là theo số ý)
+                                            <input type="checkbox" id="chkSelectAll_TheoSoCau">
+                                        </th>
+
+                                        <th class="td-center">
+                                            Cho phép xem điểm
+                                            <input type="checkbox" id="chkSelectAll_ChoPhepXemDiem">
+                                        </th>
+                                        <th class="td-center">
+                                            Cho phép xem kết quả
+
+                                            <input type="checkbox" id="chkSelectAll_ChoPhepXemKetQua">
+                                        </th>
+
+                                        <th class="td-fixed td-center">
+                                            <input type="checkbox" id="chkSelectAll_ImportPhongThi">
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- load from js -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="box-footer">
+                <div class="pull-right">
+
+                    <a class="btn btn-default btnClose" id=""><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+                </div>
+            </div>
+        </div>
+        <div class="box box-solid form-container zone-bus" id="zonePhongThi" style="display: none">
+            <div class="box-header with-border">
+                <h3 class="box-title"><span class="myModalLabel"> <i class="fa fa-pencil"></i></span>Chi tiết Phòng thi </h3>
+                <div class="pull-right title-note">
+                    <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times"></i></a>
+                </div>
+            </div>
+            <div class="box-body">
+                <div class="row zone-box">
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <div class="group-title-name">
+                                <span class="lang" key="">Đơn vị</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <label id="lblDonVi" style="color: #0073b7"></label>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="group-title-name">
+                                <span class="lang" key="">Đợt thi</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <label id="lblDotThi" style="color: #0073b7"></label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <div class="group-title-name">
+                                <span class="lang" key="">Phòng thi</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-10">
+                            <input type="text" id="txtRoomName" class="form-control" />
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <span class="lang" key=""> Chọn học phần   </span>
+                        </div>
+                        <div class="col-sm-10">
+                            <select id="drpHocPhan" class="select-opt"></select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <div class="group-title-name">
+                                <span class="lang" key="">Môn thi</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-10">
+                            <input type="text" id="txtCourseName" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <div class="group-title-name">
+                                <span class="lang" key=""> Mã môn </span>
+                            </div>
+                        </div>
+                        <div class="col-sm-10">
+                            <input type="text" id="txtCourseCode" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <div class="group-title-name">
+                                <span class="lang" key=""> Số ĐVHT/TC  </span>
+                            </div>
+                        </div>
+                        <div class="col-sm-10">
+                            <input type="text" id="txtCourseCredit" class="form-control" />
+
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <div class="group-title-name">
+                                <span class="lang" key="">  Mã DST   </span>
+                            </div>
+                        </div>
+                        <div class="col-sm-10">
+                            <input type="text" id="txtCodeDST" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <div class="group-title-name">
+                                <span class="lang" key="">   Tiêu đề phòng thi    </span>
+                            </div>
+                        </div>
+                        <div class="col-sm-10">
+                            <input type="text" id="txtRoomTitle" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <div class="group-title-name">
+                                <span class="lang" key="">    Hướng dẫn làm bài </span>
+                            </div>
+                        </div>
+                        <div class="col-sm-10">
+                            <input type="text" id="txtRoomHelp" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <div class="group-title-name">
+                                <span class="lang" key="">  Giám khảo 1  </span>
+                            </div>
+                        </div>
+                        <div class="col-sm-10">
+                            <input type="text" id="txtTeacher1" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <div class="group-title-name">
+                                <span class="lang" key="">  Giám khảo 2  </span>
+                            </div>
+                        </div>
+                        <div class="col-sm-10">
+                            <input type="text" id="txtTeacher2" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <div class="group-title-name">
+                                <span class="lang" key="">  DS cán bộ coi thi  </span>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <a class="submit btn btn-primary" id="btnShowAdd_CanBoCoiThi"><i class="fa fa-save"></i><span class="lang" key=""> Thêm CB coi thi</span></a>
+                            <a id="btnDelete_CBCT" class="btn btn-default"><i class="fa fa-trash"></i> Xóa</a>
+                            <table id="tblCanBoCoiThi" class="table table-hover table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th class="td-fixed td-center">Stt</th>
+                                        <th class="td-center">Mã</th>
+                                        <th class="td-center">Họ tên</th>
+                                        <th class="td-center">Đơn vị</th>
+                                        <th class="td-fixed td-center">
+                                            Chọn
+                                        </th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- load from js -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <div class="group-title-name">
+                                <span class="lang" key="">  DS cán bộ chấm thi  </span>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <a class="submit btn btn-primary" id="btnShowAdd_CanBoChamThi"><i class="fa fa-save"></i><span class="lang" key=""> Thêm CB chấm thi</span></a>
+                            <a id="btnDelete_ChamThi" class="btn btn-default"><i class="fa fa-trash"></i> Xóa</a>
+                            <table id="tblCanBoChamThi" class="table table-hover table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th class="td-fixed td-center">Stt</th>
+                                        <th class="td-center">Mã</th>
+                                        <th class="td-center">Họ tên</th>
+                                        <th class="td-center">Đơn vị</th>
+                                        <th class="td-fixed td-center">
+                                            Chọn
+                                        </th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- load from js -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <div class="group-title-name">
+                                <span class="lang" key="">  Ngày thi  </span>
+                            </div>
+                        </div>
+                        <div class="col-sm-10">
+                            <input type="text" id="txtExamDate" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <div class="group-title-name">
+                                <span class="lang" key=""> Thời gian thi(phút) </span>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <input type="text" id="txtTotalTime" class="form-control" />
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <div class="group-title-name">
+                                <span class="lang" key="">  Thang điểm  </span>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <input type="text" id="txtThangDiem" class="form-control" />
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <div class="group-title-name">
+                                <span class="lang" key="">  Số điểm lẻ  </span>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <input type="text" id="txtSoDiemLe" class="form-control" />
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <div class="group-title-name">
+                                <span class="lang" key="">   Mật khẩu cho phòng thi   </span>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <input type="text" id="txtMatKhauChoPhongThi" class="form-control" />
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="group-title-name">
+                                <label class="group-title-name">
+                                    <input type="checkbox" id="chkChoPhepXemDiem" />
+                                    Cho phép xem điểm
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <label class="group-title-name">
+                                <input type="checkbox" id="chkChoPhepXemKetQuaTraLoi" />
+                                Cho phép xem kết quả
+                            </label>
+
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <span class="lang" key="">  Cách tính điểm   </span>
+                        </div>
+                        <div class="col-sm-6">
+                            <select id="drpCachTinhDiem" class="select-opt">
+                                <option value="">Chọn cách tính điểm</option>
+                                <option value="THEOSOY">Theo số ý</option>
+                                <option value="THEOSOCAU">Theo số câu</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <span class="lang" key="">  Trạng thái phòng   </span>
+                        </div>
+                        <div class="col-sm-6">
+                            <select id="drpTrangThaiPhongThi_Edit" class="select-opt">
+                                <option value="">Chọn trạng thái phòng(Đóng/Mở)</option>
+                                <option value="1">Đang mở</option>
+                                <option value="0">Đang đóng</option>
+                                <!-- Load from js -->
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <span class="lang" key="">  Tình trạng phòng   </span>
+                        </div>
+                        <div class="col-sm-6">
+                            <select id="drpStatus_Edit" class="select-opt">
+                                <option value="" id="">Tình trạng phòng(Ẩn/Hiện)</option>
+                                <option value="0">Ẩn</option>
+                                <option value="1">Hiện</option>
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="box-footer">
+                <div class="pull-right">
+                    <a class="submit btn btn-primary" id="btnSave_PhongThi"><i class="fa fa-save"></i><span class="lang" key=""> Lưu</span></a>
+                    <a class="btn btn-default btnClose" id=""><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+                </div>
+            </div>
+        </div>
+        <div class="box box-solid form-container zone-bus" id="zoneCanBoCoiThi" style="display: none">
+            <div class="box-header with-border">
+                <h3 class="box-title"><span class="myModalLabel"> <i class="fa fa-pencil"></i></span>Thêm cán bộ coi thi </h3>
+                <div class="pull-right title-note">
+                    <a class="btn btn-default btnClose_CBCT" href="#" title="Close"><i class="fa fa-times"></i></a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="area-search">
+                    <div id="search" class="inputSearch">
+                        <div class="col-sm-3 item-search">
+                            <input id="txtSearch_CanBoCoiThi" class="form-control" placeholder="Nhập từ khóa tìm kiếm" />
+                        </div>
+                        <div class="col-sm-3 item-search">
+                            <a id="btnSearch_CanBoCoiThi" class="btn btn-default"><i class="fa fa-search"></i> <span class="lang" key="">Tìm kiếm</span></a>
+                            <a id="btnAdd_CanBoCoiThi" class="btnAdd btn btn-primary"><i class="fa fa-plus-circle"></i>Thêm CBCT</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="box-body">
+                <div class="row zone-box">
+                    <table id="tblTimKiemCanBoCoiThi" class="table table-hover table-bordered">
+                        <thead>
+                            <tr>
+                                <th class="td-fixed td-center">Stt</th>
+                                <th class="td-center">Mã</th>
+                                <th class="td-center">Họ Tên</th>
+                                <th class="td-center">Đơn vị</th>
+                                <th class="td-fixed td-center">
+                                    Chọn
+                                </th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- load from js -->
+                        </tbody>
+                    </table>
+
+
+                </div>
+            </div>
+            <div class="box-footer">
+                <div class="pull-right">
+                    <a class="btn btn-default btnClose_CBCT" id=""><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+
+                </div>
+            </div>
+
+        </div>
+        <div class="box box-solid form-container zone-bus" id="zoneCanBoChamThi" style="display: none">
+            <div class="box-header with-border">
+                <h3 class="box-title"><span class="myModalLabel"> <i class="fa fa-pencil"></i></span>Thêm cán bộ chấm thi </h3>
+                <div class="pull-right title-note">
+                    <a class="btn btn-default btnClose_CBCT" href="#" title="Close"><i class="fa fa-times"></i></a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="area-search">
+                    <div id="search" class="inputSearch">
+                        <div class="col-sm-3 item-search">
+                            <input id="txtSearch_CanBoChamThi" class="form-control" placeholder="Nhập từ khóa tìm kiếm" />
+                        </div>
+                        <div class="col-sm-3 item-search">
+                            <a id="btnSearch_CanBoChamThi" class="btn btn-default"><i class="fa fa-search"></i> <span class="lang" key="">Tìm kiếm</span></a>
+                            <a id="btnAdd_CanBoChamThi" class="btnAdd btn btn-primary"><i class="fa fa-plus-circle"></i>Thêm CB chấm thi</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="box-body">
+                <div class="row zone-box">
+                    <table id="tblTimKiemCanBoChamThi" class="table table-hover table-bordered">
+                        <thead>
+                            <tr>
+                                <th class="td-fixed td-center">Stt</th>
+                                <th class="td-center">Mã</th>
+                                <th class="td-center">Họ Tên</th>
+                                <th class="td-center">Đơn vị</th>
+                                <th class="td-fixed td-center">
+                                    Chọn
+                                </th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- load from js -->
+                        </tbody>
+                    </table>
+
+
+                </div>
+            </div>
+            <div class="box-footer">
+                <div class="pull-right">
+                    <a class="btn btn-default btnClose_CBCT" id=""><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+
+                </div>
+            </div>
+
+        </div>
+        <div class="box box-solid form-container zone-bus" id="zoneKhoiTaoDeChoCacPhongThi" style="display: none">
+            <div class="box-header with-border">
+                <h3 class="box-title"><span class="myModalLabel"> <i class="fa fa-pencil"></i></span>Khởi tạo đề </h3>
+                <div class="pull-right title-note">
+                    <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times"></i></a>
+                </div>
+            </div>
+            <div class="box-body">
+                <div class="nav-tabs-custom">
+                    <ul class="nav nav-tabs">
+                        <li class="active">
+                            <a href="#tab_GenDeTuDeThiCoSan_CacPhongThi" data-toggle="tab" aria-expanded="true">
+                                <span class="lang" key="">
+                                    TẠO ĐỀ TỪ ĐỀ THI CÓ SẴN
+                                    <span class="pull-right badge bg-light-blue">
+                                        <span id="tblImport_ThanhCong_Tong_CacPhongThi"></span>
+                                    </span>
+                                </span>
+                            </a>
+                        </li>
+                        <li class="">
+                            <a href="#tab_GenDeTheoCauTrucDeThi_CacPhongThi" data-toggle="tab" aria-expanded="true">
+                                <span class="lang" key="">
+                                    TẠO ĐỀ THEO CẤU TRÚC ĐỀ
+                                    <span class="pull-right badge bg-light-blue">
+                                        <span id="tblImport_ThatBai_Tong_CacPhongThi"></span>
+                                    </span>
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="tab-content" style="padding-top: 2px">
+                        <!--  TẠO ĐỀ TỪ ĐỀ THI CÓ SẴN-->
+                        <div class="tab-pane active" id="tab_GenDeTuDeThiCoSan_CacPhongThi">
+                            <div class="row">
+                                <div class="col-sm-5">
+                                    <div class="group-title-name">
+                                        <select id="drpGroupQuestion_GenDeTuDeThiCoSan_CacPhongThi" class="select-opt">
+                                            <option value="">Chọn nhóm câu hỏi</option>
+                                            <!-- Load from js -->
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-5">
+                                    <div class="group-title-name">
+                                        <select id="drpExamStruct_GenDeTuDeThiCoSan_CacPhongThi" class="select-opt">
+                                            <option value="">Chọn cấu trúc đề</option>
+                                            <!-- Load from js -->
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row row-align">
+                                <table id="tblGenDeTuDeThiCoSan_CacPhongThi" class="table table-hover table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th class="td-fixed td-center">Stt</th>
+                                            <th class="td-center">Tên đề thi</th>
+                                            <th class="td-center">Số đề tạo</th>
+                                            <th class="td-fixed td-center">
+                                                Chọn
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- load from js -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="box-footer">
+                                <div class="pull-right">
+                                    <a class="submit btn btn-primary" id="btnSave_GenDeTuDeThiCoSan_CacPhongThi"><i class="fa fa-mars-double"></i><span class="lang" key="">Thực hiện khởi tạo</span></a>
+                                    <a class="btn btn-default btnClose" id=""><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+
+                                </div>
+                            </div>
+                        </div>
+                        <!--  TẠO ĐỀ THEO CẤU TRÚC ĐỀ-->
+                        <div class="tab-pane" id="tab_GenDeTheoCauTrucDeThi_CacPhongThi">
+                            <div class="row">
+                                <div class="col-sm-5">
+                                    <div class="group-title-name">
+                                        <select id="drpGroupQuestion_GenDeTheoCauTrucDeThi_CacPhongThi" class="select-opt">
+                                            <option value="">Chọn nhóm câu hỏi</option>
+                                            <!-- Load from js -->
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-5">
+                                    <div class="group-title-name">
+                                        <select id="drpExamStruct_GenDeTheoCauTrucDeThi_CacPhongThi" class="select-opt">
+                                            <option value="">Chọn cấu trúc đề</option>
+                                            <!-- Load from js -->
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row row-align">
+                                <table id="tblGenDeTheoCauTrucDeThi_CacPhongThi" class="table table-hover table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th class="td-fixed td-center">Stt</th>
+                                            <th class="td-center">Tên</th>
+                                            <th class="td-center">Loại câu hỏi</th>
+                                            <th class="td-center">Mức độ</th>
+                                            <th class="td-center">Số câu trong NHCH</th>
+                                            <th class="td-center">Số câu lấy ra</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- load from js -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="box-footer">
+                                <div class="pull-right">
+                                    <a class="submit btn btn-primary" id="btnSave_GenDeTheoCauTrucDeThi_NgauNhien_CacPhongThi"><i class="fa fa-random"></i><span class="lang" key="">Khởi tạo đề thi ngẫu nhiên</span></a>
+                                    <a class="submit btn btn-primary" id="btnSave_GenDeTheoCauTrucDeThi_CungDe_CacPhongThi"><i class="fa fa-sliders"></i><span class="lang" key="">Khởi tạo cùng 1 đề(Thứ tự câu hỏi/đáp án ngẫu nhiên)</span></a>
+                                    <a class="btn btn-default btnClose" id=""><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="box box-solid form-container zone-bus" id="zoneThiSinh" style="display: none">
+            <div class="box-header with-border">
+                <h3 class="box-title"><span class="myModalLabel"> <i class="fa fa-pencil"></i></span> Thí sinh</h3>
+                <div class="pull-right title-note">
+                    <a class="btn btn-default btnCloseSubDetail" href="#" title="Close"><i class="fa fa-times"></i></a>
+                </div>
+            </div>
+            <div class="box-body">
+                <div class="row zone-box">
+
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <div class="group-title-name">
+                                <span class="lang" key="">Mã sinh viên:</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-10">
+                            <input type="text" id="txtStudentCode" class="form-control" />
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <div class="group-title-name">
+                                <span class="lang" key="">Họ đệm:</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-10">
+                            <input type="text" id="txtLastName" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row">
+
+                        <div class="col-sm-2">
+                            <div class="group-title-name">
+                                <span class="lang" key="">Tên:</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-10">
+                            <input type="text" id="txtFirtName" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <div class="group-title-name">
+                                <span class="lang" key=""> Lớp: </span>
+                            </div>
+                        </div>
+                        <div class="col-sm-10">
+                            <input type="text" id="txtClassName" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <div class="group-title-name">
+                                <span class="lang" key=""> Số báo danh  </span>
+                            </div>
+                        </div>
+                        <div class="col-sm-10">
+                            <input type="text" id="txtSoBaoDanh" class="form-control" />
+
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <div class="group-title-name">
+                                <span class="lang" key=""> Ngày sinh </span>
+                            </div>
+                        </div>
+                        <div class="col-sm-10">
+                            <input type="text" id="txtBirthDate" class="form-control" />
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+            <div class="box-footer">
+                <div class="pull-right">
+                    <a class="btn btn-default btnCloseSubDetail" id=""><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+                    <a class="submit btn btn-primary" id="btnSave_ThiSinh"><i class="fa fa-save"></i><span class="lang" key=""> Lưu</span></a>
+                </div>
+            </div>
+        </div>
+        <div class="box box-solid form-container zone-bus" id="zoneDiaChiIP_ThiSinh" style="display: none">
+            <div class="box-header with-border">
+                <h3 class="box-title"><span class="myModalLabel"> <i class="fa fa-pencil"></i></span> Thí sinh</h3>
+                <div class="pull-right title-note">
+                    <a class="btn btn-default btnCloseSubDetail" href="#" title="Close"><i class="fa fa-times"></i></a>
+                </div>
+            </div>
+            <div class="box-body">
+                <div class="row zone-box">
+
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <div class="group-title-name">
+                                <span class="lang" key="">Mã sinh viên:</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-10">
+                            <label id="lblStudentCode" style="color: #0073b7"></label>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <div class="group-title-name">
+                                <span class="lang" key="">Họ tên:</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-10">
+                            <label id="lblHoTen" style="color: #0073b7"></label>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <div class="group-title-name">
+                                <span class="lang" key=""> Lớp: </span>
+                            </div>
+                        </div>
+                        <div class="col-sm-10">
+                            <label id="lblClassName" style="color: #0073b7"></label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <div class="group-title-name">
+                                <span class="lang" key=""> Số báo danh:  </span>
+                            </div>
+                        </div>
+                        <div class="col-sm-10">
+
+                            <label id="lblSoBaoDanh" style="color: #0073b7"></label>
+
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <div class="group-title-name">
+                                <span class="lang" key=""> Ngày sinh: </span>
+                            </div>
+                        </div>
+                        <div class="col-sm-10">
+                            <label id="lblBirthDate" style="color: #0073b7"></label>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="row row-align">
+                            <table id="tbl_DiaChiIP_ThiSinh" class="table table-hover table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th class="td-fixed td-center">Stt</th>
+                                        <th class="td-center">Địa chỉ IP</th>
+                                        <th class="td-center">Tên máy</th>
+                                        <th class="td-center">Ngày  giờ</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- load from js -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+            <div class="box-footer">
+                <div class="pull-right">
+                    <a class="btn btn-default btnCloseSubDetail" id=""><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+
+                </div>
+            </div>
+        </div>
+        <div id="zoneTaoDeThi" class="col-sm-12 zone-bus beforeActive" style="display: none">
+            <div class="box-header with-border">
+                <h3 class="box-title"><span class="myModalLabel"> <i class="fa fa-pencil"></i></span>Tạo đề </h3>
+                <div class="pull-right title-note">
+                    <a class="btn btn-default btnCloseSubDetail" href="#" title="Close"><i class="fa fa-times"></i></a>
+                </div>
+            </div>
+            <div class="row zone-box">
+                <div class="row">
+                    <p class="group-title-name">
+                        <span class="badge bg-blue">Thông tin phòng thi</span>
+                    </p>
+                </div>
+                <div class="row">
+                    <div class="col-sm-1">
+                        <div class="group-title-name">
+                            <span class="lang" key="">Đơn vị:</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <label id="lblDonVi_TaoDeThi" style="color: #0073b7"></label>
+                    </div>
+                    <div class="col-sm-1">
+                        <div class="group-title-name">
+                            <span class="lang" key="">Đợt thi:</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <label id="lblDotThi_TaoDeThi" style="color: #0073b7"></label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-1">
+                        <div class="group-title-name">
+                            Phòng thi: <span class="title-colon">:</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <label id="lblPhongThi_TaoDeThi" style="color: #0073b7"></label>
+                    </div>
+                    <div class="col-sm-1">
+                        <div class="group-title-name">
+                            Môn thi: <span class="title-colon">:</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <label id="lblMonThi_TaoDeThi" style="color: #0073b7"></label>
+                    </div>
+                    <div class="col-sm-1">
+                        <div class="group-title-name">
+                            Ngày thi<span class="title-colon">:</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <label id="lblNgayThi_TaoDeThi" style="color: #0073b7"></label>
+                    </div>
+                </div>
+            </div>
+            <div class="row zone-box">
+                <div class="row">
+                    <p class="group-title-name">
+                        <span class="badge bg-blue">Thông tin đề thi</span>
+                    </p>
+                </div>
+                <div class="row">
+                    <div class="col-sm-1">
+                        <div class="group-title-name">
+                            <span class="lang" key="">Kiểu tạo đề:</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-5">
+                        <label id="lblKieuTaoDe_TaoDeThi" style="color: #0073b7"></label>
+                    </div>
+                    <div class="col-sm-1">
+                        <div class="group-title-name">
+                            <span class="lang" key="">Cấu trúc đề:</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-5">
+                        <label id="lblCauTrucDe_TaoDeThi" style="color: #0073b7"></label>
+                    </div>
+                </div>
+
+                <div class="row">
+
+                    <div class="col-sm-1">
+                        <div class="group-title-name">
+                            Trạng Thái: <span class="title-colon">:</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-5">
+                        <label id="lblTrangThai_TaoDeThi" style="color: #0073b7"></label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-1">
+                        <div class="group-title-name">
+                            Tổng số câu hỏi:
+                        </div>
+                    </div>
+                    <div class="col-sm-5">
+                        <label id="lblTongSoCau_TaoDeThi" style="color: #0073b7"></label>
+                    </div>
+                    <div class="col-sm-1">
+                        <div class="group-title-name">
+                            <span class="lang" key="">Đề thi:</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-5">
+                        <label id="lblDeThi_TaoDeThi" style="color: #0073b7"></label>
+                    </div>
+                </div>
+            </div>
+            <div class="row zone-box">
+                <div id="MatKhauDeThi" style="padding-left: 25px" class="inputSearch collapse in">
+                    <div id="zoneMatKhauDeThi"></div>
+                    <a id="btnAdd_MatKhauPhanThi" class="btnAdd btn btn-primary"><i class="fa fa-key"></i>Cập nhật mật khẩu phần thi</a>
+                </div>
+            </div>
+            <div class="box-header">
+                <div class="pull-right">
+                    <a class="btn btn-default btnCloseSubDetail" href="#" title="Close"><i class="fa fa-times"></i> Đóng</a>
+
+                </div>
+            </div>
+            <div class="box-body">
+                <div class="nav-tabs-custom">
+                    <ul class="nav nav-tabs">
+                        <li class="active">
+                            <a href="#tab_GenDeTuDeThiCoSan" data-toggle="tab" aria-expanded="true">
+                                <span class="lang" key="">
+                                    TẠO ĐỀ TỪ ĐỀ THI CÓ SẴN
+                                    <span class="pull-right badge bg-light-blue">
+                                        <span id="tblImport_ThanhCong_Tong"></span>
+                                    </span>
+                                </span>
+                            </a>
+                        </li>
+                        <li class="">
+                            <a href="#tab_GenDeTheoCauTrucDeThi" data-toggle="tab" aria-expanded="true">
+                                <span class="lang" key="">
+                                    TẠO ĐỀ THEO CẤU TRÚC ĐỀ
+                                    <span class="pull-right badge bg-light-blue">
+                                        <span id="tblImport_ThatBai_Tong"></span>
+                                    </span>
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="tab-content" style="padding-top: 2px">
+                        <!--  TẠO ĐỀ TỪ ĐỀ THI CÓ SẴN-->
+                        <div class="tab-pane active" id="tab_GenDeTuDeThiCoSan">
+                            <div class="row">
+                                <div class="col-sm-5">
+                                    <div class="group-title-name">
+                                        <select id="drpGroupQuestion_GenDeTuDeThiCoSan" class="select-opt">
+                                            <option value="">Chọn nhóm câu hỏi</option>
+                                            <!-- Load from js -->
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-5">
+                                    <div class="group-title-name">
+                                        <select id="drpExamStruct_GenDeTuDeThiCoSan" class="select-opt">
+                                            <option value="">Chọn cấu trúc đề</option>
+                                            <!-- Load from js -->
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row row-align">
+                                <table id="tblGenDeTuDeThiCoSan" class="table table-hover table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th class="td-fixed td-center">Stt</th>
+                                            <th class="td-center">Tên đề thi</th>
+                                            <th class="td-center">Số đề tạo</th>
+                                            <th class="td-fixed td-center">
+                                                Chọn
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- load from js -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="box-footer">
+                                <div class="pull-right">
+                                    <a class="submit btn btn-primary" id="btnSave_GenDeTuDeThiCoSan"><i class="fa fa-mars-double"></i><span class="lang" key="">Thực hiện khởi tạo</span></a>
+                                    <a class="btn btn-default btnCloseSubDetail" id=""><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+
+                                </div>
+                            </div>
+                        </div>
+                        <!--  TẠO ĐỀ THEO CẤU TRÚC ĐỀ-->
+                        <div class="tab-pane" id="tab_GenDeTheoCauTrucDeThi">
+                            <div class="row">
+                                <div class="col-sm-5">
+                                    <div class="group-title-name">
+                                        <select id="drpGroupQuestion_GenDeTheoCauTrucDeThi" class="select-opt">
+                                            <option value="">Chọn nhóm câu hỏi</option>
+                                            <!-- Load from js -->
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-5">
+                                    <div class="group-title-name">
+                                        <select id="drpExamStruct_GenDeTheoCauTrucDeThi" class="select-opt">
+                                            <option value="">Chọn cấu trúc đề</option>
+                                            <!-- Load from js -->
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row row-align">
+                                <table id="tblGenDeTheoCauTrucDeThi" class="table table-hover table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th class="td-fixed td-center">Stt</th>
+                                            <th class="td-center">Tên</th>
+                                            <th class="td-center">Loại câu hỏi</th>
+                                            <th class="td-center">Mức độ</th>
+                                            <th class="td-center">Số câu trong NHCH</th>
+                                            <th class="td-center">Số câu lấy ra</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- load from js -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="box-footer">
+                                <div class="pull-right">
+                                    <a class="submit btn btn-primary" id="btnSave_GenDeTheoCauTrucDeThi_NgauNhien"><i class="fa fa-random"></i><span class="lang" key="">Khởi tạo đề thi ngẫu nhiên</span></a>
+                                    <a class="submit btn btn-primary" id="btnSave_GenDeTheoCauTrucDeThi_CungDe"><i class="fa fa-sliders"></i><span class="lang" key="">Khởi tạo cùng 1 đề(Thứ tự câu hỏi/đáp án ngẫu nhiên)</span></a>
+                                    <a class="btn btn-default btnCloseSubDetail" id=""><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="zoneTaoDeTuDeThiThuCong" class="col-sm-12 zone-bus beforeActive" style="display: none">
+            <div class="box-header with-border">
+                <h3 class="box-title"><span class="myModalLabel"> <i class="fa fa-pencil"></i></span>Tạo đề từ đề thi thủ công </h3>
+                <div class="pull-right title-note">
+                    <a class="btn btn-default btnCloseSubDetail" href="#" title="Close"><i class="fa fa-times"></i></a>
+                </div>
+            </div>
+            <div class="row zone-box">
+                <div class="row">
+                    <p class="group-title-name">
+                        <span class="badge bg-blue">Thông tin phòng thi</span>
+                    </p>
+                </div>
+                <div class="row">
+                    <div class="col-sm-1">
+                        <div class="group-title-name">
+                            <span class="lang" key="">Đơn vị:</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <label id="lblDonVi_TaoDeTuDeThiThuCong" style="color: #0073b7"></label>
+                    </div>
+                    <div class="col-sm-1">
+                        <div class="group-title-name">
+                            <span class="lang" key="">Đợt thi:</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <label id="lblDotThi_TaoDeTuDeThiThuCong" style="color: #0073b7"></label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-1">
+                        <div class="group-title-name">
+                            Phòng thi: <span class="title-colon">:</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <label id="lblPhongThi_TaoDeTuDeThiThuCong" style="color: #0073b7"></label>
+                    </div>
+                    <div class="col-sm-1">
+                        <div class="group-title-name">
+                            Môn thi: <span class="title-colon">:</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <label id="lblMonThi_TaoDeTuDeThiThuCong" style="color: #0073b7"></label>
+                    </div>
+                    <div class="col-sm-1">
+                        <div class="group-title-name">
+                            Ngày thi<span class="title-colon">:</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <label id="lblNgayThi_TaoDeTuDeThiThuCong" style="color: #0073b7"></label>
+                    </div>
+                </div>
+            </div>
+            <div class="row zone-box">
+                <div class="row">
+                    <p class="group-title-name">
+                        <span class="badge bg-blue">Thông tin đề thi</span>
+                    </p>
+                </div>
+                <div class="row">
+                    <div class="col-sm-1">
+                        <div class="group-title-name">
+                            <span class="lang" key="">Kiểu tạo đề:</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-5">
+                        <label id="lblKieuTaoDe_TaoDeTuDeThiThuCong" style="color: #0073b7"></label>
+                    </div>
+                    <div class="col-sm-1">
+                        <div class="group-title-name">
+                            <span class="lang" key="">Cấu trúc đề:</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-5">
+                        <label id="lblCauTrucDe_TaoDeTuDeThiThuCong" style="color: #0073b7"></label>
+                    </div>
+                </div>
+
+                <div class="row">
+
+                    <div class="col-sm-1">
+                        <div class="group-title-name">
+                            Trạng Thái: <span class="title-colon">:</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-5">
+                        <label id="lblTrangThai_TaoDeTuDeThiThuCong" style="color: #0073b7"></label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-1">
+                        <div class="group-title-name">
+                            Tổng số câu hỏi:
+                        </div>
+                    </div>
+                    <div class="col-sm-5">
+                        <label id="lblTongSoCau_TaoDeTuDeThiThuCong" style="color: #0073b7"></label>
+                    </div>
+                    <div class="col-sm-1">
+                        <div class="group-title-name">
+                            <span class="lang" key="">Đề thi:</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-5">
+                        <label id="lblDeThi_TaoDeTuDeThiThuCong" style="color: #0073b7"></label>
+                    </div>
+                </div>
+            </div>
+            <div class="row zone-box">
+                <div class="row">
+                    <p class="group-title-name">
+                        <span class="badge bg-blue">Phần thi</span>
+                    </p>
+                </div>
+                <div class="row">
+                    <div class="col-sm-1">
+                        <div class="group-title-name">
+                            <span class="lang" key="">Tên phần thi:</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-5">
+                        <label id="lblPhanThi_TaoDeTuDeThiThuCong" style="color: #0073b7"></label>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="box-body">
+
+                <!--  TẠO ĐỀ TỪ ĐỀ THI Thủ công-->
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-sm-5">
+                            <div class="group-title-name">
+                                <select id="drpGroupQuestion_TaoDeTuDeThiThuCong" class="select-opt">
+                                    <option value="">Chọn nhóm câu hỏi</option>
+                                    <!-- Load from js -->
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row row-align">
+                        <table id="tblGenDeTuDeThiThuCong" class="table table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="td-fixed td-center">Stt</th>
+                                    <th class="td-center">Tên đề thi</th>
+                                    <th class="td-center">Số đề tạo</th>
+                                    <th class="td-fixed td-center">
+                                        Chọn
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- load from js -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="box-footer">
+                        <div class="pull-right">
+                            <a id="btnSave_ThucHienGenLayNDeTuDeThiThuCong" class="btnAdd btn btn-primary" too><i class="fa fa-plus-circle"></i>Lấy ra n đề rồi tạo đề</a>
+                            <input type="text" id="txtSoDeThiNgauNhienLayRa" class="form-control" style="width:100px; float: left;">
+                            <a class="submit btn btn-primary" id="btnSave_GenDeTuDeThiThuCong"><i class="fa fa-mars-double"></i><span class="lang" key="">Thực hiện khởi tạo lấy đề ngẫu nhiên</span></a>
+                            <a class="submit btn btn-primary" id="btnSave_GenDeThiSinhTuDeThiThuCong"><i class="fa fa-mars-double"></i><span class="lang" key="">Thực hiện khởi tạo đề cho thí sinh lấy đề ngẫu nhiên</span></a>
+                            <a class="btn btn-default btnCloseSubDetail" id=""><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div id="zoneTinhHuongThi" class="col-sm-12 zone-bus beforeActive" style="display: none">
+            <div class="box-header with-border">
+                <h3 class="box-title"><span class="myModalLabel"> <i class="fa fa-pencil"></i></span>Xử lý tình huống thi </h3>
+                <div class="pull-right title-note">
+                    <a class="btn btn-default btnCloseSubDetail" href="#" title="Close"><i class="fa fa-times"></i></a>
+                </div>
+            </div>
+            <div class="row zone-box">
+                <div class="row">
+                    <p class="group-title-name">
+                        <span class="badge bg-blue">Thông tin phòng thi</span>
+                    </p>
+                </div>
+                <div class="row">
+                    <div class="col-sm-1">
+                        <div class="group-title-name">
+                            <span class="lang" key="">Đơn vị:</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <label id="lblDonVi_TinhHuongThi" style="color: #0073b7"></label>
+                    </div>
+                    <div class="col-sm-1">
+                        <div class="group-title-name">
+                            <span class="lang" key="">Đợt thi:</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <label id="lblDotThi_TinhHuongThi" style="color: #0073b7"></label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-1">
+                        <div class="group-title-name">
+                            Phòng thi: <span class="title-colon">:</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <label id="lblPhongThi_TinhHuongThi" style="color: #0073b7"></label>
+                    </div>
+                    <div class="col-sm-1">
+                        <div class="group-title-name">
+                            Môn thi: <span class="title-colon">:</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <label id="lblMonThi_TinhHuongThi" style="color: #0073b7"></label>
+                    </div>
+                    <div class="col-sm-1">
+                        <div class="group-title-name">
+                            Ngày thi<span class="title-colon">:</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <label id="lblNgayThi_TinhHuongThi" style="color: #0073b7"></label>
+                    </div>
+                </div>
+            </div>
+            <div class="row zone-box">
+                <div class="row">
+                    <p class="group-title-name">
+                        <span class="badge bg-blue">Thông tin đề thi</span>
+                    </p>
+                </div>
+                <div class="row">
+                    <div class="col-sm-1">
+                        <div class="group-title-name">
+                            <span class="lang" key="">Kiểu tạo đề:</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-5">
+                        <label id="lblKieuTaoDe_TinhHuongThi" style="color: #0073b7"></label>
+                    </div>
+                    <div class="col-sm-1">
+                        <div class="group-title-name">
+                            <span class="lang" key="">Cấu trúc đề:</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-5">
+                        <label id="lblCauTrucDe_TinhHuongThi" style="color: #0073b7"></label>
+                    </div>
+                </div>
+
+                <div class="row">
+
+                    <div class="col-sm-1">
+                        <div class="group-title-name">
+                            Trạng Thái: <span class="title-colon">:</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-5">
+                        <label id="lblTrangThai_TinhHuongThi" style="color: #0073b7"></label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-1">
+                        <div class="group-title-name">
+                            Tổng số câu hỏi:
+                        </div>
+                    </div>
+                    <div class="col-sm-5">
+                        <label id="lblTongSoCau_TinhHuongThi" style="color: #0073b7"></label>
+                    </div>
+                    <div class="col-sm-1">
+                        <div class="group-title-name">
+                            <span class="lang" key="">Đề thi:</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-5">
+                        <label id="lblDeThi_TinhHuongThi" style="color: #0073b7"></label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row zone-box">
+                <div class="row" style="align-content:center">
+                    <div>
+                        <div id="DSKieuLamBai" style="padding-left: 25px" class="inputSearch collapse in">
+                            <div id="zoneKieuLamBai"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="clear"></div>
+                <div class="row">
+
+                    <a id="btnAdd_KetThucLamBai" class="btnAdd btn btn-primary"><i class="fa fa-flag-checkered"></i>Kết thúc làm bài</a>
+                    <a id="btn_DoiMay" class="btnAdd btn btn-primary"><i class="fa fa-flag-checkered"></i>Cho phép TS đổi máy</a>
+
+                    <a id="btnAdd_LamLaiBaiTuDau" class="btnAdd btn btn-primary"><i class="fa fa-plus-circle"></i>Làm lại bài từ đầu</a>
+
+                    <a id="btnAdd_KhoiTaoLaiDe" class="btnAdd btn btn-primary"><i class="fa fa-plus-circle"></i>Khởi tạo lại đề</a>
+
+                    <a id="btnAdd_TamDung" class="btnAdd btn btn-primary"><i class="fa fa-pause"></i>Tạm dừng</a>
+
+                    <a id="btnAdd_TiepTucLamBai" class="btnAdd btn btn-primary"><i class="fa fa-address-card"></i>Tiếp tục làm bài</a>
+
+                    <a id="btnAdd_CongThemThoiGianLamBai" class="btnAdd btn btn-primary"><i class="fa fa-plus-circle"></i>Cộng thêm t/g làm bài</a>
+
+                    <input type="text" id="txtCongThemThoiGianLamBai" style="width:50px;">
+
+                </div>
+                <div class="row">
+                    <div class="pull-left">
+                        <a id="btnAdd_ViphamQuyCheThi" class="btnAdd btn btn-primary" style="float: left"><i class="fa fa-plus-circle"></i>Vi phạm quy chế</a>
+                        <div style="width: 220px; float: left">
+                            <select id="drpViPhamQuyChe" class="select-opt">
+                                <option value="">---</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="pull-right">
+                        <a class="btn btn-default btnCloseSubDetail" href="#" title="Close"><i class="fa fa-times"></i> Đóng</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12 scroll-table-x">
+                <table id="tblThiSinh_TinhHuongThi" class="table table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <th class="td-fixed td-center">Stt</th>
+                            <th class="td-center">Mã thí sinh</th>
+                            <th class="td-center"> Họ và tên</th>
+                            <th class="td-center"> Ngày sinh </th>
+                            <th class="td-center"> Số báo danh </th>
+                            <th class="td-center"> Điểm được công nhận </th>
+                            <th class="td-center"> Tình trạng </th>
+                            <th class="td-center"> T/g BĐ làm bài </th>
+                            <th class="td-center">  Máy đã đăng nhập  </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- load from js -->
+                    </tbody>
+                    <tfoot></tfoot>
+                </table>
+            </div>
+        </div>
+        <div class="box box-solid form-container zone-bus" id="zoneImportPhongThi_SinhVien" style="display: none">
+            <div class="box-header with-border">
+                <h3 class="box-title"><span class="myModalLabel"> <i class="fa fa-pencil"></i></span>Thông tin thí sinh phòng thi</h3>
+                <div class="pull-right title-note">
+                    <a class="btn btn-default btnClose_PhongThiImport_SinhVien" href="#" title="Close"><i class="fa fa-times"></i></a>
+                </div>
+            </div>
+            <div class="box-body">
+                <div class="nav-tabs-custom">
+                    <ul class="nav nav-tabs">
+                        <li class="active">
+                            <a href="#tabPTTS_1" data-toggle="tab" aria-expanded="true">
+                                <span class="lang" key="">
+                                    Danh sách thí sinh đã đưa vào phòng thi
+                                    <span class="pull-right badge bg-light-blue">
+                                        <span id="lblPhongThiImport_ThiSinhDaImport_Tong"></span>
+                                    </span>
+                                </span>
+                            </a>
+                        </li>
+                        <li class="">
+                            <a href="#tabPTTS_2" data-toggle="tab" aria-expanded="true">
+                                <span class="lang" key="">
+                                    Danh sách thí sinh chưa đưa vào phòng thi
+                                    <span class="pull-right badge bg-light-blue">
+                                        <span id="lblPhongThiImport_ThiSinhChuaImport_Tong"></span>
+                                    </span>
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="tab-content" style="padding-top: 2px">
+                        <!--  tab1-->
+                        <div class="tab-pane active" id="tabPTTS_1">
+                            <div class="row row-align">
+                                <table id="tblPhongThiImport_ThiSinhDaImport" class="table table-hover table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th class="td-fixed td-center">Stt</th>
+                                            <th class="td-center">Mã Thí sinh</th>
+                                            <th class="td-center">Họ đệm</th>
+                                            <th class="td-center">Tên</th>
+                                            <th class="td-center"> Ngày sinh </th>
+                                            <th class="td-center">Lớp </th>
+                                            <th class="td-center">Số báo danh</th>
+                                            <th class="td-center">Tình trạng thi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- load from js -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!--  Kết quả Import không thành công-->
+                        <div class="tab-pane" id="tabPTTS_2">
+                            <div class="row row-align">
+                                <table id="tblPhongThiImport_ThiSinhChuaImport" class="table table-hover table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th class="td-fixed td-center">Stt</th>
+                                            <th class="td-center">Mã Thí sinh</th>
+                                            <th class="td-center">Họ đệm</th>
+                                            <th class="td-center">Tên</th>
+                                            <th class="td-center"> Ngày sinh </th>
+                                            <th class="td-center">Lớp </th>
+                                            <th class="td-center">Số báo danh</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- load from js -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="box-footer">
+                <div class="pull-right">
+
+                    <a class="btn btn-default btnClose_PhongThiImport_SinhVien" id=""><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+                </div>
+            </div>
+        </div>
+        <div class="box box-solid form-container zone-bus" id="zoneBaoCaoLocTheoDuLieu" style="display: none">
+            <div class="box-header with-border">
+                <h3 class="box-title"><span class="myModalLabel"> <i class="fa fa-pencil"></i></span>Chi tiết Phòng thi </h3>
+                <div class="pull-right title-note">
+                    <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times"></i></a>
+                </div>
+            </div>
+            <div class="box-body">
+                <div class="row zone-box">
+
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <div class="group-title-name">
+                                <span class="lang" key="">    Nhóm dữ liệu </span>
+                            </div>
+                        </div>
+                        <div class="col-sm-10">
+                            <input type="text" id="txtBaoCaoLocTheoDuLieu" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="box-footer">
+                <div class="pull-right">
+                    <a class="submit btn btn-primary" id="btnBaoCaoLocTheoDuLieu"><i class="fa fa-save"></i><span class="lang" key=""> Xuất dữ liệu</span></a>
+                    <a class="btn btn-default btnClose" id=""><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="box box-solid zone-bus" id="zonebatdau">
+        <div class="box box-solid">
+            <div class="box-header with-border">
+                <h3 class="box-title"><i class="fa fa-window-restore"></i> Tìm kiếm</h3>
+            </div>
+            <div class="box-body">
+                <!-- Bộ tìm kiếm -->
+                <div class="col-sm-12 item-search">
+                    <div class="row">
+                        <div class="col-sm-3 item-search">
+                            <select id="drpDonVi" class="select-opt">
+                                <option value="">Chọn đơn vị</option>
+                                <!-- Load from js -->
+                            </select>
+                        </div>
+                        <div class="col-sm-2 item-search">
+                            <select id="drpNamHoc" class="select-opt">
+                                <option value="">Chọn chọn năm học</option>
+                                <!-- Load from js -->
+                            </select>
+                        </div>
+                        <div class="col-sm-2 item-search">
+                            <select id="drpHocKy" class="select-opt">
+                                <option value="">Chọn học kỳ</option>
+                                <!-- Load from js -->
+                            </select>
+                        </div>
+                        <div class="col-sm-2 item-search">
+                            <select id="drpDotThi" class="select-opt">
+                                <option value="">Chọn đợt thi</option>
+                                <!-- Load from js -->
+                            </select>
+                        </div>
+                        <div class="col-sm-2 item-search">
+                            <select id="drpTrangThaiPhongThi" class="select-opt">
+                                <option value="">Chọn trạng thái phòng(Đóng/Mở)</option>
+                                <option value="1">Đang mở</option>
+                                <option value="0">Đang đóng</option>
+                                <!-- Load from js -->
+                            </select>
+                        </div>
+                        <div class="col-sm-2 item-search">
+                            <select id="drpStatus" class="select-opt">
+                                <option value="">Tình trạng phòng(Ẩn/Hiện)</option>
+                                <option value="0">Ẩn</option>
+                                <option value="1">Hiện</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-2 item-search">
+                            <select id="drpHocPhan_DotThi" class="select-opt"></select>
+                        </div>
+
+                    </div>
+                    <div class="row">
+
+                        <div class="col-sm-1 item-search">
+                            <input type="text" id="txtTuNgay" class="form-control input-datepicker" placeholder="Từ ngày">
+                        </div>
+                        <div class="col-sm-1  item-search">
+                            <input type="text" id="txtDenNgay" class="form-control input-datepicker" placeholder="Đến ngày">
+                        </div>
+                        <div class="col-sm-2 item-search">
+                            <input type="text" id="txtSearch_TuKhoa" class="form-control" placeholder="Nhập từ khóa tìm kiếm">
+                        </div>
+                        <div class="col-sm-1 item-search">
+                            <a class="btn btn-primary btnSearch_PhongThi"><i class="fa fa-search"></i> <span class="lang" key="">Tìm kiếm</span></a>
+
+                        </div>
+                        <div class="pull-left">
+                            <select id="drpBaoCao_Main" data-placeholder="Chọn loại báo cáo..." class="chosen-select">
+                                <option value="">Chọn loại báo cáo</option>
+                                <option value="BAOCAODIEM_NHIEUPHONG">Báo cáo điểm</option>
+                                <option value="BAOCAODIEM_NHIEUPHONG_CACPHANTHI">Báo cáo điểm(Các phần thi)</option>
+                                <option value="BAOCAODIEM_CLO">Thống kê câu hỏi thí sinh</option>
+                                <!-- <option value="THONGKETYLESUDUNGCAUHOI">Thống kê tỷ lệ sử dụng câu hỏi</option>-->
+                            </select>
+                            <a id="btnTaiFile_Main" class="btn btn-default"><i class="fa fa-download"></i> Tải file</a>
+                            <div class="dropdown" id="zonebtnBaoCao" style="margin-left: 15px">
+                            </div>
+                        </div>
+                        <div class="box-tools pull-right">
+                            <a id="btnThucHienTacVu" class="btnAdd btn btn-primary"><i class="fa fa-plus-circle"></i>Thực hiện tác vụ</a>
+                            <select id="drpTacVu" data-placeholder="Thực hiện tác vụ" class="chosen-select">
+                                <option value="">Chọn tác vụ</option>
+                                <option value="IMPORTPHONGTHI">Import phòng thi</option>
+                                <option value="BAOCAOTHEODANHSACH">Báo cáo theo DS</option>
+                                <option value="THEMPHONGTHI">Nhập mới phòng thi</option>
+                                <option value="MOPHONGTHI">Mở phòng thi</option>
+                                <option value="DONGPHONGTHI">Đóng phòng thi</option>
+                                <option value="ANPHONGTHI">Ẩn phòng thi</option>
+                                <option value="HIENPHONGTHI">Hiển thị phòng thi</option>
+                                <option value="XOAPHONGTHI">Xóa phòng thi</option>
+                                <option value="TINHDIEMCAUHOI">Tạo dữ liệu báo cáo</option>                                
+                                <option value="KHOITAODETHI">Khởi tạo đề thi</option>
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="box box-solid">
+                <div class="box-header with-border">
+                    <h3 class="box-title">
+                        <i class="fa fa-hdd-o"></i> Danh sách phòng thi
+                        <span class="pull-right badge bg-light-blue">
+                            <span id="lblPhongThi_Tong"></span>
+                        </span>
+                    </h3>
+
+                </div>
+                <div class="box-body">
+
+                    <div class="col-sm-12 scroll-table-x">
+                        <table id="tblPhongThi" class="table table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="td-fixed td-center">Stt</th>
+                                    <th class="td-center">Phòng thi</th>
+                                    <th class="td-center">Môn thi</th>
+                                    <th class="td-center"> Ngày thi </th>
+                                    <th class="td-center"> Giờ thi </th>
+                                    <th class="td-center"> Đợt thi </th>
+                                    <th class="td-center"> Trạng thái phòng </th>
+                                    <th class="td-center">Tình trạng</th>
+                                    <th class="td-center">SL thí sinh</th>
+                                    <th class="td-fixed td-center">Sửa phòng thi</th>
+                                    <th class="td-fixed td-center">Chi tiết phòng thi</th>
+                                    <th class="td-fixed td-center">
+                                        <input type="checkbox" id="chkSelectAll_PhongThi">
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- load from js -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade zone-bus" id="zoneMaXacNhan" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="myModalLabel"><span class="lang" key=""> <i class="fa fa-key"></i>Nhập mật mã xác nhận</span></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <h4 class="modal-title" id="myModalLabel"><span style="font:bold;color:red"> Khi xuất báo cáo sẽ ảnh hưởng đến thí sinh đang làm bài </span></h4>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <h4 class="modal-title" id="myModalLabel"><span class="lang" key=""> <i class="fa fa-key"></i>Mã xác nhận</span></h4>
+                            <h4 class="modal-title" id="myModalLabel">
+                                <label id="lblMaXacNhan" style="font:bold"></label>
+                            </h4>
+
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <input type="text" id="txtMaXacNhan" placeholder="Mã xác nhận">
+                        </div>
+                    </div>
+
+                </div>
+                <div id="notify_import"></div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times-circle-o"></i> <span class="lang" key="">Đóng</span></button>
+                    <a class="submit btn btn-primary" id="btn_NhapMaXacNhan"><i class="fa fa-save"></i><span class="lang" key=""> Xác nhận</span></a>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+    <div id="zoneKetQuaThi" class="row col-sm-12 zone-bus" style="width: 100%; display: none">
+        <div id="zoneActionHoaDon" class="col-sm-1" style="float:right; margin-left: 3px">
+            <div id="btnIn_DeThiCuaThiSinh" style="width:85px; text-align:center; background-color: #fff; border-bottom: 1px solid #f1f1f1">
+                <a class="btn"><i style="color: #00a65a" class="fa fa-print fa-4x"></i></a>
+                <a class="color-active bold lbsymbolHD">In bài thi</a>
+            </div>
+            <div id="btnClose_KetQuaThi" style="width:85px; text-align:center; background-color: #fff; border-bottom: 1px solid #f1f1f1">
+                <a class="btn"><i style="color: #337ab7" class="fa fa-angle-double-down fa-4x"></i></a>
+                <a class="color-active bold lbsymbolHD">Đóng</a>
+            </div>
+
+        </div>
+        <div style="float:left; background-color: #fff" class="col-sm-11">
+            <div style="margin: 20px">
+                <div id="ThongTinBaiThi"></div>
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>
+
+</section>
+
+<script src="modules/quanlythi/script/quanlythi.js?v=1.0.0.0"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    function OpenNewWindow(bigurl, width, height) {
+        var newWindow = window.open("", "pictureViewer", "location=no, directories=no, fullscreen=no, menubar=no, status=no, toolbar=no, width=" + width + ", height=" + height + ", scrollbars=no");
+        newWindow.document.writeln("<html>");
+        newWindow.document.writeln("<body style='margins: 0 0 0 0;'>");
+        newWindow.document.writeln("<a href='javascript:window.close();'>");
+        newWindow.document.writeln("<img src='" + bigurl + "' alt='Click to close' id='bigImage' border='0'/>");
+        newWindow.document.writeln("</a>");
+        newWindow.document.writeln("</body></html>");
+        newWindow.document.close();
+    };
+    main_doc['QuanLyThi'] = new QuanLyThi();
+    $(document).ready(function () {
+        main_doc.QuanLyThi.init();
+    });
+    
+</script>
+

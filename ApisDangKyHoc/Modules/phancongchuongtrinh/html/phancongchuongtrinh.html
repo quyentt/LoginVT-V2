@@ -1,0 +1,531 @@
+﻿<style>
+    .h2 {
+        margin-bottom: 2em;
+        text-align: center;
+    }
+
+    %content {
+        font-size: 32px;
+        text-align: center;
+        margin: 0 5px;
+    }
+
+    .bin, .item {
+        @extend %content;
+        margin: 10px;
+        padding: 10px;
+        min-height: 150px;
+        min-width: 150px;
+    }
+
+    .bin {
+        border: 1px solid red;
+    }
+
+    .item {
+        background: blue;
+        color: white;
+        cursor: move;
+        transition: all 0.2s ease;
+    }
+
+    .drag {
+        opacity: 0.5;
+    }
+
+    .over {
+        background: red;
+    }
+
+    .item-li {
+        background-color: #fff;
+        margin: 5px !important;
+        border-radius: 10px;
+        height: 40px !important;
+        cursor: pointer
+    }
+
+    #zoneBox_KeHoach .small-box {
+        -webkit-box-shadow: 1px 1px 1px 1px #ccc;
+        -moz-box-shadow: 1px 1px 1px 1px #ccc; /* Firefox 3.5 - 3.6 */
+        box-shadow: 1px 1px 1px 1px #ccc;
+    }
+</style>
+<section class="content">
+    <div class="row">
+        <div class="zone-content" id="zone_kehoach">
+            <div class="box box-solid">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><i class="fa fa-window-restore"></i> Tìm kế hoạch</h3>
+                </div>
+                <div class="box-body">
+                    <!-- Bộ tìm kiếm -->
+                    <div class="col-sm-2 item-search">
+                        <select id="dropSearch_NamHoc" class="select-opt" style="width:100% !important">
+                            <option id="" value="">Chọn năm học</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-2 item-search">
+                        <select id="dropSearch_HocKy" class="select-opt" style="width:100% !important">
+                            <option id="" value="">Chọn học kỳ</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-2 item-search">
+                        <select id="dropSearch_DotHoc" class="select-opt" style="width:100% !important">
+                            <option id="" value="">Chọn đợt học</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-2 item-search">
+                        <input id="txtSearch_TuKhoa" class="form-control" placeholder="Nhập từ khóa tìm kiếm" />
+                    </div>
+                    <div class="col-sm-2 item-search">
+                        <a id="btnSearchKeHoach" class="btn btn-default"><i class="fa fa-search"></i> <span class="lang" key="">Tìm kiếm</span></a>
+                    </div>
+                </div>
+            </div>
+            <div class="box box-solid">
+                <div class="box-header with-border">
+                    <h3 class="box-title"> Danh sách kế hoạch</h3>
+                    
+                </div>
+                <div class="box-body">
+                    <div id="zoneBox_KeHoach">
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="zone-content" id="zone_phancongchuongtrinh" style="display: none">
+            <!-- /.left-content -->
+            <div class="col-sm-12">
+                <div class="box box-solid">
+                    <div class="box-header with-border" style="text-align: center">
+                        <a style="font-weight: bold; font-size: 32px"> Nội dung chương trình theo kế hoạch: <span class="color-active" id="lblNoiDungKeHoachDangKy"></span></a>
+                        <div class="pull-right">
+                            <a class="btn btn-default btnCloseToggle" href="#" title="Close"><i class="fa fa-times-circle"></i> Đóng</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.zone-content -->
+            <div class="col-sm-12">
+                <div class="box box-solid">
+                    <div class="box-header with-border">
+                        <h3 class="box-title" title="Danh sách chương trình">
+                            <i class="fa fa-book"></i> Danh sách chương trình
+                        </h3>
+                        <span class="pull-right">
+                            <a class="submit btn btn-primary pull-right" id="btnAdd_ChuongTrinh"><i class="fa fa-plus"></i> <span class="lang" key="lb_luu"> Thêm chương trình</span></a>
+                        </span>
+                    </div>
+                    <div class="box-body">
+                        <div style="height: 500px; overflow-y: scroll">
+                            <table id="tblChuongTrinh" class="table table-hover table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th class="td-fixed td-center">Stt</th>
+                                        <th class="td-center" style="width: 100px">Khóa</th>
+                                        <th class="td-center" style="width: 200px">Chương trình</th>
+                                        <th class="td-center" style="width: 50px">Số sinh viên</th>
+                                        <th class="td-fixed"><span class="lang" key="">Chi tiết</span></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- load from js -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="box-footer">
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <td>Tổng số chương tình: <span id="iTongSoChuongTrinh"></span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="box box-solid form-container zone-content" id="zone_inputchuongtrinh" style="display: none">
+            <div class="box-header with-border">
+                <h3 class="box-title"><i class="fa fa-pencil"></i> Chọn chương trình cho kế hoạch: <span id="lblInputChuongTrinh" class="color-active"></span></h3>
+                <div class="pull-right title-note">
+                    <a class="btn btn-default btnClose_SelectChuongTrinh11" href="#" title="Close"><i class="fa fa-times"></i></a>
+                </div>
+            </div>
+            <div class="box-body">
+                <div class="col-sm-12 box-view">
+                    <!-- Row Thong tin co ban -->
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <td style="width: 48%">
+                                    <div class="box box-solid" style="background-color: #f1f1f1 !important">
+                                        <div class="box-header with-border">
+                                            <h3 class="box-title" title="Danh sách chương trình">
+                                                <i class="fa fa-book"></i> Xác định chương trình cho kế hoạch
+                                            </h3>
+                                        </div>
+                                        <div class="box-body">
+                                            <div class="input-group">
+                                                <input type="text" id="txtSearch_TuKhoa_SelectChuongTrinh" class="form-control" placeholder="Nhập từ khóa tìm kiếm">
+                                                <span class="input-group-addon poiter btnExtend_Search" title="Tìm kiếm nâng cao">
+                                                    <i class="fa fa-angle-double-down"></i> Nâng cao
+                                                </span>
+                                            </div>
+                                            <div class="box-sub-search" style="display: none">
+                                                <div class="bss-item">
+                                                    <i>Chọn điều kiện tìm kiếm:</i>
+                                                </div>
+
+                                                <!--<div class="bss-item">
+                                                    <select id="dropSearchChuongTrinh_HeDaoTao" class="select-opt">
+                                                        <option value="">-- Chọn hệ đào tạo --</option>
+                                                    </select>
+                                                </div>-->
+
+                                                <div class="bss-item">
+                                                    <select id="dropSearchChuongTrinh_KhoaDaoTao" class="select-opt">
+                                                        <option value="">-- Chọn khóa đào tạo --</option>
+                                                        <!-- Load from js -->
+                                                    </select>
+                                                </div>
+
+                                                <div class="col-sm-3 item-search">
+                                                    <input id="txtSearch_TuKhoa" class="form-control" placeholder="Nhập từ khóa tìm kiếm" />
+                                                </div>
+                                                <div class="col-sm-3 item-search">
+                                                    <a class="btn btn-default btnSearch_ChuongTrinh"><i class="fa fa-search"></i> <span class="lang" key="">Tìm kiếm</span></a>
+                                                </div>
+                                                <div class="clear"></div>
+                                            </div>
+
+                                            <ul class="sidebar-menu" data-widget="tree" id="zoneTongChuongTrinh" style="height: 500px; overflow-y: scroll"></ul>
+                                        </div>
+                                        <div class="box-footer">
+                                            <div class="pull-right">
+                                                <a class="btn btn-primary" id="btnAddAll_ChuongTrinh" href="#" title="Close"><i class="	fa fa-window-restore"></i> Thêm tất cả</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style="min-width: 50px;text-align: center"><i class="fa fa-forward" style="font-size:48px;color:red"></i></td>
+                                <td style="width: 48%">
+                                    <div class="box box-solid" style="background-color: #f1f1f1 !important">
+                                        <div class="box-header with-border">
+                                            <h3 class="box-title" title="Danh sách học phần">
+                                                <i class="fa fa-files-o"></i> Danh sách kết quả chương trình thuộc kế hoạch
+                                            </h3>
+                                        </div>
+                                        <div class="box-body">
+                                            <input type="text" id="txtSearch_TuKhoa_SelectedChuongTrinh" class="form-control item-li" placeholder="Nhập từ khóa tìm kiếm" style="width: 99%">
+                                            <ul class="sidebar-menu" data-widget="tree" id="zoneChuongtrinh_Selectedxxx" style="height: 500px; overflow-y: scroll" ></ul>
+                                        </div>
+                                        <div class="box-footer">
+                                            <div class="pull-right">
+                                                <a class="btn btn-default" id="btnAdd_DMChuongTrinh" href="#" title="Close"><i class="fa fa-refresh"></i> Tải lại</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="box-footer">
+                <div class="pull-right">
+                    <a class="btn btn-default btnClose_SelectChuongTrinh11" id=""><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+                    <a class="btn btn-primary" id="btnSave_KeHoach_ChuongTrinh"><i class="fa fa-check"></i> <span class="lang" key="">Lưu</span></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="box box-solid form-container zone-content" id="zone_editchuongtrinh" style="display: none">
+            <div class="box-header with-border">
+                <h3 class="box-title"><i class="fa fa-pencil"></i> Chỉnh sửa chương trình: <span id="lblEditChuongTrinh" class="color-active"></span></h3>
+                <div class="pull-right title-note">
+                    <a class="btn btn-default btnClose_SelectChuongtrinh" href="#" title="Close"><i class="fa fa-times"></i></a>
+                </div>
+            </div>
+            <div class="box-body">
+                <div class="col-sm-12 box-view">
+                    <!--  Thong tin co ban -->
+                    <div style="width: 100%">
+                        <div style="width: 40%; float: left">
+                            <label style="font-weight: normal"><span class="lang" key="">Mã chương trình</span></label>
+                        </div>
+                        <div style="width: 60%; float: left">
+                            <input type="text" id="txtCT_Ma" class="form-control " />
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <div style="width: 100%">
+                        <div style="width: 40%; float: left">
+                            <label style="font-weight: normal"><span class="lang" key="">Tên chương trình</span></label>
+                        </div>
+                        <div style="width: 60%; float: left">
+                            <input type="text" id="txtCT_Ten" class="form-control " />
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <div style="width: 100%">
+                        <div style="width: 40%; float: left">
+                            <label style="font-weight: normal"><span class="lang" key="">Khóa đào tạo</span></label>
+                        </div>
+                        <div style="width: 60%; float: left">
+                            <select id="dropCT_KhoaDaoTao" class="select-opt"></select>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <div style="width: 100%">
+                        <div style="width: 40%; float: left">
+                            <label style="font-weight: normal"><span class="lang" key="">Khoa quản lý</span></label>
+                        </div>
+                        <div style="width: 60%; float: left">
+                            <select id="dropCT_KhoaQuanLy" class="select-opt"></select>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <div style="width: 100%">
+                        <div style="width: 40%; float: left">
+                            <label style="font-weight: normal"><span class="lang" key="">Ngành tuyển sinh</span></label>
+                        </div>
+                        <div style="width: 60%; float: left">
+                            <select id="dropCT_NganhTuyenSinh" class="select-opt">
+                                <option id="" value="">--Chọn ngành tuyển sinh-- </option>
+                            </select>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <!--row 2-->
+                    <!--row 3-->
+                    <div style="width: 100%">
+                        <div style="width: 40%; float: left">
+                            <label style="font-weight: normal"><span class="lang" key="">Phân loại ngành - chuyên ngành</span></label>
+                        </div>
+                        <div style="width: 60%; float: left">
+                            <input type="text" id="txtCT_PhanLoai_N_CN" class="form-control " />
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <!--row 4-->
+                    <div style="width: 100%">
+                        <div style="width: 40%; float: left">
+                            <label style="font-weight: normal"><span class="lang" key="">Ngành - chuyên ngành đào tạo</span></label>
+                        </div>
+                        <div style="width: 60%; float: left">
+                            <select id="dropCT_DaoTao_N_CN" class="select-opt">
+                                <option id="" value="">--Chọn ngành/chuyên ngành đào tạo-- </option>
+                            </select>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <!--row 5-->
+                    <!--row 6-->
+                    <!--row 7-->
+                    <div style="width: 100%">
+                        <div style="width: 40%; float: left">
+                            <label style="font-weight: normal"><span class="lang" key="">Tổng số tín chỉ quy định</span></label>
+                        </div>
+                        <div style="width: 60%; float: left">
+                            <input type="text" id="txtCT_TongSoTinChi" class="form-control " />
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <!--row 8-->
+                    <!--row 9-->
+                    <div style="width: 100%">
+                        <div style="width: 40%; float: left">
+                            <label style="font-weight: normal"><span class="lang" key="">Chương trình cha</span></label>
+                        </div>
+                        <div style="width: 60%; float: left">
+                            <select id="dropCT_ChuongTrinhCha" class="select-opt"></select>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <!--row 10-->
+                    <div style="width: 100%">
+                        <div style="width: 40%; float: left">
+                            <label style="font-weight: normal"><span class="lang" key="">Mô tả</span></label>
+                        </div>
+                        <div style="width: 60%; float: left">
+                            <input type="text" id="txtCT_MoTa" class="form-control " />
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="box-footer">
+                <div class="pull-right">
+                    <a class="btn btn-danger" id="delete_EditChuongTrinh"><i class="fa fa-trash"></i> <span class="lang" key="">Xóa chương trình</span></a>
+                    <a class="btn btn-default btnClose_SelectChuongTrinh" id=""><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+                    <a class="btn btn-primary" id="btnSave_EditChuongTrinh"><i class="fa fa-check"></i> <span class="lang" key="">Lưu</span></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="myModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title"><span class="lang" key=""><span class="myModalLabel"><i class="fa fa-plus"></i> Thêm mới - </span> Tổ chức chương trình</span></h4>
+                </div>
+                <div class="modal-body" style="">
+                    <!--row 1-->
+                    <div style="width: 100%">
+                        <div style="width: 40%; float: left">
+                            <label style="font-weight: normal"><span class="lang" key="">Mã chương trình</span></label>
+                        </div>
+                        <div style="width: 60%; float: left">
+                            <input type="text" id="txtCT_Ma" class="form-control " />
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <div style="width: 100%">
+                        <div style="width: 40%; float: left">
+                            <label style="font-weight: normal"><span class="lang" key="">Tên chương trình</span></label>
+                        </div>
+                        <div style="width: 60%; float: left">
+                            <input type="text" id="txtCT_Ten" class="form-control " />
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <div style="width: 100%">
+                        <div style="width: 40%; float: left">
+                            <label style="font-weight: normal"><span class="lang" key="">Khóa đào tạo</span></label>
+                        </div>
+                        <div style="width: 60%; float: left">
+                            <select id="dropCT_KhoaDaoTao" class="select-opt"></select>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <div style="width: 100%">
+                        <div style="width: 40%; float: left">
+                            <label style="font-weight: normal"><span class="lang" key="">Khoa quản lý</span></label>
+                        </div>
+                        <div style="width: 60%; float: left">
+                            <select id="dropCT_KhoaQuanLy" class="select-opt"></select>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <div style="width: 100%">
+                        <div style="width: 40%; float: left">
+                            <label style="font-weight: normal"><span class="lang" key="">Ngành tuyển sinh</span></label>
+                        </div>
+                        <div style="width: 60%; float: left">
+                            <select id="dropCT_NganhTuyenSinh" class="select-opt">
+                                <option id="" value="">--Chọn ngành tuyển sinh-- </option>
+                            </select>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <!--row 2-->
+                    <!--row 3-->
+                    <div style="width: 100%">
+                        <div style="width: 40%; float: left">
+                            <label style="font-weight: normal"><span class="lang" key="">Phân loại ngành - chuyên ngành</span></label>
+                        </div>
+                        <div style="width: 60%; float: left">
+                            <input type="text" id="txtCT_PhanLoai_N_CN" class="form-control " />
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <!--row 4-->
+                    <div style="width: 100%">
+                        <div style="width: 40%; float: left">
+                            <label style="font-weight: normal"><span class="lang" key="">Ngành - chuyên ngành đào tạo</span></label>
+                        </div>
+                        <div style="width: 60%; float: left">
+                            <select id="dropCT_DaoTao_N_CN" class="select-opt">
+                                <option id="" value="">--Chọn ngành/chuyên ngành đào tạo-- </option>
+                            </select>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <!--row 5-->
+                    <!--row 6-->
+                    <!--row 7-->
+                    <div style="width: 100%">
+                        <div style="width: 40%; float: left">
+                            <label style="font-weight: normal"><span class="lang" key="">Tổng số tín chỉ quy định</span></label>
+                        </div>
+                        <div style="width: 60%; float: left">
+                            <input type="text" id="txtCT_TongSoTinChi" class="form-control " />
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <!--row 8-->
+                    <!--row 9-->
+                    <div style="width: 100%">
+                        <div style="width: 40%; float: left">
+                            <label style="font-weight: normal"><span class="lang" key="">Chương trình cha</span></label>
+                        </div>
+                        <div style="width: 60%; float: left">
+                            <select id="dropCT_ChuongTrinhCha" class="select-opt"></select>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <!--row 10-->
+                    <div style="width: 100%">
+                        <div style="width: 40%; float: left">
+                            <label style="font-weight: normal"><span class="lang" key="">Mô tả</span></label>
+                        </div>
+                        <div style="width: 60%; float: left">
+                            <input type="text" id="txtCT_MoTa" class="form-control " />
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+                <div id="notify"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times-circle"></i><span class="lang" key=""> Đóng</span></button>
+                    <a class="submit btn btn-primary" id="btnSave"><i class="fa fa-save"></i><span class="lang" key=""> Lưu</span></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- page script -->
+<script src="modules/phancongchuongtrinh/script/phancongchuongtrinh.js?v=1.0.0.2"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['PhanCongChuongTrinh'] = new PhanCongChuongTrinh();
+    $(document).ready(function () {
+        main_doc.PhanCongChuongTrinh.init();
+    });
+</script>
+<!-- FIX 2026-08-26: Select2 trong modal — re-init voi dropdownParent = modal
+     de popup nam trong modal, khong lech / che noi dung. Universal handler,
+     an toan khi modal khong co select. -->
+<script>
+(function () {
+    if (typeof jQuery === 'undefined') return;
+    var $ = jQuery;
+    $(document).off('shown.bs.modal.__s2fix').on('shown.bs.modal.__s2fix', '.modal', function () {
+        var $modal = $(this);
+        $modal.find('select.select-opt, select[id^="drop"]').each(function () {
+            var $sel = $(this);
+            try {
+                if ($sel.hasClass('select2-hidden-accessible')) $sel.select2('destroy');
+            } catch (e) {}
+            $sel.select2({ dropdownParent: $modal, width: '100%' });
+        });
+    });
+})();
+</script>
+<style>
+    .modal .select2-container--open,
+    .modal .select2-container--open .select2-dropdown {
+        z-index: 100060 !important;
+    }
+    .modal .select2-results__options {
+        max-height: 220px !important;
+        overflow-y: auto !important;
+    }
+</style>

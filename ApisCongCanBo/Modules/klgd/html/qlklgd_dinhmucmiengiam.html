@@ -1,0 +1,340 @@
+﻿<style>
+</style>
+<div class="one-door">
+    <div class="content-tab no-tab">
+        <div class="d-flex justify-content-between">
+            <div class="nav-content-left">
+                <p class="link"><a href="#">Khối lượng giảng dạy</a><i class="fal fa-angle-right"></i><a href="#">Phân công giảng dạy</a></p>
+            </div>
+            <div class="nav-content-right">
+                <a class="d-block text-right" href=""><i class="fas fa-question-circle"></i></a>
+            </div>
+        </div>
+    </div>
+    <div id="divNhapDiem"></div>
+    <div id="divprogessdiem"></div>
+    <!-- đăng ký nguyện vọng -->
+    <div class="box-shadow register-wish pt-0 zone-bus" id="zone_notify_nhapdiem">
+        <div class="form-top">
+            <div class="row">
+                <div class="col-3 col-lg-3 col-md-6 mb-15">
+                    <div class="form-item d-flex  form-add-info">
+                        <div class="input-group no-icon">
+                            <select class="form-select select-opt" id="drpNamHoc" aria-label="Default select example"></select>
+
+                        </div>
+
+                    </div>
+                </div>
+
+
+                <div class="col-3 col-lg-3 col-md-6 mb-15">
+
+                    <div class="form-item d-flex  form-add-info">
+                        <div class="input-group no-icon">
+                            <select class="form-select select-opt" id="drpBoMon" aria-label="Default select example">
+                                <option value="">Chọn bộ môn</option>
+                            </select>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-2 col-lg-3 col-md-6 mb-15">
+                    <div class="btn btn-dask-blue max-w-50 ms-3" style="margin-left: 10px" id="btnTongHop"><i class="fal fa-save me-2"></i><span>Tổng hợp</span></div>
+                    <div class="dropdown" id="zonebtnKLGD" style="margin-left: 15px">
+                    </div>
+
+
+                </div>
+                <div class="col-4 col-lg-3 col-md-6 mb-15">
+
+                    <a id="btnCall_Import_DMIP" class="btn btn-dask-blue max-w-150 ms-3"><i class="fa fa fa-file-excel"></i> <span class="lang" key="">Import khối lượng</span></a>
+
+                </div>
+            </div>
+
+
+
+        </div>
+
+        <div class="container-fluid px-20">
+            <div class="row col-12">
+                <div>
+                    <div class="title-is-paging">
+                        <p class="color-dask-blue fw-bold mt-3">Thông tin</p>
+                    </div>
+
+                    <table class="table" id="tblThongTin">
+                        <thead>
+                            <tr>
+                                <th class="text-center" scope="col">STT</th>
+                                <th scope="col">Mã số</th>
+                                <th scope="col">Họ tên</th>
+                                <th scope="col">Học hàm, học vị</th>
+                                <th scope="col">Định mức GD</th>
+                                <th scope="col">Định mức NCKH</th>
+                                <th scope="col">Thông tin định mức</th>
+                                <th scope="col">Thông tin miễn giảm</th>
+                                <th scope="col">Đơn giá</th>
+                                <th scope="col">Thông tin đơn giá</th>
+                                <th scope="col">Chi tiết</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="modal fade register-wish" id="modalThongTinChiTiet" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-1440">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="finance-user-info in-modal ">
+                    <p><b>Thông tin quá trình</b></p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="col-12">
+                <div class="row">
+                    <div class="modal-header">
+                        <div class="finance-user-info in-modal ">
+                            <p><b>Giảng Viên</b></p> <label id="lblGiangVien" style="color:red"></label>
+                            <p><b>Bộ môn</b></p> <label id="lblBoMon" style="color:red"></label>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="">
+                        <div class="title-is-paging">
+                            <p class="color-dask-blue fw-bold mt-3">Chi tiết định mức</p>
+                            <div id="btnSaveDinhMuc" class="btn btn-sm btn-dask-blue min-w-auto ms-3"><i class="fas fa-save me-2"></i>Cập nhật</div>
+                            <div id="btnXoaDinhMuc" class="btn btn-sm btn-dask-blue min-w-auto ms-3"><i class="fas fa-trash me-2"></i>Xóa</div>
+                        </div>
+
+                        <table class="table" id="tblDinhMuc">
+                            <thead>
+                                <tr>
+                                    <th class="text-center" scope="col">STT</th>
+                                    <th scope="col">Mã định mức</th>
+                                    <th scope="col">Tên định mức</th>
+                                    <th scope="col">Định mức GD</th>
+                                    <th scope="col">Định mức NCKH</th>
+                                    <th scope="col">Thời gian từ</th>
+                                    <th scope="col">Thời gian đến</th>
+                                    <th class="td-fixed td-center">
+                                        <input type="checkbox" id="chkSelectAll_DinhMuc">
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="4">
+                                        <div class="form-item d-flex  form-add-info">
+                                            <div class="input-group no-icon">
+                                                <select class="form-select select-opt" id="drpDinhMuc" aria-label="Default select example">
+                                                    <option value="">Chọn định mức</option>
+                                                </select>
+                                            </div>
+
+                                        </div>
+                                    </td>
+                                    <td colspan="1">
+                                        <input type="text" class="form-control" id="txtDinhMuc_TuNgay" style="width:150px;" placeholder="Từ ngày">
+                                    </td>
+                                    <td colspan="1">
+                                        <input type="text" class="form-control" id="txtDinhMuc_DenNgay" style="width:150px;" placeholder="Đến ngày">
+
+                                    </td>
+                                    <td colspan="1">
+                                        <div id="btnThemDinhMuc" class="btn btn-sm btn-dask-blue min-w-auto ms-3"><i class="fas fa-save me-2"></i>Thêm</div>
+                                    </td>
+
+
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="">
+                        <div class="title-is-paging">
+                            <p class="color-dask-blue fw-bold mt-3">Nhập định mức giảng dạy</p>c
+                            <input type="text" class="form-control" id="txtNhapDinhMucGiangDay" style="width:250px;" placeholder="Nhập định mức GD">
+                            <input type="text" class="form-control" id="txtNhapDinhMucNCKH" style="width:250px;" placeholder="Nhập định mức NCKH">
+                            <div id="btnSave_NhapDinhMuc" class="btn btn-sm btn-dask-blue min-w-auto ms-3"><i class="fas fa-save me-2"></i>Cập nhật</div>
+
+                        </div>
+ 
+                    </div>
+
+                </div>
+                <div class="row" style="margin-top:40px">
+                    <div class="">
+                        <div class="title-is-paging">
+                            <p class="color-dask-blue fw-bold mt-3">Chi tiết miễn giảm</p>
+                            <div id="btnSaveMienGiam" class="btn btn-sm btn-dask-blue min-w-auto ms-3"><i class="fas fa-save me-2"></i>Cập nhật</div>
+                            <div id="btnXoaMienGiam" class="btn btn-sm btn-dask-blue min-w-auto ms-3"><i class="fas fa-trash me-2"></i>Xóa</div>
+                        </div>
+
+                        <table class="table" id="tblMienGiam">
+                            <thead>
+                                <tr>
+                                    <th class="text-center" scope="col">STT</th>
+                                    <th scope="col">Mã MG</th>
+                                    <th scope="col">Tên miễn giảm</th>
+                                    <th scope="col">Miễn giảm GD</th>
+                                    <th scope="col">Miễn giảm NCKH</th>
+                                    <th scope="col">Thời gian từ</th>
+                                    <th scope="col">Thời gian đến</th>
+                                    <th class="td-fixed td-center">
+                                        <input type="checkbox" id="chkSelectAll_MienGiam">
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="4">
+                                        <div class="form-item d-flex  form-add-info">
+                                            <div class="input-group no-icon">
+                                                <select class="form-select select-opt" id="drpMienGiam" aria-label="Default select example">
+                                                    <option value="">Chọn miễn giảm</option>
+                                                </select>
+                                            </div>
+
+                                        </div>
+                                    </td>
+                                    <td colspan="1">
+                                        <input type="text" class="form-control" id="txtMienGiam_TuNgay" style="width:150px;" placeholder="Từ ngày">
+                                    </td>
+                                    <td colspan="1">
+                                        <input type="text" class="form-control" id="txtMienGiam_DenNgay" style="width:150px;" placeholder="Đến ngày">
+
+                                    </td>
+                                    <td colspan="1">
+                                        <div id="btnThemMienGiam" class="btn btn-sm btn-dask-blue min-w-auto ms-3"><i class="fas fa-save me-2"></i>Thêm</div>
+                                    </td>
+
+
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                </div>
+                <div class="row" style="margin-top:40px">
+                    <div class="">
+                        <div class="title-is-paging">
+                            <p class="color-dask-blue fw-bold mt-3">Chi tiết đơn giá</p>
+                            <div id="btnSaveDonGia" class="btn btn-sm btn-dask-blue min-w-auto ms-3"><i class="fas fa-save me-2"></i>Cập nhật</div>
+                            <div id="btnXoaDonGia" class="btn btn-sm btn-dask-blue min-w-auto ms-3"><i class="fas fa-trash me-2"></i>Xóa</div>
+                        </div>
+
+                        <table class="table" id="tblDonGia">
+                            <thead>
+                                <tr>
+                                    <th class="text-center" scope="col">STT</th>
+                                    <th scope="col">Loại đơn giá</th>
+                                    <th scope="col">Số tiền</th>
+                                    <th scope="col">Thời gian từ</th>
+                                    <th scope="col">Thời gian đến</th>
+                                    <th class="td-fixed td-center" style="width:50px;">
+                                        <input type="checkbox" id="chkSelectAll_DonGia">
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3">
+                                        <div class="form-item d-flex  form-add-info">
+                                            <div class="input-group no-icon">
+                                                <select class="form-select select-opt" id="drpDonGia" aria-label="Default select example">
+                                                    <option value="">Chọn đơn giá</option>
+                                                </select>
+                                            </div>
+
+                                        </div>
+                                    </td>
+                                    <td colspan="1">
+                                        <input type="text" class="form-control" id="txtDonGia_TuNgay" style="width:150px;" placeholder="Từ ngày">
+                                    </td>
+                                    <td colspan="1">
+                                        <input type="text" class="form-control" id="txtDonGia_DenNgay" style="width:150px;" placeholder="Đến ngày">
+
+                                    </td>
+                                    <td colspan="1">
+                                        <div id="btnDonGia" class="btn btn-sm btn-dask-blue min-w-auto ms-3"><i class="fas fa-save me-2"></i>Thêm</div>
+                                    </td>
+
+
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <p></p>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="modal fade zone-bus" id="myModal_Upload" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-bs-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="myModalLabel"><span class="lang" key=""> <i class="fa fa-file-excel-o"></i> Import dữ liệu</span></h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="col-sm-4">
+                            - Chọn file Import:
+                        </div>
+                        <div class="col-sm-6">
+                            <div id="txtFile_DMIP">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="notify_import"></div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-bs-dismiss="modal"><i class="fa fa-times-circle-o"></i> <span class="lang" key="">Đóng</span></button>
+                <a id="btnFileMau" class="btn btn-default"><i class="fa fa-download"></i> Tải file mẫu</a>
+                <a class="submit btn btn-primary" id="btnImport_MIENGGIAM"><i class="fa fa-cloud-upload"></i><span class="lang" key=""> Import MG</span></a>
+                <a class="submit btn btn-primary" id="btnImport_DINHMUC"><i class="fa fa-cloud-upload"></i><span class="lang" key=""> Import Định mức</span></a>
+                <a class="submit btn btn-primary" id="btnImport_DONGIA"><i class="fa fa-cloud-upload"></i><span class="lang" key=""> Import Đơn giá</span></a>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<div class="clear"></div>
+<!-- page script -->
+<script src="modules/klgd/script/qlklgd_dinhmucmiengiam.js"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['qlklgd_dinhmucmiengiam'] = new qlklgd_dinhmucmiengiam();
+    $(document).ready(function () {
+        main_doc.qlklgd_dinhmucmiengiam.init();
+    });
+</script>

@@ -1,0 +1,498 @@
+﻿<style>
+    .tr-bg-diem {
+        background: #b3b3b3 !important;
+        /*khi chon*/
+    }
+
+    .mauthangbo {
+        background: #4e8d42 !important;
+        /*mau tieu de*/
+    }
+
+    #tblTaskBar_TongHopKetQua td {
+        padding-left: 5px !important;
+        border: 0 !important;
+    }
+
+    /* Scroll ngang cho bảng điểm chi tiết */
+    #zone_input_TraCuuDiem #table-container.scroll-table-x {
+        overflow-x: auto !important;
+        overflow-y: auto !important;
+        max-width: 100%;
+        max-height: calc(100vh - 200px);
+    }
+
+    /* Cố định các cột đầu (Stt, MSV, Họ đệm, Tên) khi scroll ngang */
+    #tblTraCuuDiem .sticky-col {
+        position: sticky !important;
+        z-index: 2 !important;
+        background: #fff !important;
+    }
+
+    #tblTraCuuDiem thead .sticky-col {
+        z-index: 3 !important;
+    }
+
+    #tblTraCuuDiem tbody tr:hover .sticky-col {
+        background: #f5f5f5 !important;
+    }
+
+    #tblTraCuuDiem tbody tr.tr-bg-diem .sticky-col {
+        background: #b3b3b3 !important;
+    }
+
+    /* Border phải cho cột sticky cuối cùng */
+    #tblTraCuuDiem .sticky-col-last {
+        border-right: 2px solid #ccc !important;
+    }
+
+    /* Thu gọn bảng danh sách bảng điểm */
+    #tblDSDiem {
+        table-layout: fixed !important;
+        width: 100% !important;
+    }
+
+    #tblDSDiem th:nth-child(1),
+    #tblDSDiem td:nth-child(1) {
+        width: 50px !important;
+        text-align: center !important;
+    }
+
+    #tblDSDiem th:nth-child(2),
+    #tblDSDiem td:nth-child(2) {
+        width: 120px !important;
+        text-align: left !important;
+    }
+
+    #tblDSDiem th:nth-child(3),
+    #tblDSDiem td:nth-child(3) {
+        text-align: left !important;
+    }
+
+    #tblDSDiem th:nth-child(4),
+    #tblDSDiem td:nth-child(4) {
+        width: 40px !important;
+        text-align: center !important;
+    }
+
+    #tblDSDiem tbody td {
+        text-align: left !important;
+    }
+
+    #tblDSDiem tbody td:first-child,
+    #tblDSDiem tbody td:last-child {
+        text-align: center !important;
+    }
+</style>
+<link href="Modules/TraCuuDiem/css/bootstrap-colorselector.min.css" rel="stylesheet" /><!-- editor -->
+
+<section class="content aps-nhapdiem">
+    <div class="row aps-tracuudiem">
+        <div class="col-lg-12">
+            <!-- box Notify_VBSC -->
+            <div class="box box-solid zone-bus pd0" id="zone_notify_TraCuuDiem">
+                <!--Box search-->
+                <div class="box box-solid  box-search pl20 pt10 pb20 pr20">
+                    <div class="box-header with-border d-none">
+                        <h3 class="box-title"><i class="fa fa-window-restore"></i> Tìm kiếm</h3>
+                    </div>
+                    <div class="box-body pd0">
+                        <table class="table table-noborder table-form-add mb-0 tblTaskBar_TongHopKetQua"
+                            id="tblTaskBar_TongHopKetQua">
+                            <thead>
+                                <tr class="aps-table-form-item">
+                                    <td class="aps-form-lable d-none" style="width:11% !important;">Hệ đào tạo</td>
+                                    <td class="aps-form-input" style="width:25%  !important;">
+                                        <select id="dropHeDaoTao" class="select-opt" multiple="multiple">
+                                            <option value="">-- Chọn hệ đào tạo --</option>
+                                        </select>
+                                    </td>
+                                    <td class="aps-form-lable text-right d-none" style="width:10%  !important;">Khóa đào
+                                        tạo
+                                    </td>
+                                    <td class="aps-form-input" style="width:22%  !important;">
+                                        <select id="dropKhoaDaoTao" class="select-opt" multiple="multiple">
+                                            <option value="">-- Chọn khóa đào tạo --</option>
+                                        </select>
+                                    </td>
+                                    <td class="aps-form-lable text-right d-none" style="width:10%  !important;">Khoa
+                                        quản lý
+                                    </td>
+                                    <td class="aps-form-input" style="width:22%  !important;">
+                                        <select id="dropKhoaQuanLy" class="select-opt" multiple="multiple">
+                                            <option value="">-- Chọn khoa quản lý--</option>
+                                        </select>
+                                    </td>
+                                    <td class="aps-form-lable d-none" style="width:11%  !important;">Chương trình đào
+                                        tạo</td>
+                                    <td class="aps-form-input pl0" style="width:25%  !important;">
+                                        <select id="dropChuongTrinhDaoTao" class="select-opt" multiple="multiple">
+                                            <option value="1">-- Chọn chương trình đào tạo--</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr class="aps-table-form-item">
+                                    <td class="aps-form-lable text-right d-none" style="width:10%  !important;">Lớp quản
+                                        lý
+                                    </td>
+                                    <td class="aps-form-input" style="width:22%  !important;">
+                                        <select id="dropLopQuanLy" class="select-opt" multiple="multiple">
+                                            <option value="1">-- Chọn lớp quản lý--</option>
+                                        </select>
+                                    </td>
+
+                                    <td class="aps-form-lable text-right d-none" style="width:10% !important;">Tình
+                                        trạng sinh
+                                        viên
+                                    </td>
+                                    <td class="aps-form-input" style="width:22% !important;">
+                                        <select id="dropTinhTrangSinhVien" class="select-opt" multiple="multiple">
+                                            <option value="">-- Chọn tình trạng sinh viên--</option>
+                                        </select>
+                                    </td>
+                                    <td class="aps-form-lable d-none" style="width:11% !important;">Thang điểm</td>
+                                    <td class="aps-form-input" style="width:25% !important;">
+                                        <select id="dropThangDiem" class="select-opt" multiple="multiple">
+                                            <option value="">-- Chọn thang điểm--</option>
+                                        </select>
+                                    </td>
+                                    <td class="aps-form-lable text-right d-none" style="width:10% !important;">Lọc theo
+                                    </td>
+                                    <td class="aps-form-input" style="width:25% !important;">
+                                        <select id="dropLocTheo" class="select-opt" multiple="multiple">
+                                            <option value="">-- Chọn lọc theo --</option>
+                                            <option value="HOCPHAN_CHUONGTRINH">Học phần - chương trình</option>
+                                            <option value="HOCPHAN_LOP">Học phần - lớp</option>
+                                            <option value="DULIEUDIEM">Kết quả điểm</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr class="aps-table-form-item">
+                                    <td class="aps-form-lable text-right d-none" style="width:10% !important;">Phạm vi
+                                        tổng hợp
+                                    </td>
+                                    <td class="aps-form-input" style="width:22% !important;">
+                                        <select id="dropPhanViTongHop" class="select-opt">
+                                            <option value="">-- Chọn phạm vi tổng hợp--</option>
+                                        </select>
+                                    </td>
+                                    <td class="aps-form-lable d-none" style="width:11% !important;">Thông tin tìm kiếm
+                                    </td>
+                                    <td class="aps-form-input" colspan="6">
+                                        <input id="txtSearch_TuKhoa" class="form-control"
+                                            placeholder="Nhập mã số hoặc tên" />
+                                    </td>
+                                </tr>
+                                <tr class="aps-table-form-item">
+                                    <td colspan="8" class="pt10">
+                                        <div class="d-flex align-items-center">
+                                            <a class="btn btn-primary btn-table-38" id="btnSearch">
+                                                <i class="fa-light fa-book-open-cover"></i>Xem học phần của lớp</a>
+                                            <a class="btn btn-danger ml-10 btn-table-38" id="btnXemBangDiem">
+                                                <i class="fa-light fa-book-open-reader"></i>Xem bảng điểm</a>
+                                            <span class="ml-20" style="border-left:1px solid #ddd;height:28px;"></span>
+                                            <a class="btn btn-warning ml-20 btn-table-38" id="btnThongKeHocTap">
+                                                <i class="fa-light fa-chart-column"></i>Thống kê theo ngành</a>
+                                            <a class="btn btn-warning ml-10 btn-table-38" id="btnThongKeHocTapCTDT">
+                                                <i class="fa-light fa-chart-column"></i>Thống kê theo CTĐT</a>
+                                            <div class="dropdown btn-table-38 ml-auto" id="zonebtnBaoCao_TCD" style="padding-left: 30px;">
+                                                <!--<button class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown">
+                                                <i class="fa fa fa-file-excel-o"></i> Xuất báo cáo <span class="caret"></span>
+                                            </button>
+                                            <ul class="dropdown-menu form-container" id="zonebtnBaoCao_DT">
+                                                <li><a class="btnBaoCao_LHD" name="DeTai" href="#"> 1. Đề tài</a></li>
+                                            </ul>-->
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr class="zonePhamVi aps-table-form-item" id="zone_TOANKHOA" style="display: none">
+                                    <td class="aps-form-lable fw-bold">Toàn khóa</td>
+                                </tr>
+                                <tr class="zonePhamVi aps-table-form-item" id="zone_NHIEUKY" style="display: none">
+                                    <td class="aps-form-lable">Nhiều kỳ</td>
+                                    <td class="aps-form-input">
+                                        <select id="dropPhanViTongHop_NHIEUKY" class="select-opt">
+                                            <option value="">-- Chọn kỳ--</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr class="zonePhamVi aps-table-form-item" id="zone_NAMHOC" style="display: none">
+                                    <td class="aps-form-lable">Năm học</td>
+                                    <td class="aps-form-input">
+                                        <select id="dropPhanViTongHop_NAMHOC" class="select-opt" multiple="multiple">
+                                            <option value="">-- Chọn năm học--</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr class="zonePhamVi aps-table-form-item" id="zone_HOCKY" style="display: none">
+                                    <td class="aps-form-lable">Học kỳ</td>
+                                    <td class="aps-form-input">
+                                        <select id="dropPhanViTongHop_HOCKY" class="select-opt" multiple="multiple">
+                                            <option value="">-- Chọn học kỳ--</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr class="zonePhamVi aps-table-form-item" id="zone_DOTHOC" style="display: none"
+                                    multiple="multiple">
+                                    <td class="aps-form-lable">Đợt học</td>
+                                    <td class="aps-form-input">
+                                        <select id="dropPhanViTongHop_DOTHOC" class="select-opt">
+                                            <option value="">-- Chọn đợt học --</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- load taskbar -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!--Box Danh sach-->
+                <div class="box box-solid aps-tracuudiem-list pd20 pt20">
+                    <div class="box-header pb20 pl0 pr0">
+                        <h3 class="box-title color-blue mt-0 line-20" title="Danh sách bảng điểm">
+                            <i class="fa-solid fa-list-timeline"></i> Danh sách bảng điểm
+                        </h3>
+                        <span class="badge bg-light-blue">
+                            <span id="lblDSDiem_Tong"></span>
+                        </span>
+                    </div>
+                    <div class="box-body pd0">
+                        <div class="aps-table-select scroll-table-x">
+                            <table id="tblDSDiem"
+                                class="table table-hover table-bordered table-noborder tblDSDiem mt-10">
+                                <thead>
+                                    <tr>
+                                        <th class="td-fixed td-center w-50px">Stt</th>
+                                        <th class="td-left">Mã</th>
+                                        <th class="td-left">Tên</th>
+                                        <th class="td-center td-fixed">
+                                            <input type="checkbox" id="chkSelectAll_Diem">
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Load from js -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- box Thống kê học tập theo ngành -->
+            <div class="box box-solid form-container zone-bus" id="zone_input_ThongKeHocTap" style="display: none">
+                <div class="box box-solid">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">
+                            <span style="float: left">
+                                <i class="fa-light fa-chart-column"></i> Thống kê học tập theo ngành</span>
+                            <span>
+                                <a class="btn btn-success btnReportAll ml-10 pull-left" name="tblThongKeHocTap" href="#"
+                                    title="Export"> <i class="fa fa-file-excel-o"></i>Export</a>
+                            </span>
+                        </h3>
+                        <div class="pull-right">
+                            <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times"></i></a>
+                        </div>
+                    </div>
+                    <div class="box-body pd20">
+                        <div id="divprogessThongKe"></div>
+                        <div class="clear"></div>
+                        <div class="scroll-table-x" style="overflow-x:auto;max-width:100%;">
+                            <table id="tblThongKeHocTap" class="table table-hover table-bordered">
+                                <thead class="mauthangbo" style="font-weight: bold"></thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- box Thống kê học tập theo CTĐT -->
+            <div class="box box-solid form-container zone-bus" id="zone_input_ThongKeHocTapCTDT" style="display: none">
+                <div class="box box-solid">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">
+                            <span style="float: left">
+                                <i class="fa-light fa-chart-column"></i> Thống kê học tập theo CTĐT</span>
+                            <span>
+                                <a class="btn btn-success btnReportAll ml-10 pull-left" name="tblThongKeHocTapCTDT" href="#"
+                                    title="Export"> <i class="fa fa-file-excel-o"></i>Export</a>
+                            </span>
+                        </h3>
+                        <div class="pull-right">
+                            <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times"></i></a>
+                        </div>
+                    </div>
+                    <div class="box-body pd20">
+                        <div id="divprogessThongKeCTDT"></div>
+                        <div class="clear"></div>
+                        <div class="scroll-table-x" style="overflow-x:auto;max-width:100%;">
+                            <table id="tblThongKeHocTapCTDT" class="table table-hover table-bordered">
+                                <thead class="mauthangbo" style="font-weight: bold"></thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- box Edit_VBSC -->
+            <div class="box box-solid form-container zone-bus" id="zone_input_TraCuuDiem" style="display: none">
+                <div class="box box-solid">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">
+                            <span id="lblForm_KhoiTao_NO" style="float: left">
+                                <i class="fa-light fa-book-open-reader"></i> Bảng điểm</span>
+                            <span>
+                                <a class="btn btn-success btnReportAll ml-10 pull-left" name="tblTraCuuDiem" href="#"
+                                    title="Export"> <i class="fa fa-file-excel-o"></i>Export</a>
+                            </span>
+                        </h3>
+
+                        <div class="pull-right">
+                            <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times"></i></a>
+                        </div>
+                    </div>
+                    <div class="box-body pd20">
+                        <div id="divprogessdiem"></div>
+                        <div class="clear"></div>
+                        <div class="row">
+                            <div class="col-sm-12 box-view" id="zoneHienThi">
+                                <!--<div style="float: left">
+                                    <table id="tblTraCuuDiemNguoiHoc" class="table table-hover table-bordered" ><thead class="mauthangbo" style="font-weight: bold"></thead><tbody></tbody></table>
+                                </div>-->
+                                <div id="top-scroll-wrapper" style="overflow-x:auto;overflow-y:hidden;">
+                                    <div id="top-scroll-content" style="height:1px;"></div>
+                                </div>
+                                <div id="table-container" class="scroll-table-x">
+                                    <table id="tblTraCuuDiem" class="table table-hover table-bordered"></table>
+                                    <div id="bottom_anchor"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Modal danh sách SV theo xếp loại -->
+<div class="modal fade" id="modal_XemDSSVXepLoai" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document" style="width: 95%; max-width: 1400px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">
+                    <i class="fa-light fa-users"></i>
+                    Danh sách sinh viên <span id="lblDSSVXepLoai_TieuDe"></span>
+                    <span class="badge bg-light-blue" id="lblDSSVXepLoai_Tong"></span>
+                </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div style="overflow-x:auto;max-height:70vh;overflow-y:auto;">
+                    <table id="tblDSSVXepLoai" class="table table-hover table-bordered">
+                        <thead class="mauthangbo" style="font-weight: bold; position: sticky; top: 0; z-index: 2;">
+                            <tr>
+                                <th class="td-center">Stt</th>
+                                <th class="td-center">Mã SV</th>
+                                <th>Họ đệm</th>
+                                <th>Tên</th>
+                                <th class="td-center">Giới tính</th>
+                                <th>Xếp loại</th>
+                                <th>Học kỳ</th>
+                                <th>Trạng thái</th>
+                                <th>Lớp quản lý</th>
+                                <th>Chương trình đào tạo</th>
+                                <th>Khóa đào tạo</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <i class="fa fa-times"></i> Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- page script -->
+<script src="modules/TraCuuDiem/script/tracuudiem.js?v=1.0.0.2"></script>
+<script src="modules/TraCuuDiem/script/bootstrap-colorselector.js"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['TraCuuDiem'] = new TraCuuDiem();
+    $(document).ready(function () {
+        main_doc.TraCuuDiem.init();
+
+        // Đồng bộ scroll ngang trên-dưới cho bảng điểm
+        var topScroll = document.getElementById('top-scroll-wrapper');
+        var bottomScroll = document.getElementById('table-container');
+        var isSyncingTop = false;
+        var isSyncingBottom = false;
+
+        function syncTopScrollWidth() {
+            var tbl = document.getElementById('tblTraCuuDiem');
+            if (tbl) {
+                document.getElementById('top-scroll-content').style.width = tbl.scrollWidth + 'px';
+            }
+        }
+
+        topScroll.addEventListener('scroll', function () {
+            if (isSyncingTop) { isSyncingTop = false; return; }
+            isSyncingBottom = true;
+            bottomScroll.scrollLeft = topScroll.scrollLeft;
+        });
+
+        bottomScroll.addEventListener('scroll', function () {
+            if (isSyncingBottom) { isSyncingBottom = false; return; }
+            isSyncingTop = true;
+            topScroll.scrollLeft = bottomScroll.scrollLeft;
+        });
+
+        // Cập nhật chiều rộng scroll trên + tính left cho sticky cols khi bảng thay đổi
+        function applyStickyPositions() {
+            syncTopScrollWidth();
+            var tbl = document.getElementById('tblTraCuuDiem');
+            if (!tbl) return;
+            var headerRow = tbl.querySelector('thead tr');
+            if (!headerRow) return;
+            var stickyCols = headerRow.querySelectorAll('.sticky-col');
+            if (stickyCols.length === 0) return;
+
+            // Tính left cho từng cột sticky dựa trên width thực tế
+            var leftPositions = [];
+            var cumLeft = 0;
+            for (var k = 0; k < stickyCols.length; k++) {
+                leftPositions.push(cumLeft);
+                cumLeft += stickyCols[k].offsetWidth;
+            }
+
+            // Áp dụng left cho tất cả sticky-col trong thead và tbody
+            for (var k = 0; k < stickyCols.length; k++) {
+                var colClass = 'sticky-col-' + k;
+                var allCells = tbl.querySelectorAll('.' + colClass);
+                for (var m = 0; m < allCells.length; m++) {
+                    allCells[m].style.left = leftPositions[k] + 'px';
+                }
+                // Đánh dấu cột sticky cuối cùng
+                if (k === stickyCols.length - 1) {
+                    for (var m = 0; m < allCells.length; m++) {
+                        allCells[m].classList.add('sticky-col-last');
+                    }
+                }
+            }
+        }
+
+        var observer = new MutationObserver(applyStickyPositions);
+        observer.observe(document.getElementById('tblTraCuuDiem'), { childList: true, subtree: true });
+    });
+</script>

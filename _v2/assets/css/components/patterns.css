@@ -1,0 +1,562 @@
+/* =========================================================================
+   6. COMPONENTS — BỘ BỐ CỤC DÙNG CHUNG (ums.pat)
+   =========================================================================
+   Kiểu của các bố cục dùng lại được cho MỌI phân hệ. Gộp từ các bản mỗi
+   module tự viết khi chuyển ApisTaiChinh (mg-*, dmhsa-*, hd-cards, tcsp-*).
+
+   Màn hình KHÔNG được chép lại các khối này vào CSS riêng của module.
+   Sổ bố cục: _v2/BO-CUC.md
+   ========================================================================= */
+
+/* ---------- Lưới nhập: dòng × cột (ums.pat.matrix) ----------------------- */
+.ums-matrix__col { min-width: 120px; }
+.ums-matrix__cell { padding-top: 4px; padding-bottom: 4px; }
+
+.ums-cellbox {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 110px;
+}
+
+.ums-cellbox > .ums-input {
+    min-width: 90px;
+    height: var(--ums-control-h-sm);
+    padding: 0 var(--ums-sp-2);
+    font-size: var(--ums-fz-13);
+    text-align: right;
+}
+
+.ums-cellbox > .ums-iconbtn { flex: 0 0 auto; }
+.ums-cellbox__text { flex: 1; text-align: right; font-size: var(--ums-fz-13); }
+
+/* Ô đã sửa nhưng chưa lưu */
+.ums-cellbox.is-dirty > .ums-input,
+.ums-matrix input[data-mi].is-dirty {
+    border-color: var(--ums-act-edit);
+    background: var(--ums-warn-bg);
+}
+
+/* ---------- Bảng xoay (ums.pat.pivot) ------------------------------------ */
+.ums-pivot thead th { text-align: center; vertical-align: middle; }
+.ums-pivot__col { min-width: 96px; }
+
+.ums-pivot__cell {
+    position: relative;
+    min-width: 96px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+/* Nút sửa/xoá chỉ hiện khi rê chuột vào ô — bảng đỡ rối */
+.ums-pivot__acts {
+    position: absolute;
+    right: 2px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: inline-flex;
+    visibility: hidden;
+    background: var(--ums-surface);
+    border-radius: var(--ums-r-1);
+}
+
+.ums-pivot__cell:hover .ums-pivot__acts { visibility: visible; }
+
+/* Thiết bị cảm ứng không có "rê chuột" — luôn hiện */
+@media (hover: none) {
+    .ums-pivot__acts { visibility: visible; position: static; transform: none; display: block; }
+}
+
+/* ---------- Hai cột: danh sách trái, nội dung phải (ums.pat.master) ------- */
+.ums-master {
+    display: grid;
+    grid-template-columns: var(--ums-master-side, 320px) minmax(0, 1fr);
+    gap: var(--ums-sp-4);
+    align-items: start;
+}
+
+/* Cột trái dính theo --ums-stick-top như mọi thanh dính khác (shell.css):
+   thanh trên tự ẩn khi cuộn xuống thì biến này về 0 và cột trái trượt lên
+   sát đỉnh. Trước đây đặt cứng --ums-topbar-h nên thanh trên đã ẩn rồi mà
+   cột trái vẫn treo ở 72px, hụt hẳn một khoảng so với đầu khung bên phải. */
+.ums-master__side { min-width: 0; position: sticky; top: calc(var(--ums-stick-top, var(--ums-topbar-h)) + var(--ums-sp-4)); }
+.ums-master__main { min-width: 0; }
+.ums-master__search { padding: var(--ums-sp-3) var(--ums-sp-4) 0; }
+
+/* Khối lọc riêng của cột trái — luôn có đệm, màn hình không phải tự thêm */
+.ums-master__filter { padding: var(--ums-sp-3) var(--ums-sp-4) 0; }
+.ums-master__filter:empty { display: none; }
+/* Cột trái chỉ là khung tìm / lọc (danh sách bên dưới ẩn — vd cơ cấu tổ chức v2, vị trí công việc): vùng cuối cùng đang
+   hiện phải có đệm dưới, không để ô tìm chạm đáy khung (người dùng 2026-09-26: "lỗi padding").
+   Đệm đặt trên CHÍNH thân khung (không đặt trên ô tìm / vùng lọc) → đúng cả khi "Bộ lọc nâng cao" mở hay đóng
+   (2026-09-27: bản cũ lồng :has() trong :has() — trình duyệt bỏ cả luật → đóng lọc thì ô tìm chạm đáy). */
+.ums-panel__body:has(> .ums-master__list[hidden]) { padding-bottom: var(--ums-sp-4); }
+
+/* Cột trái hẹp (320px): MỖI Ô MỘT DÒNG, đúng như bản gốc (giữa hai <select>
+   của khung lọc bên trái bản gốc luôn có <div class="clear">). Để hai ô chia
+   nhau một dòng thì tên hệ/khoá/chương trình bị cắt còn "Đại học c..." —
+   không đọc được. Muốn xếp ngang thì tự đặt lớp riêng cho khung lọc ấy. */
+/* Cột trái 320px: nhóm ô đánh dấu luôn MỘT CỘT và mỗi mục MỘT DÒNG — hai
+   cột thì tên dài ("Phòng ĐT không QL") bị bẻ đôi, nhìn như hai mục khác
+   nhau. Ở biểu mẫu rộng thì vẫn hai cột như cũ. */
+.ums-master__side .ums-checkgrid { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+.ums-master__side .ums-checkgrid .ums-check { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.ums-master__side .ums-filter { gap: var(--ums-sp-2); }
+
+/* Nhóm nút chọn MỘT (radio) ngắn trong khung lọc — "Đã nhập / Chưa nhập / Toàn bộ": xếp NGANG, xuống dòng thì thẳng
+   mép trái, không thụt (người dùng 2026-09-27). Dùng: <div class="ums-field"><label class="ums-field__label">Điều kiện</label>
+   <div class="ums-radios"><label class="ums-check"><input type="radio" …> Đã nhập</label>…</div></div> */
+.ums-radios { display: flex; flex-wrap: wrap; align-items: center; gap: 6px var(--ums-sp-4); }
+.ums-radios > .ums-check { margin: 0; white-space: nowrap; }
+
+/* Dấu tình trạng ở CUỐI mục danh sách trái (vd "đã nhập học"): biểu tượng xanh dạt phải, có title
+   (người dùng 2026-09-27: "icon đã nhập học phải dạt phải và màu như những màn hình khác").
+   Dùng: …<span class="ums-master__item__main">…</span><i class="fa-light fa-tag ums-master__tt" title="Đã nhập học"></i> */
+.ums-master__item:has(> .ums-master__tt) { display: flex; align-items: center; gap: var(--ums-sp-3); }
+.ums-master__tt { flex: 0 0 auto; margin-left: auto; color: var(--ums-act-save); font-size: 15px; }
+.ums-master__side .ums-filter > .ums-field { flex: 1 1 100%; }
+
+/* Chân cột trái: phân trang / nút. Rỗng thì không chiếm chỗ */
+.ums-master__foot { padding: 0 var(--ums-sp-2); }
+.ums-master__foot:empty { display: none; }
+.ums-master__foot .ums-pager { border-top: 1px solid var(--ums-line); }
+/* Phân trang tự có đệm riêng; cộng thêm đệm của chân cột là cột 320px hụt
+   chỗ, chữ "Hiển thị…" và dãy số bị tách hai dòng. */
+.ums-master__foot:has(> .ums-pager) { padding: 0; }
+
+/* Cụm lọc không có đệm dưới, nên danh sách dính sát vào ô tìm / nút Tìm kiếm
+   (đo được: 0px). Tách ra bằng một khoảng + đường kẻ, cùng kiểu với đường
+   phân cách giữa các mục. */
+.ums-master__search + .ums-master__list,
+.ums-master__filter + .ums-master__list {
+    margin-top: var(--ums-sp-3);
+    border-top: 1px solid var(--ums-line);
+}
+
+/* KHÔNG cuộn bên trong: danh sách dài thì cuộn cả trang, để thanh dính đỉnh
+   làm đúng việc của nó. Vùng cuộn lồng nhau vừa khó dùng vừa làm hàng tiêu đề
+   bảng dính nhầm khung. */
+.ums-master__list {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Một mục trong danh sách bên trái */
+/* Mục trong danh sách bên trái — giữ ĐÚNG KIỂU HỆ CŨ: nền xám nhạt, mép
+   trái răng cưa (như mép xé của cuống vé), mục đang chọn thì NỀN XANH ĐẶC
+   chữ trắng. Răng cưa vẽ bằng repeating-linear-gradient ở 6px bên trái —
+   không thêm thẻ, không thêm ảnh. */
+.ums-master__item {
+    display: block;
+    width: 100%;
+    padding: var(--ums-sp-3) var(--ums-sp-4);
+    padding-left: calc(var(--ums-sp-4) + 8px);
+    /* Chừa 5px hai bên để mục đang chọn không dính sát mép khung */
+    margin: 0 5px 2px;
+    width: calc(100% - 10px);
+    border: 0;
+    background-color: var(--ums-surface-2);
+    background-image: repeating-linear-gradient(
+        to bottom,
+        var(--ums-surface) 0 4px,
+        transparent 4px 9px);
+    background-repeat: no-repeat;
+    background-size: 6px 100%;
+    background-position: left center;
+    font: inherit;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+    /* Mã danh mục là chuỗi liền không dấu cách (THI.TINHTRANGVANGTHI_VIPHAMQUYCHETHI) → không có chỗ ngắt,
+       chữ tràn khỏi cột trái. Cho xuống dòng trong mục; chỉ ngắt giữa chữ khi không còn chỗ ngắt nào khác. */
+    min-width: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.ums-master__item:hover { background-color: var(--ums-surface-3); }
+
+.ums-master__item.is-active {
+    background-color: var(--ums-blue);
+    color: #fff;
+    font-weight: var(--ums-fw-semibold);
+}
+
+/* Mục đang chọn: MỌI chữ bên trong đều trắng. Các lớp như .ums-cell__title
+   tự đặt màu xanh than nên không thừa kế được màu của mục — phải nói rõ. */
+.ums-master__item.is-active .ums-master__item__sub,
+.ums-master__item.is-active .ums-cell__sub { color: rgba(255, 255, 255, .85); }
+
+.ums-master__item.is-active,
+.ums-master__item.is-active .ums-cell__title,
+.ums-master__item.is-active b,
+.ums-master__item.is-active strong,
+.ums-master__item.is-active .ums-u-faint,
+.ums-master__item.is-active .ums-u-muted { color: #fff; }
+
+.ums-master__item__sub { display: block; margin-top: 2px; color: var(--ums-ink-3); font-size: var(--ums-fz-12); }
+
+/* Mục có nút thao tác riêng: dựng bằng <div> (không lồng nút trong nút) */
+.ums-master__item:is(div) { display: flex; align-items: center; gap: var(--ums-sp-2); }
+.ums-master__item__main { flex: 1; min-width: 0; }
+.ums-master__item__act { flex: 0 0 auto; display: flex; gap: 2px; }
+
+/* ---------- Kiểu DANH MỤC (side.kieu: 'danhmuc') ----------------------
+   Danh sách là các danh mục → vẽ như cây thư mục: đường chấm nối, biểu
+   tượng thư mục (mở khi đang chọn), số lượng thành nhãn tròn xanh. Thay cho
+   mép răng cưa của danh sách thường — người dùng yêu cầu 2026-09-22. */
+.ums-master--danhmuc { --ums-dm-line: #9aa4b2; }
+.ums-master--danhmuc .ums-panel__title [data-z="sideCount"],
+.ums-master--danhmuc .ums-panel__title .ums-u-faint[data-z="sideCount"] {
+    display: inline-block; min-width: 26px; padding: 1px 9px; border-radius: 999px;
+    background: var(--ums-blue); color: #fff !important; /* thắng .ums-u-faint (!important) */ font-size: 12px; font-weight: var(--ums-fw-semibold); text-align: center;
+}
+.ums-master--danhmuc .ums-panel__title [data-z="sideCount"]:empty { display: none; }
+.ums-master--danhmuc .ums-master__list { padding: var(--ums-sp-2) var(--ums-sp-3) var(--ums-sp-3) var(--ums-sp-4); }
+.ums-master--danhmuc .ums-master__list ul { list-style: none; margin: 0 0 0 22px; padding: 0; border-left: 1px dotted var(--ums-dm-line); }
+.ums-master--danhmuc .ums-master__list > ul { margin-left: 0; }
+.ums-master--danhmuc .ums-master__list:has(> .ums-master__item) { border-left: 1px dotted var(--ums-dm-line); margin-left: var(--ums-sp-4); padding-left: 0; }
+.ums-master--danhmuc .ums-master__list li { margin: 0; }
+.ums-master--danhmuc .ums-master__item {
+    position: relative; display: block;
+    width: 100%; margin: 1px 0; padding: 5px 10px 5px 40px;
+    background: none; border-radius: 4px; font-size: 13px; line-height: 1.35;
+}
+/* Đường chấm ngang nối vào thân cây */
+.ums-master--danhmuc .ums-master__item::before {
+    content: ''; position: absolute; left: 0; top: 50%; width: 14px; border-top: 1px dotted var(--ums-dm-line);
+}
+/* Biểu tượng thư mục */
+.ums-master--danhmuc .ums-master__item::after {
+    content: '\f07b'; position: absolute; left: 18px; top: 50%; transform: translateY(-50%);
+    font-family: 'Font Awesome 7 Pro'; font-weight: 900; font-size: 14px; color: #e0a526;
+}
+.ums-master--danhmuc .ums-master__item:hover { background: var(--ums-surface-3); }
+.ums-master--danhmuc .ums-master__item.is-active { background: var(--ums-blue); color: #fff; }
+.ums-master--danhmuc .ums-master__item.is-active::after { content: '\f07c'; color: #ffd66b; }
+/* Mục có con: thư mục đậm hơn một chút để thấy là nhánh */
+.ums-master--danhmuc li:has(> ul) > .ums-master__item { font-weight: var(--ums-fw-semibold); }
+
+@media (max-width: 991px) {
+    .ums-master { grid-template-columns: minmax(0, 1fr); }
+    .ums-master__side { position: static; }
+}
+
+/* ---------- Lưới thẻ (ums.pat.cards) ------------------------------------- */
+.ums-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: var(--ums-sp-3);
+    padding: var(--ums-sp-4);
+}
+
+/* Thẻ tra cứu chứng từ — DỰNG THEO BẢN GỐC: nền xám nhạt, mép trái răng
+   cưa như cuống biên lai, mỗi dòng "nhãn : giá trị" ngăn nhau bằng vạch
+   chấm. Màu đo từ chính hệ cũ: nền #f7f7f7, rê chuột #eaeaea. */
+.ums-card {
+    display: flex;
+    flex-direction: column;
+    padding: var(--ums-sp-2) var(--ums-sp-4);
+    padding-left: calc(var(--ums-sp-4) + 10px);
+    border: 0;
+    border-radius: var(--ums-r-1);
+    background-color: #f7f7f7;
+    background-image: repeating-linear-gradient(
+        to bottom,
+        #fff 0 5px,
+        transparent 5px 11px);
+    background-repeat: no-repeat;
+    background-size: 7px 100%;
+    background-position: left center;
+    font: inherit;
+    font-size: var(--ums-fz-13);
+    color: var(--ums-ink);
+    text-align: left;
+    cursor: pointer;
+}
+
+.ums-card:hover { background-color: #eaeaea; }
+
+/* Tình trạng chứng từ thể hiện ở MÀU SỐ (bản gốc cũng vậy), không còn
+   vạch màu bên trái vì mép trái nay là răng cưa. */
+.ums-card--mute .ums-card__no { color: var(--ums-ink-3); }
+
+.ums-card__no {
+    font-weight: var(--ums-fw-bold);
+    color: var(--ums-navy);
+    text-decoration: underline;   /* bản gốc gạch chân số chứng từ */
+    text-underline-offset: 2px;
+}
+
+.ums-card--ok .ums-card__no { color: var(--ums-ok); }
+.ums-card--bad .ums-card__no { color: var(--ums-bad); text-decoration: line-through; }
+.ums-card--warn .ums-card__no { color: var(--ums-warn); }
+
+/* Dòng "nhãn — giá trị": nhãn chữ nhạt bên trái, GIÁ TRỊ ĐẬM bên phải,
+   đúng cách hệ cũ trình bày thẻ hoá đơn / phiếu thu. */
+.ums-card__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--ums-sp-3);
+    padding: 7px 0;
+    border-bottom: 1px dotted #d3d3d3;
+    color: var(--ums-ink-2);
+}
+
+.ums-card__row:last-child { border-bottom: 0; }
+
+/* Bản gốc viết "Số:", "Năm:"… — thêm dấu hai chấm ở đây để không phải
+   sửa chữ trong từng màn. */
+.ums-card__row > span:first-child::after { content: ":"; }
+
+.ums-card__row > :last-child,
+.ums-card__row b {
+    text-align: right;
+    color: var(--ums-ink);
+    font-weight: var(--ums-fw-medium);
+}
+
+/* Thẻ có nút thao tác: dựng bằng <div>, phần nội dung vẫn bấm được */
+.ums-card--acts { padding: 0; cursor: default; }
+.ums-card--acts .ums-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: var(--ums-sp-3) var(--ums-sp-4);
+    cursor: pointer;
+}
+.ums-card--acts .ums-card__body:not([data-card]) { cursor: default; }
+/* Thẻ trong LƯỚI cao bằng nhau và hàng nút luôn nằm ĐÁY: nhãn dài ngắn khác
+   nhau thì thân thẻ tự giãn, nút "Chi tiết" của cả hàng vẫn thẳng nhau. */
+.ums-cards > .ums-card { height: 100%; }
+.ums-cards > .ums-card > .ums-card__body { flex: 1 1 auto; }
+.ums-cards > .ums-card > .ums-card__acts { margin-top: auto; }
+
+.ums-card__acts {
+    display: flex;
+    justify-content: flex-end;
+    gap: 2px;
+    padding: var(--ums-sp-2) var(--ums-sp-3);
+    border-top: 1px solid var(--ums-line);
+    background: var(--ums-surface-2);
+    border-radius: 0 0 var(--ums-r-2) var(--ums-r-2);
+}
+
+.ums-card__row > span:first-child { white-space: nowrap; }
+.ums-card__row b { min-width: 0; color: var(--ums-ink); text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ---------- Ô tìm trong khung (cột trái của ums.pat.master) --------------
+   .ums-searchbar là ô tìm LỚN của trang: cao 46, bo tròn nhiều, viền nhạt,
+   có đổ bóng. Trong cột trái nó đứng ngay trên các ô chọn/ô nhập của cụm lọc
+   nên phải trông y hệt một ô nhập, nếu không mỗi ô một kiểu (đo được: cao
+   32 vs 38, bo 10px vs 6px, viền --ums-line vs --ums-line-2, thừa một lớp
+   bóng). Biến thể --sm chỉ pat.master dùng, nên đổi thẳng ở đây. */
+.ums-searchbar--sm {
+    height: var(--ums-control-h);
+    border-radius: var(--ums-r-1);
+    border-color: var(--ums-line-2);
+    box-shadow: none;
+}
+.ums-searchbar--sm .ums-searchbar__icon { width: 36px; font-size: var(--ums-fz-14); }
+.ums-searchbar--sm .ums-searchbar__input { font-size: var(--ums-fz-14); }
+
+/* Vùng lọc đã có lề của .ums-master__filter; con bên trong không thêm lề nữa,
+   nếu không cụm lọc thụt vào 16px so với ô tìm ngay trên nó. */
+.ums-master__filter > .ums-master__search,
+.ums-master__filter > .ums-panel__body { padding: 0; }
+
+/* ---------- Khối xem chỉ đọc "nhãn : giá trị" (.ums-kv) --------------------
+   Dùng cho khung chi tiết chỉ xem (vd hoso/quyetdinh): nhãn cố định bề
+   ngang, giá trị chữ thường (dòng đầu / .ums-kv--dam in đậm), kẻ chấm dưới mỗi dòng.
+
+       <div class="ums-kv"><span>Số quyết định</span><b>125/QĐ</b></div>      */
+.ums-kv {
+    display: flex; gap: var(--ums-sp-2); align-items: baseline; min-width: 0;
+    padding: 7px 0; border-bottom: 1px dotted var(--ums-line-2);
+}
+.ums-kv > span { flex: 0 0 150px; color: var(--ums-ink-2); }
+.ums-kv > span::after { content: ":"; }
+/* Giá trị CHỮ THƯỜNG; chỉ dòng đầu (thường là tên) hoặc dòng mang .ums-kv--dam in đậm (người dùng 2026-09-26:
+   "chỉ tên in đậm, những thứ khác chữ thường") */
+.ums-kv > b { flex: 1 1 auto; min-width: 0; color: var(--ums-ink); font-weight: var(--ums-fw-regular, 400); overflow-wrap: anywhere; }
+.ums-kv:first-child > b,
+.ums-kv--dam > b { font-weight: var(--ums-fw-semibold); }
+/* Dòng đầu KHÔNG phải tên (vd cột thứ hai của khối hai cột) thì đặt .ums-kv--thuong để không tự in đậm */
+.ums-kv.ums-kv--thuong > b { font-weight: var(--ums-fw-regular, 400); }
+/* Tiêu đề nhóm ngay trên dòng đầu: dòng đầu bỏ lề trên để tiêu đề không xa nội dung (người dùng 2026-09-27) */
+.ums-legend + .ums-kv { padding-top: 2px; }
+
+/* ---------- Nhiều tab × nhiều khung danh sách (ums.pat.sections) ---------
+   Mở biểu mẫu ở một khung thì chỉ còn biểu mẫu đó: giấu dải tab và mọi khung
+   khác — đúng edu.util.toggle_overide của bản gốc. */
+.ums-sections__tabs { margin-bottom: var(--ums-sp-4); }
+.ums-sections__sec + .ums-sections__sec { margin-top: var(--ums-sp-4); }
+.ums-sections.is-editing .ums-sections__tabs,
+.ums-sections.is-editing .ums-sections__sec:not(.is-open) { display: none; }
+
+/* ---------- Khung "Tìm nâng cao" trong cột trái ---------------------------
+   Dùng chung cho Thu tiền (_chung_thutien.js) và Chứng từ (chungtu.js) — trước
+   2026-09-22 mỗi màn một bộ CSS riêng nên lệch nhau: Chứng từ thêm 16px lề
+   ngang (ô hẹp 254px thay vì 286px), cách 12px thay 8px, danh sách trạng
+   thái cuộn riêng trong 180px, nút Tìm kiếm co theo chữ.
+
+       <div class="ums-master__adv" hidden>
+         <div class="ums-field"><select …></select></div>   ← mỗi ô một dòng
+         <div class="ums-master__advtitle">Trạng thái …</div>
+         <label class="ums-check"><input type="checkbox" …> <b>Tất cả</b></label>
+         <div class="ums-master__tt">…ô đánh dấu…</div>
+         <button class="ums-btn …">Tìm kiếm</button>          ← hết bề ngang
+       </div>
+
+   KHÔNG thêm lề ngang: .ums-master__filter đã có lề (lề kép — bảng Lỗi vặt). */
+.ums-master__adv {
+    display: grid;
+    gap: var(--ums-sp-2);
+    margin: 0 0 var(--ums-sp-2);
+    padding-top: var(--ums-sp-2);
+    border-top: 1px dashed var(--ums-line);
+}
+.ums-master__adv .ums-field { margin: 0; }
+.ums-master__advtitle { font-size: var(--ums-fz-13); font-weight: var(--ums-fw-semibold); color: var(--ums-ink); }
+/* Mỗi dòng một mục, KHÔNG cuộn bên trong — hai cột trong cột 320px thì tên dài
+   ("Phòng ĐT không QL") xuống hai dòng, đọc rối. */
+.ums-master__tt { display: grid; grid-template-columns: 1fr; gap: 2px; font-size: var(--ums-fz-13); }
+.ums-master__tt .ums-check { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ums-master__tt .ums-check + .ums-check { margin-left: 0; }
+
+/* ---------- Bảng gộp ô theo nhóm (ums.pat.groupTable) -------------------- */
+.ums-gtable > tbody > tr > td.ums-gtable__g {
+    background: var(--ums-surface-2);
+    vertical-align: top;
+    font-weight: var(--ums-fw-semibold);
+    color: var(--ums-navy);
+}
+
+/* ---------- Bảng cao: cuộn dọc trong khung, giữ tiêu đề dính ------------- */
+/* .ums-tablewrap--tall đã bỏ — không cuộn bên trong nữa (2026-09-21) */
+.ums-tablewrap--tall .ums-tablewrap { overflow: visible; }
+
+/* ---------- Thanh lọc xếp dọc (khi nằm trong cột hẹp) -------------------- */
+.ums-filter--stack { flex-direction: column; align-items: stretch; }
+.ums-filter--stack > .ums-field { flex: 0 0 auto; }
+
+/* ---------- Nhóm ô đánh dấu 3 cột ---------------------------------------- */
+.ums-checkgrid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 991px) { .ums-checkgrid--3 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 767px) { .ums-checkgrid--3 { grid-template-columns: minmax(0, 1fr); } }
+
+/* ---------- Ô nhập chữ trong lưới (công thức…): căn trái ----------------- */
+.ums-matrix--text .ums-cellbox > .ums-input { text-align: left; min-width: 150px; }
+
+/* ---------- Vùng dưới bảng: tổng, chú thích, thanh thao tác -------------- */
+.ums-tablefoot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--ums-sp-3);
+    padding: var(--ums-sp-3) var(--ums-sp-5);
+    border-top: 1px solid var(--ums-line);
+    background: var(--ums-surface-2);
+    font-size: var(--ums-fz-13);
+    color: var(--ums-ink-2);
+}
+
+.ums-tablefoot__sum { margin-left: auto; display: flex; gap: var(--ums-sp-5); }
+.ums-tablefoot__sum b { color: var(--ums-navy); font-size: var(--ums-fz-15); }
+
+/* ---------- Hỏi lại kèm chi tiết (ums.pat.xacNhanChiTiet) --------------- */
+.ums-xnct__canh { display: flex; gap: var(--ums-sp-3); padding: var(--ums-sp-3); border-radius: 8px; background: #fff4e5; color: #8a4b00; font-size: 13px; }
+.ums-xnct__canh > i { font-size: 18px; margin-top: 2px; }
+.ums-xnct__sub { display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: baseline; margin-top: var(--ums-sp-3); padding: var(--ums-sp-2) var(--ums-sp-3); border: 1px dashed var(--ums-line); border-radius: 8px; font-size: 13px; }
+.ums-xnct__sub b { color: var(--ums-navy); }
+.ums-xnct__sec { margin-top: var(--ums-sp-3); border: 1px solid var(--ums-line); border-radius: 8px; overflow: hidden; }
+.ums-xnct__sechead { padding: 6px var(--ums-sp-3); font-weight: 700; font-size: 13px; color: #fff; background: var(--ums-blue); }
+.ums-xnct__sec.is-green .ums-xnct__sechead { background: #198754; }
+.ums-xnct__sec.is-orange .ums-xnct__sechead { background: #e8590c; }
+.ums-xnct__sec.is-red .ums-xnct__sechead { background: #dc3545; }
+.ums-xnct__sec table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.ums-xnct__sec th, .ums-xnct__sec td { padding: 5px var(--ums-sp-3); border-top: 1px solid var(--ums-line); text-align: left; vertical-align: top; }
+.ums-xnct__sec th { width: 40%; font-weight: 500; color: var(--ums-ink-3); }
+.ums-xnct__sec td i { color: var(--ums-ink-3); }
+
+/* ---------- Khung "Ghi chú chuyển đổi" (app.js veCanQuyet, sổ assets/js/can-quyet.js) ---------- */
+.ums-canquyet { margin-bottom: var(--ums-sp-4); border: 1px dashed #e8a33a; border-radius: 10px; background: #fff8ec; font-size: 13px; }
+.ums-canquyet > summary { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ums-sp-2); padding: 8px 12px; cursor: pointer; color: #8a5300; list-style: none; }
+.ums-canquyet > summary::-webkit-details-marker { display: none; }
+.ums-canquyet > summary::after { content: "\25B8"; margin-left: auto; transition: transform .15s; }
+.ums-canquyet[open] > summary::after { transform: rotate(90deg); }
+.ums-canquyet__so { padding: 1px 8px; border-radius: 999px; background: #f2c78a; color: #5c3700; font-size: 12px; }
+.ums-canquyet__so.is-kiem { background: #d8e6ff; color: #1b3f86; }
+.ums-canquyet__so.is-ora { background: #f7d4d4; color: #7a1d1d; }
+.ums-canquyet__so.is-nv { background: #d6efe9; color: #0f5646; }
+.ums-canquyet__nhom { padding: 0 12px; margin-top: 4px; font-weight: 700; color: #5c3700; }
+.ums-canquyet ol { margin: 4px 0 10px; padding: 0 16px 0 34px; list-style: decimal; color: var(--ums-ink-2); }
+.ums-canquyet li { margin: 3px 0; }
+.ums-canquyet__now { color: var(--ums-ink-3); font-style: italic; }
+/* Ô trả lời từng điểm (lưu localStorage, xuất tệp .txt) */
+.ums-canquyet__tl { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 8px; }
+.ums-canquyet__tl .ums-select { flex: 0 0 230px; height: var(--ums-control-h-sm); font-size: 13px; }
+.ums-canquyet__tl textarea.ums-input { flex: 1 1 260px; height: auto; min-height: var(--ums-control-h-sm); padding: 4px 8px; font-size: 13px; line-height: 1.4; resize: vertical; }
+.ums-canquyet__so.is-loi { background: #c62828; color: #fff; font-weight: 600; }   /* lỗi đã kiểm, yêu cầu backend xử lý — phải đập vào mắt */
+.ums-canquyet__so.is-tl { background: #ececec; color: #555; }
+.ums-canquyet__so.is-tl.is-du { background: #cdebd5; color: #185c2e; }
+.ums-canquyet__foot { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px 12px 10px; border-top: 1px dashed #e8a33a; }
+.ums-canquyet__luu { flex: 1 1 auto; color: var(--ums-ink-3); font-style: italic; }
+
+/* ---------- Danh sách cán bộ (ums.pat.dsNhanSu / masterNhanSu) + ảnh người tròn (ums.pat.anhNguoi) ---------- */
+.ums-ava { position: relative; flex: 0 0 40px; width: 40px; height: 40px; display: inline-grid; place-items: center;
+    border-radius: 50%; overflow: hidden; background: var(--ums-surface-3); color: var(--ums-ink-3); font-size: 18px; }
+.ums-ava img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.ums-master__item.is-active .ums-ava { background: rgba(255, 255, 255, .2); color: #fff; }
+.ums-master__item.ums-dsns__item { display: flex; align-items: center; gap: var(--ums-sp-3); text-align: left; }
+.ums-dsns__item .ums-master__item__main { display: flex; flex-direction: column; min-width: 0; }
+.ums-dsns__nut { display: flex; flex-wrap: wrap; gap: var(--ums-sp-2); margin-bottom: var(--ums-sp-2); }
+/* Khung lọc chỉ còn phần tử ẩn (bộ lọc nâng cao đang đóng) → không để lại khoảng đệm trống dưới ô tìm */
+.ums-master__filter:not(:has(> :not([hidden]))) { display: none; }
+/* Nút biểu tượng đang bật (bộ lọc nâng cao mở / đang có điều kiện lọc) */
+.ums-iconbtn.is-on { color: var(--ums-blue); background: var(--ums-blue-50, rgba(13, 110, 253, .1)); }
+.ums-dsns__dau { margin-bottom: var(--ums-sp-4); }
+.ums-dsns__ghichu { margin: 0 0 var(--ums-sp-4); color: var(--ums-ink-3); font-style: italic; }
+/* Nút biểu tượng trong mục ĐANG CHỌN (nền xanh đặc) — trước đây xanh trên xanh, không thấy */
+.ums-master__item.is-active .ums-iconbtn,
+.ums-master__item.is-active .ums-iconbtn:disabled { color: #fff; }
+.ums-master__item.is-active .ums-iconbtn:hover { background: rgba(255, 255, 255, .16); color: #fff; }
+/* Khung lọc nâng cao nằm SÁT dưới ô tìm: bỏ gạch đứt phía trên khi nó đứng đầu vùng lọc */
+.ums-master__filter > .ums-dsns__loc:first-child { border-top: 0; padding-top: 0; }
+
+/* ---------- Khung đối tượng đang chọn (pat.dauDoiTuong) + thanh thao tác tab (pat.thanhThu) ---------- */
+.ums-dtg__ten { display: flex; align-items: center; flex-wrap: wrap; gap: var(--ums-sp-2) var(--ums-sp-3); min-width: 0; }
+.ums-dtg__name { font-size: var(--ums-fz-16); font-weight: 700; color: var(--ums-navy); text-transform: uppercase; }
+.ums-dtg__noco:empty { display: none; }
+.ums-thanhthu { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--ums-sp-3); margin-bottom: var(--ums-sp-3); }
+.ums-thanhthu__l, .ums-thanhthu__r { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ums-sp-2); }
+.ums-thanhthu__tong { font-size: var(--ums-fz-14); color: var(--ums-ink-2); }
+.ums-thanhthu__tong b { font-size: var(--ums-fz-16); color: var(--ums-navy); }
+.ums-thanhthu__chon { margin-right: var(--ums-sp-1); font-size: var(--ums-fz-13); color: var(--ums-ink-2); white-space: nowrap; }
+.ums-thanhthu__chon b { font-size: var(--ums-fz-16); color: var(--ums-navy); }
+.ums-thanhthu .ums-field { margin: 0; min-width: 180px; }
+.ums-thanhthu__ghichu { font-size: var(--ums-fz-13); color: var(--ums-ink-3); }
+/* Xuống dòng (ô ngày + nhiều nút) thì cụm "đã chọn + nút" vẫn bám mép phải */
+.ums-thanhthu__r { margin-left: auto; justify-content: flex-end; }
+
+/* ---------- Biểu mẫu / màn con THAY CHỖ màn (ums.pat.formTrang) ------------------------------------------------
+   host mang data-ft-mo khi đang có biểu mẫu: mọi phần tử con khác ẩn đi (kể cả phần tử màn bật hiện sau đó).
+   Lồng nhau (tầng hai trong thân tầng một, màn con ums.crud trong biểu mẫu): khung trong bỏ viền + đệm ngang để bề
+   ngang không hẹp dần qua từng lớp. */
+[data-ft-mo] > :not(.ums-formtrang) { display: none !important; }
+.ums-formtrang .ums-formtrang > .ums-panel,
+.ums-formtrang [data-ft="body"] .ums-panel { border: 0; box-shadow: none; background: transparent; }
+.ums-formtrang .ums-formtrang > .ums-panel > .ums-panel__head,
+.ums-formtrang [data-ft="body"] .ums-panel > .ums-panel__head { padding-left: 0; padding-right: 0; }
+.ums-formtrang .ums-formtrang > .ums-panel > .ums-panel__body,
+.ums-formtrang [data-ft="body"] .ums-panel > .ums-panel__body { padding-left: 0; padding-right: 0; }
+
+/* ---------- Bảng "Màn đang có lỗi backend" (trang vai trò / trang chủ — app.js lbBang) ---------- */
+.ums-table.ums-lb > tbody > tr > td { vertical-align: top; line-height: 1.5; }
+.ums-lb__man { font-weight: 600; color: var(--ums-blue-d); }
+.ums-lb__man:hover { text-decoration: underline; }
+.ums-lb__phu { margin-top: 2px; font-size: 12px; color: var(--ums-ink-3); }
+.ums-lb__goi { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; color: var(--ums-ink-2); }
+.ums-lb__chan { padding: 10px 16px; font-size: 12px; color: var(--ums-ink-3); border-top: 1px solid var(--ums-line); }

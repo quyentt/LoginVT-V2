@@ -1,0 +1,1581 @@
+﻿<!-- Main content -->
+<style>
+
+    .btn-large {
+        width: 108px;
+        text-align: center;
+        background-color: #fff;
+        border-bottom: 1px solid #f1f1f1;
+        float: left;
+        margin-left: 5px;
+    }
+
+    /*.color-active {
+        width: 108px;
+        overflow: hidden !important;
+    }*/
+</style>
+<section class="content">
+    <div class="row ">
+        <!-- /.left-content -->
+        <div class="col-lg-3">
+            <div class="box box-solid">
+                <div class="box-body">
+                    <!-- Bộ tìm kiếm -->
+                    <div class="bs-item input-group">
+                        <input type="text" id="txtSearch_HSLL_TuKhoa" class="form-control" placeholder="Nhập từ khóa tìm kiếm">
+                        <span class="input-group-addon poiter btnExtend_Search" title="Kéo xuống">
+                            <i class="fa fa-angle-double-down"></i>
+                        </span>
+                    </div>
+                    <div class="bs-item pull-right">
+                        <a id="btnSearch_HSLL_NhanSu" class="btn btn-default"><i class="fa fa-search"></i> <span class="lang" key="">Tìm kiếm</span></a>
+                    </div>
+                    <div class="box-sub-search">
+                        <div class="bss-item">
+                            <i>Chọn điều kiện tìm kiếm:</i>
+                        </div>
+                        <div class="bss-item">
+                            <select id="dropSearch_HSLL_CoCauToChuc" class="select-opt">
+                                <option value="">-- Cơ cấu khoa/viện/phòng ban --</option>
+                                <!-- Load from js -->
+                            </select>
+                        </div>
+                        <div class="bss-item">
+                            <select id="dropSearch_HSLL_BoMon" class="select-opt">
+                                <option value="">-- Bộ môn --</option>
+                                <!-- Load from js -->
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="box box-solid">
+                <div class="box-header with-border">
+                    <h3 class="box-title" title="Tổng bài báo trong nước">
+                        <i class="fa fa-hdd-o"></i> Danh sách nhân sự
+                    </h3>
+                    <span class="pull-right badge bg-light-blue">
+                        <span id="lblHSLL_NhanSu_Tong"></span>
+                    </span>
+                </div>
+                <div class="box-body">
+                    <table id="tblHoSoLL_NhanSu" class="table table-hover">
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- /.right-content -->
+        <div class="col-lg-9">
+            <!-- box Notify QuyetDinh -->
+            <div class="box box-solid zoneHSLL" id="zone_view_hsll">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><i class="fa fa-info"></i> Thông tin cơ bản</h3>
+                </div>
+                <div class="box-body">
+                    <div class="col-sm-12">
+                        <!-- Row 1,2,3,4,5 -->
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div id="txtInAnHSLL_Anh"></div>
+                            </div>
+                            <div class="col-sm-10">
+                                <div class="row sub-row">
+                                    <div class="col-sm-3">
+                                        <div class="title-name">
+                                            1) Họ và tên khai sinh:
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <span id="lblHSLL_HoTen" class="color-active"></span>
+                                    </div>
+                                </div>
+                                <div class="row sub-row">
+                                    <div class="col-sm-3">
+                                        <div class="title-name">
+                                            2) Tên gọi khác:
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <span id="lblHSLL_TenGoi_Khac"></span>
+                                    </div>
+                                </div>
+                                <div class="row sub-row">
+                                    <div class="col-sm-2">
+                                        <div class="title-name">
+                                            3) Sinh ngày:
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <span id="lblHSLL_NgaySinh">_/_/_</span>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="title-name">
+                                            , Giới tính:
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <span id="lblHSLL_GioiTinh"></span>
+                                    </div>
+                                </div>
+                                <div class="row sub-row">
+                                    <div class="col-sm-2">
+                                        <div class="title-name">
+                                            4) Nơi sinh
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-10">
+                                        <span id="lblHSLL_NoiSinh">Kinh</span>
+                                    </div>
+                                </div>
+                                <div class="row sub-row">
+                                    <div class="col-sm-2">
+                                        <div class="title-name">
+                                            5) Quên quán
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-10">
+                                        <span id="lblHSLL_QueQuan"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="box-footer">
+                    <div class="col-sm-3">
+                        <span class="italic"> - Vui lòng chọn kiểu file in:  </span>
+                    </div>
+                    <div class="col-sm-9">
+                        <div class="form-group">
+                            <div class="row" id="zoneBtnBaoCao">
+                            </div>
+                        </div>
+                    </div>
+                    <!--<div class="col-sm-3">
+                        <span class="italic"> - Thực hiện in hồ sơ:  </span>
+                    </div>
+                    <div class="col-sm-9">
+                        <div class="pull-left">
+                            <div class="dropdown">
+                                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                                    <i class="fa fa-print"></i> In <span class="caret"></span>
+                                </button>
+                                <div id="zoneReport_NS">
+                                </div>
+                            </div>
+                        </div>
+                    </div>-->
+                </div>
+            </div>
+            <!-- box- HoSoLyLich-2C-BNV -->
+            <div class="box box-solid form-container zoneHSLL" id="zone_2cbnv_hsll">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><i class="fa fa-print"></i> Mẫu lý lịch 2C-BNV </h3>
+                    <div class="pull-right">
+                        <a class="btn btn-default btnClose"><i class="fa fa-times-circle"></i></a>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="col-sm-12 box-view">
+                        <!-- Row 1,2,3,4,5 -->
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <img src="../../../Upload/Avatar/no-avatar.png" style="width:100%; height:100%" />
+                            </div>
+                            <div class="col-sm-10">
+                                <div class="row sub-row">
+                                    <div class="col-sm-6">
+                                        <div class="title-name">
+                                            1) Họ và tên khai sinh:
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <span id="lblHSLL_HoTen_KhaiSinh"></span>
+                                    </div>
+                                </div>
+                                <div class="row sub-row">
+                                    <div class="col-sm-4">
+                                        <div class="title-name">
+                                            2) Tên gọi khác:
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <span id="lblHSLL_HoTen_Khac"></span>
+                                    </div>
+                                </div>
+                                <div class="row sub-row">
+                                    <div class="col-sm-2">
+                                        <div class="title-name">
+                                            3) Sinh ngày:
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <span id="lblHSLL_NgaySinh">_/_/_</span>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="title-name">
+                                            , Giới tính:
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <span id="lblHSLL_GioiTinh"></span>
+                                    </div>
+                                </div>
+                                <div class="row sub-row">
+                                    <div class="col-sm-2">
+                                        <div class="title-name">
+                                            4) Nơi sinh: Xã
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <span id="lblHSLL_NoiSinh_Xa">Kinh</span>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="title-name">
+                                            ,Huyện
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <span id="lblHSLL_NoiSinh_Huyen"></span>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="title-name">
+                                            ,Tỉnh
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <span id="lblHSLL_NoiSinh_Tinh"></span>
+                                    </div>
+                                </div>
+                                <div class="row sub-row">
+                                    <div class="col-sm-2">
+                                        <div class="title-name">
+                                            5) Quên quán: Xã
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <span id="lblHSLL_QueQuan_Xa"></span>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="title-name">
+                                            ,Huyện
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <span id="lblHSLL_QueQuan_Huyen"></span>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="title-name">
+                                            ,Tỉnh
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <span id="lblHSLL_QueQuan_Tinh"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Row 6,7 - Dan toc/ Ton giao -->
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    6) Dân tộc:
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <span id="lblHSLL_DanToc">Kinh</span>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    7) Tôn giáo:
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <span id="lblHSLL_TonGiao">Không</span>
+                            </div>
+                        </div>
+                        <!-- Row 8 - Ho khau thuong tru -->
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <div class="title-name">
+                                    8) Nơi đăng ký hộ khẩu thường trú:
+                                </div>
+                            </div>
+                            <div class="col-sm-8">
+                                <span id="lblHSLL_HoKhauThuongTru">Ngũ lão- Quang hưng - Phù cừ - Hưng yên</span>
+                            </div>
+                        </div>
+                        <!-- Row 9 - No o hien nay -->
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <div class="title-name">
+                                    9) Nơi ở hiện nay:
+                                </div>
+                            </div>
+                            <div class="col-sm-7">
+                                <span id="lblHSLL_HoKhauThuongTru">Ngũ lão- Quang hưng - Phù cừ - Hưng yên</span>
+                            </div>
+                        </div>
+                        <!-- Row 10 - nghe nghiep khi duoc tuyen dung -->
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <div class="title-name">
+                                    10) Nghề nghiệp khi được tuyển dụng:
+                                </div>
+                            </div>
+                            <div class="col-sm-7">
+                                <span id="lblHSLL_HoKhauThuongTru">Nhân viên kỹ thuật</span>
+                            </div>
+                        </div>
+                        <!-- Row 11 - Ngay tuyen dung/ Co quan tuyen dung -->
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <div class="title-name">
+                                    11) Ngày tuyển dụng:
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <span id="lblHSLL_NgayTuyenDung">_/_/_</span>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="title-name">
+                                    ,Cơ quan tuyển dụng:
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <span id="lblHSLL_CoQuanTuyenDung">Phòng công nghệ thông tin</span>
+                            </div>
+                        </div>
+                        <!-- Row 12 - Chuc vu, chuc danh hien tai -->
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <div class="title-name">
+                                    12) Chức vụ (chức danh) hiện tại:
+                                </div>
+                            </div>
+                            <div class="col-sm-8">
+                                <span id="lblHSLL_ChucVuChucDanhHienTai">Trưởng phòng</span>
+                            </div>
+                        </div>
+                        <!-- Row 13 - Cong viec chinh duoc giao  -->
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <div class="title-name">
+                                    13) Công việc chính được giao:
+                                </div>
+                            </div>
+                            <div class="col-sm-7">
+                                <span id="lblHSLL_CongViecDuocGiao">Quản lý trang thiết bị máy tính, mạng,..</span>
+                            </div>
+                        </div>
+                        <!-- Row 14 - Ngach cong chuc, vien chuc/ Ma ngach -->
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <div class="title-name">
+                                    14) Ngạch công chức (viên chức):
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <span id="lblHSLL_NgayTuyenDung">_/_/_</span>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    ,Mã ngạch:
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <span id="lblHSLL_CoQuanTuyenDung">Phòng công nghệ thông tin</span>
+                            </div>
+                        </div>
+                        <!-- Row 14 - Bac luong/ He so/ Ngay huong -->
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    Bậc lương:
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <span id="lblHSLL_BacLuong">6</span>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    ,Hệ số:
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <span id="lblHSLL_HeSo">3.2</span>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    ,Ngày hưởng:
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <span id="lblHSLL_NgayHuong">_/_/_</span>
+                            </div>
+                        </div>
+                        <!-- Row 14 - Phu cap chuc vu/ Phu cap khac -->
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    Phụ cấp chức vụ:
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <span id="lblHSLL_PhuCapChucVu">0.5</span>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    ,Phụ cấp khác:
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <span id="lblHSLL_PhuCapKhac">0.2</span>
+                            </div>
+                        </div>
+                        <!-- Row 15-1 - Trinh do tot nghiep pho thong (da tot nghiep lop may/thuoc he nao) -->
+                        <div class="row">
+                            <div class="col-sm-9">
+                                <div class="title-name">
+                                    15.1- Trình độ giáo dục phổ thông(đã tốt nghiệp lớp mấy/thuộc hệ nào):
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <span id="lblHSLL_HoKhauThuongTru">12/12</span>
+                            </div>
+                        </div>
+                        <!-- Row 15-2 - Trinh do chuyen mon cao nhat -->
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <div class="title-name">
+                                    15.2- Trình độ chuyên môn cao nhất:
+                                </div>
+                            </div>
+                            <div class="col-sm-8">
+                                <span id="lblHSLL_HoKhauThuongTru">Đại học</span>
+                            </div>
+                        </div>
+                        <!-- Row 15-3, 15-4 - Ly luan chinh tri/ Quan ly nha nuoc -->
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <div class="title-name">
+                                    15.3- Lý luận chính trị:
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <span id="lblHSLL_LyLuanChinhTri">_/_/_</span>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="title-name">
+                                    15.4- Quản lý nhà nước:
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <span id="lblHSLL_QuanLyNhaNuoc"></span>
+                            </div>
+                        </div>
+                        <!-- Row 15-5, 15-6 - Ly luan chinh tri/ Quan ly nha nuoc -->
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    15.5- Ngoại ngữ:
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <span id="lblHSLL_NgoaiNgu">_/_/_</span>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    15.6- Tin học:
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <span id="lblHSLL_TinHoc"></span>
+                            </div>
+                        </div>
+                        <!-- Row 16 - Ngày vào đảng csvn/ Ngày chính thức -->
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <div class="title-name">
+                                    16) Ngày vào Đảng Cộng sản Việt Nam:
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <span id="lblHSLL_NgayVaoDangCongSanVietNam">_/_/_</span>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    ,Ngày chính thức:
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <span id="lblHSLL_NgayChinhThuc"></span>
+                            </div>
+                        </div>
+                        <!-- Row 17 - Tham gia to chuc chinh tri - xa hoi -->
+                        <div class="row">
+                            <div class="col-sm-5">
+                                <div class="title-name">
+                                    17) Tham gia tổ chức chính trị - xã hội:
+                                </div>
+                            </div>
+                            <div class="col-sm-7">
+                                <span id="lblHSLL_ThamGiaToChucChinhTriXaHoi"></span>
+                            </div>
+                        </div>
+                        <!-- Row 18 - Ngay nhap ngu/ Ngay xuat ngu/ Quan ham cao nhat -->
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    18) Ngày nhập ngũ:
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <span id="lblHSLL_NgayNhapNgu">_/_/_</span>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    ,Ngày xuất ngũ:
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <span id="lblHSLL_NgayXuatNgu">_/_/_</span>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    ,Quân hàm cao nhất:
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <span id="lblHSLL_QuanHamCaoNhat"></span>
+                            </div>
+                        </div>
+                        <!-- Row 19 - Danh hieu duoc phong tang cao nhat -->
+                        <div class="row">
+                            <div class="col-sm-5">
+                                <div class="title-name">
+                                    19) Danh hiệu được phong tặng cao nhất:
+                                </div>
+                            </div>
+                            <div class="col-sm-7">
+                                <span id="lblHSLL_DanhHieuDuocPhongTangCaoNhat"></span>
+                            </div>
+                        </div>
+                        <!-- Row 20 - So truong cong tac -->
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <div class="title-name">
+                                    20) Sở trường công tác:
+                                </div>
+                            </div>
+                            <div class="col-sm-9">
+                                <span id="lblHSLL_DanhHieuDuocPhongTangCaoNhat"></span>
+                            </div>
+                        </div>
+                        <!-- Row 21,22 - Khen thuong/ Ky luat -->
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    21) Khen thưởng:
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <span id="lblHSLL_KhenThuong"></span>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    ,22) Kỷ luật:
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <span id="lblHSLL_KyLuat"></span>
+                            </div>
+                        </div>
+                        <!-- Row 23 - Tinh trang suc khoe/ Chieu cao/ Can nang/ Nhom mau -->
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    23) Tình trạng sức khỏe:
+                                </div>
+                            </div>
+                            <div class="col-sm-1">
+                                <span id="lblHSLL_TinhTrangSucKhoe"></span>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    ,Chiều cao:
+                                </div>
+                            </div>
+                            <div class="col-sm-1">
+                                <span id="lblHSLL_ChieuCao"></span>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    ,Cân nặng:
+                                </div>
+                            </div>
+                            <div class="col-sm-1">
+                                <span id="lblHSLL_CanNang"></span>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    ,Nhóm máu:
+                                </div>
+                            </div>
+                            <div class="col-sm-1">
+                                <span id="lblHSLL_NhomMau"></span>
+                            </div>
+                        </div>
+                        <!-- Row 24 - La thuong binh hang/ La gia dinh chinh sach -->
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <div class="title-name">
+                                    24) Là thương binh hạng:
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <span id="lblHSLL_ThuongBinhHang"></span>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="title-name">
+                                    , Là con gia đình chính sách:
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <span id="lblHSLL_GiaDinhChinhSach"></span>
+                            </div>
+                        </div>
+                        <!-- Row 25 - Chung minh nhan dan/ Ngay cap -->
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <div class="title-name">
+                                    25) Số chứng minh nhân dân:
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <span id="lblHSLL_CMND_So"></span>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    , Ngày cấp:
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <span id="lblHSLL_CMND_NgayCap">_/_/_</span>
+                            </div>
+                        </div>
+                        <!-- Row 26 - So truong cong tac -->
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    26) Số sổ BHXH:
+                                </div>
+                            </div>
+                            <div class="col-sm-10">
+                                <span id="lblHSLL_BHXH_So"></span>
+                            </div>
+                        </div>
+                        <!-- Row 27 - Dao tao, boi dunog ve chuyen mon, nghiep vu, ly luan chinh tri, ngoai ngu, tin hoc -->
+                        <div class="row">
+                            <p class="group-title-name">
+                                27) Đào tạo, bồi dưỡng về chuyên môn, nghiệp vụ, lý luận chính trị, ngại ngữ, tin học
+                            </p>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <table id="tblHSLL_DaoTaoBoiDuong" class="table">
+                                    <thead>
+                                        <tr>
+                                            <td class="title-name">Tên trường</td>
+                                            <td class="title-name">Chuyên ngành đào tạo, bồi dưỡng</td>
+                                            <td class="title-name">Từ tháng, năm - đến tháng, năm</td>
+                                            <td class="title-name">Hình thức đào tạo</td>
+                                            <td class="title-name">Văn bằng, chứng chỉ, trình độ gì</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- Row 28 - Tom tat qua trinh cong tac -->
+                        <div class="row">
+                            <p class="group-title-name">
+                                28) Tóm tắc quá trình công tác
+                            </p>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <table id="tblHSLL_QuaTrinhCongTac" class="table">
+                                    <thead>
+                                        <tr>
+                                            <td class="title-name">Từ tháng, năm đến tháng, năm</td>
+                                            <td class="title-name">Chức danh, chức vụ, đơn vị công tác (đảng, chính quyền, đoàn thể, toor chức xã hội), kể cả thời gian được đào tạo, bồi dưỡng về chuyên môn, nghiệp vụ, ...</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- Row 29 - Dac diem lich su ban than  -->
+                        <div class="row">
+                            <p class="group-title-name">
+                                29) Đặc điểm, lịch sử bản thân
+                            </p>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="title-name">
+                                    - Khai rõ: bị bắt,bị tù (từ ngày nào đến ngày tháng năm nào, ở đâu), đã khai báo cho ai,
+                                    những vấn đề gì? Bản thân có làm việc trong chế độ cũ
+                                    (cơ quan, đơn vị nào, địa điểm, chức danh, chức vụ, thời gian làm việc, ...)
+                                </div>
+                            </div>
+                            <div class="col-sm-12">
+                                <span id="lblHSLL_DacBiemBanTha_KhaiRo"></span>
+                            </div>
+
+                            <div class="col-sm-12">
+                                <div class="title-name">
+                                    - Tham gia hoặc có quan hệ với các tổ chức chính trị, kinh tế, xã hội nào ở nước ngoài (làm gì, tổ chức nào, đặt trụ sở ở đâu, ...?)
+                                </div>
+                            </div>
+                            <div class="col-sm-12">
+                                <span id="lblHSLL_DacBiemBanTha_ThamGia"></span>
+                            </div>
+
+                            <div class="col-sm-12">
+                                <div class="title-name">
+                                    - Có thân nhân (Cha, Mẹ, Vợ, Chồng, con, anh chị em ruột) ở nước ngoài (làm gì, địa chỉ, ...?)
+                                </div>
+                            </div>
+                            <div class="col-sm-12">
+                                <span id="lblHSLL_DacBiemBanTha_ThanNhan"></span>
+                            </div>
+                        </div>
+                        <!-- Row 30 - Quan he gia dinh -->
+                        <div class="row">
+                            <p class="group-title-name">
+                                28) Quan hệ gia đình
+                            </p>
+                        </div>
+                        <!-- Row 30.a - Ban than -->
+                        <div class="row">
+                            <div class="col-sm-9">
+                                <div class="title-name">
+                                    a) Về bản thân: Cha, Mẹ, Vợ (hoặc chồng), các con, anh chị em ruột
+                                </div>
+                                <div class="col-sm-2"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <table id="tblHSLL_QuanHeGiaDinh_BanThan" class="table">
+                                    <thead>
+                                        <tr>
+                                            <td class="title-name">Mối quan hệ</td>
+                                            <td class="title-name">Họ và tên</td>
+                                            <td class="title-name">Năm sinh</td>
+                                            <td class="title-name">Quê quán nghề nghiệp, chức danh, chức vụ, đơn vị công tác, học tập, nơi ở (trong, nước ngoài); thành viên các tổ chức trính tr- xã hội, ...</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- Row 30.b Vo hoac chong-->
+                        <div class="row">
+                            <div class="col-sm-9">
+                                <div class="title-name">
+                                    a) Về bên vợ (hoặc chồng): Cha, Mẹ, anh chị em ruột
+                                </div>
+                            </div>
+                            <div class="col-sm-2"></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <table id="tblHSLL_QuanHeGiaDinh_BanThan" class="table">
+                                    <thead>
+                                        <tr>
+                                            <td class="title-name">Mối quan hệ</td>
+                                            <td class="title-name">Họ và tên</td>
+                                            <td class="title-name">Năm sinh</td>
+                                            <td class="title-name">Quê quán nghề nghiệp, chức danh, chức vụ, đơn vị công tác, học tập, nơi ở (trong, nước ngoài); thành viên các tổ chức trính tr- xã hội, ...</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- Row 31 -  Dien bien luong -->
+                        <div class="row">
+                            <p class="group-title-name">
+                                31) Diễn biến lương của cán bộ, công chức
+                            </p>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <table id="tblHSLL_DienBienLuong" class="table">
+                                    <thead>
+                                        <tr>
+                                            <td class="title-name">Tháng/Năm</td>
+                                            <td class="title-name">Mã ngạch/bậc</td>
+                                            <td class="title-name">Hệ số lương</td>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- Row 32 - Dac diem lich su ban than  -->
+                        <div class="row">
+                            <p class="group-title-name">
+                                32) Nhận xét, đánh giá của cơ quan, đơn vị quản lý và sử dụng cán bộ, công chức
+                            </p>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <span id="lblHSLL_NhanXetCoQuan"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- box- HoSoLyLich-2C-BNV -->
+            <div class="box box-solid form-container zoneHSLL" id="zone_2tw_hsll">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><i class="fa fa-print"></i> Mẫu lý lịch 2C-TW </h3>
+                    <div class="pull-right">
+                        <a class="btn btn-default btnClose"><i class="fa fa-times-circle"></i></a>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="col-sm-12 box-view">
+                        <!-- Row 1,2,3,4,5 -->
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <img src="../../../Upload/Avatar/no-avatar.png" style="width:100%; height:100%" />
+                            </div>
+                            <div class="col-sm-10">
+                                <div class="row sub-row">
+                                    <div class="col-sm-6">
+                                        <div class="title-name">
+                                            1) Họ và tên khai sinh:
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <span id="lblHSLL_HoTen_KhaiSinh"></span>
+                                    </div>
+                                </div>
+                                <div class="row sub-row">
+                                    <div class="col-sm-4">
+                                        <div class="title-name">
+                                            2) Tên gọi khác:
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <span id="lblHSLL_HoTen_Khac"></span>
+                                    </div>
+                                </div>
+                                <div class="row sub-row">
+                                    <div class="col-sm-2">
+                                        <div class="title-name">
+                                            3) Sinh ngày:
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <span id="lblHSLL_NgaySinh">_/_/_</span>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="title-name">
+                                            , Giới tính:
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <span id="lblHSLL_GioiTinh"></span>
+                                    </div>
+                                </div>
+                                <div class="row sub-row">
+                                    <div class="col-sm-2">
+                                        <div class="title-name">
+                                            4) Nơi sinh: Xã
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <span id="lblHSLL_NoiSinh_Xa">Kinh</span>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="title-name">
+                                            ,Huyện
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <span id="lblHSLL_NoiSinh_Huyen"></span>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="title-name">
+                                            ,Tỉnh
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <span id="lblHSLL_NoiSinh_Tinh"></span>
+                                    </div>
+                                </div>
+                                <div class="row sub-row">
+                                    <div class="col-sm-2">
+                                        <div class="title-name">
+                                            5) Quên quán: Xã
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <span id="lblHSLL_QueQuan_Xa"></span>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="title-name">
+                                            ,Huyện
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <span id="lblHSLL_QueQuan_Huyen"></span>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="title-name">
+                                            ,Tỉnh
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <span id="lblHSLL_QueQuan_Tinh"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Row 6,7 - Dan toc/ Ton giao -->
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    6) Dân tộc:
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <span id="lblHSLL_DanToc">Kinh</span>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    7) Tôn giáo:
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <span id="lblHSLL_TonGiao">Không</span>
+                            </div>
+                        </div>
+                        <!-- Row 8 - Ho khau thuong tru -->
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <div class="title-name">
+                                    8) Nơi đăng ký hộ khẩu thường trú:
+                                </div>
+                            </div>
+                            <div class="col-sm-8">
+                                <span id="lblHSLL_HoKhauThuongTru">Ngũ lão- Quang hưng - Phù cừ - Hưng yên</span>
+                            </div>
+                        </div>
+                        <!-- Row 9 - No o hien nay -->
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <div class="title-name">
+                                    9) Nơi ở hiện nay:
+                                </div>
+                            </div>
+                            <div class="col-sm-7">
+                                <span id="lblHSLL_HoKhauThuongTru">Ngũ lão- Quang hưng - Phù cừ - Hưng yên</span>
+                            </div>
+                        </div>
+                        <!-- Row 10 - nghe nghiep khi duoc tuyen dung -->
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <div class="title-name">
+                                    10) Nghề nghiệp khi được tuyển dụng:
+                                </div>
+                            </div>
+                            <div class="col-sm-7">
+                                <span id="lblHSLL_HoKhauThuongTru">Nhân viên kỹ thuật</span>
+                            </div>
+                        </div>
+                        <!-- Row 11 - Ngay tuyen dung/ Co quan tuyen dung -->
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <div class="title-name">
+                                    11) Ngày tuyển dụng:
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <span id="lblHSLL_NgayTuyenDung">_/_/_</span>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="title-name">
+                                    ,Cơ quan tuyển dụng:
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <span id="lblHSLL_CoQuanTuyenDung">Phòng công nghệ thông tin</span>
+                            </div>
+                        </div>
+                        <!-- Row 12 - Chuc vu, chuc danh hien tai -->
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <div class="title-name">
+                                    12) Chức vụ (chức danh) hiện tại:
+                                </div>
+                            </div>
+                            <div class="col-sm-8">
+                                <span id="lblHSLL_ChucVuChucDanhHienTai">Trưởng phòng</span>
+                            </div>
+                        </div>
+                        <!-- Row 13 - Cong viec chinh duoc giao  -->
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <div class="title-name">
+                                    13) Công việc chính được giao:
+                                </div>
+                            </div>
+                            <div class="col-sm-7">
+                                <span id="lblHSLL_CongViecDuocGiao">Quản lý trang thiết bị máy tính, mạng,..</span>
+                            </div>
+                        </div>
+                        <!-- Row 14 - Ngach cong chuc, vien chuc/ Ma ngach -->
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <div class="title-name">
+                                    14) Ngạch công chức (viên chức):
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <span id="lblHSLL_NgayTuyenDung">_/_/_</span>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    ,Mã ngạch:
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <span id="lblHSLL_CoQuanTuyenDung">Phòng công nghệ thông tin</span>
+                            </div>
+                        </div>
+                        <!-- Row 14 - Bac luong/ He so/ Ngay huong -->
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    Bậc lương:
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <span id="lblHSLL_BacLuong">6</span>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    ,Hệ số:
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <span id="lblHSLL_HeSo">3.2</span>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    ,Ngày hưởng:
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <span id="lblHSLL_NgayHuong">_/_/_</span>
+                            </div>
+                        </div>
+                        <!-- Row 14 - Phu cap chuc vu/ Phu cap khac -->
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    Phụ cấp chức vụ:
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <span id="lblHSLL_PhuCapChucVu">0.5</span>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    ,Phụ cấp khác:
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <span id="lblHSLL_PhuCapKhac">0.2</span>
+                            </div>
+                        </div>
+                        <!-- Row 15-1 - Trinh do tot nghiep pho thong (da tot nghiep lop may/thuoc he nao) -->
+                        <div class="row">
+                            <div class="col-sm-9">
+                                <div class="title-name">
+                                    15.1- Trình độ giáo dục phổ thông(đã tốt nghiệp lớp mấy/thuộc hệ nào):
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <span id="lblHSLL_HoKhauThuongTru">12/12</span>
+                            </div>
+                        </div>
+                        <!-- Row 15-2 - Trinh do chuyen mon cao nhat -->
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <div class="title-name">
+                                    15.2- Trình độ chuyên môn cao nhất:
+                                </div>
+                            </div>
+                            <div class="col-sm-8">
+                                <span id="lblHSLL_HoKhauThuongTru">Đại học</span>
+                            </div>
+                        </div>
+                        <!-- Row 15-3, 15-4 - Ly luan chinh tri/ Quan ly nha nuoc -->
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <div class="title-name">
+                                    15.3- Lý luận chính trị:
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <span id="lblHSLL_LyLuanChinhTri">_/_/_</span>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="title-name">
+                                    15.4- Quản lý nhà nước:
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <span id="lblHSLL_QuanLyNhaNuoc"></span>
+                            </div>
+                        </div>
+                        <!-- Row 15-5, 15-6 - Ly luan chinh tri/ Quan ly nha nuoc -->
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    15.5- Ngoại ngữ:
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <span id="lblHSLL_NgoaiNgu">_/_/_</span>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    15.6- Tin học:
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <span id="lblHSLL_TinHoc"></span>
+                            </div>
+                        </div>
+                        <!-- Row 16 - Ngày vào đảng csvn/ Ngày chính thức -->
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <div class="title-name">
+                                    16) Ngày vào Đảng Cộng sản Việt Nam:
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <span id="lblHSLL_NgayVaoDangCongSanVietNam">_/_/_</span>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    ,Ngày chính thức:
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <span id="lblHSLL_NgayChinhThuc"></span>
+                            </div>
+                        </div>
+                        <!-- Row 17 - Tham gia to chuc chinh tri - xa hoi -->
+                        <div class="row">
+                            <div class="col-sm-5">
+                                <div class="title-name">
+                                    17) Tham gia tổ chức chính trị - xã hội:
+                                </div>
+                            </div>
+                            <div class="col-sm-7">
+                                <span id="lblHSLL_ThamGiaToChucChinhTriXaHoi"></span>
+                            </div>
+                        </div>
+                        <!-- Row 18 - Ngay nhap ngu/ Ngay xuat ngu/ Quan ham cao nhat -->
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    18) Ngày nhập ngũ:
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <span id="lblHSLL_NgayNhapNgu">_/_/_</span>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    ,Ngày xuất ngũ:
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <span id="lblHSLL_NgayXuatNgu">_/_/_</span>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    ,Quân hàm cao nhất:
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <span id="lblHSLL_QuanHamCaoNhat"></span>
+                            </div>
+                        </div>
+                        <!-- Row 19 - Danh hieu duoc phong tang cao nhat -->
+                        <div class="row">
+                            <div class="col-sm-5">
+                                <div class="title-name">
+                                    19) Danh hiệu được phong tặng cao nhất:
+                                </div>
+                            </div>
+                            <div class="col-sm-7">
+                                <span id="lblHSLL_DanhHieuDuocPhongTangCaoNhat"></span>
+                            </div>
+                        </div>
+                        <!-- Row 20 - So truong cong tac -->
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <div class="title-name">
+                                    20) Sở trường công tác:
+                                </div>
+                            </div>
+                            <div class="col-sm-9">
+                                <span id="lblHSLL_DanhHieuDuocPhongTangCaoNhat"></span>
+                            </div>
+                        </div>
+                        <!-- Row 21,22 - Khen thuong/ Ky luat -->
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    21) Khen thưởng:
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <span id="lblHSLL_KhenThuong"></span>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    ,22) Kỷ luật:
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <span id="lblHSLL_KyLuat"></span>
+                            </div>
+                        </div>
+                        <!-- Row 23 - Tinh trang suc khoe/ Chieu cao/ Can nang/ Nhom mau -->
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    23) Tình trạng sức khỏe:
+                                </div>
+                            </div>
+                            <div class="col-sm-1">
+                                <span id="lblHSLL_TinhTrangSucKhoe"></span>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    ,Chiều cao:
+                                </div>
+                            </div>
+                            <div class="col-sm-1">
+                                <span id="lblHSLL_ChieuCao"></span>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    ,Cân nặng:
+                                </div>
+                            </div>
+                            <div class="col-sm-1">
+                                <span id="lblHSLL_CanNang"></span>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    ,Nhóm máu:
+                                </div>
+                            </div>
+                            <div class="col-sm-1">
+                                <span id="lblHSLL_NhomMau"></span>
+                            </div>
+                        </div>
+                        <!-- Row 24 - La thuong binh hang/ La gia dinh chinh sach -->
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <div class="title-name">
+                                    24) Là thương binh hạng:
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <span id="lblHSLL_ThuongBinhHang"></span>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="title-name">
+                                    , Là con gia đình chính sách:
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <span id="lblHSLL_GiaDinhChinhSach"></span>
+                            </div>
+                        </div>
+                        <!-- Row 25 - Chung minh nhan dan/ Ngay cap -->
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <div class="title-name">
+                                    25) Số chứng minh nhân dân:
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <span id="lblHSLL_CMND_So"></span>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    , Ngày cấp:
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <span id="lblHSLL_CMND_NgayCap">_/_/_</span>
+                            </div>
+                        </div>
+                        <!-- Row 26 - So truong cong tac -->
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div class="title-name">
+                                    26) Số sổ BHXH:
+                                </div>
+                            </div>
+                            <div class="col-sm-10">
+                                <span id="lblHSLL_BHXH_So"></span>
+                            </div>
+                        </div>
+                        <!-- Row 27 - Dao tao, boi dunog ve chuyen mon, nghiep vu, ly luan chinh tri, ngoai ngu, tin hoc -->
+                        <div class="row">
+                            <p class="group-title-name">
+                                27) Đào tạo, bồi dưỡng về chuyên môn, nghiệp vụ, lý luận chính trị, ngại ngữ, tin học
+                            </p>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <table id="tblHSLL_DaoTaoBoiDuong" class="table">
+                                    <thead>
+                                        <tr>
+                                            <td class="title-name">Tên trường</td>
+                                            <td class="title-name">Chuyên ngành đào tạo, bồi dưỡng</td>
+                                            <td class="title-name">Từ tháng, năm - đến tháng, năm</td>
+                                            <td class="title-name">Hình thức đào tạo</td>
+                                            <td class="title-name">Văn bằng, chứng chỉ, trình độ gì</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- Row 28 - Tom tat qua trinh cong tac -->
+                        <div class="row">
+                            <p class="group-title-name">
+                                28) Tóm tắc quá trình công tác
+                            </p>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <table id="tblHSLL_QuaTrinhCongTac" class="table">
+                                    <thead>
+                                        <tr>
+                                            <td class="title-name">Từ tháng, năm đến tháng, năm</td>
+                                            <td class="title-name">Chức danh, chức vụ, đơn vị công tác (đảng, chính quyền, đoàn thể, toor chức xã hội), kể cả thời gian được đào tạo, bồi dưỡng về chuyên môn, nghiệp vụ, ...</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- Row 29 - Dac diem lich su ban than  -->
+                        <div class="row">
+                            <p class="group-title-name">
+                                29) Đặc điểm, lịch sử bản thân
+                            </p>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="title-name">
+                                    - Khai rõ: bị bắt,bị tù (từ ngày nào đến ngày tháng năm nào, ở đâu), đã khai báo cho ai,
+                                    những vấn đề gì? Bản thân có làm việc trong chế độ cũ
+                                    (cơ quan, đơn vị nào, địa điểm, chức danh, chức vụ, thời gian làm việc, ...)
+                                </div>
+                            </div>
+                            <div class="col-sm-12">
+                                <span id="lblHSLL_DacBiemBanTha_KhaiRo"></span>
+                            </div>
+
+                            <div class="col-sm-12">
+                                <div class="title-name">
+                                    - Tham gia hoặc có quan hệ với các tổ chức chính trị, kinh tế, xã hội nào ở nước ngoài (làm gì, tổ chức nào, đặt trụ sở ở đâu, ...?)
+                                </div>
+                            </div>
+                            <div class="col-sm-12">
+                                <span id="lblHSLL_DacBiemBanTha_ThamGia"></span>
+                            </div>
+
+                            <div class="col-sm-12">
+                                <div class="title-name">
+                                    - Có thân nhân (Cha, Mẹ, Vợ, Chồng, con, anh chị em ruột) ở nước ngoài (làm gì, địa chỉ, ...?)
+                                </div>
+                            </div>
+                            <div class="col-sm-12">
+                                <span id="lblHSLL_DacBiemBanTha_ThanNhan"></span>
+                            </div>
+                        </div>
+                        <!-- Row 30 - Quan he gia dinh -->
+                        <div class="row">
+                            <p class="group-title-name">
+                                28) Quan hệ gia đình
+                            </p>
+                        </div>
+                        <!-- Row 30.a - Ban than -->
+                        <div class="row">
+                            <div class="col-sm-9">
+                                <div class="title-name">
+                                    a) Về bản thân: Cha, Mẹ, Vợ (hoặc chồng), các con, anh chị em ruột
+                                </div>
+                                <div class="col-sm-2"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <table id="tblHSLL_QuanHeGiaDinh_BanThan" class="table">
+                                    <thead>
+                                        <tr>
+                                            <td class="title-name">Mối quan hệ</td>
+                                            <td class="title-name">Họ và tên</td>
+                                            <td class="title-name">Năm sinh</td>
+                                            <td class="title-name">Quê quán nghề nghiệp, chức danh, chức vụ, đơn vị công tác, học tập, nơi ở (trong, nước ngoài); thành viên các tổ chức trính tr- xã hội, ...</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- Row 30.b Vo hoac chong-->
+                        <div class="row">
+                            <div class="col-sm-9">
+                                <div class="title-name">
+                                    a) Về bên vợ (hoặc chồng): Cha, Mẹ, anh chị em ruột
+                                </div>
+                            </div>
+                            <div class="col-sm-2"></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <table id="tblHSLL_QuanHeGiaDinh_BanThan" class="table">
+                                    <thead>
+                                        <tr>
+                                            <td class="title-name">Mối quan hệ</td>
+                                            <td class="title-name">Họ và tên</td>
+                                            <td class="title-name">Năm sinh</td>
+                                            <td class="title-name">Quê quán nghề nghiệp, chức danh, chức vụ, đơn vị công tác, học tập, nơi ở (trong, nước ngoài); thành viên các tổ chức trính tr- xã hội, ...</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- Row 31 -  Dien bien luong -->
+                        <div class="row">
+                            <p class="group-title-name">
+                                31) Diễn biến lương của cán bộ, công chức
+                            </p>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <table id="tblHSLL_DienBienLuong" class="table">
+                                    <thead>
+                                        <tr>
+                                            <td class="title-name">Tháng/Năm</td>
+                                            <td class="title-name">Mã ngạch/bậc</td>
+                                            <td class="title-name">Hệ số lương</td>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- Row 32 - Dac diem lich su ban than  -->
+                        <div class="row">
+                            <p class="group-title-name">
+                                32) Nhận xét, đánh giá của cơ quan, đơn vị quản lý và sử dụng cán bộ, công chức
+                            </p>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <span id="lblHSLL_NhanXetCoQuan"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- page script -->
+<script src="modules/tracuuinan/script/hosolylich.js?v=1.0.0.0"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['HoSoLyLich'] = new HoSoLyLich();
+    $(document).ready(function () {
+        main_doc.HoSoLyLich.init();
+    });
+</script>

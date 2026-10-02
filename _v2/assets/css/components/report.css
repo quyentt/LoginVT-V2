@@ -1,0 +1,278 @@
+/* =========================================================================
+   6. COMPONENTS — báo cáo / import / tải tệp / hàng đợi (assets/js/report.js)
+   ========================================================================= */
+
+/* ---------- Nút thả xuống "Báo cáo" / "Import" ---------------------------- */
+.ums-drop {
+    position: relative;
+    display: inline-flex;
+}
+
+/* Hai nút thả xuống đứng cạnh nhau (Xuất báo cáo · Import) — vùng chứa không
+   phải lúc nào cũng là flex có gap, nên tự chừa khoảng cách ở đây. */
+.ums-drop + .ums-drop { margin-left: var(--ums-sp-2); }
+
+.ums-drop__caret {
+    margin-left: calc(-1 * var(--ums-sp-1));
+    font-size: var(--ums-fz-12);
+    transition: transform var(--ums-t);
+}
+
+.ums-drop.is-open .ums-drop__caret { transform: rotate(180deg); }
+.ums-drop.is-open .ums-drop__toggle { border-color: var(--ums-blue); color: var(--ums-blue); }
+
+.ums-drop__menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    z-index: var(--ums-z-pop);
+    min-width: 260px;
+    max-width: min(420px, calc(100vw - 32px));
+    max-height: min(420px, 70vh);
+    overflow: auto;
+    padding: var(--ums-sp-1);
+    background: var(--ums-surface);
+    border: 1px solid var(--ums-line);
+    border-radius: var(--ums-r-2);
+    box-shadow: var(--ums-sh-3);
+    animation: ums-drop-in .14s ease;
+}
+
+.ums-drop__menu[hidden] { display: none; }
+.ums-drop.is-left .ums-drop__menu { right: auto; left: 0; }
+
+@keyframes ums-drop-in {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ums-drop__menu { animation: none; }
+}
+
+.ums-drop__item {
+    display: flex;
+    align-items: baseline;
+    gap: var(--ums-sp-2);
+    width: 100%;
+    padding: var(--ums-sp-2) var(--ums-sp-3);
+    border: 0;
+    border-radius: var(--ums-r-1);
+    background: transparent;
+    color: var(--ums-ink);
+    font-size: var(--ums-fz-14);
+    line-height: var(--ums-lh-tight);
+    text-align: left;
+    cursor: pointer;
+}
+
+.ums-drop__item:hover,
+.ums-drop__item:focus-visible { background: var(--ums-blue-l); color: var(--ums-blue-d); outline: none; }
+
+.ums-drop__no {
+    flex: 0 0 auto;
+    min-width: 22px;
+    color: var(--ums-ink-3);
+    font-size: var(--ums-fz-13);
+    font-variant-numeric: tabular-nums;
+}
+
+.ums-drop__text { flex: 1; }
+.ums-drop__mark { flex: 0 0 auto; color: var(--ums-ink-3); font-size: var(--ums-fz-13); }
+.ums-drop__item:hover .ums-drop__mark { color: inherit; }
+
+/* ---------- Biểu mẫu trong hộp import ---------------------------------- */
+.ums-rp-form {
+    display: grid;
+    gap: var(--ums-sp-4);
+    margin-bottom: var(--ums-sp-4);
+}
+
+.ums-rp-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ums-sp-2);
+    min-height: var(--ums-control-h);
+    color: var(--ums-blue);
+    font-weight: var(--ums-fw-medium);
+}
+
+.ums-rp-link:hover { text-decoration: underline; }
+
+/* ---------- Ô tải tệp ------------------------------------------------- */
+.ums-upload { display: grid; gap: var(--ums-sp-2); }
+
+.ums-upload__pick {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ums-sp-2);
+    min-height: 64px;
+    padding: var(--ums-sp-3) var(--ums-sp-4);
+    border: 1px dashed var(--ums-line-2);
+    border-radius: var(--ums-r-2);
+    background: var(--ums-surface-2);
+    color: var(--ums-ink-2);
+    font-size: var(--ums-fz-14);
+    cursor: pointer;
+    transition: border-color var(--ums-t), background var(--ums-t), color var(--ums-t);
+}
+
+.ums-upload__pick > i { font-size: var(--ums-fz-18); color: var(--ums-blue); }
+.ums-upload__pick:hover,
+.ums-upload__pick:focus-within { border-color: var(--ums-blue); background: var(--ums-blue-l); color: var(--ums-blue-d); }
+
+/* Ô file thật phủ kín vùng bấm nhưng vô hình — vẫn nhận tiêu điểm bàn phím */
+.ums-upload__input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.ums-upload.is-busy .ums-upload__pick { pointer-events: none; opacity: .6; }
+
+.ums-upload__files { display: flex; flex-wrap: wrap; gap: var(--ums-sp-2); }
+.ums-upload__files:empty { display: none; }
+
+.ums-upload__file {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ums-sp-2);
+    max-width: 100%;
+    padding: var(--ums-sp-1) var(--ums-sp-1) var(--ums-sp-1) var(--ums-sp-3);
+    border: 1px solid var(--ums-line);
+    border-radius: var(--ums-r-pill);
+    background: var(--ums-surface);
+    font-size: var(--ums-fz-13);
+}
+
+.ums-upload__file > i { color: var(--ums-g-green); }
+.ums-upload__name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.ums-upload__del {
+    width: 24px;
+    height: 24px;
+    display: inline-grid;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--ums-ink-3);
+    cursor: pointer;
+}
+
+.ums-upload__del:hover { background: var(--ums-bad-bg); color: var(--ums-bad); }
+.ums-upload__state { color: var(--ums-ink-2); font-size: var(--ums-fz-13); }
+
+/* ---------- Tiến trình import ----------------------------------------- */
+.ums-rp-progress {
+    margin: var(--ums-sp-3) 0;
+    padding: var(--ums-sp-4);
+    border: 1px solid #dbe4f3;
+    border-radius: var(--ums-r-2);
+    background: #f8fbff;
+}
+
+.ums-rp-progress[hidden] { display: none; }
+
+.ums-rp-progress__head {
+    display: flex;
+    align-items: center;
+    gap: var(--ums-sp-2);
+    margin-bottom: var(--ums-sp-3);
+    color: var(--ums-navy);
+}
+
+.ums-rp-progress__head > i { color: var(--ums-blue); }
+.ums-rp-progress__hint { margin-top: var(--ums-sp-2); color: var(--ums-ink-2); font-size: var(--ums-fz-13); }
+.ums-rp-progress__note { margin-top: var(--ums-sp-1); color: var(--ums-warn); font-size: var(--ums-fz-13); }
+.ums-rp-progress__note:empty { display: none; }
+
+/* Thanh chạy không xác định — máy chủ không trả tiến độ */
+.ums-meter--busy .ums-meter__track { height: 8px; }
+.ums-meter--busy .ums-meter__fill {
+    width: 35%;
+    border-radius: inherit;
+    animation: ums-meter-busy 1.2s ease-in-out infinite;
+}
+
+@keyframes ums-meter-busy {
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(290%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ums-meter--busy .ums-meter__fill { width: 100%; animation: none; opacity: .6; }
+}
+
+/* ---------- Báo lỗi trong hộp + kết quả -------------------------------- */
+.ums-rp-msg {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--ums-sp-2);
+    margin: var(--ums-sp-3) 0;
+    padding: var(--ums-sp-3) var(--ums-sp-4);
+    border: 1px solid #f5c2c7;
+    border-radius: var(--ums-r-1);
+    background: var(--ums-bad-bg);
+    color: var(--ums-bad);
+    font-size: var(--ums-fz-14);
+    line-height: var(--ums-lh);
+}
+
+.ums-rp-msg[hidden] { display: none; }
+.ums-rp-msg > i { margin-top: 2px; }
+
+.ums-rp-sum { display: flex; gap: var(--ums-sp-2); margin: var(--ums-sp-3) 0; }
+.ums-rp-result:empty { display: none; }
+
+/* ---------- Xem tệp báo cáo ------------------------------------------- */
+.ums-rp-view { min-height: 240px; }
+
+.ums-rp-view__frame {
+    display: block;
+    width: 100%;
+    height: calc(100vh - 220px);
+    min-height: 360px;
+    border: 0;
+    border-radius: var(--ums-r-1);
+    background: var(--ums-surface-2);
+}
+
+/* ---------- Hàng đợi --------------------------------------------------- */
+.ums-queue { display: grid; gap: var(--ums-sp-2); }
+
+.ums-queue__item {
+    display: grid;
+    grid-template-columns: minmax(180px, 280px) 1fr auto;
+    align-items: center;
+    gap: var(--ums-sp-4);
+    padding: var(--ums-sp-3) var(--ums-sp-4);
+    border: 1px solid var(--ums-line);
+    border-radius: var(--ums-r-2);
+    background: var(--ums-surface);
+}
+
+.ums-queue__item.is-running { border-color: var(--ums-blue); background: var(--ums-blue-l); }
+.ums-queue__name { color: var(--ums-ink); font-weight: var(--ums-fw-medium); }
+.ums-queue__count { flex: 0 0 auto; min-width: 120px; color: var(--ums-ink-2); font-size: var(--ums-fz-13); text-align: right; font-variant-numeric: tabular-nums; }
+.ums-queue__item .ums-meter__fill { transition: width .2s ease; }
+
+.ums-queue__none {
+    display: flex;
+    align-items: center;
+    gap: var(--ums-sp-2);
+    color: var(--ums-warn);
+    font-size: var(--ums-fz-14);
+    font-style: italic;
+}
+
+.ums-queue__history { margin-top: var(--ums-sp-4); }
+
+@media (max-width: 767px) {
+    .ums-queue__item { grid-template-columns: 1fr; gap: var(--ums-sp-2); }
+}

@@ -1,0 +1,6 @@
+/* Dữ liệu mẫu cho nghithaisan — chỉ dùng ở chế độ dựng thử. NS.QUDI, NS_Files có sẵn. */
+ums.demo.crudStore('NS_QT_ThaiSan', [
+    { ID: 'TS1', LOAIQUYETDINH_ID: 'QD1', SOQUYETDINH: '77/QĐ-TCCB', NGAYKYQUYETDINH: '01/02/2021', THOIGIANBATDAUNGHI: '15/02/2021', NGAYKETTHUC: '15/08/2021',
+      NHANSU_TTQUYETDINH_SOQD: '77/QĐ-TCCB', NHANSU_TTQUYETDINH_NGAYQD: '01/02/2021', NHANSU_TTQUYETDINH_NGAYHL: '15/02/2021', NHANSU_TTQUYETDINH_NGAYHHL: '15/08/2021', NHANSU_THONGTINQUYETDINH_ID: 'TQ5' }
+], { map: function (o) { return { LOAIQUYETDINH_ID: o.strLoaiQuyetDinh_Id, SOQUYETDINH: o.strSoQuyetDinh, NGAYKYQUYETDINH: o.strNgayQuyetDinh,
+    THOIGIANBATDAUNGHI: o.strNgayHieuLuc, NGAYKETTHUC: o.strNgayKetThuc, NHANSU_TTQUYETDINH_SOQD: o.strSoQuyetDinh }; } });

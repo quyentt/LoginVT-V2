@@ -1,0 +1,1517 @@
+﻿<style>
+    .mini-popover {
+        display: none;
+        position: fixed;
+        min-width: 280px;
+        max-width: 360px;
+        background: #fff;
+        border: 1px solid #d9d9d9;
+        border-radius: 6px;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+        z-index: 9999;
+        padding: 0;
+    }
+
+    .mini-popover-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 10px;
+        border-bottom: 1px solid #eee;
+        font-weight: bold;
+        background: #f8f8f8;
+    }
+
+    .mini-popover-header button {
+        border: none;
+        background: transparent;
+        font-size: 18px;
+        cursor: pointer;
+    }
+
+    .mini-popover-body {
+        padding: 10px;
+        max-height: 220px;
+        overflow-y: auto;
+    }
+
+    .popover-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .popover-table th,
+    .popover-table td {
+        padding: 6px;
+        border: 1px solid #e5e5e5;
+        text-align: left;
+        font-size: 13px;
+    }
+
+    #tblKhoaHocPopup th,
+    #tblKhoaHocPopup td {
+        color: gray !important;
+    }
+
+    /* Phiếu mẫu: tên thường rất dài → truncate gọn, full text xem qua tooltip/title */
+    .aps-khaosat-kehoach #dropPhieuMau+.select2-container .select2-selection__rendered,
+    .aps-khaosat-kehoach #dropPhieuMau {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+    }
+</style>
+<div class="one-door aps-khaosat-kehoach">
+    <div class="overlay"></div>
+    <div class="content-tab no-tab">
+        <div class="d-flex justify-content-between">
+            <div class="nav-content-left">
+                <p class="link">
+                    <a href="#">quản lý chung</a><i class="fal fa-angle-right"></i><a href="#">
+                        Quản lý kế hoạch
+                    </a>
+                </p>
+            </div>
+            <div class="nav-content-right">
+                <a class="d-block text-right" href=""><i class="fas fa-question-circle"></i></a>
+            </div>
+        </div>
+    </div>
+    <!-- đăng ký nguyện vọng -->
+    <div class="box-shadow register-wish pt-0 zone-bus" id="zonebatdau" style="display: block">
+        <div class="form-top mb-20">
+            <div class="row">
+                <div class="col-12 col-lg-4 col-md-6 mb-15">
+                    <div class="form-item d-flex  form-add-info flex-grow-1">
+                        <div class="input-group no-icon">
+                            <input type="text" class="form-control" id="txtSearch" placeholder="Nhập từ khóa tìm kiếm">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-4 col-md-3 mb-15 aps-gap-10">
+                    <div class="d-flex align-items-center">
+                        <div class="btn btn-default btn-search min-w-auto px-4 ms-auto ms-lg-0" id="btnSearch"><i
+                                class="fal fa-search me-2"></i> Tìm kiếm</div>
+                    </div>
+                    <div class="dropdown" id="zonebtnBaoCao_KeHoach"></div>
+                </div>
+                <div class="col-12 col-lg-4 col-md-3 mb-15"></div>
+            </div>
+
+        </div>
+        <div class="container-fluid px-20">
+            <div class="d-flex align-items-center mt-4 flex-wrap mb-4">
+                <div class="group-title pl0">
+                    <p class="mb-0 pt-10">
+                        <i class="fa-solid fa-book-bookmark"></i>
+                        <span class="lang" key="">Danh sách kế hoạch</span>
+                    </p>
+                </div>
+                <!-- <p class="mb-0 color-dask-blue fw-bold">Danh sách kế hoạch</p> -->
+                <div class="ms-auto aps-gap-10">
+                    <div class="btn btn-soft-danger min-w-auto" id="btnDelete_KeHoach">
+                        <i class="fa-solid fa-trash"></i>Xóa
+                    </div>
+                    <div class="btn btn-success btnAdd" id="btnAdd"><i class="fal fa-plus"></i>Thêm mới</div>
+                </div>
+
+            </div>
+            <table class="table transcrip-table tabs-scores h-auto tblKeHoach table-bordered table-noborder"
+                id="tblKeHoach">
+                <thead>
+                    <tr>
+                        <th class="text-center w-50px" scope="col">STT</th>
+                        <th class="" scope="col">Tên kế hoạch</th>
+                        <th class="text-center" scope="col">Từ ngày</th>
+                        <th class="text-center" scope="col">Đến ngày</th>
+                        <th class="text-center" scope="col">Trạng thái</th>
+                        <th class="text-center w200px" scope="col" style="width:120px !important;">Phiếu khảo sát</th>
+                        <th class="text-center w200px" scope="col" style="width: 125px !important;">
+                            Kết quả khảo sát
+                        </th>
+                        <th class="text-center" scope="col">Tổng số phiếu gửi</th>
+                        <th class="text-center" scope="col">Tổng số phiếu đã thực hiện</th>
+                        <th class="text-center" scope="col">Tỷ lệ hoàn thành</th>
+                        <th class="text-center" scope="col">Khóa học</th>
+                        <th class="text-center" scope="col">Phiếu khảo sát mẫu</th>
+                        <th class="text-center w-50px" scope="col">Sửa</th>
+                        <th class="text-center" scope="col"><input type="checkbox" id="chkSelectAll_KeHoach"></th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <!--<div class="popup-overlay" id="popupOverlay" style="display: none">
+        <div class="popup-box popup-large">
+            <div class="popup-header">
+                <h3>Danh sách lựa chọn</h3>
+                <button type="button" class="popup-close" onclick="closePopup()">X</button>
+            </div>
+            <div class="popup-content">
+                <table class="popup-table" id="tblKhoaHocPopup">
+                    <thead>
+                        <tr>
+                            <th>Stt</th>
+                            <th>Khóa học</th>
+                            <th>
+                                <input type="checkbox" class="chkSystemSelectAll" />
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+            </div>
+            <div class="popup-footer">
+                <button type="button" onclick="closePopup()">Đóng</button>
+            </div>
+        </div>
+    </div>-->
+            <div id="miniPopover" class="mini-popover">
+                <div class="mini-popover-header">
+                    <span id="lblTenKeHoachPopUp">Chọn mục</span>
+                    <button type="button" id="btnClosePopup">×</button>
+                </div>
+                <div class="mini-popover-body">
+                    <table class="popup-table" id="tblKhoaHocPopup" style="min-width: 300px">
+                        <thead>
+                            <tr>
+                                <th class="text-center w-50px">Stt</th>
+                                <th class="text-center">Khóa học</th>
+                                <th class="text-center w-50px" scope="col">
+                                    <input type="checkbox" class="chkSystemSelectAll" />
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Kế hoạch -->
+    <div class="fake-modal zoneEdit box-kehoach zone-bus box-none" id="zoneEdit" style="display:none">
+        <div class="box-shadow register-wish pt-0 position-relative modal-aps-add">
+            <div class="d-flex justify-content-between pt-3 px-20 box-header">
+                <div class="nav-content-left">
+                    <p class="link" style="margin-top: 5px;"><a> <span class="myModalLabel">
+                                <i class="fa-solid fa-rectangle-history-circle-plus"></i></span>Kế hoạch</a></p>
+                </div>
+                <div class="nav-content-right mt-0" style="padding-bottom: 0px;">
+                    <a class="d-block text-right fs-16 color-fff btnClose"><i class="fal fa-times"></i></a>
+                </div>
+            </div>
+            <div class="form-top rounded-0 border-top" style="margin-bottom: 10px">
+                <div class="row">
+                    <div class="col-12 col-md-12 col-lg-12 pr0">
+                        <div class="form-item d-flex mb-5 form-add-info">
+                            <label class="form-label w100px">Tên kế hoạch</label>
+                            <div class="input-group">
+                                <input class="form-control" id="txtTen" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-lg-3 pr-0">
+                        <div class="form-item d-flex mb-5 form-add-info">
+                            <label class="form-label">Từ ngày</label>
+                            <div class="input-group">
+                                <input id="txtTuNgay" class="form-control input-datepicker" placeholder="dd/mm/yyyy" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-3 pr-0">
+                        <div class="form-item d-flex mb-5 form-add-info">
+                            <label class="form-label text-right pr-15">Đến ngày</label>
+                            <div class="input-group">
+                                <input id="txtDenNgay" class="form-control input-datepicker" placeholder="dd/mm/yyyy" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-lg-6 pr-0">
+                        <div class="form-item d-flex mb-5 form-add-info no-icon">
+                            <label class="form-label text-right pr-15">Chế độ</label>
+                            <div class="input-group">
+                                <select id="dropCheDo" class="select-opt">
+                                    <option value="2">Khảo sát giả lập</option>
+                                    <option value="0">Chờ khảo sát</option>
+                                    <option value="1">Đang khảo sát</option>
+                                </select>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-lg-3 pr-0">
+                        <div class="form-item d-flex mb-5 form-add-info">
+                            <label class="form-label">Năm học</label>
+                            <div class="input-group">
+                                <input class="form-control" id="txtNamHoc" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-3 pr-0">
+                        <div class="form-item d-flex mb-5 form-add-info">
+                            <label class="form-label text-right pr-15">Học kỳ</label>
+                            <div class="input-group">
+                                <input class="form-control" id="txtHocKy" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-3 pr-0">
+                        <div class="form-item d-flex mb-5 form-add-info">
+                            <label class="form-label text-right pr-15">Đợt</label>
+                            <div class="input-group">
+                                <input class="form-control" id="txtDot" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-3 pr-0">
+                        <div class="form-item d-flex mb-5 form-add-info no-icon">
+                            <label class="form-label text-right pr-15">Phiếu mẫu</label>
+                            <div class="input-group flex-grow-1" style="min-width:0">
+                                <select id="dropPhieuMau" class="select-opt w-100" style="max-width:100%"></select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-12 col-lg-12 pr-0">
+                        <div class="form-item d-flex mb-5 form-add-info">
+                            <label class="form-label">Mô tả</label>
+                            <div class="input-group">
+                                <textarea id="txtMoTa" class="form-control" style="min-height: 200px" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid px-20">
+                <div class="row">
+                    <div class="col-12 col-lg-6 mt-10 pl0">
+                        <div class="d-flex align-items-center">
+                            <span class="fw-bold text-success fz16">Đối tượng được khảo sát</span>
+
+                        </div>
+                        <div class="mt-10">
+                            <table class="table transcrip-table tabs-scores tblPhamVi table-bordered table-noborder"
+                                id="tblPhamVi">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center w-50px" scope="col">STT</th>
+                                        <th scope="col">Mã</th>
+                                        <th scope="col">Tên</th>
+                                        <th scope="col">Mô tả</th>
+                                        <th scope="col">Loại đối tượng</th>
+                                        <th class="text-center" scope="col">
+                                            <input class="form-check-input" type="checkbox" id="chkSelectAll_PhamVi">
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                        <div class="ApDungChoKhoa"></div>
+                        <div class="ApDungChoChuongTrinh"></div>
+                        <div class="ApDungChoLop"></div>
+                        <div style="width: 100%; margin-top: 10px">
+                            <div class="pull-left aps-all-btn">
+                                <button class="btn-sm btn btn-soft-danger min-w-auto ms-auto btnDelete_PhamVi ml-10"
+                                    style="position: relative !important;">
+                                    <i class="fal fa-trash me-1"></i> Xóa</button>
+                            </div>
+                            <div class="pull-right aps-all-btn">
+                                <a class="btn-sm btn btn-soft-success"
+                                    style="float: right; margin-left: 10px !important" id="btnAdd_PhamVi"><i
+                                        class="fa-solid fa-user-graduate"></i>Thêm người học</a>
+                                <a class="btn-sm btn btn-soft-info" style="float: right; margin-left: 10px !important"
+                                    id="btnAdd_SVDangKy_PhamVi"><i class="fa-solid fa-user-magnifying-glass"></i>Thêm
+                                    sinh viên từ đăng ký học</a>
+                                <a class="btn-sm btn btn-soft-primary"
+                                    style="float: right; margin-left: 10px !important" id="btnAdd_GV_PhamVi">
+                                    <i class="fa-solid fa-chalkboard-user"></i>Thêm Giảng viên</a>
+                                <a class="btn-sm btn btn-soft-success" id="btnAdd_DTK_PhamVi">
+                                    <i class="fa-solid fa-plus"></i>Thêm dòng</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6 mt-10">
+                        <div class="d-flex align-items-center">
+                            <span class="fw-bold text-success fz16">Đối tượng tham gia khảo sát</span>
+                        </div>
+                        <div class="mt-10">
+                            <table class="table transcrip-table tabs-scores table-bordered table-noborder"
+                                id="tblDoiTuong">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center" scope="col">STT</th>
+                                        <th scope="col">Mã</th>
+                                        <th scope="col">Tên</th>
+                                        <th scope="col">Mô tả</th>
+                                        <th scope="col">Loại đối tượng</th>
+                                        <th class="text-center" scope="col">
+                                            <input class="form-check-input" type="checkbox" id="chkSelectAll_DoiTuong">
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                        <div style="width: 100%; margin-top: 10px">
+                            <div class="pull-left aps-all-btn">
+                                <button class="btn-sm btn btn-soft-danger btnDelete_DoiTuong">
+                                    <i class="fal fa-trash me-1"></i> Xóa</button>
+                            </div>
+                            <div class="pull-right aps-all-btn">
+                                <a class="btn-sm btn btn-soft-success"
+                                    style="float: right; margin-left: 10px !important" id="btnAdd_DoiTuong"><i
+                                        class="fa-solid fa-user-graduate"></i>Thêm người học</a>
+                                <a class="btn-sm btn btn-soft-info" style="float: right; margin-left: 10px !important"
+                                    id="btnAdd_SVDangKy_DoiTuong"><i class="fa-solid fa-user-magnifying-glass"></i>Thêm
+                                    sinh
+                                    viên từ đăng ký học</a>
+                                <a class="btn-sm btn btn-soft-primary"
+                                    style="float: right; margin-left: 10px !important" id="btnAdd_GV_DoiTuong">
+                                    <i class="fa-solid fa-chalkboard-user"></i>Thêm giảng viên</a>
+                                <a class="btn-sm btn btn-soft-success"
+                                    style="float: right; margin-left: 10px !important" id="btnAdd_DTK_DoiTuong"><i
+                                        class="fal fa-plus me-1"></i>Thêm dòng</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid px-20">
+                <hr />
+                <div class="d-flex align-items-center mt-4 flex-wrap mb-4">
+                    <div class="aps-gap-10">
+                        <div class="btn btn-outline-danger d-none" id="btnDelete_KeHoach_Edit">
+                            <i class="fal fa-trash"></i> Xóa kế hoạch
+                        </div>
+                    </div>
+                    <div class="ms-auto aps-gap-10">
+                        <div class="btn btn-outline-secondary btnClose">
+                            <i class="fal fa-times"></i> Đóng
+                        </div>
+                        <div class="btn btn-primary" id="btnSave_KeHoach"><i class="fal fa-save"></i> Lưu</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Phiếu khảo sát -->
+    <div class="fake-modal zoneDSPhieu zone-bus box-none" id="zoneDSPhieu" style="display: none">
+        <div class="box-shadow register-wish pt-0 position-relative modal-aps-add">
+            <div class="d-flex justify-content-between pt-3 px-20 box-header">
+                <div class="nav-content-left">
+                    <p class="link"><a> <span class="myModalLabel"><i class="fa fa-plus"></i></span>Phiếu khảo sát</a>
+                    </p>
+                </div>
+                <div class="nav-content-right mt">
+                    <a class="d-block text-right fs-16 color-fff btnClose mt-5"><i class="fal fa-times"></i></a>
+                </div>
+            </div>
+            <div class="form-top rounded-0 border-top d-none" style="margin-bottom: 10px"></div>
+            <div class="container-fluid px-20" style="padding-bottom: 0 !important;">
+                <div class="row">
+                    <div class="col-12 col-lg-12 mt-12 pd0">
+                        <div class="d-flex align-items-center">
+                            <span class="fw-bold color-blue fz16 mt-15">Phiếu khảo sát</span>
+                            <a class="btn btn-soft-success ms-auto mr-10 btnAdd" style="margin-right: 10px"
+                                id="btnAdd_PhieuTuDong"><i class="fal fa-plus"></i>Thêm phiếu tự động</a>
+                            <a class="btn btn-success btnAdd" id="btnAdd_DSPhieu"><i class="fal fa-plus"></i>Thêm
+                                phiếu</a>
+                        </div>
+                        <div class="mt-10 aps-table-select">
+                            <table class="table transcrip-table tabs-scores table-bordered table-noborder"
+                                id="tblDSPhieu">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center" scope="col">STT</th>
+                                        <th scope="col">Tên phiếu</th>
+                                        <th class="text-center">Xem cấu trúc phiếu</th>
+                                        <th class="text-center">Đối tượng được khảo sát</th>
+                                        <th class="text-center">Đối tượng tham gia khảo sát</th>
+                                        <th class="text-center">Tỷ lệ hoàn thành phiếu</th>
+                                        <th class="text-center">Sửa</th>
+                                        <th class="text-center" scope="col">
+                                            <input class="form-check-input" type="checkbox" id="chkSelectAll_DSPhieu">
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                        <!--<div class="ApDungChoKhoa"></div>
+                        <div class="ApDungChoChuongTrinh"></div>
+                        <div class="ApDungChoLop"></div>-->
+                        <div style="width: 100%;">
+                            <!-- <a class="btn-sm btn btn-soft-danger min-w-auto px-3 ms-auto btnDelete_DSPhieu"
+                                style="float: right; margin-left: 10px !important"><i class="fal fa-trash"></i> Xóa</a> -->
+                            <!-- <a class="btn-sm btn btn-outline-success min-w-auto ms-auto px-3" style="float: right; margin-left: 10px !important" id="btnAdd_PhamVi"><i class="fa-solid fa-user-graduate"></i>Thêm người học</a> -->
+                            <!-- <a class="btn-sm btn btn-outline-primary min-w-auto  ms-auto px-3" style="float: right; margin-left: 10px !important" id="btnAdd_GV_PhamVi"><i class="fa-solid fa-user-graduate"></i>Thêm Giảng viên</a> -->
+                            <!-- <a class="btn-sm btn btn-outline-info min-w-auto  ms-auto px-3" style="float: right; margin-left: 10px !important" id="btnAdd_DTK_PhamVi"><i class="fa-solid fa-user"></i>Thêm đối tượng</a> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid px-20">
+                <hr />
+                <div class="d-flex align-items-center mt-4 flex-wrap mb-4">
+                    <div class="ms-auto aps-gap-10">
+                        <div class="btn btn-outline-secondary  px-4 min-w-auto  btnClose"><i class="fal fa-times"></i>
+                            Đóng</div>
+                        <a class="btn-sm btn btn-soft-danger btnDelete_DSPhieu"><i class="fal fa-trash"></i> Xóa</a>
+                        <!-- <div class="btn btn-primary px-4 min-w-auto " id="btnSave_KeHoach"><i class="fal fa-save"></i> Lưu</div> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chỉnh sửa - Phiếu khảo sát -->
+    <div class="fake-modal zonePhieu zone-bus" id="zonePhieu" style="display: none">
+        <div class="box-shadow register-wish pt-0 position-relative modal-aps-add">
+            <div class="d-flex justify-content-between pt-3 px-20 box-header">
+                <div class="nav-content-left">
+                    <p class="link"><a> <span class="myModalLabel"><i class="fa-solid fa-pen-field"></i>Chỉnh sửa
+                                -</span>Phiếu
+                            khảo sát</a></p>
+                </div>
+                <div class="nav-content-right mt">
+                    <a class="d-block text-right fs-16 mt-5 color-fff btnCloseDSPhieu"><i class="fal fa-times"></i></a>
+                </div>
+            </div>
+            <div class="form-top rounded-0 border-top" style="background: unset">
+                <div class="cmc-page">
+                    <div class="cmc-con">
+                        <div class="container" style="max-width: 100% !important;">
+                            <div class="cmc-con-before d-none" style="z-index: unset">
+                                <div class="cmc-main-title" id="lblTieuDe">
+                                </div>
+                                <!--<a href="" class="btn">
+                                    <i class="fal fa-paper-plane"></i>
+                                    <span>Lưu</span>
+                                </a>-->
+                            </div>
+                            <div class="cmc-suvery pt-10 pl-10 pr-10">
+                                <div class="cmc-suvery-head">
+                                    <div class="tern-name" id="lblMoTaPhieu">
+                                    </div>
+                                    <div class="align-items-end w-100 ms-auto text-right">
+                                        <button class="btn btn-soft-success mr-10 ms-auto" id="btnKhoiTaoPhieu">
+                                            <i class="fal fa-plus"></i><span>Khởi tạo theo phiếu mẫu</span>
+                                        </button>
+                                        <button class="btn btn-soft-danger mr-0" id="btnGenPhieu">
+                                            <i class="fal fa-plus"></i><span>Gen phiếu</span>
+                                        </button>
+                                    </div>
+                                    <div style="clear: both"></div>
+                                    <div class="row pd0">
+                                        <div class="col-12 col-md-3 col-lg-3 pl0">
+                                            <div class="form-item mb-5 form-add-info no-icon d-flex">
+                                                <label class="form-label">Mã</label>
+                                                <div class="input-group  no-icon">
+                                                    <input class="form-control" id="txtMaPhieu" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-9 col-lg-9 pr0">
+                                            <div class="form-item mb-5 form-add-info no-icon  d-flex">
+                                                <label class="form-label text-right pr-15">Tên phiếu</label>
+                                                <div class="input-group  no-icon">
+                                                    <input class="form-control" id="txtTenPhieu" />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div style="clear: both"></div>
+                                        <div class="col-12 col-md-12 col-lg-12">
+                                            <div class="form-item mb-5 form-add-info d-flex">
+                                                <label class="form-label">Mô tả</label>
+                                                <div class="input-group  no-icon">
+                                                    <textarea id="txtMoTaPhieu" class="form-control"
+                                                        style="min-height: 100px" />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <div class="container-fluid zoneEdit pl0 pr0">
+                                    <div class="d-flex align-items-center mt-1 flex-wrap mb-1 mb-10">
+                                        <p class="mb-0 color-dask-blue fw-bold fz16">Đối tượng cần khảo sát</p>
+                                        <div class="ms-auto aps-gap-10">
+                                            <div class="btn btn-outline-danger min-w-auto d-none"
+                                                id="btnDelete_KeHoach">
+                                                <i class="fal fa-trash"></i>Xóa
+                                            </div>
+                                            <div class="btn btn-primary min-w-auto" id="btnLuuDoiTuongDuocKhaoSat">
+                                                <i class="fal fa-save"></i>Lưu theo phiếu
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div>
+                                        <div class="form-item d-flex mb-15 form-add-info no-icon">
+                                            <label class="form-label">Đối tượng</label>
+                                            <div class="input-group  no-icon">
+                                                <select id="dropDoiTuongDuocKhaoSat" class="select-opt"></select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <table
+                                        class="table transcrip-table tabs-scores h-auto table-bordered table-noborder tblPhieuKhaoSat d-none"
+                                        id="tblPhieuKhaoSat">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-center w-50px" scope="col">STT</th>
+                                                <th class="" scope="col">Tên kế hoạch</th>
+                                                <th class="text-center" scope="col">Từ ngày</th>
+                                                <th class="text-center" scope="col">Đến ngày</th>
+                                                <th class="text-center" scope="col">Trạng thái</th>
+                                                <th class="text-center" scope="col">Phiếu khảo sát</th>
+                                                <th class="text-center" scope="col">Kết quả khảo sát</th>
+                                                <th class="text-center" scope="col">Phiếu khảo sát mẫu</th>
+                                                <th class="text-center w-50px" scope="col">Sửa</th>
+                                                <th class="text-center" scope="col"><input type="checkbox"
+                                                        id="chkSelectAll_KeHoach"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                                <div class="container-fluid zoneEdit pd0">
+                                    <div class="row">
+                                        <div class="col-12 col-lg-6 mt-6">
+                                            <div class="d-flex align-items-center">
+                                                <span class="fw-bold text-success mt-10">Đối tượng tham gia</span>
+                                                <a class="btn-sm btn btn-soft-danger min-w-auto px-3 ms-auto"
+                                                    id="btnDelete_ThamGia" style="float: right;">
+                                                    <i class="fal fa-trash"></i>Xóa</a>
+                                                <a class="btn btn-soft-success ms-auto d-none ml-10"
+                                                    style="float: right;" id="btnAdd_ThamGia">
+                                                    <i class="fal fa-plus"></i>Thêm</a>
+                                            </div>
+                                            <div class="mt-10">
+                                                <table
+                                                    class="table transcrip-table tabs-scores table-bordered table-noborder tblThamGia"
+                                                    id="tblThamGia">
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="text-center w-50px" scope="col">STT</th>
+                                                            <th class="" scope="col">Mã </th>
+                                                            <th class="text-center" scope="col">Tên</th>
+                                                            <th class="text-center" scope="col">Mô tả</th>
+                                                            <th class="text-center" scope="col"><input type="checkbox"
+                                                                    id="chkSelectAll_ThamGia"></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody></tbody>
+                                                </table>
+                                            </div>
+                                            <!--<div style="width: 100%; margin-top: 10px">
+                                                <a class="btn-sm btn btn-soft-secondary min-w-auto px-3 ms-auto btnDelete_ThamGia" style="float: right;"><i class="fal fa-trash me-1"></i> Xóa</a>
+                                            </div>-->
+                                        </div>
+
+                                        <div class="col-12 col-lg-6 mt-6 pr0 pl-10">
+                                            <div class="d-flex align-items-center">
+                                                <span class="fw-bold text-success mt-10">Chưa tham gia</span>
+                                                <a class="btn btn-soft-success ms-auto" style="float: right;"
+                                                    id="btnAdd_ChuaThamGia"><i class="fal fa-plus"></i>Thêm</a>
+                                            </div>
+                                            <div class="mt-10">
+                                                <table
+                                                    class="table transcrip-table tabs-scores table-bordered table-noborder tblChuaThamGia"
+                                                    id="tblChuaThamGia">
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="text-center w-50px" scope="col">STT</th>
+                                                            <th class="" scope="col">Mã </th>
+                                                            <th class="text-center" scope="col">Tên</th>
+                                                            <th class="text-center" scope="col">Mô tả</th>
+                                                            <th class="text-center" scope="col"><input type="checkbox"
+                                                                    id="chkSelectAll_ChuaThamGia"></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody></tbody>
+                                                </table>
+                                            </div>
+                                            <!--<div style="width: 100%; margin-top: 10px">
+                                                <a class="btn-sm btn btn-soft-secondary min-w-auto px-3 ms-auto btnDelete_ChuaThamGia" style="float: right;"><i class="fal fa-trash me-1"></i> Xóa</a>
+                                            </div>-->
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="cmc-suvery-content zoneAdd" id="tblNoiDung">
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Chỉnh sửa Phiếu tự động -->
+    <div class="fake-modal zoneThemPhieu zone-bus box-none" id="zoneThemPhieu" style="display: none">
+        <div class="box-shadow register-wish pt-0 position-relative modal-aps-add">
+            <div class="d-flex justify-content-between pt-3 px-20 box-header">
+                <div class="nav-content-left">
+                    <p class="link"><a> <span class="myModalLabel">
+                                <i class="fa-solid fa-pen-field"></i> Chỉnh sửa -</span>Phiếu tự động</a></p>
+                </div>
+                <div class="nav-content-right mt">
+                    <a class="d-block text-right fs-16 color-fff btnCloseDSPhieu mt-5"><i class="fal fa-times"></i></a>
+                </div>
+            </div>
+            <div class="form-top rounded-0 border-top pd0 tab-Phieu" style="background: #fff">
+                <div class="cmc-con pd20">
+                    <ul class="nav nav-tabs cmc-tabs mt-0" id="myTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home"
+                                type="button" role="tab" aria-controls="home" aria-selected="true">
+                                Khảo sát theo GV <br /> <span>không phân biệt học phần dạy</span>
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile"
+                                type="button" role="tab" aria-controls="profile" aria-selected="false">
+                                Khảo sát theo học phần<br /> <span> không quan tâm là GV nào dạy</span>
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact"
+                                type="button" role="tab" aria-controls="contact" aria-selected="false">
+                                Khảo sát theo 1 học phần<br /> <span> 1 GV giảng dạy</span>
+                            </button>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="myTabContent">
+                        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                            <div class="d-flex justify-content-center w-100 mt-4">
+                                <div class="cmc-form add-auto-form w-100">
+                                    <div class="d-flex  w-100 flex-wrap">
+                                        <div class="label fs-14 mb-3 pt-2 color-88" style="width: 115px;">Mô tả</div>
+                                        <div class="form-item d-flex form-add-info flex-grow-1 ">
+                                            <div class="input-group">
+                                                <textarea class="form-control form-textarea ps-3 py-4"
+                                                    style="height: auto !important; line-height: 20px !important; padding-block: 11px !important;"
+                                                    placeholder="" id="floatingTextarea"
+                                                    rows="5">1 GV giảng dạy nhiều học phần và 1 học phần được giảng dạy bởi nhiều GV --> Khảo sát theo GV, không phân biệt học phần dạy</textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-15">
+                                        <div class="col-12 col-lg-9 col-md-8 mb-0">
+                                            <div class="d-flex align-items-center w-100">
+                                                <div class="label fs-14 mb-3 color-88" style="width: 115px;">Chọn thời
+                                                    gian
+                                                </div>
+                                                <div class="form-item d-flex form-add-info flex-grow-1 ">
+                                                    <div class="input-group">
+                                                        <select id="dropSearch_ThoiGianTabHome" multiple="multiple"
+                                                            class="select-opt form-select ps-3"
+                                                            aria-label="Default select example"></select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-lg-3 col-md-4 pr0 mb-0">
+                                            <button class="btn btn-soft-primary" id="btnThoiGianTabHome">
+                                                <i class="fa-solid fa-magnifying-glass"></i>Xem DS GV Theo TKB</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-end mb-10">
+                                <button id="btnTaoPhieuTabHome" class="btn btn-soft-success"
+                                    style=" width: auto;"><span><i class="fa-regular fa-file-plus"></i>Tạo phiếu tự
+                                        động</span>
+                                </button>
+                            </div>
+                            <div class="cmc-con-table mb-4">
+                                <table
+                                    class="table transcrip-table tabs-scores h-auto table-bordered table-noborder w-100"
+                                    id="tblTabHome">
+                                    <thead class="text-22 ">
+                                        <tr>
+                                            <th class="text-center w-50px border-0" scope="col">STT</th>
+                                            <th class=" border-0" scope="col">Mã số</th>
+                                            <th class=" border-0" scope="col">Họ đệm</th>
+                                            <th class=" border-0" scope="col">Tên</th>
+                                            <th class=" border-0" scope="col">Đơn vị</th>
+                                            <th class="text-center border-0 w-50px">
+                                                <input class="form-check-input" type="checkbox"
+                                                    id="chkSelectAll_TabHome">
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                            <div class="d-flex justify-content-center w-100 mt-4">
+                                <div class="cmc-form add-auto-form w-100">
+                                    <div class="d-flex  w-100 flex-wrap">
+                                        <div class="label fs-14 mb-3 pt-2 color-88" style="width: 115px;">Mô tả</div>
+                                        <div class="form-item d-flex form-add-info flex-grow-1 ">
+                                            <div class="input-group">
+                                                <textarea class="form-control form-textarea ps-3 py-4"
+                                                    style="height: auto !important; line-height: 20px !important; padding-block: 11px !important;"
+                                                    placeholder="" id="floatingTextarea"
+                                                    rows="5">1 học phần có nhiều GV giảng dạy --> Khảo sát theo học phần, không quan tâm là GV nào dạy</textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-15">
+                                        <div class="col-12 col-lg-9 col-md-8">
+                                            <div class="d-flex align-items-center w-100 ">
+                                                <div class="label fs-14 mb-3 color-88" style="width: 115px;">Chọn thời
+                                                    gian
+                                                </div>
+                                                <div class="form-item d-flex form-add-info flex-grow-1 ">
+                                                    <div class="input-group">
+                                                        <select id="dropSearch_ThoiGianTabPro" multiple="multiple"
+                                                            class="select-opt form-select ps-3"
+                                                            aria-label="Default select example"></select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-lg-3 col-md-4 pr0 mb-0">
+                                            <button class="btn btn-soft-primary" id="btnThoiGianTabPro">
+                                                <i class="fa-solid fa-magnifying-glass"></i>Xem DS Học phần Theo
+                                                TKB</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-end mt-3 mb-10">
+                                <button id="btnTaoPhieuTabPro" class="btn btn-soft-success" style=" width: auto;">
+                                    <i class="fa-regular fa-file-plus"></i><span>Tạo phiếu tự động</span>
+                                </button>
+                            </div>
+                            <div class="cmc-con-table mb-4">
+                                <table
+                                    class="table transcrip-table tabs-scores h-auto table-bordered table-noborder w-100 tblTabPro"
+                                    id="tblTabPro">
+                                    <thead class="text-22 ">
+                                        <tr>
+                                            <th class="text-center w-50px border-0" scope="col">STT</th>
+                                            <th class=" border-0" scope="col">Mã học phần</th>
+                                            <th class=" border-0" scope="col">Tên học phần</th>
+                                            <th class=" border-0" scope="col">Học trình</th>
+                                            <th class=" border-0" scope="col">Đơn vị</th>
+                                            <th class="text-center border-0 w-50px">
+                                                <input class="form-check-input" type="checkbox"
+                                                    id="chkSelectAll_TabPro">
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+                            <div class="d-flex justify-content-center w-100 mt-4">
+                                <div class="cmc-form add-auto-form w-100">
+                                    <div class="d-flex  w-100 flex-wrap">
+                                        <div class="label fs-14 mb-3 pt-2 color-88" style="width: 115px;">Mô tả</div>
+                                        <div class="form-item d-flex form-add-info flex-grow-1 ">
+                                            <div class="input-group">
+                                                <textarea class="form-control form-textarea ps-3 py-4"
+                                                    style="height: auto !important; line-height: 20px !important; padding-block: 11px !important;"
+                                                    placeholder="" id="floatingTextarea"
+                                                    rows="5">1 học phần 1 GV giảng dạy</textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-15">
+                                        <div class="col-12 col-lg-9 col-md-8">
+                                            <div class="d-flex align-items-center w-100">
+                                                <div class="label fs-14 mb-3 color-88" style="width: 115px;">
+                                                    Chọn thời gian
+                                                </div>
+                                                <div class="form-item d-flex form-add-info flex-grow-1 ">
+                                                    <div class="input-group">
+                                                        <select id="dropSearch_ThoiGianTabPan" multiple="multiple"
+                                                            class="select-opt form-select ps-3"
+                                                            aria-label="Default select example"></select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-lg-3 col-md-4 pr0 mb">
+                                            <button class="btn btn-soft-primary" id="btnThoiGianTabPan">
+                                                <i class="fa-solid fa-magnifying-glass"></i>Xem DS GV - lớp HP theo TKB
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col-12 col-lg-9 col-md-8">
+                                            <div class="d-flex align-items-center w-100">
+                                                <div class="label fs-14 mb-3 color-88" style="width: 115px;">Khoa quản lý</div>
+                                                <div class="form-item d-flex mb-15 form-add-info flex-grow-1">
+                                                    <div class="input-group">
+                                                        <select id="dropKhoaQuanLy_TabPan" multiple="multiple"
+                                                            class="select-opt form-select ps-3"
+                                                            aria-label="Chọn 1 hoặc nhiều khoa quản lý"></select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-end mb-10 aps-gap-10">
+                                <button id="btnTaoPhieuTabPanTT" class="btn btn-soft-danger" style=" width: auto;">
+                                    <i class="fa-regular fa-file-plus"></i>
+                                    <span>Chạy tiến trình tạo phiếu</span>
+                                </button>
+                                <button id="btnTaoPhieuTabPan" class="btn btn-soft-success" style=" width: auto;">
+                                    <i class="fa-regular fa-file-plus"></i>
+                                    <span>Tạo phiếu tự động</span>
+                                </button>
+                            </div>
+                            <div id="zoneprocessXXXXPTD"></div>
+                            <div class="cmc-con-table mb-4">
+                                <table class="table transcrip-table tabs-scores h-auto" id="tblTabPan">
+                                    <thead class="text-22 ">
+                                        <tr>
+                                            <th class="text-center w-50px border-0" scope="col">STT</th>
+                                            <th class=" border-0" scope="col">Giảng viên</th>
+                                            <th class=" border-0" scope="col">Mã học phần</th>
+                                            <th class=" border-0" scope="col">Tên học phần</th>
+                                            <th class=" border-0" scope="col">Tên lớp học phần</th>
+                                            <th class=" border-0" scope="col">Thời gian</th>
+                                            <th class="text-center border-0 w-50px">
+                                                <input class="form-check-input" type="checkbox"
+                                                    id="chkSelectAll_TabPan">
+                                            </th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- tab kết quả -->
+    <div class="zoneKetQua zone-bus box-none" id="zoneKetQua" style="display: none">
+        <div class="">
+            <!--<div class="d-flex justify-content-between pt-3 px-20">
+                <div class="nav-content-left">
+                    <p class="link"><a> <span class="myModalLabel1"> <i class="fa fa-plus"></i></span>Kết quả</a></p>
+                </div>
+                <div class="nav-content-right mt">
+                    <a class="d-block text-right fs-20 color-66 btnClose"><i class="fal fa-times-circle"></i></a>
+                </div>
+            </div>-->
+            <div class="register-school pd-20 mb-40">
+                <div class="tabs-scores">
+                    <ul class="nav nav-tabs fz16" id="myTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="home-tab" data-bs-toggle="tab"
+                                data-bs-target="#tab_doituongthamgia" type="button" role="tab" aria-controls="home"
+                                aria-selected="true">
+                                <span>Đối tượng tham gia khảo sát</span>
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="profile-tab" data-bs-toggle="tab"
+                                data-bs-target="#doituongduockhaosat" type="button" role="tab" aria-controls="profile"
+                                aria-selected="false">
+                                <span>Đối tượng được khảo sát</span>
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="contact-tab" data-bs-toggle="tab"
+                                data-bs-target="#doituongthuchien" type="button" role="tab" aria-controls="contact"
+                                aria-selected="false">
+
+                                <span>Đối tượng thực hiện khảo sát</span>
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="info-tab" data-bs-toggle="tab" data-bs-target="#ketquachitiet"
+                                type="button" role="tab" aria-controls="contact" aria-selected="false">
+
+                                <span>Kết quả chi tiết</span>
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content box-shadow pb-0" id="myTabContent" style="border-radius: 0 !important;">
+                        <!-- danh sách đối tượng tham gia khảo sát -->
+                        <div class="tab-pane fade show active" id="tab_doituongthamgia" role="tabpanel"
+                            aria-labelledby="home-tab">
+                            <div class="title-is-paging">
+                                <p class="color-dask-blue fw-bold mt-3 mb-10">Danh sách đối tượng tham gia khảo sát</p>
+                            </div>
+                            <div class="register-wish p-0 m-0 pb-0">
+                                <table class="table transcrip-table tabs-scores h-auto table-bordered table-noborder"
+                                    id="tblDoiTuongThamGia">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center w-50px" scope="col">STT</th>
+                                            <th class="" scope="col">Mã số</th>
+                                            <th class="" scope="col">Họ tên</th>
+                                            <th class="" scope="col">Mô tả</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                    <tfoot></tfoot>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- danh sách đối tượng được khảo sát -->
+                        <div class="tab-pane fade" id="doituongduockhaosat" role="tabpanel"
+                            aria-labelledby="profile-tab">
+                            <div class="title-is-paging">
+                                <p class="color-dask-blue fw-bold mt-3 mb-10">Danh sách đối tượng được khảo sát</p>
+                            </div>
+                            <div class="register-wish p-0 m-0 pb-0">
+                                <table
+                                    class="table transcrip-table tabs-scores h-auto table-bordered table-noborder tblDoiTuongDuocKhaoSat"
+                                    id="tblDoiTuongDuocKhaoSat">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center w-50px" scope="col">STT</th>
+                                            <th class="" scope="col">Mã số</th>
+                                            <th class="" scope="col">Họ tên</th>
+                                            <th class="" scope="col">Mô tả</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                    <tfoot></tfoot>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- danh sách đối tượng thực hiện khảo sát -->
+                        <div class="tab-pane fade" id="doituongthuchien" role="tabpanel" aria-labelledby="contact-tab">
+                            <div class="title-is-paging">
+                                <p class="color-dask-blue fw-bold mt-3 mb-10">Danh sách đối tượng thực hiện khảo sát</p>
+                            </div>
+                            <div class="register-wish p-0 m-0 mb-0 pb-0">
+                                <table
+                                    class="table transcrip-table tabs-scores h-auto table-bordered table-noborder tblDoiTuongChuaThucHien"
+                                    id="tblDoiTuongChuaThucHien">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center w-50px" scope="col">STT</th>
+                                            <th class="" scope="col">Mã số</th>
+                                            <th class="" scope="col">Họ tên</th>
+                                            <th class="" scope="col">Mô tả</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                    <tfoot></tfoot>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- Kết quả chi tiết-->
+                        <div class="tab-pane fade" id="ketquachitiet" role="tabpanel" aria-labelledby="contact-tab">
+                            <div class="title-is-paging">
+                                <p class="color-dask-blue fw-bold mt-3 mb-10">Kết quả chi tiết</p>
+                            </div>
+                            <div class="register-wish p-0 m-0 table-responsive mb-0 pb-0">
+                                <table
+                                    class="table transcrip-table tabs-scores table-bordered table-border small-table tblKetQuaChiTiet"
+                                    id="tblKetQuaChiTiet">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center w-50px" rowspan="2">STT</th>
+                                            <th class="text-center fw-bold" colspan="3">Thông tin đối tượng tham gia
+                                                khảo sát
+                                            </th>
+                                            <th rowspan="2" style="min-width: 120px;">Phiếu khảo sát</th>
+                                            <th class="text-center" rowspan="2" style="min-width: 150px;">Trạng thái
+                                                khảo sát</th>
+                                            <th class="text-center fw-bold" colspan="2">Thông tin đối tượng được khảo
+                                                sát</th>
+                                        </tr>
+                                        <tr>
+                                            <th>Mã số</th>
+                                            <th style="min-width: 130px;">Họ tên</th>
+                                            <th style="min-width: 130px;">Ghi chú</th>
+                                            <th>Mã số</th>
+                                            <th style="min-width: 130px;">Họ tên</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                    <tfoot></tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="container-fluid pd-20 bg-white"
+                        style="border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+                        <div class="d-flex align-items-center mt-4 flex-wrap mb-4">
+                            <div class="ms-auto aps-gap-10">
+                                <div class="btn btn-outline-secondary  px-4 min-w-auto px-4 btnClose"><i
+                                        class="fal fa-times"></i> Đóng</div>
+                                <div class="btn btn-primary" id="btnSave_KeHoach"><i class="fal fa-save"></i> Lưu</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- end đăng ký nguyện vọng -->
+</div>
+<!-- ---------- -->
+<div class="aps-all-button ml-20 aps-gap-10" style="display: none !important;">
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modaldangky">
+        Danh sách đã đăng ký tham gia</button>
+    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modaldathamgia">
+        Danh sách đã tham gia</button>
+    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modal_sinhvien">
+        Tìm kiếm sinh viên</button>
+    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modal_nhansu">
+        Tìm kiếm giảng viên</button>
+</div>
+<!-- ---------- -->
+<!-- Danh sách đã đăng ký tham gia -->
+<div class="modal fade register-wish modaldangky" id="modaldangky" tabindex="-1" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-1440">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="finance-user-info in-modal ">
+                    <p><i class="fa-solid fa-user-pen mr-10"></i>Danh sách đã đăng ký tham gia</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="col-12">
+                    <table
+                        class="table tabs-scores  transcrip-table border-l-0 border-right-0 tblDangKyThamGia table-bordered table-noborder"
+                        id="tblDangKyThamGia">
+                        <thead>
+                            <tr>
+                                <th class="text-center w-50px" scope="col">STT</th>
+                                <th scope="col">Mã số</th>
+                                <th class="" scope="col">Tên</th>
+                                <th class="" scope="col">Lớp</th>
+                                <th class="" scope="col">Ngành</th>
+                                <th class="" scope="col">Khóa</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div class="d-flex align-items-center mt-15 flex-wrap mb-4" style="display: none !important;">
+                    <div class="btn btn-primary  px-4 ms-auto "><i class="fal fa-save" id="btnSave_SuKien"></i> Lưu
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- Danh sách đã tham gia -->
+<div class="modal fade register-wish modaldathamgia" id="modaldathamgia" tabindex="-1"
+    aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-1440">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="finance-user-info in-modal ">
+                    <p><i class="fa-regular fa-users mr-10"></i>Danh sách đã tham gia</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="col-12">
+                    <table
+                        class="table tabs-scores transcrip-table border-l-0 border-right-0 tblDaThamGia table-bordered table-noborder"
+                        id="tblDaThamGia">
+                        <thead>
+                            <tr>
+                                <th class="text-center w-50px" scope="col">STT</th>
+                                <th scope="col">Mã số</th>
+                                <th class="" scope="col">Tên</th>
+                                <th class="" scope="col">Lớp</th>
+                                <th class="" scope="col">Ngành</th>
+                                <th class="" scope="col">Khóa</th>
+
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div class="d-flex align-items-center mt-4 flex-wrap mb-4 mt-15" style="display: none !important;">
+                    <div class="btn btn-primary ms-auto"><i class="fal fa-save" id="btnSave_SuKien"></i> Lưu</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- Tìm kiếm sinh viên -->
+<div class="modal fade register-wish modal_sinhvien" id="modal_sinhvien" tabindex="-1"
+    aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-1800">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="finance-user-info in-modal ">
+                    <p><i class="fa-solid fa-user-magnifying-glass mr-5"></i>Tìm kiếm sinh viên</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0" style="padding: 0 !important;">
+                <div class="col-12 box-timSV pd-20 bg-white">
+                    <div class="box-search-sv">
+                        <div class="d-flex inputs-tksv ">
+                            <div class="inputs-wr">
+                                <div class=" item">
+                                    <div class="form-item d-flex  form-add-info flex-grow-1">
+                                        <div class="input-group no-icon">
+                                            <select id="dropSearchModal_He_SV" class="select-opt"
+                                                multiple="multiple"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class=" item">
+                                    <div class="form-item d-flex  form-add-info flex-grow-1">
+                                        <div class="input-group no-icon">
+                                            <select id="dropSearchModal_Khoa_SV" class="select-opt"
+                                                multiple="multiple"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class=" item">
+                                    <div class="form-item d-flex  form-add-info flex-grow-1">
+                                        <div class="input-group no-icon">
+                                            <select id="dropSearchModal_ChuongTrinh_SV" class="select-opt"
+                                                multiple="multiple"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class=" item">
+                                    <div class="form-item d-flex  form-add-info flex-grow-1">
+                                        <div class="input-group no-icon">
+                                            <select id="dropSearchModal_Lop_SV" class="select-opt"
+                                                multiple="multiple"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class=" item">
+                                    <div class="form-item d-flex  form-add-info flex-grow-1">
+                                        <div class="input-group no-icon">
+                                            <input id="txtSearchModal_TuKhoa_SV" class="form-control"
+                                                placeholder="Nhập từ khóa tìm kiếm">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="btn btn-default btn-search min-w-auto" id="btnSearch_ModalSinhVien">
+                                <i class="fal fa-search"></i> Tìm
+                            </div>
+                        </div>
+                        <div class="d-flex flex-wrap align-items-start list-title-first mt-15 ">
+                            <p class=" mt-5 mb-1 color-88">Thêm nhiều</p>
+                            <div class="d-flex flex-wrap list aps-gap-10">
+                                <a href="" class="btn btn-sm btn-soft-success min-w-auto" id="btnAdd_Khoa"> <i
+                                        class="fal fa-plus"></i> Thêm từng khóa</a>
+                                <a href="" class="btn btn-sm btn-soft-danger min-w-auto" id="btnAdd_ChuongTrinh"> <i
+                                        class="fal fa-plus"></i> Thêm từng chương trình</a>
+                                <a href="" class="btn btn-sm btn-soft-primary min-w-auto" id="btnAdd_Lop"> <i
+                                        class="fal fa-plus"></i> Thêm từng lớp</a>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-wrap align-items-start list-title-first">
+                            <p class="mt-15 mb-1 color-88">Trạng thái</p>
+                            <div class="d-flex flex-wrap lists" id="DSTrangThaiSV_MD">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box-list-sv">
+                        <div class="title-is-paging">
+                            <p class="color-dask-blue fw-bold mt-3">Danh sách</p>
+                            <button id="btnChonSinhVien" class="btn btn-sm btn-on-paging btnChonSinhVien"
+                                style="height: 28px;"><i class="fas fa-check-square me-2"></i>Chọn</button>
+                        </div>
+                        <div class="bus-wrp box-table-sv" style="max-height: 505px;">
+                            <table
+                                class="table transcrip-table tabs-scores h-auto tblModal_SinhVien table-bordered table-noborder"
+                                id="tblModal_SinhVien">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center w-50px" scope="col">STT</th>
+                                        <th scope="col">Mã số</th>
+                                        <th class="" scope="col">Họ tên</th>
+                                        <th class="" scope="col">Ngày sinh</th>
+                                        <th class="" scope="col">Lớp</th>
+                                        <th class="" scope="col">Chương trình</th>
+                                        <th class="" scope="col">Khóa</th>
+                                        <th class="" scope="col">Trạng thái</th>
+                                        <th class="text-right" scope="col">
+                                            <input type="checkbox" id="chkSelectAll_SinhVien" />
+                                        </th>
+
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Tìm kiếm sinh viên -->
+<div class="modal fade register-wish modal_sinhvien" id="modal_sinhvien" tabindex="-1"
+    aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-1800">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="finance-user-info in-modal ">
+                    <p><b>Tìm kiếm sinh viên</b></p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0" style="padding: 0 !important;">
+                <div class="col-12">
+                    <div class="bg-f4 px-3 pt-3 pb-3">
+                        <div class="d-flex inputs-tksv ">
+                            <div class="inputs-wr">
+                                <div class=" item">
+                                    <div class="form-item d-flex  form-add-info flex-grow-1">
+                                        <div class="input-group no-icon">
+                                            <select id="dropSearchModal_He_SV" class="select-opt"
+                                                multiple="multiple"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class=" item">
+                                    <div class="form-item d-flex  form-add-info flex-grow-1">
+                                        <div class="input-group no-icon">
+                                            <select id="dropSearchModal_Khoa_SV" class="select-opt"
+                                                multiple="multiple"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class=" item">
+                                    <div class="form-item d-flex  form-add-info flex-grow-1">
+                                        <div class="input-group no-icon">
+                                            <select id="dropSearchModal_ChuongTrinh_SV" class="select-opt"
+                                                multiple="multiple"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class=" item">
+                                    <div class="form-item d-flex  form-add-info flex-grow-1">
+                                        <div class="input-group no-icon">
+                                            <select id="dropSearchModal_Lop_SV" class="select-opt"
+                                                multiple="multiple"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class=" item">
+                                    <div class="form-item d-flex  form-add-info flex-grow-1">
+                                        <div class="input-group no-icon">
+                                            <input id="txtSearchModal_TuKhoa_SV" class="form-control"
+                                                placeholder="Nhập từ khóa tìm kiếm" style="margin-top: 10px">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="btn btn-dask-blue min-w-auto px-4" id="btnSearch_ModalSinhVien"><i
+                                    class="fal fa-search me-2"></i> Tìm</div>
+                        </div>
+                        <div class="d-flex flex-wrap align-items-start list-title-first">
+                            <p class="fw-bold  mt-1 mb-1">Thêm nhiều</p>
+                            <div class="d-flex flex-wrap list">
+                                <a href="" class="btn btn-sm btn-soft-success min-w-auto px-4 ms-3 mb-3"
+                                    id="btnAdd_Khoa"> <i class="fal fa-plus me-2"></i> Thêm từng khóa</a>
+                                <a href="" class="btn btn-sm btn-soft-success min-w-auto px-4 ms-3 mb-3"
+                                    id="btnAdd_ChuongTrinh"> <i class="fal fa-plus me-2"></i> Thêm từng chương trình</a>
+                                <a href="" class="btn btn-sm btn-soft-success min-w-auto px-4 ms-3 mb-3"
+                                    id="btnAdd_Lop"> <i class="fal fa-plus me-2"></i> Thêm từng lớp</a>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-wrap align-items-start list-title-first">
+                            <p class="fw-bold  mt-1 mb-1">Trạng thái</p>
+                            <div class="d-flex flex-wrap lists" id="DSTrangThaiSV_MD">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="px-3 pb-5">
+                        <div class="title-is-paging">
+                            <p class="color-dask-blue fw-bold mt-3">Danh sách</p>
+                            <button id="btnChonSinhVien"
+                                class="btn btn-sm ms-auto btn-outline-dask-blue min-w-auto ms-3 px-3 btn-on-paging"
+                                style="height: 28px;"><i class="fas fa-check-square me-2"></i>Chọn</button>
+                        </div>
+                        <div class="bus-wrp" style="max-height: 505px;">
+                            <table class="table transcrip-table tabs-scores h-auto" id="tblModal_SinhVien">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center w-50px" scope="col">STT</th>
+                                        <th scope="col">Mã số</th>
+                                        <th class="" scope="col">Họ tên</th>
+                                        <th class="" scope="col">Ngày sinh</th>
+                                        <th class="" scope="col">Lớp</th>
+                                        <th class="" scope="col">Chương trình</th>
+                                        <th class="" scope="col">Khóa</th>
+                                        <th class="" scope="col">Trạng thái</th>
+                                        <th class="text-right" scope="col">
+                                            <input type="checkbox" id="chkSelectAll_SinhVien" />
+                                        </th>
+
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- Tìm kiếm giảng viên -->
+<div class="modal fade register-wish modal_nhansu" id="modal_nhansu" tabindex="-1" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-1800">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="finance-user-info in-modal ">
+                    <p><i class="fa-solid fa-user-magnifying-glass mr-5"></i>Tìm kiếm giảng viên 1</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0 pd0">
+                <div class="col-12 box-timGV">
+                    <div class="box-search-GV">
+                        <div class="d-flex inputs-tksv">
+                            <div class="inputs-wr">
+                                <div class=" item">
+                                    <div class="form-item d-flex  form-add-info flex-grow-1">
+                                        <div class="input-group no-icon">
+                                            <select id="dropSearchModal_LoaiCCTC_NS" class="select-opt"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class=" item">
+                                    <div class="form-item d-flex  form-add-info flex-grow-1">
+                                        <div class="input-group no-icon">
+                                            <select id="dropSearchModal_CCTC_NS" class="select-opt"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class=" item">
+                                    <div class="form-item d-flex  form-add-info flex-grow-1">
+                                        <div class="input-group no-icon">
+                                            <select id="dropSearchModal_CB_NS" class="select-opt">
+                                                <option value="0">Cán bộ trong trường</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="item">
+                                    <div class="form-item d-flex  form-add-info flex-grow-1">
+                                        <div class="input-group no-icon">
+                                            <input id="txtSearchModal_TuKhoa_NS" class="form-control"
+                                                placeholder="Nhập từ khóa tìm kiếm">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="item">
+                                    <div class="btn btn-default btn-search" id="btnSearch_ModalNhanSu"><i
+                                            class="fal fa-search"></i>Tìm</div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="pb-5 box-list-gv position-relative">
+                        <div class="title-is-paging pt-0">
+                            <p class="color-dask-blue fw-bold mt-15">Danh sách</p>
+                            <button id="btnChonNhanSu" class="btn btn-sm ms-auto btnChonSinhVien btn-on-paging"
+                                style="height: 28px;"><i class="fas fa-check-square me-2"></i>Chọn</button>
+                        </div>
+                        <div class="bus-wrp box-table-gv aps-table-select" style="max-height: 505px;">
+                            <table
+                                class="table transcrip-table tabs-scores h-auto tblModal_NhanSu table-bordered table-noborder"
+                                id="tblModal_NhanSu">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center w-50px" scope="col">STT</th>
+                                        <th scope="col">Mã số</th>
+                                        <th class="" scope="col">Họ tên</th>
+                                        <th class="" scope="col">Ngày sinh</th>
+                                        <th class="" scope="col">Giới tính</th>
+                                        <th class="text-right w-50px" scope="col">
+                                            <input type="checkbox" id="chkSelectAll_SinhVien" />
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="modules/khaosat/script/dsdangkyhoc_picker.js?v=1.0.0.0"></script>
+<script src="modules/khaosat/script/kehoach.js?v=1.0.0.0"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['KeHoach'] = new KeHoach();
+    $(document).ready(function () {
+        main_doc.KeHoach.init();
+    });
+</script>
+<!-- FIX 2026-08-26: Select2 trong modal — re-init voi dropdownParent = modal
+     de popup nam trong modal, khong lech / che noi dung. Universal handler,
+     an toan khi modal khong co select. -->
+<script>
+(function () {
+    if (typeof jQuery === 'undefined') return;
+    var $ = jQuery;
+    $(document).off('shown.bs.modal.__s2fix').on('shown.bs.modal.__s2fix', '.modal', function () {
+        var $modal = $(this);
+        $modal.find('select.select-opt, select[id^="drop"]').each(function () {
+            var $sel = $(this);
+            try {
+                if ($sel.hasClass('select2-hidden-accessible')) $sel.select2('destroy');
+            } catch (e) {}
+            $sel.select2({ dropdownParent: $modal, width: '100%' });
+        });
+    });
+})();
+</script>
+<style>
+    .modal .select2-container--open,
+    .modal .select2-container--open .select2-dropdown {
+        z-index: 100060 !important;
+    }
+    .modal .select2-results__options {
+        max-height: 220px !important;
+        overflow-y: auto !important;
+    }
+</style>

@@ -1,0 +1,460 @@
+﻿<style>
+    .checkbox-inline+.checkbox-inline,
+    .radio-inline+.radio-inline {
+        margin-left: 0px;
+    }
+</style>
+<section class="content aps-sinhvien">
+    <div class="row aps-chinhsach-goihotro">
+        <div class="zone-bus" id="zonebatdau">
+            <!--Box search-->
+            <div class="box box-solid box-search pd20 pb10">
+                <div class="box-body pd0">
+                    <div class="group-title d-none">
+                        <p class="titleSearchContent">
+                            <i class="fa fa-window-restore">
+                            </i> <span class="lang" key="">Tìm kiếm</span>
+                        </p>
+                    </div>
+                    <div class="area-search">
+                        <div id="search" class="inputSearch">
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_CheDo" class="select-opt"></select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_DoiTuong" class="select-opt"></select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <input id="txtSearch" class="form-control" placeholder="Nhập từ khóa tìm kiếm" />
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <a id="btnSearch" class="btn btn-default btn-search"><i class="fa fa-search"></i> <span
+                                        class="lang" key="">Tìm kiếm</span></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="clear"></div>
+            <!-- Danh sách -->
+            <div class="box box-solid row mt-15 pb20">
+                <div class="col-sm-4 aps-goi-hotro pl20 pr15">
+                    <div class="box box-solid">
+                        <div class="box-header pl0 pr0">
+                            <h3 class="box-title color-blue pt10">
+                                <i class="fa-light fa-headset"></i> Gói hỗ trợ
+                                <span class="pull-right badge bg-light-blue ml-15">
+                                    <span id="lblGoiHoTro_Tong"></span>
+                                </span>
+                            </h3>
+                            <div class="pull-right">
+                                <a class="btn btnAdd btn-outline-primary" id="btnAddGoiHoTro" href="#"><i
+                                        class="fa fa-plus"></i> Thêm mới</a>
+                                <!--<a id="btnXoaGoiHoTro" class="btn btn-default"><i class="fa fa-trash"></i> Xóa</a>-->
+                            </div>
+                        </div>
+                        <div class="box-body pd0 pt10">
+                            <div class="col-sm-12 table-select2 aps-table-select">
+                                <table id="tblGoiHoTro" class="table table-hover table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th class="td-fixed td-center">Stt</th>
+                                            <th class="td-center">Mã</th>
+                                            <th class="td-center">Tên</th>
+                                            <th class="td-fixed td-center">Chi tiết</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- load from js -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-8 aps-goi-chinhsach0-hotro pr15 pl20">
+                    <div class="box box-solid">
+                        <div class="box-header pr0">
+                            <h3 class="box-title color-green pt10 d-flex">
+                                <i class="fa-light fa-books color-green"></i> Chính sách - Gói hỗ trợ
+                                <span class="pull-right badge bg-light-success" style="margin-left: 10px !important;">
+                                    <span id="lblGoiHoTro_Tong"></span>
+                                </span>
+                            </h3>
+                            <div class="pull-right">
+                                <a class="btn btnAdd btn-outline-success" id="btnAddDoiTuong" href="#"><i
+                                        class="fa fa-plus"></i> Thêm mới</a>
+                                <!--<a id="btnXoaGoiHoTro" class="btn btn-default"><i class="fa fa-trash"></i> Xóa</a>-->
+                            </div>
+                        </div>
+                        <div class="box-body pd0 pt10">
+                            <div class="col-sm-12 table-select2 aps-table-select">
+                                <table id="tblGoiHoTro_DoiTuong" class="table table-hover table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th class="td-fixed td-center">Stt</th>
+                                            <th class="td-center">Chế độ</th>
+                                            <th class="td-center">Đối tượng</th>
+                                            <th class="td-center">Gói hỗ trợ</th>
+                                            <th class="td-center">Thời gian</th>
+                                            <th class="td-center">Hiệu lực</th>
+                                            <th class="td-fixed td-center">Chi tiết</th>
+                                            <!--<th class="td-center td-fixed">
+            <input type="checkbox" id="chkSelectAll_GoiHoTro">
+        </th>-->
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- load from js -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Thêm mới Gói hỗ trợ -->
+        <div class="box box-solid zone-bus form-container aps-add-goi-hotro add-absolue" id="zoneEdit"
+            style="display: none">
+            <div class="box-header with-border">
+                <h3 class="box-title"><span class="myModalLabel"><i class="fa fa-plus"></i> Thêm mới - </span> Gói hỗ
+                    trợ</h3>
+                <div class="pull-right">
+                    <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times"></i></a>
+                </div>
+            </div>
+            <div class="box-body pd0">
+                <div class="col-sm-12 box-view aps-add-new pd20">
+                    <!-- 1. Thông tin học viên -->
+                    <div class="row aps-form">
+                        <div class="col-lg-7 pr20 mt-20">
+                            <div class="row aps-lable-name">
+                                <p class="group-group-title-name border-0 mb-5">
+                                    <span class="badge bg-blue"> Thông tin gói hỗ trợ</span>
+                                </p>
+                            </div>
+                            <!--row 2-->
+                            <div class="row aps-form-item">
+                                <div class="col-sm-4 aps-form-lable">Mã</div>
+                                <div class="col-sm-8 aps-form-input">
+                                    <input id="txtMa" class="form-control" />
+                                </div>
+                            </div>
+                            <!--row 2-->
+                            <div class="row aps-form-item">
+                                <div class="col-sm-4 aps-form-lable">Tên</div>
+                                <div class="col-sm-8 aps-form-input">
+                                    <input id="txtTen" class="form-control" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-5 pl20">
+                            <div class="aps-img pt10 pb15 text-left"> <img src="Upload/images/img-support.svg"
+                                    style="max-height: 200px"></div>
+                        </div>
+                    </div>
+
+                    <div class="row aps-form" id="zoneChiTiet">
+                        <div class="row aps-lable-name">
+                            <p class="group-group-title-name border-0 mb-5">
+                                <span class="badge bg-blue">Gói hỗ trợ chi tiết</span>
+                            </p>
+                            <div class="clear"></div>
+                            <div class="pull-left">
+                                <div style="width: 360px">
+                                    <select id="dropSearch_GoiHoTro" class="select-opt"></select>
+                                </div>
+                            </div>
+                            <div class="pull-right">
+                                <div class="group-title-name">
+                                    <a class="btn btn-outline-success btnAdd" id="btnAddChiTiet"><i
+                                            class="fa fa-plus color-active"></i> Thêm gói hỗ trợ</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <table id="tblGoiHoTro_ChiTiet" class="table mb-10">
+                                <thead>
+                                    <tr>
+                                        <td class="td-fixed td-center">Stt</td>
+                                        <td class="td-center">Khoản được nhận</td>
+                                        <td class="td-center">Mức nhận</td>
+                                        <td class="td-center">Đơn vị tính</td>
+                                        <td class="td-center">Kiểu tính</td>
+                                        <td class="td-center">Quy định thời gian</td>
+                                        <td class="td-center">Ngày bắt đầu</td>
+                                        <td class="td-center">Ngày kết thúc</td>
+                                        <td class="td-center">Ghi chú</td>
+                                        <th class="td-fixed td-center">Chi tiết</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="box-footer">
+                <div class="pull-right">
+                    <a class="submit btn btn-danger btnOpenDelete" id="btnDelete_GoiHoTro" style="display: none"><i
+                            class="fa fa-trash"></i> <span class="lang" key="">Xóa</span></a>
+                    <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times-circle"></i>
+                        Đóng</a>
+                    <a id="btnSave_GoiHoTro" class="btn btn-primary"><i class="fa fa-save"></i> Lưu</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!--Gói hỗ trợ - đối tượng-->
+<div class="modal fade myModal_DoiTuong" id="myModal_DoiTuong" role="dialog" aria-labelledby="myModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-680">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+                <h3 class="box-title"><span class="myModalLabel"> <i class="fa fa-pencil"></i></span> Gói hỗ trợ - đối
+                    tượng</h3>
+            </div>
+            <div class="modal-body" id="modal_body">
+                <div class="row aps-form">
+                    <!--row 1-->
+                    <div class="row aps-form-item">
+                        <div class="col-sm-3 aps-form-lable">
+                            <label style="font-weight: normal"><span class="lang" key="">Chế độ</span></label>
+                        </div>
+                        <div class="col-sm-9 aps-form-input">
+                            <select id="dropCheDo" class="select-opt"></select>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <!--row 2-->
+                    <div class="row aps-form-item">
+                        <div class="col-sm-3 aps-form-lable">
+                            <label style="font-weight: normal"><span class="lang" key="">Đối tượng</span></label>
+                        </div>
+                        <div class="col-sm-9 aps-form-input">
+                            <select id="dropDoiTuong" class="select-opt"></select>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <!--row 3-->
+                    <div class="row aps-form-item">
+                        <div class="col-sm-3 aps-form-lable">
+                            <label style="font-weight: normal"><span class="lang" key="">Gói hỗ trợ</span></label>
+                        </div>
+                        <div class="col-sm-9 aps-form-input">
+                            <select id="dropGoiHoTro" class="select-opt"></select>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <!--row 4-->
+                    <div class="row aps-form-item">
+                        <div class="col-sm-3 aps-form-lable">
+                            <label style="font-weight: normal"><span class="lang" key="">Thời gian</span></label>
+                        </div>
+                        <div class="col-sm-9 aps-form-input">
+                            <select id="dropThoiGian" class="select-opt"></select>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <!--row 5-->
+                    <div class="row aps-form-item">
+                        <div class="col-sm-3 aps-form-lable">
+                            <label style="font-weight: normal"><span class="lang" key="">Hiệu lực</span></label>
+                        </div>
+                        <div class="col-sm-9 aps-form-input">
+                            <select id="dropHieuLuc" class="select-opt">
+                                <option value="1">Có</option>
+                                <option value="0">Không</option>
+                            </select>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <!--row 6-->
+                    <div class="row aps-form-item">
+                        <div class="col-sm-3 aps-form-lable">
+                            <label style="font-weight: normal"><span class="lang" key="">Ghi chú</span></label>
+                        </div>
+                        <div class="col-sm-9 aps-form-input">
+                            <input type="text" id="txtGhiChu" class="form-control" />
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="clear"></div>
+            <div id="notify"></div>
+            <div class="modal-footer">
+                <a class="submit btn btn-danger btnOpenDelete" id="btnDelete_GoiHoTro_DoiTuong" style="display: none"><i
+                        class="fa fa-trash"></i> <span class="lang" key="">Xóa</span></a>
+                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times-circle-o"></i>
+                    <span class="lang" key="">Đóng</span></button>
+                <a class="submit btn btn-primary" id="btnSave_GoiHoTro_DoiTuong"><i class="fa fa-save"></i><span
+                        class="lang" key=""> Lưu</span></a>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Chi tiết gói hỗ trợ-->
+<div class="modal fade myModal_ChiTiet" id="myModal_ChiTiet" role="dialog" aria-labelledby="myModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-680">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+                <h3 class="box-title"><span class="myModalLabel"> <i class="fa fa-pencil"></i></span> Chi tiết gói hỗ
+                    trợ <span class="nameGoiHoTro"></span></h3>
+            </div>
+            <div class="modal-body" id="modal_body">
+                <div class="row aps-form mt-10">
+                    <!--row 1-->
+                    <div class="row aps-form-item">
+                        <div class="col-sm-3 aps-form-lable">
+                            <label style="font-weight: normal"><span class="lang" key="">Khoản được nhận</span></label>
+                        </div>
+                        <div class="col-sm-9 aps-form-input">
+                            <select id="dropKhoanDuocNhan" class="select-opt"></select>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <!--row 2-->
+                    <div class="row aps-form-item">
+                        <div class="col-sm-3 aps-form-lable">
+                            <label style="font-weight: normal"><span class="lang" key="">Mức nhận</span></label>
+                        </div>
+                        <div class="col-sm-9 aps-form-input">
+                            <input type="text" id="txtMucNhan" class="form-control" />
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <!--row 3-->
+                    <div class="row aps-form-item">
+                        <div class="col-sm-3 aps-form-lable">
+                            <label style="font-weight: normal"><span class="lang" key="">Đơn vị tính</span></label>
+                        </div>
+                        <div class="col-sm-9 aps-form-input">
+                            <select id="dropDonViTinh" class="select-opt"></select>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <!--row 4-->
+                    <div class="row aps-form-item">
+                        <div class="col-sm-3 aps-form-lable">
+                            <label style="font-weight: normal"><span class="lang" key="">Kiểu tính</span></label>
+                        </div>
+                        <div class="col-sm-9 aps-form-input">
+                            <select id="dropKieuTinh" class="select-opt"></select>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <!--row 5-->
+                    <div class="row aps-form-item">
+                        <div class="col-sm-3 aps-form-lable">
+                            <label style="font-weight: normal"><span class="lang" key="">Quy định thời
+                                    gian</span></label>
+                        </div>
+                        <div class="col-sm-9 aps-form-input">
+                            <select id="dropQuyDinhThoiGian" class="select-opt"></select>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <!--row 6-->
+                    <div class="row aps-form-item">
+                        <div class="col-sm-3 aps-form-lable">
+                            <label style="font-weight: normal"><span class="lang" key="">Ngày bắt đầu</span></label>
+                        </div>
+                        <div class="col-sm-9 aps-form-input">
+                            <input type="text" id="txtNgayBatDau" class="form-control input-datepicker" />
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <!--row 7-->
+                    <div class="row aps-form-item">
+                        <div class="col-sm-3 aps-form-lable">
+                            <label style="font-weight: normal"><span class="lang" key="">Ngày kết thúc</span></label>
+                        </div>
+                        <div class="col-sm-9 aps-form-input">
+                            <input type="text" id="txtNgayKetThuc" class="form-control input-datepicker" />
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <!--row 8-->
+                    <div class="row aps-form-item">
+                        <div class="col-sm-3 aps-form-lable">
+                            <label style="font-weight: normal"><span class="lang" key="">Ghi chú</span></label>
+                        </div>
+                        <div class="col-sm-9 aps-form-input">
+                            <input type="text" id="txtCT_GhiChu" class="form-control" />
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <!--row 9-->
+                    <div class="row aps-form-item mb-0">
+                        <div class="col-sm-3 aps-form-lable">
+                            <label style="font-weight: normal"><span class="lang" key="">Thứ tự</span></label>
+                        </div>
+                        <div class="col-sm-9 aps-form-input">
+                            <input type="text" id="txtThuTu" class="form-control" />
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="clear"></div>
+            <div id="notify"></div>
+            <div class="modal-footer">
+                <a class="submit btn btn-danger btnOpenDelete" id="btnDelete_ChiTiet" style="display: none"><i
+                        class="fa fa-trash"></i> <span class="lang" key="">Xóa</span></a>
+                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times-circle-o"></i>
+                    <span class="lang" key="">Đóng</span></button>
+                <a class="submit btn btn-primary" id="btnSave_GoiHoTro_ChiTiet"><i class="fa fa-save"></i><span
+                        class="lang" key=""> Lưu</span></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- page script -->
+<script src="modules/chinhsach/script/goihotro.js?v=1.0.0.0"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['GoiHoTro'] = new GoiHoTro();
+    $(document).ready(function () {
+        main_doc.GoiHoTro.init();
+    });
+</script>
+<!-- FIX 2026-08-26: Select2 trong modal — re-init voi dropdownParent = modal
+     de popup nam trong modal, khong lech / che noi dung. Universal handler,
+     an toan khi modal khong co select. -->
+<script>
+(function () {
+    if (typeof jQuery === 'undefined') return;
+    var $ = jQuery;
+    $(document).off('shown.bs.modal.__s2fix').on('shown.bs.modal.__s2fix', '.modal', function () {
+        var $modal = $(this);
+        $modal.find('select.select-opt, select[id^="drop"]').each(function () {
+            var $sel = $(this);
+            try {
+                if ($sel.hasClass('select2-hidden-accessible')) $sel.select2('destroy');
+            } catch (e) {}
+            $sel.select2({ dropdownParent: $modal, width: '100%' });
+        });
+    });
+})();
+</script>
+<style>
+    .modal .select2-container--open,
+    .modal .select2-container--open .select2-dropdown {
+        z-index: 100060 !important;
+    }
+    .modal .select2-results__options {
+        max-height: 220px !important;
+        overflow-y: auto !important;
+    }
+</style>

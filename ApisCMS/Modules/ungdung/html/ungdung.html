@@ -1,0 +1,413 @@
+﻿<!-- Main content -->
+<style>
+    /* ============================================================
+       Modal #myModal (Thêm mới - Ứng dụng) — reskin header + footer
+       theo memory feedback_modal_design.md:
+       - Header: title trái, nút close (×) ở góc PHẢI (chuẩn Bootstrap)
+       - Footer: Đóng (grey outline) + Lưu (blue CTA), căn phải, gap 10px
+       ============================================================ */
+    #myModal .modal-content {
+        border-radius: 10px !important;
+        border: none !important;
+        box-shadow: 0 20px 50px rgba(15, 23, 42, 0.25) !important;
+        overflow: hidden;
+    }
+    #myModal .modal-header {
+        background: #1e3a8a !important;
+        background-color: #1e3a8a !important;
+        background-image: none !important;
+        border-bottom: none !important;
+        padding: 14px 20px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        flex-direction: row-reverse;
+    }
+    /* Force text trắng cho MỌI element trong header */
+    html body #myModal .modal-header,
+    html body #myModal .modal-header *,
+    html body #myModal .modal-header h4,
+    html body #myModal .modal-header h4 *,
+    html body #myModal .modal-header .modal-title,
+    html body #myModal .modal-header .modal-title *,
+    html body #myModal .modal-header .myModalLabel,
+    html body #myModal .modal-header .myModalLabel *,
+    html body #myModal .modal-header .lang {
+        color: #ffffff !important;
+        -webkit-text-fill-color: #ffffff !important;
+        text-shadow: none !important;
+    }
+    #myModal .modal-header .modal-title,
+    #myModal .modal-header h4 {
+        margin: 0 !important;
+        padding: 0 !important;
+        font-size: 16px !important;
+        font-weight: 600 !important;
+        line-height: 1 !important;
+        flex: 1;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 6px;
+    }
+    #myModal .modal-header .modal-title i,
+    #myModal .modal-header h4 i {
+        color: #ffffff !important;
+        font-size: 16px !important;
+    }
+    /* Nút close × ở góc phải: khối 32×32 bo tròn 8, hover đỏ */
+    #myModal .modal-header .close,
+    #myModal .modal-header button.close {
+        float: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 32px !important;
+        height: 32px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 20px !important;
+        font-weight: 400 !important;
+        line-height: 1 !important;
+        color: #ffffff !important;
+        background: rgba(255, 255, 255, 0.15) !important;
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        border-radius: 8px !important;
+        opacity: 1 !important;
+        text-shadow: none !important;
+        cursor: pointer;
+        transition: background 0.15s;
+    }
+    #myModal .modal-header .close:hover,
+    #myModal .modal-header .close:focus {
+        background: rgba(220, 53, 69, 0.85) !important;
+        border-color: rgba(220, 53, 69, 0.85) !important;
+        color: #ffffff !important;
+        outline: none !important;
+    }
+    /* Footer: Đóng + Lưu căn phải, gap 10px */
+    #myModal .modal-footer {
+        background: #f8fafc !important;
+        border-top: 1px solid #e2e8f0 !important;
+        padding: 14px 20px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-end !important;
+        gap: 10px !important;
+    }
+    #myModal .modal-footer .btn {
+        margin: 0 !important;
+        height: 38px !important;
+        padding: 8px 18px !important;
+        font-size: 13px !important;
+        font-weight: 500 !important;
+        line-height: 1 !important;
+        border-radius: 6px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        background-image: none !important;
+    }
+    /* Đóng: grey outline, không tranh chú ý */
+    #myModal .modal-footer .btn-default {
+        background: #ffffff !important;
+        border: 1px solid #cbd5e1 !important;
+        color: #475569 !important;
+    }
+    #myModal .modal-footer .btn-default:hover {
+        background: #f1f5f9 !important;
+        border-color: #94a3b8 !important;
+        color: #1e293b !important;
+    }
+    /* Lưu (btn-primary hoặc btnSave_UD): blue CTA solid */
+    #myModal .modal-footer .btn-primary,
+    #myModal .modal-footer .btn-primary *,
+    #myModal .modal-footer #btnSave_UD,
+    #myModal .modal-footer #btnSave_UD * {
+        background: #2563eb !important;
+        background-color: #2563eb !important;
+        color: #ffffff !important;
+        font-weight: 600 !important;
+        text-shadow: none !important;
+    }
+    #myModal .modal-footer .btn-primary,
+    #myModal .modal-footer #btnSave_UD {
+        border: 1px solid #2563eb !important;
+    }
+    #myModal .modal-footer .btn-primary:hover,
+    #myModal .modal-footer .btn-primary:hover *,
+    #myModal .modal-footer #btnSave_UD:hover,
+    #myModal .modal-footer #btnSave_UD:hover * {
+        background: #1d4ed8 !important;
+        background-color: #1d4ed8 !important;
+        border-color: #1d4ed8 !important;
+        color: #ffffff !important;
+    }
+    #myModal .modal-footer .btn-primary i,
+    #myModal .modal-footer #btnSave_UD i,
+    #myModal .modal-footer #btnSave_UD .lang,
+    #myModal .modal-footer #btnSave_UD span {
+        color: #ffffff !important;
+        background: transparent !important;
+        background-color: transparent !important;
+    }
+
+    /* Text contrast trong modal body — label đậm, placeholder nhạt vừa */
+    #myModal .modal-body label,
+    #myModal .modal-body .aps-form-lable {
+        color: #0f172a !important;
+        font-weight: 600 !important;
+        font-size: 14px !important;
+    }
+    #myModal .modal-body input.form-control,
+    #myModal .modal-body textarea.form-control,
+    #myModal .modal-body .select2-selection__rendered {
+        color: #0f172a !important;
+        font-weight: 500 !important;
+        font-size: 14px !important;
+    }
+    #myModal .modal-body input.form-control::placeholder,
+    #myModal .modal-body textarea.form-control::placeholder,
+    #myModal .modal-body .select2-selection__placeholder {
+        color: #64748b !important;
+        font-weight: 500 !important;
+        font-style: normal !important;
+        opacity: 1 !important;
+    }
+</style>
+<section class="content aps-cms">
+    <div class="box-shadow aps-appli aps-ungdung">
+        <div class="row box-search pd20 pb10">
+            <!--Search zone-->
+            <div class="group-title d-none">
+                <p class="titleSearchContent">
+                    <i class="fa fa-window-restore"></i> <span class="lang" key="">Tìm kiếm</span>
+                </p>
+            </div>
+            <div class="area-search">
+                <div class="col-sm-5 item-search">
+                    <input id="txtKeyWord_UD" class="form-control" placeholder="Nhập từ khóa tìm kiếm"/>
+                </div>
+                <div class="col-sm-3 item-search">
+                    <a id="btnSearch_UD" class="btn btn-default btn-search"><i class="fa fa-search"></i> <span
+                            class="lang" key="">Tìm kiếm</span></a>
+                </div>
+                <div class="col-sm-3 item-search"></div>
+                <div class="col-sm-3 item-search"></div>
+            </div>
+        </div>
+        <div class="row aps-appli-content pl20 pr20">
+            <!--Data zone-->
+            <div class="zoneMainContent">
+                <div class="zone-action box-header pd0 mb-5">
+                    <div class="pull-left">
+                        <div class="group-title pl0">
+                            <p class="titleSearchContent" data-toggle="collapse" data-target="#search">
+                                <i class="fa-light fa-laptop-code"></i> <span class="lang" key="">Danh sách</span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="pull-right">                        
+                        <div style="float:left; padding-left:8px;">
+                            <div class="dropdown">
+                                <button class="btn btn-primary dropdown-toggle" type="button"
+                                        data-toggle="dropdown">
+                                    <i class="fa fa fa-file-excel-o"></i> Truy/xuất <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a id="btnExport" href="javascript:void(0)"> Import dữ liệu</a></li>
+                                    <li><a href="#">Export dữ liệu</a></li>
+                                    <li><a href="#">...</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div style="float:left; margin-left:8px;">
+                            <a id="btnRefresh_UD" class="btn btn-warning">
+                                <i class="fa fa-refresh"></i> <span class="lang" key="CHUNG_TAILAI">Tải lại</span>
+                            </a>
+                        </div>
+                        <div style="float:left; margin-left:8px;">
+                            <a id="btnDelete_UD" class="btn btn-danger">
+                                <i class="fa fa-trash"></i> <span class="lang" key="CHUNG_XOA">Xóa</span>
+                            </a>
+                        </div>
+                        <div style="float:left">
+                            <a id="btnAddNew_UD" class="btn btn-primary btnAdd">
+                                <i class="fa fa-plus-circle"></i> 
+                                <span class="lang" key="CHUNG_TAOMOI">Tạo mới</span>
+                            </a>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+                <div class="clear"></div>
+                <div class="zone-content-table aps-table-select">
+                    <table id="tbldata_UD" class="table table-hover mb-0">
+                        <thead>
+                        <tr>
+                            <th class="td-center td-fixed">Stt</th>
+                            <th class="td-center td-fixed"><span class="lang" key="">Icon</span></th>
+                            <th class="td-left"><span class="lang" key="">Mã</span></th>
+                            <th class="td-left"><span class="lang" key="">Tên</span></th>
+                            <th class="td-left"><span class="lang" key="">Đường dẫn login</span></th>
+                            <th class="td-center"><span class="lang" key="">Hiển thị</span></th>
+                            <th class="td-left"><span class="lang" key="">Đa ngôn ngữ</span></th>
+                            <th class="td-left"><span class="lang" key="">Tình trạng</span></th>
+                            <th class="td-center td-fixed">Sửa</th>
+                            <th class="td-center td-fixed"><input type="checkbox" name="chkSelectAll_UD"
+                                                                  id='chkSelectAll_UD'/></th>
+                        </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Modal -->
+<div class="modal fade aps-appli-add" id="myModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+                <h4 class="modal-title"><span class="myModalLabel"><i class="fa fa-plus"></i> Thêm mới - </span> <span
+                        class="lang" key="">Ứng dụng</span></h4>
+            </div>
+            <div class="modal-body aps-add-new" style="">
+                <div class="aps-form">
+                    <!--row 1-->
+                    <div class="row aps-form-item">
+                        <div class="col-sm-3 aps-form-lable">Tên <span class="color-red">(*)</span></div>
+                        <div class="col-sm-9 aps-form-input">
+                            <input type="text" id="txtTenUngDung" class="form-control" placeholder="Nhập tên ứng dụng"/>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <!--row 2-->
+                    <div class="row aps-form-item">
+                        <div class="col-sm-3 aps-form-lable">Mã <span class="color-red">(*)</span></div>
+                        <div class="col-sm-9 aps-form-input">
+                            <input type="text" id="txtMaUngDung" class="form-control" placeholder="Nhập mã ứng dụng"/>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <!--row 2-->
+                    <div class="row aps-form-item">
+                        <div class="col-sm-3 aps-form-lable">Thứ tự <span class="color-red">(*)</span></div>
+                        <div class="col-sm-9 aps-form-input">
+                            <input type="text" id="txtThuTuHienThi" class="form-control"
+                                   placeholder="Nhập thứ tự hiển thị"/>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <!--row 3-->
+                    <div class="row aps-form-item">
+                        <div class="col-sm-3 aps-form-lable">Icon</div>
+                        <div class="col-sm-9 aps-form-input">
+                            <input type="text" id="txtIcon" class="form-control" placeholder="Nhập icon"/>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <!--row 4-->
+                    <div class="row aps-form-item">
+                        <div class="col-sm-3 aps-form-lable">Đường dẫn SSO <span class="color-red">(*)</span></div>
+                        <div class="col-sm-9 aps-form-input">
+                            <input type="text" name="required" id="txtDuongDanSSO" class="form-control"
+                                   placeholder="Nhập đường dẫn login"/>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <!--row 4-->
+                    <div class="row aps-form-item">
+                        <div class="col-sm-3 aps-form-lable">Báo cáo</div>
+                        <div class="col-sm-9 aps-form-input">
+                            <input type="text" name="required" id="txtDuongDanBaoCao" class="form-control"
+                                   placeholder="Nhập đường dẫn báo cáo"/>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <!--row 5-->
+                    <div class="row aps-form-item">
+                        <div class="col-sm-3 aps-form-lable">Mô tả</div>
+                        <div class="col-sm-9 aps-form-input">
+                            <!-- <input type="text" id="txtMoTa" class="form-control" placeholder="Nhập mô tả"/>-->
+                            <textarea id="txtMoTa" class="form-control min-h-68" placeholder="Nhập mô tả"></textarea>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <!--row 6-->
+                    <div class="row aps-form-item">
+                        <div class="col-sm-3 aps-form-lable">Ngôn ngữ</div>
+                        <div class="col-sm-9 aps-form-input">
+                            <select id="dropSuDungDaNgonNgu" class="select-opt">
+                                <option value="">-- Cho phép đa ngôn ngữ trong ứng dụng --</option>
+                                <option value="1">Có</option>
+                                <option value="0">Không</option>
+                            </select>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <!--row 7-->
+                    <div class="row aps-form-item">
+                        <div class="col-sm-3 aps-form-lable">Trạng thái</div>
+                        <div class="col-sm-9 aps-form-input">
+                            <select id="dropTrangThaiEdit" class="select-opt">
+                                <option value="">-- Chọn trạng thái --</option>
+                                <option value="1">Đang hoạt động</option>
+                                <option value="2">Dừng hoạt động</option>
+                            </select>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <!--End row-->
+                </div>
+            </div>
+            <div id="notify"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times-circle"></i>
+                    <span class="lang" key="">Đóng</span></button>
+                <a class="submit btn btn-primary" id="btnSave_UD"><i class="fal fa-save"></i> <span class="lang" key="">Lưu</span></a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- page script -->
+<script src="modules/ungdung/script/ungdung.js?v=1.0.0.1"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['UngDung'] = new UngDung();
+    $(document).ready(function () {
+        main_doc.UngDung.init();
+    });
+</script>
+<!-- FIX 2026-08-26: Select2 trong modal — re-init voi dropdownParent = modal
+     de popup nam trong modal, khong lech / che noi dung. Universal handler,
+     an toan khi modal khong co select. -->
+<script>
+(function () {
+    if (typeof jQuery === 'undefined') return;
+    var $ = jQuery;
+    $(document).off('shown.bs.modal.__s2fix').on('shown.bs.modal.__s2fix', '.modal', function () {
+        var $modal = $(this);
+        $modal.find('select.select-opt, select[id^="drop"]').each(function () {
+            var $sel = $(this);
+            try {
+                if ($sel.hasClass('select2-hidden-accessible')) $sel.select2('destroy');
+            } catch (e) {}
+            $sel.select2({ dropdownParent: $modal, width: '100%' });
+        });
+    });
+})();
+</script>
+<style>
+    .modal .select2-container--open,
+    .modal .select2-container--open .select2-dropdown {
+        z-index: 100060 !important;
+    }
+    .modal .select2-results__options {
+        max-height: 220px !important;
+        overflow-y: auto !important;
+    }
+</style>

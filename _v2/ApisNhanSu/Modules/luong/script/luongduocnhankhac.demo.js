@@ -1,0 +1,22 @@
+/* Dữ liệu mẫu cho luongduocnhankhac — chỉ dùng ở chế độ dựng thử. */
+(function () {
+    var ds = [
+        { ID: 'DN1', NHANSU_HOSOCANBO_ID: 'NS1', DAOTAO_COCAUTOCHUC_TEN: 'Khoa Công nghệ thông tin', NHANSU_HOSOCANBO_MASO: 'CB001', NHANSU_HOSOCANBO_HODEM: 'Nguyễn Văn', NHANSU_HOSOCANBO_TEN: 'Hùng',
+          NHANSU_HOSOCANBO_MASOTHUE: '8012345678', CHUNGTU: 'PC-0210', SOTIEN: '3500000', THUETNCN: '175000', KYHIEU: 'CT/25E', SOCHUNGTU: '0000123', NGAYCHUNGTU: '20/10/2025',
+          MOTA: 'Thù lao hội đồng', LOAIKHOAN_ID: 'LK3', LOAIKHOAN_TEN: 'Tiền thưởng', NGAYPHATSINH: '18/10/2025', TONGLUONG_THUNHAPKHAC: '152400000', TONGTHUE_TNCN: '4820000' },
+        { ID: 'DN2', NHANSU_HOSOCANBO_ID: 'NS2', DAOTAO_COCAUTOCHUC_TEN: 'Bộ môn Hệ thống thông tin', NHANSU_HOSOCANBO_MASO: 'CB015', NHANSU_HOSOCANBO_HODEM: 'Trần Thị', NHANSU_HOSOCANBO_TEN: 'Mai',
+          NHANSU_HOSOCANBO_MASOTHUE: '8098765432', CHUNGTU: 'PC-0211', SOTIEN: '1200000', THUETNCN: '0', KYHIEU: '', SOCHUNGTU: '', NGAYCHUNGTU: '',
+          MOTA: 'Chấm thi', LOAIKHOAN_ID: 'LK3', LOAIKHOAN_TEN: 'Tiền thưởng', NGAYPHATSINH: '22/10/2025', TONGLUONG_THUNHAPKHAC: '152400000', TONGTHUE_TNCN: '4820000' }
+    ];
+    var kq = [
+        { ID: 'KQ1', NAM: 2026, THANG: 8, DAOTAO_COCAUTOCHUC_TEN: 'Khoa Công nghệ thông tin', NHANSU_HOSOCANBO_MASO: 'CB001', NHANSU_HOSOCANBO_HODEM: 'Nguyễn Văn', NHANSU_HOSOCANBO_TEN: 'Hùng',
+          NHANSU_HOSOCANBO_MASOTHUE: '8012345678', CHUNGTU: 'BL-08', SOTIEN: '18650000', THUETNCN: '420000', MOTA: 'Lương tháng 8', NGAYPHATSINH: '31/08/2026', TONGLUONG_THUNHAPKHAC: '37300000', TONGTHUE_TNCN: '840000' },
+        { ID: 'KQ2', NAM: 2026, THANG: 9, DAOTAO_COCAUTOCHUC_TEN: 'Khoa Công nghệ thông tin', NHANSU_HOSOCANBO_MASO: 'CB001', NHANSU_HOSOCANBO_HODEM: 'Nguyễn Văn', NHANSU_HOSOCANBO_TEN: 'Hùng',
+          NHANSU_HOSOCANBO_MASOTHUE: '8012345678', CHUNGTU: 'BL-09', SOTIEN: '18650000', THUETNCN: '420000', MOTA: 'Lương tháng 9', NGAYPHATSINH: '30/09/2026', TONGLUONG_THUNHAPKHAC: '37300000', TONGTHUE_TNCN: '840000' }
+    ];
+    ums.demo.add({
+        'L_DuocNhan/LayDanhSach': function () { return { rows: ds, pager: ds.length }; },
+        'L_DuocNhan/LayChiTiet': function (o) { return ds.filter(function (r) { return r.ID === o.strId; }); },
+        'L_KetQuaLuong/LayDanhSach': kq
+    });
+})();

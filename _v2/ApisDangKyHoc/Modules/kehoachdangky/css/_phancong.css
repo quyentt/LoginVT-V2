@@ -1,0 +1,59 @@
+/* =========================================================================
+   Khung chung các màn PHÂN CÔNG (Đăng ký học) — script/_phancong.js
+   Dùng ở: kehoachdangky/phanconglop, kehoachdangky/phancongphamvi,
+           nguyenvongdangky/phancongphamvi
+   ========================================================================= */
+
+/* Biểu mẫu hai cột: Thông tin phạm vi | Thời gian (gốc col-lg-6 | col-lg-6) */
+.dkhpc-cols {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--ums-sp-6);
+    align-items: start;
+}
+/* phanconglop: phạm vi 4 | lớp học phần 8 (gốc col-lg-4 | col-lg-8) */
+.dkhpc-cols--4-8 { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); }
+
+@media (max-width: 1199px) {
+    .dkhpc-cols,
+    .dkhpc-cols--4-8 { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Một dòng phạm vi: ô chọn giãn hết chỗ + nút "Thêm" */
+.dkhpc-pv { display: flex; align-items: center; gap: var(--ums-sp-2); }
+.dkhpc-pv__sel { flex: 1 1 auto; min-width: 0; }
+.dkhpc-pv > .ums-btn { flex: 0 0 auto; }
+
+/* "Phạm vi đã chọn:" */
+.dkhpc-pvchon {
+    padding: var(--ums-sp-3);
+    border: 1px dashed var(--ums-line);
+    border-radius: var(--ums-r-2);
+    background: var(--ums-surface-2);
+    font-size: var(--ums-fz-14);
+}
+.dkhpc-pvchon > span { color: var(--ums-blue); }
+
+/* Ngày | Giờ | Phút trên một hàng */
+.dkhpc-time {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--ums-sp-3);
+}
+.dkhpc-hai { gap: var(--ums-sp-3); }
+
+/* Danh sách phân công: mỗi phân cấp một bảng nhỏ, tự xếp hàng (gốc: bảng 300px thả trôi trái) */
+.dkhpc-luoi {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--ums-sp-4);
+    align-items: start;
+}
+.dkhpc-ten { text-align: left; }
+
+/* Thanh lọc chỉ có ô Kế hoạch: gốc col-sm-6 */
+.ums-filter > .dkhpc-kh { flex: 0 1 50%; }
+@media (max-width: 767px) { .ums-filter > .dkhpc-kh { flex: 1 1 100%; } }
+
+/* Ô đánh dấu đứng cùng hàng ô chọn trong thanh lọc — căn giữa theo chiều cao ô */
+.dkhpc-ck { align-self: center; }

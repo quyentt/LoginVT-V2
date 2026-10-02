@@ -1,0 +1,526 @@
+﻿<style>
+    .btn-white {
+        background-color: #fff;
+        -webkit-box-shadow: 1px 1px 1px 1px #ccc;
+        -moz-box-shadow: 1px 1px 1px 1px #ccc; /* Firefox 3.5 - 3.6 */
+        box-shadow: 1px 1px 1px 1px #ccc;
+        height: 26px;
+    }
+</style>
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <!-- /.left-content -->
+        <div class="col-lg-3">
+            <div class="box box-solid">
+                <div class="box-body">
+                    <div class="bss-item">
+                        <select id="dropSearch_DonViThanhVien_TCQT" class="select-opt">
+                            <option value="">--Tất cả đơn vị thành viên--</option>
+                        </select>
+                    </div>
+                    <div class="bss-item">
+                        <select id="dropSearch_ThanhVienDangKy_TCQT" class="select-opt-img">
+                            <option value="">--Tất cả thành viên đăng ký--</option>
+                        </select>
+                    </div>
+                    <div class="bss-item">
+                        <select id="dropSearch_NamDanhGia_DT" class="select-opt">
+                            <option value="">--Tất cả năm đánh giá--</option>
+                        </select>
+                    </div>
+                    <div class="bs-item input-group">
+                        <input type="text" id="txtSearch_TuKhoa" class="form-control" placeholder="Nhập từ khóa tìm kiếm">
+                        <span class="input-group-addon poiter btnExtend" title="Kéo xuống">
+                            <i class="fa fa-angle-double-down"></i>
+                        </span>
+                    </div>
+                    <div class="box-sub-search">
+                        <div class="bss-item">
+                            <i>Chọn điều kiện tìm kiếm:</i>
+                        </div>
+                        <div class="bss-item">
+                            <select id="dropSearch_LinhVuc_TCQT" class="select-opt">
+                                <option value="">--Chọn lĩnh vực--</option>
+                            </select>
+                        </div>
+                        <div class="bss-item">
+                            <select id="dropSearch_PhanLoai_TCQT" class="select-opt">
+                                <option value="">--Chọn phân loại--</option>
+                            </select>
+                        </div>
+                        <div class="bss-item">
+                            <select id="dropSearch_DeTai_TCQT" class="select-opt">
+                                <option value="">--Chọn đề tài--</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="bs-item pull-right">
+                        <a class="btn btn-default btnExtend_Search"><i class="fa fa-search"></i> <span class="lang" key="">Tìm kiếm</span></a>
+                    </div>
+                </div>
+            </div>
+            <div class="box box-solid">
+                <div class="box-header with-border">
+                    <h3 class="box-title" title="Tổng bài báo trong nước">
+                        <i class="fa fa-list-alt"></i> Tạp chí quốc tế
+                    </h3>
+                    <span class="badge bg-light-blue">
+                        <span id="lblaiBaoQT_Tong"></span>
+                    </span>
+                </div>
+                <div class="box-body">
+                    <table id="tblTCQT" class="table table-hover">
+                        <tbody>
+                            <!-- Load from js -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- /.right-content -->
+        <div class="col-lg-9">
+            <!-- box Notify_TCQT -->
+            <div class="box box-solid zone-bus" id="zone_notify_tcqt">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><i class="fa fa-info"></i> Thông tin chung</h3>
+                </div>
+                <div class="box-body">
+                    <div class="col-sm-12">
+                        <p>- Hôm nay bạn có sản phẩm mới không? <a class="btn btnAddnew" href="#"><i class="fa fa-plus"></i> Thêm mới</a></p>
+                    </div>
+                </div>
+            </div>
+            <!-- Edit - Thong tin bai bao -->
+            <div class="box box-solid form-container zone-bus" id="zone_input_tcqt">
+                <div class="box-header with-border">
+                    <h3 class="box-title">.. <i class="fa fa-pencil"></i> Kê khai bài báo quốc tế </h3>
+                    <div class="pull-right">
+                        <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times"></i></a>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="col-sm-12 box-view">
+                        <div class="row zone-box">
+                            <!-- 1. Noi dung bai bao -->
+                            <div class="row">
+                                <p class="group-title-name">
+                                    <span class="badge bg-blue">Thông tin bài báo</span>
+                                </p>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Tên bài báo (*)<span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-8">
+                                    <input id="txtTCQT_Ten" class="form-control form-border-bottom" placeholder="Nhập tên bài báo" />
+                                </div>
+
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        <a class="btn btn-white btnSearchTCQT_BaiBao" id=""><i class="fa fa-search color-active"></i> Tìm bài báo</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Tên tạp chí (*)<span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <input id="txtTCQT_TenTapChi" class="form-control form-border-bottom" placeholder="Nhập tên tạp chí" />
+                                </div>
+
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Mã ISSN (*)<span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <input id="txtTCQT_ISSN" class="form-control form-border-bottom" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Lĩnh vực <span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <select id="dropTCQT_LinhVuc" class="select-opt">
+                                        <option value="">--- Chọn lĩnh vực --</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Loại bài báo<span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <select id="dropTCQT_LoaiBaiBao" class="select-opt">
+                                        <option value="">--- Chọn loại bài báo--</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Mã sản phẩm (*)<span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <input id="txtTCQT_Ma" class="form-control form-border-bottom" />
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Hệ số IF<span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <input id="txtTCQT_HeSoIF" class="form-control form-border-bottom" />
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Số doi<span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <input id="txtTCQT_SoDOI" class="form-control form-border-bottom" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Tổng số tác giả<span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <input id="txtTCQT_TongSoTacGia" class="form-control form-border-bottom" />
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Số tác giả trong trường<span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <input id="txtTCQT_SoTacGiaTrongTruong" class="form-control form-border-bottom" />
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Có nằm trong danh mục ISI/Scopus<span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <select id="dropDM_ISI" class="select-opt">
+                                        <option value="-1">Không xét</option>
+                                        <option value="0">Không</option>
+                                        <option value="1">Có</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Tập<span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <input id="txtTCQT_Tap" class="form-control form-border-bottom" />
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Số<span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <input id="txtTCQT_So" class="form-control form-border-bottom" />
+                                </div>
+
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Trang <span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <input id="txtTCQT_Trang" class="form-control form-border-bottom" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Năm hoàn thành<span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <input id="txtTCQT_NamHoanThanh" class="form-control form-border-bottom" />
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Năm công bố<span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <input id="txtTCQT_NamCongBo" class="form-control form-border-bottom" />
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Tháng công bố<span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <input id="txtTCQT_ThangCongBo" class="form-control form-border-bottom" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Trích dẫn<span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-10">
+                                    <textarea id="txtTCQT_TrichDanPubmed" class="form-control form-border-bottom">
+                                </textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row zone-box">
+                            <!-- 2. Minh chung -->
+                            <div class="row">
+                                <p class="group-title-name">
+                                    <span class="badge bg-blue">Nội dung minh chứng</span>
+                                </p>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Nội dung<span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-10">
+                                    <input id="txtTCQT_NoiDungMinhChung" class="form-control form-border-bottom" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        File đính kèm<span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-10">
+                                    <div id="txtTCQT_FileDinhKem">
+
+                                    </div>
+                                </div>
+                                <div class="clear"></div>
+                                <div style="font-style: italic; font-size: 12px">Chú ý: File đính kèm là pdf chứa các hình ảnh (trang bìa, trang đầu, trang cuối, mục lục, số ISSN)</div>
+                            </div>
+                        </div>
+                        <div class="row zone-box">
+                            <!-- 3. Thanh vien tham gia -->
+                            <div class="row">
+                                <p class="group-title-name">
+                                    <span class="badge bg-blue">Thành viên trong trường tham gia</span>
+                                </p>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-10">
+                                    <div class="group-title-name">
+                                        Vui lòng chọn thành viên trong trường tham gia
+                                        <a class="btn btn-default btnSearchTCQT_NhanSu" id=""><i class="fa fa-search color-active"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <table id="tblInput_TCQT_ThanhVien" class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <td class="td-fixed td-center">#</td>
+                                            <td class="td-center">Hình ảnh</td>
+                                            <td>Họ tên</td>
+                                            <td>Vai trò</td>
+                                            <td class="td-center">Xóa</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- load from js -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row zone-box">
+                            <!-- 4. Thanh vien tham gia -->
+                            <div class="row">
+                                <p class="group-title-name">
+                                    <span class="badge bg-blue">Thành viên ngoài trường tham gia</span>
+                                </p>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-10">
+                                    <div class="group-title-name">
+                                        Vui lòng chọn thành viên ngoài trường tham gia
+                                        <a class="btn btn-default btnSearchTCQT_NhanSu_NgoaiTruong" id=""><i class="fa fa-search color-active"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <table id="tblInput_TCQT_ThanhVien_NgoaiTruong" class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <td class="td-fixed td-center">#</td>
+                                            <td>Họ tên</td>
+                                            <td>Vai trò</td>
+                                            <td class="td-center">Xóa</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- load from js -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row zone-box">
+                            <div class="row">
+                                <p class="group-title-name">
+                                    <span class="badge bg-blue">Đề tài của sản phẩm</span>
+                                </p>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Thuộc đề tài<span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-10">
+                                    <select id="dropTCQT_DeTai" class="select-opt">
+                                        <option value="">--- Chọn đề tài--</option>
+                                    </select>
+                                </div>
+                                <div class="clear"></div>
+                                <div style="font-style: italic; font-size: 12px">Chú ý: Nếu sản phẩm không thuộc đề tài nào thì bỏ qua mục này</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="box-footer">
+                    <div class="pull-right">
+                        <a class="btn btn-default btnReWrite" href="#" title="Xóa trắng toàn bộ thông tin nhập"><i class="fa fa fa-eraser"></i> Nhập tiếp</a>
+                        <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times-circle"></i> Đóng</a>
+                        <a id="btnSave_TCQT" class="btn btn-primary"><i class="fa fa-check"></i> Lưu</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<div class="modal fade" id="modal_nhansu" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <!-- load from js -->
+</div>
+<div class="modal fade" id="modal_TimBaiBao" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width:80%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title modal-name" id="myModalLabel"><i class="fa fa-search"></i> Tìm kiếm bài báo</h4>
+            </div>
+            <div class="modal-body" id="modalContent">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <div class="box box-solid">
+                            <div class="box-body">
+                                <div class="search">
+                                    <div class="item-modal">
+                                        <p class="group-title"><i class="fa fa-ellipsis-v"></i><i class="fa fa-ellipsis-v"></i> Tìm kiếm</p>
+                                    </div>
+                                    <div class="item-modal">
+                                        <input id="txtSearchModal_TCQT_TuKhoa" class="form-control" placeholder="Nhập từ khóa tìm kiếm" />
+                                    </div>
+                                    <div class="item-modal">
+                                        <select id="dropSearchModal_TCQT_DonVi" class="select-opt" style="width:100% !important">
+                                            <option value=""> -- Chọn đơn vị -- </option>
+                                        </select>
+                                    </div>
+                                    <div class="item-modal">
+                                        <select id="dropSearchModal_TCQT_LinhVuc" class="select-opt" style="width:100% !important">
+                                            <option value=""> -- Chọn lĩnh vực-- </option>
+                                        </select>
+                                    </div>
+                                    <div class="item-modal">
+                                        <a class="btn btn-default" href="#" id="btnSearch_Modal_TCQT"><i class="fa fa-search fa-customer"></i> Tìm kiếm</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-9">
+                        <div class="box box-solid">
+                            <div class="box-body">
+                                <div class="item-modal">
+                                    <p class="group-title"><i class="fa fa-ellipsis-v"></i><i class="fa fa-ellipsis-v"></i> Danh sách</p>
+                                </div>
+                                <div class="scroll-table-x">
+                                    <table id="tblModal_TCQT" class="table">
+                                        <thead>
+                                            <tr>
+                                                <th class="td-fixed td-center">Stt</th>
+                                                <th class="td-left">Tên bài báo</th>
+                                                <th class="td-left">Tên tạp chí</th>
+                                                <th class="td-left">Lĩnh vực</th>
+                                                <th class="td-fixed td-center">#</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" id="btnCancel"><i class="fa fa-times-circle"></i> Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- page script -->
+<script src="modules/quanlysanpham/script/tapchiquocte.js?v=1.0.0.0"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['TapChiQuocTe'] = new TapChiQuocTe();
+    $(document).ready(function () {
+        main_doc.TapChiQuocTe.init();
+    });
+</script>
+<!-- FIX 2026-08-26: Select2 trong modal — re-init voi dropdownParent = modal
+     de popup nam trong modal, khong lech / che noi dung. Universal handler,
+     an toan khi modal khong co select. -->
+<script>
+(function () {
+    if (typeof jQuery === 'undefined') return;
+    var $ = jQuery;
+    $(document).off('shown.bs.modal.__s2fix').on('shown.bs.modal.__s2fix', '.modal', function () {
+        var $modal = $(this);
+        $modal.find('select.select-opt, select[id^="drop"]').each(function () {
+            var $sel = $(this);
+            try {
+                if ($sel.hasClass('select2-hidden-accessible')) $sel.select2('destroy');
+            } catch (e) {}
+            $sel.select2({ dropdownParent: $modal, width: '100%' });
+        });
+    });
+})();
+</script>
+<style>
+    .modal .select2-container--open,
+    .modal .select2-container--open .select2-dropdown {
+        z-index: 100060 !important;
+    }
+    .modal .select2-results__options {
+        max-height: 220px !important;
+        overflow-y: auto !important;
+    }
+</style>

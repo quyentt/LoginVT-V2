@@ -1,0 +1,436 @@
+﻿<style>
+    /*.finance-modal .input-row{
+        display: flex
+    }*/
+    .finance-modal .form-add-info .form-label {
+        font-size: unset;
+        color: unset;
+    }
+
+    .zone-bus .select2-container--open {
+        max-width: unset;
+    }
+</style>
+<div class="one-door aps-phieu">
+    <div class="overlay"></div>
+    <div class="content-tab no-tab">
+        <div class="d-flex justify-content-between">
+            <div class="nav-content-left">
+                <p class="link">
+                    <a href="#">quản lý chung</a><i class="fal fa-angle-right"></i><a href="#">Quản lý phiếu 12
+                    </a>
+                </p>
+            </div>
+            <div class="nav-content-right">
+                <a class="d-block text-right" href=""><i class="fas fa-question-circle"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- đăng ký nguyện vọng -->
+    <div class="box-shadow register-wish pt-0 zone-bus" id="zonebatdau">
+        <!-- Bộ tìm kiếm -->
+        <div class="form-top">
+            <div class="row">
+                <div class="col-12 col-lg-3 col-md-6 mb-15">
+                    <div class="form-item d-flex  form-add-info flex-grow-1">
+                        <div class="input-group no-icon">
+                            <input type="text" class="form-control" id="txtSearch" placeholder="Nhập từ khóa tìm kiếm">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-4 col-md-3 mb-15">
+                    <div class="d-flex align-items-center">
+                        <div class="btn btn-search btn-default min-w-auto px-4 ms-auto ms-lg-0" id="btnSearch">
+                            <i class="fal fa-search me-2"></i> Tìm kiếm
+                        </div>
+                        <div class="dropdown" id="zonebtnBaoCao_Phieu"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- Danh sách phiếu -->
+        <div class="container-fluid px-20 mt-20">
+            <div class="d-flex align-items-center mt-4 flex-wrap mb-4">
+                <div class="group-title pl0">
+                    <p class="mb-0 pt-10">
+                        <i class="fa-solid fa-list-timeline"></i>
+                        <span class="lang" key="">Danh sách phiếu</span>
+                    </p>
+                </div>
+                <!-- <p class="mb-0 color-dask-blue fw-bold pt10 "></p> -->
+                <div class="ms-auto aps-gap-10">
+                    <div class="btn btn-soft-danger" id="btnDelete_Phieu" style="min-width: unset"><i
+                            class="fal fa-trash"></i> Xóa</div>
+                    <div class="btn btn-success btnAdd" id="btnAdd_Phieu">
+                        <i class="fal fa-plus"></i> Thêm mới
+                    </div>
+                </div>
+
+            </div>
+            <table class="table transcrip-table tabs-scores h-auto tblPhieu table-bordered table-noborder"
+                id="tblPhieu">
+                <thead>
+                    <tr>
+                        <th class="text-center w-50px" scope="col">STT</th>
+                        <th class="" scope="col">Tên phiếu</th>
+                        <th class="text-center" scope="col">Loại phiếu</th>
+                        <th class="text-center" scope="col">Phân quyền</th>
+                        <th class="text-center" scope="col">Xem tổng thế phiếu</th>
+                        <th class="text-center" scope="col">Xem phiếu</th>
+                        <th class="text-center w-50px" scope="col">Sửa</th>
+                        <th class="text-center" scope="col"><input type="checkbox" id="chkSelectAll_Phieu"></th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Câu hỏi -->
+    <div class="fake-modal zone-bus modal-question" id="zoneEdit" style="display: none">
+        <div class="box-shadow register-wish pt-0 position-relative modal-aps-add">
+            <div class="d-flex justify-content-between pt-3 px-20 box-header">
+                <div class="nav-content-left">
+                    <p class="link"><a> <span class="myModalLabel"><i
+                                    class="fa-regular fa-file-circle-question fw-bold"></i></span>Câu hỏi</a></p>
+                </div>
+                <div class="nav-content-right mt">
+                    <a class="d-block text-right fs-16 mt-5 color-fff btnClosePhieu"><i class="fal fa-times"></i></a>
+                </div>
+            </div>
+
+            <div class="form-top rounded-0 border-top">
+                <div class="row">
+                    <div class="col-12 col-md-4 col-lg-4 pr-0">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label" style="width:150px">Tên câu hỏi</label>
+                            <div class="input-group">
+                                <input class="form-control" id="txtCauHoi" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4 col-lg-4">
+                        <div class="form-item d-flex mb-0 form-add-info ">
+                            <label class="form-label text-right pr-15" style="width:150px">Thuộc nhóm</label>
+                            <div class="input-group">
+                                <select id="dropThuocNhom" class="select-opt"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4 col-lg-4">
+                        <div class="form-item d-flex mb-0 form-add-info">
+                            <label class="form-label text-right pr-15" style="width:150px">Thứ tự</label>
+                            <div class="input-group">
+                                <input id="txtThuTu" class="form-control w-100" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4 col-lg-4">
+                        <div class="form-item d-flex mb-0 form-add-info no-icon">
+                            <label class="form-label" style="width:150px">Loại câu hỏi</label>
+                            <div class="input-group">
+                                <select id="dropLoaiCauHoi" class="select-opt">
+                                    <option value="3">Chọn 1 đáp án</option>
+                                    <option value="4">Chọn nhiều đáp án</option>
+                                    <option value="2">Câu hỏi mở gõ trực tiếp</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4 col-lg-4">
+                        <div class="form-item d-flex mb-0 form-add-info no-icon">
+                            <label class="form-label text-right pr-15" style="width:150px">Kiểu trả lời</label>
+                            <div class="input-group">
+                                <select id="dropKieuTraLoi" class="select-opt">
+                                    <option value="1">Bắt buộc</option>
+                                    <option value="0">Không bắt buộc</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4 col-lg-4">
+                        <div class="form-item d-flex mb-15 form-add-info no-icon">
+                            <label class="form-label text-right pr-15" style="width:150px">Kiểu hiển thị</label>
+                            <div class="input-group">
+                                <select id="dropKieuHienThi" class="select-opt">
+                                    <option value="1">Mặc định</option>
+                                    <option value="0">Hàng ngang</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid px-20">
+                <div class="row">
+                    <div class="col-12 col-lg-6 mt-6 pl0">
+                        <div class="d-flex align-items-center w-100 justify-content-between">
+                            <span class="fw-bold text-success pull-left">Danh sách đáp án mẫu</span>
+                        </div>
+                        <div class="d-flex align-items-center w-100 justify-content-between mt-8">
+                            <select id="dropSearch_CauHoi" class="select-opt form-select mr-10"
+                                style="width: 600px !important;" aria-label="Default select example"></select>
+                            <!-- <button class="btn-sm btn btn-outline-secondary min-w-auto px-3 ms-auto btnDelete_PhamVi"><i class="fal fa-trash me-1"></i> Xóa</button> -->
+                            <button class="btn-sm btn btn-soft-success pull-right min-w-100p ml-10"
+                                id="btnAdd_DapAn_Mau">
+                                <i class="fal fa-plus"></i> Thêm</button>
+                        </div>
+                        <div class="mt-10 aps-table-select">
+                            <table
+                                class="table transcrip-table tabs-scores tblDapAn_Mau mt-10 table-bordered table-noborder"
+                                id="tblDapAn_Mau">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center w-50px" scope="col">STT</th>
+                                        <th scope="col" class="text-center">Tên </th>
+                                        <th scope="col" class="text-center">Mã </th>
+                                        <th scope="col" class="text-center">Thứ tự</th>
+                                        <th scope="col" class="text-center">Trọng số </th>
+                                        <th class="text-center" scope="col">
+                                            <input class="form-check-input" type="checkbox" id="chkSelectAll_DapAn_Mau">
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6 mt-6 pr-0">
+                        <div class="d-flex align-items-center">
+                            <span class="fw-bold text-success">Danh sách đáp án dụng cho câu hỏi</span>
+                            <!--<button class="btn-sm btn btn-outline-secondary min-w-auto px-3 ms-auto btnAdd_DapAn"><i class="fal fa-trash me-1"></i> Xóa</button>-->
+                            <!--<button class="btn-sm btn btn-outline-success min-w-auto px-3 ms-2 btnAdd_PhamVi"><i class="fal fa-plus me-1"></i> Thêm</button>-->
+                        </div>
+                        <div class="mt-8 aps-table-select">
+                            <table class="table transcrip-table tabs-scores table-bordered table-noborder tblDapAn"
+                                id="tblDapAn">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center w-50px" scope="col">STT</th>
+                                        <th scope="col" class="text-center">Tên </th>
+                                        <th scope="col" class="text-center">Mã </th>
+                                        <th scope="col" class="text-center">Thứ tự</th>
+                                        <th scope="col" class="text-center">Trọng số </th>
+                                        <th class="text-center" scope="col">
+                                            <!--<input class="form-check-input" type="checkbox" id="chkSelectAll_DapAn">-->
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                        <div style="width: 100%; margin-top: 10px">
+                            <button class="btn-sm btn btn-soft-primary min-w-auto btnAdd_DapAn" style="float: right">
+                                <i class="fal fa-plus me-1"></i>Thêm dòng</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid px-20 pl-0 pr-0">
+                <hr />
+                <div class="d-flex align-items-center flex-wrap pl20 pr20">
+                    <div class="ms-auto aps-gap-10">
+                        <div class="btn btn-outline-secondary btnClosePhieu">
+                            <i class="fal fa-times"></i>Đóng
+                        </div>
+                        <div class="btn btn-soft-danger" id="btnDelete_Phieu" style="min-width: unset">
+                            <i class="fal fa-trash"></i>Xóa
+                        </div>
+                        <div class="btn btn-primary" id="btnSave_CauHoi"><i class="fal fa-save"></i>Lưu</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!-- Chỉnh sửa -->
+    <div class="fake-modal zonePhieu zone-bus zonePhieu-edit" id="zonePhieu" style="display: none">
+        <div class="box-shadow register-wish pt-0 position-relative modal-aps-add">
+            <div class="d-flex justify-content-between pt-3 px-20 box-header">
+                <div class="nav-content-left">
+                    <p class="link"><a><span class="myModalLabel1">
+                                <i class="fa-solid fa-pen"></i>Chỉnh sửa - </span>Phiếu</a></p>
+                </div>
+                <div class="nav-content-right mt">
+                    <a class="d-block text-right fs-16 color-fff btnClose mt-5"><i class="fal fa-times"></i></a>
+                </div>
+            </div>
+            <div class="form-top rounded-0 border-top" style="background: unset">
+                <div class="cmc-page">
+                    <div class="cmc-con">
+                        <div class="container">
+                            <div class="cmc-con-before" style="z-index: unset">
+                                <div class="cmc-main-title" id="lblTieuDe">
+                                </div>
+                                <!--<a href="" class="btn">
+                                    <i class="fal fa-paper-plane"></i>
+                                    <span>Lưu</span>
+                                </a>-->
+                            </div>
+                            <div class="cmc-suvery">
+                                <div class="cmc-suvery-head">
+                                    <div class="tern-name" id="lblMoTaPhieu">
+                                    </div>
+                                    <div class="d-flex align-items-right" style="float: right; margin-right: -15px">
+                                        <a class="btn btn-soft-success btnAdd" id="btnAdd_Nhom" style="min-width: unset">
+                                            <i class="fal fa-plus"></i><span>Thêm nhóm</span>
+                                        </a>
+                                        <a class="btn btn-soft-primary btnAdd_CauHoi btnAdd" style="min-width: unset">
+                                            <i class="fal fa-plus"></i><span>Thêm câu hỏi</span>
+                                        </a>
+                                    </div>
+                                    <div style="clear: both"></div>
+                                </div>
+                                <div class="cmc-suvery-content" id="tblNoiDung">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!-- end đăng ký nguyện vọng -->
+</div>
+<!-- ---------- -->
+<div class="aps-all-button ml-20 aps-gap-10" style="display: none !important;">
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">
+        Phiếu mẫu </button>
+    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#myModal_NhomCauHoi">
+        Nhóm câu hỏi </button>
+</div>
+<!-- ---------- -->
+
+
+<!-- modal khối kiến thức chuyên ngành-->
+<div class="modal fade finance-modal" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="finance-user-info in-modal ">
+                    <p><span class="myModalLabel"><i class="fa-solid fa-file-lines"></i></span> Phiếu mẫu</a></p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-item d-flex mb-15 form-add-info no-icon">
+                    <label class="form-label">Tên phiếu</label>
+                    <div class="input-group  no-icon">
+                        <input class="form-control" id="txtTen" />
+                    </div>
+                </div>
+                <div class="form-item d-flex mb-15 form-add-info no-icon">
+                    <label class="form-label">Mã</label>
+                    <div class="input-group  no-icon">
+                        <input class="form-control" id="txtMa" />
+                    </div>
+                </div>
+                <div class="form-item d-flex mb-15 form-add-info no-icon">
+                    <label class="form-label">Phân loại</label>
+                    <div class="input-group input-group-select no-icon">
+                        <select id="dropPhanLoai" class="select-opt"></select>
+                    </div>
+                </div>
+                <div class="form-item d-flex mb-15 form-add-info">
+                    <label class="form-label">Mô tả</label>
+                    <div class="input-group input-group-tẽ no-icon">
+                        <textarea id="txtMoTa" class="form-control form-control-textarea" style="min-height: 200px"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <!--<div class="btn btn-outline-secondary" id="btnDelete_Phieu"><i class="fal fa-trash me-2"></i> Xóa</div>-->
+                <div class="btn btn-primary" id="btnSave_Phieu">
+                    <i class="fal fa-save me-2"></i>Lưu
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- modal khối kiến thức chuyên ngành-->
+<div class="modal fade finance-modal myModal_NhomCauHoi" id="myModal_NhomCauHoi" tabindex="-1"
+    aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="finance-user-info in-modal ">
+                    <p><span class="myModalLabel"> <i class="fa-solid fa-circle-question"></i> </span> Nhóm câu hỏi</a>
+                    </p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-item d-flex mb-15 form-add-info no-icon">
+                    <label class="form-label">Tên nhóm</label>
+                    <div class="input-group  no-icon">
+                        <input class="form-control" id="txtTen_NhomCauHoi" />
+                    </div>
+                </div>
+                <div class="form-item d-flex mb-15 form-add-info no-icon">
+                    <label class="form-label">Thứ tự trên phiếu</label>
+                    <div class="input-group  no-icon">
+                        <input class="form-control" id="txtThuTu_NhomCauHoi" />
+                    </div>
+                </div>
+                <div class="form-item d-flex mb-15 form-add-info">
+                    <label class="form-label">Mô tả</label>
+                    <div class="input-group  no-icon">
+                        <textarea id="txtMoTa_NhomCauHoi" class="form-control" style="min-height: 200px"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="pull-left aps-all-btn">
+                    <div class="btn btn-soft-danger" id="btnDelete_Nhom"><i class="fal fa-trash"></i>Xóa</div>
+                </div>
+                <div class="pull-right aps-all-btn">
+                    <div class="btn btn-primary" style="float: right" id="btnSave_Nhom">
+                        <i class="fal fa-save me-2"></i>Lưu</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="modules/khaosat/script/Phieu.js?v=1.0.0.0"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['Phieu'] = new Phieu();
+    $(document).ready(function () {
+        main_doc.Phieu.init();
+    });
+</script>
+<!-- FIX 2026-08-26: Select2 trong modal — re-init voi dropdownParent = modal
+     de popup nam trong modal, khong lech / che noi dung. Universal handler,
+     an toan khi modal khong co select. -->
+<script>
+(function () {
+    if (typeof jQuery === 'undefined') return;
+    var $ = jQuery;
+    $(document).off('shown.bs.modal.__s2fix').on('shown.bs.modal.__s2fix', '.modal', function () {
+        var $modal = $(this);
+        $modal.find('select.select-opt, select[id^="drop"]').each(function () {
+            var $sel = $(this);
+            try {
+                if ($sel.hasClass('select2-hidden-accessible')) $sel.select2('destroy');
+            } catch (e) {}
+            $sel.select2({ dropdownParent: $modal, width: '100%' });
+        });
+    });
+})();
+</script>
+<style>
+    .modal .select2-container--open,
+    .modal .select2-container--open .select2-dropdown {
+        z-index: 100060 !important;
+    }
+    .modal .select2-results__options {
+        max-height: 220px !important;
+        overflow-y: auto !important;
+    }
+</style>

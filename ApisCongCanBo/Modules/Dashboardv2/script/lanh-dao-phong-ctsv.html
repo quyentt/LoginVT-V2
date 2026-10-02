@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Lãnh đạo Phòng CTSV</title>
+    <style>
+        /* ============================================
+           DASHBOARD PHÒNG CTSV - GIAO DIỆN
+           Thiết kế: Modern, Responsive, Clean
+           ============================================ */
+
+        * { box-sizing: border-box; }
+
+        .main-content,
+        section.content.aps-congcanbo {
+            max-width: none !important;
+            width: 100% !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        .dashboard-phong-ctsv {
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        /* Breadcrumb */
+        .dashboard-phong-ctsv .content-tab.no-tab {
+            margin-bottom: 10px;
+            background: white;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .dashboard-phong-ctsv .content-tab.no-tab .link {
+            margin: 0;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .dashboard-phong-ctsv .content-tab.no-tab .link a {
+            color: #64748b;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .dashboard-phong-ctsv .content-tab.no-tab .link a:hover {
+            color: #f43f5e;
+        }
+
+        /* Header */
+        .dashboard-header {
+            padding: 30px 20px;
+            background: linear-gradient(135deg, #fb7185 0%, #f43f5e 100%);
+            color: white;
+            margin: 0 0 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .dashboard-header h3 {
+            margin: 0 0 10px 0;
+            font-size: 28px;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+        }
+
+        .dashboard-header p {
+            margin: 0;
+            font-size: 16px;
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 30px;
+            font-size: 14px;
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+            margin-top: 14px;
+            flex-wrap: wrap;
+        }
+
+        .header-stat {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.12);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Stats grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            padding: 0 20px 20px 20px;
+            margin-bottom: 0;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--card-color);
+        }
+
+        .stat-card.rose { --card-color: #f43f5e; }
+        .stat-card.green { --card-color: #10b981; }
+        .stat-card.blue { --card-color: #3b82f6; }
+        .stat-card.orange { --card-color: #f59e0b; }
+        .stat-card.red { --card-color: #ef4444; }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            background: var(--card-color);
+        }
+
+        .stat-trend {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .stat-trend.up {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .stat-trend.down {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 8px;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #64748b;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+
+        .stat-subtitle {
+            font-size: 13px;
+            color: #94a3b8;
+            margin: 0;
+        }
+
+        /* Layout */
+        .main-content-grid {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 20px;
+            padding: 0 20px 20px 20px;
+            overflow: visible;
+            min-height: 600px;
+        }
+
+        .charts-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            min-width: 0;
+            width: 100%;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            width: 100%;
+            min-height: 460px;
+            overflow: hidden;
+        }
+
+        .chart-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .chart-header {
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chart-subtitle {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .chart-canvas {
+            height: 360px;
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            padding: 10px;
+        }
+
+        .chart-canvas canvas {
+            max-height: 360px !important;
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        /* Sidebar */
+        .dashboard-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            min-width: 350px;
+            max-width: 400px;
+            width: 400px;
+            height: fit-content;
+        }
+
+        .sidebar-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .sidebar-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .sidebar-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Filters */
+        .filter-group {
+            margin-bottom: 20px;
+        }
+
+        .filter-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .filter-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .filter-select:focus {
+            border-color: #f43f5e;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.12);
+        }
+
+        /* Buttons */
+        #applyFilters:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(244, 63, 94, 0.35);
+        }
+
+        #applyFilters:active {
+            transform: translateY(0);
+        }
+
+        #resetFilters:hover {
+            background: #e2e8f0;
+            color: #475569;
+        }
+
+        /* Quick Stats */
+        .quick-stats {
+            background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #fecdd3;
+        }
+
+        .quick-stats-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #9f1239;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .quick-stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(244, 63, 94, 0.12);
+        }
+
+        .quick-stat-item:last-child {
+            border-bottom: none;
+        }
+
+        .quick-stat-label {
+            font-size: 13px;
+            color: #0f172a;
+            font-weight: 500;
+        }
+
+        .quick-stat-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: #9f1239;
+        }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        .slide-up {
+            animation: slideUp 0.8s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .stat-card:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card:nth-child(2) { animation-delay: 0.2s; }
+        .stat-card:nth-child(3) { animation-delay: 0.3s; }
+        .stat-card:nth-child(4) { animation-delay: 0.4s; }
+
+        /* Responsive */
+        @media (max-width: 1400px) {
+            .main-content-grid {
+                grid-template-columns: 1fr 350px;
+                gap: 15px;
+            }
+
+            .dashboard-sidebar {
+                min-width: 320px;
+                max-width: 350px;
+                width: 350px;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .main-content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-sidebar {
+                min-width: 0;
+                max-width: none;
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+                padding: 0 15px 15px 15px;
+            }
+
+            .main-content-grid {
+                padding: 0 15px 15px 15px;
+            }
+
+            .dashboard-header {
+                padding: 20px 15px;
+            }
+
+            .header-stats {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<section class="content aps-congcanbo">
+    <div class="row dashboard-phong-ctsv">
+        <!-- Breadcrumb -->
+        <div class="content-tab no-tab">
+            <p class="link">
+                <a href="#">Dashboard</a><i class="fal fa-angle-right"></i>
+                <a href="#">Lãnh đạo Phòng CTSV</a>
+            </p>
+        </div>
+
+        <!-- Header -->
+        <div class="dashboard-header">
+            <h3>
+                <i class="fa-solid fa-people-group"></i>
+                Dashboard Lãnh đạo Phòng CTSV
+            </h3>
+            <p>🎓 Quản lý công tác sinh viên, học bổng và hỗ trợ - Dữ liệu cập nhật theo thời gian thực</p>
+            <div class="header-stats">
+                <div class="header-stat">
+                    <i class="fa-solid fa-clock"></i>
+                    <span>Cập nhật: <span id="lastUpdateTime">--</span></span>
+                </div>
+                <div class="header-stat">
+                    <i class="fa-solid fa-database"></i>
+                    <span>Nguồn: Hệ thống CTSV</span>
+                </div>
+                <div class="header-stat">
+                    <i class="fa-solid fa-shield-check"></i>
+                    <span>Trạng thái: <span id="systemStatus">Đang tải...</span></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid fade-in" id="statsCards">
+            <!-- Sẽ được render bởi JavaScript -->
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content-grid">
+            <!-- Charts Section -->
+            <div class="charts-section">
+                <!-- Chart 1: Hoạt động CTSV -->
+                <div class="chart-card slide-up">
+                    <div class="chart-header">
+                        <h3 class="chart-title">
+                            <i class="fa-solid fa-chart-bar" style="color: #f43f5e;"></i>
+                            Hoạt động CTSV theo loại
+                        </h3>
+                        <p class="chart-subtitle">Phân bố các hoạt động công tác sinh viên</p>
+                    </div>
+                    <div class="chart-canvas">
+                        <canvas id="activityChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Chart 2: Học bổng và hỗ trợ -->
+                <div class="chart-card slide-up">
+                    <div class="chart-header">
+                        <h3 class="chart-title">
+                            <i class="fa-solid fa-award" style="color: #10b981;"></i>
+                            Học bổng và hỗ trợ
+                        </h3>
+                        <p class="chart-subtitle">Số lượng sinh viên được hỗ trợ theo tháng</p>
+                    </div>
+                    <div class="chart-canvas">
+                        <canvas id="scholarshipChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Chart 3: Kỷ luật sinh viên -->
+                <div class="chart-card slide-up">
+                    <div class="chart-header">
+                        <h3 class="chart-title">
+                            <i class="fa-solid fa-triangle-exclamation" style="color: #ef4444;"></i>
+                            Tình hình kỷ luật sinh viên
+                        </h3>
+                        <p class="chart-subtitle">Thống kê vi phạm và xử lý kỷ luật</p>
+                    </div>
+                    <div class="chart-canvas">
+                        <canvas id="disciplineChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="dashboard-sidebar">
+                <!-- Filters -->
+                <div class="sidebar-card">
+                    <h3 class="sidebar-title">
+                        <i class="fa-solid fa-filter"></i>
+                        Bộ lọc &amp; Tùy chọn
+                    </h3>
+
+                    <!-- Năm học -->
+                    <div class="filter-group">
+                        <label class="filter-label">
+                            <i class="fa-solid fa-calendar-days" style="margin-right: 5px;"></i>
+                            Năm học
+                        </label>
+                        <select id="yearFilter" class="filter-select">
+                            <option value="2024-2025" selected>2024-2025</option>
+                            <option value="2023-2024">2023-2024</option>
+                            <option value="2022-2023">2022-2023</option>
+                            <option value="2021-2022">2021-2022</option>
+                        </select>
+                    </div>
+
+                    <!-- Học kỳ / Đợt -->
+                    <div class="filter-group">
+                        <label class="filter-label">
+                            <i class="fa-solid fa-calendar-week" style="margin-right: 5px;"></i>
+                            Học kỳ / Đợt
+                        </label>
+                        <select id="semesterFilter" class="filter-select">
+                            <option value="" selected>Tất cả</option>
+                            <option value="hk1">Học kỳ 1</option>
+                            <option value="hk2">Học kỳ 2</option>
+                            <option value="he">Học kỳ hè</option>
+                            <option value="dot1">Đợt 1</option>
+                            <option value="dot2">Đợt 2</option>
+                        </select>
+                    </div>
+
+                    <!-- Bậc đào tạo -->
+                    <div class="filter-group">
+                        <label class="filter-label">
+                            <i class="fa-solid fa-graduation-cap" style="margin-right: 5px;"></i>
+                            Bậc đào tạo
+                        </label>
+                        <select id="levelFilter" class="filter-select">
+                            <option value="all" selected>Tất cả</option>
+                            <option value="dai-hoc">Đại học</option>
+                            <option value="thac-si">Thạc sĩ</option>
+                            <option value="tien-si">Tiến sĩ</option>
+                        </select>
+                    </div>
+
+                    <!-- Đơn vị -->
+                    <div class="filter-group">
+                        <label class="filter-label">
+                            <i class="fa-solid fa-building-columns" style="margin-right: 5px;"></i>
+                            Đơn vị
+                        </label>
+                        <select id="unitFilter" class="filter-select">
+                            <option value="toan-truong" selected>Toàn trường</option>
+                            <option value="khoa">Theo Khoa</option>
+                            <option value="nganh">Theo Ngành/CTĐT</option>
+                        </select>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                        <button id="applyFilters" style="flex: 1; padding: 12px; background: linear-gradient(135deg, #fb7185 0%, #f43f5e 100%); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                            <i class="fa-solid fa-check" style="margin-right: 6px;"></i>
+                            Áp dụng
+                        </button>
+                        <button id="resetFilters" style="flex: 1; padding: 12px; background: #f1f5f9; color: #64748b; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                            <i class="fa-solid fa-rotate-left" style="margin-right: 6px;"></i>
+                            Reset
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="sidebar-card">
+                    <div class="quick-stats">
+                        <h4 class="quick-stats-title">
+                            <i class="fa-solid fa-gauge-high"></i>
+                            Thống kê CTSV
+                        </h4>
+                        <div id="quickStats">
+                            <!-- Sẽ được render bởi JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Load Scripts -->
+<!-- Chart.js v2.9.4 - Phiên bản ổn định -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+<script>
+    // Kiểm tra Chart.js đã load chưa
+    if (typeof Chart === 'undefined') {
+        console.warn('⚠️ Chart.js không load được từ CDN chính, thử CDN dự phòng...');
+        var script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js';
+        script.onload = function() {
+            console.log('✅ Chart.js loaded từ CDN dự phòng');
+            if (typeof main_doc !== 'undefined' && main_doc.DashboardPhongCTSV) {
+                main_doc.DashboardPhongCTSV.initCharts();
+            }
+        };
+        script.onerror = function() {
+            console.error('❌ Không thể load Chart.js từ cả 2 CDN');
+        };
+        document.head.appendChild(script);
+    } else {
+        console.log('✅ Chart.js v2.9.4 loaded successfully');
+    }
+</script>
+
+<script src="modules/Dashboardv2/script/lanh-dao-phong-ctsv.js?v=2.0.0"></script>
+<script type="text/javascript">
+    // Khởi tạo Dashboard
+    var main_doc = {};
+    main_doc['DashboardPhongCTSV'] = new DashboardPhongCTSV();
+
+    $(document).ready(function () {
+        // Fix: Remove width constraint
+        $('.main-content').css({
+            'max-width': 'none',
+            'width': '100%'
+        });
+
+        $('section.content.aps-congcanbo').css({
+            'max-width': 'none',
+            'width': '100%',
+            'padding': '0',
+            'margin': '0'
+        });
+
+        // Khởi động Dashboard
+        main_doc.DashboardPhongCTSV.init();
+    });
+</script>
+</body>
+</html>

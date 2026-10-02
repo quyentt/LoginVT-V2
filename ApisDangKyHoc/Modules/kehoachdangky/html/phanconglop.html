@@ -1,0 +1,548 @@
+﻿<style>
+    .checkbox-inline+.checkbox-inline,
+    .radio-inline+.radio-inline {
+        margin-left: 0px;
+    }
+    /* Overflow visible cho container ancestors — dropdown khong bi clip khi fallback
+       render inline (truong hop select2 chua ap dropdownParent=body). Style + z-index
+       cua popup select2 da duoc xu ly toan cuc o indexi.aspx (line 463-519, 775). */
+    .aps-phanconglop .zone-box,
+    .aps-phanconglop .box-body,
+    .aps-phanconglop .col-TT-phamvi,
+    .aps-phanconglop .col-TT-batbuoc,
+    .aps-phanconglop .aps-form-item,
+    .aps-phanconglop .aps-form-input,
+    .aps-phanconglop .row {
+        overflow: visible !important;
+    }
+    /* Badge "Thong tin pham vi" / "Thong tin bat buoc" — text mac dinh toi tren nen xanh
+       dam gay kho doc. Ep chu trang + padding thoang. */
+    .aps-phanconglop .group-group-title-name .badge.bg-blue {
+        color: #ffffff !important;
+        background-color: #223771 !important;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        padding: 6px 14px !important;
+        border-radius: 6px !important;
+        letter-spacing: .2px;
+    }
+    /* Nut "Xoa" ngoai (btnXoaPhanCongLop) — soft-danger qua nhat, doi solid do de noi bat
+       action destructive. */
+    .aps-phanconglop #btnXoaPhanCongLop.btn,
+    .aps-phanconglop #btnXoaPhanCongLop.btn.btn-soft-danger {
+        background: #dc3545 !important;
+        border: 1px solid #dc3545 !important;
+        color: #ffffff !important;
+    }
+    .aps-phanconglop #btnXoaPhanCongLop.btn:hover {
+        background: #c82333 !important;
+        border-color: #bd2130 !important;
+        color: #ffffff !important;
+    }
+    .aps-phanconglop #btnXoaPhanCongLop.btn i {
+        color: #ffffff !important;
+    }
+</style>
+<section class="content aps-dangkyhoc">
+    <div class="row aps-phanconglop">
+        <div class="zone-bus aps-phanconglop-search" id="zonebatdau">
+            <div class="box box-solid box-search">
+                <div class="box-body pt20 pl20 pr20 pd10">
+                    <div class="group-title d-none">
+                        <p class="titleSearchContent">
+                            <i class="fa fa-search">
+                            </i> <span class="lang" key="">Tìm kiếm</span>
+                        </p>
+                    </div>
+                    <div class="area-search">
+                        <div id="search" class="inputSearch">
+                            <div class="col-sm-6 item-search">
+                                <select id="dropSearch_KeHoach" class="select-opt"></select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <a id="btnSearch" class="btn btn-default btn-search">
+                                    <i class="fa fa-search"></i><span class="lang" key="">Tìm kiếm</span></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="clear"></div>
+            <div class="box box-solid aps-phanconglop-ds pl20 pr20 pb20 pt10">
+                <div class="box-header pd0">
+                    <h3 class="box-title color-blue line-20 mt-10">
+                        <i class="far fa-clipboard-list-check"></i> Danh sách phân công
+                        <span class="pull-right badge bg-light-blue ml-15">
+                            <span id="lblPhanCongLop_Tong"></span>
+                        </span>
+                    </h3>
+                    <div class="box-tools pull-right d-flex">
+                        <a id="btnXoaPhanCongLop" class="btn btn-soft-danger"><i class="fa fa-trash"></i>Xóa</a>
+                        <a id="btnAddnew" class="btn btn-primary btnAdd"><i class="fa fa-plus"></i>Thêm mới</a>
+                    </div>
+                </div>
+                <div class="box-body pd0 mt-20">
+                    <div class="col-sm-12 zonePhanCong" id="zonePhanCong">
+                        <table id="tblPhanCongSinhVien"
+                            class="table table-hover table-bordered table-border tblPhanCongSinhVien">
+                            <thead>
+                                <tr>
+                                    <th class="td-center td-fixed">
+                                        <input type="checkbox" id="chkSelectAll_SinhVien">
+                                    </th>
+                                    <th class="td-left">Sinh viên</th>
+                                    <th class="td-left" style="width: 93px">Phân công</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- load from js -->
+                            </tbody>
+                        </table>
+                        <table id="tblPhanCongSinhVien" class="table table-hover table-bordered table-border">
+                            <thead>
+                                <tr>
+                                    <th class="td-center td-fixed">
+                                        <input type="checkbox" id="chkSelectAll_SinhVien">
+                                    </th>
+                                    <th class="td-left">Lớp</th>
+                                    <th class="td-left" style="width: 93px">Phân công</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- load from js -->
+                            </tbody>
+                        </table>
+                        <table id="tblPhanCongSinhVien" class="table table-hover table-bordered table-border">
+                            <thead>
+                                <tr>
+                                    <th class="td-center td-fixed">
+                                        <input type="checkbox" id="chkSelectAll_SinhVien">
+                                    </th>
+                                    <th class="td-left">Chương trình</th>
+                                    <th class="td-left" style="width: 93px">Phân công</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- load from js -->
+                            </tbody>
+                        </table>
+                        <table id="tblPhanCongSinhVien" class="table table-hover table-bordered table-border">
+                            <thead>
+                                <tr>
+                                    <th class="td-center td-fixed">
+                                        <input type="checkbox" id="chkSelectAll_SinhVien">
+                                    </th>
+                                    <th class="td-left">Khóa</th>
+                                    <th class="td-left" style="width: 93px">Phân công</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- load from js -->
+                            </tbody>
+                        </table>
+                        <table id="tblPhanCongSinhVien" class="table table-hover table-bordered table-border">
+                            <thead>
+                                <tr>
+                                    <th class="td-center td-fixed">
+                                        <input type="checkbox" id="chkSelectAll_SinhVien">
+                                    </th>
+                                    <th class="td-left">Hệ</th>
+                                    <th class="td-left" style="width: 93px">Phân công</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- load from js -->
+                            </tbody>
+                        </table>
+                        <table id="tblPhanCongSinhVien" class="table table-hover table-bordered table-border">
+                            <thead>
+                                <tr>
+                                    <th class="td-center td-fixed">
+                                        <input type="checkbox" id="chkSelectAll_SinhVien">
+                                    </th>
+                                    <th class="td-left">Khoa quản lý</th>
+                                    <th class="td-left" style="width: 93px">Phân công</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- load from js -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="box box-solid zone-bus form-container aps-add-new aps-them-phanCong" id="zoneEdit" style="display: none">
+            <div class="box-header with-border">
+                <h3 class="box-title"><span class="myModalLabel pr10">
+                        <i class="fa fa-plus" style="color: #fff !important;"></i>
+                        Thêm mới - </span> Phân công</h3>
+                <div class="pull-right">
+                    <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times"></i></a>
+                </div>
+            </div>
+            <div class="box-body">
+                <div class="col-sm-12 box-view">
+                    <!-- 1. Noi dung bai bao -->
+                    <div class="row zone-box pd20">
+                        <div class="col-lg-4 col-TT-phamvi pr10">
+                            <div class="row">
+                                <p class="group-group-title-name">
+                                    <span class="badge bg-blue">Thông tin phạm vi </span>
+                                </p>
+                            </div>
+
+                            <div class="row  aps-form-item mb-10">
+                                <div class="col-sm-3 aps-lable-name">
+                                    <div class="group-title-name">
+                                        Khoa quản lý <span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-9 aps-form-input d-flex">
+                                    <select id="dropKhoaQuanLy" class="select-opt"
+                                        style="width:100% !important"></select>
+                                    <div class="box-tools pull-right">
+                                        <a id="addKhoaQuanLy" class="btn btn-primary addPhamVi"
+                                            title="Thêm phạm vi và phân công"><i class="fa fa-plus"></i>Thêm</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row  aps-form-item mb-10">
+                                <div class="col-sm-3 aps-lable-name">
+                                    <div class="group-title-name">
+                                        Hệ <span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-9 aps-form-input d-flex">
+                                    <select id="dropHeDaoTao" class="select-opt" style="width:100% !important">
+                                        <option id="" value=""> --Chọn hệ đào tạo--</option>
+                                    </select>
+                                    <div class="box-tools pull-right">
+                                        <a id="addHeDaoTao" class="btn btn-primary addPhamVi"
+                                            title="Thêm phạm vi và phân công"><i class="fa fa-plus"></i>Thêm</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row  aps-form-item mb-10">
+                                <div class="col-sm-3 aps-lable-name">
+                                    <div class="group-title-name color-888">
+                                        Khóa <span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-9 aps-form-input d-flex">
+                                    <select id="dropKhoaDaoTao" class="select-opt" style="width:100% !important">
+                                        <option id="" value=""> --Chọn khóa đào tạo--</option>
+                                    </select>
+                                    <div class="box-tools pull-right">
+                                        <a id="addKhoaDaoTao" class="btn btn-primary addPhamVi"
+                                            title="Thêm phạm vi và phân công"><i class="fa fa-plus"></i>Thêm</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row  aps-form-item mb-10">
+                                <div class="col-sm-3 aps-lable-name">
+                                    <div class="group-title-name">
+                                        Chương trình <span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-9 aps-form-input d-flex">
+                                    <select id="dropChuongTrinh" class="select-opt" style="width:100% !important">
+                                        <option id="" value=""> --Chọn chương trình--</option>
+                                    </select>
+                                    <div class="box-tools pull-right">
+                                        <a id="addChuongTrinh" class="btn btn-primary addPhamVi"
+                                            title="Thêm phạm vi và phân công"><i class="fa fa-plus"></i>Thêm</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row  aps-form-item mb-10">
+                                <div class="col-sm-3 aps-lable-name">
+                                    <div class="group-title-name">
+                                        Định hướng <span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-9 aps-form-input d-flex">
+                                    <select id="dropDinhHuong" class="select-opt" style="width:100% !important">
+                                        <option id="" value=""> --Chọn định hướng-- </option>
+                                    </select>
+
+                                    <div class="box-tools pull-right">
+                                        <a id="addDinhHuong" class="btn btn-primary addPhamVi"
+                                            title="Thêm phạm vi và phân công"><i class="fa fa-plus"></i> Thêm</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row  aps-form-item mb-10">
+                                <div class="col-sm-3 aps-lable-name">
+                                    <div class="group-title-name">
+                                        Nhóm định hướng <span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-9 aps-form-input d-flex">
+                                    <select id="dropNhomDinhHuong" class="select-opt" style="width:100% !important">
+                                        <option id="" value=""> --Chọn nhóm định hướng-- </option>
+                                    </select>
+
+                                    <div class="box-tools pull-right">
+                                        <a id="addNhomDinhHuong" class="btn btn-primary addPhamVi"
+                                            title="Thêm phạm vi và phân công"><i class="fa fa-plus"></i> Thêm</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row  aps-form-item mb-10">
+                                <div class="col-sm-3 aps-lable-name">
+                                    <div class="group-title-name">
+                                        Lớp <span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-9 aps-form-input d-flex">
+                                    <select id="dropLop" class="select-opt" style="width:100% !important">
+                                        <option id="" value=""> --Chọn lớp--</option>
+                                    </select>
+                                    <div class="box-tools pull-right">
+                                        <a id="addLop" class="btn btn-primary addPhamVi"
+                                            title="Thêm phạm vi và phân công"><i class="fa fa-plus"></i>Thêm</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row  aps-form-item mb-10">
+                                <div class="col-sm-3 aps-lable-name">
+                                    <div class="group-title-name">
+                                        Người học <span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-9 aps-form-input d-flex">
+                                    <select id="dropHocVien" class="select-opt" style="width:100% !important">
+                                        <option id="" value=""> --Chọn học viên--</option>
+                                    </select>
+                                    <div class="box-tools pull-right">
+                                        <a id="addHocVien" class="btn btn-primary addPhamVi"
+                                            title="Thêm phạm vi và phân công"><i class="fa fa-plus"></i>Thêm</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-10 text-right">
+                                <a id="addKhoaQuanKyKhoaHoc" class="btn btn-primary"
+                                    title="Thêm Khoa quản lý - khóa học">
+                                    <i class="fa fa-plus"></i> Thêm Khoa quản lý - khóa học
+                                </a>
+                            </div>
+                            <div class="row aps-form-item mb-10">
+                                <p class="group-title-name">
+                                    <span class="pv-chon color-blue">
+                                        <b>Phạm vi đã chọn:</b> <span id="lblPhamVi"></span>
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-lg-8 pl20 col-TT-batbuoc">
+                            <div class="row">
+                                <p class="group-group-title-name">
+                                    <span class="badge bg-blue">Thông tin bắt buộc</span>
+                                </p>
+                            </div>
+                            <div class="row col-TT-batbuoc-form">
+                                <!--<div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Thời gan <span class="title-colon">:</span>
+                                    </div>
+                                </div>-->
+
+                                <div class="col-sm-3 mr-4">
+                                    <select id="dropCoSoDaoTao" class="select-opt"
+                                        style="width:100% !important"></select>
+                                </div>
+                                <div class="col-sm-3 aps-lable-name">
+                                    <select id="dropThoiGianDaoTao" class="select-opt"
+                                        style="width:100% !important"></select>
+                                </div>
+                                <div class="col-sm-3 aps-lable-name">
+                                    <select id="dropHeDaoTao_MK" class="select-opt"
+                                        style="width:100% !important"></select>
+                                </div>
+                                <div class="col-sm-3 aps-lable-name">
+                                    <select id="dropKhoaDaoTao_MK" class="select-opt"
+                                        style="width:100% !important"></select>
+                                </div>
+                                <div class="col-sm-3 aps-lable-name">
+                                    <select id="dropKhoaToChuc" class="select-opt"
+                                        style="width:100% !important"></select>
+                                </div>
+                                <div class="col-sm-3 pr0">
+                                    <select id="dropNganhDaoTao" class="select-opt"
+                                        style="width:100% !important"></select>
+                                </div>
+                                <!--<div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Học phần <span class="title-colon">:</span>
+                                    </div>
+                                </div>-->
+                            </div>
+                            <div class="row col-TT-batbuoc-check">
+                                <div class="col-sm-3 aps-lable-name">
+                                    <select id="dropHocPhan" class="select-opt" style="width:100% !important"></select>
+                                </div>
+                                <div class="col-sm-3  checkbox-inline user-check-print pl20" style="padding-top: 13px;">
+                                    <input style="float: left" type="checkbox" id="dChuaPhanCong" />
+                                    <span>Chỉ hiện các lớp chưa phân công</span>
+                                </div>
+                                <div class="col-sm-4 checkbox-inline user-check-print pl20" style="padding-top: 13px;">
+                                    <input style="float: left" type="checkbox" id="dLocCTDT" />
+                                    <span>Lọc theo học phần mở theo chương trình</span>
+                                </div>
+                                <div class="col-sm-2">
+                                    <a id="btnSearchPhanCong" class="btn btn-default btn-search">
+                                        <i class="fa fa-search"></i><span class="lang" key="">Tìm kiếm</span></a>
+                                </div>
+                            </div>
+                            <div class="row mt-10">
+                                <div class="aps-table-select scroll-table-x">
+                                    <table id="tblLopHocPhan"
+                                        class="table table-hover table-bordered table-noborder tblLopHocPhan mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th class="td-center w-50px">Stt</th>
+                                                <th class="td-left">Mã lớp</th>
+                                                <th class="td-left">Tên lớp</th>
+                                                <th class="td-left">Chương trình mở lớp HP</th>
+                                                <th class="td-left">Khóa mở lớp HP</th>
+                                                <th class="td-center">Đã phân công</th>
+                                                <th class="td-center td-fixed">
+                                                    <input type="checkbox" id="chkSelectAll_LopHocPhan">
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- load from js -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="box-footer">
+                <div class="pull-right">
+                    <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa-regular fa-xmark"></i>Đóng</a>
+                    <a id="btnSave_PhanCongLop" class="btn btn-primary ml-10"><i
+                            class="fa-light fa-users-viewfinder"></i> Phân công cho phạm vi</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ---------- -->
+<div class="aps-all-button ml-20 aps-gap-10 btn-show mt-10 pl20" style="display: none !important;">
+    <button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#myModal">
+        Danh sách học phần</button>
+    <button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#myModalPhamVi">
+        Danh sách phạm vi</button>
+</div>
+<!-- ---------- -->
+<div class="modal fade aps-modal-nhansu" id="modal_nhansu" role="dialog" aria-labelledby="myModalLabel"
+    aria-hidden="true">
+    <!-- load from js -->
+</div>
+<div class="modal fade aps-modal-nhansu aps-modal-sinhvien" id="modal_sinhvien" role="dialog"
+    aria-labelledby="myModalLabel" aria-hidden="true">
+    <!-- load from js -->
+</div>
+
+<!-- Danh sách học phần -->
+<div class="modal fade myModaldsHocPhan" id="myModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-860 modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+                <h4 class="modal-title line-20"><span class="myModalLabel1"><i
+                            class="fa-solid fa-book-open-reader"></i>Danh sách học phần</span></h4>
+            </div>
+            <div class="modal-body" id="modal_body">
+                <div class="aps-table-select">
+                <table id="tblQuanSoLop" class="table table-hover table-bordered table-noborder tblQuanSoLop">
+                    <thead>
+                        <tr>
+                            <th class="td-fixed w-50px">Stt</th>
+                            <th class="td-left"><span class="lang" key="">Mã lớp học phần</span></th>
+                            <th class="td-left"><span class="lang" key="">Tên lớp học phần</span></th>
+                            <th class="td-center td-fixed"><input type="checkbox" id="chkSelectAll_QuanSo"></th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table></div>
+            </div>
+            <div id="notify"></div>
+            <div class="modal-footer">
+                <div class="pull-left d-flex aps-list-btn"><a id="btnDelete_LopHocPhan" class="btn btn-soft-danger"><i class="fa fa-trash"></i>Xóa</a></div>
+                <div class="pull-right d-flex aps-list-btn">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        <i class="fa-regular fa-xmark"></i>
+                        <span class="lang" key="">Đóng</span></button>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Danh sách phạm vi -->
+<div class="modal fade myModalPhamVi" id="myModalPhamVi" role="dialog" aria-labelledby="myModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-860 modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+                <h4 class="modal-title line-20"><span class="myModalLabel1"><i
+                            class="fa-light fa-users-viewfinder"></i>Danh sách phạm vi</span></h4>
+            </div>
+            <div class="modal-body" id="modal_body">
+                <table id="tblPhamVi" class="table table-hover table-bordered table-noborder tblPhamVi">
+                    <thead>
+                        <tr>
+                            <th class="td-fixed">Stt</th>
+                            <th class="td-left"><span class="lang" key="">Phạm vi</span></th>
+                            <th class="td-left"><span class="lang" key="">Phân cấp</span></th>
+                            <th class="td-center td-fixed"><input type="checkbox" id="chkSelectAll_PhamVi"></th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div id="notify"></div>
+            <div class="modal-footer">
+                <div class="pull-left d-flex aps-list-btn"><a id="btnDelete_PhamVi" class="btn btn-soft-danger"><i class="fa fa-trash"></i>Xóa</a></div>
+                <div class="d-flex pull-right aps-list-btn">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        <i class="fa-regular fa-xmark"></i> <span class="lang" key="">Đóng</span></button>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ------------------------- -->
+<script src="modules/kehoachdangky/script/phanconglop.js?v=1.0.0.0"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['PhanCongLop'] = new PhanCongLop();
+    $(document).ready(function () {
+        main_doc.PhanCongLop.init();
+        // Re-init cac .select-opt trong form "Them moi - Phan cong" voi dropdownParent = body,
+        // dam bao popup KHONG bi render inline (bi row ke tiep che). Chay 1 lan sau khi
+        // module init xong; global observer + z-index o indexi.aspx lo phan con lai.
+        setTimeout(function () {
+            if (window.jQuery && $.fn.select2) {
+                $('#zoneEdit .select-opt').each(function () {
+                    var $el = $(this);
+                    if ($el.data('select2')) { try { $el.select2('destroy'); } catch (e) {} }
+                    $el.select2({ dropdownParent: $(document.body) });
+                });
+            }
+        }, 500);
+    });
+</script>

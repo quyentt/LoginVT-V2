@@ -1,0 +1,25 @@
+/* Dữ liệu mẫu cho Lệ phí nhập học — chỉ dùng ở chế độ dựng thử. */
+(function () {
+    var SV = [
+        { ID: 'SV1', SOBAODANH: 'TLA001234', MASONGUOIHOC: '2551060001', HODEM: 'Nguyễn Văn', TEN: 'An', NGAYSINH_NGAY: '12', NGAYSINH_THANG: '03', NGAYSINH_NAM: '2007', GIOITINH_TEN: 'Nam', DAOTAO_LOPQUANLY_TEN: 'K67-KTPM1' },
+        { ID: 'SV2', SOBAODANH: 'TLA001301', MASONGUOIHOC: '2551060002', HODEM: 'Trần Thị', TEN: 'Bình', NGAYSINH_NGAY: '05', NGAYSINH_THANG: '11', NGAYSINH_NAM: '2007', GIOITINH_TEN: 'Nữ', DAOTAO_LOPQUANLY_TEN: 'K67-KTPM1' },
+        { ID: 'SV3', SOBAODANH: 'TLA001455', MASONGUOIHOC: '2551060003', HODEM: 'Lê Minh', TEN: 'Châu', NGAYSINH_NGAY: '21', NGAYSINH_THANG: '07', NGAYSINH_NAM: '2007', GIOITINH_TEN: 'Nam', DAOTAO_LOPQUANLY_TEN: 'K67-KTPM1' },
+        { ID: 'SV4', SOBAODANH: 'TLA001502', MASONGUOIHOC: '2551060004', HODEM: 'Phạm Thu', TEN: 'Dung', NGAYSINH_NGAY: '30', NGAYSINH_THANG: '01', NGAYSINH_NAM: '2007', GIOITINH_TEN: 'Nữ', DAOTAO_LOPQUANLY_TEN: 'K67-KTPM1' }
+    ];
+    ums.demo.add({
+        'pkg_hosohocvien.LayDanhSachHoSo': function (o) { return o.strLopQuanLy_Id ? SV : []; },
+        'NH_ThongKe/LayDanhSach_CacKhoanNhapHocKeHoach': [
+            { ID: 'KT1', TEN: 'Học phí kỳ 1' }, { ID: 'KT2', TEN: 'Bảo hiểm y tế' }, { ID: 'KT3', TEN: 'Khám sức khoẻ' }, { ID: 'KT4', TEN: 'Đồng phục' }
+        ],
+        'NH_ThongKe/LayDSTongHopThuTheoKeHoach': [
+            { QLSV_NGUOIHOC_ID: 'SV1', TAICHINH_CACKHOANTHU_ID: 'KT1', TAICHINH_CACKHOANTHU_TEN: 'Học phí kỳ 1', SOTIEN: 9800000 },
+            { QLSV_NGUOIHOC_ID: 'SV1', TAICHINH_CACKHOANTHU_ID: 'KT2', TAICHINH_CACKHOANTHU_TEN: 'Bảo hiểm y tế', SOTIEN: 884520 },
+            { QLSV_NGUOIHOC_ID: 'SV1', TAICHINH_CACKHOANTHU_ID: 'KT3', TAICHINH_CACKHOANTHU_TEN: 'Khám sức khoẻ', SOTIEN: 150000 },
+            { QLSV_NGUOIHOC_ID: 'SV2', TAICHINH_CACKHOANTHU_ID: 'KT1', TAICHINH_CACKHOANTHU_TEN: 'Học phí kỳ 1', SOTIEN: 9800000 },
+            { QLSV_NGUOIHOC_ID: 'SV2', TAICHINH_CACKHOANTHU_ID: 'KT4', TAICHINH_CACKHOANTHU_TEN: 'Đồng phục', SOTIEN: 450000 },
+            { QLSV_NGUOIHOC_ID: 'SV3', TAICHINH_CACKHOANTHU_ID: 'KT1', TAICHINH_CACKHOANTHU_TEN: 'Học phí kỳ 1', SOTIEN: 4900000 },
+            { QLSV_NGUOIHOC_ID: 'SV3', TAICHINH_CACKHOANTHU_ID: 'KT1', TAICHINH_CACKHOANTHU_TEN: 'Học phí kỳ 1', SOTIEN: 4900000 },
+            { QLSV_NGUOIHOC_ID: 'SV3', TAICHINH_CACKHOANTHU_ID: 'KT2', TAICHINH_CACKHOANTHU_TEN: 'Bảo hiểm y tế', SOTIEN: 884520 }
+        ]
+    });
+})();

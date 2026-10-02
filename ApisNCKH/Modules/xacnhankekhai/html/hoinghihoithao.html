@@ -1,0 +1,521 @@
+﻿<style>
+    .btn-white {
+        background-color: #fff;
+        -webkit-box-shadow: 1px 1px 1px 1px #ccc;
+        -moz-box-shadow: 1px 1px 1px 1px #ccc; /* Firefox 3.5 - 3.6 */
+        box-shadow: 1px 1px 1px 1px #ccc;
+        height: 26px;
+    }
+
+    #txtTenSanPham {
+        width: 550px;
+        overflow: hidden !important;
+        display: block;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        float: left;
+        color: #4e8d42;
+    }
+
+    .btn-large {
+        width: 85px;
+        text-align: center;
+        background-color: #fff;
+        border-bottom: 1px solid #f1f1f1;
+        float: left;
+        margin-left: 5px;
+    }
+
+    .btnxacnhan_small {
+        width: 35px;
+        -webkit-box-shadow: 1px 1px 1px 1px #ccc;
+        -moz-box-shadow: 1px 1px 1px 1px #ccc; /* Firefox 3.5 - 3.6 */
+        box-shadow: 1px 1px 1px 1px #ccc;
+    }
+</style>
+
+<section class="content">
+    <div class="row">
+        <!-- /.left-content -->
+        <!-- /.right-content -->
+        <div class="col-lg-12">
+            <!-- box Notify_DeTai -->
+            <div class="box box-solid zone-bus" id="zone_notify_hnht">
+
+                <div class="box box-solid">
+
+                    <div class="box-body">
+                        <div class="col-sm-3 item-search">
+                            <select id="dropSearch_DonViThanhVien_HNHT" class="select-opt">
+                                <option value="">--Tất cả đơn vị thành viên--</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-3 item-search">
+                            <select id="dropSearch_ThanhVienDangKy_HNHT" class="select-opt-img">
+                                <option value="">--Tất cả thành viên đăng ký--</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-3 item-search">
+                            <select id="dropSearch_PhamVi_HNHT" class="select-opt">
+                                <option value="">--Chọn phạm vi hội nghị hội thảo--</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-3 item-search">
+                            <select id="dropSearch_LinhVuc_HNHT" class="select-opt">
+                                <option value="">--Chọn lĩnh vực--</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-3 item-search">
+                            <select id="dropSearch_DonViToChuc_HNHT" class="select-opt">
+                                <option value="">--Chọn đơn vị tổ chức--</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-3 item-search">
+                            <select id="dropSearch_DeTai_HNHT" class="select-opt">
+                                <option value="">--Chọn đề tài--</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-3 item-search">
+                            <select id="dropSearch_TinhTrang_HNHT" class="select-opt">
+                                <option value="">--Tất cả tình trạng--</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-3 item-search">
+                            <select id="dropSearch_NamDanhGia_DT" class="select-opt">
+                                <option value="">--Tất cả năm đánh giá--</option>
+                            </select>
+                        </div>
+                        <div class="clear"></div>
+                        <div class="col-sm-3 item-search">
+                            <input id="txtSearch_TuKhoa" class="form-control" placeholder="Nhập từ khóa tìm kiếm" />
+                        </div>
+                        <div class="col-sm-3">
+                            <a class="btn btn-default btnExtend_Search"><i class="fa fa-search"></i> <span class="lang" key="">Tìm kiếm</span></a>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="dropdown" id="zonebtnBaoCao_HNHT">
+                                <button class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown">
+                                    <i class="fa fa fa-file-excel-o"></i> Xuất báo cáo <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu form-container" id="zonebtnBaoCao_HN">
+                                    <li><a class="btnBaoCao_LHD" name="HoiThaoHoiNghi" href="#"> 1. Hội nghị hội thảo</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="box box-solid">
+                    <div class="box-header with-border">
+                        <h3 class="box-title" title="Hội nghị hội thảo">
+                            <i class="fa fa-list-alt"></i> Hội nghị hội hảo
+                        </h3>
+                        <span class=" badge bg-light-blue">
+                            <i>Tổng:</i> <span id="lblHNHT_Tong"></span>
+                        </span>
+                    </div>
+                    <div class="box-body">
+                        <table id="tblHNHT" class="table table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="td-fixed td-center">Stt</th>
+                                    <th class="td-center">Tên hội nghị</th>
+                                    <th class="td-center">Năm tổ chức</th>
+                                    <th class="td-center">Lĩnh vực</th>
+                                    <th class="td-center">Phạm vi</th>
+                                    <th class="td-center">Số người báo cáo</th>
+                                    <th class="td-center">File đính kèm</th>
+                                    <th class="td-center">Xác nhận</th>
+                                    <th class="td-center">Xác nhận cuối cùng</th>
+                                    <th class="td-center">Nội dung xác nhận</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!--Load from js -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- box - Edit_DeTai -->
+            <div class="box box-solid form-container zone-bus" id="zone_input_hnht">
+                <div class="box-header with-border">
+                    <h3 class="box-title">.. <i class="fa fa-pencil"></i> Kê khai hội nghị hội thảo </h3>
+                    <div class="pull-right">
+                        <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times"></i></a>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="col-sm-12">
+                        <!--1. Thong tin bai bao -->
+                        <div class="row zone-box">
+                            <div class="row">
+                                <p class="group-title-name">
+                                    <span>
+                                        <span class="badge bg-blue">Thông tin hội nghị hội thảo</span>
+                                    </span>
+                                </p>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Tên hội nghị <span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-10">
+                                    <input type="text" id="txtHNHT_TenHoiNghiHoiThao" class="form-control form-border-bottom" />
+                                </div>
+                            </div>
+                            <div class="row">
+
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Chủ đề hội nghị hội thảo <span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-10">
+                                    <input type="text" id="txtHNHT_TenBaoCao" class="form-control form-border-bottom" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Mục tiêu <span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-10">
+                                    <input id="txtHNHT_MucTieu" class="form-control form-border-bottom" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Nội dung <span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-10">
+                                    <input id="txtHNHT_NoiDung" class="form-control form-border-bottom" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Năm tổ chức<span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <input id="txtHNHT_NamHoanThanh" class="form-control form-border-bottom " />
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Tháng tổ chức<span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <input id="txtHNHT_NamBaoCao" class="form-control form-border-bottom" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Phạm vi/Cấp <span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <select id="dropHNHT_PhamVi" class="select-opt">
+                                        <option value="">--- Chọn phạm vi --</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Mã sản phẩm <span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <input id="txtHNHT_MaSanPham" class="form-control form-border-bottom" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Lĩnh vực/Ngành <span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-10">
+                                    <select id="dropHNHT_LinhVuc_Nganh" class="select-opt">
+                                        <option value="">--- Chọn Lĩnh vực/Ngành --</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Đơn vị tổ chức <span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-10">
+                                    <select id="dropHNHT_DonViToChuc" class="select-opt">
+                                        <option value="">--- Chọn đơn vị tổ chức --</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--2. Dai bieu tham du -->
+                        <div class="row zone-box">
+                            <div class="row">
+                                <p class="group-title-name">
+                                    <span class="badge bg-blue">Số đại biểu tham dự</span>
+                                </p>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Quốc tế <span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <input type="text" id="txtHNHT_SoDaiBieuQuocTe" class="form-control form-border-bottom" />
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Trong nước <span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <input type="text" id="txtHNHT_SoDaiBieuTrongNuoc" class="form-control form-border-bottom" />
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Số lượng báo cáo <span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <input type="text" id="txtHNHT_SoLuongBaoCao" class="form-control form-border-bottom" />
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Số người báo cáo <span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <input type="text" id="txtHNHT_SoLuongNguoiBaoCao" class="form-control form-border-bottom" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Thành phần tham gia<span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-10">
+                                    <input type="text" id="txtHNHT_ThanhPhanThamGia" class="form-control form-border-bottom">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3. Đơn vị hợp tác -->
+                        <div class="row zone-box">
+                            <div class="row">
+                                <p class="group-title-name">
+                                    <span class="badge bg-blue">Nguồn kinh phí</span>
+                                </p>
+                            </div>
+                            <div class="row">
+                                <table id="tblInput_HNHT_KinhPhi" class="table">
+                                    <tbody></tbody>
+
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- 4. Minh chung -->
+                        <div class="row zone-box">
+                            <div class="row">
+                                <p class="group-title-name">
+                                    <span class="badge bg-blue">Nội dung minh chứng</span>
+                                </p>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Nội dung <span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-10">
+                                    <!--<div id="txtHNHT_NoiDungMinhChung"></div>-->
+                                    <input id="txtHNHT_NoiDungMinhChung" class="form-control form-border-bottom" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        File đính kèm <span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-10">
+                                    <div id="txtHNHT_FileDinhKem">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 5. Thanh vien tham gia -->
+                        <div class="row zone-box">
+                            <div class="row">
+                                <p class="group-title-name">
+                                    <span class="badge bg-blue">Thành viên tham gia</span>
+                                </p>
+                            </div>
+                            <!--<div class="row">
+                                <div class="col-sm-10">
+                                    <div class="group-title-name">
+                                        Vui lòng chọn thành viên tham gia
+                                        <a class="btn btn-default btnSearchHNHT_NhanSu" id=""><i class="fa fa-search color-active"></i></a>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+
+                                </div>
+                            </div>-->
+                            <div class="row">
+                                <table id="tblInput_HNHT_ThanhVien" class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <td class="td-fixed td-center">#</td>
+                                            <td class="td-center">Hình ảnh</td>
+                                            <td>Họ tên</td>
+                                            <td>Vai trò</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- load from js -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- 5. Sản phẩm thuộc đề tài-->
+                        <div class="row zone-box">
+                            <div class="row">
+                                <p class="group-title-name">
+                                    <span class="badge bg-blue">Đề tài của sản phẩm</span>
+                                </p>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="group-title-name">
+                                        Thuộc đề tài<span class="title-colon">:</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-10">
+                                    <select id="dropHNHT_DeTai" class="select-opt">
+                                        <option value="">--- Chọn đề tài--</option>
+                                    </select>
+                                </div>
+                                <div class="clear"></div>
+                                <div style="font-style: italic; font-size: 12px">Chú ý: Nếu sản phẩm không thuộc đề tài nào thì bỏ qua mục này</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box-footer">
+                        <div class="pull-right">
+                            <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times-circle"></i> Đóng</a>
+                            <a id="btnXacNhan_HNHT" class="btn btn-primary"><i class="fa fa-check"></i> Xác nhận sản phẩm</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="modal fade" id="modal_XacNhan" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 800px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title modal-name" id="myModalLabel"><span style="float: left"><i class="fa fa-wrench"></i> Xác nhận sản phẩm: </span><span id="txtTenSanPham"></span></h4>
+            </div>
+            <div class="modal-body">
+
+                <!-- 2. Minh chung -->
+                <div class="row zone-box">
+                    <div class="row">
+                        <p class="group-title-name">
+                            <span class="badge bg-blue">Nội dung xác nhận</span>
+                        </p>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <input id="txtNoiDungXacNhanSanPham" class="form-control form-border-bottom" />
+                        </div>
+                    </div>
+                </div>
+                <!-- 2. Minh chung -->
+                <div class="row zone-box">
+                    <div class="row">
+                        <p class="group-title-name">
+                            <span class="badge bg-blue">Chọn xác nhận</span>
+                        </p>
+                    </div>
+                    <div class="row" id="zoneBtnXacNhan">
+                        <div style="margin-left: auto; margin-right: auto; width: 270px">
+                            <div id="btnClose_HDBL" class="btn-large">
+                                <a class="btn"><i style="color: #337ab7" class="fa fa-angle-double-down fa-4x"></i></a>
+                                <a class="color-active bold lbsymbolHD">Đóng</a>
+                            </div>
+                            <div id="btnClose_HDBL" class="btn-large">
+                                <a class="btn"><i style="color: #337ab7" class="fa fa-angle-double-down fa-4x"></i></a>
+                                <a class="color-active bold lbsymbolHD">Đóng</a>
+                            </div>
+                            <div id="btnClose_HDBL" class="btn-large">
+                                <a class="btn"><i style="color: #337ab7" class="fa fa-angle-double-down fa-4x"></i></a>
+                                <a class="color-active bold lbsymbolHD">Đóng</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row zone-box">
+                    <div class="row">
+                        <p class="group-title-name">
+                            <span class="badge bg-blue">Lịch sử xác nhận</span>
+                        </p>
+                    </div>
+                    <div class="row">
+                        <table id="tblModal_XacNhan" class="table">
+                            <thead>
+                                <tr>
+                                    <th class="td-fixed td-center">Stt</th>
+                                    <th class="td-left">Xác nhận</th>
+                                    <th class="td-left">Nội dung</th>
+                                    <th class="td-left">Người xác nhận</th>
+                                    <th class="td-center" style="width: 100px">Ngày</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div id="notify"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" id="btnCancel"><i class="fa fa-times-circle"></i> Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modal_nhansu" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <!-- load from js -->
+</div>
+<!-- page script -->
+<script src="modules/xacnhankekhai/script/hoinghihoithao.js?v=1.0.0.4"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['HoiNghiHoiThao'] = new HoiNghiHoiThao();
+    $(document).ready(function () {
+        main_doc.HoiNghiHoiThao.init();
+    });
+</script>

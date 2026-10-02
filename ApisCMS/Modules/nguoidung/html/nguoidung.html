@@ -1,0 +1,770 @@
+﻿<style>
+    .popover,
+    .popover *,
+    .popover-title,
+    .popover-title *,
+    .popover-header,
+    .popover-header *,
+    .popover-content,
+    .popover-content *,
+    .popover-body,
+    .popover-body * {
+        font-family: "Segoe UI", "Roboto", "Helvetica Neue", Arial, "Noto Sans", sans-serif !important;
+        font-stretch: normal !important;
+        font-variant: normal !important;
+        font-style: normal !important;
+    }
+    .popover {
+        font-size: 13px !important;
+        border-radius: 8px !important;
+        border: 1px solid #dfe3e8 !important;
+        box-shadow: 0 6px 18px rgba(0,0,0,.08) !important;
+        max-width: 320px;
+    }
+    .popover-title,
+    .popover-header {
+        background: #f4f9fd !important;
+        color: #2472a4 !important;
+        font-weight: 600 !important;
+        font-size: 14px !important;
+        letter-spacing: 0.2px !important;
+        text-transform: none !important;
+        padding: 10px 14px !important;
+        border-bottom: 1px solid #e5ecf2 !important;
+        border-radius: 8px 8px 0 0 !important;
+    }
+    .popover-title i,
+    .popover-header i {
+        margin-right: 6px;
+        color: #3c8dbc;
+    }
+    .popover-content,
+    .popover-body {
+        padding: 10px 12px !important;
+        color: #333 !important;
+        line-height: 1.5 !important;
+    }
+</style>
+<!-- Main content -->
+<section class="content aps-cms">
+    <div class="row aps-nguoidung">
+        <!-- /.left-content -->
+        <div class="col-sm-3 aps-nguoidung-l">
+            <div class="box box-shadow">
+                <div class="box box-solid box-search" style="padding-bottom: 0 !important;">
+                    <div class="box-body">
+                        <!-- Bộ tìm kiếm -->
+                        <div class="bs-item input-group aps-search-input">
+                            <input type="text" id="txtSearch_NguoiDung_TuKhoa" class="form-control"
+                                   placeholder="Nhập từ khóa tìm kiếm">
+                            <span class="input-group-addon poiter btnExtend_Search" title="Tìm kiếm">
+                                <i class="fa fa-search"></i>
+                            </span>
+                        </div>
+                        <style>
+                            .aps-search-input .form-control {
+                                padding-left: 34px !important;
+                                text-indent: 0;
+                                background-position: 10px center !important;
+                                background-size: 14px 14px !important;
+                            }
+                            .aps-search-input .form-control::placeholder {
+                                color: #9aa0a6;
+                                opacity: 1;
+                            }
+                        </style>
+                        <div class="box-sub-search aps-filter-panel">
+                            <div class="aps-filter-title">Chọn điều kiện tìm kiếm</div>
+                            <div class="aps-filter-options">
+                                <label class="aps-filter-option">
+                                    <input type="radio" class="rdNguoiDung_PhanLoai" name="rdNguoiDung_PhanLoai" value="CANBO" checked="checked">
+                                    <span>Cán bộ</span>
+                                </label>
+                                <label class="aps-filter-option">
+                                    <input type="radio" class="rdNguoiDung_PhanLoai" name="rdNguoiDung_PhanLoai" value="SINHVIEN">
+                                    <span>Sinh viên</span>
+                                </label>
+                                <label class="aps-filter-option">
+                                    <input type="radio" class="rdNguoiDung_PhanLoai" name="rdNguoiDung_PhanLoai" value="CUUSINHVIEN">
+                                    <span>Cựu sinh viên</span>
+                                </label>
+                                <label class="aps-filter-option">
+                                    <input type="radio" class="rdNguoiDung_PhanLoai" name="rdNguoiDung_PhanLoai" value="GIADINH">
+                                    <span>Gia đình</span>
+                                </label>
+                                <label class="aps-filter-option">
+                                    <input type="radio" class="rdNguoiDung_PhanLoai" name="rdNguoiDung_PhanLoai" value="DOITAC">
+                                    <span>Đối tác</span>
+                                </label>
+                            </div>
+                        </div>
+                        <style>
+                            .aps-filter-panel { padding: 8px 4px 4px; }
+                            .aps-filter-title {
+                                font-size: 13px;
+                                font-weight: 600;
+                                color: #333;
+                                margin-bottom: 8px;
+                                padding-bottom: 6px;
+                                border-bottom: 1px solid #e5e5e5;
+                            }
+                            .aps-filter-options {
+                                display: flex;
+                                flex-wrap: wrap;
+                                gap: 6px;
+                            }
+                            .aps-filter-option {
+                                display: inline-flex;
+                                align-items: center;
+                                gap: 6px;
+                                padding: 5px 10px;
+                                margin: 0;
+                                border: 1px solid #d5dbe0;
+                                border-radius: 16px;
+                                background: #fff;
+                                font-size: 13px;
+                                font-weight: 400;
+                                white-space: nowrap;
+                                cursor: pointer;
+                                transition: all .15s ease;
+                            }
+                            .aps-filter-option:hover {
+                                border-color: #3c8dbc;
+                                background: #f4f9fd;
+                            }
+                            .aps-filter-option input[type="radio"] { margin: 0; cursor: pointer; }
+                            .aps-filter-option input[type="radio"]:checked + span { color: #3c8dbc; font-weight: 600; }
+                            .aps-filter-option:has(input:checked) {
+                                border-color: #3c8dbc;
+                                background: #eaf4fb;
+                            }
+                        </style>
+                    </div>
+                </div>
+                <div class="box box-solid box-nguoidung" style="padding-top: 0 !important;">
+                    <div class="box-header with-border pb10">
+                        <h3 class="box-title" title="Danh sách người dùng" style="margin-top: 0 !important;">
+                            <i class="fa-light fa-address-book"></i> Danh sách người dùng
+                        </h3>
+                        <span class="pull-right badge bg-light-blue">
+                            <span id="tblNguoiDung_Tong"></span>
+                        </span>
+                    </div>
+                    <div class="box-body aps-nguoidung-table mt-10">
+                        <table id="tblNguoiDung" class="table table-hover tblNguoiDung">
+                            <tbody></tbody>
+                        </table>
+                        <style>
+                            .aps-nguoidung-table .dataTables_wrapper .dataTables_info,
+                            .aps-nguoidung-table .dataTables_info {
+                                float: none !important;
+                                display: block;
+                                text-align: center;
+                                font-size: 12px;
+                                color: #666;
+                                padding: 6px 0 4px;
+                                white-space: normal;
+                            }
+                            .aps-nguoidung-table .dataTables_paginate,
+                            .aps-nguoidung-table .dataTables_wrapper .dataTables_paginate {
+                                float: none !important;
+                                display: flex;
+                                justify-content: center;
+                                flex-wrap: wrap;
+                                gap: 4px;
+                                padding: 4px 0 8px;
+                                text-align: center;
+                            }
+                            .aps-nguoidung-table .dataTables_paginate .paginate_button,
+                            .aps-nguoidung-table .pagination > li > a,
+                            .aps-nguoidung-table .pagination > li > span {
+                                min-width: 28px;
+                                height: 28px;
+                                padding: 0 8px !important;
+                                margin: 0 !important;
+                                line-height: 28px !important;
+                                font-size: 12px;
+                                display: inline-flex;
+                                align-items: center;
+                                justify-content: center;
+                            }
+                            .aps-nguoidung-table .pagination {
+                                margin: 0 !important;
+                                display: inline-flex;
+                                flex-wrap: wrap;
+                                gap: 4px;
+                                justify-content: center;
+                            }
+                            .aps-nguoidung-table .row {
+                                margin-left: 0;
+                                margin-right: 0;
+                            }
+                            .aps-nguoidung-table .row > [class*="col-"] {
+                                width: 100%;
+                                float: none;
+                                padding: 0;
+                            }
+                            .aps-nguoidung-table .table-img {
+                                width: 40px !important;
+                                height: 40px !important;
+                                min-width: 40px;
+                                min-height: 40px;
+                                max-width: 40px;
+                                max-height: 40px;
+                                object-fit: cover;
+                                object-position: center;
+                                border-radius: 50%;
+                                background: #f0f0f0;
+                                display: block;
+                            }
+                            .aps-nguoidung-table td {
+                                vertical-align: middle !important;
+                            }
+                        </style>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.right-content -->
+        <div class="col-sm-9 aps-nguoidung-r">
+            <div class="box box-solid box-shadow">
+                <!-- 1. So luong NguoiDung wating active -->
+                <div class="box box-solid zone-bus-nd" id="zone_bus_list">
+                    <div class="box-header with-border">
+                        <h3 class="box-title pt10">
+                            <i class="fa-light fa-circle-user"></i>Thông tin khởi tạo tài khoản Người dùng
+                        </h3>
+                        <div class="pull-right">
+                            <a class="submit btn btn-primary btnAddnew"><i class="fa fa-plus"></i> <span class="lang"
+                                                                                                         key="">Thêm</span></a>
+                        </div>
+                    </div>
+                    <div class="box-body">
+                        <ul class="todo-list ui-sortable" id="detailInitial_ND">
+                            <!-- load from js -->
+                        </ul>
+                    </div>
+                </div>
+                <!-- 2. get list NguoiDung_KhoiTao -->
+                <div class="box box-solid form-container zone-bus-nd" id="zone_bus_initial">
+                    <div class="box-header with-border bg-blue">
+                        <h3 class="box-title"><i class="fa-light fa-users"></i> Danh sách cán bộ</h3>
+                        <div class="pull-right pull-right-absolute">
+                            <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa-light fa-xmark"></i></a>
+                        </div>
+                    </div>
+                    <div class="box-body">
+                        <div class="row d-flex aps-search mb-10">
+                            <div class="bs-item input-group col-sm-6">
+                                <input type="text" id="txtSearch_ND_TuKhoa" class="form-control"
+                                       placeholder="Nhập từ khóa tìm kiếm">
+                                <span class="input-group-addon poiter btnND_Search" title="Kéo xuống">
+                                    <i class="fa fa-search"></i>
+                                </span>
+                            </div>
+                            <div class="pull-right col-sm-6 text-right">
+                                <a id="btnKichHoat" class="btn btn-primary"><i class="fa-light fa-user-check"></i> Kích
+                                    hoạt tài khoản</a>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 scroll-table-x">
+                            <table id="tblNguoiDung_CanBo" class="table table-hover table-bordered">
+                                <thead>
+                                <tr>
+                                    <th class="td-fixed td-center">Stt</th>
+                                    <th class="td-center">Mã</th>
+                                    <th class="td-center">Tên</th>
+                                    <th class="td-center">Ngày sinh</th>
+                                    <th class="td-center">Số điện thoại</th>
+                                    <th class="td-center td-fixed"><input type="checkbox" id="chkSelectAll"></th>
+                                </tr>
+                                </thead>
+                                <tbody></tbody>
+                                <tfoot></tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. get list NguoiDung_KhoiTao -->
+                <div class="box box-solid form-container zone-bus-nd aps-nguoidung-sv" id="zone_bus_initial_SV">
+                    <div class="box-header with-border bg-blue">
+                        <h3 class="box-title"><i class="fa-light fa-user-graduate"></i> Danh sách sinh viên khởi tạo
+                        </h3>
+                        <div class="pull-right pull-right-absolute">
+                            <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa-light fa-xmark"></i></a>
+                        </div>
+                    </div>
+                    <div class="box-body">
+                        <div class="bs-item input-group col-lg-12 aps-nguoidung-sv-search">
+                            <div class="col col-sm-4 item-search">
+                                <select id="dropSearch_HeDaoTao" class="select-opt">
+                                    <option value="">--Chọn hệ--</option>
+                                    <!-- Load from js -->
+                                </select>
+                            </div>
+                            <div class="col col-sm-4 item-search">
+                                <select id="dropSearch_KhoaDaoTao" class="select-opt">
+                                    <option value="">--Chọn khóa--</option>
+                                    <!-- Load from js -->
+                                </select>
+                            </div>
+                            <div class="col col-sm-4 item-search">
+                                <select id="dropSearch_ChuongTrinhDaoTao" class="select-opt">
+                                    <option value="">--Chọn chương trình--</option>
+                                    <!-- Load from js -->
+                                </select>
+                            </div>
+                            <div class="clear"></div>
+                            <div class="col col-sm-4 item-search">
+                                <select id="dropSearch_LopQuanLy" class="select-opt">
+                                    <option value="">--Chọn lớp--</option>
+                                    <!-- Load from js -->
+                                </select>
+                            </div>
+                            <div class="col col-sm-4 item-search">
+                                <div class="input-group">
+                                    <input type="text" id="txtSearch_SV_TuKhoa" class="form-control"
+                                           placeholder="Nhập từ khóa tìm kiếm">
+                                    <span class="input-group-addon poiter btnSV_Search" title="Kéo xuống" style="padding-right: 5px">
+                                        <i class="fa fa-search"></i> Tìm sinh viên
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col col-sm-4 text-right btn-kichhoat">
+                                <a id="btnKichHoat_SV" class="btn btn-primary">
+                                    <i class="fa fa-save"></i> Kích hoạt tài khoản</a>
+                            </div>
+                        </div>
+
+
+                        <div class="col-sm-12 scroll-table-x mt-10">
+                            <table id="tblNguoiDung_SV" class="table table-hover table-bordered">
+                                <thead>
+                                <tr>
+                                    <th class="td-fixed td-center">Stt</th>
+                                    <th class="td-center">Mã</th>
+                                    <th class="td-center">Tên</th>
+                                    <th class="td-center">Ngày sinh</th>
+                                    <th class="td-center">Số điện thoại</th>
+                                    <th class="td-center td-fixed"><input type="checkbox" id="chkSelectAll_SV"></th>
+                                </tr>
+                                </thead>
+                                <tbody></tbody>
+                                <tfoot></tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- 3. Xem chi tiet NguoiDung -->
+                <div class="box box-solid form-container zone-bus-nd aps-add-user aps-detail-user" id="zone_bus_detail">
+                    <div class="box-header with-border bg-blue">
+                        <h3 class="box-title"><i class="fa-light fa-address-card"></i> Chi tiết người dùng </h3>
+                        <div class="pull-right pull-right-absolute">
+                            <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa-light fa-xmark"></i></a>
+                        </div>
+                    </div>
+                    <div class="box-body zone-box">
+                        <div class="row box-view aps-form">
+                            <div class="col-sm-3 aps-user-avata">
+                                <img class="imgnguoidung" style="width:100%; height:100%"/>
+                            </div>
+                            <div class="col-sm-9">
+                                <!-- Row Thong tin co ban -->
+                                <div class=" aps-form-item row">
+                                    <div class="col-sm-3">
+                                        <div class="title-name">
+                                            Họ và tên:
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-9 aps-form-lable">
+                                        <span class="lightcoral" id="lblNguoiDung_HoTen"></span>
+                                    </div>
+                                </div>
+
+                                <div class="aps-form-item row">
+                                    <div class="col-sm-3">
+                                        <div class="title-name">
+                                            Tài khoản:
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-9 aps-form-lable">
+                                        <span id="lblNguoiDung_TaiKhoan"></span>
+                                    </div>
+                                </div>
+
+                                <div class="aps-form-item row">
+                                    <div class="col-sm-3">
+                                        <div class="title-name">
+                                            Email:
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-9 aps-form-lable">
+                                        <span id="lblNguoiDung_Email"></span>
+                                    </div>
+                                </div>
+                                <div class="aps-form-item row">
+                                    <div class="col-sm-3">
+                                        <div class="title-name">
+                                            Điện thoại:
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-9 aps-form-lable">
+                                        <span id="lblNguoiDung_DienThoai"></span>
+                                    </div>
+                                </div>
+
+                                <div class="aps-form-item row">
+                                    <div class="col-sm-3">
+                                        <div class="title-name">
+                                            Đơn vị:
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-9 aps-form-lable">
+                                        <span id="lblNguoiDung_DonVi"></span>
+                                    </div>
+                                </div>
+                                <!-- Row - Lịch sử truy cập -->
+                                <div class="aps-form-item row">
+                                    <div class="col-sm-3">
+                                        <div class="title-name">
+                                            Hạn mật khẩu:
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-9 aps-form-lable">
+                                        <span id="lblNguoiDung_HanMatKhau"></span>
+                                    </div>
+                                </div>
+                                <!-- Row - Lịch sử truy cập -->
+                                <div class="aps-form-item">
+                                    <div class="col-sm-3">
+                                        <div class="title-name">
+                                            Lịch sử truy cập:
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-9 aps-form-lable">
+                                        <span id="lblNguoiDung_TruyCapGanNhat"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="box-footer">
+                        <div class="pull-right">
+                            <a id="btnResetPass_Default" class="btn btn-default">
+                                <i class="fa fa-key"></i> Reset mật khẩu</a>
+                            <a id="btnKeThua" class="btn btn-success">
+                                <i class="fa-light fa-user-gear"></i> Kế thừa phân quyền chức năng</a>
+                            <a id="btnKeThuaToanBo" class="btn btn-success">
+                                <i class="fa-light fa-circle-check"></i> Xác nhận kế thừa</a>
+                            <a id="btnEdit_NguoiDung" class="btn btn-primary">
+                                <i class="fa-light fa-pen-to-square"></i> Sửa thông tin</a>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 box-view" style="display: none" id="dsNguoiDung2">
+                        <div class="box-body pd0">
+                            <div class="box-header" style="padding-left: 0 !important;padding-right: 0 !important;">
+                                <h3 class="box-title color-blue">
+                                    <span style="color: #0a66b7 !important;">
+                                        <i class="fa-solid fa-users-between-lines" style="color: #0a66b7 !important;"></i> Danh sách người dùng</span>
+                                    <span class="pull-right badge bg-light-blue"><span id="lblNguoiDung2_Tong"></span></span>
+                                </h3>
+                            </div>
+                            <div class="box-body pd0" style="padding-left: 0 !important;padding-right: 0 !important;padding-top: 10px !important;">
+                                <div class="aps-table-select">
+                                    <table id="tblNguoiDung2" class="table table-hover table-bordered">
+                                            <thead>
+                                            <tr>
+                                                <th class="td-fixed td-center">Stt</th>
+                                                <th class="td-center">Mã</th>
+                                                <th class="td-center">Tên</th>
+                                                <th class="td-center td-fixed">
+                                                    <input type="checkbox" class="chkSystemSelectAll">
+                                                </th>
+                                            </tr>
+                                            </thead>
+                                            <tbody></tbody>
+                                        </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 4. Them moi NguoiDung -->
+                <div class="box box-solid form-container zone-bus-nd aps-add-user" id="zone_bus_input">
+                    <div class="box-header with-border bg-blue">
+                        <h3 class="box-title"><i class="fa-light fa-user-plus"></i> Tạo mới tài khoản</h3>
+                        <div class="pull-right pull-right-absolute">
+                            <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa-light fa-xmark"></i></a>
+                        </div>
+                    </div>
+                    <div class="box-body zone-box">
+                        <div class="col-sm-12 box-view">
+                            <!-- Row Thong tin co ban -->
+                            <div class="row">
+                                <div class="col-sm-2 aps-user-avata">
+                                    <img id="imgnguoidung" src="../../../Upload/Avatar/no-avatar.png"
+                                         style="width:100%; height:100%"/>
+                                </div>
+                                <div class="col-sm-10 aps-form">
+                                    <div class="row sub-row aps-form-item">
+                                        <div class="col-sm-2">
+                                            <div class="title-name">
+                                                Họ:
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <input id="txtNguoiDung_Ho" class="form-control form-border-none"/>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <div class="title-name">
+                                                Tên:
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <input id="txtNguoiDung_Ten" class="form-control form-border-none"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="row sub-row aps-form-item">
+                                        <div class="col-sm-2">
+                                            <div class="title-name">
+                                                Tài khoản:
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <input id="txtNguoiDung_TaiKhoan" class="form-control form-border-none"/>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <div class="title-name">
+                                                Mật khẩu:
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <input id="txtNguoiDung_MatKhau" class="form-control form-border-none"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="row sub-row aps-form-item">
+                                        <div class="col-sm-2">
+                                            <div class="title-name">
+                                                Email:
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <input id="txtNguoiDung_Email" class="form-control form-border-none"/>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <div class="title-name">
+                                                Điện thoại:
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <input id="txtNguoiDung_DienThoai" class="form-control form-border-none"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box-footer">
+                        <div class="pull-right">
+                            <a class="btn btn-default btnClose">
+                                <i class="fa fa-times-circle"></i> <span class="lang" key="">Đóng</span></a>
+                            <!--<a class="btn btn-default" id="btnRewrite_NguoiDung"><i class="fa fa-refresh"></i> <span class="lang" key="">Viết lại</span></a>-->
+                            <a class="btn btn-primary" id="btnSave_NguoiDung"><i class="fal fa-save"></i><span
+                                    class="lang" key="">Lưu</span></a>
+                        </div>
+                    </div>
+                </div>
+                <!-- 5. Cap nhat thong tin tai khoan -->
+                <div class="box box-solid form-container zone-bus-nd aps-add-user" id="zone_bus_edit">
+                    <div class="box-header with-border bg-blue">
+                        <h3 class="box-title"><i class="fa-light fa-pen-to-square"></i> Cập nhật tài khoản
+                            <span class="badge bg-light-blue" id="lblEditND_TieuDe"></span>
+                        </h3>
+                        <div class="pull-right pull-right-absolute">
+                            <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa-light fa-xmark"></i></a>
+                        </div>
+                    </div>
+                    <div class="box-body zone-box">
+                        <div class="col-sm-12 box-view">
+                            <input type="hidden" id="hidEditND_Id"/>
+                            <input type="hidden" id="hidEditND_HinhDaiDien"/>
+                            <input type="hidden" id="hidEditND_QuyDinhDoiMatKhauId"/>
+                            <div class="row">
+                                <div class="col-sm-2 aps-user-avata">
+                                    <img id="imgEditND_Avatar" src="../../../Upload/Avatar/no-avatar.png"
+                                         style="width:100%; height:100%"/>
+                                </div>
+                                <div class="col-sm-10 aps-form">
+                                    <div class="row sub-row aps-form-item">
+                                        <div class="col-sm-2">
+                                            <div class="title-name">Tài khoản:</div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <input id="txtEditND_TaiKhoan" class="form-control form-border-none"/>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <div class="title-name">Họ và tên:</div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <input id="txtEditND_TenDayDu" class="form-control form-border-none"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="row sub-row aps-form-item">
+                                        <div class="col-sm-2">
+                                            <div class="title-name">Email:</div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <input id="txtEditND_Email" class="form-control form-border-none"/>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <div class="title-name">Điện thoại:</div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <input id="txtEditND_DienThoai" class="form-control form-border-none"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="row sub-row aps-form-item">
+                                        <div class="col-sm-2">
+                                            <div class="title-name">Đơn vị:</div>
+                                        </div>
+                                        <div class="col-sm-10">
+                                            <select id="dropEditND_DonVi" class="select-opt">
+                                                <option value="">--Chọn đơn vị--</option>
+                                                <!-- Load from js -->
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="row sub-row aps-form-item">
+                                        <div class="col-sm-2">
+                                            <div class="title-name">Địa chỉ:</div>
+                                        </div>
+                                        <div class="col-sm-10">
+                                            <input id="txtEditND_DiaChi" class="form-control form-border-none"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="row sub-row aps-form-item">
+                                        <div class="col-sm-2">
+                                            <div class="title-name">Trạng thái:</div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <select id="dropEditND_TrangThai" class="select-opt">
+                                                <option value="1">Đang hoạt động</option>
+                                                <option value="0">Ngừng hoạt động</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <div class="title-name">Hạn đổi mật khẩu:</div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <input id="txtEditND_ThoiHanDoiMatKhau" type="number" min="0"
+                                                   class="form-control form-border-none"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box-footer">
+                        <div class="pull-right">
+                            <a class="btn btn-default btnClose">
+                                <i class="fa fa-times-circle"></i> <span class="lang" key="">Đóng</span></a>
+                            <a class="btn btn-primary" id="btnUpdate_NguoiDung"><i class="fal fa-save"></i>
+                                <span class="lang" key="">Lưu</span></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="modal fade" id="myModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+                <h3 class="box-title"><span class="myModalLabel"> <i class="fa fa-pencil"></i></span>Cài lại mật khẩu
+                </h3>
+            </div>
+            <div class="modal-body" id="modal_body">
+                <div class="row zone-box">
+
+                    <!--row 1-->
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <label style="font-weight: normal"><span class="lang" key="">Loại</span></label>
+                        </div>
+                        <div class="col-sm-9">
+                            <select id="dropLoaiThongTin" class="select-opt"></select>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <label style="font-weight: normal"><span class="lang" key="">Mật khẩu</span></label>
+                        </div>
+                        <div class="col-sm-9">
+                            <input type="text" id="strPassResetA" class="form-control"/>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="clear"></div>
+            <div id="notify"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times-circle-o"></i>
+                    <span class="lang" key="">Đóng</span></button>
+                <a class="submit btn btn-primary" id="btnSave_MatKhau"><i class="fa fa-check-circle"></i><span
+                        class="lang" key=""> Lưu</span></a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- page script -->
+<script src="modules/nguoidung/script/nguoidung.js?v=1.0.0.0"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['NguoiDung'] = new NguoiDung();
+    $(document).ready(function () {
+        main_doc.NguoiDung.init();
+    });
+</script>
+<!-- FIX 2026-08-26: Select2 trong modal — re-init voi dropdownParent = modal
+     de popup nam trong modal, khong lech / che noi dung. Universal handler,
+     an toan khi modal khong co select. -->
+<script>
+(function () {
+    if (typeof jQuery === 'undefined') return;
+    var $ = jQuery;
+    $(document).off('shown.bs.modal.__s2fix').on('shown.bs.modal.__s2fix', '.modal', function () {
+        var $modal = $(this);
+        $modal.find('select.select-opt, select[id^="drop"]').each(function () {
+            var $sel = $(this);
+            try {
+                if ($sel.hasClass('select2-hidden-accessible')) $sel.select2('destroy');
+            } catch (e) {}
+            $sel.select2({ dropdownParent: $modal, width: '100%' });
+        });
+    });
+})();
+</script>
+<style>
+    .modal .select2-container--open,
+    .modal .select2-container--open .select2-dropdown {
+        z-index: 100060 !important;
+    }
+    .modal .select2-results__options {
+        max-height: 220px !important;
+        overflow-y: auto !important;
+    }
+</style>

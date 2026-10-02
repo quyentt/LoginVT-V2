@@ -1,0 +1,1670 @@
+﻿<section class="content">
+    <style>
+
+        .question {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
+
+        .question-text {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .draggable-word {
+            display: inline-block;
+            padding: 6px 10px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            margin: 2px;
+            cursor: move;
+            font-size: 13px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+            .draggable-word:hover {
+                background: #45a049;
+                transform: translateY(-1px);
+            }
+
+            .draggable-word.ui-draggable-dragging {
+                opacity: 0.8;
+                transform: rotate(3deg);
+            }
+
+            .draggable-word.used {
+                background: #9E9E9E;
+                color: #fff;
+                cursor: not-allowed;
+                opacity: 0.6;
+            }
+
+                .draggable-word.used:hover {
+                    background: #9E9E9E;
+                    transform: none;
+                }
+
+        .answer-slot {
+            display: inline-block;
+            min-width: 100px;
+            height: 35px;
+            border: 2px dashed #ccc;
+            border-radius: 4px;
+            margin: 2px;
+            padding: 6px 10px;
+            text-align: center;
+            background: #f0f0f0;
+            vertical-align: middle;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+            .answer-slot.highlight {
+                border-color: #2196F3;
+                background: #E3F2FD;
+            }
+
+            .answer-slot.filled {
+                border-color: #4CAF50;
+                background: #E8F5E8;
+                cursor: move;
+            }
+
+            .answer-slot.correct {
+                border-color: #4CAF50;
+                background: #C8E6C9;
+                color: #2E7D32;
+            }
+
+            .answer-slot.incorrect {
+                border-color: #F44336;
+                background: #FFCDD2;
+                color: #C62828;
+            }
+
+        .answers-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f0f8ff;
+            border-radius: 8px;
+            border-left: 4px solid #2196F3;
+        }
+
+        .answers-title {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #2196F3;
+            font-size: 16px;
+        }
+
+        .answer-item {
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .answer-label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .drop-zone {
+            min-height: 50px;
+            border: 2px dashed #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 5px 0;
+            background: #f9f9f9;
+            text-align: center;
+            color: #666;
+        }
+
+            .drop-zone.highlight {
+                border-color: #2196F3;
+                background: #E3F2FD;
+            }
+
+            .drop-zone.filled {
+                border-color: #4CAF50;
+                background: #E8F5E8;
+            }
+
+            .drop-zone.correct {
+                border-color: #4CAF50;
+                background: #C8E6C9;
+                color: #2E7D32;
+            }
+
+            .drop-zone.incorrect {
+                border-color: #F44336;
+                background: #FFCDD2;
+                color: #C62828;
+            }
+
+        .word-in-answer {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #4CAF50;
+            color: white;
+            border-radius: 3px;
+            margin: 2px;
+            cursor: move;
+            font-size: 12px;
+        }
+
+
+  
+    </style>
+    <style>
+        .flash-red {
+            animation: flash-red-anim 0.7s infinite alternate;
+            background-color: #ffcccc !important;
+        }
+
+        @keyframes flash-red-anim {
+            from {
+                background-color: #ffcccc;
+            }
+
+            to {
+                background-color: #ff0000;
+            }
+        }
+    </style>
+    <!-- /.left-content -->
+    <!-- /.right-content -->
+    <div class="col-lg-12">
+        <!-- box Notify_GT -->
+
+        <div class="box box-solid form-container zone-bus" id="zoneGroupQuestion" style="display: none">
+            <div class="box-header with-border">
+                <h3 class="box-title"><span class="myModalLabel"> <i class="fa fa-pencil"></i></span>Thông tin </h3>
+                <div class="pull-right title-note">
+                    <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times"></i></a>
+                </div>
+            </div>
+            <div class="box-body">
+                <div class="row zone-box">
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <div class="group-title-name">
+                                <span class="lang" key="">Đơn vị</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-10">
+                            <label id="lblDonVi" style="color: #0073b7"></label>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <div class="group-title-name">
+                                <span class="lang" key="">Mã</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-10">
+                            <input type="text" id="txtGroupQuestionCode" class="form-control" />
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <div class="group-title-name">
+                                <span class="lang" key="">Tên</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-10">
+                            <input type="text" id="txtGroupQuestionName" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                        </div>
+                        <div class="col-sm-10">
+                            <div class="col-sm-3 item-search">
+                                <select id="drpGroupQuestionStatus" class="select-opt">
+                                    <option value="">Tình trạng (Ẩn/Hiện)</option>
+                                    <option value="0">Ẩn</option>
+                                    <option value="1">Hiện</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="box-footer">
+                <div class="pull-right">
+                    <a class="btn btn-default btnClose" id=""><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="box box-solid form-container zone-bus" id="zoneGroupQuestionDetail" style="display: none">
+            <div class="box box-solid">
+                <div class="col-sm-3">
+                   
+                    <div class="box box-solid">
+                        <div class="box-header with-border">
+                            <h3 class="box-title" title="Danh sách nhóm câu hỏi">
+                                <i class="fa fa-map-signs"></i> Thông tin
+                            </h3>
+                            <span class="pull-right badge bg-light-blue">
+                                <span id="lblDanhMucTenBang_Tong"></span>
+                            </span>
+                        </div>
+                        <div class="box-body">
+                            <div id="zone_GroupQuestionDetail_treejs">
+                                <!--Content of treejs-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="box-body col-sm-9">
+                    <div class="nav-tabs-custom">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">
+                                <i class="fa fa-hdd-o"></i> Danh sách câu hỏi
+                            </h3>
+                            <div class="box-tools pull-right">
+                                <div class="pull-right title-note">
+                                    <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        <ul class="nav nav-tabs">
+                            <li class="active">
+                                <a href="#tab_1_DANHSACHCAUHOI" data-toggle="tab" aria-expanded="true">
+                                    <span class="lang" key="">Danh sách câu hỏi</span>
+                                </a>
+                            </li>
+                            <li class="">
+                                <a href="#tab_2_NOIDUNGCAUHOINHOM" data-toggle="tab" aria-expanded="true">
+                                    <span class="lang" key="">Nội dung câu hỏi nhóm</span>
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <!-- Tab_1: Cấu trúc đề -->
+                            <div class="tab-pane active" id="tab_1_DANHSACHCAUHOI">
+                                <div class="box box-solid">
+                                    <div class="row zone-box">
+                                        <div class="zone-bus-GroupQuestionDetail" id="zonebatdauGroupQuestionDetail">
+                                            <div class="box box-solid">
+                                                <div class="box-header with-border">
+                                                    <h3 class="box-title">
+                                                        <i class="fa fa-hdd-o"></i> Danh sách câu hỏi trong nhóm
+                                                        <span class="pull-right badge bg-light-blue">
+                                                            <span id="lblNhomCauHoi_Tong"></span>
+                                                        </span>
+                                                    </h3>
+
+                                                </div>
+
+                                                <div class="box-body">
+                                                    <div class="row">
+                                                        <div class="box-tools fa-pull-left">
+                                                            <div class="col-sm-2">
+                                                                <select id="drpQuestionStatus" class="select-opt">
+                                                                    <option value="">Tình trạng</option>
+                                                                    <option value="1">Đang dùng</option>
+                                                                    <option value="0">Không dùng</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-sm-3">
+                                                                <select id="drpLoaiCauHoi_Search" class="select-opt"></select>
+                                                            </div>
+                                                            <div class="col-sm-3">
+                                                                <select id="drpMucDoCauHoi_Search" class="select-opt"></select>
+                                                            </div>
+                                                            <div class="col-sm-3">
+                                                                <input type="text" id="txtSearch_CauHoi" class="form-control" placeholder="Nhập từ khóa tìm kiếm">
+                                                            </div>
+                                                            <div class="col-sm-1">
+                                                                <a class="btn btn-primary btnSearch_CauHoi"><i class="fa fa-search"></i> <span class="lang" key="">Tìm kiếm</span></a>
+                                                            </div>
+
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-sm-4">
+                                                            <select id="drpBaoCao" data-placeholder="Chọn loại báo cáo..." class="chosen-select">
+                                                                <option value="">Chọn loại báo cáo</option>
+                                                                <option value="THONGKECHATLUONGCAUHOI">Thống kê chất lượng câu hỏi</option>
+                                                                <option value="THONGKETHISINHTRALOI">Thống kê thí sinh trả lời</option>
+                                                                <option value="THONGKETYLESUDUNGCAUHOI">Thống kê tỷ lệ sử dụng câu hỏi</option>
+                                                            </select>
+                                                            <a id="btnTaiFile" class="btn btn-default"><i class="fa fa-download"></i> Tải file</a>
+                                                        </div>
+                                                        <div class="col-sm-8">
+
+                                                            <div class="box-tools pull-right">
+                                                                
+                                                                <a id="btnThucHienTacVu" class="btnAdd btn btn-primary"><i class="fa fa-plus-circle"></i>Thực hiện tác vụ</a>
+                                                                <select id="drpTacVu" data-placeholder="Thực hiện tác vụ" class="chosen-select">
+                                                                    <option value="">Chọn tác vụ</option>
+                                                                     
+                                                                    <option value="PREVIEWCAUHOI">Preview</option>
+                                                                    <option value="KIEMTRACAUHOI">Kiểm tra câu hỏi</option>
+                                                                    
+                                                                    
+                                                                </select>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="clear"></div>
+
+                                                    <div class="row">
+                                                        <div class="scroll-table-x">
+                                                            <table id="tblCauHoi" class="table table-hover table-bordered">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th class="td-fixed td-center">Stt</th>
+                                                                        <th class="td-fixed td-center">Order</th>
+                                                                        <th class="td-center">Nội dung câu hỏi </th>
+                                                                        <th class="td-center">Đáp án </th>
+                                                                        <th class="td-center">Số đ/a </th>
+                                                                        <th class="td-center">Loại câu hỏi</th>
+                                                                        <th class="td-center">Mức độ</th>
+                                                                        <th class="td-center">Điểm(+/-)</th>
+                                                                        <th class="td-center">Đảo đ/a</th>
+                                                                        <th class="td-center">Trạng thái</th>
+                                                                        
+                                                                        <th class="td-center">
+                                                                            Tính theo ý
+                                                                            <input type="checkbox" id="chkSelectAll_TheoSoY">
+                                                                        </th>
+                                                                        <th class="td-center">SL đã thi</th>
+                                                                        <th class="td-fixed td-center">Sửa</th>
+                                                                        <th class="td-fixed td-center">
+                                                                            <input type="checkbox" id="chkSelectAll_CauHoi">
+                                                                        </th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <!-- load from js -->
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="box box-solid form-container zone-bus-GroupQuestionDetail" id="zoneEditGroupQuestionDetail" style="display: none">
+                                            <div class="box-header with-border">
+                                                <h3 class="box-title"><span class="myModalLabel"> <i class="fa fa-pencil"></i></span> Nhóm câu hỏi </h3>
+                                                <div class="pull-right title-note">
+                                                    <a class="btn btn-default btnClose_ThaoTac_GroupQuestionDetail" href="#" title="Close"><i class="fa fa-times"></i></a>
+                                                </div>
+                                            </div>
+                                            <div class="box-body">
+                                                <div class="row zone-box">
+                                                    <div class="row">
+                                                        <div class="col-sm-2">
+                                                            <div class="group-title-name">
+                                                                <span class="lang" key="">Mã nhóm</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-10">
+                                                            <input type="text" id="txtMaNhomGroupQuestionDetail" class="form-control " />
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-sm-2">
+                                                            <div class="group-title-name">
+                                                                <span class="lang" key="">Mô tả</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-10">
+                                                            <textarea  type="text" id="txtTenNhomGroupQuestionDetail" class="form-control" rows="2" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-sm-2">
+                                                            <div class="group-title-name">
+                                                                <span class="lang" key="">Là câu hỏi dạng tập các câu hỏi con</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-10">
+                                                            <input type="checkbox" id="chkTapHopCacCauHoi" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-sm-2">
+                                                            <div class="group-title-name">
+                                                                <span class="lang" key="">Nhóm cha</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-10">
+                                                            <select id="drpNhomCauHoiChaGroupQuestionDetail" class="select-opt">
+                                                                <option value="">-- Chọn nhóm cha---</option>
+                                                            </select>
+
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                                <div class="box-footer">
+                                                    <div class="pull-right">
+                                                        <a class="btn btn-default btnClose_ThaoTac_GroupQuestionDetail" id=""><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+                                                        <a class="submit btn btn-primary" id="btnSave_GroupQuestionDetail"><i class="fa fa-save"></i><span class="lang" key=""> Lưu</span></a>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                        <!--Detail cau hoi-->
+                                        <div class="box box-solid form-container zone-bus-GroupQuestionDetail" id="zoneCauHoiEdit" style="display: none">
+                                            <div class="box-header with-border">
+                                                <h3 class="box-title"><span class="myModalLabel"> <i class="fa fa-pencil"></i></span> Câu hỏi </h3>
+                                                <div class="pull-right title-note">
+                                                    <a class="btn btn-default btnClose_ThaoTac_GroupQuestionDetail" href="#" title="Close"><i class="fa fa-times"></i></a>
+                                                </div>
+                                            </div>
+                                            <div class="box-body">
+                                                <div class="row zone-box">
+                                                    <div class="row">
+                                                        <div class="col-sm-2">
+                                                            <div class="group-title-name">
+                                                                <span class="lang" key="">Nội dung câu hỏi</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-10">
+                                                            <!--<input type="text" id="txtNoiDungCauHoi" class="form-control " />-->
+                                                            <!-- This container will become the editable. -->
+
+                                                            <textarea name="editor_nhomcauhoi" id="editor_nhomcauhoi"></textarea>
+
+
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-sm-2">
+                                                            <div class="group-title-name">
+                                                                <span class="lang" key="">STT</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-10">
+                                                            <input type="text" class="form-control" id="txtOrderNumber" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-sm-2">
+                                                            <div class="group-title-name">
+                                                                <span class="lang" key="">Loại câu hỏi</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-10">
+                                                            <select id="drpLoaiCauHoi" class="select-opt"></select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-sm-2">
+                                                            <div class="group-title-name">
+                                                                <span class="lang" accesskey="">Đảo đáp án</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-10">
+                                                            <select id="drpDaoDapAn" class="select-opt">
+                                                                <option value="">---Chọn đảo/không đảo đáp án---</option>
+                                                                <option value="1">Đảo đáp án</option>
+                                                                <option value="0">Không đảo đáp án</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-sm-2">
+                                                            <div class="group-title-name">
+                                                                <span class="lang" accesskey="">Mức độ</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-10">
+                                                            <select id="drpMucDoCauHoi" class="select-opt"></select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-sm-2">
+                                                            <div class="group-title-name">
+                                                                <span class="lang" key="">Điểm cộng</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-10">
+                                                            <input type="text" class="form-control" id="txtDiemCong" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-sm-2">
+                                                            <div class="group-title-name">
+                                                                <span class="lang" key="">Điểm trừ</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-10">
+                                                            <input type="text" class="form-control" id="txtDiemTru" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-sm-2">
+                                                            <div class="group-title-name">
+                                                                <span class="lang" key="">Thời gian (nhập số giây)</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-10">
+                                                            <input type="text" class="form-control" id="txtThoiGian" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-sm-2">
+                                                            <div class="group-title-name">
+                                                                <span class="lang" accesskey="">Trạng thái</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-10">
+                                                            <select id="drpTrangThaiCauHoi" class="select-opt">
+                                                                <option value="">---Chọn trạng thái---</option>
+                                                                <option value="1">Đang dùng</option>
+                                                                <option value="0">Không dùng</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-sm-2">
+                                                            <div class="group-title-name">
+                                                                <span class="lang" accesskey="">Tính điểm theo số ý</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-10">
+                                                            <input type="checkbox" id="chkCachTinhDiemTheoSoY">
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div type="text" id="txt_Question_Audio"></div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <table id="tblQuestionAudioFiles" class="table table-hover table-bordered">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th class="td-fixed td-center">Stt</th>
+                                                                    <th class="td-center" style="width:20%">File</th>
+                                                                    <th class="td-center">Tên file</th>
+                                                                    <th class="td-center" style="width:20px">Xóa</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <!-- load from js -->
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                    <div class="box-footer">
+                                                        <div class="pull-right">
+                                                            <a id="btnShowPreview_CauHoi" class="btnAdd btn btn-primary"><i class="fa fa-eye"></i>Preview</a>
+                                                            
+                                                            <a class="btn btn-default btnClose_ThaoTac_GroupQuestionDetail" id=""><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="box-body" id="zoneDapAn">
+                                                        <div class="row bg-blue">
+                                                            <p class="group-title-name">
+                                                                <span>THÔNG TIN ĐÁP ÁN</span>
+                                                            </p>
+                                                        </div>
+                                                        <div>
+                                                            <table id="tblDapAn" class="table table-hover table-bordered">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th class="td-fixed td-center">Stt</th>
+                                                                        <th class="td-center" style="width: 50px;">Thứ tự</th>
+                                                                        <th class="td-center" style="width: 50px;">Fix vị trí</th>
+                                                                        <th class="td-center" style="width: 50px;">Đáp án</th><!--2: MULTICHOICE -->
+                                                                        <th class="td-center" style="width: 50px;">Đáp án</th><!--3: BESTANSWER -->
+                                                                        <th class="td-center">Nội dung đáp án </th>
+                                                                        <th class="td-center">Vế 2 </th><!--5: CROSSLINK -->
+                                                                        <th class="td-center">Nội dung điền </th><!--6: FILLTHEBLANK -->
+                                                                        <th class="td-center">Điểm </th>
+                                                                        <th class="td-fixed td-center">
+                                                                            <input type="checkbox" id="chkSelectAll_DapAn">
+                                                                        </th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <!-- load from js -->
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                                <div class="row pull-right">
+
+                                                </div>
+                                                <div class="box-footer">
+                                                    <div class="row zone-box">
+                                                        <div class="col-sm-1">
+                                                            <div class="group-title-name">
+                                                                <input type="text" id="txtOrder" class="form-control" placeholder="STT" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-1">
+                                                            <input type="checkbox" id="chkDapAnDung" />
+                                                        </div>
+                                                        <div class="col-sm-10">
+
+                                                            <textarea name="editor_txtContent" id="editor_txtContent"></textarea>
+                                                            <input type="text" id="txtContent2" class="form-control" placeholder="Nội dung điền" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="row pull-right">
+                                                        
+
+                                                        <a class="btn btn-default btnClose_ThaoTac_GroupQuestionDetail" id=""><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+                                                    </div>
+                                                </div>
+                                                <div class="box-body" id="zoneDapAn_Ve2">
+                                                    <div class="row bg-blue">
+                                                        <p class="group-title-name">
+                                                            <span>THÔNG TIN VẾ 2</span>
+                                                        </p>
+                                                    </div>
+                                                    <div>
+                                                        <table id="tblDapAn_Ve2" class="table table-hover table-bordered">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th class="td-center" style="width: 50px;">Stt</th>
+                                                                    <th class="td-center">Nội dung vế 2 </th>
+                                                                    <th class="td-fixed td-center">
+                                                                        <input type="checkbox" id="chkSelectAll_DapAn_Ve2">
+                                                                    </th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <!-- load from js -->
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                    <div class="row pull-right">
+                                                        <a class="submit btn btn-primary" id="btnSave_DapAn_Ve2"><i class="fa fa-save"></i><span class="lang" key=""> Lưu vế 2</span></a>
+                                                        <a class="submit btn btn-primary" id="btnXoa_DapAn_Ve2"><i class="fa fa-trash"></i><span class="lang" key=""> Xóa</span></a>
+                                                    </div>
+                                                    <div class="box-footer">
+                                                        <div class="row zone-box">
+                                                            <div class="col-sm-2">
+                                                                <div class="group-title-name">
+                                                                    <input type="text" id="txtOrder_Ve2" class="form-control" placeholder="STT" />
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-sm-10">
+                                                                <input type="text" id="txtContent_Ve2" class="form-control" placeholder="Nội dung vế 2" />
+                                                            </div>
+
+                                                        </div>
+                                                        <div class="row pull-right">
+                                                            <a class="submit btn btn-primary" id="btnThem_DapAn_Ve2"><i class="fa fa-save"></i><span class="lang" key=""> Thêm vế 2</span></a>
+
+                                                            <a class="btn btn-default btnClose_ThaoTac_GroupQuestionDetail" id=""><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+                                                        </div>
+
+
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+
+                                        <!--Preview cau hoi-->
+                                        <div class="box box-solid form-container zone-bus-GroupQuestionDetail" id="zonePreviewCauHoiEdit" style="display: none">
+                                            <div class="box-header with-border">
+                                                <h3 class="box-title"><span class="myModalLabel">  </span> Preview Câu hỏi </h3>
+                                                <div class="pull-right title-note">
+                                                    <a class="btn btn-default btnClose_ThaoTac_GroupQuestionDetail" href="#" title="Close"><i class="fa fa-times"></i></a>
+                                                </div>
+                                            </div>
+                                            <div id="btnIn_Preview" style="width:30px; text-align:center; background-color: #fff; border-bottom: 1px solid #f1f1f1">
+                                                <a class="btn"><i style="color: #00a65a" class="fa fa-print fa-4x"></i></a>
+                                                <a class="color-active bold lbsymbolHD">In</a>
+                                            </div>
+                                            <div class="box-body">
+                                                <div class="row zone-box" id="zonePrintPreview">
+                                                    <span id="zonePreviewTableQuestion">
+                                                    </span>
+                                                </div>
+                                                <div class="row zone-box">
+                                                    <div class="box-footer">
+                                                        <div class="pull-right">
+                                                            <a class="btn btn-default btnClose_ThaoTac_GroupQuestionDetail" id=""><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                        <!--Move cau hoi-->
+                                        <div class="box box-solid form-container zone-bus-GroupQuestionDetail" id="zoneMove_CauHoi" style="display: none">
+                                            <div class="box-header with-border">
+                                                <h3 class="box-title"><span class="myModalLabel">  </span> Move Câu hỏi </h3>
+
+                                                <div class="pull-right title-note">
+
+                                                    <a class="btn btn-default btnClose_ThaoTac_Move_CauHoi" href="#" title="Close"><i class="fa fa-times"></i></a>
+                                                </div>
+                                            </div>
+                                            <div class="box-body">
+                                                <div class="box box-solid">
+                                                    <div class="box-header with-border">
+                                                        <h3 class="box-title" title="Danh sách nhóm câu hỏi">
+                                                            <i class="fa fa-map-signs"></i> Thông tin
+                                                        </h3>
+                                                        <span class="pull-right badge bg-light-blue">
+                                                            <span id="lblDanhMucTenBang_Tong_Move_CauHoi"></span>
+                                                        </span>
+                                                    </div>
+                                                    <div class="box-body">
+                                                        <div id="zone_Move_CauHoi_treejs">
+                                                            <!--Content of treejs-->
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row zone-box">
+                                                    <div class="box-footer">
+                                                        <div class="pull-right">
+                                                            <label id="lblSoCauChuyen" style="color: #0073b7"></label>
+                                                            <a id="btn_ThucHienChuyenCauHoi" class="btnAdd btn btn-primary"><i class="fa fa-plus-square"></i>Thực hiện chuyển</a>
+                                                            <a class="btn btn-default btnClose_ThaoTac_Move_CauHoi" id=""><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                        <!--Show Preview cau hoi-->
+                                        <div class="box box-solid form-container zone-bus-GroupQuestionDetail" id="zoneShowPreviewCauHoiEdit" style="display: none">
+                                            <div class="box-header with-border">
+                                                <h3 class="box-title"><span class="myModalLabel">  </span> Preview Câu hỏi </h3>
+                                                <div class="pull-right title-note">
+
+                                                    <a class="btn btn-default btnClose_ShowPreview_CauHoi" href="#" title="Close"><i class="fa fa-times"></i></a>
+                                                </div>
+                                            </div>
+                                            <div class="box-body">
+
+                                                <div class="row zone-box" id="divShowPreviewTableQuestion">
+                                                    <span id="zoneShowPreviewTableQuestion">
+                                                    </span>
+                                                </div>
+                                                <div class="row zone-box">
+                                                    <div class="box-footer">
+                                                        <div class="pull-right">
+                                                            <a class="btn btn-default btnClose_ShowPreview_CauHoi" id=""><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+
+                                        <!--Câu hỏi tạm-->
+                                        <div class="form-container zone-bus-GroupQuestionDetail" id="zoneCauHoi_Temp" style="display: none">
+                                            <div class="box-header with-border">
+                                                <h3 class="box-title"><span class="myModalLabel"> <i class="fa fa-pencil"></i></span> Câu hỏi tạm</h3>
+                                                <div class="pull-right title-note">
+                                                    <a class="btn btn-default btnClose_ThaoTac_GroupQuestionDetail" href="#" title="Close"><i class="fa fa-times"></i></a>
+                                                </div>
+                                            </div>
+                                            <div class="row pull-right col-sm-12">
+                                                <div class="col-sm-3">
+                                                    <select id="drpLoaiCauHoi_Imp" class="select-opt"></select>
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <a id="btnCall_Import_DMIP" class="btn btn-default"><i class="fa fa fa-file-excel-o"></i> <span class="lang" key="">Import dữ liệu</span></a>
+                                                </div>
+                                                <div class="col-sm-7">
+                                                    <a id="btnAdd_DuaVaoNganHangDe" class="btnAdd btn btn-primary"><i class="fa fa-plus-circle"></i>Đưa vào ngân hàng đề</a>
+                                                    <a id="btnMauFileDoc" class="btn btn-default"><i class="fa fa-download"></i> Tải mẫu file doc</a>
+                                                    <a id="btnPreview_CauHoi_Temp" class="btnAdd btn btn-primary"><i class="fa fa-eye"></i>Preview</a>
+                                                    <a id="btnKiemTra_CauHoi_Temp" class="btnde btn btn-primary"><i class="fa fa-check"></i>Kiểm tra câu hỏi</a>
+                                                    <a id="btnUpdate_CauHoi_Temp_STT" class="btnAdd btn btn-primary"><i class="fa fa-save"></i>Cập nhật</a>
+                                                    <a id="btnDelete_CauHoi_Temp" class="btnde btn btn-primary"><i class="fa fa-trash"></i>Xóa câu hỏi tạm</a>
+                                                    <a class="btn btn-default btnClose_ThaoTac_GroupQuestionDetail" id=""><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="row zone-box">
+                                                    <span class="pull-right badge bg-light-blue">
+                                                        <span id="lblDanhSachNhomCauHoi_Temp_Tong"></span>
+                                                    </span>
+                                                    <div class="clear"></div>
+                                                    <div class="row">
+                                                        <div class="scroll-table-x">
+                                                            <table id="tblCauHoi_Temp" class="table table-hover table-bordered">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th class="td-fixed td-center">Stt</th>
+                                                                        <th class="td-fixed td-center">Order</th>
+                                                                        <th class="td-center">Nội dung câu hỏi </th>
+                                                                        <th class="td-center">Đáp án </th>
+                                                                        <th class="td-center">Số đáp án </th>
+                                                                        <th class="td-center">Loại câu hỏi</th>
+                                                                        <th class="td-center">Mức độ</th>
+                                                                        <th class="td-center">Điểm(+/-)</th>
+                                                                        <th class="td-center">Đảo đ/a</th>
+                                                                        <th class="td-center">
+                                                                            Tính theo ý
+                                                                            <input type="checkbox" id="chkSelectAll_Temp_TheoSoY">
+                                                                        </th>
+                                                                        <th class="td-fixed td-center">Sửa</th>
+                                                                        <th class="td-fixed td-center">
+                                                                            <input type="checkbox" id="chkSelectAll_CauHoi_Temp">
+                                                                        </th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <!-- load from js -->
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                        <!--Preview cau hoi Temp-->
+                                        <div class="box box-solid form-container zone-bus-GroupQuestionDetail" id="zonePreviewCauHoi_TempEdit" style="display: none">
+                                            <div class="box-header with-border">
+                                                <h3 class="box-title"><span class="myModalLabel">  </span> Preview Câu hỏi </h3>
+                                                <div class="pull-right title-note">
+                                                    <a class="btn btn-default btnClose_CauHoiTemp" href="#" title="Close"><i class="fa fa-times"></i></a>
+                                                </div>
+                                            </div>
+                                            <div id="btnIn_PreviewTemp" style="width:30px; text-align:center; background-color: #fff; border-bottom: 1px solid #f1f1f1">
+                                                <a class="btn"><i style="color: #00a65a" class="fa fa-print fa-4x"></i></a>
+                                                <a class="color-active bold lbsymbolHD">In</a>
+                                            </div>
+                                            <div class="box-body">
+                                                <div class="row zone-box" id="zonePrintPreviewTemp">
+                                                    <span id="zonePreviewTableQuestion_Temp">
+                                                    </span>
+                                                </div>
+                                                <div class="row zone-box">
+                                                    <div class="box-footer">
+                                                        <div class="pull-right">
+                                                            <a class="btn btn-default btnClose_CauHoiTemp" id=""><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+
+                                        <!--Detail cau hoi tam-->
+                                        <div class="box box-solid form-container  zone-bus-GroupQuestionDetail" id="zoneChiTietCauHoiEdit_Temp" style="display: none">
+                                            <div class="box-header with-border">
+                                                <h3 class="box-title"><span class="myModalLabel"> <i class="fa fa-pencil"></i></span> Câu hỏi </h3>
+                                                <div class="pull-right title-note">
+                                                    <a class="btn btn-default btnClose_CauHoiTemp" href="#" title="Close"><i class="fa fa-times"><span class="lang" key="">Đóng</span></i></a>
+                                                </div>
+                                            </div>
+                                            <div class="box-body">
+                                                <div class="row zone-box">
+                                                    <div class="row">
+                                                        <div class="col-sm-2">
+                                                            <div class="group-title-name">
+                                                                <span class="lang" key="">Nội dung câu hỏi</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-10">
+                                                            <!--<input type="text" id="txtNoiDungCauHoi" class="form-control " />-->
+                                                            <!-- This container will become the editable. -->
+
+                                                            <textarea name="editor_nhomcauhoi_Temp" id="editor_nhomcauhoi_Temp"></textarea>
+
+
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-sm-2">
+                                                            <div class="group-title-name">
+                                                                <span class="lang" key="">STT</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-10">
+                                                            <input type="text" class="form-control" id="txtOrderNumber_Temp" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-sm-2">
+                                                            <div class="group-title-name">
+                                                                <span class="lang" key="">Loại câu hỏi</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-10">
+                                                            <select id="drpLoaiCauHoi_Temp" class="select-opt"></select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-sm-2">
+                                                            <div class="group-title-name">
+                                                                <span class="lang" accesskey="">Đảo đáp án</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-10">
+                                                            <select id="drpDaoDapAn_Temp" class="select-opt">
+                                                                <option value="">---Chọn đảo/không đảo đáp án---</option>
+                                                                <option value="1">Đảo đáp án</option>
+                                                                <option value="0">Không đảo đáp án</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-sm-2">
+                                                            <div class="group-title-name">
+                                                                <span class="lang" accesskey="">Mức độ</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-10">
+                                                            <select id="drpMucDoCauHoi_Temp" class="select-opt"></select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-sm-2">
+                                                            <div class="group-title-name">
+                                                                <span class="lang" key="">Điểm cộng</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-10">
+                                                            <input type="text" class="form-control" id="txtDiemCong_Temp" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-sm-2">
+                                                            <div class="group-title-name">
+                                                                <span class="lang" key="">Điểm trừ</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-10">
+                                                            <input type="text" class="form-control" id="txtDiemTru_Temp" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-sm-2">
+                                                            <div class="group-title-name">
+                                                                <span class="lang" key="">Thời gian (nhập số giây)</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-10">
+                                                            <input type="text" class="form-control" id="txtThoiGian_Temp" />
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row">
+                                                        <div class="col-sm-2">
+                                                            <div class="group-title-name">
+                                                                <span class="lang" accesskey="">Trạng thái</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-10">
+                                                            <select id="drpTrangThaiCauHoi_Temp" class="select-opt">
+                                                                <option value="">---Chọn trạng thái---</option>
+                                                                <option value="1">Đang dùng</option>
+                                                                <option value="0">Không dùng</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-sm-2">
+                                                            <div class="group-title-name">
+                                                                <span class="lang" accesskey="">Tính điểm theo số ý</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-10">
+                                                            <input type="checkbox" id="chkCachTinhDiemTheoSoY_Temp">
+                                                        </div>
+                                                    </div>
+                                                    <div class="box-footer">
+                                                        <div class="pull-right">
+
+                                                            <a class="submit btn btn-primary" id="btnSave_CauHoi_Temp"><i class="fa fa-save"></i><span class="lang" key=""> Lưu câu hỏi</span></a>
+                                                            <a class="btn btn-default btnClose_CauHoiTemp" href="#" title="Close"><i class="fa fa-times"><span class="lang" key="">Đóng</span></i></a>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="box-body" id="zoneDapAn_Temp">
+                                                        <div class="row bg-blue">
+                                                            <p class="group-title-name">
+                                                                <span>THÔNG TIN ĐÁP ÁN</span>
+                                                            </p>
+                                                        </div>
+                                                        <div>
+                                                            <table id="tblDapAn_Temp" class="table table-hover table-bordered">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th class="td-fixed td-center">Stt</th>
+                                                                        <th class="td-center" style="width: 50px;">Thứ tự</th>
+                                                                        <th class="td-center" style="width: 50px;">Fix vị trí</th>
+                                                                        <th class="td-center" style="width: 50px;">Đáp án</th><!--2: MULTICHOICE -->
+                                                                        <th class="td-center" style="width: 50px;">Đáp án</th><!--3: BESTANSWER -->
+                                                                        <th class="td-center">Nội dung đáp án </th>
+                                                                        <th class="td-center">Vế 2 </th><!--5: CROSSLINK -->
+                                                                        <th class="td-center">Nội dung điền </th><!--6: FILLTHEBLANK -->
+                                                                        <th class="td-center">Điểm </th>
+                                                                        <th class="td-fixed td-center">
+                                                                            <input type="checkbox" id="chkSelectAll_DapAn_Temp">
+                                                                        </th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <!-- load from js -->
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="box-footer">
+                                                    <div class="row pull-right">
+                                                        <a class="submit btn btn-primary" id="btnSave_DapAn_Temp"><i class="fa fa-save"></i><span class="lang" key=""> Cập nhật đáp án</span></a>
+                                                        <a class="submit btn btn-primary" id="btnXoa_DapAn_Temp"><i class="fa fa-trash"></i><span class="lang" key=""> Xóa</span></a>
+                                                        <a class="btn btn-default btnClose_CauHoiTemp" href="#" title="Close"><i class="fa fa-times"><span class="lang" key="">Đóng</span></i></a>
+                                                    </div>
+                                                </div>
+                                                <div class="box-footer">
+                                                    <div class="row zone-box">
+                                                        <div class="col-sm-1">
+                                                            <div class="group-title-name">
+                                                                <input type="text" id="txtOrder_Temp" class="form-control" placeholder="STT" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-1">
+                                                            <input type="checkbox" id="chkDapAnDung_Temp" />
+                                                        </div>
+                                                        <div class="col-sm-10">
+
+                                                            <textarea name="editor_txtContent_Temp" id="editor_txtContent_Temp"></textarea>
+                                                            <input type="text" id="txtContent2_Temp" class="form-control" placeholder="Nội dung điền" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="row pull-right">
+                                                        <a class="submit btn btn-primary" id="btnThem_DapAn_Temp"><i class="fa fa-save"></i><span class="lang" key=""> Thêm đáp án</span></a>
+
+                                                        <a class="btn btn-default btnClose_CauHoiTemp" href="#" title="Close"><i class="fa fa-times"><span class="lang" key="">Đóng</span></i></a>
+                                                    </div>
+                                                </div>
+                                                <div class="box-body" id="zoneDapAn_Ve2_Temp">
+                                                    <div class="row bg-blue">
+                                                        <p class="group-title-name">
+                                                            <span>THÔNG TIN VẾ 2</span>
+                                                        </p>
+                                                    </div>
+                                                    <div>
+                                                        <table id="tblDapAn_Ve2_Temp" class="table table-hover table-bordered">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th class="td-center" style="width: 50px;">Stt</th>
+                                                                    <th class="td-center">Nội dung vế 2 </th>
+                                                                    <th class="td-fixed td-center">
+                                                                        <input type="checkbox" id="chkSelectAll_DapAn_Ve2_Temp">
+                                                                    </th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <!-- load from js -->
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                    <div class="row pull-right">
+                                                        <a class="submit btn btn-primary" id="btnSave_DapAn_Ve2_Temp"><i class="fa fa-save"></i><span class="lang" key=""> Lưu vế 2</span></a>
+                                                        <a class="submit btn btn-primary" id="btnXoa_DapAn_Ve2_Temp"><i class="fa fa-trash"></i><span class="lang" key=""> Xóa</span></a>
+                                                    </div>
+                                                    <div class="box-footer">
+                                                        <div class="row zone-box">
+                                                            <div class="col-sm-2">
+                                                                <div class="group-title-name">
+                                                                    <input type="text" id="txtOrder_Ve2_Temp" class="form-control" placeholder="STT" />
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-sm-10">
+                                                                <input type="text" id="txtContent_Ve2_Temp" class="form-control" placeholder="Nội dung vế 2" />
+                                                            </div>
+
+                                                        </div>
+                                                        <div class="row pull-right">
+                                                            <a class="submit btn btn-primary" id="btnThem_DapAn_Ve2_Temp"><i class="fa fa-save"></i><span class="lang" key=""> Thêm vế 2</span></a>
+
+                                                            <a class="btn btn-default btnClose_CauHoiTemp" href="#" title="Close"><i class="fa fa-times"><span class="lang" key="">Đóng</span></i></a>
+                                                        </div>
+
+
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                        <div class="box box-solid form-container zone-bus-GroupQuestionDetail" id="zoneImport" style="display: none">
+                                            <div class="box box-solid">
+                                                <div class="box-header with-border">
+                                                    <div class="pull-left">
+                                                        <h3>Import câu hỏi tạm</h3>
+
+                                                    </div>
+                                                    <div class="pull-right">
+                                                        <a class="btn btn-default btnCloseImport" href="#" title="Close"><i class="fa fa-times"></i></a>
+
+                                                    </div>
+                                                </div>
+                                                <div class="box-body">
+                                                    <div class="nav-tabs-custom">
+                                                        <ul class="nav nav-tabs">
+                                                            <li class="active">
+                                                                <a href="#tab_1" data-toggle="tab" aria-expanded="true">
+                                                                    <span class="lang" key="">
+                                                                        1) Kết quả import thành công
+                                                                        <span class="pull-right badge bg-light-blue">
+                                                                            <span id="tblImport_ThanhCong_Tong"></span>
+                                                                        </span>
+                                                                    </span>
+                                                                </a>
+                                                            </li>
+                                                            <li class="">
+                                                                <a href="#tab_2" data-toggle="tab" aria-expanded="true">
+                                                                    <span class="lang" key="">
+                                                                        2) Kết quả import lỗi
+                                                                        <span class="pull-right badge bg-light-blue">
+                                                                            <span id="tblImport_ThatBai_Tong"></span>
+                                                                        </span>
+                                                                    </span>
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                        <div class="tab-content" style="padding-top: 2px">
+                                                            <!--  Kết quả Import thành công-->
+                                                            <div class="tab-pane active" id="tab_1">
+                                                                <div class="row row-align">
+                                                                    <table id="tblImport_ThanhCong" class="table table-hover table-bordered">
+
+                                                                        <tbody>
+                                                                            <!-- load from js -->
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </div>
+                                                            <!--  Kết quả Import không thành công-->
+                                                            <div class="tab-pane" id="tab_2">
+                                                                <div class="row row-align">
+                                                                    <table id="tblImport_ThatBai" class="table table-hover table-bordered">
+                                                                        <tbody>
+                                                                            <!-- load from js -->
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="box-footer">
+                                                    <div class="pull-right">
+                                                        <a class="btn btn-default btnCloseImport" href="#" title="Close"><i class="fa fa-times"></i> Close</a>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="modal fade zone-bus-GroupQuestionDetail" id="myModal_Upload" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                                        <h4 class="modal-title" id="myModalLabel"><span class="lang" key=""> <i class="fa fa-file-excel-o"></i> Import dữ liệu</span></h4>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="row">
+                                                            <div class="col-sm-12">
+                                                                <div class="col-sm-4">
+                                                                    - Chọn file Import:
+                                                                </div>
+                                                                <div class="col-sm-6">
+                                                                    <div id="txtFile_DMIP">
+
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div id="notify_import"></div>
+
+                                                    <div class="modal-footer">
+
+                                                        <a class="submit btn btn-primary" id="btnImport_DMIP_Doc"><i class="fa fa-cloud-upload"></i><span class="lang" key=""> Import dữ liệu file doc</span></a>
+                                                        <!--<a class="submit btn btn-primary" id="btnImport_DMIP_LaTeX"><i class="fa fa-cloud-upload"></i><span class="lang" key=""> Import dữ liệu file LaTeX</span></a>-->
+                                                        <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times-circle-o"></i> <span class="lang" key="">Đóng</span></button>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Tab_2: Ma trận câu hỏi -->
+                            <div class="tab-pane" id="tab_2_NOIDUNGCAUHOINHOM">
+                                <!-- box Notify_GT -->
+                                <div class="box box-solid">
+                                    <div class="row zone-box">
+                                        <div class="row">
+                                            <div class="col-sm-2">
+                                                <div class="group-title-name">
+                                                    <span class="lang" key="">Nội dung câu hỏi nhóm</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-10">
+                                                <!--<input type="text" id="txtNoiDungCauHoi" class="form-control " />-->
+                                                <!-- This container will become the editable. -->
+                                                <textarea name="editor_GroupQuestionDetailContent" id="editor_GroupQuestionDetailContent"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-2">
+                                                <div class="group-title-name">
+                                                    <span class="lang" accesskey="">Trạng thái</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-10">
+                                                <select id="drpTrangThai_GroupQuestionDetailContent" class="select-opt">
+                                                    <option value="">---Chọn trạng thái---</option>
+                                                    <option value="1">Đang dùng</option>
+                                                    <option value="0">Không dùng</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div type="text" id="txt_File_Audio"></div>
+
+                                        </div>
+                                        <div class="row">
+                                            <table id="tblAudioFiles" class="table table-hover table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="td-fixed td-center">Stt</th>
+                                                        <th class="td-center" style="width:20%">File</th>
+                                                        <th class="td-center">Tên file</th>
+                                                        <th class="td-center" style="width:20px">Xóa</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <!-- load from js -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        <div class="box-footer">
+                                            <div class="pull-right">
+                                                
+                                                <a class="btn btn-default btnClose_ThaoTac_GroupQuestionDetail" id=""><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--Câu hỏi da tao de-->
+        <div class="form-container zone-bus" id="zonePreviewCauHoiDaTaoDe" style="display: none">
+            <div class="box-header with-border">
+                <h3 class="box-title"><span class="myModalLabel"> <i class="fa fa-pencil"></i></span> Câu hỏi đã tạo đề</h3>
+                <div class="pull-right title-note">
+                    <a class="btn btn-default btnClose_ThaoTac_CauHoiDaTaoDe" href="#" title="Close"><i class="fa fa-times"></i></a>
+                </div>
+            </div>
+            <div class="row">
+
+                <div class="col-sm-2 item-search">
+                    <select id="drpNamHoc" class="select-opt">
+                        <option value="">Chọn chọn năm học</option>
+                        <!-- Load from js -->
+                    </select>
+                </div>
+                <div class="col-sm-2 item-search">
+                    <select id="drpHocKy" class="select-opt">
+                        <option value="">Chọn học kỳ</option>
+                        <!-- Load from js -->
+                    </select>
+                </div>
+                <div class="col-sm-2 item-search">
+                    <select id="drpDotThi" class="select-opt">
+                        <option value="">Chọn đợt thi</option>
+                        <!-- Load from js -->
+                    </select>
+                </div>
+                <div class="col-sm-2 item-search">
+                    <select id="drpTrangThaiPhongThi" class="select-opt">
+                        <option value="">Chọn trạng thái phòng(Đóng/Mở)</option>
+                        <option value="1">Đang mở</option>
+                        <option value="0">Đang đóng</option>
+                        <!-- Load from js -->
+                    </select>
+                </div>
+                <div class="col-sm-2 item-search">
+                    <select id="drpStatusPhongThi" class="select-opt">
+                        <option value="">Tình trạng phòng(Ẩn/Hiện)</option>
+                        <option value="0">Ẩn</option>
+                        <option value="1">Hiện</option>
+                    </select>
+                </div>
+                <div class="col-sm-2 item-search">
+                    <select id="drpHocPhan_DotThi" class="select-opt"></select>
+                </div>
+
+            </div>
+            <div class="row">
+
+                <div class="col-sm-1 item-search">
+                    <input type="text" id="txtTuNgay" class="form-control input-datepicker" placeholder="Từ ngày">
+                </div>
+                <div class="col-sm-1  item-search">
+                    <input type="text" id="txtDenNgay" class="form-control input-datepicker" placeholder="Đến ngày">
+                </div>
+                <div class="col-sm-2 item-search">
+                    <input type="text" id="txtSearch_TuKhoa" class="form-control" placeholder="Nhập từ khóa tìm kiếm">
+                </div>
+                <div class="col-sm-1 item-search">
+                    <a class="btn btn-primary btnSearch_PhongThi_ThiSinh"><i class="fa fa-search"></i> <span class="lang" key="">DS thí sinh</span></a>
+                </div>
+                <div class="col-sm-4 item-search">
+                    <select id="drpPhongThiDungCauHoi" class="select-opt">
+                        <option value="">Chọn phòng thi</option>
+                        <!-- Load from js -->
+                    </select>
+                </div>
+                
+                <div class="pull-right">
+                    <select id="drpBaoCao_DaTaoDe" data-placeholder="Chọn loại báo cáo..." class="chosen-select">
+                        <option value="CAUHOIDATAODE">Báo cáo đã tạo đề</option>
+
+                    </select>
+                    <a id="btnTaiFile_DaTaoDe" class="btn btn-default"><i class="fa fa-download"></i> Tải file</a>
+
+                </div>
+
+            </div>
+
+            <div class="row">
+                <div class="row zone-box">
+                    <span class="pull-right badge bg-light-blue">
+                        <span id="lblDanhSachNhomCauHoi_Temp_Tong"></span>
+                    </span>
+                    <div class="clear"></div>
+                    <div class="row">
+                        <div class="scroll-table-x">
+                            <table id="tblCauHoi_DaTaoDe" class="table table-hover table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th class="td-fixed td-center">Stt</th>
+                                        <th class="td-fixed td-center">Mã SV</th>
+                                        <th class="td-center">Họ đệm </th>
+                                        <th class="td-center">Tên </th>
+                                        <th class="td-center">Ngày thi </th>
+                                        <th class="td-center">Giờ thi</th>
+                                        <th class="td-center">Phòng thi</th>
+                                        <th class="td-center">Trạng thái</th>
+                                        <th class="td-center">Đ/a TS</th>
+                                        <th class="td-center">Điểm công nhận</th>
+                                        <th class="td-center">Điểm tính</th>
+                                        <th class="td-fixed td-center">
+                                            <input type="checkbox" id="chkSelectAll_CauHoiThiSinhPhongThi">
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- load from js -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="form-container zone-bus" id="zonePreviewLichSu_DapAn" style="display: none">
+            <div class="box-header with-border">
+                <h3 class="box-title"><span class="myModalLabel"> <i class="fa fa-pencil"></i></span>Lịch sử</h3>
+                <div class="pull-right title-note">
+                    <a class="btn btn-default btnClose_ThaoTac_CauHoiDaTaoDe" href="#" title="Close"><i class="fa fa-times"></i></a>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="row zone-box">
+                    <span class="pull-right badge bg-light-blue">
+                        <span id="lblSoBanGhiLichSuDapAn"></span>
+                    </span>
+                    <div class="clear"></div>
+                    <div class="row">
+                        <div class="scroll-table-x">
+                            <table id="tblDapAn_LichSu" class="table table-hover table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th class="td-fixed td-center">Stt</th>
+                                        <th class="td-fixed td-center">Order</th>
+                                        <th class="td-fixed td-center">Fix vị trí</th>
+                                        <th class="td-fixed td-center">Đáp án</th> 
+                                        <th class="td-fixed td-center">Nội đáp án</th>
+                                        <th class="td-center">Ngày </th>
+                                        <th class="td-center">Tài khoản</th>
+                                        <th class="td-center">Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- load from js -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="form-container zone-bus" id="zonePreviewLichSu_CauHoi" style="display: none">
+            <div class="box-header with-border">
+                <h3 class="box-title"><span class="myModalLabel"> <i class="fa fa-pencil"></i></span>Lịch sử</h3>
+                <div class="pull-right title-note">
+                    <a class="btn btn-default btnClose_ThaoTac_CauHoiDaTaoDe" href="#" title="Close"><i class="fa fa-times"></i></a>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="row zone-box">
+                    <span class="pull-right badge bg-light-blue">
+                        <span id="lblSoBanGhiLichSu"></span>
+                    </span>
+                    <div class="clear"></div>
+                    <div class="row">
+                        <div class="scroll-table-x">
+                            <table id="tblCauHoi_LichSu" class="table table-hover table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th class="td-fixed td-center">Stt</th>
+                                        <th class="td-fixed td-center">Order</th>
+                                        <th class="td-fixed td-center">Nội dung câu hỏi</th>
+
+                                        <th class="td-center">Loại câu hỏi </th>
+                                        <th class="td-center">Mức độ</th>
+                                        <th class="td-center">Điểm(+/-)</th>
+                                        <th class="td-center">Đảo đ/a</th>
+                                        <th class="td-center">Trạng thái</th>
+                                        <th class="td-center">Ngày </th>
+                                        <th class="td-center">Tài khoản</th>
+                                        <th class="td-center">Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- load from js -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="box box-solid zone-bus" id="zonebatdau">
+            <div class="box box-solid">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><i class="fa fa-window-restore"></i> Tìm kiếm</h3>
+                </div>
+                <div class="box-body">
+                    <!-- Bộ tìm kiếm -->
+                    <div class="col-sm-12 item-search">
+                        <div class="row">
+                            <div class="col-sm-3 item-search">
+                                <select id="drpDonVi" class="select-opt">
+                                    <option value="">Chọn đơn vị</option>
+                                    <!-- Load from js -->
+                                </select>
+
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <select id="drpStatus" class="select-opt">
+                                    <option value="">Tình trạng (Ẩn/Hiện)</option>
+                                    <option value="0">Ẩn</option>
+                                    <option value="1">Hiện</option>
+                                </select>
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="box-tools pull-right">
+                                <a class="btn btn-primary btnSearch_PhanQuyenGroupQuestion"><i class="fa fa-search"></i> <span class="lang" key="">Tìm kiếm</span></a>
+                                 
+                                
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="box box-solid">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">
+                            <i class="fa fa-hdd-o"></i> Danh sách
+                            <span class="pull-right badge bg-light-blue">
+                                <span id="lblGroupQuestion_Tong"></span>
+                            </span>
+                        </h3>
+                    </div>
+                    <div class="box-body">
+
+                        <div class="col-sm-12 scroll-table-x">
+                            <table id="tblGroupQuestion" class="table table-hover table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th class="td-fixed td-center">Stt</th>
+                                        <th class="td-center" style="width:20%">Mã</th>
+                                        <th class="td-center">Tên</th>
+                                        <th class="td-center" style="width:10%"> Trạng thái </th>
+                                        <th class="td-fixed td-center" style="width:5%">Sửa</th>
+                                        <th class="td-fixed td-center" style="width:5%">Chi tiết</th>
+                                        <th class="td-fixed td-center">
+                                            <input type="checkbox" id="chkSelectAll_GroupQuestion">
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- load from js -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="clear"></div>
+        <input type="text" hidden id="filehtml" value="viewquanlynganhangcauhoi"/>
+    </div>
+
+</section>
+<script src="modules/quanlynganhangcauhoi/script/quanlynganhangcauhoi.js?v=1.0.0.1"></script>
+
+<!--<script src="Scripts/ckeditor/ckeditor.js"></script>
+<script src="Scripts/ckfinder/ckfinder.js"></script>-->
+<script>
+
+    CKEDITOR.replace('ckeditor', {
+        on: {
+            focus: onFocus,
+            blur: onBlur,
+
+
+            pluginsLoaded: function (evt) {
+                var doc = CKEDITOR.document, ed = evt.editor;
+                if (!ed.getCommand('bold'))
+                    doc.getById('exec-bold').hide();
+                if (!ed.getCommand('link'))
+                    doc.getById('exec-link').hide();
+            }
+        }
+    });
+
+    function Focus() {
+        CKEDITOR.instances.editor1.focus();
+    }
+
+    function onFocus() {
+        document.getElementById('eMessage').innerHTML = '<b>' + this.name + ' is focused </b>';
+    }
+
+    function onBlur() {
+        document.getElementById('eMessage').innerHTML = this.name + ' lost focus';
+    }
+
+</script> 
+
+<script type="text/javascript">
+    var main_doc = {};
+    function OpenNewWindow(bigurl, width, height) {
+        var newWindow = window.open("", "pictureViewer", "location=no, directories=no, fullscreen=no, menubar=no, status=no, toolbar=no, width=" + width + ", height=" + height + ", scrollbars=no");
+        newWindow.document.writeln("<html>");
+        newWindow.document.writeln("<body style='margins: 0 0 0 0;'>");
+        newWindow.document.writeln("<a href='javascript:window.close();'>");
+        newWindow.document.writeln("<img src='" + bigurl + "' alt='Click to close' id='bigImage' border='0'/>");
+        newWindow.document.writeln("</a>");
+        newWindow.document.writeln("</body></html>");
+        newWindow.document.close();
+    };
+    main_doc['quanlynganhangcauhoi'] = new quanlynganhangcauhoi();
+    $(document).ready(function () {
+        main_doc.quanlynganhangcauhoi.init();
+        strView = '1';
+    });
+</script>
+

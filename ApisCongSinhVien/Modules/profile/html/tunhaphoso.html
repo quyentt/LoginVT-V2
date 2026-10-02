@@ -1,0 +1,734 @@
+
+<style>
+    /* ============================================================
+       "Tự nhập hồ sơ" — page-scoped styling.
+       Wrapped in .page-tunhaphoso so it doesn't leak to other pages
+       that share .sv-add-info / .sv-info-base / .sv-info-detail-*
+       ============================================================ */
+    .page-tunhaphoso {
+        --tnhs-brand: #1e3a8a;
+        --tnhs-brand-soft: #eef3fe;
+        --tnhs-accent: #ff7a2f;
+        --tnhs-text: #1e293b;
+        --tnhs-muted: #64748b;
+        --tnhs-line: #e8eef7;
+        --tnhs-bg: #f7f9fd;
+    }
+
+    .page-tunhaphoso .link {
+        font-size: 14px;
+        color: var(--tnhs-muted);
+    }
+    .page-tunhaphoso .link a { color: var(--tnhs-muted); }
+    .page-tunhaphoso .link a:last-of-type { color: var(--tnhs-brand); font-weight: 600; }
+
+    /* ---------- Card wrapper ---------- */
+    .page-tunhaphoso .sv-add-info {
+        border-radius: 14px;
+        box-shadow: 0 6px 24px rgba(15, 40, 100, .06);
+        border: 1px solid var(--tnhs-line);
+        overflow: hidden;
+        background: #fff;
+    }
+
+    .page-tunhaphoso .sv-lable {
+        background: linear-gradient(135deg, #f6f9ff 0%, #eef3fe 100%);
+        border-bottom: 1px solid var(--tnhs-line);
+        height: 60px;
+        line-height: 60px;
+        padding-left: 30px;
+    }
+    .page-tunhaphoso .sv-lable:before {
+        height: 26px;
+        width: 4px;
+        top: 17px;
+        left: 20px;
+        background: linear-gradient(180deg, var(--tnhs-accent), #ff5722);
+        border-radius: 4px;
+    }
+    .page-tunhaphoso .sv-lable h3 {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--tnhs-brand);
+        line-height: 60px;
+        padding-left: 18px;
+        text-transform: uppercase;
+        letter-spacing: .3px;
+    }
+
+    /* ---------- Two-column layout ---------- */
+    .page-tunhaphoso .sv-info-profile {
+        padding: 24px 28px;
+        gap: 24px;
+        align-items: flex-start;
+    }
+
+    /* ---------- Left column: avatar + info ---------- */
+    .page-tunhaphoso .row.sv-info-base {
+        width: 320px;
+        padding: 18px 18px 8px;
+        background: linear-gradient(180deg, #fafcff, #ffffff);
+        border: 1px solid var(--tnhs-line);
+        border-radius: 12px;
+        flex-direction: column;
+    }
+
+    .page-tunhaphoso .sv-info-base-avata { padding: 0 !important; text-align: center; }
+
+    /* Container: perfect circle with concentric ring, clip everything inside */
+    .page-tunhaphoso .avata-img {
+        width: 140px !important;
+        height: 140px !important;
+        border-radius: 50% !important;
+        overflow: hidden !important;
+        border: 0 !important;
+        padding: 0 !important;
+        margin: 14px auto 22px !important;
+        left: auto !important;
+        transform: none !important;
+        position: relative !important;
+        background:
+            url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%23eef3fe'/><stop offset='1' stop-color='%23dfe8fb'/></linearGradient></defs><circle cx='50' cy='50' r='50' fill='url(%23g)'/><circle cx='50' cy='40' r='15' fill='%23b8c5db'/><path d='M20 88c0-17 13-27 30-27s30 10 30 27z' fill='%23b8c5db'/></svg>") center/cover no-repeat #eef3fe !important;
+        box-shadow:
+            0 0 0 4px #ffffff,
+            0 0 0 5px #e2eaf6,
+            0 10px 24px rgba(30, 58, 138, .15) !important;
+    }
+    /* Bó gọn MỌI thứ widget UploadAvatar chèn vào (img / canvas / wrapper div) */
+    .page-tunhaphoso .avata-img img,
+    .page-tunhaphoso .avata-img canvas,
+    .page-tunhaphoso .avata-img > div,
+    .page-tunhaphoso .avata-img > div > img,
+    .page-tunhaphoso .avata-img > div > canvas {
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        max-width: 100% !important;
+        max-height: 100% !important;
+        border-radius: 50% !important;
+        object-fit: cover !important;
+        display: block !important;
+        background: transparent !important;
+        border: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    /* Camera button vẫn nổi trên cùng — không bị các rule trên nuốt */
+    .page-tunhaphoso .avata-img .upload-avata {
+        position: absolute !important;
+    }
+    /* Camera button — floats on the circle edge at ~45° */
+    .page-tunhaphoso .upload-avata {
+        width: 36px !important;
+        height: 36px !important;
+        border-radius: 50% !important;
+        background: var(--tnhs-brand) !important;
+        border: 3px solid #fff !important;
+        color: #fff !important;
+        right: 2px !important;
+        bottom: 2px !important;
+        box-shadow: 0 4px 10px rgba(30, 58, 138, .35) !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        line-height: 1 !important;
+        font-size: 13px !important;
+        padding: 0 !important;
+        z-index: 3 !important;
+        transition: transform .15s, background .15s !important;
+    }
+    .page-tunhaphoso .upload-avata i {
+        color: #fff !important;
+        font-size: 13px !important;
+        line-height: 1 !important;
+        margin: 0 !important;
+    }
+    .page-tunhaphoso .upload-avata:hover {
+        background: var(--tnhs-accent) !important;
+        transform: scale(1.08) !important;
+    }
+    .page-tunhaphoso .upload-avata:hover i { color: #fff !important; }
+
+    .page-tunhaphoso .sv-info-base-text {
+        padding: 4px 4px 8px;
+        font-size: 14px;
+        line-height: 1.6;
+    }
+    .page-tunhaphoso .sv-info-base-text > .row {
+        padding: 8px 0;
+        border-bottom: 1px dashed #e8eef7;
+        margin: 0;
+    }
+    .page-tunhaphoso .sv-info-base-text > .row:last-child { border-bottom: 0; }
+    .page-tunhaphoso .sv-info-base-text span {
+        color: var(--tnhs-muted);
+        font-size: 12.5px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: .3px;
+    }
+    .page-tunhaphoso .sv-info-base-text .col-md-2 {
+        width: 110px;
+        padding-left: 0;
+    }
+    .page-tunhaphoso .sv-info-base-text .col-md-10 {
+        color: var(--tnhs-text);
+        font-size: 14px;
+        font-weight: 500;
+        padding-left: 4px;
+    }
+    .page-tunhaphoso .sv-info-base-text b { font-weight: 600; }
+
+    /* "Không có" placeholder for empty values */
+    .page-tunhaphoso .sv-info-base-text .col-md-10:empty::after {
+        content: "—";
+        color: #cbd5e1;
+    }
+
+    /* ---------- Plan toolbar (full-width bar under header) ---------- */
+    .page-tunhaphoso .tnhs-plan-bar {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 14px 28px;
+        background: #fbfcfe;
+        border-bottom: 1px solid var(--tnhs-line);
+    }
+    .page-tunhaphoso .tnhs-plan-label {
+        color: var(--tnhs-muted);
+        font-size: 13px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .3px;
+        margin: 0;
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .page-tunhaphoso .tnhs-plan-label i { color: var(--tnhs-brand); font-size: 16px; }
+    .page-tunhaphoso .tnhs-plan-select {
+        flex: 1;
+        max-width: 560px;
+    }
+    /* Force select2 width — beats inline style set at init */
+    .page-tunhaphoso #dropSearch_KeHoach { width: 100% !important; }
+    .page-tunhaphoso .tnhs-plan-select .select2-container {
+        width: 100% !important;
+        display: block;
+    }
+    .page-tunhaphoso .tnhs-plan-select .select2-selection--single {
+        height: 40px !important;
+        border-radius: 8px !important;
+        border: 1px solid #cfd8ea !important;
+        background: #fff !important;
+    }
+    .page-tunhaphoso .tnhs-plan-select .select2-selection__rendered {
+        line-height: 38px !important;
+        color: var(--tnhs-text) !important;
+        padding-left: 14px !important;
+        padding-right: 32px !important;
+        font-size: 14px;
+        font-weight: 500;
+    }
+    .page-tunhaphoso .tnhs-plan-select .select2-selection__arrow {
+        height: 38px !important;
+        right: 8px !important;
+    }
+    /* Dropdown popup can grow beyond trigger width */
+    .select2-container.select2-container--open .select2-dropdown {
+        min-width: 320px !important;
+    }
+
+    /* ---------- Tabs wrap — force visible (override .one-door .tab-list{display:none}) ---------- */
+    .page-tunhaphoso .tnhs-tabs-wrap {
+        padding: 14px 28px 0 28px;
+    }
+    .page-tunhaphoso .tnhs-tabs-wrap .tab-list {
+        display: block !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    .page-tunhaphoso .tnhs-tabs-wrap .swiper-wrapper {
+        transform: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    .page-tunhaphoso #zoneTab { padding-left: 0 !important; }
+
+    /* ---------- Right column: dynamic form ---------- */
+    .page-tunhaphoso .sv-info-detail {
+        flex: 1;
+        margin-left: 0;
+        min-width: 0;
+    }
+
+    .page-tunhaphoso .sv-info-detail-lable {
+        background: linear-gradient(90deg, #f6f9ff, #eef3fe);
+        border-radius: 10px;
+        height: 46px;
+        line-height: 46px;
+        color: var(--tnhs-muted);
+        font-size: 12.5px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .4px;
+        border: 1px solid var(--tnhs-line);
+        margin: 0 0 14px;
+    }
+
+    .page-tunhaphoso .sv-info-detail-form { min-height: 260px; }
+
+    .page-tunhaphoso .sv-info-detail-item {
+        padding: 10px 6px;
+        border-bottom: 1px solid #f2f5fb;
+        border-radius: 6px;
+        transition: background .15s;
+        align-items: center;
+    }
+    .page-tunhaphoso .sv-info-detail-item:hover { background: #fafbfd; }
+    .page-tunhaphoso .text-lable-groud b {
+        color: var(--tnhs-brand);
+        font-weight: 600;
+        font-size: 13px;
+        text-transform: uppercase;
+    }
+    .page-tunhaphoso .text-lable {
+        color: var(--tnhs-text);
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    /* Inputs inside the form */
+    .page-tunhaphoso .form-add-info .form-control,
+    .page-tunhaphoso .form-add-info .form-select,
+    .page-tunhaphoso .select2-selection--single {
+        border-radius: 8px !important;
+        border-color: #d3ddef !important;
+        transition: border-color .15s, box-shadow .15s;
+    }
+    .page-tunhaphoso .form-add-info .form-control:focus,
+    .page-tunhaphoso .form-add-info .form-select:focus {
+        border-color: var(--tnhs-brand) !important;
+        box-shadow: 0 0 0 3px rgba(30, 58, 138, .12) !important;
+    }
+
+    /* ---------- Empty state ---------- */
+    .page-tunhaphoso .tnhs-empty {
+        text-align: center;
+        padding: 60px 20px 40px;
+        color: var(--tnhs-muted);
+    }
+    .page-tunhaphoso .tnhs-empty .empty-ic {
+        display: inline-flex;
+        width: 84px;
+        height: 84px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: var(--tnhs-brand-soft);
+        color: var(--tnhs-brand);
+        font-size: 34px;
+        margin-bottom: 16px;
+    }
+    .page-tunhaphoso .tnhs-empty h4 {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--tnhs-text);
+        margin: 4px 0 6px;
+    }
+    .page-tunhaphoso .tnhs-empty p {
+        font-size: 13.5px;
+        color: var(--tnhs-muted);
+        margin: 0;
+    }
+
+    /* ---------- Tabs (nhóm thông tin) ---------- */
+    .page-tunhaphoso .tab-profile { margin-bottom: 12px; }
+    .page-tunhaphoso #zoneTab {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .page-tunhaphoso .tab-item {
+        background: #fff;
+        border: 1px solid var(--tnhs-line);
+        border-radius: 10px;
+        padding: 8px 16px;
+        cursor: pointer;
+        transition: all .15s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        width: auto !important;
+    }
+    .page-tunhaphoso .tab-item:hover {
+        border-color: var(--tnhs-brand);
+        color: var(--tnhs-brand);
+    }
+    .page-tunhaphoso .tab-item.swiper-slide-thumb-active {
+        background: var(--tnhs-brand);
+        border-color: var(--tnhs-brand);
+        color: #fff;
+    }
+    .page-tunhaphoso .tab-item.swiper-slide-thumb-active a,
+    .page-tunhaphoso .tab-item.swiper-slide-thumb-active i,
+    .page-tunhaphoso .tab-item.swiper-slide-thumb-active p { color: #fff !important; }
+    .page-tunhaphoso .tab-item a {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--tnhs-text);
+        font-size: 13.5px;
+        font-weight: 500;
+    }
+    .page-tunhaphoso .tab-item p { margin: 0; }
+
+    /* ---------- Save-button strip ---------- */
+    .page-tunhaphoso .sv-ground-button {
+        background: #fafbfd;
+        border-top: 1px solid var(--tnhs-line);
+        height: auto;
+        padding: 14px 24px;
+        margin: 0;
+        border-radius: 0 0 14px 14px;
+    }
+    .page-tunhaphoso .btnSave_TuNhapHoSo {
+        background: linear-gradient(135deg, #ff8a3d, #ff5722);
+        border: 0;
+        color: #fff;
+        min-width: 200px;
+        height: 44px;
+        font-weight: 600;
+        font-size: 14.5px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(255, 87, 34, .28);
+        transition: transform .15s, box-shadow .15s;
+    }
+    .page-tunhaphoso .btnSave_TuNhapHoSo:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(255, 87, 34, .35);
+        color: #fff;
+    }
+    .page-tunhaphoso .btnSave_TuNhapHoSo i { margin-left: 8px; }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width: 991px) {
+        .page-tunhaphoso .sv-info-profile { flex-direction: column; padding: 16px; }
+        .page-tunhaphoso .row.sv-info-base { width: 100%; }
+        .page-tunhaphoso .sv-info-detail-lable { display: none; }
+    }
+
+    /* ============ CARD LAYOUT: tung nhom thong tin la 1 card giong tin tuc ============ */
+    .page-tunhaphoso .sv-info-detail-form {
+        background: transparent;
+        padding: 0;
+        min-height: 260px;
+    }
+
+    /* An header cu (Nhom / Ten thong tin / Du lieu can nhap) - khong con dung */
+    .page-tunhaphoso .sv-info-detail-lable { display: none !important; }
+
+    /* Card container - mo phong .news-group cua trang chu */
+    .page-tunhaphoso .tnhs-card {
+        background: #fff;
+        border: 1px solid #e6ebf5;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(30, 60, 130, 0.05);
+        margin-bottom: 18px;
+        overflow: hidden;
+    }
+    .page-tunhaphoso .tnhs-card:last-child { margin-bottom: 0; }
+
+    /* Card header - gradient bar + title + count */
+    .page-tunhaphoso .tnhs-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 20px;
+        background: linear-gradient(90deg, #eff4ff, #f8faff);
+        border-bottom: 2px solid var(--tnhs-brand);
+    }
+    .page-tunhaphoso .tnhs-card-title {
+        font-size: 14.5px;
+        font-weight: 700;
+        color: var(--tnhs-brand);
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .page-tunhaphoso .tnhs-card-title i {
+        font-size: 16px;
+        color: var(--tnhs-brand);
+        opacity: 0.85;
+    }
+    .page-tunhaphoso .tnhs-card-count {
+        font-size: 12px;
+        color: var(--tnhs-muted);
+        background: #fff;
+        padding: 3px 10px;
+        border-radius: 12px;
+        border: 1px solid var(--tnhs-line);
+        font-weight: 500;
+    }
+
+    /* Card body - danh sach cac field */
+    .page-tunhaphoso .tnhs-card-body {
+        padding: 4px 20px;
+    }
+
+    /* Row - moi row = 1 field */
+    .page-tunhaphoso .tnhs-row {
+        display: grid;
+        grid-template-columns: 220px 1fr 180px;
+        gap: 16px;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px dashed #eef1f7;
+        transition: background .15s ease;
+    }
+    .page-tunhaphoso .tnhs-row:last-child { border-bottom: none; }
+    .page-tunhaphoso .tnhs-row:hover { background: #fafbfd; }
+    .page-tunhaphoso .tnhs-row:hover { margin: 0 -12px; padding: 12px; border-radius: 8px; }
+
+    .page-tunhaphoso .tnhs-row-label {
+        color: var(--tnhs-text);
+        font-size: 13.5px;
+        font-weight: 500;
+        text-align: right;
+        line-height: 1.5;
+    }
+    .page-tunhaphoso .tnhs-req {
+        color: #ef4444;
+        font-weight: 700;
+        margin-left: 4px;
+    }
+
+    .page-tunhaphoso .tnhs-row-input {
+        min-width: 0;
+    }
+    .page-tunhaphoso .tnhs-row-input .form-item {
+        margin: 0 !important;
+        max-width: 480px;
+    }
+    .page-tunhaphoso .tnhs-row-input .input-group {
+        max-width: 480px;
+    }
+
+    .page-tunhaphoso .tnhs-row-verify {
+        font-size: 12.5px;
+        color: var(--tnhs-muted);
+        font-style: italic;
+        text-align: right;
+    }
+
+    /* Responsive - mobile stack lai */
+    @media (max-width: 767px) {
+        .page-tunhaphoso .tnhs-row {
+            grid-template-columns: 1fr;
+            gap: 6px;
+        }
+        .page-tunhaphoso .tnhs-row-label { text-align: left; }
+        .page-tunhaphoso .tnhs-row-verify { text-align: left; }
+    }
+
+    /* Input polish */
+    .page-tunhaphoso .form-add-info .form-control,
+    .page-tunhaphoso .form-add-info .form-select,
+    .page-tunhaphoso .form-add-info input.form-control {
+        height: 42px !important;
+        font-size: 14px !important;
+        padding: 8px 14px !important;
+        border-radius: 8px !important;
+        border: 1px solid #d3ddef !important;
+        background: #fff !important;
+        transition: border-color .15s, box-shadow .15s, background .15s;
+    }
+    .page-tunhaphoso .form-add-info .form-control:hover,
+    .page-tunhaphoso .form-add-info .form-select:hover { border-color: #a9bce4 !important; }
+    .page-tunhaphoso .form-add-info .form-control:focus,
+    .page-tunhaphoso .form-add-info .form-select:focus {
+        border-color: var(--tnhs-brand) !important;
+        box-shadow: 0 0 0 3px rgba(30, 58, 138, .1) !important;
+        outline: none !important;
+    }
+    .page-tunhaphoso .form-add-info textarea.form-control {
+        height: auto !important;
+        min-height: 42px;
+        padding: 10px 14px !important;
+        line-height: 1.5;
+        resize: vertical;
+    }
+
+    /* Select2 dong bo chieu cao voi input */
+    .page-tunhaphoso .select2-container--default .select2-selection--single {
+        height: 42px !important;
+        border-radius: 8px !important;
+        border: 1px solid #d3ddef !important;
+        background: #fff !important;
+    }
+    .page-tunhaphoso .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 40px !important;
+        padding-left: 14px !important;
+        color: var(--tnhs-text);
+        font-size: 14px;
+    }
+    .page-tunhaphoso .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 40px !important;
+        right: 6px;
+    }
+    .page-tunhaphoso .select2-container--default.select2-container--focus .select2-selection--single {
+        border-color: var(--tnhs-brand) !important;
+        box-shadow: 0 0 0 3px rgba(30, 58, 138, .1) !important;
+    }
+
+    /* Group separator hr - thanh phan cach mem mai */
+    .page-tunhaphoso .sv-info-detail-form hr {
+        border: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, #d3ddef 30%, #d3ddef 70%, transparent);
+        margin: 20px 0 10px;
+    }
+
+    /* Dau * bat buoc - dep hon */
+    .page-tunhaphoso .text-lable span[style*="color: red"] {
+        color: #ef4444 !important;
+        font-weight: 700;
+        margin-left: 2px;
+    }
+
+    /* Cot xac nhan (col-md-3 cuoi) - font nhe, mau muted */
+    .page-tunhaphoso .sv-info-detail-item .col-md-3:last-child {
+        font-size: 13px;
+        color: var(--tnhs-muted);
+        font-style: italic;
+    }
+    .page-tunhaphoso .sv-info-detail-item .col-md-3:last-child:empty { display: none; }
+
+    /* Datepicker input */
+    .page-tunhaphoso .form-add-info .input-datepicker {
+        background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Cline x1='16' y1='2' x2='16' y2='6'%3E%3C/line%3E%3Cline x1='8' y1='2' x2='8' y2='6'%3E%3C/line%3E%3Cline x1='3' y1='10' x2='21' y2='10'%3E%3C/line%3E%3C/svg%3E") no-repeat right 12px center !important;
+        background-size: 16px !important;
+        padding-right: 38px !important;
+    }
+</style>
+
+<div class="one-door page-tunhaphoso">
+    <div class="content-tab">
+        <p class="link"><a href="#">Thông tin hồ sơ</a><i class="fal fa-angle-right"></i> <a href="#">Tự nhập hồ sơ</a></p>
+    </div>
+
+    <div class="swiper service-content-slider">
+        <div class="swiper-wrapper">
+            <!-- Thông tin cá nhân-->
+            <div class="swiper-slide">
+                <!-- dashboad -->
+                <div class="dashboad">
+                    <div class="sv-add-info">
+                        <div class="sv-lable"><h3>Thông tin cá nhân</h3></div>
+
+                        <!-- Toolbar full-width: chọn kế hoạch nhập hồ sơ -->
+                        <div class="tnhs-plan-bar">
+                            <label for="dropSearch_KeHoach" class="tnhs-plan-label">
+                                <i class="fal fa-clipboard-list-check"></i>
+                                Kế hoạch nhập hồ sơ
+                            </label>
+                            <div class="tnhs-plan-select">
+                                <select class="form-select" id="dropSearch_KeHoach"></select>
+                            </div>
+                        </div>
+
+                        <!-- Tabs nhóm thông tin (được ẩn ở CSS gốc, override tại đây) -->
+                        <div class="tnhs-tabs-wrap">
+                            <div class="tab-list swiper service-slider tab-profile">
+                                <div class="swiper-wrapper" id="zoneTab"></div>
+                            </div>
+                        </div>
+
+                        <div class="sv-add-info-content sv-info-profile">
+                            <div class="row sv-info-base">
+                                <div class="col-12 sv-info-base-avata">
+                                    <div class="avata-img">
+                                        <img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" id="uploadPicture_SV" alt="Ảnh đại diện">
+                                        <a href="#" class="upload-avata" title="Đổi ảnh đại diện">
+                                            <i class="fal fa-camera"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="col-12 sv-info-base-text">
+                                    <div class="row">
+                                        <div class="col-12 col-md-2"><span>Họ và tên</span></div>
+                                        <div class="col-12 col-md-10"><b id="lblHoTen"></b></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12 col-md-2"><span>Ngày sinh</span></div>
+                                        <div class="col-12 col-md-10" id="lblNgaySinh"></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12 col-md-2"><span>CMND/CCCD</span></div>
+                                        <div class="col-12 col-md-10" id="lblCMT"></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12 col-md-2"><span>Mã SV</span></div>
+                                        <div class="col-12 col-md-10" id="lblMaSinhVien"></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12 col-md-2"><span>Ngành học</span></div>
+                                        <div class="col-12 col-md-10" id="lblNganhHoc"></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12 col-md-2"><span>Lớp quản lý</span></div>
+                                        <div class="col-12 col-md-10" id="lblLopQuanly"></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="dropdown" id="zonebtnBaoCao_TNHS" style="float: right"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="sv-info-detail">
+                                <div class="row sv-info-detail-lable">
+                                    <div class="col-12 col-md-2 col-lable-groud">Nhóm</div>
+                                    <div class="col-12 col-md-2 text-right col-name-tt">Tên thông tin</div>
+                                    <div class="col-12 col-md-4">Dữ liệu cần nhập</div>
+                                    <div class="col-12 col-md-3 xacnhan" id="lblXacNhanTuTruong">Xác nhận từ trường</div>
+                                </div>
+                                <div class="sv-info-detail-form" id="tblTuNhapHoSo">
+                                    <div class="tnhs-empty">
+                                        <span class="empty-ic"><i class="fal fa-clipboard-list-check"></i></span>
+                                        <h4>Chưa có nhóm thông tin nào để nhập</h4>
+                                        <p>Vui lòng chọn <b>Kế hoạch</b> ở bên trái để bắt đầu nhập hồ sơ.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="sv-ground-button">
+                            <div class="row">
+                                <div class="col-12 col-sm-8"></div>
+                                <div class="col-12 col-sm-4 sv-button">
+                                    <button type="submit" class="btn btn-continue btnSave_TuNhapHoSo">
+                                        Lưu thông tin <i class="fal fa-save"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="modules/profile/script/tunhaphoso.js?v=1.0.0.7"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['TuNhapHoSo'] = new TuNhapHoSo();
+    $(document).ready(function () {
+        main_doc.TuNhapHoSo.init();
+    });
+</script>

@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quản lý sinh viên 360 - Dashboard toàn trường</title>
+    <link rel="stylesheet" href="../assets/css/styles.css" />
+    <style>
+        /* ===== CSS riêng cho trang Icon (tiền tố ic-, không đụng style cũ) ===== */
+        .ic-toolbar {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .ic-search {
+            flex: 1;
+            min-width: 220px;
+            padding: 10px 14px;
+            border: 1px solid #d0d5dd;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .ic-search:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
+        }
+
+        .ic-styles {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .ic-style-btn {
+            padding: 8px 14px;
+            border: 1px solid #d0d5dd;
+            background: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #334155;
+        }
+
+        .ic-style-btn.active {
+            background: #2563eb;
+            color: #fff;
+            border-color: #2563eb;
+        }
+
+        .ic-count {
+            font-size: 13px;
+            color: #888;
+            white-space: nowrap;
+        }
+
+        .ic-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+        }
+
+        .ic-cell {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 18px 8px;
+            border: 1px solid #eef1f4;
+            border-radius: 10px;
+            cursor: pointer;
+            background: #fff;
+            transition: .15s ease;
+            text-align: center;
+        }
+
+        .ic-cell:hover {
+            border-color: #2563eb;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, .12);
+            transform: translateY(-2px);
+        }
+
+        .ic-cell i {
+            font-size: 26px;
+            color: #1e293b;
+        }
+
+        .ic-cell span {
+            font-size: 11px;
+            color: #64748b;
+            word-break: break-all;
+            line-height: 1.3;
+        }
+
+        .ic-empty {
+            grid-column: 1 / -1;
+            padding: 40px;
+            text-align: center;
+            color: #888;
+        }
+
+        .ic-toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: #1e293b;
+            color: #fff;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 14px;
+            opacity: 0;
+            pointer-events: none;
+            transition: .25s ease;
+            z-index: 9999;
+        }
+
+        .ic-toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header fixed-top">
+        <div class="top-nav">
+            <div class="sidebar-bars">
+                <i class="fa-light fa-bars-sort"> </i>
+            </div>
+            <div class="head-logo">
+                <a href="../index.html">
+                    <img class="logo-icon" src="../assets/images/logo/logo-icon.png" />
+                    <img class="logo-text" src="../assets/images/logo/logo-text.png" />
+                </a>
+            </div>
+            <div class="head-search-form">
+                <div class="head-search-toggle">
+                    <i class="fal fa-search"></i>
+                </div>
+                <div class="head-search-box">
+                    <div class="form">
+                        <input type="text" class="search-imput" placeholder="Tìm kiếm thông tin" />
+                        <button class="search-btn">
+                            <i class="fal fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="main-menu">
+                <ul class="list-unstyled">
+                    <li class="item">
+                        <a class="menu-link" href="../index.html">
+                            <i class="fal fa-home"></i>
+                            <span>Trang chủ</span>
+                        </a>
+                    </li>
+                    <li class="item">
+                        <a class="menu-link" href="../dashboard.html">
+                            <i class="fa-solid fa-bars-sort mr-5"></i>
+                            <span>Danh mục</span>
+                        </a>
+                    </li>
+
+                </ul>
+                <div class="menu-toggle">
+                    <i class="fal fa-bars"></i>
+                </div>
+            </div>
+            <div class="account-group">
+                <div class="dropdown">
+                    <div class="item" data-bs-toggle="dropdown">
+                        <img src="../assets/images/avatar.jpg" class="avatar" />
+                    </div>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#">Action</a></li>
+                        <li><a class="dropdown-item" href="#">Another action</a></li>
+                        <li><a class="dropdown-item" href="#">Something else here</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="main-wrap">
+        <div class="left-sidebar">
+            <div class="sidebar-menu">
+                <div class="accordion" id="sidebar-menu">
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" data-bs-toggle="collapse"
+                            data-bs-target="#sbComponents" href="javascrip:void(0)">
+                            <i class="fa-light fa-puzzle-piece item-icon"></i>
+                            <span>Components</span>
+                            <i class="fal fa-chevron-right item-arrow-icon"></i>
+                            <i class="fal fa-chevron-down item-arrow-icon down"></i>
+                        </a>
+                        <div class="sidebar-menu-sub collapse" id="sbComponents" data-bs-parent="#sidebar-menu">
+                            <div class="sidebar-menu-sub-content">
+                                <a href="components.html#accordion">Accordion</a>
+                                <a href="components.html#alerts">Alerts</a>
+                                <a href="components.html#badge">Badge</a>
+                                <a href="components.html#breadcrumb">Breadcrumb</a>
+                                <a href="components.html#buttons">Buttons</a>
+                                <a href="components.html#button-group">Button group</a>
+                                <a href="components.html#card">Card</a>
+                                <a href="components.html#carousel">Carousel</a>
+                                <a href="components.html#close">Close button</a>
+                                <a href="components.html#collapse">Collapse</a>
+                                <a href="components.html#dropdowns">Dropdowns</a>
+                                <a href="components.html#list-group">List group</a>
+                                <a href="components.html#modal">Modal</a>
+                                <a href="components.html#navs-tabs">Navs &amp; tabs</a>
+                                <a href="components.html#navbar">Navbar</a>
+                                <a href="components.html#offcanvas">Offcanvas</a>
+                                <a href="components.html#pagination">Pagination</a>
+                                <a href="components.html#popovers">Popovers</a>
+                                <a href="components.html#progress">Progress</a>
+                                <a href="components.html#spinners">Spinners</a>
+                                <a href="components.html#toasts">Toasts</a>
+                                <a href="components.html#tooltips">Tooltips</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" data-bs-toggle="collapse" data-bs-target="#sbUtilities"
+                            href="javascrip:void(0)">
+                            <i class="fa-light fa-screwdriver-wrench item-icon"></i>
+                            <span>Utilities</span>
+                            <i class="fal fa-chevron-right item-arrow-icon"></i>
+                            <i class="fal fa-chevron-down item-arrow-icon down"></i>
+                        </a>
+                        <div class="sidebar-menu-sub collapse" id="sbUtilities" data-bs-parent="#sidebar-menu">
+                            <div class="sidebar-menu-sub-content">
+                                <a href="utilities.html#background">Background</a>
+                                <a href="utilities.html#borders">Borders</a>
+                                <a href="utilities.html#colors">Colors</a>
+                                <a href="utilities.html#display">Display</a>
+                                <a href="utilities.html#flex">Flex</a>
+                                <a href="utilities.html#float">Float</a>
+                                <a href="utilities.html#interactions">Interactions</a>
+                                <a href="utilities.html#link">Link</a>
+                                <a href="utilities.html#object-fit">Object fit</a>
+                                <a href="utilities.html#opacity">Opacity</a>
+                                <a href="utilities.html#overflow">Overflow</a>
+                                <a href="utilities.html#position">Position</a>
+                                <a href="utilities.html#shadows">Shadows</a>
+                                <a href="utilities.html#sizing">Sizing</a>
+                                <a href="utilities.html#spacing">Spacing</a>
+                                <a href="utilities.html#text">Text</a>
+                                <a href="utilities.html#vertical-align">Vertical align</a>
+                                <a href="utilities.html#visibility">Visibility</a>
+                                <a href="utilities.html#zindex">Z-index</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" data-bs-toggle="collapse" data-bs-target="#sbHelpers"
+                            href="javascrip:void(0)">
+                            <i class="fa-light fa-wand-magic-sparkles item-icon"></i>
+                            <span>Helpers</span>
+                            <i class="fal fa-chevron-right item-arrow-icon"></i>
+                            <i class="fal fa-chevron-down item-arrow-icon down"></i>
+                        </a>
+                        <div class="sidebar-menu-sub collapse" id="sbHelpers" data-bs-parent="#sidebar-menu">
+                            <div class="sidebar-menu-sub-content">
+                                <a href="helpers.html#clearfix">Clearfix</a>
+                                <a href="helpers.html#colored-links">Colored links</a>
+                                <a href="helpers.html#ratio">Ratio</a>
+                                <a href="helpers.html#position">Position</a>
+                                <a href="helpers.html#visually-hidden">Visually hidden</a>
+                                <a href="helpers.html#stretched-link">Stretched link</a>
+                                <a href="helpers.html#text-truncation">Text truncation</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" data-bs-toggle="collapse" data-bs-target="#sbLayout"
+                            href="javascrip:void(0)">
+                            <i class="fa-light fa-table-layout item-icon"></i>
+                            <span>Layout</span>
+                            <i class="fal fa-chevron-right item-arrow-icon"></i>
+                            <i class="fal fa-chevron-down item-arrow-icon down"></i>
+                        </a>
+                        <div class="sidebar-menu-sub collapse" id="sbLayout" data-bs-parent="#sidebar-menu">
+                            <div class="sidebar-menu-sub-content">
+                                <a href="layout.html#breakpoints">Breakpoints</a>
+                                <a href="layout.html#containers">Containers</a>
+                                <a href="layout.html#grid">Grid</a>
+                                <a href="layout.html#columns">Columns</a>
+                                <a href="layout.html#gutters">Gutters</a>
+                                <a href="layout.html#utilities">Utilities</a>
+                                <a href="layout.html#zindex">Z-index</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" data-bs-toggle="collapse" data-bs-target="#sbForms"
+                            href="javascrip:void(0)">
+                            <i class="fa-light fa-file-user item-icon"></i>
+                            <span>Forms</span>
+                            <i class="fal fa-chevron-right item-arrow-icon"></i>
+                            <i class="fal fa-chevron-down item-arrow-icon down"></i>
+                        </a>
+                        <div class="sidebar-menu-sub collapse" id="sbForms" data-bs-parent="#sidebar-menu">
+                            <div class="sidebar-menu-sub-content">
+                                <a href="forms.html#overview">Overview</a>
+                                <a href="forms.html#form-control">Form control</a>
+                                <a href="forms.html#select">Select</a>
+                                <a href="forms.html#checks-radios">Checks &amp; radios</a>
+                                <a href="forms.html#input-group">Input group</a>
+                                <a href="forms.html#floating">Floating labels</a>
+                                <a href="forms.html#layout">Layout</a>
+                                <a href="forms.html#validation">Validation</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" data-bs-toggle="collapse" data-bs-target="#sbDatTen"
+                            href="javascrip:void(0)">
+                            <i class="fa-regular fa-tags item-icon"></i>
+                            <span>Đặt tên class</span>
+                            <i class="fal fa-chevron-right item-arrow-icon"></i>
+                            <i class="fal fa-chevron-down item-arrow-icon down"></i>
+                        </a>
+                        <div class="sidebar-menu-sub collapse" id="sbDatTen" data-bs-parent="#sidebar-menu">
+                            <div class="sidebar-menu-sub-content">
+                                <a href="dat-ten-class.htm#dtc-bocuc">Bố cục</a>
+                                <a href="dat-ten-class.htm#dtc-header">Header &amp; Footer</a>
+                                <a href="dat-ten-class.htm#dtc-dieuhuong">Điều hướng</a>
+                                <a href="dat-ten-class.htm#dtc-nut">Nút</a>
+                                <a href="dat-ten-class.htm#dtc-bieumau">Biểu mẫu</a>
+                                <a href="dat-ten-class.htm#dtc-the">Thẻ &amp; Hộp</a>
+                                <a href="dat-ten-class.htm#dtc-bang">Bảng</a>
+                                <a href="dat-ten-class.htm#dtc-vanban">Văn bản</a>
+                                <a href="dat-ten-class.htm#dtc-thanhphan">Thành phần</a>
+                                <a href="dat-ten-class.htm#dtc-trangthai">Trạng thái</a>
+                                <a href="dat-ten-class.htm#dtc-tienich">Tiện ích</a>
+                                <a href="dat-ten-class.htm#dtc-khoangcach">Khoảng cách</a>
+                                <a href="dat-ten-class.htm#dtc-hinhanh">Hình ảnh &amp; Media</a>
+                                <a href="dat-ten-class.htm#dtc-luoi">Lưới</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" href="color.html">
+                            <i class="fa-light fa-palette item-icon"></i>
+                            <span>Colors</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" href="button.html">
+                            <i class="fa-light fa-hand-pointer item-icon"></i>
+                            <span>Buttons</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" href="Modal.html">
+                            <i class="fa-light fa-window-restore item-icon"></i>
+                            <span>Modal</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" href="table.html">
+                            <i class="fa-light fa-table item-icon"></i>
+                            <span>Table</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" href="tabs.html">
+                            <i class="fa-light fa-folder-tree item-icon"></i>
+                            <span>Tabs</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" href="tree.html">
+                            <i class="fa-light fa-sitemap item-icon"></i>
+                            <span>Danh mục tree</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-menu-item active">
+                        <a class="sidebar-menu-header collapsed" href="icon.html">
+                            <i class="fa-light fa-icons item-icon"></i>
+                            <span>Icon</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" href="Header - title.html">
+                            <i class="fa-light fa-font item-icon"></i>
+                            <span>Header - title</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" href="Search.html">
+                            <i class="fa-light fa-magnifying-glass item-icon"></i>
+                            <span>Search</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" href="HTML-Form-ChucNangHSo.html">
+                            <i class="fa-light fa-id-card item-icon"></i>
+                            <span>Hồ sơ sinh viên</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-menu-item">
+                        <a class="sidebar-menu-header collapsed" href="thong-tin-sinh-vien.html">
+                            <i class="fa-light fa-address-card item-icon"></i>
+                            <span>Thông tin sinh viên</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="main-content">
+            <!-- content -->
+            <div class="overlay"></div>
+            <div class="content-tab no-tab">
+                <div class="d-flex justify-content-between">
+                    <div class="nav-content-left">
+                        <p class="link">
+                            <a href="#">Icon</a>
+                            <i class="fal fa-angle-right"></i>
+                            <a href="#">Font Awesome 6 Pro</a>
+                        </p>
+                    </div>
+                    <div class="nav-content-right">
+                        <a class="d-block text-right" href>
+                            <i class="fas fa-question-circle"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="row box-comment">
+                <div class="col-12 pl-20">
+                    <h3 class="pl-0">Thư viện Icon — Font Awesome 6 Pro</h3>
+                    <div class="box box-solid box-shadow pd0 mb-20">
+                        <div class="box-header with-border">
+                            <h3 class="box-title color-blue">
+                                <i class="fa-duotone fa-solid fa-icons mr-5"></i> Danh sách icon
+                            </h3>
+                        </div>
+                        <div class="box-body column-1">
+                            <div class="box-content pd-20">
+                                <p class="color-888">Chọn nhóm style, gõ để tìm theo tên, rồi
+                                    <b>bấm vào icon để copy code</b> dạng
+                                    <code>&lt;i class="fa-solid fa-user"&gt;&lt;/i&gt;</code>.
+                                </p>
+                                <div class="ic-toolbar">
+                                    <input type="text" id="icSearch" class="ic-search"
+                                        placeholder="Tìm icon theo tên... (vd: user, home, file)" />
+                                    <span class="ic-count" id="icCount">0 icon</span>
+                                </div>
+                                <div class="ic-styles" id="icStyles">
+                                    <button class="ic-style-btn active" data-style="solid">Solid</button>
+                                    <button class="ic-style-btn" data-style="regular">Regular</button>
+                                    <button class="ic-style-btn" data-style="light">Light</button>
+                                    <button class="ic-style-btn" data-style="thin">Thin</button>
+                                    <button class="ic-style-btn" data-style="duotone">Duotone</button>
+                                    <button class="ic-style-btn" data-style="brands">Brands</button>
+                                </div>
+                                <div class="line mt-20 mb-20"></div>
+                                <div class="ic-grid" id="icGrid"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="ic-toast" id="icToast">Đã copy code!</div>
+
+        <!-- -------------------------- -->
+        <!-- JS -->
+        <script src="../assets/bootstrap-5.3.2/js/bootstrap.bundle.js"></script>
+        <script src="../assets/js/jquery-3.7.1.min.js"></script>
+        <script src="../assets/js/customs.js"></script>
+        <!-- Dữ liệu icon (file mới, tự sinh từ CSS dự án) -->
+        <script src="fa-icons-data.js"></script>
+        <script>
+            (function () {
+                var STYLE_CLASS = {
+                    solid: 'fa-solid', regular: 'fa-regular', light: 'fa-light',
+                    thin: 'fa-thin', duotone: 'fa-duotone', brands: 'fa-brands'
+                };
+                var curStyle = 'solid';
+                var grid = document.getElementById('icGrid');
+                var search = document.getElementById('icSearch');
+                var countEl = document.getElementById('icCount');
+                var toast = document.getElementById('icToast');
+                var toastTimer = null;
+
+                function activeList() {
+                    return curStyle === 'brands'
+                        ? (window.FA_BRANDS || [])
+                        : (window.FA_CLASSIC || []);
+                }
+
+                function render() {
+                    var q = search.value.trim().toLowerCase();
+                    var pre = STYLE_CLASS[curStyle] || 'fa-solid';
+                    var list = activeList();
+                    if (q) list = list.filter(function (n) { return n.indexOf(q) !== -1; });
+                    countEl.textContent = list.length.toLocaleString('vi-VN') + ' icon';
+                    if (!list.length) {
+                        grid.innerHTML = '<div class="ic-empty">Không tìm thấy icon nào khớp "' + q + '"</div>';
+                        return;
+                    }
+                    var html = '';
+                    for (var i = 0; i < list.length; i++) {
+                        var n = list[i];
+                        html += '<div class="ic-cell" data-name="' + n + '" title="' + n + '">'
+                            + '<i class="' + pre + ' fa-' + n + '"></i>'
+                            + '<span>' + n + '</span></div>';
+                    }
+                    grid.innerHTML = html;
+                }
+
+                function showToast(msg) {
+                    toast.textContent = msg;
+                    toast.classList.add('show');
+                    if (toastTimer) clearTimeout(toastTimer);
+                    toastTimer = setTimeout(function () { toast.classList.remove('show'); }, 1500);
+                }
+
+                function copyText(text) {
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(text).catch(fallbackCopy.bind(null, text));
+                    } else {
+                        fallbackCopy(text);
+                    }
+                }
+                function fallbackCopy(text) {
+                    var ta = document.createElement('textarea');
+                    ta.value = text;
+                    ta.style.position = 'fixed';
+                    ta.style.opacity = '0';
+                    document.body.appendChild(ta);
+                    ta.select();
+                    try { document.execCommand('copy'); } catch (e) { }
+                    document.body.removeChild(ta);
+                }
+
+                // Bấm icon -> copy code
+                grid.addEventListener('click', function (e) {
+                    var cell = e.target.closest('.ic-cell');
+                    if (!cell) return;
+                    var pre = STYLE_CLASS[curStyle] || 'fa-solid';
+                    var code = '<i class="' + pre + ' fa-' + cell.dataset.name + '"></i>';
+                    copyText(code);
+                    showToast('Đã copy: ' + code);
+                });
+
+                // Đổi style
+                document.getElementById('icStyles').addEventListener('click', function (e) {
+                    var btn = e.target.closest('.ic-style-btn');
+                    if (!btn) return;
+                    curStyle = btn.dataset.style;
+                    var btns = this.querySelectorAll('.ic-style-btn');
+                    for (var i = 0; i < btns.length; i++) btns[i].classList.remove('active');
+                    btn.classList.add('active');
+                    render();
+                });
+
+                // Tìm kiếm (debounce)
+                var t = null;
+                search.addEventListener('input', function () {
+                    if (t) clearTimeout(t);
+                    t = setTimeout(render, 150);
+                });
+
+                render();
+            })();
+        </script>
+</body>
+
+</html>

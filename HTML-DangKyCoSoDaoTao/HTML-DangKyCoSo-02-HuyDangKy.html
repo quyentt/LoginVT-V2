@@ -1,0 +1,2098 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hủy đăng ký cơ sở đào tạo</title>
+  <link rel="stylesheet" href="../assets/css/styles.css" />
+  <style>
+    /* Force light color scheme — bao hiem tren nhung browser bo qua meta color-scheme.
+         Ep form controls (input/select/scrollbar) render theo light theme + tat outline
+         mac dinh mau do/hong tren dark OS. */
+    html,
+    :root {
+      color-scheme: light only !important;
+      forced-color-adjust: none;
+    }
+
+    /* Ap dung forced-color-adjust cho MOI element de chan Windows High Contrast Mode +
+         Chrome dark theme adjustments tu do bien viet ve tren border/outline. */
+    *,
+    *::before,
+    *::after {
+      forced-color-adjust: none !important;
+    }
+
+    input,
+    select,
+    textarea,
+    button {
+      color-scheme: light !important;
+    }
+
+    *:focus,
+    *:focus-visible {
+      outline-color: #223771 !important;
+    }
+
+    /* Sidebar: bulletproof — chan MOI kha nang browser inject vien do (High Contrast
+         Mode, Chrome dark focus outline, extensions, autofill highlight...). Force outline
+         va box-shadow ve 0/tone chinh, khong cho browser tu quyet dinh mau focus. */
+    .left-sidebar,
+    .left-sidebar *,
+    .sidebar-menu,
+    .sidebar-menu *,
+    .sidebar-menu-sub,
+    .sidebar-menu-sub * {
+      forced-color-adjust: none !important;
+      -webkit-tap-highlight-color: transparent !important;
+    }
+
+    .left-sidebar *:focus,
+    .left-sidebar *:focus-visible,
+    .left-sidebar *:active,
+    .sidebar-menu *:focus,
+    .sidebar-menu *:focus-visible,
+    .sidebar-menu *:active,
+    .sidebar-menu-sub a:focus,
+    .sidebar-menu-sub a:focus-visible,
+    .sidebar-menu-sub a:active {
+      outline: none !important;
+      outline-color: transparent !important;
+      outline-width: 0 !important;
+      box-shadow: none !important;
+      border-color: transparent !important;
+    }
+
+    /* Focus visible: khong dung outline vien cam (xau) — chi doi mau chu */
+    .sidebar-menu-sub a:focus-visible {
+      outline: none !important;
+      color: #f8843d !important;
+    }
+
+    /* FCM header notifications: layout only (no new colors) */
+    #fcm-noti-button {
+      position: relative;
+    }
+
+    #fcm-noti-badge {
+      position: absolute;
+      top: -6px;
+      right: -10px;
+      line-height: 1;
+    }
+
+    #fcm-noti-menu {
+      min-width: 340px;
+      max-width: 420px;
+      max-height: 420px;
+      overflow: auto;
+    }
+
+    .fcm-noti-item-title {
+      font-weight: 600;
+    }
+
+    .head-search-box {
+      position: relative;
+    }
+
+    .search-suggestions {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: #fff;
+      border: 1px solid #e3e6ef;
+      border-radius: 6px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, .12);
+      margin-top: 4px;
+      max-height: 360px;
+      overflow-y: auto;
+      z-index: 2050;
+      display: none;
+      padding: 4px 0;
+      list-style: none;
+    }
+
+    .search-suggestions.show {
+      display: block;
+    }
+
+    .search-suggestions li {
+      padding: 8px 14px;
+      cursor: pointer;
+      color: #333;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .search-suggestions li:hover,
+    .search-suggestions li.active {
+      background: #f1f5ff;
+      color: #1967d2;
+    }
+
+    .search-suggestions li i {
+      color: #1967d2;
+      width: 16px;
+      text-align: center;
+    }
+
+    .search-suggestions li .parent {
+      margin-left: auto;
+      font-size: 12px;
+      color: #8a8f99;
+    }
+
+    .search-suggestions .empty {
+      padding: 10px 14px;
+      color: #8a8f99;
+      font-style: italic;
+      cursor: default;
+    }
+
+    /* ─── Role picker (giao diện chọn vai trò kiểu mới) ─── */
+    /* Reset background image + màu chữ của .quick-action cho gọn */
+    .dashboard-content .quick-action {
+      background: transparent !important;
+      margin-top: 0 !important;
+      padding: 20px 25px 25px;
+    }
+
+    .dashboard-content .quick-action .welcome {
+      color: #64748b;
+      font-style: italic;
+      font-size: 14px;
+      padding-top: 0;
+    }
+
+    .dashboard-content .quick-action .welcome strong {
+      font-weight: 700;
+      font-style: normal;
+      color: #223771;
+    }
+
+    .dashboard-content .quick-action .quick-acction-title {
+      color: #0f172a !important;
+      font-size: 22px;
+      font-weight: 700;
+      margin: 6px 0 18px;
+    }
+
+    .role-picker-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+
+    .role-picker-search {
+      position: relative;
+      flex: 1;
+      height: 42px;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      transition: border-color .2s ease, box-shadow .2s ease;
+    }
+
+    .role-picker-search:focus-within {
+      border-color: #cbd5e1;
+    }
+
+    /* Ghi đè global input:focus trong all.css/bootstrap để không vẽ viền màu quanh input */
+    .role-picker-search input,
+    .role-picker-search input:focus,
+    .role-picker-search input:focus-visible,
+    .role-picker-search input:active {
+      border: 0 !important;
+      outline: none !important;
+      box-shadow: none !important;
+      border-color: transparent !important;
+    }
+
+    .role-picker-search>.fa-search {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #64748b;
+      font-size: 14px;
+      pointer-events: none;
+    }
+
+    .role-picker-search input {
+      flex: 1;
+      height: 100%;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      padding: 0 40px 0 42px;
+      font-size: 14px;
+      color: #0f172a;
+    }
+
+    .role-picker-search input::placeholder {
+      color: #94a3b8;
+    }
+
+    .role-picker-clear {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 0;
+      background: #f1f5f9;
+      color: #64748b;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .role-picker-clear.show {
+      display: flex;
+    }
+
+    .role-picker-clear:hover {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+
+    .role-picker-counter {
+      font-size: 13px;
+      font-weight: 600;
+      color: #475569;
+      white-space: nowrap;
+    }
+
+    .role-picker-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .role-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 12px 5px 12px;
+      border: 1px solid #e2e8f0;
+      background: #fff;
+      color: #0f172a;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .15s ease;
+    }
+
+    .role-chip:hover {
+      border-color: var(--color-blue);
+      color: var(--color-blue);
+    }
+
+    .role-chip.active {
+      background: var(--color-blue);
+      border-color: var(--color-blue);
+      color: #fff;
+    }
+
+    .role-chip-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 20px;
+      padding: 0 6px;
+      height: 18px;
+      border-radius: 999px;
+      background: #f1f5f9;
+      color: #64748b;
+      font-size: 10px;
+      font-weight: 600;
+      line-height: 1;
+    }
+
+    .role-chip.active .role-chip-count {
+      background: rgba(255, 255, 255, .2);
+      color: #fff;
+    }
+
+    /* Ghi đè .action-group flex mặc định để dùng grouped layout */
+    #zonedashbroad.role-picker-grid {
+      display: block !important;
+      margin: 0 !important;
+      gap: 0;
+    }
+
+    /* Ẩn cho tới khi role picker render xong (tránh flash tile cũ) */
+    #zonedashbroad:not(.role-picker-ready) {
+      visibility: hidden;
+    }
+
+    .role-group+.role-group {
+      margin-top: 22px;
+    }
+
+    .role-group-title {
+      font-family: Arial, Helvetica, sans-serif !important;
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      margin: 0 0 12px;
+      font-size: 16px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .role-group-count {
+      font-weight: 600;
+      color: #64748b;
+      font-size: 13px;
+    }
+
+    .role-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    @media (min-width: 640px) {
+      .role-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .role-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+    }
+
+    @media (min-width: 1280px) {
+      .role-grid {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+      }
+    }
+
+    .role-card {
+      display: flex !important;
+      flex-direction: column;
+      gap: 12px;
+      padding: 14px;
+      border: 1px solid #e2e8f0;
+      background: #fff;
+      border-radius: 12px;
+      transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+      min-height: 90px;
+      width: auto !important;
+      height: auto !important;
+      cursor: pointer;
+    }
+
+    .role-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(15, 23, 42, .08);
+      border-color: #cbd5e1;
+    }
+
+    .role-card-head {
+      display: flex;
+      align-items: flex-start;
+      /* justify-content: space-between; */
+      gap: 10px;
+    }
+
+    .role-card-icon {
+      display: grid;
+      place-items: center;
+      width: 60px;
+      height: 60px;
+      border-radius: 12px;
+      font-size: 28px;
+      flex-shrink: 0;
+      font-weight: 700 !important;
+    }
+
+    .role-card-icon i {
+      font-size: 28px;
+      /* font-weight: 700 !important; */
+    }
+
+    .role-card-badge {
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .role-card-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: #0f172a;
+      line-height: 1.35;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin: 0;
+    }
+
+    .role-empty {
+      padding: 40px 20px;
+      text-align: center;
+      color: #64748b;
+      font-size: 14px;
+      font-style: italic;
+      border: 1px dashed #e2e8f0;
+      border-radius: 12px;
+      background: #fff;
+    }
+
+    /* ─── Reskin header + sidebar theo tone NewUI (dask-blue #223771 + orange #f8843d) ─── */
+    /* Header top nav dùng --color-link (#2563EB) mặc định → đổi sang dask-blue */
+    .top-nav {
+      background: #223771 !important;
+    }
+
+    /* Sidebar: nền dask-blue, chữ light-blue, active/hover accent orange */
+    .left-sidebar {
+      background: #223771 !important;
+      box-shadow: none !important;
+    }
+
+    .left-sidebar a:hover {
+      color: #ffffff !important;
+      background: rgba(255, 255, 255, 0.1) !important;
+    }
+
+    .left-sidebar a:hover .item-icon {
+      color: #ffffff !important;
+    }
+
+    .sidebar-menu-header {
+      color: #ffffff !important;
+      background: transparent !important;
+      font-weight: 500 !important;
+    }
+
+    .sidebar-menu-header .item-icon,
+    .sidebar-menu-item.sidebar-menu-home .sidebar-menu-header i {
+      color: #ffffff !important;
+    }
+
+    .sidebar-menu-item.sidebar-menu-home .sidebar-menu-header {
+      color: #ffffff !important;
+    }
+
+    .sidebar-menu-header:not(.collapsed):hover,
+    .sidebar-menu-item.sidebar-menu-home .sidebar-menu-header:hover {
+      color: #ffffff !important;
+      /* background: rgba(255, 255, 255, 0.1) !important; */
+      background-color: var(--color-blue);
+    }
+
+    .sidebar-menu-header:not(.collapsed):hover i,
+    .sidebar-menu-header:not(.collapsed):hover .item-icon {
+      color: #ffffff !important;
+    }
+
+    .sidebar-menu-item.active .sidebar-menu-header {
+      background-color: var(--color-blue);
+      color: #fff !important;
+      font-weight: 700 !important;
+    }
+
+    .sidebar-menu-item.active .sidebar-menu-header .item-icon,
+    .sidebar-menu-item.active .sidebar-menu-header i {
+      color: #fff !important;
+    }
+
+    /* Submenu (cấp con) — bullet + border-left theo tone dask-blue */
+    /* Container submenu: ep TRANSPARENT background de blend voi sidebar toi.
+         THU PHAM: App_Themes/Cms/Custom_V1/styles.css:2896 co rule
+         `.sidebar-menu-item .sidebar-menu-sub.collapse { background:#f4f4f4 !important }`
+         voi specificity cao hon. Can beat bang ID selector (#sidebar-menu) + full chain.
+         Ngoai ra Windows High Contrast / Chrome dark theme cung co the dao mau -> them
+         color-scheme + forced-color-adjust de khoa mau. */
+    html body #sidebar-menu,
+    html body #sidebar-menu * {
+      color-scheme: light only !important;
+      forced-color-adjust: none !important;
+    }
+
+    html body #sidebar-menu .sidebar-menu-item .sidebar-menu-sub,
+    html body #sidebar-menu .sidebar-menu-item .sidebar-menu-sub.collapse,
+    html body #sidebar-menu .sidebar-menu-item .sidebar-menu-sub.show,
+    html body #sidebar-menu .sidebar-menu-item .sidebar-menu-sub.collapsing,
+    #sidebar-menu .sidebar-menu-item .sidebar-menu-sub,
+    #sidebar-menu .sidebar-menu-item .sidebar-menu-sub.collapse,
+    #sidebar-menu .sidebar-menu-item .sidebar-menu-sub.show,
+    .sidebar-menu .sidebar-menu-item .sidebar-menu-sub,
+    .sidebar-menu .sidebar-menu-item .sidebar-menu-sub.collapse,
+    .sidebar-menu .sidebar-menu-item .sidebar-menu-sub.show,
+    html body .sidebar-menu-item .sidebar-menu-sub.collapse {
+      background: #1a2b5c !important;
+      background-color: #1a2b5c !important;
+      background-image: none !important;
+      border-radius: 0 0 12px 0 !important;
+      padding: 4px 0 8px 0 !important;
+      margin-top: 5px !important;
+      box-shadow: none !important;
+    }
+
+    html body #sidebar-menu .sidebar-menu-sub a,
+    html body #sidebar-menu .sidebar-menu-sub a:link,
+    html body #sidebar-menu .sidebar-menu-sub a:visited,
+    html body #sidebar-menu .sidebar-menu-sub a span,
+    .sidebar-menu-sub a {
+      color: #ffffff;
+      font-weight: 500 !important;
+      background: transparent !important;
+      background-color: transparent !important;
+      border-left-color: #5a7adb !important;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    .sidebar-menu-sub a:hover,
+    .sidebar-menu-sub a.active {
+      color: #f8843d !important;
+      background: transparent !important;
+      border-color: transparent;
+      outline: none !important;
+      box-shadow: none !important;
+    }
+
+    .sidebar-menu-sub a::before,
+    .sidebar-menu-sub a::after {
+      background-color: #5a7adb !important;
+    }
+
+    .sidebar-menu-sub a:hover::before,
+    .sidebar-menu-sub a:hover::after,
+    .sidebar-menu-sub a.active::before,
+    .sidebar-menu-sub a.active::after {
+      background-color: #f8843d !important;
+    }
+
+    /* Nền wrap = dask-blue để lộ được góc bo top-left của main-content
+         (nếu không sẽ trùng màu với main-content nên không thấy round) */
+    .main-wrap {
+      background-color: #223771 !important;
+    }
+
+    /* Main content: nền light-gray + bo góc trái trên tiếp giáp sidebar.
+         overflow-y auto để scroll dọc được (main-wrap = 100vh, content dài hơn thì scroll).
+         overflow-x hidden để nội dung không tràn ra ngoài góc bo top-left 16px. */
+    .main-content {
+      background: #f0f3fd;
+      border-top-left-radius: 16px;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    /* Header controls: chữ menu + bell trắng, tránh bị var(--color-*) đè */
+    .top-nav .sidebar-bars,
+    .top-nav .sidebar-bars span {
+      color: #ffffff !important;
+    }
+
+    /* ─── [SPA-MODULE-TONE] Đồng bộ tone module SPA-native (load trong index.aspx)
+         với reskin dask-blue + orange. Không đụng assets/css-new (file share). ─── */
+
+    /* Card wrapper: border-#f5f5f5 gần như vô hình (css-new/main.css:304) → làm
+         cho card trắng tinh trơ trên nền. Bump border rõ hơn + shadow rõ hơn. */
+    #main-content-wrapper .card.today-card,
+    #main-content-wrapper .today-card {
+      border: 1px solid #e2e8f0 !important;
+      border-radius: 10px !important;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06) !important;
+      background: #ffffff !important;
+    }
+
+    /* Bỏ hiệu ứng "double layer" ::before của .today-card (nhìn dơ trên UI mới) */
+    #main-content-wrapper .card.today-card::before,
+    #main-content-wrapper .today-card::before {
+      display: none !important;
+    }
+
+    /* Card body có padding rõ + tách khối với header */
+    #main-content-wrapper .card.today-card>.card-body,
+    #main-content-wrapper .today-card>.card-body {
+      padding: 16px 18px !important;
+      background: #ffffff !important;
+      border-bottom-right-radius: 12px;
+      border-bottom-left-radius: 12px;
+    }
+
+    /* Card header: css-new/main.css:329 set background: var(--color-link) = #2563EB xanh
+         Bootstrap. Override về dask-blue để khớp header shell + reskin indexi. */
+    #main-content-wrapper .card.today-card>.card-header,
+    #main-content-wrapper .today-card-1>.card-header,
+    #main-content-wrapper .today-card-2>.card-header,
+    #main-content-wrapper .today-card-3>.card-header {
+      background: #223771;
+      border: 0 !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 0 18px !important;
+      margin-bottom: -1px;
+    }
+
+    /* Card title (không phải tab) → trắng */
+    #main-content-wrapper .today-card>.card-header .title .feature-name {
+      color: #ffffff !important;
+    }
+
+    /* Tab inactive (chưa chọn): text trắng mờ trên nền dask-blue */
+    #main-content-wrapper .today-card>.card-header .myTab-header-link,
+    #main-content-wrapper .today-card>.card-header .myTab-header-link i {
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    #main-content-wrapper .today-card>.card-header .myTab-header-link:hover,
+    #main-content-wrapper .today-card>.card-header .myTab-header-link:hover i {
+      color: #ffffff;
+    }
+
+    /* Tab active: pill trắng bg (giữ design gốc css-new/main.css:1650) + text
+         dask-blue + icon cam accent */
+    #main-content-wrapper .today-card>.card-header .myTab-header-link.active {
+      background: #ffffff !important;
+      color: #223771;
+      font-weight: 700 !important;
+    }
+
+    #main-content-wrapper .today-card>.card-header .myTab-header-link.active i {
+      color: #223771;
+      font-weight: 700;
+    }
+
+    /* Icon frame trong card header (today-card-1 gradient xanh) → tone dask-blue */
+    #main-content-wrapper .today-card-1>.card-header .icon,
+    #main-content-wrapper .today-card>.card-header .title .icon {
+      background: rgba(255, 255, 255, 0.18) !important;
+      background-image: none !important;
+      color: #ffffff !important;
+    }
+
+    /* Section title .color-blue (dùng cho "Danh sách học phần dự kiến..." v.v.) */
+    #main-content-wrapper .color-blue,
+    #main-content-wrapper .text-blue {
+      color: var(--color-blue) !important;
+    }
+
+    /* Buttons SPA-native: .btn-view / .btn-link / .btn-save → dask-blue solid */
+    #main-content-wrapper .btn.btn-view,
+    #main-content-wrapper .btn.btn-link,
+    #main-content-wrapper .btn.btn-save,
+    #main-content-wrapper #btnSearch.btn.btn-view {
+      background: #223771 !important;
+      background-image: none !important;
+      border: 1px solid #223771 !important;
+      color: #ffffff !important;
+      font-weight: 500 !important;
+    }
+
+    #main-content-wrapper .btn.btn-view:hover,
+    #main-content-wrapper .btn.btn-link:hover,
+    #main-content-wrapper .btn.btn-save:hover,
+    #main-content-wrapper #btnSearch.btn.btn-view:hover {
+      background: #1c2e5f !important;
+      border-color: #1c2e5f !important;
+      color: #ffffff !important;
+    }
+
+    /* Outline buttons — giữ semantic màu (success/danger/warning) nhưng đồng bộ
+         .btn-outline-primary về dask-blue thay vì bright blue */
+    #main-content-wrapper .btn.btn-outline-primary {
+      color: #223771 !important;
+      border-color: #223771 !important;
+      background: transparent !important;
+    }
+
+    #main-content-wrapper .btn.btn-outline-primary:hover {
+      background: #223771 !important;
+      color: #ffffff !important;
+      border-color: #223771 !important;
+    }
+
+    /* Table header .bg-th trong SPA-native → nền tím nhạt khớp indexi reskin */
+    #main-content-wrapper .table>thead>tr>th.bg-th,
+    #main-content-wrapper .table .bg-th {
+      background: #f0f3fd !important;
+      color: #222 !important;
+      font-weight: 700 !important;
+    }
+
+    /* Breadcrumb SPA (.content-tab .nav-content-left .link) → tone xám khớp */
+    #main-content-wrapper .content-tab .nav-content-left .link,
+    #main-content-wrapper .content-tab .nav-content-left .link a {
+      color: #64748b !important;
+    }
+
+    #main-content-wrapper .content-tab .nav-content-left .link i {
+      color: #94a3b8 !important;
+      margin: 5px 0px;
+      font-size: 12px !important;
+    }
+
+    /* ═══ Select2 SPA — center dọc chuẩn + look xịn (border-radius + focus ring) ═══ */
+    #main-content-wrapper .select2-container .select2-selection--single {
+      height: 38px !important;
+      min-height: 38px !important;
+      border: 1px solid #c1c1c1 !important;
+      border-radius: 8px !important;
+      background: #ffffff !important;
+      display: flex !important;
+      align-items: center !important;
+      padding: 0 !important;
+      transition: border-color .15s ease, box-shadow .15s ease !important;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04) !important;
+    }
+
+    /* Focus state: viền dask-blue + shadow ring xanh nhạt */
+    #main-content-wrapper .select2-container--focus .select2-selection--single,
+    #main-content-wrapper .select2-container--open .select2-selection--single {
+      border-color: #d1d1d1 !important;
+      box-shadow: 0 0 0 3px rgba(34, 55, 113, 0.12) !important;
+    }
+
+    /* Hover state: viền đậm hơn 1 chút */
+    #main-content-wrapper .select2-container .select2-selection--single:hover {
+      border-color: #94a3b8 !important;
+    }
+
+    /* Text render — center dọc bằng flex, KHÔNG dùng line-height (gây lệch) */
+    #main-content-wrapper .select2-container--default .select2-selection--single .select2-selection__rendered {
+      line-height: 1 !important;
+      padding: 2px 32px 1px 12px !important;
+      color: #0f172a !important;
+      font-size: 14px !important;
+      font-weight: 400 !important;
+      width: 100% !important;
+      display: flex !important;
+      align-items: center !important;
+      height: 100% !important;
+      margin: 0 !important;
+    }
+
+    /* Placeholder select2 — đậm hơn cho dễ nhìn (user global request) */
+    #main-content-wrapper .select2-container--default .select2-selection--single .select2-selection__placeholder {
+      color: #64748b !important;
+      font-weight: 500 !important;
+      font-style: normal !important;
+      opacity: 1 !important;
+    }
+
+    /* Placeholder input/textarea — global đậm hơn */
+    #main-content-wrapper input.form-control::placeholder,
+    #main-content-wrapper input::placeholder,
+    #main-content-wrapper textarea::placeholder,
+    #main-content-wrapper textarea.form-control::placeholder {
+      color: #64748b !important;
+      opacity: 1 !important;
+    }
+
+    /* Text đã nhập trong input/select đậm hơn */
+    #main-content-wrapper input.form-control,
+    #main-content-wrapper select.form-control,
+    #main-content-wrapper textarea.form-control {
+      color: #0f172a !important;
+      font-weight: 500 !important;
+    }
+
+    /* Mũi tên: căn giữa dọc, cách viền phải 8px */
+    #main-content-wrapper .select2-container--default .select2-selection--single .select2-selection__arrow {
+      height: 100% !important;
+      top: 0px;
+      right: 8px !important;
+      width: 20px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+
+    #main-content-wrapper .select2-container--default .select2-selection--single .select2-selection__arrow b {
+      border-color: #d1d1d1 transparent transparent transparent !important;
+      border-width: 5px 5px 0 5px !important;
+      position: static !important;
+      margin: 0 !important;
+    }
+
+    #main-content-wrapper .select2-container--open .select2-selection__arrow b {
+      border-color: transparent transparent #d1d1d1 transparent !important;
+      border-width: 0 5px 6px 5px !important;
+    }
+
+    /* Dropdown khi mở — max spec + shadow to + border đậm để dropdown "nhảy ra"
+         hoàn toàn khỏi container. Bố cục shadow 3 lớp cho depth chuẩn. */
+    html body .select2-container,
+    html body>.select2-container,
+    html body .select2-container--default .select2-dropdown {
+      z-index: 99999 !important;
+    }
+
+    html body .select2-container--default .select2-dropdown {
+      border: 2px solid #223771 !important;
+      border-radius: 10px !important;
+      box-shadow:
+        0 0 0 1px rgba(34, 55, 113, 0.05),
+        0 4px 12px rgba(15, 23, 42, 0.12),
+        0 20px 40px rgba(15, 23, 42, 0.25) !important;
+      margin-top: 8px !important;
+      background: #ffffff !important;
+      padding: 6px 0 !important;
+      overflow: hidden !important;
+    }
+
+    html body .select2-container--default .select2-dropdown--above {
+      margin-top: 0 !important;
+      margin-bottom: 8px !important;
+      box-shadow:
+        0 0 0 1px rgba(34, 55, 113, 0.05),
+        0 -4px 12px rgba(15, 23, 42, 0.12),
+        0 -20px 40px rgba(15, 23, 42, 0.25) !important;
+    }
+
+    .select2-container--default .select2-search--dropdown {
+      padding: 6px 8px !important;
+    }
+
+    .select2-container--default .select2-search--dropdown .select2-search__field {
+      border: 1px solid #cbd5e1 !important;
+      border-radius: 6px !important;
+      padding: 6px 10px !important;
+      font-size: 13px !important;
+      outline: none !important;
+    }
+
+    .select2-container--default .select2-search--dropdown .select2-search__field:focus {
+      border-color: #223771 !important;
+      box-shadow: 0 0 0 2px rgba(34, 55, 113, 0.1) !important;
+    }
+
+    .select2-container--default .select2-results__options {
+      max-height: 250px !important;
+    }
+
+    .select2-container--default .select2-results__option {
+      padding: 8px 14px !important;
+      font-size: 14px !important;
+      color: #0f172a !important;
+      transition: background .1s ease;
+    }
+
+    .select2-container--default .select2-results__option--highlighted[aria-selected] {
+      background: #223771 !important;
+      color: #ffffff !important;
+    }
+
+    .select2-container--default .select2-results__option[aria-selected="true"] {
+      background: #f0f3fd !important;
+      color: #223771 !important;
+      font-weight: 600 !important;
+    }
+
+    /* Floating label trong .box-search-hocphan (css-new/main.css:4010): mặc định
+         12px + #888 → hơi bé + mờ. Bump lên 13px + color đậm hơn cho dễ đọc. */
+    #main-content-wrapper .box-search-hocphan .input-label-left label,
+    #main-content-wrapper .filter-4-item .input-label-left label {
+      font-size: 14px !important;
+      color: #888 !important;
+      font-weight: 400 !important;
+      padding: 0 8px !important;
+      line-height: 38px !important;
+      margin-top: 0 !important;
+    }
+
+    /* Filter row: button "Xem danh sách" / "Tìm kiếm" phải align cuối dòng với
+         input row (tránh nằm lệch trên khi input wrap 2 dòng) */
+    #main-content-wrapper .filter-4-item {
+      align-items: flex-end !important;
+    }
+
+    #main-content-wrapper .filter-4-item .flex-shrink-0 {
+      display: flex;
+      align-items: flex-end;
+      padding-bottom: 10px;
+    }
+
+    #main-content-wrapper .filter-4-item .flex-shrink-0 .btn {
+      height: 38px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      margin-top: 0 !important;
+    }
+
+    /* ─── [SPA-ALT] Pattern module SPA-native KHÔNG dùng .card.today-card
+         (vd phieu.html khảo sát) — dùng .box-shadow.zone-bus / .register-wish /
+         .group-title. Add card-like border + section title + button để đồng bộ. ─── */
+
+    /* Wrapper container thay .card.today-card — LOẠI TRỪ .modal (nếu áp vào modal
+         wrapper sẽ vỡ layout modal vì modal cần transparent frame ngoài) */
+    #main-content-wrapper .box-shadow.zone-bus:not(.modal),
+    #main-content-wrapper .register-wish:not(.modal),
+    #main-content-wrapper .zone-bus.box-shadow:not(.modal) {
+      background: #ffffff !important;
+      border: 1px solid #e2e8f0 !important;
+      border-radius: 10px !important;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06) !important;
+      padding: 0 !important;
+      margin-bottom: 16px !important;
+    }
+
+    /* Modal riêng — dùng cho .modal.register-wish, .modal.modaldangky, v.v...
+         Ép proper Bootstrap 5 modal style + backdrop */
+    #main-content-wrapper .modal,
+    body>.modal {
+      /* background: transparent !important; */
+      border: 0 !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+
+    #main-content-wrapper .modal .modal-content,
+    body>.modal .modal-content {
+      background: #ffffff !important;
+      border: 1px solid #e2e8f0 !important;
+      border-radius: 10px !important;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.2) !important;
+    }
+
+    #main-content-wrapper .modal .modal-header,
+    body>.modal .modal-header {
+      background: #223771 !important;
+      color: #ffffff !important;
+      border-bottom: 0 !important;
+      border-top-left-radius: 10px !important;
+      border-top-right-radius: 10px !important;
+      padding: 12px 18px !important;
+    }
+
+    #main-content-wrapper .modal .modal-header .modal-title,
+    #main-content-wrapper .modal .modal-header p,
+    #main-content-wrapper .modal .modal-header i,
+    body>.modal .modal-header .modal-title,
+    body>.modal .modal-header p,
+    body>.modal .modal-header i {
+      color: #ffffff !important;
+      font-weight: 500 !important;
+    }
+
+    #main-content-wrapper .modal .modal-header .btn-close,
+    body>.modal .modal-header .btn-close {
+      filter: invert(1) brightness(2) !important;
+      opacity: 0.8 !important;
+    }
+
+    #main-content-wrapper .modal .modal-header .btn-close:hover,
+    body>.modal .modal-header .btn-close:hover {
+      opacity: 1 !important;
+    }
+
+    #main-content-wrapper .modal .modal-body,
+    body>.modal .modal-body {
+      padding: 16px 18px;
+      background: #ffffff !important;
+    }
+
+    #main-content-wrapper .modal .modal-footer,
+    body>.modal .modal-footer {
+      padding: 15px 18px !important;
+      border-top: 1px solid #e2e8f0 !important;
+    }
+
+    /* Form top (filter row đầu module) — spacing */
+    #main-content-wrapper .form-top {
+      margin-bottom: 15px;
+    }
+
+    #main-content-wrapper .form-top .form-item .form-control,
+    #main-content-wrapper .form-top .input-group input.form-control {
+      height: 38px !important;
+      border: 1px solid #d1d1d1 !important;
+      border-radius: 8px !important;
+      font-size: 14px !important;
+    }
+
+    #main-content-wrapper .form-top .form-control:focus {
+      border-color: #cbd5e1 !important;
+      box-shadow: none !important;
+    }
+
+    /* Section title dùng .group-title (thay .color-blue) */
+    #main-content-wrapper .group-title,
+    #main-content-wrapper .group-title.pl0 {
+      margin-bottom: 8px;
+    }
+
+    #main-content-wrapper .group-title p,
+    #main-content-wrapper .group-title.pl0 p {
+      color: var(--color-blue) !important;
+      font-weight: 700 !important;
+      font-size: 15px !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+      margin: 0 !important;
+    }
+
+    #main-content-wrapper .group-title p i,
+    #main-content-wrapper .group-title.pl0 p i {
+      color: var(--color-blue-dark) !important;
+      font-size: 15px;
+      margin-right: 5px !important;
+    }
+
+    /* Button search combo — .btn-search + .btn-default → dask-blue solid */
+    #main-content-wrapper .btn.btn-search,
+    #main-content-wrapper .btn.btn-search.btn-default,
+    #main-content-wrapper div.btn.btn-search,
+    #main-content-wrapper div.btn.btn-search.btn-default {
+      background: #223771 !important;
+      background-image: none !important;
+      color: #ffffff !important;
+      border: 1px solid #223771 !important;
+      border-radius: 6px !important;
+      height: 38px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      padding: 0 14px !important;
+      cursor: pointer !important;
+      font-weight: 500 !important;
+    }
+
+    #main-content-wrapper .btn.btn-search:hover,
+    #main-content-wrapper .btn.btn-search.btn-default:hover {
+      background: #1c2e5f !important;
+      border-color: #1c2e5f !important;
+    }
+
+    #main-content-wrapper .btn.btn-search i,
+    #main-content-wrapper .btn.btn-search span,
+    #main-content-wrapper .btn.btn-search .lang,
+    #main-content-wrapper .btn.btn-search * {
+      color: #ffffff !important;
+    }
+
+    /* Table plain trong SPA-alt module (không có .table-responsive wrapper) */
+    #main-content-wrapper .table.tblPhieu,
+    #main-content-wrapper .table.transcrip-table {
+      /* margin-top: 4px !important; */
+      /* border: 1px solid #e2e8f0 !important; */
+      /* border-radius: 6px !important; */
+    }
+
+    /* Bump toàn bộ table header trong SPA scope — cover cả các bảng không có
+         class .bg-th (vd tblPhieu). Nền tím nhạt + chữ đậm + border dày dưới. */
+    #main-content-wrapper .table>thead>tr>th,
+    #main-content-wrapper table.table>thead>tr>th {
+      background: #f0f3fd !important;
+      color: #0f172a !important;
+      font-weight: 700 !important;
+      font-size: 13px !important;
+      padding: 10px 12px !important;
+      border-bottom: 1px solid #d1d1d1 !important;
+      vertical-align: middle !important;
+    }
+
+    /* Body row có border + hover nhẹ để tách khối */
+    #main-content-wrapper .table>tbody>tr>td {
+      padding: 10px !important;
+      color: #0f172a;
+      vertical-align: middle !important;
+    }
+
+    #main-content-wrapper .table-hover>tbody>tr:hover,
+    #main-content-wrapper .table-hover>tbody>tr:hover>td {
+      background: #f8fafc !important;
+      color: #0f172a !important;
+    }
+
+    /* Bảng có class .table-noborder — bo góc + shadow nhẹ để thấy khối */
+    #main-content-wrapper .table.table-noborder {
+      border-collapse: separate !important;
+      border-spacing: 0 !important;
+      overflow: hidden !important;
+      margin-bottom: 10px;
+    }
+
+    /* ─── [SPA-ADMINLTE-COMPAT] Cover module cu dung .box, .box-body, .box-header
+         nhung load trong SPA shell (vd phancongphamvi.html cua Dang ky hoc).
+         Add card-like style tuong tu compat trong indexi.aspx. ─── */
+    #main-content-wrapper .box {
+      position: relative;
+      background: #ffffff !important;
+      border: 1px solid #e2e8f0 !important;
+      border-top: 1px solid #e2e8f0 !important;
+      border-radius: 8px !important;
+      margin-bottom: 14px !important;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04) !important;
+    }
+
+    #main-content-wrapper .box.box-solid {
+      border-top: 1px solid #e2e8f0 !important;
+    }
+
+    #main-content-wrapper .box.box-shadow {
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06) !important;
+    }
+
+    #main-content-wrapper .box-header {
+      padding: 10px 15px 5px 15px;
+      /* border-bottom: 1px solid #e2e8f0 !important; */
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      flex-wrap: wrap !important;
+    }
+
+    #main-content-wrapper .box-body {
+      padding: 15px 0 !important;
+      overflow: visible !important;
+      max-height: none !important;
+    }
+
+    #main-content-wrapper .box-footer {
+      padding: 12px 16px !important;
+      border-top: 1px solid #e2e8f0 !important;
+    }
+
+    #main-content-wrapper .box-title {
+      font-weight: 700 !important;
+      /* font-size: 15px !important; */
+      color: var(--color-blue) !important;
+      margin: 0 !important;
+    }
+
+    #main-content-wrapper .box-title.color-blue {
+      color: #223771 !important;
+    }
+
+    /* Padding/margin helpers module AdminLTE */
+    #main-content-wrapper .pd0 {
+      padding: 0 !important;
+    }
+
+    #main-content-wrapper .pd10 {
+      padding: 10px !important;
+    }
+
+    #main-content-wrapper .pd15 {
+      padding: 15px !important;
+    }
+
+    #main-content-wrapper .pd20 {
+      padding: 20px;
+    }
+
+    #main-content-wrapper .pt10 {
+      padding-top: 10px !important;
+    }
+
+    #main-content-wrapper .pt15 {
+      padding-top: 15px !important;
+    }
+
+    #main-content-wrapper .pt20 {
+      padding-top: 20px !important;
+    }
+
+    #main-content-wrapper .pb10 {
+      padding-bottom: 10px !important;
+    }
+
+    #main-content-wrapper .pb15 {
+      padding-bottom: 15px !important;
+    }
+
+    #main-content-wrapper .pl0 {
+      padding-left: 0 !important;
+    }
+
+    #main-content-wrapper .pl15 {
+      padding-left: 15px !important;
+    }
+
+    #main-content-wrapper .pl20 {
+      padding-left: 20px !important;
+    }
+
+    #main-content-wrapper .pr10 {
+      padding-right: 10px !important;
+    }
+
+    #main-content-wrapper .pr20 {
+      padding-right: 20px !important;
+    }
+
+    #main-content-wrapper .mt-10 {
+      margin-top: 10px !important;
+    }
+
+    #main-content-wrapper .mt-20 {
+      margin-top: 20px !important;
+    }
+
+    #main-content-wrapper .ml-10 {
+      margin-left: 10px !important;
+    }
+
+    #main-content-wrapper .ml-20 {
+      margin-left: 20px !important;
+    }
+
+    #main-content-wrapper .mb-10 {
+      margin-bottom: 10px !important;
+    }
+
+    #main-content-wrapper .mb-20 {
+      margin-bottom: 20px !important;
+    }
+
+    #main-content-wrapper .item-search {
+      padding: 6px 10px;
+    }
+
+    #main-content-wrapper .table-noborder {
+      border: 0 !important;
+    }
+
+    #main-content-wrapper .pull-right {
+      float: right !important;
+    }
+
+    #main-content-wrapper .pull-left {
+      float: left !important;
+    }
+
+    /* Multi-table float layout (vd phancongphamvi.html: 6 table float:left width:300px)
+         → khi row counts khác nhau, table thấp/cao lệch. Align top + gap giữa các table. */
+    #main-content-wrapper .scroll-table-x {
+      display: flex !important;
+      flex-wrap: wrap !important;
+      /* gap: 12px !important; */
+      align-items: flex-start !important;
+      overflow-x: auto;
+    }
+
+    #main-content-wrapper .scroll-table-x>table {
+      float: none !important;
+      margin: 0 !important;
+      vertical-align: top !important;
+    }
+
+    #main-content-wrapper .scroll-table-x>table td,
+    #main-content-wrapper .scroll-table-x>table th {
+      vertical-align: middle !important;
+    }
+
+    /* Button trong table cell (vd "Chi tiết", "Xem" của module Khảo sát render
+         qua kehoach.js:1009 dùng .btn.btn-default) — .btn-default trong SPA shell
+         không có bg/color → hover row làm chữ trắng invisible. Ép dask-blue solid +
+         chữ trắng, kích thước nhỏ gọn khớp cell. */
+    #main-content-wrapper .table td .btn.btn-default,
+    #main-content-wrapper .table td a.btn.btn-default,
+    #main-content-wrapper .table td span>a.btn.btn-default,
+    #main-content-wrapper .table-hover>tbody>tr:hover>td .btn.btn-default,
+    #main-content-wrapper .table-hover>tbody>tr:hover>td a.btn.btn-default {
+      background: rgba(13, 110, 253, 0.1) !important;
+      background-image: none !important;
+      color: var(--color-blue) !important;
+      border: 1px solid rgba(13, 110, 253, 0.3) !important;
+      border-radius: 4px !important;
+      padding: 6px 10px !important;
+      font-size: 13px !important;
+      font-weight: 500 !important;
+      display: inline-block !important;
+      min-width: auto !important;
+      cursor: pointer !important;
+      text-decoration: none !important;
+      line-height: 18px !important;
+    }
+
+    #main-content-wrapper .table td .btn.btn-default:hover,
+    #main-content-wrapper .table td a.btn.btn-default:hover {
+      background: var(--color-blue) !important;
+      border-color: var(--color-blue) !important;
+      color: #ffffff !important;
+    }
+
+    /* Đảm bảo text/icon bên trong button trong cell luôn trắng — không bị inherit
+         từ row hover color rule */
+    #main-content-wrapper .table td .btn.btn-default *,
+    #main-content-wrapper .table-hover>tbody>tr:hover>td .btn.btn-default * {
+      color: var(--color-blue) !important;
+      font-weight: 700;
+    }
+
+    /* ═══ [DISABLED 2026-08-12] FIX MODAL BLEED-THROUGH — khi modal mo, an TOAN BO
+         #main-content-wrapper de khong container nao xuyen qua backdrop. ═══
+         User feedback: an het main-content khien khong biet modal thong bao xuat hien
+         tu form nao -> comment lai, giu backdrop opacity thap de van thay form phia sau. */
+    /*
+      body.modal-open #main-content-wrapper,
+      body:has(.modal.show) #main-content-wrapper,
+      body:has(.modal.in) #main-content-wrapper {
+        visibility: hidden !important;
+      }
+      */
+    /* Modal (o bat ky dau — body level via #alert hoac inline trong module) va backdrop
+         luon hien khi mo. Child visibility:visible override parent's visibility:hidden. */
+    body.modal-open .modal.show,
+    body.modal-open .modal.in,
+    body.modal-open .modal-backdrop,
+    body:has(.modal.show) .modal.show,
+    body:has(.modal.in) .modal.in,
+    body:has(.modal.show) .modal-backdrop,
+    body:has(.modal.in) .modal-backdrop {
+      visibility: visible !important;
+    }
+
+    /* Select2 dropdown khi open (append vao body) — z-index cao hon modal (BS default 1055) */
+    .select2-container--open {
+      z-index: 20000 !important;
+    }
+
+    /* Modal & backdrop z-index cao de dam bao che het */
+    .modal.show,
+    .modal.in {
+      z-index: 10055 !important;
+    }
+
+    .modal-backdrop.show,
+    .modal-backdrop.in {
+      z-index: 10050 !important;
+      opacity: 0.5 !important;
+      background-color: #0f172a !important;
+    }
+
+    /* ═══ [FIX 2026-08-12] Khi modal open, select2-container base (line 680) o
+         z-index 99999 cao hon backdrop (10050) -> user van chon duoc dropdown xuyen
+         qua modal. Reset ve auto khi modal open de backdrop chan pointer events. ═══ */
+    body.modal-open .select2-container,
+    body.modal-open>.select2-container,
+    body:has(.modal.show) .select2-container,
+    body:has(.modal.show)>.select2-container,
+    body:has(.modal.in) .select2-container,
+    body:has(.modal.in)>.select2-container,
+    body:has(.cke_dialog_container) .select2-container,
+    body:has(.cke_dialog_container)>.select2-container,
+    body:has(.cke_dialog_background_cover) .select2-container,
+    body:has(.cke_dialog_background_cover)>.select2-container {
+      z-index: auto !important;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="header fixed-top">
+    <div class="top-nav">
+      <div class="sidebar-bars">
+        <i class="fa-light fa-bars-sort"> </i>
+      </div>
+      <div class="head-logo">
+        <a href="../index.html">
+          <img class="logo-icon" src="../assets/images/logo/logo-icon.png" />
+          <img class="logo-text" src="../assets/images/logo/logo-text.png" />
+        </a>
+      </div>
+      <div class="head-search-form">
+        <div class="head-search-toggle">
+          <i class="fal fa-search"></i>
+        </div>
+        <div class="head-search-box">
+          <div class="form">
+            <input type="text" class="search-imput" placeholder="Tìm kiếm thông tin" />
+            <button class="search-btn">
+              <i class="fal fa-search"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="main-menu">
+        <ul class="list-unstyled d-none">
+          <li class="item">
+            <a class="menu-link" href="../index.html">
+              <i class="fal fa-home"></i>
+              <span>Trang chủ</span>
+            </a>
+          </li>
+          <li class="item">
+            <a class="menu-link" href="../dashboard.html">
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="item">
+            <a class="menu-link" href="../modul.html">
+              <span>Modul</span>
+            </a>
+          </li>
+          <li class="item">
+            <a class="menu-link" href="../chucnang-cuaban.html">
+              <span>Chức năng của bạn</span>
+            </a>
+          </li>
+          <li class="item">
+            <a class="menu-link" href="../tintuc.html">
+              <span>Tin tức</span>
+            </a>
+          </li>
+        </ul>
+        <div class="menu-toggle">
+          <i class="fal fa-bars"></i>
+        </div>
+      </div>
+      <div class="account-group">
+        <div class="dropdown d-none">
+          <div class="item" data-bs-toggle="dropdown">
+            <i class="fal fa-circle-check"></i>
+            <span>3</span>
+          </div>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#">Action</a></li>
+            <li><a class="dropdown-item" href="#">Another action</a></li>
+            <li><a class="dropdown-item" href="#">Something else here</a></li>
+          </ul>
+        </div>
+        <div class="dropdown d-none">
+          <div class="item message" data-bs-toggle="dropdown">
+            <i class="fal fa-messages"></i>
+            <span>3</span>
+          </div>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#">Action</a></li>
+            <li><a class="dropdown-item" href="#">Another action</a></li>
+            <li><a class="dropdown-item" href="#">Something else here</a></li>
+          </ul>
+        </div>
+        <div class="dropdown d-none">
+          <div class="item noti" data-bs-toggle="dropdown">
+            <i class="fal fa-bell"></i>
+            <span>9+</span>
+          </div>
+          <ul class="dropdown-menu box-notify">
+            <li class="lable-notify d-flex justify-content-between">
+              <h3 class="d-flex">
+                <img src="./images/notification.svg" style="width: 26px; margin-right: 6px" />
+                Thông báo
+              </h3>
+              <i class="fa-regular fa-xmark" style="margin-top: 5px"></i>
+            </li>
+            <li class="list-notify">
+              <ul>
+                <li class="chuadoc">
+                  <a href="#">
+                    <div class="item-notify">
+                      <div class="icon-notify">
+                        <i class="fa-solid fa-circle-dollar-to-slot color-blue"></i>
+                      </div>
+                      <div class="content-notify">
+                        Thông báo thay đổi lịch dảng dậy lớp ABC Phương pháp
+                        tính và MAtLAB
+                        <p class="date-notify">
+                          <i class="fa-light fa-calendar-clock"></i>16:02
+                          <i class="fa-solid fa-circle fw-bold"></i> Thứ ba
+                          20/1/2026
+                        </p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+                <li class="dadoc">
+                  <a href="#">
+                    <div class="item-notify">
+                      <div class="icon-notify">
+                        <img src="./images/money-bag.png" class="img-notify" />
+                      </div>
+                      <div class="content-notify">
+                        Thông báo thay đổi lịch dảng dậy lớp ABC Phương pháp
+                        tính và MAtLAB
+                        <p class="date-notify">
+                          <i class="fa-light fa-calendar-clock"></i>16:02
+                          <i class="fa-solid fa-circle fw-bold"></i> Thứ ba
+                          20/1/2026
+                        </p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+                <li class="chuadoc">
+                  <a href="#">
+                    <div class="item-notify">
+                      <div class="icon-notify">
+                        <i class="fa-solid fa-circle-dollar-to-slot color-blue"></i>
+                      </div>
+                      <div class="content-notify">
+                        <b>Tín hiệu và hệ thống</b><br />
+                        Đã có điểm môn quá trình tín hiệu và hệ thống
+                        <p class="date-notify">
+                          <i class="fa-light fa-calendar-clock"></i>16:02
+                          <i class="fa-solid fa-circle fw-bold"></i> Thứ ba
+                          20/1/2026
+                        </p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+                <li class="dadoc">
+                  <a href="#">
+                    <div class="item-notify">
+                      <div class="icon-notify">
+                        <img src="./images/newspaper.svg" class="img-notify" />
+                      </div>
+                      <div class="content-notify">
+                        Thông báo thay đổi lịch dảng dậy lớp ABC Phương pháp
+                        tính và MAtLAB
+                        <p class="date-notify">
+                          <i class="fa-light fa-calendar-clock"></i>16:02
+                          <i class="fa-solid fa-circle fw-bold"></i> Thứ ba
+                          20/1/2026
+                        </p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+                <li class="dadoc">
+                  <a href="#">
+                    <div class="item-notify">
+                      <div class="icon-notify">
+                        <img src="./images/newspaper.svg" class="img-notify" />
+                      </div>
+                      <div class="content-notify">
+                        Thông báo thay đổi lịch dảng dậy lớp ABC Phương pháp
+                        tính và MAtLAB
+                        <p class="date-notify">
+                          <i class="fa-light fa-calendar-clock"></i>16:02
+                          <i class="fa-solid fa-circle fw-bold"></i> Thứ ba
+                          20/1/2026
+                        </p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+                <li class="dadoc">
+                  <a href="#">
+                    <div class="item-notify">
+                      <div class="icon-notify">
+                        <img src="./images/newspaper.svg" class="img-notify" />
+                      </div>
+                      <div class="content-notify">
+                        Thông báo thay đổi lịch dảng dậy lớp ABC Phương pháp
+                        tính và MAtLAB
+                        <p class="date-notify">
+                          <i class="fa-light fa-calendar-clock"></i>16:02
+                          <i class="fa-solid fa-circle fw-bold"></i> Thứ ba
+                          20/1/2026
+                        </p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+                <li class="dadoc">
+                  <a href="#">
+                    <div class="item-notify">
+                      <div class="icon-notify">
+                        <img src="./images/newspaper.svg" class="img-notify" />
+                      </div>
+                      <div class="content-notify">
+                        Thông báo thay đổi lịch dảng dậy lớp ABC Phương pháp
+                        tính và MAtLAB
+                        <p class="date-notify">
+                          <i class="fa-light fa-calendar-clock"></i>16:02
+                          <i class="fa-solid fa-circle fw-bold"></i> Thứ ba
+                          20/1/2026
+                        </p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+                <li class="dadoc">
+                  <a href="#">
+                    <div class="item-notify">
+                      <div class="icon-notify">
+                        <img src="./images/newspaper.svg" class="img-notify" />
+                      </div>
+                      <div class="content-notify">
+                        Thông báo thay đổi lịch dảng dậy lớp ABC Phương pháp
+                        tính và MAtLAB
+                        <p class="date-notify">
+                          <i class="fa-light fa-calendar-clock"></i>16:02
+                          <i class="fa-solid fa-circle fw-bold"></i> Thứ ba
+                          20/1/2026
+                        </p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+        <div class="dropdown">
+          <div class="item" data-bs-toggle="dropdown">
+            <img src="../assets/images/avatar.jpg" class="avatar" />
+          </div>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#">Action</a></li>
+            <li><a class="dropdown-item" href="#">Another action</a></li>
+            <li><a class="dropdown-item" href="#">Something else here</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="main-wrap">
+    <div class="left-sidebar">
+      <div class="sidebar-menu">
+        <div class="accordion" id="sidebar-menu">
+          <div class="sidebar-menu-item">
+            <a class="sidebar-menu-header collapsed" href="../index.html">
+              <i class="fa-light fa-house-window item-icon"></i>
+              <span>Dashboads</span>
+            </a>
+          </div>
+          <!-- siderbar menu  item -->
+          <div class="sidebar-menu-item">
+            <a class="sidebar-menu-header collapsed" data-bs-toggle="collapse" data-bs-target="#collapse1"
+              href="javascrip:void(0)" aria-expanded="true">
+              <i class="fa-light fa-chalkboard-user item-icon"></i>
+              <span>Giảng viên</span>
+              <i class="fal fa-chevron-right item-arrow-icon"></i>
+              <i class="fal fa-chevron-down item-arrow-icon down"></i>
+            </a>
+            <div class="sidebar-menu-sub collapse" id="collapse1" data-bs-parent="#sidebar-menu">
+              <div class="sidebar-menu-sub-content">
+                <a class href="#">Thông tin chung</a>
+                <a href="#">Nhập điểm theo lớp học phần</a>
+                <a href="#">Điểm danh theo lớp học phần</a>
+                <a href="#">Tra cứu hồ sơ sinh viên</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- siderbar menu  item -->
+          <div class="sidebar-menu-item">
+            <a class="sidebar-menu-header collapsed" data-bs-toggle="collapse" data-bs-target="#collapse2"
+              href="javascrip:void(0)">
+              <i class="fa-light fa-building-user item-icon"> </i>
+              <span>Trưởng khoa</span>
+              <i class="fal fa-chevron-right item-arrow-icon"></i>
+              <i class="fal fa-chevron-down item-arrow-icon down"></i>
+            </a>
+            <div class="sidebar-menu-sub collapse" id="collapse2" data-bs-parent="#sidebar-menu">
+              <div class="sidebar-menu-sub-content">
+                <a href="#">Profile demo 1</a>
+                <a href="#">Profile demo 2</a>
+                <a href="#">Profile demo 3</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- siderbar menu  item -->
+          <div class="sidebar-menu-item">
+            <a class="sidebar-menu-header collapsed" data-bs-toggle="collapse" data-bs-target="#collapse3"
+              href="javascrip:void(0)">
+              <i class="fa-solid fa-users item-icon"></i>
+              <span>Nhân sự</span>
+              <i class="fal fa-chevron-right item-arrow-icon"></i>
+              <i class="fal fa-chevron-down item-arrow-icon down"></i>
+            </a>
+            <div class="sidebar-menu-sub collapse" id="collapse3" data-bs-parent="#sidebar-menu">
+              <div class="sidebar-menu-sub-content">
+                <a class="" href="nhansu/nhansu-chitiet.html" data-position="0">Kế hoạch tuyển dụng</a>
+                <a href="nhansu/nhansu-chitiet.html" data-position="1">Đề xuất tuyển dụng</a>
+              </div>
+            </div>
+          </div>
+          <!-- siderbar menu  item -->
+          <div class="sidebar-menu-item">
+            <a class="sidebar-menu-header collapsed" data-bs-toggle="collapse" data-bs-target="#collapse4"
+              href="javascrip:void(0)">
+              <i class="fa-light fa-users-gear item-icon"></i>
+              <span>Thiết lập quản trị nhóm</span>
+              <i class="fal fa-chevron-right item-arrow-icon"></i>
+              <i class="fal fa-chevron-down item-arrow-icon down"></i>
+            </a>
+            <div class="sidebar-menu-sub collapse" id="collapse4" data-bs-parent="#sidebar-menu">
+              <div class="sidebar-menu-sub-content">
+                <a class="" href="#" data-position="0">Danh sách thiết lập quản trị nhóm</a>
+                <a href="QuanTriNhom.html" data-position="1">Quản trị nhóm</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- siderbar menu  item -->
+          <!-- siderbar menu  item -->
+          <div class="sidebar-menu-item active">
+            <a class="sidebar-menu-header" data-bs-toggle="collapse" data-bs-target="#collapse5"
+              href="javascrip:void(0)">
+              <i class="far fa-user-graduate item-icon"></i>
+              <span>Sinh viên</span>
+              <i class="fal fa-chevron-right item-arrow-icon"></i>
+              <i class="fal fa-chevron-down item-arrow-icon down"></i>
+            </a>
+            <div class="sidebar-menu-sub collapse show" id="collapse5" data-bs-parent="#sidebar-menu">
+              <div class="sidebar-menu-sub-content">
+                <a href="HTML-DangKyCoSo-01-DangKy.html" data-position="0">Đăng ký cơ sở đào tạo</a>
+                <a class="active" href="HTML-DangKyCoSo-02-HuyDangKy.html" data-position="1">Hủy đăng ký cơ sở</a>
+                <a href="HTML-DangKyCoSo-03-ChonLaiCoSo.html" data-position="2">Chọn lại cơ sở</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="main-content">
+      <!-- content -->
+      <div class="overlay"></div>
+      <div class="content-tab no-tab">
+        <div class="d-flex justify-content-between">
+          <div class="nav-content-left">
+            <p class="link">
+              <a href="#">Sinh viên</a>
+              <i class="fal fa-angle-right"></i>
+              <a href="#">Đăng ký cơ sở đào tạo</a>
+              <i class="fal fa-angle-right"></i>
+              <a href="#">Hủy đăng ký</a>
+            </p>
+          </div>
+          <div class="nav-content-right">
+            <a class="d-block text-right" href>
+              <i class="fas fa-question-circle"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="box-content pt-0 pl20 pr20 aps-dkcs">
+        <!-- Điều hướng 3 luồng -->
+        <div class="dkcs-steps">
+          <a href="HTML-DangKyCoSo-01-DangKy.html"><span class="num">1</span>Đăng ký cơ sở</a>
+          <a class="active" href="HTML-DangKyCoSo-02-HuyDangKy.html"><span class="num">2</span>Hủy đăng ký</a>
+          <a href="HTML-DangKyCoSo-03-ChonLaiCoSo.html"><span class="num">3</span>Chọn lại cơ sở</a>
+        </div>
+
+        <div class="dkcs-page-title">
+          <h2>Đăng ký cơ sở đào tạo</h2>
+          <p>Lựa chọn cơ sở đào tạo theo kế hoạch của nhà trường</p>
+        </div>
+
+        <!-- Kế hoạch + thông tin người học -->
+        <div class="dkcs-card dkcs-plan">
+          <div class="dkcs-cols">
+            <div>
+              <div class="plan-head">
+                <i class="fa-solid fa-bullhorn"></i>
+                <span class="plan-name blue">Kế hoạch đăng ký cơ sở đào tạo đợt 1 - Năm học 2026 - 2027</span>
+                <span class="dkcs-pill green">Kế hoạch còn hiệu lực</span>
+              </div>
+              <div class="plan-row" style="padding-left:34px">
+                <span>Thời gian đăng ký:</span><b>01/10/2026 - 15/10/2026</b>
+              </div>
+            </div>
+            <div>
+              <div class="plan-learner">
+                <i class="fa-regular fa-user"></i>
+                <div>
+                  <div class="cap">Thông tin người học</div>
+                  <div class="dk-name">Nguyễn Văn A</div>
+                  <div>MSSV: 20231234</div>
+                  <div>Lớp: CNTT-K68<span class="sep">|</span>Khoa: Công nghệ thông tin</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dkcs-cols dkcs-stretch mb-3">
+          <div>
+            <!-- Đang có cơ sở -->
+            <div id="boxDaDangKy" class="dkcs-alert al-warn al-top h-100 mb-0">
+              <i class="fa-solid fa-circle-info"></i>
+              <p><b class="t">Bạn đã từng đăng ký cơ sở đào tạo.</b><br />
+                <span class="s">Hiện tại bạn đang đăng ký <b id="lblCoSoHienTai">Cơ sở Hà Nội</b>. Bạn có thể hủy lựa
+                  chọn khi kế hoạch còn hạn.</span></p>
+              <button id="btnHuyLuaChon" class="btn-dkcs danger-outline sm al-action align-self-center">
+                <i class="fa-regular fa-trash-can"></i><span>Hủy lựa chọn</span>
+              </button>
+            </div>
+            <!-- Đã hủy -->
+            <div id="boxDaHuy" class="dkcs-alert al-warn al-top h-100 mb-0 d-none">
+              <i class="fa-solid fa-circle-info"></i>
+              <p><b class="t">Bạn đã hủy lựa chọn cơ sở đào tạo.</b><br />
+                <span class="s">Lựa chọn trước đó đã được ghi lịch sử với hành động "Hủy".</span></p>
+            </div>
+          </div>
+          <div>
+            <div class="dkcs-alert al-plain al-top h-100 mb-0">
+              <i class="fa-regular fa-clock"></i>
+              <p>Lần xác nhận gần nhất:<br /><span id="lblLanXacNhan">09/10/2026 14:25 - Cơ sở Hà Nội</span></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lựa chọn cơ sở -->
+        <div class="dkcs-card">
+          <div class="dkcs-section-title">Lựa chọn cơ sở đào tạo</div>
+
+          <div id="boxChuaChon" class="dkcs-alert al-danger al-top d-none">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <p><b class="t">Hiện tại bạn chưa chọn cơ sở đào tạo.</b><br />
+              <span class="s">Vui lòng chọn 1 trong các cơ sở đào tạo bên dưới trước khi kết thúc thời gian đăng
+                ký.</span></p>
+          </div>
+
+          <div class="dkcs-campus-grid">
+            <label class="dkcs-campus">
+              <input type="radio" name="rdCoSo" value="Cơ sở Hà Nội" checked />
+              <img src="../assets/images/bg-login.jpg" alt="Cơ sở Hà Nội" />
+              <div class="c-body">
+                <p class="c-name">Cơ sở Hà Nội</p>
+                <p class="c-line"><i class="fa-solid fa-location-dot"></i><span>Số 1 Phố X, Quận Y, Hà Nội</span></p>
+                <p class="c-italic">Cơ sở đào tạo chính, đầy đủ các ngành/chương trình.</p>
+              </div>
+            </label>
+            <label class="dkcs-campus">
+              <input type="radio" name="rdCoSo" value="Cơ sở Bắc Ninh" />
+              <img src="../assets/images/bg-header.jpg" alt="Cơ sở Bắc Ninh" />
+              <div class="c-body">
+                <p class="c-name">Cơ sở Bắc Ninh</p>
+                <p class="c-line"><i class="fa-solid fa-location-dot"></i><span>Đường Lý Thái Tổ, TP. Bắc Ninh</span></p>
+                <p class="c-italic">Cơ sở đào tạo phục vụ sinh viên khu vực phía Bắc.</p>
+              </div>
+            </label>
+            <label class="dkcs-campus">
+              <input type="radio" name="rdCoSo" value="Cơ sở Hồ Chí Minh" />
+              <img src="../assets/images/LNGL_bg-header.jpg" alt="Cơ sở Hồ Chí Minh" />
+              <div class="c-body">
+                <p class="c-name">Cơ sở Hồ Chí Minh</p>
+                <p class="c-line"><i class="fa-solid fa-location-dot"></i><span>Số 10 Đường Y, Quận Z, TP. Hồ Chí Minh</span></p>
+                <p class="c-italic">Cơ sở đào tạo phía Nam, thuận tiện cho sinh viên khu vực miền Nam.</p>
+              </div>
+            </label>
+          </div>
+
+          <div class="dkcs-alert al-warn al-top mb-0">
+            <i class="fa-solid fa-circle-info"></i>
+            <p><b class="t">Nếu không chọn cơ sở nào trước khi hết hạn, hệ thống sẽ ghi nhận trạng thái chưa đăng ký cơ
+                sở đào tạo.</b><br />
+              <span class="s">Điều này có thể ảnh hưởng đến việc sắp xếp lớp học, lịch học và các quyền lợi học tập của
+                bạn.</span></p>
+          </div>
+
+          <div class="dkcs-actions dkcs-bar">
+            <button id="btnHoanTac" class="btn-dkcs outline">
+              <i class="fa-regular fa-rotate-left"></i><span>Hoàn tác thay đổi</span>
+            </button>
+            <button class="btn-dkcs outline"><span>Đóng</span></button>
+            <button id="btnXacNhanCapNhat" class="btn-dkcs primary" disabled>
+              <i class="fa-regular fa-check"></i><span>Xác nhận cập nhật</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Luồng xử lý (sheet 2_HuyDangKy) -->
+        <div class="box box-solid box-shadow dkcs-flow">
+          <div class="box-header d-flex pt20 pl20 pr20 pb0">
+            <h3 class="box-title line-38" style="padding: 0 !important">
+              <i class="fa-light fa-list-timeline line-38"></i> Luồng xử lý - Hủy đăng ký / Không chọn cơ sở
+            </h3>
+          </div>
+          <div class="box-body pl20 pr20 pb10">
+            <p class="mb-2" style="color:#64748b">Mô tả luồng xử lý khi sinh viên hủy lựa chọn hiện tại và kết quả cuối
+              cùng không có cơ sở nào được chọn. Trạng thái: sinh viên đang có cơ sở hiện hành → xác nhận hủy → trở về
+              trạng thái chưa chọn cơ sở.</p>
+            <div class="aps-table-select scroll-table-x pb-0 mb-10">
+              <table class="table table-hover table-bordered table-noborder">
+                <thead>
+                  <tr>
+                    <th class="td-center w-50px">STT</th>
+                    <th class="td-left">Bước xử lý</th>
+                    <th class="td-left">Điều kiện</th>
+                    <th class="td-left">Thao tác sinh viên</th>
+                    <th class="td-left">Dữ liệu / lựa chọn</th>
+                    <th class="td-left">Phản hồi hệ thống</th>
+                    <th class="td-left">Trạng thái sau xử lý</th>
+                    <th class="td-left">Ghi chú</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="td-center">1</td>
+                    <td class="td-left">Hệ thống kiểm tra kế hoạch còn hiệu lực.</td>
+                    <td class="td-left">Kế hoạch đăng ký cơ sở đang còn hạn.</td>
+                    <td class="td-left">Truy cập chức năng "Đăng ký cơ sở đào tạo".</td>
+                    <td class="td-left">-</td>
+                    <td class="td-left">Hiển thị trạng thái "Còn hạn", cho phép thay đổi lựa chọn.</td>
+                    <td class="td-left">Sẵn sàng thao tác</td>
+                    <td class="td-left">Nếu kế hoạch hết hạn thì không cho phép hủy hoặc thay đổi.</td>
+                  </tr>
+                  <tr>
+                    <td class="td-center">2</td>
+                    <td class="td-left">Sinh viên đang có cơ sở đã đăng ký trước đó.</td>
+                    <td class="td-left">Sinh viên đã từng đăng ký và hiện đang có 01 cơ sở được chọn.</td>
+                    <td class="td-left">Xem thông tin cơ sở hiện tại.</td>
+                    <td class="td-left">Ví dụ: Cơ sở Hà Nội</td>
+                    <td class="td-left">Hiển thị cơ sở hiện tại và nút "Hủy lựa chọn".</td>
+                    <td class="td-left">Đang có cơ sở</td>
+                    <td class="td-left">Nút "Hủy lựa chọn" chỉ xuất hiện khi có cơ sở đang được đăng ký.</td>
+                  </tr>
+                  <tr>
+                    <td class="td-center">3</td>
+                    <td class="td-left">Sinh viên bấm "Hủy lựa chọn".</td>
+                    <td class="td-left">Kế hoạch còn hạn; sinh viên đang có cơ sở đã đăng ký.</td>
+                    <td class="td-left">Bấm nút "Hủy lựa chọn".</td>
+                    <td class="td-left">Yêu cầu hủy cơ sở hiện tại</td>
+                    <td class="td-left">Hiển thị hộp thoại xác nhận hủy lựa chọn.</td>
+                    <td class="td-left">Chờ xác nhận</td>
+                    <td class="td-left">Chưa cập nhật DB ở bước này.</td>
+                  </tr>
+                  <tr>
+                    <td class="td-center">4</td>
+                    <td class="td-left">Hệ thống hiển thị hộp thoại xác nhận hủy.</td>
+                    <td class="td-left">Sinh viên đã bấm "Hủy lựa chọn".</td>
+                    <td class="td-left">Đọc nội dung xác nhận.</td>
+                    <td class="td-left">Thông báo: "Bạn có chắc chắn muốn hủy lựa chọn cơ sở đào tạo hiện tại không?"</td>
+                    <td class="td-left">Hiển thị 2 nút "Đóng" và "Hủy lựa chọn".</td>
+                    <td class="td-left">Chờ sinh viên xác nhận</td>
+                    <td class="td-left">Nếu bấm "Đóng" thì giữ nguyên cơ sở hiện tại.</td>
+                  </tr>
+                  <tr>
+                    <td class="td-center">5</td>
+                    <td class="td-left">Sinh viên bấm "Hủy lựa chọn".</td>
+                    <td class="td-left">Đang ở hộp thoại xác nhận hủy.</td>
+                    <td class="td-left">Bấm nút "Hủy lựa chọn" màu cảnh báo.</td>
+                    <td class="td-left">Xác nhận hủy đăng ký</td>
+                    <td class="td-left">Tiếp nhận yêu cầu, kiểm tra lại thời hạn và quyền thao tác.</td>
+                    <td class="td-left">Đang xử lý</td>
+                    <td class="td-left">Nếu kiểm tra cuối không hợp lệ thì không thay đổi dữ liệu.</td>
+                  </tr>
+                  <tr>
+                    <td class="td-center">6</td>
+                    <td class="td-left">Hệ thống xóa/làm rỗng lựa chọn hiện hành.</td>
+                    <td class="td-left">Sinh viên xác nhận hủy thành công.</td>
+                    <td class="td-left">-</td>
+                    <td class="td-left"></td>
+                    <td class="td-left">Đóng lựa chọn hiện hành, ghi lịch sử hành động "Hủy", cập nhật giao diện.</td>
+                    <td class="td-left">Chưa chọn cơ sở</td>
+                    <td class="td-left">Sinh viên có thể chọn lại một cơ sở khác trước khi kế hoạch hết hạn.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- modal Xác nhận hủy lựa chọn -->
+  <div class="modal fade modal-dkcs m-side" id="modal-xac-nhan-huy" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <button type="button" class="btn-close-x" data-bs-dismiss="modal" aria-label="Đóng"><i
+            class="fa-light fa-xmark"></i></button>
+        <div class="m-side-body">
+          <div class="m-side-head">
+            <span class="m-icon"><i class="fa-regular fa-trash-can"></i></span>
+            <p class="m-title">Xác nhận hủy lựa chọn</p>
+          </div>
+          <p class="m-text">Bạn có chắc chắn muốn hủy lựa chọn cơ sở đào tạo<br />hiện tại không?</p>
+          <p class="m-sub">Sau khi hủy, bạn sẽ chưa chọn cơ sở đào tạo nào và cần chọn lại trước khi kết thúc thời gian
+            đăng ký.</p>
+          <div class="m-footer">
+            <button class="btn-dkcs outline" style="min-width:120px" data-bs-dismiss="modal"><span>Đóng</span></button>
+            <button id="btnXacNhanHuy" class="btn-dkcs danger" style="min-width:180px">
+              <i class="fa-regular fa-trash-can"></i><span>Hủy lựa chọn</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- -------------------------- -->
+  <!-- JS -->
+  <script src="../assets/bootstrap-5.3.2/js/bootstrap.bundle.js"></script>
+  <script src="../assets/swiper-slide/swiper-bundle.min.js"></script>
+  <script src="../assets/js/jquery-3.7.1.min.js"></script>
+
+  <script src="../assets/js/customs.js"></script>
+  <script>
+    $(function () {
+      var modal = new bootstrap.Modal(document.getElementById("modal-xac-nhan-huy"));
+      var coSoHienTai = "Cơ sở Hà Nội";
+      var daHuy = false;
+
+      function getChon() {
+        return $("input[name='rdCoSo']:checked").val() || "";
+      }
+
+      function refresh() {
+        var chon = getChon();
+        $(".dkcs-campus").removeClass("selected");
+        $("input[name='rdCoSo']:checked").closest(".dkcs-campus").addClass("selected");
+        // Nút "Hủy lựa chọn" chỉ xuất hiện khi đang có cơ sở được đăng ký
+        $("#boxDaDangKy").toggleClass("d-none", !coSoHienTai);
+        $("#boxDaHuy").toggleClass("d-none", !!coSoHienTai || !daHuy);
+        $("#boxChuaChon").toggleClass("d-none", !!coSoHienTai);
+        $("#btnXacNhanCapNhat").prop("disabled", !chon || chon === coSoHienTai);
+      }
+
+      $("input[name='rdCoSo']").on("change", refresh);
+
+      // Bước 3-4: mở hộp thoại xác nhận hủy
+      $("#btnHuyLuaChon").on("click", function () {
+        modal.show();
+      });
+
+      // Bước 5-6: xác nhận hủy -> làm rỗng lựa chọn hiện hành
+      $("#btnXacNhanHuy").on("click", function () {
+        modal.hide();
+        coSoHienTai = "";
+        daHuy = true;
+        $("input[name='rdCoSo']").prop("checked", false);
+        $("#lblLanXacNhan").text(formatNow() + " - Đã hủy lựa chọn");
+        refresh();
+      });
+
+      // Chọn lại cơ sở sau khi hủy
+      $("#btnXacNhanCapNhat").on("click", function () {
+        coSoHienTai = getChon();
+        $("#lblCoSoHienTai").text(coSoHienTai);
+        $("#lblLanXacNhan").text(formatNow() + " - " + coSoHienTai);
+        refresh();
+      });
+
+      $("#btnHoanTac").on("click", function () {
+        $("input[name='rdCoSo']").prop("checked", false);
+        if (coSoHienTai) {
+          $("input[name='rdCoSo'][value='" + coSoHienTai + "']").prop("checked", true);
+        }
+        refresh();
+      });
+
+      function formatNow() {
+        var d = new Date(), p = function (n) { return (n < 10 ? "0" : "") + n; };
+        return p(d.getDate()) + "/" + p(d.getMonth() + 1) + "/" + d.getFullYear() + " " + p(d.getHours()) + ":" + p(d.getMinutes());
+      }
+
+      refresh();
+    });
+  </script>
+</body>
+
+</html>

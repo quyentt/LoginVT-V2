@@ -1,0 +1,101 @@
+<!--
+    Màn hình mẫu — BIỂU MẪU KHAI BÁO
+    Là mục đang được chọn trong cây chức năng (chữ cam ở cột trái).
+    Dùng để thử các ô nhập: select2, lịch, ô nhiều lựa chọn.
+-->
+<div class="ums-page__head">
+    <h1 class="ums-page__title ums-u-mb-0">Kế hoạch hoạt động tài chính</h1>
+    <div class="ums-page__actions" id="ktActions"></div>
+</div>
+
+<div class="ums-grid ums-grid--main-aside">
+    <div class="ums-panel">
+        <div class="ums-panel__head">
+            <div class="ums-panel__title"><i class="fa-light fa-calendar-range"></i> Thông tin kế hoạch</div>
+        </div>
+        <div class="ums-panel__body" id="ktForm"></div>
+    </div>
+
+    <div class="ums-stack">
+        <div class="ums-panel">
+            <div class="ums-panel__head">
+                <div class="ums-panel__title"><i class="fa-light fa-circle-info"></i> Hướng dẫn</div>
+            </div>
+            <div class="ums-panel__body ums-u-fz13 ums-u-muted">
+                <p>Kế hoạch hoạt động tài chính xác định khung thời gian áp dụng cho các
+                   khoản thu trong một năm học.</p>
+                <p>Sau khi lưu, kế hoạch sẽ xuất hiện trong danh sách chọn ở các màn hình
+                   khai báo mức thu và tính học phí.</p>
+            </div>
+        </div>
+
+        <div class="ums-panel">
+            <div class="ums-panel__head">
+                <div class="ums-panel__title"><i class="fa-light fa-clock-rotate-left"></i> Thay đổi gần đây</div>
+            </div>
+            <div class="ums-panel__body ums-panel__body--flush" id="ktLog"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    'use strict';
+    var ui = ums.ui;
+
+    var NAM = [{ ID: '2526', TEN: 'Năm học 2025 - 2026' }, { ID: '2627', TEN: 'Năm học 2026 - 2027' }];
+    var KHOA = [
+        { ID: 'CNTT', TEN: 'Khoa Công nghệ thông tin' },
+        { ID: 'QTKD', TEN: 'Khoa Quản trị kinh doanh' },
+        { ID: 'NNA', TEN: 'Khoa Ngôn ngữ Anh' },
+        { ID: 'KT', TEN: 'Khoa Kế toán' },
+        { ID: 'LKT', TEN: 'Khoa Luật kinh tế' },
+        { ID: 'DL', TEN: 'Khoa Du lịch' }
+    ];
+
+    document.getElementById('ktActions').innerHTML = ui.btn('close') + ui.btn('save');
+
+    document.getElementById('ktForm').innerHTML =
+        '<div class="ums-legend">Thông tin chung</div>' +
+        ui.field('Mã kế hoạch', '<input class="ums-input" value="KHTC-2526">', { required: true, inline: true, labelWidth: '150px' }) +
+        ui.field('Tên kế hoạch', '<input class="ums-input" value="Kế hoạch tài chính năm học 2025-2026">', { required: true, inline: true, labelWidth: '150px' }) +
+        ui.field('Năm học', '<select class="ums-select" id="ktNam">' + ui.options(NAM, { title: false }) + '</select>', { required: true, inline: true, labelWidth: '150px' }) +
+
+        '<div class="ums-legend ums-legend--cach">Thời gian áp dụng</div>' +
+        ui.field('Từ ngày', '<div class="ums-inputwrap"><input class="ums-input" id="ktTu" value="01/09/2026" readonly><i class="fa-light fa-calendar"></i></div>', { required: true, inline: true, labelWidth: '150px' }) +
+        ui.field('Đến ngày', '<div class="ums-inputwrap"><input class="ums-input" id="ktDen" value="31/08/2027" readonly><i class="fa-light fa-calendar"></i></div>', { required: true, inline: true, labelWidth: '150px' }) +
+        ui.field('Khoảng áp dụng', '<div class="ums-inputwrap"><input class="ums-input" id="ktRange" placeholder="Chọn khoảng ngày" readonly><i class="fa-light fa-calendar-range"></i></div>', { inline: true, labelWidth: '150px' }) +
+
+        '<div class="ums-legend ums-legend--cach">Phạm vi</div>' +
+        ui.field('Khoa áp dụng', '<select class="ums-select" id="ktKhoa" multiple></select>', { required: true, inline: true, labelWidth: '150px' }) +
+        ui.field('Ghi chú', '<textarea class="ums-textarea" placeholder="Nhập ghi chú…"></textarea>', { inline: true, labelWidth: '150px', hint: 'Tối đa 500 ký tự' });
+
+    ui.select2('#ktNam');
+    var $khoa = ui.select2('#ktKhoa', { placeholder: 'Chọn một hoặc nhiều khoa' });
+    if ($khoa) {
+        $khoa.append(KHOA.map(function (k) {
+            return new Option(k.TEN, k.ID, false, k.ID === 'CNTT' || k.ID === 'QTKD');
+        })).trigger('change');
+    }
+
+    ui.datepicker('#ktTu');
+    ui.datepicker('#ktDen');
+    ui.datepicker('#ktRange', { mode: 'range' });
+
+    ui.table({
+        el: '#ktLog',
+        stt: false,
+        tableCls: '',
+        rows: [
+            { ID: '1', NG: '14/09/2026', AI: 'admin', VIEC: 'Sửa thời gian áp dụng' },
+            { ID: '2', NG: '02/09/2026', AI: 'ketoan01', VIEC: 'Thêm khoa Du lịch' },
+            { ID: '3', NG: '28/08/2026', AI: 'admin', VIEC: 'Tạo kế hoạch' }
+        ],
+        columns: [
+            { title: 'Ngày', prop: 'NG', cls: 'is-nowrap' },
+            { title: 'Người thực hiện', prop: 'AI', cls: 'is-nowrap' },
+            { title: 'Nội dung', prop: 'VIEC' }
+        ]
+    });
+})();
+</script>
