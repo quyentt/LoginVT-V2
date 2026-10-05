@@ -206,3 +206,7 @@ Luật kiểm host hiện hành nằm ở CLAUDE.md mục 9 (bản rút gọn). 
     `cdp.js` nay tự `Page.bringToFront` + `Emulation.setFocusEmulationEnabled` và mở Edge với cờ tắt bóp nền. Thấy màn > 25 giây mà 0 lời gọi thì chạy lại bằng `CHI=`.
   · Sổ đã kiểm của 11 phân hệ cũ (TC, CCB, CSV, CC, CMS, DKH, HLTL, RL, XLHV, HB, QLD): phần ĐỌC đã cập nhật theo lượt quét 29/9; phần THỬ GHI còn nhiều màn "chưa thử ghi"
     trong sổ — việc kế tiếp là làm cuốn chiếu từng phân hệ cũ (bắt đầu Tài chính) khi người dùng bảo.
+- **Kiểm host 2026-10-06 (01:00–01:40), Cổng cán bộ ("kiểm kỹ"):** đọc sâu lại 2 vai trò host (25 + 87 màn) → 0 lỗi mới, 6 lỗi backend cũ đã có sổ (+ `capnhathoso` ảnh tạm 404
+  ghi `ben`). Thử ghi: `sukien/kehoach` sạch; `luanvan/giaodetai` (biểu mẫu hai tầng) thêm → xoá sạch, Esc đóng từng tầng ĐẠT trên host; `khaosat/phieu` nhóm câu hỏi thêm được,
+  xoá bị từ chối (liên kết phiếu–nhóm) → còn sót `ZKT0119`, ghi `ben`; `khaosat/kehoach` + `khaosat/phieu` thiếu `required` → sửa, chờ up. Lái tay: `nut("Xoá đã chọn")` không khớp
+  chữ "Xoá 1 dòng đã chọn" → tìm nút bằng regex; gọi `chay.js` với `-` sau một lượt có thể mất trạng thái màn → gộp cả chuỗi thao tác vào MỘT lệnh có cnId.

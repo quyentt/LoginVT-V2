@@ -26,6 +26,18 @@ Tài chính thử ghi xong (19 màn sạch), Nhân sự kiểm lại sau khi đ�
 **Đợt chuyển hộp thoại MỚI kiểm trên host ở Nhân sự + 4 màn Tài chính** — 12 phân hệ còn lại chỉ mới dò bằng dữ liệu mẫu trên máy: khi kiểm host phân hệ nào
 thì mở các màn ghi `xong 30/9` của phân hệ đó trong `RA-HOP-THOAI.md` (bấm Thêm / Sửa: không có `dialog[open]`, một nút Đóng, Esc đóng đúng tầng, Lưu chạy đúng).
 
+## 0b. Kiểm host Cổng cán bộ 6/10 (01:00–01:40) — CHỜ UP rồi kiểm lại
+
+- Đọc sâu lại hai vai trò host "Cổng cán bộ" (25 màn) + "Cổng cán bộ(admin)" (87 màn): 0 lỗi mới; 6 màn lỗi cũ đều đã có `ben` (coithi, duyetdiemthitracnghiem: dịch vụ QLTTN
+  không chạy; tracuulichgiang ORA-01427; thongke/henganh thiếu API KHCT_NamNhapHoc; nhapdiemchamkiemtra gói PL/SQL lỗi; capnhathoso ảnh tạm 404 — mới ghi `ben` nghiepvu).
+- Thử ghi: `sukien/kehoach` sạch (thu-ghi); `luanvan/giaodetai` kho đề tài thêm → xoá sạch, biểu mẫu hai tầng không hộp thoại, một nút Đóng, Esc đóng từng tầng (lái tay);
+  `khaosat/phieu` thêm nhóm câu hỏi được nhưng XOÁ bị máy chủ từ chối → nhóm `ZKT0119` CÒN SÓT (ghi `ben` + CLAUDE.md); `khaosat/kehoach`, `khaosat/phieu` thêm bị từ chối
+  vì màn chưa kiểm ô bắt buộc → ĐÃ SỬA (required), sổ lỗi mã "chờ kiểm lại".
+- **Sau khi người dùng up gói bổ sung:** `node thu-ghi.js B0B172E252D24251A5E650D38AC901A2 E381DC2CB178489A8FD6ED0AAB233181 C73DB13D533B42478C1DEC746A09AC08`
+  (kế hoạch khảo sát phải chọn Phiếu mẫu — bộ thử điền ô bắt buộc; phiếu mẫu thêm → xoá) rồi `loi-code.js xong` hai màn. Không thử nhóm câu hỏi nữa.
+- Chưa thử ghi (không có đường xoá hoặc đụng dữ liệu thật): lichgiangphonghoc (đăng ký phòng), phangiangvien, nhapkl, tuibai/_dst (điểm), thanhtoangiangday, lichhocsv,
+  moigiang (tạo hồ sơ nhân sự), dukienhocphan, _qhht_hoso, doilich, thi/_chung phân công. Màn `sukien/sukien` không có trên menu host.
+
 ## 1. Làm TRƯỚC — màn đã sửa mã, chờ kiểm lại
 
 ### Kết quả kiểm host 5/10 (chiều) — phân hệ ĐÃ hoàn thành + Cổng cán bộ / Cổng SV

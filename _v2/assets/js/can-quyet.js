@@ -24,6 +24,12 @@
     them("apiscms/modules/danhmuc/cautrucnoidungguiemail", [
         {"man":"Quản trị hệ thống → Danh mục → Cấu trúc nội dung gửi email","q":"Không thêm được cấu trúc email mới — máy chủ báo lỗi thủ tục. Ảnh hưởng: không khai được mẫu email gửi hàng loạt mới (mẫu cũ vẫn dùng được). **Anh:** kiểm lại chữ ký thủ tục thêm so với API. (CMS_TienIch/Them_CauTrucNoiDungGuiEmail → ORA-06550 wrong number or types of arguments in call to THEM_CAUTRUCNOIDUNGGUIEMAIL; tham số giao diện gửi khớp bản gốc từng khoá.)","ben":"oracle"}
     ]);
+    them("apiscongcanbo/modules/hoso/capnhathoso", [
+        {"man":"Cổng cán bộ → Cập nhật hồ sơ","ben":"nghiepvu","q":"Mở màn, **ảnh đại diện không hiện** (ô ảnh trống, trình duyệt báo không tìm thấy tệp). Cán bộ thử vào Cập nhật hồ sơ → chọn lại ảnh → Lưu là hết. (Kỹ thuật: cột ảnh trong hồ sơ của tài khoản thử đang trỏ tên tệp TẠM `unsave_…_20260922…jpg` do lần lưu ảnh 22/9 không chép được sang tên chính thức; tệp tạm nay không còn trên máy chủ. Kiểm host 6/10.)"}
+    ]);
+    them("apiscongcanbo/modules/khaosat/phieu", [
+        {"man":"Cổng cán bộ → Phiếu mẫu (khảo sát)","ben":"oracle","q":"Mở phiếu → Xem → bấm một nhóm câu hỏi → **Xóa** → máy chủ từ chối \"Du lieu KS_PhieuKhaoSat_Mau_Nhom van ton tai\", nhóm vẫn còn → không gỡ được nhóm đã tạo nhầm. Bản gốc gọi y hệt (`KS_ThongTin/Xoa_KS_NhomKhaoSat` strId) nên cũng không xoá được. Backend: thủ tục xoá nhóm phải gỡ dòng liên kết phiếu–nhóm (KS_PhieuKhaoSat_Mau_Nhom) trước, hoặc có thủ tục xoá liên kết riêng. Kiểm host 6/10; nhóm thử `ZKT0119` id D3D0DA37A248400BAB4FDC2A8B6D532D trên phiếu AF61B8BEF4C24E37B43B36825B3D435A còn sót — xoá tay trong CSDL."}
+    ]);
     them("apiscongcanbo/modules/coithi/coithi", [
         {"man":"Cổng cán bộ → Giám sát thi","q":"Mở màn thì **mọi ô chọn đều trống** (đơn vị, đợt thi, học kỳ, mức phê duyệt, cấu hình thi trắc nghiệm, vi phạm quy chế thi) và báo \"Mất kết nối dịch vụ QLTTN\" → chưa giám sát / duyệt điểm thi trắc nghiệm được. Trình duyệt không tới được máy chủ dịch vụ thi trắc nghiệm (không phải lỗi dữ liệu). **Anh:** kiểm dịch vụ QLTTN có đang chạy không, địa chỉ khai cho tiền tố QLTTN trong Config.js / web.config có đúng và mở được từ máy người dùng không (https, cổng, CORS). (Mọi lời gọi QLTTN_ThongTin/*, QLTTN_QuanLyThi/* báo \"Failed to fetch\".)","ben":"oracle"}
     ]);

@@ -144,7 +144,8 @@
             { title: 'Phiếu khảo sát mẫu', prop: 'KS_PHIEUKHAOSAT_MAU_TEN' }
         ],
         fields: [
-            { key: 'strTenKeHoach', col: 'TENKEHOACH', label: 'Tên kế hoạch', cols: 12 },
+            // required (kiểm host 6/10): máy chủ từ chối "Phieu khao sat mau khong ton tai" khi để trống Phiếu mẫu — chặn ở màn trước
+            { key: 'strTenKeHoach', col: 'TENKEHOACH', label: 'Tên kế hoạch', cols: 12, required: true },
             { key: 'strNgayBatDau', col: 'NGAYBATDAU', label: 'Từ ngày', type: 'date', cols: 3 },
             { key: 'strNgayKetThuc', col: 'NGAYKETTHUC', label: 'Đến ngày', type: 'date', cols: 3 },
             { key: 'dCheDoKhaoSat', col: 'CHEDOKHAOSAT', label: 'Chế độ', type: 'select', cols: 3,
@@ -152,7 +153,7 @@
             { key: 'strNamHoc', col: 'NAMHOC', label: 'Năm học', cols: 3 },
             { key: 'strHocKy', col: 'HOCKY', label: 'Học kỳ', cols: 3 },
             { key: 'strDotHoc', col: 'DOTHOC', label: 'Đợt', cols: 3 },
-            { key: 'strKS_PhieuKhaoSat_Mau_Id', col: 'KS_PHIEUKHAOSAT_MAU_ID', label: 'Phiếu mẫu', type: 'select', cols: 6, placeholder: 'Chọn phiếu',
+            { key: 'strKS_PhieuKhaoSat_Mau_Id', col: 'KS_PHIEUKHAOSAT_MAU_ID', label: 'Phiếu mẫu', type: 'select', cols: 6, placeholder: 'Chọn phiếu', required: true,
               source: { call: { action: C + 'LayDSPhieu_Mau_NguoiDung', method: 'GET', strNguoiThucHien_Id: uid() }, name: 'TENPHIEU' } },
             { key: 'strNoiDungKeHoach', col: 'NOIDUNGKEHOACH', label: 'Mô tả', type: 'textarea', cols: 12 }
         ],

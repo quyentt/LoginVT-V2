@@ -126,9 +126,10 @@
             { title: 'Xem phiếu', cls: 'is-center', render: function (r) { return nut('xem', r, 'Xem'); } }
         ],
         fields: [
-            { key: 'strTenPhieu', col: 'TENPHIEU', label: 'Tên phiếu', span: true },
-            { key: 'strMaPhieu', col: 'MAPHIEU', label: 'Mã', span: true },
-            { key: 'strLoaiPhieu_Id', col: 'LOAIPHIEU_ID', label: 'Phân loại', type: 'select', span: true, source: { dm: 'QLKS.LPKS' } },
+            // required (kiểm host 6/10): máy chủ từ chối "Ten phieu, ma phieu, loai phieu … khong de trang" — chặn ở màn trước
+            { key: 'strTenPhieu', col: 'TENPHIEU', label: 'Tên phiếu', span: true, required: true },
+            { key: 'strMaPhieu', col: 'MAPHIEU', label: 'Mã', span: true, required: true },
+            { key: 'strLoaiPhieu_Id', col: 'LOAIPHIEU_ID', label: 'Phân loại', type: 'select', span: true, required: true, source: { dm: 'QLKS.LPKS' } },
             { key: 'strMoTa', col: 'MOTA', label: 'Mô tả', type: 'textarea', span: true }
         ],
         save: function (v, row) {
@@ -209,7 +210,7 @@
         var dlg = pat.formTrang({
             host: z('bd'), title: 'Nhóm câu hỏi', icon: 'fa-circle-question',
             body: ui.field('Tên nhóm', '<input class="ums-input" data-n="ten" autocomplete="off">') +
-                ui.field('Thứ tự trên phiếu', '<input class="ums-input" data-n="tt" autocomplete="off">') +
+                ui.field('Thứ tự trên phiếu', '<input class="ums-input" data-n="tt" type="number" min="0" step="1" inputmode="numeric" autocomplete="off">') +
                 '<div style="grid-column:1 / -1">' + ui.field('Mô tả', '<textarea class="ums-input" rows="6" data-n="mota"></textarea>') + '</div>',
             buttons: (n ? [{ kind: 'del', text: 'Xóa', onClick: function () { xoaNhom(n, dlg); return false; } }] : [])
                 .concat([{ kind: 'save', text: 'Lưu', onClick: function () { luuNhom(n, dlg); return false; } }])

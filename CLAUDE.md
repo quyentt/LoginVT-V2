@@ -312,7 +312,8 @@ Kiểm vỏ CŨ trên máy: `http://localhost:8787/index-old.html` (`_harness/RE
   KHÔNG bấm thao tác không hoàn lại: tổng hợp / xếp loại / tính phí hàng loạt, chốt, xuất hoá đơn – biên lai, gạch nợ, gửi thư, nhập từ tệp, thứ máy chủ chặn gỡ.
   Phạm vi thử an toàn đã dùng: hệ "Đào tạo khác" → khoá Tập huấn / Bổ sung kiến thức, khoản "Võ phục", kỳ `2031_2032_2`.
 - **Bản ghi thử còn sót (cần CSDL xoá tay):** `quatrinhcongtac/nhiemvuchienluoc` id `71F5751A5EA94D4983F8E45EB1B95456`; `D_CongThucDiem_ApDung` id
-  `4084811E199B4D1EB4478890442FCE91` (lớp `TTKT.03.K11.01.LH.C04BS.1_LT`). Đừng thử ghi hai chỗ đó tới khi sửa.
+  `4084811E199B4D1EB4478890442FCE91` (lớp `TTKT.03.K11.01.LH.C04BS.1_LT`); CCB `khaosat/phieu` nhóm câu hỏi `ZKT0119` id `D3D0DA37A248400BAB4FDC2A8B6D532D`
+  trên phiếu `AF61B8BE…` (6/10 — thủ tục xoá nhóm từ chối vì còn liên kết phiếu–nhóm, đã ghi `ben`). Đừng thử ghi ba chỗ đó tới khi sửa.
 - **Ngày sinh ba ô** Ngày / Tháng / Năm: kiểm trước khi gửi bằng `ums.util.ngaySinh(ngay, thang, nam, maMuc)` (api.js) — sai thì báo, không gửi `//`.
   Câu ORA-20000…20999 hiện gọn (`cauKiem`, câu gốc ở `err.goc`).
 - Bẫy bộ thử: Edge bị che / có DevTools cạnh → trình duyệt bóp đồng hồ (màn "đứng im" > 25 giây, 0 lời gọi → chạy lại bằng `CHI=`); hộp thoại đã `.close()`
@@ -428,7 +429,7 @@ Mở bằng `file://` là trắng trang (CORS). Lên host phải nằm TRONG d�
 | Phân hệ | Màn | Vai trò mẫu | Xong | Kiểm host |
 |---|---|---|---|---|
 | Tài chính `ApisTaiChinh` | 72/73 | R33 `TC-` | 19/9 | đọc sâu + thử ghi xong |
-| Cổng cán bộ `ApisCongCanBo` | 152/152 | R02 `CCB-` | 22/9 | đọc sâu xong, thử ghi dở |
+| Cổng cán bộ `ApisCongCanBo` | 152/152 | R02 `CCB-` | 22/9 | 6/10: đọc sâu lại 112 màn trên host sạch (6 lỗi backend đã có sổ), thử ghi thêm 3 crud + 2 màn biểu mẫu trong trang; 2 lỗi mã đã sửa chờ up |
 | Cổng sinh viên `ApisCongSinhVien` | 36/36 | R04 `CSV-` (thủ vai) | 23/9 | đọc sâu xong (chỉ đọc) |
 | Chuyên cần `ApisChuyenCan` | 5/5 | R07 `CC-` | 25/9 | đọc sâu |
 | Quản trị hệ thống `ApisCMS` | 46 | R44 `CMS-` | 25/9 | đọc sâu, thử ghi dở |
