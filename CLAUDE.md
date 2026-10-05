@@ -447,7 +447,7 @@ Mở bằng `file://` là trắng trang (CORS). Lên host phải nằm TRONG d�
 | Thi phách `ApisThiPhach` | 18/18 | R14 `TP-` | 29/9 | chưa |
 | Tốt nghiệp `ApisTotNghiep` | 13/13 | R16 `TN-` | 5/10 | chưa (đã up) |
 | Quản lý thi trắc nghiệm `ApisQuanLyThiTracNghiem` | 16/16 | R12 `QLTTN-` | 5/10 | chưa (gói bổ sung chưa up) |
-| Thi trắc nghiệm `ApisThiTracNghiem` (trang làm bài .aspx) | 0 | — | DỪNG (người dùng 5/10) | — |
+| Thi trắc nghiệm `ApisThiTracNghiem` (trang làm bài .aspx) | 0 | — | DỪNG (5/10, xác nhận lại 6/10 sau khảo sát: trang ASPX độc lập 3.202 dòng, cổng thí sinh `eIndex.aspx` + `eassets/` không có trong kho, 2 trang thiếu HTML, kiểm host = làm bài thật) | — |
 | Tin tức `ApisTinTuc` | 4/4 | R46 `TT-` | 5/10 | chưa |
 | Còn lại: Ký túc xá, Luận văn, TKGG, Tin tức, Danh hiệu | — | — | chưa | — |
 
