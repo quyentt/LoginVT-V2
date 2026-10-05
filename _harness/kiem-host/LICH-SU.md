@@ -210,3 +210,5 @@ Luật kiểm host hiện hành nằm ở CLAUDE.md mục 9 (bản rút gọn). 
   ghi `ben`). Thử ghi: `sukien/kehoach` sạch; `luanvan/giaodetai` (biểu mẫu hai tầng) thêm → xoá sạch, Esc đóng từng tầng ĐẠT trên host; `khaosat/phieu` nhóm câu hỏi thêm được,
   xoá bị từ chối (liên kết phiếu–nhóm) → còn sót `ZKT0119`, ghi `ben`; `khaosat/kehoach` + `khaosat/phieu` thiếu `required` → sửa, chờ up. Lái tay: `nut("Xoá đã chọn")` không khớp
   chữ "Xoá 1 dòng đã chọn" → tìm nút bằng regex; gọi `chay.js` với `-` sau một lượt có thể mất trạng thái màn → gộp cả chuỗi thao tác vào MỘT lệnh có cnId.
+  · Up 01:40 → `khaosat/phieu` thu-ghi sạch (xong); `khaosat/kehoach` máy chủ đòi thêm Từ ngày / Đến ngày → required, `va-tam.js` chạy mã mới trên host: biểu mẫu trống bị chặn
+    4 ô, thêm ZKT0143 → xoá bằng "Xóa kế hoạch" trong biểu mẫu sạch (nút "Xóa (N)" đầu danh sách là ResetKetQuaTaoPhieu — như gốc). Chờ up lần 2 rồi thu-ghi + xong.

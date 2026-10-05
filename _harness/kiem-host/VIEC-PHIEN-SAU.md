@@ -33,8 +33,9 @@ thì mở các màn ghi `xong 30/9` của phân hệ đó trong `RA-HOP-THOAI.md
 - Thử ghi: `sukien/kehoach` sạch (thu-ghi); `luanvan/giaodetai` kho đề tài thêm → xoá sạch, biểu mẫu hai tầng không hộp thoại, một nút Đóng, Esc đóng từng tầng (lái tay);
   `khaosat/phieu` thêm nhóm câu hỏi được nhưng XOÁ bị máy chủ từ chối → nhóm `ZKT0119` CÒN SÓT (ghi `ben` + CLAUDE.md); `khaosat/kehoach`, `khaosat/phieu` thêm bị từ chối
   vì màn chưa kiểm ô bắt buộc → ĐÃ SỬA (required), sổ lỗi mã "chờ kiểm lại".
-- **Sau khi người dùng up gói bổ sung:** `node thu-ghi.js B0B172E252D24251A5E650D38AC901A2 E381DC2CB178489A8FD6ED0AAB233181 C73DB13D533B42478C1DEC746A09AC08`
-  (kế hoạch khảo sát phải chọn Phiếu mẫu — bộ thử điền ô bắt buộc; phiếu mẫu thêm → xoá) rồi `loi-code.js xong` hai màn. Không thử nhóm câu hỏi nữa.
+- Up lần 1 (01:40): `khaosat/phieu` thu-ghi sạch → `loi-code xong`. `khaosat/kehoach` máy chủ còn đòi Từ ngày / Đến ngày → khai thêm required, va-tam trên host ĐẠT
+  (chặn 4 ô, thêm → "Xóa kế hoạch" sạch). **Sau khi up lần 2 (gói 2 tệp: kehoach.js, can-quyet.js):** `node thu-ghi.js B0B172E252D24251A5E650D38AC901A2 E381DC2CB178489A8FD6ED0AAB233181`
+  → sạch thì `node loi-code.js xong ApisCongCanBo khaosat/kehoach`. Không thử nhóm câu hỏi nữa (còn sót ZKT0119).
 - Chưa thử ghi (không có đường xoá hoặc đụng dữ liệu thật): lichgiangphonghoc (đăng ký phòng), phangiangvien, nhapkl, tuibai/_dst (điểm), thanhtoangiangday, lichhocsv,
   moigiang (tạo hồ sơ nhân sự), dukienhocphan, _qhht_hoso, doilich, thi/_chung phân công. Màn `sukien/sukien` không có trên menu host.
 

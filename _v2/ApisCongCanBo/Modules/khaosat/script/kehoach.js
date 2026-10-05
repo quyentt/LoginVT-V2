@@ -146,8 +146,8 @@
         fields: [
             // required (kiểm host 6/10): máy chủ từ chối "Phieu khao sat mau khong ton tai" khi để trống Phiếu mẫu — chặn ở màn trước
             { key: 'strTenKeHoach', col: 'TENKEHOACH', label: 'Tên kế hoạch', cols: 12, required: true },
-            { key: 'strNgayBatDau', col: 'NGAYBATDAU', label: 'Từ ngày', type: 'date', cols: 3 },
-            { key: 'strNgayKetThuc', col: 'NGAYKETTHUC', label: 'Đến ngày', type: 'date', cols: 3 },
+            { key: 'strNgayBatDau', col: 'NGAYBATDAU', label: 'Từ ngày', type: 'date', cols: 3, required: true },   // máy chủ: NGAY BAT DAU KHONG DUOC DE TRANG (6/10)
+            { key: 'strNgayKetThuc', col: 'NGAYKETTHUC', label: 'Đến ngày', type: 'date', cols: 3, required: true },   // máy chủ: NGAY KET THUC KHONG DUOC DE TRANG (6/10)
             { key: 'dCheDoKhaoSat', col: 'CHEDOKHAOSAT', label: 'Chế độ', type: 'select', cols: 3,
               source: { items: [{ ID: '2', TEN: 'Khảo sát giả lập' }, { ID: '0', TEN: 'Chờ khảo sát' }, { ID: '1', TEN: 'Đang khảo sát' }] } },
             { key: 'strNamHoc', col: 'NAMHOC', label: 'Năm học', cols: 3 },
