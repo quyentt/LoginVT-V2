@@ -26,7 +26,7 @@
        hoặc gọn trong .then của lời gọi nạp:  rows = ums.lamTruoc.neuRong(rows, { … })
      Trùng (cùng danh mục / cùng ô) chỉ hiện một lần.
 
-   Tắt: site.config.js → behavior.lamTruoc = false. Chế độ dữ liệu mẫu chỉ bật
+   Tắt: site.config.js → behavior.lamTruoc = false, hoặc Cài đặt → Hành vi (ghi đè localStorage). Chế độ dữ liệu mẫu chỉ bật
    khi URL có `lamtruoc` (dữ liệu mẫu thiếu nhiều danh mục → báo nhiễu).
    Bấm × : ẩn khung của MÀN đó tới hết phiên (sessionStorage), mục mới phát sinh
    sau đó vẫn hiện lại.
@@ -34,7 +34,7 @@
 (function (global) {
     'use strict';
     var ums = global.ums = global.ums || {};
-    var CFG = ums.config || {};
+    /* Cấu hình sống là ums.cfg (apply-config.js) — từng đọc nhầm ums.config (không tồn tại) nên nút tắt ở Cài đặt không có tác dụng (6/10). */
 
     var DM_MAN = '/danhmuc/html/danhmucdulieu.html';
     var DM_CMS = 'apiscms/modules/danhmuc/html/danhmucdulieu.html';
@@ -46,7 +46,7 @@
     function esc(s) { return String(s === undefined || s === null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
 
     function bat() {
-        var b = (ums.config || CFG).behavior || {};
+        var b = (ums.cfg && ums.cfg.behavior) || {};
         if (b.lamTruoc === false) return false;
         if (ums.state && ums.state.mode === 'demo') return /[?&]lamtruoc\b/.test(location.search);
         return true;
@@ -59,6 +59,7 @@
     /* Vỏ gọi mỗi lần mở một chức năng (app.js openFunction) — xoá khung cũ, bắt đầu gom cho màn mới. */
     L.batDau = function (host, url, cn) {
         if (cur && cur.hen) clearTimeout(cur.hen);
+        if (cur && cur.box) cur.box.remove();          // khung của màn trước (kể cả khi vừa tắt ở Cài đặt rồi mở lại cùng màn)
         cur = bat() ? { host: host, url: String(url || ''), ten: (cn && cn.name) || '', ds: [], keys: {}, box: null, hen: 0 } : null;
     };
 
