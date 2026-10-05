@@ -213,3 +213,4 @@ Luật kiểm host hiện hành nằm ở CLAUDE.md mục 9 (bản rút gọn). 
   · Up 01:40 → `khaosat/phieu` thu-ghi sạch (xong); `khaosat/kehoach` máy chủ đòi thêm Từ ngày / Đến ngày → required, `va-tam.js` chạy mã mới trên host: biểu mẫu trống bị chặn
     4 ô, thêm ZKT0143 → xoá bằng "Xóa kế hoạch" trong biểu mẫu sạch (nút "Xóa (N)" đầu danh sách là ResetKetQuaTaoPhieu — như gốc). Chờ up lần 2 rồi thu-ghi + xong.
   · Up 01:48 → `khaosat/kehoach` thu-ghi thêm / sửa OK, xoá qua biểu mẫu sạch; **sổ lỗi mã trống**, gói bổ sung đã up. Cổng cán bộ kết lượt 6/10.
+  · Người dùng: "phải ghi rõ màn không có trong menu" → so 152 màn `_v2` với hai vai trò host: 87 có, **65 không có** → ghi sổ `khong-tren-menu`, trạng thái mới trên tien-do.

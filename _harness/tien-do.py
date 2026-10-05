@@ -231,7 +231,7 @@ document.getElementById('tong').innerHTML =
     '<div class="the" style="grid-column:1/-1"><div class="thanh"><i style="width:' + pct(D.xong + D.bo, D.tong) + '%"></i></div>' +
     '<span>' + pct(D.xong + D.bo, D.tong) + '% màn đã xử lý (chuyển + cố ý bỏ)</span></div>';
 
-var DOC = { 'ok': ['Mở tốt', 'tot'], 'loi-may-chu': ['Lỗi máy chủ', 'xau'], 'loi-js': ['Lỗi JS', 'xau'], 'loi-nap': ['Không nạp được', 'xau'], 'loi-v2-da-sua': ['Lỗi _v2 — đã sửa', 'vua'], 'chua-chuyen': ['Chưa chuyển', ''] };
+var DOC = { 'khong-tren-menu': ['Không có trên menu host — chưa kiểm được', 'mute'], 'ok': ['Mở tốt', 'tot'], 'loi-may-chu': ['Lỗi máy chủ', 'xau'], 'loi-js': ['Lỗi JS', 'xau'], 'loi-nap': ['Không nạp được', 'xau'], 'loi-v2-da-sua': ['Lỗi _v2 — đã sửa', 'vua'], 'chua-chuyen': ['Chưa chuyển', ''] };
 var GHI = { 'sach': ['Sạch', 'tot'], 'tu-choi': ['Máy chủ LỖI khi ghi', 'xau'], 'hop-le': ['Máy chủ kiểm dữ liệu, từ chối đúng', ''], 'chan': ['Màn chặn trước khi lưu', 'vua'], 'khong-xoa': ['Không có đường xoá — không thử', ''],
     'khong-crud': ['Không có thao tác ghi', ''], 'khong-thu': ['Cố ý không thử', ''], 'con-sot': ['CÒN SÓT bản ghi thử', 'xau'], '': ['Chưa thử ghi', 'vua'] };
 var LC = { 'can-sua': ['CẦN SỬA MÃ', 'xau'], 'cho-kiem': ['Đã sửa — chờ kiểm lại', 'vua'] };

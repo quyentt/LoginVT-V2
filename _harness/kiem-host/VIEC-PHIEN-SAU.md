@@ -36,6 +36,8 @@ thì mở các màn ghi `xong 30/9` của phân hệ đó trong `RA-HOP-THOAI.md
 - Up lần 1 + 2 (01:40, 01:48): `khaosat/phieu` và `khaosat/kehoach` thu-ghi sạch, sổ lỗi mã TRỐNG. Bộ thử tự động coi "Xóa (N)" đầu danh sách kế hoạch là xoá — thực ra
   là đặt lại kết quả tạo phiếu (như gốc), xoá kế hoạch nằm trong biểu mẫu ("Xóa kế hoạch", crud `formRemove`) → màn có cả `remove` lẫn `formRemove` thì thu-ghi phải xoá qua biểu mẫu.
   Không thử nhóm câu hỏi nữa (còn sót ZKT0119).
+- **65 màn CCB không có trên menu hai vai trò host** (người dùng 6/10: "phải ghi rõ"): sổ `da-kiem.json` doc = `khong-tren-menu`, trang tiến độ hiện riêng. Nhóm: klgd 28 (cả bộ
+  qlklgd_*), dashboardv2 9, thi 7, coithi 3, sanphamkhoahoc 3, nhapdiem 3, hoatdong 3… Muốn kiểm phải được gán chức năng trên host hoặc dùng vai trò khác.
 - Chưa thử ghi (không có đường xoá hoặc đụng dữ liệu thật): lichgiangphonghoc (đăng ký phòng), phangiangvien, nhapkl, tuibai/_dst (điểm), thanhtoangiangday, lichhocsv,
   moigiang (tạo hồ sơ nhân sự), dukienhocphan, _qhht_hoso, doilich, thi/_chung phân công. Màn `sukien/sukien` không có trên menu host.
 

@@ -429,7 +429,7 @@ Mở bằng `file://` là trắng trang (CORS). Lên host phải nằm TRONG d�
 | Phân hệ | Màn | Vai trò mẫu | Xong | Kiểm host |
 |---|---|---|---|---|
 | Tài chính `ApisTaiChinh` | 72/73 | R33 `TC-` | 19/9 | đọc sâu + thử ghi xong |
-| Cổng cán bộ `ApisCongCanBo` | 152/152 | R02 `CCB-` | 22/9 | 6/10: đọc sâu lại 112 màn trên host sạch (6 lỗi backend đã có sổ), thử ghi thêm 3 crud + 2 màn biểu mẫu trong trang; 2 lỗi mã đã sửa chờ up |
+| Cổng cán bộ `ApisCongCanBo` | 152/152 | R02 `CCB-` | 22/9 | 6/10: **87/152 màn có trên menu host** đọc sâu sạch (6 lỗi backend đã có sổ), thử ghi 17 màn sạch; **65 màn KHÔNG có trên menu host, chưa kiểm được** (sổ `khong-tren-menu`: klgd 28, dashboardv2 9, thi 7, coithi 3…) |
 | Cổng sinh viên `ApisCongSinhVien` | 36/36 | R04 `CSV-` (thủ vai) | 23/9 | đọc sâu xong (chỉ đọc) |
 | Chuyên cần `ApisChuyenCan` | 5/5 | R07 `CC-` | 25/9 | đọc sâu |
 | Quản trị hệ thống `ApisCMS` | 46 | R44 `CMS-` | 25/9 | đọc sâu, thử ghi dở |
