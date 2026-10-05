@@ -1102,7 +1102,8 @@
         for (var i = 0; i < list.length; i++) {
             var n = list[i].name || '';
             var ext = n.substring(n.lastIndexOf('.') + 1).toLowerCase();
-            if (IMPORT_EXT.indexOf(ext) < 0) return Promise.reject(new Error('File ' + n + ' không hợp lệ!'));
+            // opts.ext: danh sách đuôi tệp riêng của màn (vd ['tex'] cho nhập LaTeX); bỏ trống = như cũ (xls/xlsx/doc/docx)
+            if ((opts.ext || IMPORT_EXT).indexOf(ext) < 0) return Promise.reject(new Error('File ' + n + ' không hợp lệ!'));
         }
         var names = list.map(function (f) { return f.name; });
 

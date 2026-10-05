@@ -790,7 +790,17 @@ mẫm ở đó; để dành đến khi có host.
    `hoctap/xemdiem_sv` (`ums.tnXemDiem`, trên `ums.diemHoc`); danh mục nạp DKH. Chốt: `CAN-QUYET-DA-CHOT.md` mục "Chốt ngày 2026-10-05 — Tốt nghiệp";
    1 việc dữ liệu (`dieukiennhom`: thiếu thủ tục xoá lệnh từ khoá — bản cũ gọi nhầm thủ tục xoá Khoản thu Tài chính). CHƯA kiểm host.
 
-21. Các phân hệ còn lại (Ký túc xá 22 mục menu host, Luận văn 14, TKGG 12, Tin tức 3, Danh hiệu, Thi trắc nghiệm). Tổng 859 màn hình, xem mục 7 để biết vì
+21. **Quản lý thi trắc nghiệm (ApisQuanLyThiTracNghiem) — XONG 16/16 (2026-10-05)**. 13 màn đầu 2 tác tử con (5/10); ba màn cuối tự làm (không tác tử — người dùng 5/10):
+   `quanlybode/quanlybode`, `quanlybode/taodethucong` (`ums.bode` nạp chéo `ums.nhch`; dữ liệu mẫu chung `_bode.demo.js`), `quanlythi/quanlythi` (`ums.qlt`:
+   `_qlt_chung.js` tạo đề + báo cáo mã xác nhận, `_qlt_phong.js` biểu mẫu phòng thi + cán bộ coi / chấm, `_qlt_import.js` import phòng thi / DS thí sinh — trên khung
+   `ums.coiThi.manPhong` + `gst.chiTiet` của Cổng cán bộ mở rộng bằng cờ `locThem / dotThi / thamSo / toolbar / tacVu đối tượng / sua / sauDung / tools / onCt / tenBam /
+   baoCaoMa / baoCaoChay / tinhLaiSauGhi / sanSang`). Vai trò mẫu **R12**, ID `QLTTN-<module>-<tệp>` (thư mục gốc chữ thường `modules`).
+   Kiểm: `kiem-dong-bo?vt=R12&tien=QLTTN&coTep=1` 16/16; `thu-crud` 16/16; `kiem-cot-trai` 3/3; biểu tượng 0 lệch; trang dò tạm bấm sâu ba màn cuối (cấu trúc đề ba tab, thêm
+   đề thi, thêm câu vào đề thủ công 2 → 4, import phòng thi → thêm phòng, tạo đề một phòng / nhiều phòng, mật khẩu phần thi, thí sinh thêm / sửa, hộp tình huống) 0 lỗi JS —
+   bắt được 1 lỗi: bộ chặn bấm của khung Import nuốt luôn nút của chính khung (đã sửa). Chốt: `CAN-QUYET-DA-CHOT.md` mục "Chốt ngày 2026-10-05 — Quản lý thi trắc nghiệm";
+   không có việc dữ liệu (CHƯA kiểm host; phân hệ thêm vào `ums.canQuyetChuaKiem`). ApisThiTracNghiem (trang làm bài .aspx) DỪNG theo người dùng 5/10.
+
+22. Các phân hệ còn lại (Ký túc xá 22 mục menu host, Luận văn 14, TKGG 12, Tin tức 3, Danh hiệu; Thi trắc nghiệm — trang làm bài — dừng). Tổng 859 màn hình, xem mục 7 để biết vì
    sao không thể làm bằng cách đổi CSS.
 
 ### Cách làm việc đã dùng, nên giữ

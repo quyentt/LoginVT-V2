@@ -442,12 +442,12 @@ Mở bằng `file://` là trắng trang (CORS). Lên host phải nằm TRONG d�
 | Nghiên cứu khoa học `ApisNCKH` | 55/55 | R23 `NCKH-` | 27/9 | chưa |
 | Thi phách `ApisThiPhach` | 18/18 | R14 `TP-` | 29/9 | chưa |
 | Tốt nghiệp `ApisTotNghiep` | 13/13 | R16 `TN-` | 5/10 | chưa (đã up) |
-| **Quản lý thi trắc nghiệm `ApisQuanLyThiTracNghiem`** | **13/16 — ĐANG LÀM** | R12 `QLTTN-` | 5/10 | chưa, chưa up, chưa commit |
-| Thi trắc nghiệm `ApisThiTracNghiem` (trang làm bài .aspx) | 0 | — | chưa bắt đầu | — |
+| Quản lý thi trắc nghiệm `ApisQuanLyThiTracNghiem` | 16/16 | R12 `QLTTN-` | 5/10 | chưa (gói bổ sung chưa up) |
+| Thi trắc nghiệm `ApisThiTracNghiem` (trang làm bài .aspx) | 0 | — | DỪNG (người dùng 5/10) | — |
 | Còn lại: Ký túc xá, Luận văn, TKGG, Tin tức, Danh hiệu | — | — | chưa | — |
 
-**Đang treo (5/10):** QLTTN còn `quanlybode/quanlybode` (js 505 dòng dở + `_bode.js`), `quanlybode/taodethucong` (chỉ html), `quanlythi/quanlythi` (`_qlt_chung.js` dở;
-khung CCB `coithi.js` / `_phongthi.js` đã mở rộng bằng cờ, hồi quy đạt) và ApisThiTracNghiem; sau đó gom chốt vào `CAN-QUYET-DA-CHOT.md`, `dong-goi.py`, commit.
+**Đã xong 5/10:** QLTTN 16/16 (ba màn cuối `quanlybode`, `taodethucong`, `quanlythi` tự làm, không tác tử); chốt ở `CAN-QUYET-DA-CHOT.md`; ApisThiTracNghiem DỪNG.
+Việc kế: người dùng up gói bổ sung → `--da-up`; phân hệ mới chỉ làm khi người dùng gọi tên.
 Tầng chung mới 5/10: `ums.editor` (`assets/js/editor.js`). **Giao việc: tối đa 2 tác tử con một lúc (người dùng 5/10); mỗi tác tử chỉ đọc đúng mục cần (không "đọc hết"
 CLAUDE.md / BO-CUC), grep hàm trong tệp gốc lớn thay vì đọc nguyên tệp, lưu tệp sớm.**
 

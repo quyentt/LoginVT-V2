@@ -18,6 +18,25 @@
    Khung màn danh sách phòng: ums.coiThi.manPhong(root, cfg) — lọc Đơn vị · Đợt thi · [Trạng thái] ·
      Từ ngày · Đến ngày · Từ khoá, tác vụ Mở/Đóng phòng, bảng phòng thi; "Chi tiết phòng" → khung
      chi tiết THAY CHỖ danh sách (bản gốc: modal 1440px — BO-CUC quy ước 1).
+   Tuỳ chọn thêm cho phân hệ Quản lý thi trắc nghiệm (ApisQuanLyThiTracNghiem — các bản anh em của module này;
+   mặc định giữ nguyên hành vi Cổng cán bộ):
+     · cotPhong({ gioThi: false, anHien: true, chiTietKhi(x) }) — bỏ cột Giờ thi / thêm cột "Tình trạng" Ẩn-Hiện (STATUS) /
+       chỉ vẽ nút "Chi tiết phòng" khi chiTietKhi(dòng) đúng (quanlyphuctraphuckhao: chỉ phòng ĐÃ ĐÓNG).
+     · baoCao(code, room, part, { goc: 'heThong', khongPhanThi: true }) — URL báo cáo lấy theo hệ thống (edu.system.rootPathReport
+       của bản gốc QLTTN) thay URL viết cứng của Cổng cán bộ; khongPhanThi: không gửi khoá ExamstructPartId (bản gốc
+       quanlyphuctraphuckhao chỉ gửi ba khoá ExamRoomInfo_Id, strReportCode, strNguoiDangNhap_Id).
+     · manPhong cfg.locStatus (ô "Tình trạng phòng(Ẩn/Hiện)" → strStatus), cfg.cot (tuỳ chọn cột), cfg.tacVu (mảng
+       [giá trị, chữ, động từ] hoặc false = không có tác vụ + không cột đánh dấu), cfg.thaoTac(ids, tv) → Promise.
+     · anhThiSinh(code) — ảnh thí sinh <rootPath>/Upload/Anh/<mã>.jpg (các màn QLTTN vẽ ảnh cạnh mã thí sinh; cùng lớp .ums-ava).
+     · xemBaiThi(call, { title, ma }) — hộp "Kết quả bài thi": HTML máy chủ trả (TTN_ThiSinh/gen_KetQuaThi*) + nút In; công thức
+       toán dàn qua ums.editor.toan nếu có (bản gốc gọi MathJax).
+     · (2026-10-05, cho QLTTN quanlythi/quanlythi) manPhong cfg.locThem(loc) → danh sách ô lọc đã sửa (chèn Năm học / Học kỳ / Học phần);
+       cfg.dotThi === false → không tự nạp LayDS_DotThi (màn tự nạp theo học kỳ); cfg.thamSo(v) → tham số thêm cho lời gọi danh sách;
+       cfg.toolbar → HTML (ô báo cáo, nút Tải file, vùng mẫu báo cáo) đặt trên MỘT HÀNG riêng cùng ô tác vụ (.ct-toolbar);
+       mục tác vụ dạng đối tượng { ma, ten, dongTu, lam(ids, api), chon: false } — có `lam` thì màn tự xử lý (mở màn con, hỏi lại
+       riêng), chon: false = không bắt chọn phòng; cfg.cot.sua + cfg.sua(room, api) → cột "Sửa phòng thi"; cfg.sauDung(api) gọi sau khi
+       dựng xong; trả về api { tai, st, rows(), daChon(), v(k), f(k), z(k), moChiTiet(id), dong(), phong(id) }.
+       tenThiSinh(r, dam, bam) — bam: họ tên là nút (data-tenbam = ID) để màn mở biểu mẫu thí sinh.
    Khác bản gốc (ghi ở can-quyet.js):
      · Ô từ khoá bản gốc khai sai id (`id-="txtSearch_TuKhoa"`) → không bao giờ gửi; nay gửi.
      · Tệp bài làm mở tab mới (gốc mở đè trang).
@@ -79,11 +98,19 @@
             { title: 'Giờ thi', prop: 'GIOTHI', cls: 'is-center is-nowrap' },
             { title: 'Đợt thi', prop: 'TENDOTTHI' }
         ];
+        if (o.gioThi === false) c.splice(3, 1);
         if (o.trangThai) c.push({ title: 'Trạng thái phòng', cls: 'is-center', render: function (x) {
             return e(x.OPENSTATUS) === '0' ? ui.badge('Đóng', 'mute') : ui.badge('Mở', 'ok');
         } });
-        c.push({ title: 'SL thí sinh', prop: 'SOLUONGTHISINH', cls: 'is-center' },
-            { title: 'Chi tiết', cls: 'is-center', render: function (x) {
+        if (o.anHien) c.push({ title: 'Tình trạng', cls: 'is-center', render: function (x) {
+            return e(x.STATUS) === '0' ? ui.badge('Ẩn', 'mute') : ui.badge('Hiện', 'ok');
+        } });
+        c.push({ title: 'SL thí sinh', prop: 'SOLUONGTHISINH', cls: 'is-center' });
+        if (o.sua) c.push({ title: 'Sửa phòng thi', cls: 'is-center', render: function (x) {
+            return ui.btn('edit', { text: 'Sửa', cls: 'ums-btn--sm', mod: 'out-warn', attr: { 'data-sua': e(x.ID) } });
+        } });
+        c.push({ title: 'Chi tiết', cls: 'is-center', render: function (x) {
+                if (o.chiTietKhi && !o.chiTietKhi(x)) return '';
                 return '<button type="button" class="ums-btn ums-btn--sm ums-btn--out-primary" data-phong="' + esc(x.ID) + '">' +
                     '<i class="fa-light fa-eye"></i><span>Chi tiết phòng</span></button>';
             } });
@@ -131,9 +158,11 @@
 
     /* ---------- Thí sinh ------------------------------------------------- */
     /** Họ tên: đỏ khi không có trong lịch thi; "Gian lận" nhấp nháy, bấm xem máy đã đăng nhập */
-    P.tenThiSinh = function (r, dam) {
-        return '<span class="' + (dam ? 'ct-ten' : '') + (e(r.COTRONGLICHTHI) === '0' ? ' ct-ten--ngoai' : '') + '">' + esc(e(r.FULLNAME)) + '</span>' +
-            (e(r.GIANLAN) === '1' ? '<br><button type="button" class="ct-gianlan" data-ip="' + esc(r.ID) + '">Gian lận</button>' : '');
+    P.tenThiSinh = function (r, dam, bam) {
+        var ten = '<span class="' + (dam ? 'ct-ten' : '') + (e(r.COTRONGLICHTHI) === '0' ? ' ct-ten--ngoai' : '') + '">' + esc(e(r.FULLNAME)) + '</span>';
+        // bam: họ tên là nút mở biểu mẫu thí sinh (bản gốc QLTTN: btnChiTietThiSinh)
+        if (bam) ten = '<button type="button" class="ct-tenlink" data-tenbam="' + esc(r.ID) + '" title="Thông tin thí sinh">' + ten + '</button>';
+        return ten + (e(r.GIANLAN) === '1' ? '<br><button type="button" class="ct-gianlan" data-ip="' + esc(r.ID) + '">Gian lận</button>' : '');
     };
     /** Cột "Tình trạng" — đúng thứ tự các nhánh của bản gốc; coPhan = đã chọn phần thi hoặc đề có tổng thời gian */
     P.tinhTrang = function (r, coPhan) {
@@ -154,6 +183,34 @@
         return arr(files).filter(function (f) { return e(f.DULIEU_ID) === e(r.STUDENTEXAMROOMPARTID); }).map(function (f) {
             return '<a class="ct-tep" target="_blank" rel="noopener" href="' + esc(goc + '/' + e(f.DUONGDAN)) + '">' + esc(e(f.TENHIENTHI)) + '</a>';
         }).join('');
+    };
+
+    /** Ảnh thí sinh theo mã (bản gốc QLTTN: edu.system.rootPath + '/Upload/Anh/' + STUDENTCODE + '.jpg'); không có ảnh → hình người */
+    P.anhThiSinh = function (code) {
+        var goc = (ums.session && ums.session.rootPath) || '';
+        return '<span class="ums-ava ct-anh"><i class="fa-light fa-user"></i>' +
+            (code ? '<img alt="" src="' + esc(goc + '/Upload/Anh/' + e(code) + '.jpg') + '" onerror="this.remove()">' : '') + '</span>';
+    };
+
+    /**
+     * Hộp "Kết quả bài thi" — HTML bài làm máy chủ dựng (gen_KetQuaThi / gen_KetQuaThi_KIEULAMBAI) + nút In.
+     * call = tham số ums.api.call (chép nguyên của màn); o = { title, ma (mã thí sinh, đặt tên bản in) }.
+     * Bản gốc: vùng zoneKetQuaThi thay chỗ + edu.util.printHTML + MathJax; ở đây là hộp xem (việc phụ) + ums.editor.toan.
+     */
+    P.xemBaiThi = function (call, o) {
+        o = o || {};
+        var vung = document.createElement('div');
+        vung.className = 'ct-ketqua';
+        vung.innerHTML = ui.empty('Đang tải…', 'fa-spinner fa-spin');
+        var dlg = ui.dialog({ title: o.title || 'Kết quả bài thi', icon: 'fa-file-lines', size: 'xl', body: vung,
+            buttons: [{ text: 'In bài thi', kind: 'print', keepOpen: true, onClick: function () {
+                ui.print(vung, { title: 'Bài thi' + (o.ma ? ' - ' + o.ma : '') }); return false;
+            } }] });
+        ums.api.call(call).then(function (r) {
+            vung.innerHTML = typeof r.data === 'string' && r.data ? r.data : ui.empty('Không có nội dung bài thi');
+            if (ums.editor && ums.editor.toan) ums.editor.toan(vung);
+        }).catch(function (err) { vung.innerHTML = ui.fail(err.message); ums.api.handle(err, o.title || 'kết quả bài thi'); });
+        return dlg;
     };
 
     /** Đồng hồ đếm ngược cho mọi [data-dem] (mili giây) trong host. Trả hàm dừng. */
@@ -218,13 +275,24 @@
      * strTuKhoa / strDuLieu là CHUỖI nối phẩy (không phải mảng JSON như ums.report.run),
      * rồi mở URL báo cáo viết cứng trong mã gốc (máy chủ Phenikaa) — giữ nguyên, xem can-quyet.
      */
-    P.baoCao = function (code, roomId, partId) {
+    /** Gốc URL báo cáo theo hệ thống (như report.js: chức năng → vai trò → phiên) — bản QLTTN dùng edu.system.rootPathReport */
+    P.gocBaoCao = function () {
+        var s = ums.state || {}, ss = ums.session || {};
+        var cn = (s.menu || []).filter(function (c) { return c.id === s.chucNangId; })[0];
+        if (cn && cn.report) return cn.report;
+        var role = (s.roles || []).filter(function (r) { return r.id === s.roleId; })[0];
+        if (role && role.report) return role.report;
+        return ss.rootPathReport || '';
+    };
+    P.baoCao = function (code, roomId, partId, o) {
+        o = o || {};
         if (!code) { ui.toast('Bạn chưa chọn mẫu báo cáo', 'warn'); return Promise.resolve(null); }
         var k = ['ExamRoomInfo_Id', 'ExamstructPartId', 'strReportCode', 'strNguoiDangNhap_Id'], v = [roomId, partId, code, uid()];
+        if (o.khongPhanThi) { k.splice(1, 1); v.splice(1, 1); }
         return g('SYS_Report/ThemMoi', { versionAPI: V, strTuKhoa: k.toString(), strDuLieu: v.toString(), strNguoiThucHien_Id: uid() }, true)
             .then(function (r) {
                 if (!r.message) { ui.toast('Chưa lấy được dữ liệu báo cáo!', 'warn'); return null; }
-                var url = URL_BC + '?id=' + r.message;
+                var url = (o.goc === 'heThong' ? P.gocBaoCao() : URL_BC) + '?id=' + r.message;
                 if (ums.state && ums.state.mode === 'demo') ui.toast('Dựng thử — trên máy chủ thật sẽ mở: ' + url, 'info', { title: 'Mở báo cáo', timeout: 9000 });
                 else ums.report.navigate(url);
                 return url;
@@ -244,56 +312,71 @@
         var st = { page: 1, size: 10, rows: [] }, don = null;
         var loc = [{ key: 'dv', type: 'select', label: 'Chọn đơn vị' }, { key: 'dot', type: 'select', label: 'Chọn đợt thi' }];
         if (cfg.locTrangThai) loc.push({ key: 'tt', type: 'select', label: 'Chọn trạng thái phòng(Đóng/Mở)' });
+        if (cfg.locStatus) loc.push({ key: 'st', type: 'select', label: 'Tình trạng phòng(Ẩn/Hiện)' });
         loc.push({ key: 'tu', type: 'date', label: 'Từ ngày' }, { key: 'den', type: 'date', label: 'Đến ngày' }, { key: 'q', label: 'Nhập từ khóa tìm kiếm' });
-        var tacVu = '<div class="ums-field ct-tacvu"><select class="ums-select" data-f="tv" data-ph="Chọn tác vụ"><option value="">Chọn tác vụ</option>' +
-            '<option value="MOPHONGTHI">Mở phòng thi</option><option value="DONGPHONGTHI">Đóng phòng thi</option></select></div>' +
+        if (cfg.locThem) loc = cfg.locThem(loc) || loc;
+        // Mục tác vụ: mảng [mã, chữ, động từ] (cũ) hoặc đối tượng { ma, ten, dongTu, lam(ids, api), chon }
+        var TV = (cfg.tacVu === false ? [] : (cfg.tacVu || [['MOPHONGTHI', 'Mở phòng thi', 'mở'], ['DONGPHONGTHI', 'Đóng phòng thi', 'đóng']]))
+            .map(function (t) { return Array.isArray(t) ? { ma: t[0], ten: t[1], dongTu: t[2] } : t; });
+        var tacVu = !TV.length ? '' : '<div class="ums-field ct-tacvu"><select class="ums-select" data-f="tv" data-ph="Chọn tác vụ"><option value="">Chọn tác vụ</option>' +
+            TV.map(function (t) { return '<option value="' + esc(t.ma) + '">' + esc(t.ten) + '</option>'; }).join('') + '</select></div>' +
             '<div class="ums-field ums-field--fit">' + ui.btn('save', { text: 'Thực hiện tác vụ', icon: 'fa-screen-users', mod: 'out-warn', attr: { 'data-a': 'tacvu' } }) + '</div>';
+        var extra = cfg.toolbar ? '<div class="ct-toolbar"><div class="ct-toolbar__trai">' + cfg.toolbar + '</div><div class="ct-toolbar__phai">' + tacVu + '</div></div>' : tacVu;
         root.innerHTML =
-            '<div data-z="list">' + pat.page(cfg.tieuDe) + pat.filterBar(loc, { extra: tacVu }) +
+            '<div data-z="list">' + pat.page(cfg.tieuDe) + pat.filterBar(loc, { extra: extra }) +
                 pat.panel({ title: 'Danh sách phòng thi', icon: 'fa-screen-users', count: 'n', flush: true, zone: 'bang' }) + '</div>' +
             '<div data-z="view" hidden></div>';
         ui.enhance(root);
         function z(k) { return root.querySelector('[data-z="' + k + '"]'); }
         function f(k) { return z('list').querySelector('[data-f="' + k + '"]'); }
         function v(k) { return f(k) ? f(k).value.trim() : ''; }
+        function phong(id) { return st.rows.filter(function (x) { return e(x.ID) === e(id); })[0]; }
+        var api = { st: st, v: v, f: f, z: z, phong: phong, rows: function () { return st.rows; }, daChon: function () { return P.daChon(z('bang')); } };
 
         P.napDonVi(f('dv'), cfg.donVi);
-        P.napDotThi(f('dot'));
+        if (cfg.dotThi !== false) P.napDotThi(f('dot'));
         if (cfg.locTrangThai) pat.fill(f('tt'), [{ ID: '1', TEN: 'Đang mở' }, { ID: '0', TEN: 'Đang đóng' }], { head: 'Chọn trạng thái phòng(Đóng/Mở)' });
+        if (cfg.locStatus) pat.fill(f('st'), [{ ID: '0', TEN: 'Ẩn' }, { ID: '1', TEN: 'Hiện' }], { head: 'Tình trạng phòng(Ẩn/Hiện)' });
         // Bản gốc mở màn KHÔNG nạp danh sách — chờ bấm Tìm kiếm
         z('bang').innerHTML = ui.empty('Chọn điều kiện rồi bấm Tìm kiếm', 'fa-magnifying-glass');
 
         function tai(page) {
             if (page) st.page = page;
             z('bang').innerHTML = ui.empty('Đang tải…', 'fa-spinner fa-spin');
-            return g(cfg.action, {
+            return g(cfg.action, Object.assign({
                 versionAPI: V, strDonVi_Id: v('dv'), strDotThi_Id: v('dot'), strTrangThaiPhongThi: cfg.locTrangThai ? v('tt') : cfg.trangThai,
-                strStatus: '1', strTuNgay: v('tu'), strDenNgay: v('den'), strTuKhoa: v('q'), strNguoiDung_Id: uid(),
+                strStatus: cfg.locStatus ? v('st') : '1', strTuNgay: v('tu'), strDenNgay: v('den'), strTuKhoa: v('q'), strNguoiDung_Id: uid(),
                 PageNumber: st.page, ItemPerPage: st.size
-            }).then(function (r) {
+            }, cfg.thamSo ? cfg.thamSo(v) : {})).then(function (r) {
                 st.rows = arr(r.data);
                 var tong = Number(r.pager) || st.rows.length;
                 z('n').textContent = '(' + tong + ')';
-                ui.table({ el: z('bang'), rows: st.rows, columns: P.cotPhong({ trangThai: true, chon: true }), empty: 'Không có phòng thi',
+                ui.table({ el: z('bang'), rows: st.rows, columns: P.cotPhong(Object.assign({ trangThai: true, chon: TV.length > 0 }, cfg.cot || {})), empty: 'Không có phòng thi',
                     page: { index: st.page, size: st.size, total: tong, onChange: tai, onSize: function (s) { st.size = s; tai(1); } } });
             }).catch(function (err) { z('bang').innerHTML = ui.fail(err.message); ums.api.handle(err, 'danh sách phòng thi'); });
         }
+        api.tai = tai;
 
         function tacVuPhong() {
             var tv = v('tv');
             if (!tv) { ui.toast('Bạn chưa chọn tác vụ cần thực hiện', 'warn'); return; }
-            var mo = tv === 'MOPHONGTHI', ids = P.daChon(z('bang'));
-            if (!ids.length) { ui.toast(mo ? 'Vui lòng chọn phòng thi cần mở?' : 'Vui lòng chọn phòng thi cần đóng?', 'warn'); return; }
-            ui.confirm(mo ? 'Bạn có chắc chắn mở phòng thi?' : 'Bạn có chắc chắn đóng phòng thi?', { ok: mo ? 'Mở phòng thi' : 'Đóng phòng thi' })
+            var t = TV.filter(function (x) { return x.ma === tv; })[0] || { ma: tv, ten: tv, dongTu: '' }, ids = P.daChon(z('bang'));
+            if (t.lam) {   // tác vụ riêng của màn (mở màn con, hỏi lại riêng)
+                if (t.chon !== false && !ids.length) { ui.toast(t.nhac || ('Vui lòng chọn phòng thi cần ' + (t.dongTu || 'thực hiện') + '?'), 'warn'); return; }
+                t.lam(ids, api);
+                return;
+            }
+            if (!ids.length) { ui.toast('Vui lòng chọn phòng thi cần ' + t.dongTu + '?', 'warn'); return; }
+            ui.confirm('Bạn có chắc chắn ' + t.dongTu + ' phòng thi?', { ok: t.ten })
                 .then(function (yes) {
                     if (!yes) return;
-                    P.thaoTacPhong(ids, tv).then(function () { ui.toast('Cập nhật thành công', 'ok'); tai(); })
+                    (cfg.thaoTac ? cfg.thaoTac(ids, tv) : P.thaoTacPhong(ids, tv)).then(function () { ui.toast('Cập nhật thành công', 'ok'); tai(); })
                         .catch(function (err) { ums.api.handle(err, 'thực hiện tác vụ'); });
                 });
         }
 
         function moChiTiet(id) {
-            var room = st.rows.filter(function (x) { return e(x.ID) === id; })[0];
+            var room = phong(id);
             if (!room) return;
             var view = z('view');
             view.innerHTML = '<div class="ums-page__head"><h1 class="ums-page__title ums-u-mb-0">Phòng thi — ' + esc(e(room.ROOMNAME)) + '</h1>' +
@@ -308,10 +391,15 @@
             z('view').innerHTML = '';
         }
 
+        api.moChiTiet = moChiTiet;
+        api.dong = dong;
+
         P.ganChonTatCa(z('list'));
         root.addEventListener('click', function (ev) {
             var ph = ev.target.closest('[data-phong]');
             if (ph && z('list').contains(ph)) { moChiTiet(ph.getAttribute('data-phong')); return; }
+            var sua = ev.target.closest('[data-sua]');
+            if (sua && z('list').contains(sua)) { if (cfg.sua) cfg.sua(phong(sua.getAttribute('data-sua')), api); return; }
             var a = ev.target.closest('[data-a]');
             if (!a) return;
             var k = a.getAttribute('data-a');
@@ -321,6 +409,7 @@
             else if (k === 'tacvu') tacVuPhong();
         });
         f('q').addEventListener('keydown', function (ev) { if (ev.key === 'Enter') { ev.preventDefault(); tai(1); } });
-        return { tai: tai, st: st };
+        if (cfg.sauDung) cfg.sauDung(api);
+        return api;
     };
 })();

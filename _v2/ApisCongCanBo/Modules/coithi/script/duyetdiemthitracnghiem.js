@@ -24,6 +24,11 @@
        lỗi JS → mỗi tab giữ danh sách riêng. Phân trang tab 3 gốc gọi hàm của tab 2 → sửa.
      · Học kỳ → Đợt thi: khoá theo luật cha → con (gốc nạp sẵn mọi đợt thi khi chưa chọn học kỳ).
      · Nút "Chuyển" gốc hẹn giờ 2 giây nạp lại kể cả khi bấm Huỷ → nạp lại sau khi chuyển xong.
+   Bản Quản lý thi trắc nghiệm (thẻ gốc data-kieu="qlttn" — ApisQuanLyThiTracNghiem/modules/pheduyetdiem, bản CŨ hơn của màn này):
+     · KHÔNG gọi LayDS_MucPheDuyet: luôn đủ 5 tab, tab 2 "Phê duyệt" luôn → GIAOVUCONGNHAN.
+     · Nút tab 1 mang chữ "Chuyển" (như html gốc). Báo cáo mở theo URL báo cáo của hệ thống (edu.system.rootPathReport).
+     · Gốc gửi strUngDung_Id = edu.system.strUngDung_Id — biến KHÔNG tồn tại trong Corei (luôn rỗng) → gửi vai trò như bản này.
+     · Gốc không đổ Đơn vị / Học kỳ cho tab 3 (renderPlace bỏ sót) → nay đổ đủ. Tab 5 gốc có cột đánh dấu mà không nút nào dùng → bỏ.
    ========================================================================= */
 (function () {
     'use strict';
@@ -32,6 +37,7 @@
     function esc(s) { return ui.esc(s); }
     var root = document.getElementById('coithi-duyetdiemthitracnghiem');
     if (!root) return;
+    var QLTTN = root.getAttribute('data-kieu') === 'qlttn';
 
     var baMuc = false;   // chỉ 3 mức phê duyệt: tab 2 duyệt thẳng sang "đã chốt điểm"
     var TAB = [
@@ -50,7 +56,7 @@
         if (!t.duyet) return '';
         return '<div class="ums-field ums-field--fit">' +
             (t.khong ? ui.btn('del', { text: 'Không phê duyệt', icon: 'fa-xmark', mod: 'out-danger', attr: { 'data-a': 'khong' } }) + ' ' : '') +
-            ui.btn('save', { text: 'Phê duyệt', icon: 'fa-check', attr: { 'data-a': 'duyet' } }) + '</div>';
+            ui.btn('save', { text: QLTTN && t.key === 't1' ? 'Chuyển' : 'Phê duyệt', icon: 'fa-check', attr: { 'data-a': 'duyet' } }) + '</div>';
     }
     root.innerHTML =
         '<div data-z="list">' + pat.page('Phê duyệt điểm') +
@@ -91,7 +97,7 @@
     g(QL + 'LayDS_HocKy', { strStatus: '1' }).then(function (r) {
         TAB.forEach(function (t) { pat.fill(S[t.key].f('hk'), arr(r.data), { id: 'SEMESTER', name: 'SEMESTER', head: 'Chọn học kỳ' }); });
     }).catch(function (err) { ums.api.handle(err, 'học kỳ'); });
-    g(QL + 'LayDS_MucPheDuyet', { versionAPI: V, strNguoiDung_Id: P.uid() }).then(function (r) {
+    if (!QLTTN) g(QL + 'LayDS_MucPheDuyet', { versionAPI: V, strNguoiDung_Id: P.uid() }).then(function (r) {
         baMuc = arr(r.data).filter(function (x) { return x.LOAIPHEDUYET === 'PHEDUYETDIEM'; }).length === 3;
         ['t3', 't4'].forEach(function (k) { var a = root.querySelector('[data-xtab="' + k + '"]'); if (a) a.hidden = baMuc; });
     }).catch(function (err) { ums.api.handle(err, 'mức phê duyệt'); });
@@ -187,7 +193,7 @@
             var k = a.getAttribute('data-ct') || a.getAttribute('data-a');
             if (k === 'dong') { ui.swap(view, z('list')); view.innerHTML = ''; view.onclick = null; }
             else if (k === 'refresh') taiTS();
-            else if (k === 'taifile') P.baoCao(view.querySelector('select[data-ct="bc"]').value, room.ID, selPhan.value);
+            else if (k === 'taifile') P.baoCao(view.querySelector('select[data-ct="bc"]').value, room.ID, selPhan.value, { goc: QLTTN ? 'heThong' : '' });
         };
     }
 

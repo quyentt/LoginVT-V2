@@ -289,6 +289,6 @@
     ums.canQuyet = S;
     /* Phân hệ CHƯA kiểm trên host: mục của các phân hệ này ghi lúc chuyển đổi, chưa xác nhận trên hệ thật — bảng "Màn đang có lỗi backend"
        gắn nhãn "chưa kiểm trên host". Kiểm xong phân hệ nào thì gỡ tiền tố của nó khỏi đây. */
-    ums.canQuyetChuaKiem = ['apissinhvien/', 'apisnhaphoc/', 'apisquanlytuyensinh/', 'apisnckh/', 'apisthiphach/', 'apiskehoachchuongtrinh/', 'apistotnghiep/'];
+    ums.canQuyetChuaKiem = ['apissinhvien/', 'apisnhaphoc/', 'apisquanlytuyensinh/', 'apisnckh/', 'apisthiphach/', 'apiskehoachchuongtrinh/', 'apistotnghiep/', 'apisquanlythitracnghiem/'];
     ums.canQuyetKhoa = function (url) { return String(url || '').replace(/\.html?(\?.*)?$/i, '').replace(/\/html\//i, '/').toLowerCase(); };
 })(window);

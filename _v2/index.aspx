@@ -166,6 +166,7 @@
     <script src="assets/js/phieu.js?v=<%= V("assets/js/phieu.js") %>"></script>
     <script src="assets/js/lich.js?v=<%= V("assets/js/lich.js") %>"></script>
     <script src="assets/js/diemhoc.js?v=<%= V("assets/js/diemhoc.js") %>"></script>
+    <script src="assets/js/editor.js?v=<%= V("assets/js/editor.js") %>"></script>
     <script src="assets/js/demo-data.js?v=<%= V("assets/js/demo-data.js") %>"></script>
     <script src="assets/js/icon-fa4.js?v=<%= V("assets/js/icon-fa4.js") %>"></script>
     <script src="assets/js/can-quyet.js?v=<%= V("assets/js/can-quyet.js") %>"></script>

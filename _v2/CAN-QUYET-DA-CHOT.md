@@ -4151,3 +4151,64 @@ Bảng thay đổi từng tệp: `_v2/CHO-CHUYEN-SAU-PULL.md` mục "Lần kéo 
 - TN `quanlythongtin` "Gán số vào sổ": hộp chọn (không phải thêm / sửa); cột chọn (radio) về cuối bảng (luật 17); bỏ thanh cuộn riêng 450px; câu hỏi lại ghi số sẽ gán; đổi ô lọc không tự tải (như gốc).
 - TS `kehoachtuyensinhnew`: tham số `d*` rỗng của `LayDS_TS_HoSo_DoiTacTS` GIỮ `null` (gốc 2/10 đổi sang `''` — ghi chú cũ của chính gốc nói `''` gây PLS-00306); so ngày không lùi về `Date.parse` (gốc có — `Date.parse("12")` hợp lệ, sai thứ tự khi sắp cột số); bỏ khai báo trùng `_hsDotHienTai` / `_nvDauRaHienTai` (bản sau đè bản trước, mất bước suy đợt từ nguyện vọng).
 - 10 tệp nhập điểm CCB / QLD / TP chỉ bỏ tiền tố câu lỗi — `_v2` không có tiền tố, không đổi. Core / Corei (vỏ cũ) theo gốc: gốc nay có sẵn nút "?" Cổng Help.
+
+# Chốt ngày 2026-10-05 — Quản lý thi trắc nghiệm (ApisQuanLyThiTracNghiem, 16/16 màn, vai trò R12)
+
+Mọi câu về CÁCH MÀN CHẠY tự chốt ở đây (sổ `can-quyet.js` không có việc dữ liệu — CHƯA kiểm host; phân hệ nằm trong `ums.canQuyetChuaKiem`).
+Chi tiết lời gọi / tham số từng màn ghi ở đầu mỗi tệp `_v2/ApisQuanLyThiTracNghiem/Modules/*/script/*.js`. ApisThiTracNghiem (trang làm bài .aspx) DỪNG theo người dùng 5/10.
+
+## Chung cả phân hệ
+- Mọi lệnh hàng loạt (xoá, cập nhật nhiều dòng, đổi tình trạng, chuyển, duyệt, tạo đề, import) chờ máy chủ xong rồi mới nạp lại — gốc bắn N lời gọi rồi `setTimeout` 2 giây
+  (kể cả khi bấm Huỷ). Gốc gắn `$("#btnYes").click` CỘNG DỒN mỗi lần hỏi (bấm lần hai chạy cả lệnh lần một) → hỏi bằng `ui.confirm`, chạy `ui.batch` có tiến độ.
+- Cây nhóm câu hỏi / phần thi vẽ bằng `pat.master` kiểu danh mục (`ums.nhch.cay`) thay jstree. Nội dung câu hỏi / đáp án (HTML CKEditor) hiện qua `ums.editor.html`, công thức
+  qua `ums.editor.toan` (MathJax của ứng dụng cha; không có thì để nguyên).
+- Cha → con khoá theo luật 2026-09-21 ở mọi thanh lọc (Đơn vị → Nhóm câu hỏi; Năm học → Học kỳ → Đợt thi → Học phần; Thời gian → Loại điểm → Hình thức → Đợt → Môn) —
+  gốc nạp sẵn mọi tầng dưới.
+- Ba nút "Đóng" của gốc (đầu khung, thanh công cụ, chân khung) → một nút; dòng chân bảng "Tổng số / Số Đạt / Số Không Đạt" của gốc luôn 0 → bỏ.
+- Báo cáo kiểu riêng (`SYS_Report/ThemMoi` với `strTuKhoa` / `strDuLieu` nối phẩy) giữ nguyên bộ khoá của từng màn; URL mở theo hệ thống (`rootPathReport`).
+
+## Ngân hàng câu hỏi (`quanlynganhangcauhoi`, `viewquanlynganhangcauhoi`, `nhapnganhangcauhoi` — `ums.nhch`)
+- Màn xem: gốc lúc mở gọi `LayDS_GroupQuestion` (không phân quyền), chỉ khi đổi đơn vị mới gọi bản phân quyền → nay luôn gọi `LayDS_PhanQuyenGroupQuestion`.
+- Sửa nhóm câu hỏi lớn gốc gửi `strDepartOrganId` = đơn vị đang LỌC (đổi bộ lọc rồi sửa là nhóm bị chuyển đơn vị) → gửi đơn vị của dòng.
+- "Lưu đáp án" TRUEFALSE / TRUEFALSEONE gốc luôn gửi `strCorrect = "0"`; "Thêm đáp án" gốc truyền lệch tham số (`strDiemDapAn` rơi vào `strFixViTri`) → sửa.
+- Mỗi dòng đáp án gốc tạo sẵn một CKEditor → nay bấm Sửa mới tạo; vế 2 gọi một lần thay N lần. "Kiểm tra câu hỏi" gốc tô đỏ theo `tr#id` không tồn tại → tô theo `tr[data-id]`.
+- Nút "Tính lại điểm" thứ hai (lưu điểm) gốc gọi với biến không tồn tại → khoá. Nút "Import LaTeX" gốc `display:none` ở màn quản lý → không hiện (màn nhập có, và gốc gọi NHẦM
+  import Doc → nay gọi `ImportNganHangCauHoi_Temp_LaTeX`). Preview ở màn nhập giữ GET (quản lý POST).
+- html màn nhập có sẵn khung sửa nhóm / chuyển câu hỏi nhưng JS không gắn → không chuyển.
+
+## Bộ đề (`quanlybode`, `taodethucong` — `ums.bode`, nạp chéo `ums.nhch`)
+- `Them/Sua_ExamStructDetail` gốc gửi `strDepartOrganId` = biến chỉ gán khi đã bấm Sửa bộ đề (vào thẳng Cấu trúc đề là `undefined`); `Them_ExamStructTheoNhomCT` đọc biến sai
+  chữ hoa (không bao giờ có) → nay gửi `DEPARTORGANID` của dòng bộ đề.
+- Nhóm câu hỏi ở lọc: `quanlybode` lọc nhóm "Hiện" (gốc), `taodethucong` theo ô Tình trạng (gốc). Cách tính điểm hai radio → ô chọn hai mục. Các ô số là ô số (gốc ô chữ).
+- "Cập nhật" bảng cấu trúc / đề thi / Order gốc gửi MỌI dòng → chỉ dòng có thay đổi. `closePhieu()` gốc gọi sau khi in (hàm của màn Phiếu thu) → bỏ.
+- GIỮ như gốc, nghi sai (kiểm host): `Sua_ExamStructDetail` gửi `strSoNhomCon` = `strNumberQuestion`; cột Đáp án tab "Nội dung đề thi" của Tạo đề thủ công lấy
+  `LayDS_DapAn_All` với `strGroupQuestionDetailId` = id nhóm LỚN (máy chủ trả rỗng thì cột trống).
+- Tạo đề thủ công: Sửa gốc gửi `strDepartOrganId` = ô lọc → của dòng; nút "Preview" câu hỏi và "Tìm kiếm" của tab Chọn câu hỏi gốc KHÔNG có xử lý → chạy theo ý định (việc đọc,
+  dùng `LayDS_PreviewCauHoi` như màn Ngân hàng). Chữ "Chi tiết" giữ, biểu tượng xem (fa-eye) theo bảng chuẩn.
+
+## Quản lý thi (`quanlythi` — khung `ums.coiThi` + `gst` của Cổng cán bộ mở rộng bằng cờ; `ums.qlt`)
+- Chi tiết phòng thay chỗ danh sách; mở màn chờ Tìm kiếm (gốc). Gian lận chỉ hỏi 30 giây khi đang xem phòng (gốc hỏi từ lúc mở màn). Hộp tình huống là hộp thoại
+  (thao tác hàng loạt — BO-CUC luật 1), giữ luật mã vi phạm `3442B9AD…` không kết thúc bài.
+- Công nhận điểm: gốc chỉ gửi dòng đổi điểm (đổi ghi chú không lưu), đề có tổng thời gian đọc nhầm ô ghi chú → gửi đúng, nạp lại `strCoTinhLaiDiem` '1'.
+- Biểu mẫu phòng thi: kiểm bắt buộc gốc trỏ id không tồn tại (thực tế không kiểm) → kiểm 7 ô; Sửa gốc gửi `strExamScheduleId` / `strDepartOrganId` từ ô LỌC → của dòng; cán bộ
+  coi / chấm thi chỉ hiện khi Sửa (cần id phòng); hộp tìm cán bộ nạp ngay (việc đọc).
+- Import phòng thi: ô từ khoá gốc không gửi → bỏ; hai vùng mẫu báo cáo gốc không nạp → bỏ; `strCachTinhDiem` gốc không đặt lại giữa các dòng → tính từng dòng; `strGroupQuestionId`
+  gốc gửi biến chưa gán → ''. Tiêu đề gốc "Chi tiết Phòng thi" (chép nhầm) → "Import phòng thi". Import DS thí sinh là hộp thoại, kết quả hai tab thay chỗ.
+- Tác vụ `TINHVACONGNHANDIEM` có trong js, không có trong ô chọn, hàm không tồn tại → bỏ. Nút "Xem kết quả điểm(đang test)" gọi `…_KetQua_dangtest` → giữ, khoá.
+- Tạo đề từ đề thủ công: danh sách đề gốc lọc theo ô Đơn vị của BỘ LỌC → theo đơn vị phòng thi; sau khi tạo nạp lại thí sinh + đề (gốc không). Mật khẩu phần thi chỉ gửi ô đổi.
+- Thêm thí sinh mới gửi `strId '#'` như gốc (kiểm host xem máy chủ hiểu là thêm mới không).
+- `giamsatthi`: ô Vi phạm quy chế gốc không nơi nào nạp → nạp như Cổng cán bộ; "Công nhận điểm" gốc không xử lý → khoá; "Tải file" không xử lý → chạy theo hai màn tự luận (đọc).
+- Tự luận (`quanlythituluan`, `duyetdiemthituluan` — `ums.qlttnTL`): nút "Chi tiết phòng" ở cột Xem kết quả (chữ nhầm) → "Chi tiết bài thi"; tạo phách chờ xong mới nạp lại.
+
+## Phúc tra, phúc khảo · Đợt thi · Đơn vị · Phân quyền
+- `quanlyphuctraphuckhao`: gốc so điểm với `dt.MARK` trong đó `dt` là MẢNG (luôn undefined) → gửi mọi dòng có điểm; "Chi tiết bài thi" gốc gọi hàm không tồn tại (lỗi JS) →
+  nay chạy `gen_KetQuaThi`; "Chi tiết phòng" chỉ với phòng đã đóng (gốc).
+- `quanlydotthi`: import chạy có tiến độ; xoá chọn Thời gian → bảng về lời nhắc; chữ nút "Thêm phòng thi" giữ dù việc là nhập đợt thi (chữ gốc).
+- `quanlydonvi`: cột Trạng thái gốc đọc `STUTUS` (không có) → luôn "Ẩn" → đọc `STATUS`.
+- Phân quyền (`_pq.js`): khung "Chi tiết quyền" → `pat.formTrang`; tiêu đề cột gốc chép nhầm "Mã / Tên đơn vị" cho bảng nhóm câu hỏi → "Mã / Tên nhóm câu hỏi"; ô "Chọn tất cả"
+  ở tiêu đề cột Quyền giữ (tự đồng bộ hai chiều).
+
+## Nợ tầng chung (gom)
+- Cột ô đánh dấu + "chọn tất cả" / "chọn cả cột" cho `ui.table` (QLTTN thêm 4 bản tự viết: `N.ganChon`, `P.cotChon`, `data-cotall`…).
+- Cây cha → con bản thứ sáu (`N.cay`) → `ums.pat.cay`; khung "hai cột trong một tab" (`B.haiCot`); kết quả import hai tab (`N.ketQuaImport` ≈ `Q.ketQuaImport`) → `ums.pat`.
+- `ums.coiThi.gst.chiTiet` đã mang 20 cờ — khi có màn thứ tư dùng thì tách thành khung riêng có cấu hình.

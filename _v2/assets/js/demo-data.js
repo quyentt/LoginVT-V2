@@ -356,6 +356,35 @@
                 ['danhmuc', 'Danh mục', 'fa fa-list', [
                     ['danhmucdulieu', 'Danh mục dữ liệu']]]
             ], null, { prefix: 'HB', app: 'ApisHocBong' }),
+            /* Quản lý thi trắc nghiệm (R12) — ApisQuanLyThiTracNghiem (thư mục gốc chữ thường "modules"), ID QLTTN-<module>-<tệp>.
+               Tên theo menu người dùng gửi (spa-v1.md); bốn tệp ngoài menu host đặt tên theo tệp. */
+            R12: buildMenu([
+                ['quanlynganhangcauhoi', 'Ngân hàng câu hỏi', 'fa fa-database', [
+                    ['quanlynganhangcauhoi', 'Quản lý ngân hàng câu hỏi'],
+                    ['viewquanlynganhangcauhoi', 'Xem ngân hàng câu hỏi (viewquanlynganhangcauhoi)']]],
+                ['nhapnganhangcauhoi', 'Nhập ngân hàng câu hỏi', 'fa fa-upload', [
+                    ['nhapnganhangcauhoi', 'Nhập ngân hàng câu hỏi']]],
+                ['quanlybode', 'Bộ đề', 'fa fa-files-o', [
+                    ['quanlybode', 'Quản lý bộ đề'],
+                    ['taodethucong', 'Tạo đề thủ công']]],
+                ['quanlythi', 'Quản lý thi', 'fa fa-desktop', [
+                    ['quanlythi', 'Quản lý thi'],
+                    ['giamsatthi', 'Giám sát thi'],
+                    ['quanlythituluan', 'Quản lý thi tự luận'],
+                    ['duyetdiemthituluan', 'Duyệt điểm thi tự luận (duyetdiemthituluan)']]],
+                ['pheduyetdiem', 'Phê duyệt điểm', 'fa fa-check-square-o', [
+                    ['pheduyetdiem', 'Duyệt điểm thi trắc nghiệm']]],
+                ['quanlydotthi', 'Đợt thi', 'fa fa-calendar', [
+                    ['quanlydotthi', 'Quản lý đợt thi']]],
+                ['quanlyphuctraphuckhao', 'Phúc tra, phúc khảo', 'fa fa-refresh', [
+                    ['quanlyphuctraphuckhao', 'Quản lý phúc tra, phúc khảo']]],
+                ['quanlydonvi', 'Đơn vị', 'fa fa-sitemap', [
+                    ['quanlydonvi', 'Quản lý đơn vị']]],
+                ['phanquyendulieu', 'Phân quyền dữ liệu', 'fa fa-lock', [
+                    ['phanquyenpheduyetdiem', 'Phân quyền phê duyệt dữ liệu điểm, NHCH'],
+                    ['phanquyendulieu', 'Phân quyền dữ liệu (phanquyendulieu)'],
+                    ['phanquyendulieugroupquestion', 'Phân quyền nhóm câu hỏi (phanquyendulieugroupquestion)']]]
+            ], null, { prefix: 'QLTTN', app: 'ApisQuanLyThiTracNghiem' }),
             /* Xét tốt nghiệp (R16) — ApisTotNghiep, ID TN-<module>-<tệp>. Tên đặt theo tên tệp (menu host bản xuất 26/9 không có tên màn). */
             R16: buildMenu([
                 ['thietlap', 'Thiết lập điều kiện', 'fa fa-sliders', [
