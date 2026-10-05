@@ -37,7 +37,11 @@ thì mở các màn ghi `xong 30/9` của phân hệ đó trong `RA-HOP-THOAI.md
   là đặt lại kết quả tạo phiếu (như gốc), xoá kế hoạch nằm trong biểu mẫu ("Xóa kế hoạch", crud `formRemove`) → màn có cả `remove` lẫn `formRemove` thì thu-ghi phải xoá qua biểu mẫu.
   Không thử nhóm câu hỏi nữa (còn sót ZKT0119).
 - **65 màn CCB không có trên menu hai vai trò host** (người dùng 6/10: "phải ghi rõ"): sổ `da-kiem.json` doc = `khong-tren-menu`, trang tiến độ hiện riêng. Nhóm: klgd 28 (cả bộ
-  qlklgd_*), dashboardv2 9, thi 7, coithi 3, sanphamkhoahoc 3, nhapdiem 3, hoatdong 3… Muốn kiểm phải được gán chức năng trên host hoặc dùng vai trò khác.
+  qlklgd_*), dashboardv2 9, thi 7, coithi 3, sanphamkhoahoc 3, nhapdiem 3, hoatdong 3… Đối chiếu bản xuất mapping host (619 chức năng): **16 màn CÓ chức năng trong CSDL
+  nhưng chưa gán vai trò thử** (dashboardv2 9, thi 5, daqhht, duyethoidong — ghiChu từng màn có functionId; cách kiểm: gán vào vai trò thử rồi chạy `chay-vaitro`),
+  **49 màn host CHƯA KHAI chức năng** (cả klgd 28) — không ai mở được trên host.
+- **HOÃN (người dùng 6/10: "để chờ đó đã"):** trang "Toàn bộ màn" (`?full` / `#/full`, danh sách 747 màn sinh lúc đóng gói, mở màn theo đường dẫn tệp dưới vai trò
+  đang đăng nhập, `strChucNang_Id` mượn nếu host có) + `chay-vaitro.js FULL=1` để đọc sâu màn không có chức năng. Chỉ làm khi người dùng gọi.
 - Chưa thử ghi (không có đường xoá hoặc đụng dữ liệu thật): lichgiangphonghoc (đăng ký phòng), phangiangvien, nhapkl, tuibai/_dst (điểm), thanhtoangiangday, lichhocsv,
   moigiang (tạo hồ sơ nhân sự), dukienhocphan, _qhht_hoso, doilich, thi/_chung phân công. Màn `sukien/sukien` không có trên menu host.
 
