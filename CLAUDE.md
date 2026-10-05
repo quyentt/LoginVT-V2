@@ -410,7 +410,7 @@ báo "đã up" → chạy `python _harness\dong-goi.py --da-up`** (lấy gói hi
 
 `_v2/`, `_harness/`, `CLAUDE.md` nằm trong git `quyentt/LoginVT-V2`; máy khác clone là đủ (trừ `tk.md`; `_v2_deploy/` dựng lại bằng `python _harness/dong-goi.py`).
 **Luật sau mỗi lần kéo gốc:** tệp thuộc màn ĐÃ CHUYỂN thì tự chuyển thay đổi sang `_v2` (thuần CSS vỏ cũ thì bỏ; mã mới lỗi rõ → làm theo ý định + ghi `can-quyet.js`);
-ghi `_v2/CHO-CHUYEN-SAU-PULL.md` (mốc gốc + bảng tệp) và `CAN-QUYET-DA-CHOT.md`. Lịch sử 6 lần kéo (mốc hiện tại `0551deba`): `_v2/NHAT-KY-CHUYEN.md`.
+ghi `_v2/CHO-CHUYEN-SAU-PULL.md` (mốc gốc + bảng tệp) và `CAN-QUYET-DA-CHOT.md`. Lịch sử 7 lần kéo (mốc hiện tại `1680e53d`, gốc có force-push): `_v2/NHAT-KY-CHUYEN.md`.
 **Khi người dùng bảo "chuyển" / "kiểm": `git fetch origin`, so với mốc, THÔNG BÁO trang mới kéo về thuộc phân hệ đã chuyển và LÀM TRƯỚC** (phân hệ chưa chuyển chỉ nhắc một dòng).
 
 ### Chép tối thiểu
@@ -444,8 +444,12 @@ Mở bằng `file://` là trắng trang (CORS). Lên host phải nằm TRONG d�
 | Tốt nghiệp `ApisTotNghiep` | 13/13 | R16 `TN-` | 5/10 | chưa (đã up) |
 | Quản lý thi trắc nghiệm `ApisQuanLyThiTracNghiem` | 16/16 | R12 `QLTTN-` | 5/10 | chưa (gói bổ sung chưa up) |
 | Thi trắc nghiệm `ApisThiTracNghiem` (trang làm bài .aspx) | 0 | — | DỪNG (người dùng 5/10) | — |
+| Tin tức `ApisTinTuc` | 4/4 | R46 `TT-` | 5/10 | chưa |
 | Còn lại: Ký túc xá, Luận văn, TKGG, Tin tức, Danh hiệu | — | — | chưa | — |
 
+**Đã xong 5/10 tối:** Tin tức 4/4 (`tintuc` 3.017 dòng gốc → ums.crud + hai khung formTrang Phạm vi / Gửi email + hộp Quản lý chuyên mục & Import Excel;
+`guithongbaoappsinhvien`; `vanban`; `danhmucdulieu` nạp chéo ĐKH); ba trang kiểm 4/4; chốt ở `CAN-QUYET-DA-CHOT.md` mục "Tin tức"; kéo gốc lần 7 (mốc `1680e53d`).
+Hai tác tử con bị cắt vì hết hạn mức giữa chừng — phần dở tự làm nốt; `kiem-icon-chuan.py` chạy với `PYTHONIOENCODING=utf-8` (cp1252 lỗi).
 **Đã xong 5/10:** QLTTN 16/16 (ba màn cuối `quanlybode`, `taodethucong`, `quanlythi` tự làm, không tác tử); chốt ở `CAN-QUYET-DA-CHOT.md`; ApisThiTracNghiem DỪNG.
 Việc kế: người dùng up gói bổ sung → `--da-up`; phân hệ mới chỉ làm khi người dùng gọi tên.
 Tầng chung mới 5/10: `ums.editor` (`assets/js/editor.js`). **Giao việc: tối đa 2 tác tử con một lúc (người dùng 5/10); mỗi tác tử chỉ đọc đúng mục cần (không "đọc hết"

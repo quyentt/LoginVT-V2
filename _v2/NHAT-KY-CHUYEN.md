@@ -22,6 +22,8 @@ Lần 4 (2026-09-30, 10 commit, merge `cffda56e`) + lần 5 (2026-10-01, merge `
 
 Lần 6 (2026-10-05, 13 commit gốc `88f37941..0551deba`, 1/10 → 5/10) — **ĐÃ CHUYỂN 2026-10-05, CHƯA kiểm host**. **Kho máy nay là bản GỘP một commit** (`20b5dbe6`, 2/10, đã lên LoginVT-V2) — KHÔNG chung gốc với kho gốc nên không `git pull`/`merge` được: kéo bằng `git fetch origin` rồi `git checkout origin/main -- <tệp>` cho từng tệp gốc đổi (trước đó kiểm tệp máy = bản gốc cũ theo nội dung, bỏ CRLF). Mốc gốc đã chuyển ghi đầu `_v2/CHO-CHUYEN-SAU-PULL.md`. Màn: TC `tinhhocphi`, thu tiền QR; NH `phanlop`; TN `xacnhan` (Hạ bậc trực tiếp), `quanlythongtin` (Gán số vào sổ); TS `kehoachtuyensinhnew` (nguồn khai thác). Gốc nay có sẵn nút "?" Cổng Help trong Core / Corei và hai trang help-*.aspx → ngoại lệ "không ghi đè" ở mục 9 không còn cần. Chốt: `CAN-QUYET-DA-CHOT.md` mục "Kéo gốc lần 6".
 
+Lần 7 (2026-10-05 tối, gốc force-push `0551deba` → `1680e53d`, 3 tệp) — **ĐÃ CHUYỂN cùng tối**: KHCT `danhmuc/danhmucdulieu.html` mở lại ba ô lọc Dữ liệu cha / Trạng thái / Từ khoá (bản nạp chéo `_v2` bỏ `data-loc="q"`, đã đo đủ ba ô); Core / Corei chỉ đổi độ dài `?v=` chống cache → không chuyển. Bảng tệp: `_v2/CHO-CHUYEN-SAU-PULL.md` "Lần kéo 7".
+
 **Cùng ngày — ba luật bảng ở tầng chung** (BO-CUC luật 17 + ghi nhớ): cột ô đánh dấu chọn dòng tự về CUỐI bảng (`ums.ui.table`, `data-cot-goc`, `ums.ui.oTheoGoc` cho báo cáo / import); ô đánh dấu trong ô bảng căn giữa theo chữ; "Thông tin lịch" nhiều khối thành danh sách `.ums-dsl` (`ui.escBr`); mục cột trái mã dài tự xuống dòng. `thu-crud` nhận thêm tên thủ tục `_Create` / `_Update`.
 
 ### Đã làm đến đâu
@@ -800,7 +802,16 @@ mẫm ở đó; để dành đến khi có host.
    bắt được 1 lỗi: bộ chặn bấm của khung Import nuốt luôn nút của chính khung (đã sửa). Chốt: `CAN-QUYET-DA-CHOT.md` mục "Chốt ngày 2026-10-05 — Quản lý thi trắc nghiệm";
    không có việc dữ liệu (CHƯA kiểm host; phân hệ thêm vào `ums.canQuyetChuaKiem`). ApisThiTracNghiem (trang làm bài .aspx) DỪNG theo người dùng 5/10.
 
-22. Các phân hệ còn lại (Ký túc xá 22 mục menu host, Luận văn 14, TKGG 12, Tin tức 3, Danh hiệu; Thi trắc nghiệm — trang làm bài — dừng). Tổng 859 màn hình, xem mục 7 để biết vì
+22. **Tin tức (ApisTinTuc) — XONG 4/4 (2026-10-05 tối)**. Vai trò mẫu **R46**, ID `TT-<module>-<tệp>`. Hai tác tử con (tintuc, guithongbaoappsinhvien) bị cắt
+   giữa chừng vì hết hạn mức phiên → `tintuc.js` (gốc 3.017 dòng) tự viết: `ums.crud` (biểu mẫu 4 nhóm, `ums.editor` nội dung, tệp `SV_Files`, ảnh bìa `avatar`,
+   ô tin ưu tiên `checks`) + hai khung `pat.formTrang` "Phạm vi áp dụng" (`pat.phamVi`) và "Gửi Email" (lọc Hệ / Khoá / CT / Lớp chọn nhiều tự dựng bằng
+   `ums.ref.*` + `pat.chain`, bảng SV phân trang máy chủ, `ui.batch` gửi từng người, Import Excel bằng `assets/vendor/xlsx` nạp khi bấm) + hộp Quản lý chuyên mục
+   (`CMS_DanhMucTenBang` → `CMS_DanhMucDuLieu`, nạp lại hai ô chuyên mục không qua bộ nhớ `api.dm`). `guithongbaoappsinhvien` tác tử viết xong (3 khung formTrang,
+   `boLocNguoiHoc`), `vanban` ums.crud (thêm ô Loại văn bản), `danhmucdulieu` nạp chéo ĐKH. Kiểm: `kiem-dong-bo?vt=R46&tien=TT&coTep=1` 4/4; `thu-crud` 4/4;
+   `kiem-cot-trai` 1/1; biểu tượng 0 lệch; trang dò tạm bấm sâu Thêm / Sửa / Quản lý chuyên mục / Phạm vi / Gửi email / Import (không lỗi console).
+   Chốt: `CAN-QUYET-DA-CHOT.md` mục "Chốt ngày 2026-10-05 (tối) — Tin tức"; không có việc dữ liệu (CHƯA kiểm host; thêm vào `ums.canQuyetChuaKiem`).
+
+23. Các phân hệ còn lại (Ký túc xá 22 mục menu host, Luận văn 14, TKGG 12, Danh hiệu; Thi trắc nghiệm — trang làm bài — dừng). Tổng 859 màn hình, xem mục 7 để biết vì
    sao không thể làm bằng cách đổi CSS.
 
 ### Cách làm việc đã dùng, nên giữ

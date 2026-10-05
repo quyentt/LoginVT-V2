@@ -960,7 +960,7 @@ systemroot.prototype = {
         //Cộng thêm version cho file html
         function EditUrlHtml() {
             url = me.rootPath + "/" + appCode + url;
-            var newVersion = "v=" + randomInt(4);
+            var newVersion = "v=" + randomInt(32);
             if (url.indexOf('?') != -1) {
                 url += "&" + newVersion
             }
@@ -970,7 +970,7 @@ systemroot.prototype = {
         }
 
         function EditUrlJS(strData) {
-            var newVersion = "?v=" + randomInt(4);
+            var newVersion = "?v=" + randomInt(32);
             var iStart = 0;
             while (1) {
                 var ivitri = strData.indexOf("<script", iStart);

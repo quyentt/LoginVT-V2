@@ -9443,7 +9443,7 @@ systemroot.prototype = {
         var me = this;
         if (!me.isActive || !me.urlPage) return;
         jQuery.ajax({
-            url: me.rootPath + "/" + me.appCode + me.urlPage + "?v=" + me.randomInt(4),
+            url: me.rootPath + "/" + me.appCode + me.urlPage + "?v=" + me.randomInt(32),
 
             // If "type" variable is undefined, then "GET" method will be used.
             // Make value of this field explicit since
@@ -9461,7 +9461,7 @@ systemroot.prototype = {
         var me = this;
         if (!me.isActive) return;
         jQuery.ajax({
-            url: "Config.js?v=" + me.randomInt(4),
+            url: "Config.js?v=" + me.randomInt(32),
             type: "GET",
             dataType: "html",
         }).done(function (responseText) {

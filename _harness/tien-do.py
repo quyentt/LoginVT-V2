@@ -36,7 +36,7 @@ TEN = {
 # Thứ tự đã chuyển (CLAUDE.md mục 11) — phân hệ mới chuyển thì thêm vào cuối
 THU_TU = ['ApisTaiChinh', 'ApisCongCanBo', 'ApisCongSinhVien', 'ApisChuyenCan', 'ApisCMS', 'ApisDangKyHoc',
           'ApisHocLaiThiLai', 'ApisRenLuyen', 'ApisXuLyHocVu', 'ApisHocBong', 'ApisTotNghiep', 'ApisQuanLyThiTracNghiem', 'ApisThiTracNghiem', 'ApisQuanLyDiem', 'ApisNhanSu', 'ApisSinhVien',
-          'ApisKeHoachChuongTrinh', 'ApisNhapHoc', 'ApisQuanlyTuyenSinh', 'ApisNCKH', 'ApisThiPhach']
+          'ApisKeHoachChuongTrinh', 'ApisNhapHoc', 'ApisQuanlyTuyenSinh', 'ApisNCKH', 'ApisThiPhach', 'ApisTinTuc']
 
 BO_QUA = {
     'ApisQuanlyTuyenSinh/Modules/nhapdiem/html/nhapdiemtest.html': 'Trang thử, không phải màn nghiệp vụ',

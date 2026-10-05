@@ -4212,3 +4212,26 @@ Chi tiết lời gọi / tham số từng màn ghi ở đầu mỗi tệp `_v2/A
 - Cột ô đánh dấu + "chọn tất cả" / "chọn cả cột" cho `ui.table` (QLTTN thêm 4 bản tự viết: `N.ganChon`, `P.cotChon`, `data-cotall`…).
 - Cây cha → con bản thứ sáu (`N.cay`) → `ums.pat.cay`; khung "hai cột trong một tab" (`B.haiCot`); kết quả import hai tab (`N.ketQuaImport` ≈ `Q.ketQuaImport`) → `ums.pat`.
 - `ums.coiThi.gst.chiTiet` đã mang 20 cờ — khi có màn thứ tư dùng thì tách thành khung riêng có cấu hình.
+
+## Chốt ngày 2026-10-05 (tối) — Tin tức (ApisTinTuc, R46)
+
+Bốn màn, không có việc dữ liệu mới trong `can-quyet.js`; các điểm "KIỂM TRÊN HOST" dưới đây là tên cột đoán, kiểm host xong thì sửa hoặc gỡ.
+
+### kehoach/tintuc (gốc 3.017 dòng → ums.crud + formTrang)
+- Thêm / Sửa = biểu mẫu crud (4 nhóm: Thông tin cơ bản · Phân loại & phạm vi hiển thị · Nội dung (CKEditor `ums.editor`, lùi textarea) + tệp `SV_Files` · Ảnh bìa + ô "tin ưu tiên");
+  "Phạm vi áp dụng" và "Gửi Email" là hai khung `pat.formTrang` thay chỗ màn; hộp thoại chỉ cho Quản lý chuyên mục và Import Excel.
+- Chi tiết tin (`pkg_tintuc.LayTinTuc_BangTin_ChiTiet`) THAY cả dòng khi sửa (crud) thay vì gộp dòng + chi tiết như gốc → thủ tục phải trả đủ cột (KIỂM HOST).
+- Cột "Ngày tạo" / "Người tạo" / "Duyệt" gốc đổ nhầm `NGAYBATDAU` / `NGAYKETTHUC` / `NGAYKETTHU` (sai chính tả) → đổ `NGAYTAO_DD_MM_YYYY` / `NGUOITAO_TAIKHOAN` / `TRANGTHAIDUYET_TEN` (đoán, KIỂM HOST).
+- Phạm vi: dùng `pat.phamVi` (bảng tên phạm vi + Thêm qua hộp chọn SV / khoá / CT / lớp + Xoá dòng đã lưu); gốc phân trang 20 tự vẽ → lấy `pageSize` 1000.
+- Gửi email: lọc Hệ / Khoá / CT / Lớp chọn nhiều tự dựng (`ums.ref.*` + `pat.chain`), bảng SV phân trang máy chủ 20, đánh dấu giữ qua các trang (gốc chỉ trang đang xem),
+  gửi từng người có email qua `ui.batch`; Import Excel đọc ở trình duyệt (`assets/vendor/xlsx`, nạp khi bấm) chỉ để đánh dấu SV đang hiện.
+- Bỏ: nút "Phóng to" trình soạn thảo tự chế; khung "gửi email trong phạm vi" (phần tử không có trong html); `XoaTin`; các hàm nạp ô không có trên màn.
+### kehoach/guithongbaoappsinhvien
+- Ba vùng thay chỗ → `pat.formTrang` (Thêm tin, Chọn người nhận với `pat.boLocNguoiHoc`, Tin đã gửi); Tiêu đề / Nội dung là ô thường (gốc không gọi CKEditor).
+- Nạp danh sách ngay khi mở (gốc trống tới khi bấm Tìm); Năm nhập học gửi giá trị ô chọn (gốc đọc ô không có); gửi hàng loạt qua `ui.batch` có hỏi lại, báo gộp
+  (gốc báo thành công khi chưa có phản hồi); "Gửi lại trường hợp chưa nhận" bắt buộc chọn đợt gửi; bảng Kết quả phân trang máy khách.
+### kehoach/vanban
+- Ô từ khoá gốc không được gửi (đọc `txtAAAA`) → gửi; thêm ô "Loại văn bản" vào biểu mẫu gửi `strLoaiVanVan_Id` (gốc luôn rỗng dù lọc theo loại) — cột đọc đoán `LOAIVANBAN_ID` (KIỂM HOST);
+  Hiệu lực mặc định 1 khi thêm; tệp đính kèm `TT_Files` mỗi dòng một lời gọi như gốc.
+### danhmuc/danhmucdulieu
+- Nạp chéo bản Đăng ký học (script gốc giống hệt, chỉ thiếu `page_load`).

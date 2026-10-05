@@ -997,7 +997,16 @@
                     ['lanh-dao-phong-tckt', 'Lãnh đạo Phòng TCKT'],
                     ['bgh', 'Ban giám hiệu'],
                     ['sinh-vien', 'Sinh viên']]]
-            ], null, { prefix: 'CCB', app: 'ApisCongCanBo' })
+            ], null, { prefix: 'CCB', app: 'ApisCongCanBo' }),
+            /* Tin tức (R46) — ApisTinTuc, ID TT-<module>-<tệp>. Thứ tự module như thư mục gốc. */
+            R46: buildMenu([
+                ['kehoach', 'Tin tức', 'fa fa-newspaper-o', [
+                    ['tintuc', 'Tin tức'],
+                    ['vanban', 'Văn bản'],
+                    ['guithongbaoappsinhvien', 'Gửi thông báo app sinh viên']]],
+                ['danhmuc', 'Danh mục', 'fa fa-list', [
+                    ['danhmucdulieu', 'Danh mục dữ liệu']]]
+            ], null, { prefix: 'TT', app: 'ApisTinTuc' })
         },
 
         /* Cây chức năng của vai trò "Tài chính" — phẳng, đúng như máy chủ trả.

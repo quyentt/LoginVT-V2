@@ -7,6 +7,15 @@ Xem lại đúng thay đổi của một tệp: `git diff -w <từ>..<đến> --
 
 ---
 
+## Lần kéo 7 (5/10 tối) — ĐÃ CHUYỂN HẾT, mốc gốc đã chuyển nay là `1680e53d` (gốc bị force-push từ `0551deba`)
+
+Lần sau so: `git diff --name-status 1680e53d origin/main`. Ba tệp gốc đổi, đã ghi đè bằng `git checkout origin/main -- <tệp>`.
+
+| Tệp gốc | Gốc đổi gì | `_v2` |
+|---|---|---|
+| KHCT `danhmuc/danhmucdulieu.html` | Mở lại ba ô lọc Dữ liệu cha / Trạng thái / Từ khoá + nút Tìm kiếm (script gốc vốn đã gắn sẵn, html trước chỉ có ô từ khoá) | ĐÃ CHUYỂN: bỏ `data-loc="q"` ở bản nạp chéo → hiện cả ba ô như Tài chính |
+| `Core/systemroot.js`, `Corei/systemroot.js` | `randomInt(4)` → `randomInt(32)` cho `?v=` chống cache khi nạp html / js / Config.js | Vỏ cũ — `_v2` có cơ chế `?v=` riêng, không chuyển |
+
 ## Lần kéo 6 (5/10) — ĐÃ CHUYỂN HẾT 5/10, CHƯA kiểm host — 13 commit gốc `88f37941..0551deba` (1/10 → 5/10), mốc gốc đã chuyển nay là `0551deba`
 
 Kho máy là bản GỘP một commit (`20b5dbe6`, 2/10) — không chung gốc với kho gốc → KHÔNG `git merge` được; đã ghi đè 20 tệp gốc bằng
