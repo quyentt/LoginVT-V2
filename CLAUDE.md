@@ -395,7 +395,7 @@ báo "đã up" → chạy `python _harness\dong-goi.py --da-up`** (lấy gói hi
 - Ô tìm duy nhất trên thanh trên (`timMan`: lọc menu vai trò đang dùng, rồi mọi vai trò; chỉ mục sessionStorage `ums.timMan.*` v4 có đường dẫn `p`); Ctrl K hoặc `/`.
 - Khối chung hay dùng: `pat.cotTrai`, `pat.dsNhanSu` / `masterNhanSu`, `pat.boLocNguoiHoc`, `pat.dauDoiTuong`, `pat.anhNguoi`, `pat.formTrang`, `pat.chain`, `pat.haiLuoi`,
   `ui.btn('reload')`, `ui.money`, `ums.editor` (`tao` / `toan` / `html` — CKEditor + MathJax nạp từ `../Scripts/` của ứng dụng cha, không có thì lùi về textarea). Bảng tra nhanh: `_v2/BO-CUC.md`.
-- **Cổng Help:** nút "?" mọi màn theo `site.config.js → help.url` (mẫu `{functionId}`…), xuất mapping ở màn Cài đặt (`ums.app.xuatMapping`); SSO soạn bài `_v2/help-sso.aspx` +
+- **Cổng Help:** nút "?" mọi màn theo `site.config.js → help.url` (mẫu `{functionId}`…), xuất mapping ở màn Cài đặt (`ums.app.xuatMapping`) hoặc gõ `<ứng dụng>/mapping.aspx` (bản sao ở gốc, trường chỉ chạy v1 cũng tải được; `?xem=1` xem ngay); SSO soạn bài `_v2/help-sso.aspx` +
   `help-jwks.aspx` (bản sao ở gốc dự án; `App_Data/help-sso/`; đã chạy `?xem=1` trên host, chưa gửi thật). Bẫy ASPX: không viết nguyên thẻ đóng script trong khối `runat="server"`.
 - Dính đỉnh bằng `:has()` (`objects/shell.css`); đổi vùng có hiệu ứng `ums.ui.swap` (`animation-fill-mode: backwards` để không phá sticky); thanh trượt cột trái tự vẽ (`scroll.js`).
 

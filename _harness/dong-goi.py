@@ -73,11 +73,12 @@ def main():
 
     # Vỏ
     for t in ['login.aspx', 'Logout.aspx', 'web.config',
-              'help-sso.aspx', 'help-jwks.aspx']:   # SSO sang Cổng Help (yeu-cau-sso-cho-doi-app.md)
+              'help-sso.aspx', 'help-jwks.aspx',    # SSO sang Cổng Help (yeu-cau-sso-cho-doi-app.md)
+              'mapping.aspx']:                      # tải mapping chức năng cho Cổng Help bằng một địa chỉ (2026-10-05)
         chep(t)
-    # Hai trang SSO còn có BẢN SAO ở thư mục gốc ứng dụng (địa chỉ khai bên Help: <ứng dụng>/help-sso.aspx — không phụ
-    # thuộc v1 / v2, trường chỉ chạy v1 cũng dùng được). Nguồn sửa là bản trong _v2; chép lại mỗi lần đóng gói để không lệch.
-    for t in ['help-sso.aspx', 'help-jwks.aspx']:
+    # Ba trang Cổng Help còn có BẢN SAO ở thư mục gốc ứng dụng (địa chỉ khai bên Help: <ứng dụng>/help-sso.aspx, …/mapping.aspx —
+    # không phụ thuộc v1 / v2, trường chỉ chạy v1 cũng dùng được). Nguồn sửa là bản trong _v2; chép lại mỗi lần đóng gói để không lệch.
+    for t in ['help-sso.aspx', 'help-jwks.aspx', 'mapping.aspx']:
         nguon, dich = os.path.join(V2, t), os.path.join(GOC, t)
         if not os.path.exists(dich) or open(nguon, 'rb').read() != open(dich, 'rb').read():
             shutil.copyfile(nguon, dich)
