@@ -188,8 +188,9 @@
             '<div class="ums-field ums-field--fit">' + ui.btn('search', { attr: { 'data-a': 'tim' } }) + '</div></div>' +
             '<div class="ums-legend"><i class="fa-light fa-users"></i> Danh sách sinh viên <span class="ums-u-fz13 ums-u-muted" style="float:right">Đã chọn: <b data-z="dachon">0</b> sinh viên</span></div>' +
             '<div class="ums-u-mb-2">' + ui.btn('importer', { text: 'Import Excel', attr: { 'data-a': 'import' } }) + ' ' +
-            ui.btn('confirm', { text: 'Chọn tất cả', mod: 'ghost', attr: { 'data-a': 'all' } }) + ' ' +
-            ui.btn('close', { text: 'Bỏ chọn tất cả', attr: { 'data-a': 'none' } }) + '</div>' +
+            ui.btn('confirm', { text: 'Chọn tất cả', mod: 'ghost', icon: 'fa-square-check', attr: { 'data-a': 'all' } }) + ' ' +
+            // KHÔNG dùng kind 'close' cho nút này: 'close' mang lớp ums-btn--dong (luật một nút Đóng + phím Esc) — trang dò do-man bắt được
+            ui.btn('confirm', { text: 'Bỏ chọn tất cả', mod: 'ghost', icon: 'fa-square', attr: { 'data-a': 'none' } }) + '</div>' +
             '<div data-z="bang"></div>';
         var f = function (k) { return body.querySelector('[data-f="' + k + '"]'); };
         var he = f('he'), khoa = f('khoa'), ct = f('ct'), lop = f('lop');

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>dò một màn</title></head>
+<body>
+<pre id="out"></pre>
+<iframe id="f" src="../_v2/index.html?demo" style="width:1440px;height:900px"></iframe>
+<script>
+/* TRANG DÒ DÙNG CHUNG cho một màn vừa chuyển — thay cho việc viết trang dò riêng mỗi phân hệ (phiên 5/10 viết 3 trang, mỗi trang
+   chạy 2–3 lượt vì đoán selector). Chạy:
+       MSYS_NO_PATHCONV=1 node _harness/chay-cdp.js "http://localhost:8787/_harness/do-man.html?vt=R46&man=TT-kehoach-tintuc" 9431
+   Tham số: vt (vai trò), man (ID chức năng), cot=1 (bấm mục đầu cột trái trước), sau=1 (bấm thử MỌI nút trên dòng đầu bảng
+   và mọi nút đầu khung, mỗi nút xong bấm Đóng), tho=1 (in thêm danh sách nút / ô lọc / ô biểu mẫu).
+   Các bước chuẩn: mở màn → chữ đầu màn, số dòng bảng, số ô lọc → bấm "Thêm mới" / nút add → đếm dialog[open] (phải 0 — BO-CUC luật 1),
+   đếm ô biểu mẫu, nút Đóng đang hiện (phải 1) → bấm Sửa dòng đầu (biểu tượng fa-pen-to-square) → đọc ô đầu → Đóng → (sau=1) từng nút
+   → lỗi JS / console.error gom cuối. Mỗi bước bọc try/catch, luôn in DONE. */
+var out = [];
+function log(s) { out.push(s); document.getElementById('out').textContent = out.join('\n'); }
+function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+var QS = new URLSearchParams(location.search);
+var VT = QS.get('vt') || 'R33', MAN = QS.get('man') || '', SAU = QS.get('sau') === '1', COT = QS.get('cot') === '1', THO = QS.get('tho') === '1';
+
+document.getElementById('f').onload = async function () {
+    var w = this.contentWindow, errs = [];
+    w.addEventListener('error', function (e) { errs.push(e.message + ' @' + (e.filename || '').split('/').pop() + ':' + e.lineno); });
+    var ce = w.console.error; w.console.error = function () { errs.push(Array.prototype.join.call(arguments, ' ').slice(0, 200)); ce.apply(w.console, arguments); };
+    try { await chay(w); } catch (e) { log('!! trang dò lỗi: ' + (e && e.stack || e)); }
+    log('lỗi JS / console.error: ' + JSON.stringify(errs));
+    log('DONE');
+};
+
+async function chay(w) {
+    if (!MAN) { log('!! thiếu ?man=<ID chức năng>'); return; }
+    await wait(500);
+    w.location.hash = '#/r/' + VT + '/' + MAN;
+    await wait(2500);
+    var d = w.document, sc = d.getElementById('screen');
+    if (!sc) { log('!! không có #screen'); return; }
+    function hien(el) { return !!el && el.offsetParent !== null; }
+    function nut(txt) { return Array.prototype.find.call(d.querySelectorAll('#screen button'), function (b) { return hien(b) && (b.textContent.trim() === txt || b.title === txt); }); }
+    function dongHien() { return Array.prototype.filter.call(d.querySelectorAll('#screen .ums-btn--dong'), hien).length; }
+    function dlgs() { return d.querySelectorAll('dialog[open]').length; }
+    function ft() { return d.querySelector('#screen .ums-formtrang'); }
+    function dongHet() { var b = nut('Đóng'); if (b) b.click(); var x = d.querySelector('dialog[open] [data-dlg="x"]'); if (x) x.click(); }
+    function tenNut(b) { return b.textContent.trim() || b.title || b.className.replace(/ums-\w+/g, '').trim(); }
+
+    if (/chưa chuyển sang giao diện mới/.test(sc.textContent)) { log('!! màn chưa chuyển'); return; }
+    log('màn: ' + sc.textContent.replace(/\s+/g, ' ').trim().slice(0, 150));
+    if (COT) { var it = d.querySelector('#screen .ums-master__item'); if (it) { it.click(); await wait(1500); log('đã bấm mục đầu cột trái'); } else log('!! cot=1 nhưng không có .ums-master__item'); }
+    var bang = d.querySelectorAll('#screen .ums-table'), rows = d.querySelectorAll('#screen .ums-table tbody tr').length;
+    log('bảng: ' + bang.length + ' | dòng: ' + rows + ' | ô lọc: ' + d.querySelectorAll('#screen [data-scope="filter"], #screen .ums-filter select, #screen .ums-filter input').length +
+        ' | cột trái: ' + d.querySelectorAll('#screen .ums-master__side').length + ' | dialog mở: ' + dlgs());
+    var nutDau = Array.prototype.filter.call(d.querySelectorAll('#screen .ums-page__actions button, #screen .ums-panel__head button, #screen .ums-panel__tools button'), hien);
+    log('nút đầu khung: ' + nutDau.map(tenNut).join(' ; '));
+    if (THO) {
+        log('ô lọc: ' + Array.prototype.map.call(d.querySelectorAll('#screen [data-scope="filter"]'), function (x) { return (x.getAttribute('data-k') || x.id) + ':' + x.tagName.toLowerCase(); }).join(' '));
+        log('nút dòng đầu: ' + Array.prototype.map.call(d.querySelectorAll('#screen .ums-table tbody tr:first-child button'), tenNut).join(' ; '));
+    }
+
+    // Thêm mới
+    var add = nut('Thêm mới') || Array.prototype.find.call(d.querySelectorAll('#screen .ums-btn--add'), hien);
+    if (add) {
+        add.click(); await wait(900);
+        log('THÊM ("' + tenNut(add) + '"): dialog=' + dlgs() + (dlgs() ? '  !! BO-CUC luật 1: thêm/sửa phải là biểu mẫu trong trang' : '') +
+            ' | ô biểu mẫu=' + d.querySelectorAll('#screen [data-scope="form"], #screen .ums-formtrang input, #screen .ums-formtrang select, #screen .ums-formtrang textarea').length +
+            ' | formtrang=' + !!ft() + ' | nút Đóng hiện=' + dongHien() + (dongHien() > 1 ? '  !! phải đúng 1 (BO-CUC luật 18)' : '') +
+            ' | tệp=' + d.querySelectorAll('#screen .ums-files, #screen .ums-file').length + ' | editor=' + d.querySelectorAll('#screen .cke, #screen textarea').length);
+        if (THO) log('  ô: ' + Array.prototype.map.call(d.querySelectorAll('#screen [data-scope="form"]'), function (x) { return x.getAttribute('data-k'); }).join(' '));
+        dongHet(); await wait(500);
+    } else log('không có nút Thêm mới');
+
+    // Sửa dòng đầu
+    var ed = d.querySelector('#screen .ums-table tbody .fa-pen-to-square');
+    if (ed) {
+        ed.closest('button, a').click(); await wait(1200);
+        var o1 = d.querySelector('#screen [data-scope="form"]') || (ft() && ft().querySelector('input, select, textarea'));
+        log('SỬA: dialog=' + dlgs() + ' | ô đầu ' + (o1 ? (o1.getAttribute('data-k') || o1.name || o1.tagName) + '=' + String(o1.value || '').slice(0, 40) : '(không thấy ô)') + ' | nút Đóng hiện=' + dongHien());
+        dongHet(); await wait(500);
+    } else log('không có nút Sửa trên bảng');
+
+    // Bấm thử mọi nút trên dòng đầu + nút đầu khung
+    if (SAU) {
+        var ds = Array.prototype.map.call(d.querySelectorAll('#screen .ums-table tbody tr:first-child button'), tenNut)
+            .concat(nutDau.map(tenNut)).filter(function (t, i, a) { return t && a.indexOf(t) === i && !/^(Sửa|Xoá|Xóa|Đóng|Thêm mới|Tải lại|Xoá đã chọn)$/.test(t); });
+        for (var i = 0; i < ds.length; i++) {
+            var b = Array.prototype.find.call(d.querySelectorAll('#screen .ums-table tbody tr:first-child button, #screen .ums-page__actions button, #screen .ums-panel__head button, #screen .ums-panel__tools button'),
+                function (x) { return hien(x) && tenNut(x) === ds[i]; });
+            if (!b) { log('[' + ds[i] + '] không còn thấy nút'); continue; }
+            var truoc = w.ums.api.call.__dem ? w.ums.api.call.n : 0;
+            b.click(); await wait(1800);
+            var f = ft();
+            log('[' + ds[i] + '] dialog=' + dlgs() + ' | formtrang=' + !!f + (f ? ' (bảng ' + f.querySelectorAll('.ums-table').length + ', dòng ' + f.querySelectorAll('.ums-table tbody tr').length + ', ô chọn ' + f.querySelectorAll('select').length +
+                ', nút: ' + Array.prototype.filter.call(f.querySelectorAll('.ums-panel__tools button'), hien).map(tenNut).join('/') + ')' : '') + ' | nút Đóng hiện=' + dongHien());
+            dongHet(); await wait(500); dongHet(); await wait(300);
+        }
+    }
+    log('cuối: dòng=' + d.querySelectorAll('#screen .ums-table tbody tr').length + ' | formtrang=' + !!ft() + ' | dialog=' + dlgs());
+}
+</script>
+</body></html>

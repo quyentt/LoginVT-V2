@@ -455,7 +455,19 @@ Việc kế: người dùng up gói bổ sung → `--da-up`; phân hệ mới ch
 Tầng chung mới 5/10: `ums.editor` (`assets/js/editor.js`). **Giao việc: tối đa 2 tác tử con một lúc (người dùng 5/10); mỗi tác tử chỉ đọc đúng mục cần (không "đọc hết"
 CLAUDE.md / BO-CUC), grep hàm trong tệp gốc lớn thay vì đọc nguyên tệp, lưu tệp sớm.**
 
-### Quy tắc chuyển một phân hệ (đã dùng 20 lần)
+### Bộ công cụ tiết kiệm token khi chuyển màn (6/10 — dùng TRƯỚC khi mở bất kỳ tệp mã nào)
+
+| Việc | Công cụ | Thay cho |
+|---|---|---|
+| Hiểu màn gốc | `PYTHONIOENCODING=utf-8 python _harness\tom-tat-goc.py <html gốc> [--ham a,b]` → vùng, hàm, MỌI lời gọi API kèm tham số, hàm edu.* dùng, id lệch (mã chết) | đọc nguyên văn 1.000–3.000 dòng |
+| Chữ ký tầng chung | [_v2/API.md](_v2/API.md) (sinh: `python _harness\sinh-api.py`; `--kiem` = hàm thiếu chú thích) — tra theo tên hàm | grep ui.js / crud.js / patterns.js / ref.js / report.js |
+| Tên lớp CSS | [_v2/CLASS.md](_v2/CLASS.md) (sinh: `python _harness\sinh-class.py`) | đoán lớp rồi grep CSS |
+| Dò một màn vừa chuyển | `_harness/do-man.html?vt=R..&man=<ID>&sau=1&tho=1` qua `chay-cdp.js` — bấm Thêm / Sửa / mọi nút trên dòng, đếm dialog, nút Đóng, lỗi console | viết trang dò riêng mỗi phân hệ |
+| Giao tác tử con | chép [_v2/BRIEF-TAC-TU.md](_v2/BRIEF-TAC-TU.md), điền chỗ `<…>` | soạn brief mới, tác tử đọc lại cả bộ tài liệu |
+
+Sửa tầng chung (`assets/js`, `assets/css`) xong thì chạy lại `sinh-api.py` / `sinh-class.py` (dong-goi không tự gọi). Script Python in tiếng Việt cần `PYTHONIOENCODING=utf-8`.
+
+### Quy tắc chuyển một phân hệ (đã dùng 21 lần)
 
 Menu mẫu `ums.demo.menus[R..]` (demo-data.js, `buildMenu`, ID `<TIỀN TỐ>-<module>-<tệp>`) → mỗi màn `html/<tệp>.html` + `script/<tệp>.js` (+ `.demo.js`), khung chung
 trong module (`_<tên>.js`), dùng lại khung phân hệ khác bằng nạp chéo (sửa khung thì chỉ thêm cờ, mặc định giữ nguyên, kiểm lại màn đang dùng) → ba trang kiểm

@@ -157,6 +157,9 @@ viết tạm trong module của mình và **ghi yêu cầu vào báo cáo** (m�
 
 ## 4. Tầng chung có sẵn
 
+> **Tra chữ ký đầy đủ ở [API.md](API.md)** (sinh tự động từ chú thích trong mã, `python _harness\sinh-api.py`) và tên lớp CSS ở [CLASS.md](CLASS.md).
+> Tóm tắt màn gốc trước khi đọc: `python _harness	om-tat-goc.py <html gốc>`. Mục này chỉ là bản rút gọn.
+
 ### ums.api
 
 ```js
