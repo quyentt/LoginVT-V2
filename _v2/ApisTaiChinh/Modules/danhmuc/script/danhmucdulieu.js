@@ -107,6 +107,7 @@
             tables = rowsOf(r);
             elCount.textContent = String(r.pager || tables.length);
             drawTree();
+            if (moSanDanhMuc()) return;
             if (tables.length && CFG.tuChon) pick(tables[0].ID);
             else if (tables.length) elData.innerHTML = '<div class="ums-panel">' + ui.empty('Chọn một danh mục ở cột trái', 'fa-hand-pointer') + '</div>';
             else elData.innerHTML = '<div class="ums-panel">' + ui.empty('Chưa có bảng danh mục nào') + '</div>';
@@ -114,6 +115,16 @@
             elTree.innerHTML = ui.fail(err.message);
             ums.api.handle(err, 'danh sách bảng danh mục');
         });
+    }
+
+    /* Mở từ khung "Cần làm trước" (lamtruoc.js): chọn sẵn danh mục đang thiếu giá trị; không thuộc nhóm của vai trò này thì báo */
+    function moSanDanhMuc() {
+        var ma = ums.lamTruoc && ums.lamTruoc.layDanhMucCho();
+        if (!ma) return false;
+        var t = tables.filter(function (x) { return String(x.MADANHMUC || '').toUpperCase() === ma.toUpperCase(); })[0];
+        if (t) { pick(t.ID); return true; }
+        ui.toast('Danh mục ' + ma + ' không có trong danh sách của vai trò này — mở Quản trị hệ thống → Danh mục dữ liệu để khai.', 'warn');
+        return false;
     }
 
     /** Cây theo CHUNG_TENDANHMUC_CHA_ID, tên hiện "TENDANHMUC - MADANHMUC" */

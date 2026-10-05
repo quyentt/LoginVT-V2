@@ -22,20 +22,20 @@ menu người dùng gửi. Số liệu đo bằng `skin.py` ngày 1/10: dòng ht
 
 Cột **Vỏ (host kiểm)** = theo bản xuất CSDL host đang kiểm (26/9). Trên host Phenikaa mục có thể khác — xem mục 8.
 
-| # | Menu | Tệp (dưới `ApisQuanLyThiTracNghiem/modules/`) | html | id | Móc đặc biệt / lưu ý | Vỏ (host kiểm) | Trạng thái |
-|---|---|---|---:|---:|---|---|---|
-| 1 | Quản lý bộ đề | `quanlybode/html/quanlybode.html` | 566 | 85 | tab BS3, `chosen-select` | index (Phenikaa: indexi) | **XONG** — chờ người dùng xem trên host |
-| 2 | Quản lý đơn vị | `quanlydonvi/html/quanlydonvi.html` | 137 | 13 | `btnSearch_DonVi` | indexi | **XONG** (1/10) — chờ người dùng xem trên host. ⚠ Nguồn `html/` + `goc/` của màn này nằm trong `_harness/skin-nguon.zip` (phiên đám mây không ghi được thư mục sâu 9 cấp) — GIẢI NÉN vào `App_Themes/Cms/Custom_V1/ums/` TRƯỚC khi chạy `skin.py` lần kế tiếp |
-| 3 | Phân quyền phê duyệt dữ liệu điểm, NHCH | `phanquyendulieu/html/phanquyenpheduyetdiem.html` | 187 | 19 | `btnExtend_Search`, `btnThem_PhanQuyen`, `btnThem_Muc_DonVi_PhanQuyen` | indexi | **XONG** (1/10) — chờ người dùng xem trên host. Hai cột `skin-2cot` (cột trái danh sách người dùng: luật `.table-img` / `.btn-circle` / `tr-bg` / `.skin-timkiem` thêm vào `cau-noi.css`); hai bảng đã / chưa phân quyền `ums-grid--2` như gốc. Nguồn `html/` + `goc/` trong `_harness/skin-nguon.zip` |
-| 4 | Quản lý đợt thi | `quanlydotthi/html/quanlydotthi.html` | 244 | 23 | `btnSearch_DotThi` | indexi | **XONG** (1/10) — 23/23 id, 12/12 lang, 0 lỗi JS, đã chụp kiểm sau spa, chờ người dùng xem trên host |
-| 5 | Quản lý phúc tra, phúc khảo | `quanlyphuctraphuckhao/html/quanlyphuctraphuckhao.html` | 304 | 34 | `input-datepicker`, `chosen-select` | indexi | **XONG** (1/10) — 34/34 id, 8/8 lang, 0 lỗi JS, đã chụp kiểm sau spa, chờ người dùng xem trên host |
-| 6 | Quản lý thi tự luận | `quanlythi/html/quanlythituluan.html` | 321 | 36 | `input-datepicker`, `chosen-select` | indexi | chưa |
-| 7 | Tạo đề thủ công | `quanlybode/html/taodethucong.html` | 437 | 48 | tab BS3, `btnSearch_DeThiThuCong` | indexi | chưa |
-| 8 | Giám sát thi | `quanlythi/html/giamsatthi.html` ⚠ | 787 | 85 | `input-datepicker` | (ngoài menu host kiểm) | chưa — xác nhận tệp (mục 8) |
-| 9 | Duyệt điểm thi trắc nghiệm | `pheduyetdiem/html/pheduyetdiem.html` ⚠ | 676 | 73 | 5 tab, `btnSearch_PhongThi_Tab2…5`, `input-datepicker` | (ngoài menu host kiểm) | chưa — xác nhận tệp (mục 8) |
-| 10 | Nhập ngân hàng câu hỏi | `nhapnganhangcauhoi/html/nhapnganhangcauhoi.html` | 851 | 94 | **CKEditor + CKFinder**, **modal BS3**, tab | index | chưa |
-| 11 | Quản lý ngân hàng câu hỏi | `quanlynganhangcauhoi/html/quanlynganhangcauhoi.html` | 1687 | 175 | CKEditor, modal, tab, `btnEdit`, `btnThaoTac`, nhiều `btnClose_*` | indexi | **XONG** (2/10) — 175/175 id, 0 lỗi JS; bỏ các nút Đóng thừa bên trong (chỉ giữ Đóng ngoài cùng); badge số đếm đặt cạnh tiêu đề panel; bỏ toàn bộ class fix cứng `skin-w-...`/`skin-max-...`; toolbar và filter responsive không đè nút, padding/margin thoáng đẹp |
-| 12 | Quản lý thi | `quanlythi/html/quanlythi.html` | 2318 | 231 | modal, tab, `btnCloseSubDetail`, `btnClose_CBCT`… — LỚN NHẤT | indexi | **XONG** (1/10) — 231/231 id, 18 zone/modal, 0 lỗi JS, đã chụp kiểm sau spa, chờ người dùng xem trên host |
+| #   | Menu                                    | Tệp (dưới `ApisQuanLyThiTracNghiem/modules/`)           | html |  id | Móc đặc biệt / lưu ý                                                   | Vỏ (host kiểm)           | Trạng thái                                                                                                                                                                                                                                                                                             |
+| --- | --------------------------------------- | ------------------------------------------------------- | ---: | --: | ---------------------------------------------------------------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1   | Quản lý bộ đề                           | `quanlybode/html/quanlybode.html`                       |  566 |  85 | tab BS3, `chosen-select`                                               | index (Phenikaa: indexi) | **XONG** — chờ người dùng xem trên host                                                                                                                                                                                                                                                                |
+| 2   | Quản lý đơn vị                          | `quanlydonvi/html/quanlydonvi.html`                     |  137 |  13 | `btnSearch_DonVi`                                                      | indexi                   | **XONG** (1/10) — chờ người dùng xem trên host. ⚠ Nguồn `html/` + `goc/` của màn này nằm trong `_harness/skin-nguon.zip` (phiên đám mây không ghi được thư mục sâu 9 cấp) — GIẢI NÉN vào `App_Themes/Cms/Custom_V1/ums/` TRƯỚC khi chạy `skin.py` lần kế tiếp                                          |
+| 3   | Phân quyền phê duyệt dữ liệu điểm, NHCH | `phanquyendulieu/html/phanquyenpheduyetdiem.html`       |  187 |  19 | `btnExtend_Search`, `btnThem_PhanQuyen`, `btnThem_Muc_DonVi_PhanQuyen` | indexi                   | **XONG** (1/10) — chờ người dùng xem trên host. Hai cột `skin-2cot` (cột trái danh sách người dùng: luật `.table-img` / `.btn-circle` / `tr-bg` / `.skin-timkiem` thêm vào `cau-noi.css`); hai bảng đã / chưa phân quyền `ums-grid--2` như gốc. Nguồn `html/` + `goc/` trong `_harness/skin-nguon.zip` |
+| 4   | Quản lý đợt thi                         | `quanlydotthi/html/quanlydotthi.html`                   |  244 |  23 | `btnSearch_DotThi`                                                     | indexi                   | **XONG** (1/10) — 23/23 id, 12/12 lang, 0 lỗi JS, đã chụp kiểm sau spa, chờ người dùng xem trên host                                                                                                                                                                                                   |
+| 5   | Quản lý phúc tra, phúc khảo             | `quanlyphuctraphuckhao/html/quanlyphuctraphuckhao.html` |  304 |  34 | `input-datepicker`, `chosen-select`                                    | indexi                   | **XONG** (1/10) — 34/34 id, 8/8 lang, 0 lỗi JS, đã chụp kiểm sau spa, chờ người dùng xem trên host                                                                                                                                                                                                     |
+| 6   | Quản lý thi tự luận                     | `quanlythi/html/quanlythituluan.html`                   |  321 |  36 | `input-datepicker`, `chosen-select`                                    | indexi                   | chưa                                                                                                                                                                                                                                                                                                   |
+| 7   | Tạo đề thủ công                         | `quanlybode/html/taodethucong.html`                     |  437 |  48 | tab BS3, `btnSearch_DeThiThuCong`                                      | indexi                   | chưa                                                                                                                                                                                                                                                                                                   |
+| 8   | Giám sát thi                            | `quanlythi/html/giamsatthi.html` ⚠                      |  787 |  85 | `input-datepicker`                                                     | (ngoài menu host kiểm)   | chưa — xác nhận tệp (mục 8)                                                                                                                                                                                                                                                                            |
+| 9   | Duyệt điểm thi trắc nghiệm              | `pheduyetdiem/html/pheduyetdiem.html` ⚠                 |  676 |  73 | 5 tab, `btnSearch_PhongThi_Tab2…5`, `input-datepicker`                 | (ngoài menu host kiểm)   | chưa — xác nhận tệp (mục 8)                                                                                                                                                                                                                                                                            |
+| 10  | Nhập ngân hàng câu hỏi                  | `nhapnganhangcauhoi/html/nhapnganhangcauhoi.html`       |  851 |  94 | **CKEditor + CKFinder**, **modal BS3**, tab                            | index                    | **XONG** (2/10) — 94/94 id, 0 lỗi JS, đã chụp kiểm sau spa, chờ người dùng xem trên host                                                                                                                                                                                                               |
+| 11  | Quản lý ngân hàng câu hỏi               | `quanlynganhangcauhoi/html/quanlynganhangcauhoi.html`   | 1687 | 175 | CKEditor, modal, tab, `btnEdit`, `btnThaoTac`, nhiều `btnClose_*`      | indexi                   | **XONG** (2/10) — 175/175 id, 0 lỗi JS; bỏ các nút Đóng thừa bên trong (chỉ giữ Đóng ngoài cùng); badge số đếm đặt cạnh tiêu đề panel; bỏ toàn bộ class fix cứng `skin-w-...`/`skin-max-...`; toolbar và filter responsive không đè nút, padding/margin thoáng đẹp                                     |
+| 12  | Quản lý thi                             | `quanlythi/html/quanlythi.html`                         | 2318 | 231 | modal, tab, `btnCloseSubDetail`, `btnClose_CBCT`… — LỚN NHẤT           | indexi                   | **XONG** (1/10) — 231/231 id, 18 zone/modal, 0 lỗi JS, đã chụp kiểm sau spa, chờ người dùng xem trên host                                                                                                                                                                                              |
 
 Tệp khác trong phân hệ, KHÔNG thấy trên menu (hỏi người dùng có làm không):
 `phanquyendulieu/html/phanquyendulieu.html` (166 / 16), `phanquyendulieu/html/phanquyendulieugroupquestion.html` (174 / 17),
@@ -105,7 +105,7 @@ viết trên đĩa (`modules` viết thường).
 5. **`.zone-bus` là lớp bọc TRONG SUỐT** (luật `!important` trong `cau-noi.css`). Khung trắng là `div.ums-panel` nằm BÊN TRONG:
    ```html
    <div class="zone-bus" id="zoneExamStruct" style="display: none">
-       <div class="ums-panel"> … </div>
+     <div class="ums-panel">…</div>
    </div>
    ```
    `id`, `zone-bus`, `style="display:none"` ở lớp ngoài như gốc (JS ẩn / hiện bằng `edu.util.toggle_overide`).
@@ -122,37 +122,37 @@ viết trên đĩa (`modules` viết thường).
 13. **Thanh công cụ tác vụ (`.skin-toolbar`) & nhóm nút (`.skin-toolbar-group`)**: Luôn có `flex-wrap: wrap; gap: var(--ums-sp-2);`. Không dùng `flex-wrap: nowrap` khiến các nút bị đè chồng lên nhau khi màn hình hẹp hay khi đặt trong cột con của `skin-2cot`. Các select/chosen trong toolbar khống chế `min-width: 160px; max-width: 260px; width: auto !important`.
 14. **Số đếm (Badge) trong tiêu đề Panel**: Đặt badge số đếm (`span.ums-badge.ums-badge--info`) **ngay bên trong** thẻ `<h3 class="ums-panel__title">`, liền kề sau chữ tiêu đề (vd: `<h3 class="ums-panel__title"><i class="fa fa-hdd-o"></i> Danh sách <span class="ums-badge ums-badge--info"><span id="..."></span></span></h3>`). **KHÔNG** đặt vào `.ums-panel__tools` vì `justify-content: space-between` của panel head sẽ đẩy badge dạt sang tận mép phải.
 15. **Nút Đóng (`.btnClose`) của panel/modal**: Ở các màn hình chi tiết nhiều tầng/tab (như `zoneGroupQuestionDetail`), chỉ giữ duy nhất nút Đóng ngoài cùng của panel lớn. **KHÔNG** để lặp lại các nút Đóng con thừa thãi ở panel con hoặc toolbar bên trong.
-16. **Thanh phân trang bảng ("Hiển thị [ 10 ] dữ liệu")**: Markup do JS gốc (`systemroot.js`) sinh ra dạng `[class*="zone-pag-header"]` chèn ngay trước thẻ `<table>`. Phải có khoảng cách (margin) tách rời khỏi bảng: `margin-bottom: var(--ums-sp-3) !important` và `margin-top: var(--ums-sp-3) !important` trên bảng. Ô chọn số lượng (`.aps-hienthi-input .select2-container` / `select`) phải nhỏ gọn: chiều cao `24px !important`, cỡ chữ `12px`, padding `0 18px 0 6px`, độ rộng `62px` để cân xứng với nhãn nghiêng *"Hiển thị"* và *"dữ liệu"*.
+16. **Thanh phân trang bảng ("Hiển thị [ 10 ] dữ liệu")**: Markup do JS gốc (`systemroot.js`) sinh ra dạng `[class*="zone-pag-header"]` chèn ngay trước thẻ `<table>`. Phải có khoảng cách (margin) tách rời khỏi bảng: `margin-bottom: var(--ums-sp-3) !important` và `margin-top: var(--ums-sp-3) !important` trên bảng. Ô chọn số lượng (`.aps-hienthi-input .select2-container` / `select`) phải nhỏ gọn: chiều cao `24px !important`, cỡ chữ `12px`, padding `0 18px 0 6px`, độ rộng `62px` để cân xứng với nhãn nghiêng _"Hiển thị"_ và _"dữ liệu"_.
 17. **Luôn bọc `ums-panel__body` đầy đủ**: Bất kỳ panel nào chứa bộ lọc, thanh tác vụ, bảng dữ liệu đều phải bọc trong `<div class="ums-panel__body">`. Thiếu thẻ này sẽ làm nội dung mất padding, dính sát vào mép đường viền của panel.
 
 ## 6. Bảng đổi class (cũ → mới)
 
-| Bản gốc | Bản lột da |
-|---|---|
-| `box box-solid` (khung) | `ums-panel` |
-| `box-header with-border` | `ums-panel__head` |
-| `h3.box-title` | `h3.ums-panel__title` (giữ `<i class="fa …">` đầu) |
-| `box-tools pull-right`, `pull-right title-note` | `ums-panel__tools` |
-| `box-body` | `ums-panel__body` |
-| `box-footer` | `ums-panel__foot` (thêm `ums-row--end` nếu chỉ có nút bên phải) |
-| `row` + `col-sm-2` (nhãn) + `col-sm-10` (ô) | `ums-field ums-field--inline` > `label.ums-field__label` + `div.ums-field__control` |
-| hàng ô lọc `col-sm-3 item-search` | `ums-filter` > `ums-field` (nút Tìm kiếm: `ums-field ums-field--fit`) |
-| `input.form-control` | `input.form-control.ums-input` (ô số ngắn: thêm `ums-input--so`) |
-| `select.select-opt` | giữ nguyên `select-opt` (Corei bọc select2; CSS tự cho đầy ô) |
-| `select.chosen-select` | `chosen-select ums-select` (Corei KHÔNG bọc plugin nào — ô chọn thường) |
-| `btn btn-primary` | `btn ums-btn ums-btn--primary` |
-| nút Lưu / Cập nhật | `btn ums-btn ums-btn--save` |
-| `btn btn-default` Xóa | `btn ums-btn ums-btn--delsel` |
-| `btn btn-default` Đóng / Tải file | `btn ums-btn ums-btn--ghost` (Đóng chỉ biểu tượng ở đầu khung: giữ `title="Đóng"`) |
-| `table.table.table-hover.table-bordered` (trong `row` / `scroll-table-x`) | `div.ums-tablewrap` > `table.ums-table` (giữ `id`, `thead`, `tfoot`, class `td-center`/`td-fixed` trên `th`) |
-| `span.badge.bg-light-blue` (đếm) | `span.ums-badge.ums-badge--info` (tự ẩn khi rỗng) |
-| `ul.nav.nav-tabs` > `li.active` > `a[data-toggle=tab]` | `ul.ums-tabs` > `li.ums-tabs__item.active` > `a[data-toggle=tab]` — GIỮ `li.active`, `data-toggle`, `href` (JS tab của BS3) |
-| `div.tab-content` > `div.tab-pane.active` | giữ nguyên (Bootstrap ẩn / hiện tab bằng hai class này) |
-| `label style="color:#0073b7"` (giá trị chỉ xem) | `label.skin-gt` |
-| `label style="color:red"` (cảnh báo / số đếm đỏ) | `label.skin-canh` |
-| hai cột `col-sm-3` + `col-sm-9` | `div.skin-2cot` > hai khối |
-| vùng in / xem trước (`float:left; background:#fff; margin:20px`) | `div.skin-xemin` |
-| khối nút in lớn (`fa-4x`, div có id làm nút) | div ĐÓ mang `ums-btn ums-btn--save` / `--ghost`, `role="button"` (giữ id — JS gắn click vào div) |
+| Bản gốc                                                                   | Bản lột da                                                                                                                  |
+| ------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `box box-solid` (khung)                                                   | `ums-panel`                                                                                                                 |
+| `box-header with-border`                                                  | `ums-panel__head`                                                                                                           |
+| `h3.box-title`                                                            | `h3.ums-panel__title` (giữ `<i class="fa …">` đầu)                                                                          |
+| `box-tools pull-right`, `pull-right title-note`                           | `ums-panel__tools`                                                                                                          |
+| `box-body`                                                                | `ums-panel__body`                                                                                                           |
+| `box-footer`                                                              | `ums-panel__foot` (thêm `ums-row--end` nếu chỉ có nút bên phải)                                                             |
+| `row` + `col-sm-2` (nhãn) + `col-sm-10` (ô)                               | `ums-field ums-field--inline` > `label.ums-field__label` + `div.ums-field__control`                                         |
+| hàng ô lọc `col-sm-3 item-search`                                         | `ums-filter` > `ums-field` (nút Tìm kiếm: `ums-field ums-field--fit`)                                                       |
+| `input.form-control`                                                      | `input.form-control.ums-input` (ô số ngắn: thêm `ums-input--so`)                                                            |
+| `select.select-opt`                                                       | giữ nguyên `select-opt` (Corei bọc select2; CSS tự cho đầy ô)                                                               |
+| `select.chosen-select`                                                    | `chosen-select ums-select` (Corei KHÔNG bọc plugin nào — ô chọn thường)                                                     |
+| `btn btn-primary`                                                         | `btn ums-btn ums-btn--primary`                                                                                              |
+| nút Lưu / Cập nhật                                                        | `btn ums-btn ums-btn--save`                                                                                                 |
+| `btn btn-default` Xóa                                                     | `btn ums-btn ums-btn--delsel`                                                                                               |
+| `btn btn-default` Đóng / Tải file                                         | `btn ums-btn ums-btn--ghost` (Đóng chỉ biểu tượng ở đầu khung: giữ `title="Đóng"`)                                          |
+| `table.table.table-hover.table-bordered` (trong `row` / `scroll-table-x`) | `div.ums-tablewrap` > `table.ums-table` (giữ `id`, `thead`, `tfoot`, class `td-center`/`td-fixed` trên `th`)                |
+| `span.badge.bg-light-blue` (đếm)                                          | `span.ums-badge.ums-badge--info` (tự ẩn khi rỗng)                                                                           |
+| `ul.nav.nav-tabs` > `li.active` > `a[data-toggle=tab]`                    | `ul.ums-tabs` > `li.ums-tabs__item.active` > `a[data-toggle=tab]` — GIỮ `li.active`, `data-toggle`, `href` (JS tab của BS3) |
+| `div.tab-content` > `div.tab-pane.active`                                 | giữ nguyên (Bootstrap ẩn / hiện tab bằng hai class này)                                                                     |
+| `label style="color:#0073b7"` (giá trị chỉ xem)                           | `label.skin-gt`                                                                                                             |
+| `label style="color:red"` (cảnh báo / số đếm đỏ)                          | `label.skin-canh`                                                                                                           |
+| hai cột `col-sm-3` + `col-sm-9`                                           | `div.skin-2cot` > hai khối                                                                                                  |
+| vùng in / xem trước (`float:left; background:#fff; margin:20px`)          | `div.skin-xemin`                                                                                                            |
+| khối nút in lớn (`fa-4x`, div có id làm nút)                              | div ĐÓ mang `ums-btn ums-btn--save` / `--ghost`, `role="button"` (giữ id — JS gắn click vào div)                            |
 
 Markup do **JS gốc sinh** (nút `btn btn-default` trong ô bảng, `td-center`, phân trang `zone-pag-*`, `light-pagination`) KHÔNG
 sửa được (cấm sửa JS) → đã vẽ lại trong `cau-noi.css` dưới `.ums-skin`. Màn mới sinh kiểu markup khác thì THÊM luật vào
@@ -165,7 +165,7 @@ sửa được (cấm sửa JS) → đã vẽ lại trong `cau-noi.css` dưới 
   `cssLotDa: true`, `traRaNgoai: []`, **Lỗi JS: không**. Mở XEM mọi ảnh vùng (form, tab, bảng).
 - Màn có tab: bấm từng tab (thêm lệnh `$('a[href="#tab_2"]').click()` như trong lịch sử quanlybode) — tab BS3 phải chuyển.
 - Màn có modal: mở modal bằng `$('#<idModal>').modal('show')` trong trang, chụp. Giữ khung `.modal > .modal-dialog >
-  .modal-content > .modal-header / .modal-body / .modal-footer` (JS Bootstrap + `modal*` là móc); chỉ lột da BÊN TRONG body / footer.
+.modal-content > .modal-header / .modal-body / .modal-footer` (JS Bootstrap + `modal*` là móc); chỉ lột da BÊN TRONG body / footer.
 - Màn có CKEditor: `textarea` / `div` mang id mà `CKEDITOR.replace('<id>')` dùng phải giữ id và giữ LOẠI thẻ.
 - Harness không có dữ liệu: bảng trống. Muốn thấy dòng thì chèn tay vài `<tr>` đúng chuỗi mà `mRender` của màn sinh (xem JS).
 

@@ -250,11 +250,18 @@
         nhacLop();
         if (!kh) { ctSan = null; return; }
         var k = st.dsKH.filter(function (x) { return String(x.ID) === kh; })[0];
-        ctSan = ums.ref.chuongTrinh({ strKhoaDaoTao_Id: k ? e(k.DAOTAO_KHOADAOTAO_ID) : '', strN_CN_LOP_Id: '', strKhoaQuanLy_Id: '',
+        /* gốc 2/10: khoá lấy từ DAOTAO_KHOADAOTAO_ID, lùi về KHOADAOTAO_ID / DAOTAO_KHOAHOC_ID; nhãn chương trình "Tên - Mã" */
+        var khoa = k ? (k.DAOTAO_KHOADAOTAO_ID || k.KHOADAOTAO_ID || k.DAOTAO_KHOAHOC_ID || '') : '';
+        ctSan = ums.ref.chuongTrinh({ strKhoaDaoTao_Id: e(khoa), strN_CN_LOP_Id: '', strKhoaQuanLy_Id: '',
             strToChucCT_Cha_Id: '', strNguoiThucHien_Id: '', strTuKhoa: '', pageIndex: 1, pageSize: 10000 })
-            .then(function (rows) { pat.fill(F.ct, rows, { name: 'TENCHUONGTRINH' }); },
+            .then(function (rows) { pat.fill(F.ct, rows, { name: tenCT }); },
                 function (err) { ums.api.handle(err, 'chương trình đào tạo'); });
         return ctSan;
+    }
+    function tenCT(r) {
+        var ma = r.MA || r.MACHUONGTRINH || r.TOCHUCCHUONGTRINH_MA || r.DAOTAO_TOCHUCCHUONGTRINH_MA || '';
+        var ten = r.TENCHUONGTRINH || r.TEN || r.TOCHUCCHUONGTRINH_TEN || r.DAOTAO_TOCHUCCHUONGTRINH_TEN || '';
+        return ma ? ten + ' - ' + ma : ten;
     }
     function nhacLop() {
         st.dsLop = [];

@@ -1,6 +1,20 @@
-﻿<style>
+<style>
     .checkbox-inline + .checkbox-inline, .radio-inline + .radio-inline {
         margin-left: 0px;
+    }
+    .aps-ds-kehoach .box-header .btn {
+        font-weight: 600;
+        font-size: 13px;
+        padding: 6px 12px;
+        border-radius: 4px;
+        border: none;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+        transition: all 0.2s ease-in-out;
+    }
+    .aps-ds-kehoach .box-header .btn:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.18);
     }
 </style>
 <section class="content aps-TotNghiep">
@@ -98,10 +112,11 @@
                         </span>
                     </h3>
                     <div class="pull-right right-0">
-                        <a class="btn btn-outline-primary" id="btnSinhQuyetDinh" href="javascript:void(0)"><i class="fal fa-user-cog"></i> Tạo QĐ / Chuyển trạng thái TN</a>
-                        <a class="btn btn-outline-secondary" id="btnSinhSoHieu" href="javascript:void(0)"><i class="fal fa-poll-people"></i> Sinh tự động số hiệu</a>
-                        <a class="btn btn-outline-success" id="btnSinhSoVaoSo" href="javascript:void(0)"><i class="fal fa-book-reader"></i> Sinh tự động số vào sổ</a>
-                        <a class="btn btn-outline-danger" id="btnQuanLyThongTin" href="javascript:void(0)"><i class="fal fa-check-circle"></i> Xác nhận</a>
+                        <a class="btn btn-info" id="btnGanSoVaoSoTrucTiep" href="javascript:void(0)"><i class="fal fa-bookmark"></i> Gán số vào sổ</a>
+                        <a class="btn btn-primary" id="btnSinhQuyetDinh" href="javascript:void(0)"><i class="fal fa-user-cog"></i> Tạo QĐ / Chuyển trạng thái TN</a>
+                        <a class="btn btn-warning" id="btnSinhSoHieu" href="javascript:void(0)" style="color: #fff;"><i class="fal fa-poll-people"></i> Sinh tự động số hiệu</a>
+                        <a class="btn btn-success" id="btnSinhSoVaoSo" href="javascript:void(0)"><i class="fal fa-book-reader"></i> Sinh tự động số vào sổ</a>
+                        <a class="btn btn-danger" id="btnQuanLyThongTin" href="javascript:void(0)"><i class="fal fa-check-circle"></i> Xác nhận</a>
                         <a class="btn btn-primary btnAdd" href="javascript:void(0)"><i class="fa fa-plus"></i> Thêm mới</a>
                         <a id="btnDelete_ThongTin" class="btn btn-default"><i class="fa fa-trash"></i> Xóa</a>
                     </div>
@@ -558,6 +573,60 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times-circle"></i> Đóng</button>
                 <a class="btn btn-primary" id="btnSave_SinhQuyetDinh" href="javascript:void(0)"><i class="fa fa-save"></i> Lưu</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Gán số vào sổ trực tiếp -->
+<div class="modal fade" id="modal_GanSoVaoSoTrucTiep" role="dialog" aria-labelledby="lblGanSoVaoSoTrucTiep" aria-hidden="true">
+    <div class="modal-dialog" style="width: 1000px; max-width: calc(100% - 30px);">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="lblGanSoVaoSoTrucTiep"><i class="fal fa-bookmark"></i> Danh sách số vào sổ (Chưa sử dụng)</h4>
+            </div>
+            <div class="modal-body">
+                <!-- Bộ lọc số vào sổ -->
+                <div class="box box-solid box-search pd15 pb10 mb-15">
+                    <div class="row" style="display: flex; align-items: center; gap: 10px; margin: 0;">
+                        <div class="col-sm-4" style="padding-left: 0;">
+                            <select id="dropQuyTacSinhSo_GanSo" class="select-opt" style="width:100% !important"></select>
+                        </div>
+                        <div class="col-sm-3">
+                            <input id="txtNamThucHien_GanSo" class="form-control" placeholder="Năm thực hiện" />
+                        </div>
+                        <div class="col-sm-3">
+                            <input id="txtSoChungTu_GanSo" class="form-control" placeholder="Thông tin tìm kiếm" />
+                        </div>
+                        <div class="col-sm-2" style="padding-right: 0;">
+                            <a id="btnXemSoVaoSo_GanSo" class="btn btn-default btn-search w-100"><i class="fa fa-search"></i> Xem</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Bảng danh sách số vào sổ -->
+                <div class="aps-table-select scroll-table-x" style="max-height: 450px; overflow-y: auto;">
+                    <table id="tblSoVaoSo_GanSo" class="table table-hover table-bordered mb-0">
+                        <thead>
+                            <tr>
+                                <th class="td-fixed td-center" style="width: 50px;">Chọn</th>
+                                <th class="td-fixed td-center" style="width: 50px;">STT</th>
+                                <th class="td-center">Chỉ số</th>
+                                <th class="td-center">Số vào sổ</th>
+                                <th class="td-center">Quy tắc</th>
+                                <th class="td-center">Ngày thực hiện</th>
+                                <th class="td-center">Năm</th>
+                                <th class="td-center">Tự động</th>
+                                <th class="td-center">Tình trạng sử dụng</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times-circle"></i> Đóng</button>
+                <a class="btn btn-primary" id="btnDongY_GanSoVaoSo" href="javascript:void(0)"><i class="fa fa-check"></i> Đồng ý gán số vào sổ</a>
             </div>
         </div>
     </div>

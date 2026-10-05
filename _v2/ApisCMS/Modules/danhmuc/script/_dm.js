@@ -106,6 +106,9 @@
         var st = { page: 1, rows: [], cur: null };
         var SIZE = 10;                               // edu.system.pageSize_default
         var loc = D.ganLoc(m.el, function () { load(1); });
+        /* Mở từ khung "Cần làm trước" (lamtruoc.js): tìm sẵn theo mã danh mục đang thiếu, khớp đúng một bảng thì chọn luôn */
+        var moMa = (o.onPick && ums.lamTruoc && ums.lamTruoc.layDanhMucCho()) || '';
+        if (moMa) loc.q.value = moMa;
 
         function load(p) {
             st.page = p || 1;
@@ -129,6 +132,13 @@
                 var tong = coUng ? st.rows.length : (Number(r.pager) || st.rows.length);
                 m.sideCount.textContent = String(tong);
                 draw();
+                if (moMa) {
+                    var ma = moMa; moMa = '';
+                    var t = st.rows.filter(function (x) { return String(x.MADANHMUC || '').toUpperCase() === ma.toUpperCase(); })[0];
+                    var nut = t && m.sideBody.querySelector('.dm-node[data-id="' + t.ID + '"]');
+                    if (nut) nut.click();
+                    else ui.toast('Chưa có bảng danh mục mã ' + ma + ' — cần tạo ở màn Danh mục tên bảng trước, rồi khai giá trị.', 'warn');
+                }
                 if (!coUng && tong > SIZE) {
                     m.setPage({ index: st.page, size: SIZE, total: tong, sizes: false, onChange: function (pg) {
                         if (pg >= 1 && pg <= Math.ceil(tong / SIZE)) load(pg);

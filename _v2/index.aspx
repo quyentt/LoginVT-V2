@@ -169,6 +169,7 @@
     <script src="assets/js/demo-data.js?v=<%= V("assets/js/demo-data.js") %>"></script>
     <script src="assets/js/icon-fa4.js?v=<%= V("assets/js/icon-fa4.js") %>"></script>
     <script src="assets/js/can-quyet.js?v=<%= V("assets/js/can-quyet.js") %>"></script>
+    <script src="assets/js/lamtruoc.js?v=<%= V("assets/js/lamtruoc.js") %>"></script>
     <script src="assets/js/thuvai.js?v=<%= V("assets/js/thuvai.js") %>"></script>
     <script src="assets/js/app.js?v=<%= V("assets/js/app.js") %>"></script>
 </body>

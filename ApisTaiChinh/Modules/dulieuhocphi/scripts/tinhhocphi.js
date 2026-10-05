@@ -1,4 +1,4 @@
-﻿/*----------------------------------------------
+/*----------------------------------------------
 --Author: nnthuong
 --Phone: 
 --Date of created: 23/08/2018
@@ -37,7 +37,12 @@ TinhHocPhi.prototype = {
             me.getList_KhoaDaoTao(strHeHaoTao_Id);
             me.getList_LopQuanLy("", "");
         });
-        $('#dropLopQuanLy_TP').on('select2:select', function () {
+        $('#dropLopQuanLy_TP').on('select2:select select2:unselect', function () {
+            if ($('#qt_sinhvien').hasClass('in')) {
+                me.getList_SinhVien();
+            }
+        });
+        $('#qt_sinhvien').on('show.bs.collapse', function () {
             me.getList_SinhVien();
         });
         $('#dropThoiGianDaoTao_TP').on('select2:select', function () {
@@ -120,6 +125,9 @@ TinhHocPhi.prototype = {
         $("#btnXemDanhSach").click(function () {
             me.getList_NienChe();
             me.getList_TinChi();
+            if ($('#qt_sinhvien').hasClass('in')) {
+                me.getList_SinhVien();
+            }
         });
         $("#tblTinChi").delegate(".btnChiTiet", "click", function () {
             var selected_id = this.id;

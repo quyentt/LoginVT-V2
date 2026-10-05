@@ -598,7 +598,7 @@
         if (TM.dang) return TM.dang;
         try {
             var c = JSON.parse(sessionStorage.getItem(tmKhoa()) || 'null');
-            if (c && c.v === 2 && Array.isArray(c.ds)) { TM.ds = c.ds; TM.xong = TM.tong = c.tong || 0; return Promise.resolve(TM.ds); }
+            if (c && c.v === 4 && Array.isArray(c.ds)) { TM.ds = c.ds; TM.xong = TM.tong = c.tong || 0; return Promise.resolve(TM.ds); }
         } catch (e) { /* sessionStorage có thể bị chặn */ }
         TM.ds = [];
         TM.dang = (state.roles.length ? Promise.resolve(state.roles) : loadRoles().then(function (r) { state.roles = r; return r; }))
@@ -615,7 +615,7 @@
                             if (!n.path || String(n.hash || '').toLowerCase() === '#dashboard') return;
                             var nhom = [], p = byId[n.parent], vong = 0;
                             while (p && vong++ < 8) { nhom.unshift(p.name); p = byId[p.parent]; }
-                            var mm = { r: role.id, rn: role.name, id: n.id, n: n.name, g: nhom.join(' › '),
+                            var mm = { r: role.id, rn: role.name, id: n.id, n: n.name, g: nhom.join(' › '), p: String(screenUrl(n) || '').toLowerCase(),
                                        k: noAccent(n.name + ' ' + nhom.join(' ') + ' ' + role.name) };
                             var kq = lbKhoa(n);
                             if (kq) mm.q = kq;               // màn có mục lỗi backend trong sổ → nhớ khoá để dựng bảng tổng
@@ -628,7 +628,7 @@
             })
             .then(function () {
                 TM.dang = null;
-                try { sessionStorage.setItem(tmKhoa(), JSON.stringify({ v: 2, ds: TM.ds, tong: TM.tong })); } catch (e) {}
+                try { sessionStorage.setItem(tmKhoa(), JSON.stringify({ v: 4, ds: TM.ds, tong: TM.tong })); } catch (e) {}
                 tmVe();
                 return TM.ds;
             }, function (err) { TM.dang = null; TM.ds = null; throw err; });
@@ -839,6 +839,25 @@
         if (!cn) { ums.ui.toast('Vai trò đang mở chưa được cấp chức năng này (' + ma + ')', 'warn'); return false; }
         location.hash = href(cn.id);
         return true;
+    };
+    /* Tìm màn theo ĐUÔI đường dẫn (đầy đủ, có tiền tố phân hệ như screenUrl — vd 'apiscms/modules/danhmuc/html/danhmucdulieu.html'
+       hoặc chỉ '/danhmuc/html/danhmucdulieu.html') cho khung "Cần làm trước" (lamtruoc.js). Trả Promise<mảng { r, rn, id, n, url, hash }>:
+       màn của vai trò đang mở trước, sau đó chỉ mục mọi vai trò của ô tìm màn (nạp một lần mỗi phiên). Không kiểm tệp có trong _v2 —
+       lamtruoc.js tự kiểm trước khi nhảy. */
+    ums.app.timManTheoDuongDan = function (duoi) {
+        var d = String(duoi || '').toLowerCase().replace(/^\/+/, '');
+        function khop(p) { p = String(p || '').toLowerCase().replace(/^\/+/, ''); return p && (p === d || p.slice(-d.length) === d); }
+        var role = (state.roles || []).find(function (r) { return r.id === state.roleId; }) || {};
+        var kq = (state.menu || []).filter(function (c) { return khop(screenUrl(c)); }).map(function (c) {
+            return { r: state.roleId, rn: role.name || '', id: c.id, n: c.name, url: screenUrl(c), hash: href(c.id) };
+        });
+        return tmNap().then(function (all) {
+            (all || []).forEach(function (m) {
+                if (m.r === state.roleId || !khop(m.p)) return;
+                kq.push({ r: m.r, rn: m.rn, id: m.id, n: m.n, url: m.p, hash: '#/r/' + encodeURIComponent(m.r) + '/' + encodeURIComponent(m.id) });
+            });
+            return kq;
+        }, function () { return kq; });
     };
     /** Đường dẫn hash mở một chức năng theo id — cho thẻ <a> (lối tắt ở bảng điều khiển) */
     ums.app.hrefChucNang = function (id) { return href(id); };
@@ -1059,6 +1078,7 @@
         var demo = state.mode === 'demo' ? demoScreen(cn.path) : null;
         var token = {};
         openFunction.token = token;
+        if (ums.lamTruoc) ums.lamTruoc.batDau(el('screen'), url || cn.path, cn);   // khung "Cần làm trước": gom việc thiếu dữ liệu của màn này
 
         // Ưu tiên màn hình đã chuyển đổi nằm đúng cây thư mục gốc; màn hình
         // mẫu dữ liệu cứng chỉ dùng khi đang chạy dựng thử.
@@ -1341,6 +1361,7 @@
             '</div>';
         if (moSan) d.open = true;
         host.insertBefore(d, host.firstChild);
+        if (ums.lamTruoc) ums.lamTruoc.giuViTri();   // khung "Cần làm trước" luôn ngay dưới Ghi chú
 
         function dem() {
             var o = tlDoc(), n = ds.filter(function (x) { var v = o[ma(x)]; return v && (v.tt || v.ghi); }).length;

@@ -1111,6 +1111,8 @@
         function taoQR() {
             if (!c.doiTuong) return;
             var host = (ums.session && ums.session.host) || '';
+            // gốc 5/10: có địa chỉ cổng sinh viên (Init_API().TSV) thì mở trang thanh toán ở đó
+            try { var api = typeof Init_API === 'function' ? Init_API() : null; if (api && api.TSV) host = api.TSV; } catch (e) {}
             var url = host + '/congthongtin/pages/thanhtoan.aspx?strMa=' + encodeURIComponent(M.e(c.doiTuong.MASO));
             ui.dialog({
                 title: 'Tạo QR thanh toán', icon: 'fa-qrcode', size: 'xl',

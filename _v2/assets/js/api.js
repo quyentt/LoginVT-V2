@@ -245,6 +245,20 @@
         });
     };
 
+    /* Khung "Cần làm trước" (lamtruoc.js): lời gọi trả 0 dòng → báo khung, khung đối chiếu danh mục dùng chung + bảng nguồn
+       ums.lamTruoc.NGUON. Bắt ở đây để phủ cả màn gọi thẳng action danh mục (không qua api.dm). api.dm còn báo thêm khi lấy từ
+       bộ nhớ phiên; trùng thì khung chỉ hiện một lần. */
+    var goiGoc = api.call;
+    api.call = function (opts) {
+        var p = goiGoc.apply(this, arguments);
+        if (!opts || !ums.lamTruoc) return p;
+        return p.then(function (r) {
+            var d = r && r.data;
+            if (!(Array.isArray(d) ? d : (d && d.rs) || []).length) ums.lamTruoc.sauGoi(opts);
+            return r;
+        });
+    };
+
     /** Gọi nhiều lời gọi song song, trả mảng kết quả theo đúng thứ tự */
     api.all = function (list) {
         return Promise.all(list.map(function (o) { return api.call(o); }));
@@ -270,7 +284,11 @@
             }).then(function (r) { return r.data || []; },
                 function (e) { delete dmCache[key]; throw e; });
         }
-        return dmCache[key];
+        /* Danh mục rỗng → khung "Cần làm trước" của màn đang mở (lamtruoc.js) — báo cả khi lấy từ bộ nhớ phiên */
+        return dmCache[key].then(function (rows) {
+            if (!rows.length && ums.lamTruoc) ums.lamTruoc.danhMucRong(code);
+            return rows;
+        });
     };
 
     /* ---------- Tiện ích ------------------------------------------------- */

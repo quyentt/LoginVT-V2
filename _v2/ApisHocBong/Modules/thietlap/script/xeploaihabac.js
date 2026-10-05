@@ -34,93 +34,109 @@
        → xếp loại LUÔN gửi rỗng. Nay gửi ô đang chọn.
      · Gốc lưu MỌI dòng mỗi lần Lưu (kể cả dòng trống mới thêm); nay bỏ dòng mới
        để trống và dòng cũ không đổi.
+   Tốt nghiệp (ApisTotNghiep/Modules/thietlap/xeploaihabac) dùng lại tệp này qua ums.hbXlhb(root, { xepLoai, tuKhoa }).
    ========================================================================= */
 (function () {
     'use strict';
 
-    var root = document.getElementById('hb-xeploaihabac');
-    if (!root) return;
-    var pat = ums.pat;
-    var luoi = {};          // lưới của biểu mẫu đang mở: { hb, gh }
+    /* ums.hbXlhb(root, o) — dựng màn; Tốt nghiệp gọi lại với cờ (ApisTotNghiep/Modules/thietlap/script/xeploaihabac.js):
+         o.xepLoai: true  → thêm ô "Xếp loại" (strXepLoai_Id ← XEPLOAI_ID, VANBANG.XEPLOAI) đầu cột phải, gửi khi lưu
+                            điều kiện chung + riêng (bản TN gốc có #dropXepLoai, bản HB gốc không)
+         o.tuKhoa         → cấu hình bảng từ khoá (mặc định 'TN_XetDuyet_TuKhoa' như bản HB)
+       Không cờ = giữ nguyên hành vi Học bổng. */
+    ums.hbXlhb = function (root, o) {
+        o = o || {};
+        var pat = ums.pat;
+        var luoi = {};          // lưới của biểu mẫu đang mở: { hb, gh }
 
-    function e(v) { return v === undefined || v === null ? '' : String(v); }
+        function e(v) { return v === undefined || v === null ? '' : String(v); }
 
-    function taoLuoi(host, ctl, title, cot, ctx) {
-        return pat.rows(host, {
-            title: title, icon: 'fa-layer-group',
-            columns: [
-                { key: 'strXauDieuKien', col: 'XAUDIEUKIEN', title: 'Xâu điều kiện' },
-                { key: 'strXepLoai_Id', col: 'XEPLOAI_ID', title: cot, type: 'select', width: '220px',
-                  source: { dm: 'VANBANG.XEPLOAI' }, placeholder: 'Chọn xếp loại' }
-            ],
-            list: function (pid) {
-                return {
-                    action: ctl + '/LayDanhSach', method: 'GET',
-                    strTuKhoa: '', strPhanLoai_Id: '', strXepLoai_Id: '', strTn_XepLoai_DieuKien_Id: pid,
-                    strNguoiTao_Id: '', pageIndex: 1, pageSize: 10000
-                };
-            },
-            filled: function (v, rec) {
-                if (!rec) return !!(v.strXauDieuKien || v.strXepLoai_Id);
-                return v.strXauDieuKien !== e(rec.XAUDIEUKIEN) || v.strXepLoai_Id !== e(rec.XEPLOAI_ID);
-            },
-            save: function (v, rec, pid) {
-                return {
-                    action: ctl + (rec ? '/CapNhat' : '/ThemMoi'),
-                    strId: rec ? rec.ID : '',
-                    strXauDieuKien: v.strXauDieuKien,
-                    strPhanLoai_Id: ctx.pl,
-                    strXepLoai_Id: v.strXepLoai_Id,
-                    iThuTu: '', strMoTa: '',
-                    strTN_XepLoai_DieuKien_Id: pid
-                };
-            },
-            remove: function (rec) { return { action: ctl + '/Xoa', strIds: rec.ID }; }
-        });
-    }
-
-    var luuDK = function (v) { return { strXauDieuKien: v.strXauDieuKien, iThuTu: '', strMoTa: v.strMoTa }; };
-
-    ums.hbDk.man(root, {
-        tieuDe: 'Xếp loại hạ bậc',
-        phanLoai: { key: 'strPhanLoai_Id', col: 'PHANLOAI_ID', nhan: 'Phân loại', loc: 'Chọn phân loại', nguon: { dm: 'TN.PHANLOAI' } },
-        cotChung: [
-            { title: 'Xâu điều kiện', prop: 'XAUDIEUKIEN' },
-            { title: 'Xếp loại', prop: 'XEPLOAI_TEN', cls: 'is-nowrap' },
-            { title: 'Mô tả', prop: 'MOTA' }
-        ],
-        phai: [
-            { key: 'strXauDieuKien', col: 'XAUDIEUKIEN', label: 'Xâu điều kiện', type: 'textarea' },
-            { key: 'strMoTa', col: 'MOTA', label: 'Mô tả', type: 'textarea' }
-        ],
-        chung: { ctl: 'TN_XepLoai_DieuKien', ds: { strXepLoai_Id: '', strNguoiTao_Id: '' }, luu: luuDK },
-        rieng: { ctl: 'TN_XepLoai_DieuKien_Ad', ds: { strNguoiTao_Id: '' }, luu: luuDK },
-        phanCap: 'TN_PhanCapApDung/LayDanhSach',
-        keHoach: {
-            call: {
-                action: 'TN_ThongTin/LayDSTN_KeHoach', method: 'GET',
-                strTuKhoa: '', strPhanLoai_Id: '', strDaoTao_ThoiGianDaoTao_Id: '',
-                strNguoiDung_Id: '', strNguoiTao_Id: '', pageIndex: 1, pageSize: 10000
-            }
-        },
-        tuKhoa: 'TN_XetDuyet_TuKhoa',
-
-        onForm: function (kieu, row, crud, host) {
-            host.innerHTML = '<div data-hb="hb"></div><div class="ums-u-mt-4" data-hb="gh"></div>';
-            var ctx = luoi = { pl: '' };          // mỗi lần mở biểu mẫu một bộ lưới riêng
-            ctx.hb = taoLuoi(host.querySelector('[data-hb="hb"]'), 'TN_XepLoai_DieuKien_HaBac', 'Xếp loại hạ bậc', 'Xếp loại hạ bậc', ctx);
-            ctx.gh = taoLuoi(host.querySelector('[data-hb="gh"]'), 'TN_XepLoai_DieuKien_GH', 'Xếp loại giới hạn', 'Xếp loại giới hạn', ctx);
-            luoi.hb.load(row ? row.ID : '');
-            luoi.gh.load(row ? row.ID : '');
-        },
-        /* Lưu điều kiện xong mới lưu hai lưới (save_GioiHan rồi save_HaBac như gốc) */
-        onSaved: function (kieu, crud, id) {
-            if (!id || !luoi.hb) return;
-            var x = crud.root.querySelector('[data-scope="form"][data-k="strPhanLoai_Id"]');
-            luoi.pl = x ? x.value : '';
-            // Đọc giá trị hai lưới NGAY (trước khi biểu mẫu đóng); gửi song song như gốc
-            luoi.gh.save(id);
-            luoi.hb.save(id);
+        function taoLuoi(host, ctl, title, cot, ctx) {
+            return pat.rows(host, {
+                title: title, icon: 'fa-layer-group',
+                columns: [
+                    { key: 'strXauDieuKien', col: 'XAUDIEUKIEN', title: 'Xâu điều kiện' },
+                    { key: 'strXepLoai_Id', col: 'XEPLOAI_ID', title: cot, type: 'select', width: '220px',
+                      source: { dm: 'VANBANG.XEPLOAI' }, placeholder: 'Chọn xếp loại' }
+                ],
+                list: function (pid) {
+                    return {
+                        action: ctl + '/LayDanhSach', method: 'GET',
+                        strTuKhoa: '', strPhanLoai_Id: '', strXepLoai_Id: '', strTn_XepLoai_DieuKien_Id: pid,
+                        strNguoiTao_Id: '', pageIndex: 1, pageSize: 10000
+                    };
+                },
+                filled: function (v, rec) {
+                    if (!rec) return !!(v.strXauDieuKien || v.strXepLoai_Id);
+                    return v.strXauDieuKien !== e(rec.XAUDIEUKIEN) || v.strXepLoai_Id !== e(rec.XEPLOAI_ID);
+                },
+                save: function (v, rec, pid) {
+                    return {
+                        action: ctl + (rec ? '/CapNhat' : '/ThemMoi'),
+                        strId: rec ? rec.ID : '',
+                        strXauDieuKien: v.strXauDieuKien,
+                        strPhanLoai_Id: ctx.pl,
+                        strXepLoai_Id: v.strXepLoai_Id,
+                        iThuTu: '', strMoTa: '',
+                        strTN_XepLoai_DieuKien_Id: pid
+                    };
+                },
+                remove: function (rec) { return { action: ctl + '/Xoa', strIds: rec.ID }; }
+            });
         }
-    });
+
+        var luuDK = function (v) {
+            var c = { strXauDieuKien: v.strXauDieuKien, iThuTu: '', strMoTa: v.strMoTa };
+            if (o.xepLoai) c.strXepLoai_Id = v.strXepLoai_Id;
+            return c;
+        };
+        var fXepLoai = o.xepLoai ? [{ key: 'strXepLoai_Id', col: 'XEPLOAI_ID', label: 'Xếp loại', type: 'select',
+                                      source: { dm: 'VANBANG.XEPLOAI' }, placeholder: 'Chọn xếp loại' }] : [];
+
+        ums.hbDk.man(root, {
+            tieuDe: 'Xếp loại hạ bậc',
+            phanLoai: { key: 'strPhanLoai_Id', col: 'PHANLOAI_ID', nhan: 'Phân loại', loc: 'Chọn phân loại', nguon: { dm: 'TN.PHANLOAI' } },
+            cotChung: [
+                { title: 'Xâu điều kiện', prop: 'XAUDIEUKIEN' },
+                { title: 'Xếp loại', prop: 'XEPLOAI_TEN', cls: 'is-nowrap' },
+                { title: 'Mô tả', prop: 'MOTA' }
+            ],
+            phai: fXepLoai.concat([
+                { key: 'strXauDieuKien', col: 'XAUDIEUKIEN', label: 'Xâu điều kiện', type: 'textarea' },
+                { key: 'strMoTa', col: 'MOTA', label: 'Mô tả', type: 'textarea' }
+            ]),
+            chung: { ctl: 'TN_XepLoai_DieuKien', ds: { strXepLoai_Id: '', strNguoiTao_Id: '' }, luu: luuDK },
+            rieng: { ctl: 'TN_XepLoai_DieuKien_Ad', ds: { strNguoiTao_Id: '' }, luu: luuDK },
+            phanCap: 'TN_PhanCapApDung/LayDanhSach',
+            keHoach: {
+                call: {
+                    action: 'TN_ThongTin/LayDSTN_KeHoach', method: 'GET',
+                    strTuKhoa: '', strPhanLoai_Id: '', strDaoTao_ThoiGianDaoTao_Id: '',
+                    strNguoiDung_Id: '', strNguoiTao_Id: '', pageIndex: 1, pageSize: 10000
+                }
+            },
+            tuKhoa: o.tuKhoa || 'TN_XetDuyet_TuKhoa',
+
+            onForm: function (kieu, row, crud, host) {
+                host.innerHTML = '<div data-hb="hb"></div><div class="ums-u-mt-4" data-hb="gh"></div>';
+                var ctx = luoi = { pl: '' };          // mỗi lần mở biểu mẫu một bộ lưới riêng
+                ctx.hb = taoLuoi(host.querySelector('[data-hb="hb"]'), 'TN_XepLoai_DieuKien_HaBac', 'Xếp loại hạ bậc', 'Xếp loại hạ bậc', ctx);
+                ctx.gh = taoLuoi(host.querySelector('[data-hb="gh"]'), 'TN_XepLoai_DieuKien_GH', 'Xếp loại giới hạn', 'Xếp loại giới hạn', ctx);
+                luoi.hb.load(row ? row.ID : '');
+                luoi.gh.load(row ? row.ID : '');
+            },
+            /* Lưu điều kiện xong mới lưu hai lưới (save_GioiHan rồi save_HaBac như gốc) */
+            onSaved: function (kieu, crud, id) {
+                if (!id || !luoi.hb) return;
+                var x = crud.root.querySelector('[data-scope="form"][data-k="strPhanLoai_Id"]');
+                luoi.pl = x ? x.value : '';
+                // Đọc giá trị hai lưới NGAY (trước khi biểu mẫu đóng); gửi song song như gốc
+                luoi.gh.save(id);
+                luoi.hb.save(id);
+            }
+        });
+    };
+
+    var root = document.getElementById('hb-xeploaihabac');
+    if (root) ums.hbXlhb(root);
 })();

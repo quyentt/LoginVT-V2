@@ -3,7 +3,7 @@
 Tệp này tồn tại để không phải dò lại codebase từ đầu mỗi lần. Mọi con số và
 đường dẫn dưới đây đều đã kiểm chứng trực tiếp trên mã nguồn.
 
-Cập nhật: 2026-09-29
+Cập nhật: 2026-10-05
 
 > **Vừa chuyển sang máy mới?** Đọc [mục 11](#11-làm-tiếp-trên-máy-khác) trước:
 > chép gì sang, chạy thử thế nào, đã làm đến đâu và việc kế tiếp là gì.
@@ -421,7 +421,7 @@ sẽ vỡ.**
   (3) phân hệ nào đã kiểm / còn dang dở phần thử ghi / chưa kiểm (đếm từ `da-kiem.json`); (4) bản ghi thử còn sót đã biết; (5) lượt này định làm gì, theo thứ tự nào.
   Phân hệ MỚI chỉ kiểm khi người dùng yêu cầu đích danh.
 - **⚠ HAI QUY ƯỚC KIỂM HOST (người dùng chốt 2026-09-30, áp cho MỌI phiên sau):**
-  **(A) Xử lý được bằng MÃ thì KHÔNG báo lỗi CSDL.** Gặp lỗi khi kiểm, hỏi trước: "màn có thể tự tránh / tự xử lý không?" — vd gửi sai định dạng, gửi ô trống thành
+  **(A) Xử lý được bằng MÃ thì KHÔNG báo lỗi CSDL** (người dùng nhắc lại 2026-10-05: lỗi frontend khắc phục được thì PHẢI khắc phục; chỉ thứ thực sự thuộc backend — API, thủ tục — mới lên Ghi chú; thiếu dữ liệu người dùng tự khai được → khung "Cần làm trước", mục 10). Khi kiểm, ưu tiên thay đổi (kéo gốc / sửa mã) ở các phân hệ ĐÃ hoàn thành trong `da-kiem.json` trước. Gặp lỗi khi kiểm, hỏi trước: "màn có thể tự tránh / tự xử lý không?" — vd gửi sai định dạng, gửi ô trống thành
   `//`, thiếu kiểm ô bắt buộc / kiểu số / khoảng giá trị, câu lỗi kỹ thuật hiện thô, thiếu method GET, gửi ô đang ẩn, lưu lần hai thành thêm trùng. Có → ghi SỔ LỖI MÃ
   (`loi-code.js them`), SỬA `_v2`, chờ up rồi kiểm lại; KHÔNG ghi mục `ben` vào `can-quyet.js`. Chỉ ghi việc CSDL / backend khi mã KHÔNG thể làm gì: thiếu thủ tục, gói
   lỗi biên dịch, thủ tục sai chữ ký, danh mục / dữ liệu nguồn rỗng, dịch vụ không chạy, thủ tục làm sai (xoá báo thành công mà không xoá, lưu sai trạng thái).
@@ -661,6 +661,17 @@ báo "đã up" → chạy `python _harness\dong-goi.py --da-up`** (lấy gói hi
   chạy CSS cũ. Lý do phải gộp: tệp chỉ gồm @import bị trình duyệt coi là tải
   xong rồi vẽ trang ngay → vào lần đầu trơ chữ / mất hết biểu tượng, F5 mới
   đúng (đã gặp thật trên host 2026-09-21).
+- **Khung "Cần làm trước"** (2026-10-05, người dùng: thiếu dữ liệu nghiệp vụ mà người dùng tự khai được ở màn khác thì KHÔNG đưa xuống backend) —
+  `assets/js/lamtruoc.js` (`ums.lamTruoc`) + `components/lamtruoc.css`. Vỏ TỰ PHÁT HIỆN lúc nạp màn: mọi lời gọi trả 0 dòng đi qua `ums.api.call`
+  → `lamTruoc.sauGoi(opts)`: (1) danh mục dùng chung (`CMS_DanhMucThuocTinh/LayDanhSachDuLieuTheoBangDM`, cả qua `api.dm` lấy từ bộ nhớ phiên) →
+  "Danh mục <MÃ> chưa có giá trị" + nút "Mở Danh mục dữ liệu" (màn của vai trò đang mở, không có thì bản CMS ở vai trò khác — tìm bằng
+  `ums.app.timManTheoDuongDan`, chỉ mục ô tìm màn nay `v: 3` có `p` = đường dẫn); màn đích tự chọn sẵn danh mục (DKH / Tài chính
+  `moSanDanhMuc`, CMS `_dm.js` `D.cay` tìm theo mã); (2) **BẢNG NGUỒN `ums.lamTruoc.NGUON`** (action hoặc tên thủ tục → ô / việc / ĐUÔI đường dẫn
+  màn khai) — hiện có hệ thống biên lai / phiếu thu / hoá đơn, mẫu hồ sơ NS; bỏ qua khi lời gọi có `strTuKhoa` và khi đang ở chính màn khai;
+  (3) màn tự khai `ums.lamTruoc.can({ o, viec, man, tenMan })` / `neuRong(rows, cfg)`. Khung nằm NGAY DƯỚI khung Ghi chú (`giuViTri`), dấu × ẩn
+  khung của màn đó tới hết phiên. Bật cả khi giao người dùng thật; tắt: `behavior.lamTruoc = false`. Dữ liệu mẫu chỉ bật khi URL có `lamtruoc`.
+  **Kiểm host gặp "thiếu dữ liệu khai được ở màn khác" → thêm dòng vào `NGUON` (hoặc để danh mục tự bắt), KHÔNG ghi mục `ben` vào `can-quyet.js`.**
+  Đã gỡ 16 mục cũ khỏi sổ (danh mục TC / NS / SV một cửa, hệ thống biên lai, mẫu hồ sơ).
 - **Bảng "Màn đang có lỗi backend"** (2026-09-30, người dùng: để bộ phận backend nhìn trực quan trước khi hoàn thiện sản phẩm, sau thì tắt). Trang một vai
   trò khi chưa chọn chức năng (`#/r/<vai trò>`) liệt kê các màn CỦA VAI TRÒ ĐÓ có mục `ben: 'oracle'` trong `can-quyet.js` (mục nghiệp vụ `nghiepvu` KHÔNG tính):
   tên màn là liên kết mở thẳng màn, cột lỗi, cột tình trạng (đọc câu trả lời ở khung "Ghi chú chuyển đổi"). Vai trò không có lỗi → vẫn là ô "Chọn một chức năng ở cột
@@ -764,7 +775,9 @@ Lần 3 (2026-09-29, 12 commit, merge `5018e138`; ĐÃ CHUYỂN cùng ngày): CC
 
 Lần 4 (2026-09-30, 10 commit, merge `cffda56e`) + lần 5 (2026-10-01, merge `c6886b05`) — **ĐÃ CHUYỂN 2026-10-01** (làm ở workspace đám mây, chưa commit trên máy): 20 màn — CCB `lichgiangnhieuphonghoc` (lọc phòng trống theo khoảng ngày + thứ + tiết, `TKB_CHUNG.LAYPHONGHOCTRONG`); Cổng SV 18 màn (dangkyhoc 7 kể cả congnhandiem / congnhandiemv3 không cần đổi, hoctap 4, profile 2 — `hoso` không cần đổi, thanhtoanonline, thoikhoabieu/lichhoc, tinhhinhhocphi, tintuc, dashboard) — tầng chung chạm: `ums.diemHoc` (cờ `bamDong` theo `ctdt`), `ums.lich` (`ngayNgan`), `ums.tkbSV` (tên cột bảng lớp); màn mới Cổng SV `dicvusinhvien/nguoihocxacnhanthanhtoan` (nạp chéo bản Sinh viên, `data-kieu="csv"`). F5 khi thủ vai: GIỮ cách `_v2` (giữ vai). Chốt: `_v2/CAN-QUYET-DA-CHOT.md` mục "Chốt ngày 2026-10-01"; không có việc dữ liệu mới. Kiểm dữ liệu mẫu: CSV kiem-dong-bo 36/37 (lỗi đã biết) + thu-crud 37/37, CCB kiem-dong-bo 152/152. CHƯA kiểm host. Phân hệ mới `ApisThiTracNghiem` + thay đổi `ApisQuanLyThiTracNghiem` chưa chuyển nên chưa có việc.
 
-**⚠ KHI NGƯỜI DÙNG BẢO "CHUYỂN" HOẶC "KIỂM" — ĐƯA THÔNG BÁO THAY ĐỔI GỐC TRƯỚC** (người dùng dặn 2026-09-30): đọc `_v2/CHO-CHUYEN-SAU-PULL.md`, tóm tắt các thay đổi của kho gốc đang chờ chuyển (số màn, màn nào đổi API / hành vi, màn mới, điểm cần quyết) và nói mục nào dính tới việc sắp làm, rồi mới làm. Tệp trống thì nói rõ "không có thay đổi gốc nào đang chờ". Khi kiểm host, đây là mục (6) của thông báo đầu phiên (mục 9).
+Lần 6 (2026-10-05, 13 commit gốc `88f37941..0551deba`, 1/10 → 5/10) — **ĐÃ CHUYỂN 2026-10-05, CHƯA kiểm host**. **Kho máy nay là bản GỘP một commit** (`20b5dbe6`, 2/10, đã lên LoginVT-V2) — KHÔNG chung gốc với kho gốc nên không `git pull`/`merge` được: kéo bằng `git fetch origin` rồi `git checkout origin/main -- <tệp>` cho từng tệp gốc đổi (trước đó kiểm tệp máy = bản gốc cũ theo nội dung, bỏ CRLF). Mốc gốc đã chuyển ghi đầu `_v2/CHO-CHUYEN-SAU-PULL.md`. Màn: TC `tinhhocphi`, thu tiền QR; NH `phanlop`; TN `xacnhan` (Hạ bậc trực tiếp), `quanlythongtin` (Gán số vào sổ); TS `kehoachtuyensinhnew` (nguồn khai thác). Gốc nay có sẵn nút "?" Cổng Help trong Core / Corei và hai trang help-*.aspx → ngoại lệ "không ghi đè" ở mục 9 không còn cần. Chốt: `CAN-QUYET-DA-CHOT.md` mục "Kéo gốc lần 6".
+
+**⚠ KHI NGƯỜI DÙNG BẢO "CHUYỂN" HOẶC "KIỂM" — `git fetch origin` RỒI THÔNG BÁO TRANG MỚI KÉO VỀ VÀ LÀM CHÚNG TRƯỚC** (người dùng dặn 2026-09-30, nhắc lại 2026-10-05 sau khi tôi chỉ đọc tệp ghi chú mà bỏ sót 13 commit gốc rồi đi chuyển Tốt nghiệp): so `origin/main` với mốc gốc đã chuyển (đầu `_v2/CHO-CHUYEN-SAU-PULL.md`; kho máy là bản gộp nên so theo NỘI DUNG tệp), báo các màn thuộc phân hệ ĐÃ chuyển (phân hệ chưa chuyển thì chỉ nhắc một dòng), chuyển xong rồi mới sang phân hệ mới. Ngoài ra: đọc `_v2/CHO-CHUYEN-SAU-PULL.md`, tóm tắt các thay đổi của kho gốc đang chờ chuyển (số màn, màn nào đổi API / hành vi, màn mới, điểm cần quyết) và nói mục nào dính tới việc sắp làm, rồi mới làm. Tệp trống thì nói rõ "không có thay đổi gốc nào đang chờ". Khi kiểm host, đây là mục (6) của thông báo đầu phiên (mục 9).
 
 **⚠ ĐANG TREO (1/10): 20 màn chuyển từ kéo gốc lần 4 + 5 ĐÃ UP host nhưng CHƯA KIỂM HOST, CHƯA COMMIT GIT** — khi người dùng nhắc "chuyển" hoặc "kiểm host" thì NHẮC việc này trước tiên; danh sách + cách kiểm: `_harness/kiem-host/VIEC-PHIEN-SAU.md` mục 1. Kiểm đạt mới commit + đẩy.
 
@@ -1602,7 +1615,18 @@ mẫm ở đó; để dành đến khi có host.
    `tpKt.xacNhan`) → mở rộng `ums.nd.xacNhanNut` nhận `nut()` / `lichSu()` / `luu()`; `ui.table` cột ô đánh dấu (thêm 5 bản) + phân trang máy khách +
    `ums.ui.locBang`; `pat.filterBar` nhiều nút / ô chọn tĩnh / 4 ô một hàng; `ui.dialog` nút khoá; `thu-crud` nên báo "không có gì để thử" thay "ok []".
 
-20. Các phân hệ còn lại. Tổng 859 màn hình, xem mục 7 để biết vì
+20. **Tốt nghiệp (ApisTotNghiep) — XONG 13/13 (2026-10-05)**, 5 tác tử con. Vai trò mẫu **R16**, ID `TN-<module>-<tệp>` (tên menu theo tệp).
+   Kiểm: `kiem-dong-bo?vt=R16&tien=TN&coTep=1` 13/13; `thu-crud` 8/13 — ĐÚNG THIẾT KẾ: ba màn thiết lập tab 2 chặn Thêm tới khi chọn Phân loại
+   + Phân cấp (y Học bổng), `kehoach/kehoach` lưu xong ở lại biểu mẫu (như gốc), `vanbang/quanlythongtin` bắt tìm SV rồi Xem / Kế thừa mới cho Lưu;
+   `kiem-cot-trai` 1/1; biểu tượng 0 lệch; hồi quy Học bổng 12/12 + 7/12 (không đổi).
+   Thiết lập dùng lại `ums.hbDk` (`thamsochung` nạp THẲNG tệp Học bổng; sửa HB `_dk.js` cờ `tuKhoa` đối tượng, `xeploaihabac.js` tách `ums.hbXlhb`);
+   `thuchienxet` / `xacnhan` / `tonghop` dùng lại `ums.hbKh` / `ums.hbTh` + `ums.khxl` (HB `_kh_chung.js` thêm cờ `napPhanCong` `action/khoa`, `hopDS`
+   `khoaKQ/phanTrang/onTim`); khung riêng: `kehoach/script/_tnkh_*.js` (`ums.tnKh`), `_tndkn_*.js` (`ums.tndkn`, điều kiện nhóm),
+   `vanbang/script/_tnvb_*.js` (`ums.tnvb`, `ums.tnvbPhoi` — phôi in văn bằng, `eval` thay bằng bộ tính biểu thức an toàn, html2canvas trong module);
+   `hoctap/xemdiem_sv` (`ums.tnXemDiem`, trên `ums.diemHoc`); danh mục nạp DKH. Chốt: `CAN-QUYET-DA-CHOT.md` mục "Chốt ngày 2026-10-05 — Tốt nghiệp";
+   1 việc dữ liệu (`dieukiennhom`: thiếu thủ tục xoá lệnh từ khoá — bản cũ gọi nhầm thủ tục xoá Khoản thu Tài chính). CHƯA kiểm host.
+
+21. Các phân hệ còn lại (Ký túc xá 22 mục menu host, Luận văn 14, TKGG 12, Tin tức 3, Danh hiệu, Thi trắc nghiệm). Tổng 859 màn hình, xem mục 7 để biết vì
    sao không thể làm bằng cách đổi CSS.
 
 ### Cách làm việc đã dùng, nên giữ

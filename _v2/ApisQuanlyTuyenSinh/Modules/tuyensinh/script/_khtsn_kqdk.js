@@ -33,6 +33,12 @@
        → bảng không đổi); "chọn hết = bỏ lọc" không áp khi đang tìm; ô "(Chọn tất cả)" đổi nhãn + số theo kết quả tìm.
      · Thanh công cụ + dải điều kiện lọc GHIM khi cuộn (.khtsn-kq__dinh, _khtsn.css).
      · Gốc dời popup lọc vào trong modal (Bootstrap cướp focus ô tìm) — bản này gắn popup TRONG thân màn con (position: fixed).
+   Theo gốc 1–2/10 (47ab8a26, bc5d5f67):
+     · Chưa bấm sắp xếp cột thì hồ sơ MỚI NHẤT lên đầu (mốc: ngày tạo → ngày ban hành KQ → ngày nộp → ngày cập nhật → ngày tiếp
+       nhận → cột ngày bất kỳ kiểu NGAY_TAO / CREATED). So ngày nhận thêm dạng ISO yyyy-mm-dd[Thh:mm:ss] (không dùng Date.parse
+       như gốc — Date.parse("12") ra ngày, làm sai sắp xếp cột số).
+     · Cột "Nguồn khai thác": hồ sơ có sẵn cột đối tác thì đọc thẳng; còn lại hỏi TỪNG người (P.timDoiTac — thử lùi dần),
+       bỏ bước "thử cả lô" (personId rỗng) như gốc; chặn hỏi trùng khi đang tải.
    ========================================================================= */
 (function () {
     'use strict';
@@ -42,7 +48,7 @@
     var Q = null;          // màn con đang mở (Q.dlg = khung ums.pat.formTrang)
 
     /* ---------- nhớ tạm theo phiên (như các biến me._* của gốc) ---------- */
-    var C = { lienHe: {}, nguon: {}, nguonLo: {}, ct: {}, profile: {}, daura: {}, fullHong: false, ttMap: null };
+    var C = { lienHe: {}, nguon: {}, nguonDangTai: {}, ct: {}, profile: {}, daura: {}, fullHong: false, ttMap: null };
     T.kqCache = C;
 
     T.kqDaTick = function () {
@@ -152,7 +158,7 @@
             pick(d, ['PERSONINVOICE_MAQHNS', 'HD_MA_QHNS']) || (hd.BUYER_BUDGET_MAQHNS || ''),
             pick(d, ['PERSONINVOICE_DIACHI', 'HD_DIACHI']) || (hd.BUYER_ADDR_DIACHI || ''),
             pick(d, ['PERSONINVOICE_MST', 'HD_MST', 'MST']) || (hd.BUYER_TAX_MST || ''),
-            C.nguon[pid] || '',
+            C.nguon[pid] || P.tenDoiTacCua(d, null, true) || '',
             /* [52..65] Hồ sơ & kế hoạch — kế hoạch / đợt / hệ / ngành suy từ nguyện vọng đầu ra (hồ sơ không có các khoá đó) */
             (nv && nv.khTen) || (Q && Q.kh ? T.tenKH(Q.kh) : '') || '',
             (nv && nv.dotTen) || '',
@@ -210,9 +216,26 @@
         var v = cot.get ? cot.get(d, Q.dr) : (arr || mang(d, Q.dr))[cot.i];
         return (v == null ? '' : String(v)).trim();
     }
+    /* "14/09/2026 15:03:22" / "1/8/2007" / "2026-10-01T09:34:24" → số để so sánh; không phải ngày → null (gốc 1/10 nhận thêm ISO) */
     function soNgay(s) {
-        var m = String(s).match(/^(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2}):(\d{2}))?/);
-        return m ? new Date(+m[3], +m[2] - 1, +m[1], +(m[4] || 0), +(m[5] || 0), +(m[6] || 0)).getTime() : null;
+        if (!s) return null;
+        if (s instanceof Date) return s.getTime();
+        var str = String(s).trim();
+        var m = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?)?/);
+        if (m) return new Date(+m[3], +m[2] - 1, +m[1], +(m[4] || 0), +(m[5] || 0), +(m[6] || 0)).getTime();
+        m = str.match(/^(\d{4})-(\d{1,2})-(\d{1,2})(?:[T\s](\d{1,2}):(\d{1,2})(?::(\d{1,2}))?)?/);
+        if (m) return new Date(+m[1], +m[2] - 1, +m[3], +(m[4] || 0), +(m[5] || 0), +(m[6] || 0)).getTime();
+        return null;
+    }
+    /* Mốc thời gian đại diện của một hồ sơ (_kqGetRowTime, gốc 1/10): ngày tạo → ngày ban hành KQ → ngày nộp → ngày cập nhật
+       → ngày tiếp nhận → cột ngày bất kỳ có tên kiểu NGAY_TAO / NGAY_NOP / CREATED. Không có → 0. */
+    function mocHoSo(d) {
+        var p = function (k) { return T.pick(d, k); };
+        var cac = [p(['HOSO_NGAYTAO', 'NGAY_TAO', 'NGAYTAO', 'NgayTao', 'NgayTao_dd_mm_yyyy_hhmmss']), p(['KETQUA_NGAYBANHANH', 'NGAY_QD_TT', 'HOSO_NGAYKETQUA']),
+            p(['HOSO_NGAYNOP', 'NGAY_NOP', 'NGAYNOP', 'NGAY_DK', 'NGAYDK']), p(['HOSO_NGAYCAPNHAT', 'NGAY_CAPNHAT', 'NGAYCAPNHAT']), p(['INTAKE_NGAYTIEPNHAN']),
+            T.pickFuzzy(d, /(NGAY_?TAO|NGAY_?NOP|NGAY_?DK|NGAY_?BANHANH|NGAY_?QD|CREATED)/i)];
+        for (var i = 0; i < cac.length; i++) { var t = cac[i] ? soNgay(cac[i]) : null; if (t !== null && !isNaN(t) && t > 0) return t; }
+        return 0;
     }
 
     /* =======================================================================
@@ -445,6 +468,10 @@
                 }
                 return va.localeCompare(vb, 'vi') * huong;
             });
+        } else {
+            /* Mặc định (chưa bấm sắp xếp cột): hồ sơ MỚI NHẤT lên đầu bảng (gốc 1/10) — vừa nhập xong không bị đẩy sang trang sau. */
+            rows = rows.map(function (d, i) { return { d: d, t: mocHoSo(d), i: i }; })
+                .sort(function (a, b) { return (b.t - a.t) || (a.i - b.i); }).map(function (x) { return x.d; });
         }
         Q.view = rows;
         Q.page = 1;
@@ -537,36 +564,33 @@
         return T.hangDoi(ids.map(function (p) { return function () { return P.lienHe(p).then(function (lh) { C.lienHe[p] = lh; }); }; }), 6)
             .then(function () { return true; });
     }
-    function tenDoiTac(r, dm) {
-        var ten = T.pick(r, ['TS_DOITACTUYENSINH_TEN', 'DOITAC_TEN', 'DOITACTUYENSINH_TEN', 'HOTEN']);
-        if (ten) return ten;
-        var id = T.pick(r, ['TS_DOITACTUYENSINH_ID', 'DOITAC_ID']);
-        var d = (dm || []).filter(function (x) { return String(T.id(x)) === String(id); })[0];
-        return d ? (P.hoTenDoiTac(d) || T.pick(d, ['MA', 'Ma'])) : '';
-    }
+    /* Nguồn khai thác cho cột "Nguồn khai thác" (_ensureNguonForRows — theo gốc 2/10):
+       hồ sơ có sẵn cột đối tác thì đọc thẳng; còn lại hỏi TỪNG người (P.timDoiTac — thử lùi dần), 6 luồng.
+       Gốc 2/10 bỏ bước "thử cả lô trước" (personId rỗng) → bỏ theo. C.nguonDangTai chặn hỏi trùng khi vẽ lại lúc đang tải. */
     function napNguon(rows) {
         var can = [];
-        rows.forEach(function (d) { var p = T.pid(d); if (p && !(p in C.nguon) && can.indexOf(p) < 0) can.push(p); });
-        if (!can.length) return Promise.resolve(false);
-        var khoaLo = Q.khId + '|' + T.S.dotKQ, khId = Q.khId, dotId = T.S.dotKQ;
+        C.nguonDangTai = C.nguonDangTai || {};
         return P.dmDoiTac().then(function (dm) {
-            var ghi = function (r) { var p = T.pickLoose(r, ['CORE_PERSON_ID', 'COREPERSON_ID', 'PERSON_ID']); if (p) C.nguon[p] = tenDoiTac(r, dm) || ''; };
-            var tung = function () {
-                return T.hangDoi(can.map(function (p) {
-                    return function () { return P.dsHoSoDoiTac(khId, dotId, p).then(function (a) { a.forEach(ghi); if (!(p in C.nguon)) C.nguon[p] = ''; }); };
-                }), 6).then(function () { return true; });
-            };
-            if (!C.nguonLo[khoaLo]) {
-                C.nguonLo[khoaLo] = 'thu';
-                return P.dsHoSoDoiTac(khId, dotId, '').then(function (a) {
-                    if (a.length) { a.forEach(ghi); C.nguonLo[khoaLo] = 'lo'; can.forEach(function (p) { if (!(p in C.nguon)) C.nguon[p] = ''; }); return true; }
-                    C.nguonLo[khoaLo] = 'tung';
-                    return tung();
-                });
-            }
-            if (C.nguonLo[khoaLo] === 'tung') return tung();
-            can.forEach(function (p) { C.nguon[p] = ''; });
-            return true;
+            var coMoi = false;
+            rows.forEach(function (d) {
+                var p = T.pid(d);
+                if (!p) return;
+                var ten = P.tenDoiTacCua(d, dm, true);
+                if (ten) { if (C.nguon[p] !== ten) { C.nguon[p] = ten; coMoi = true; } return; }
+                if (!(p in C.nguon) && !C.nguonDangTai[p] && can.indexOf(p) < 0) can.push(p);
+            });
+            if (!can.length) return coMoi;
+            var khId = Q.khId, dotId = T.S.dotKQ;
+            can.forEach(function (p) { C.nguonDangTai[p] = 1; });
+            return T.hangDoi(can.map(function (p) {
+                return function () {
+                    return P.timDoiTac(khId, dotId, p).then(function (a) {
+                        delete C.nguonDangTai[p];
+                        if (a.length) { a.forEach(function (r) { C.nguon[T.pickLoose(r, ['CORE_PERSON_ID', 'COREPERSON_ID', 'PERSON_ID']) || p] = P.tenDoiTacCua(r, dm) || ''; }); coMoi = true; }
+                        else if (!(p in C.nguon)) C.nguon[p] = '';
+                    });
+                };
+            }), 6).then(function () { return coMoi; });
         });
     }
     /* Chế độ Đầy đủ: 4 lời gọi / người (_ensureChiTietForRows) */

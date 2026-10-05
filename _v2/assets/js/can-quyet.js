@@ -49,22 +49,15 @@
         {"man":"Điểm rèn luyện → Tiêu chí xếp loại → Tiêu chí xếp loại áp dụng","q":"Bấm **Thêm mới** hoặc **Sửa** một mức xếp loại áp dụng rồi **Lưu**: máy chủ báo lỗi thủ tục, **không lưu được** (không tạo / không đổi gì). Nút **Kế thừa** và **Xóa toàn bộ** vẫn chạy đúng. Ảnh hưởng: với một khoá / học kỳ chỉ chép được nguyên bộ mức xếp loại chung sang, **không chỉnh được từng mức** (điểm cận trên / dưới, kỷ luật cao nhất, điểm quy đổi) và không thêm lẻ được. **Anh:** sửa hai thủ tục thêm / sửa cho khớp số tham số mà API truyền. (RL_TieuChuanXepLoai_AD/ThemMoi → PLS-00306 wrong number or types of arguments in call to THEM_DRL_TIEUCHUANXEPLOAI_AD; RL_TieuChuanXepLoai_AD/CapNhat → PLS-00306 ở SUA_DRL_TIEUCHUANXEPLOAI_AD. Kiểm host 26/09 và 30/09/2026 — bản gốc gửi y hệt.)","ben":"oracle"}
     ]);
     them("apistaichinh/modules/baocao/baocao", [
-        {"man":"Tài chính → Báo cáo → Báo cáo tài chính","q":"Ô \"Phân loại chứng từ\" không có lựa chọn nào. Nguyên nhân: danh mục TAICHINH.PHANLOAICHUNGTU **chưa được tạo** trên hệ thống. **Nghiệp vụ Tài chính:** cho biết danh sách giá trị cần dùng, hoặc xác nhận ô này không dùng. **Anh:** tạo danh mục và nạp giá trị khớp với cách thủ tục Tài chính đọc (giá trị lưu dạng mã, thủ tục dùng để xử lý — đặt tuỳ ý sẽ không khớp). (Tạo danh mục: Quản trị hệ thống → Danh mục → Danh mục tên bảng; nhập giá trị: → Danh mục dữ liệu.)","ben":"oracle"},
-        {"man":"Tài chính → Báo cáo → Báo cáo tài chính","q":"Ô \"Tình trạng báo cáo lưu\" không có lựa chọn nào. Nguyên nhân: danh mục TAICHINH.BC.TINHTRANGBCLUU **chưa được tạo** trên hệ thống. **Nghiệp vụ Tài chính:** cho biết danh sách giá trị cần dùng, hoặc xác nhận ô này không dùng. **Anh:** tạo danh mục và nạp giá trị khớp với cách thủ tục Tài chính đọc (giá trị lưu dạng mã, thủ tục dùng để xử lý — đặt tuỳ ý sẽ không khớp). (Tạo danh mục: Quản trị hệ thống → Danh mục → Danh mục tên bảng; nhập giá trị: → Danh mục dữ liệu.)","ben":"oracle"},
         {"man":"Tài chính → Báo cáo → Báo cáo tài chính","q":"Chưa cấu hình **kết nối phần mềm kế toán** (đối tác kế toán, bảng dữ liệu chuyển sang) → các ô liên quan kế toán trống, chưa chuyển số liệu sang kế toán được. Trong menu không có màn nào để khai. **Nghiệp vụ Tài chính:** xác nhận có dùng kết nối kế toán không. **Anh:** nếu có thì cấu hình đối tác và bảng dữ liệu chuyển sang. (TC_KeToan/LayDSAPI_DoiTac, LayDSTenBangDuLieu trả 0.)","ben":"oracle"}
-    ]);
-    them("apistaichinh/modules/bienlai/tracuusobienlai", [
-        {"man":"Tài chính → Tra cứu hóa đơn - phiếu thu - biên lai → Biên lai","q":"Chưa khai **hệ thống biên lai** (mẫu số, ký hiệu, dải số) → không chọn được mẫu biên lai, chưa xuất / tra cứu biên lai được. **Nghiệp vụ Tài chính:** khai theo thông tin biên lai trường đã đăng ký, ở Tài chính → Khai báo chung hệ thống → Khai báo hệ thống biên lai → \"Thêm mới\". (TC_BienLai/LayDanhSach trả 0.)","ben":"nghiepvu"}
     ]);
     them("apistaichinh/modules/danhmucheso/hethongbienlai", [
         {"man":"Tài chính → Khai báo chung hệ thống → Khai báo hệ thống biên lai","q":"Bấm \"Lưu\" hệ thống biên lai thì màn báo **lỗi CSDL** nhưng máy chủ **vẫn tạo** bản ghi → bấm lại là sinh thêm bản ghi rác (24/09/2026 đã sinh 3 bản ghi chỉ có Mẫu số \"01\" khi thử với các ô số để trống). **Anh:** sửa thủ tục (lỗi thì không được để lại bản ghi), cho biết ô nào bắt buộc, xoá các bản ghi rác. Bản cũ gửi đúng các tham số như bản mới. (TC_BienLai/ThemMoi → \"ORA-00001: unique constraint (QTDHDA.SYS_C0023805) violated\" — có thể ở bước sinh số theo quyển khi Số phiếu/quyển, Độ dài, Số khởi tạo = 0; chưa kiểm vì phải ghi dữ liệu.)","ben":"oracle"},
-        {"man":"Tài chính → Khai báo chung hệ thống → Khai báo hệ thống biên lai","q":"Chưa khai **hệ thống biên lai** (mẫu số, ký hiệu, dải số) → không chọn được mẫu biên lai, chưa xuất / tra cứu biên lai được. **Nghiệp vụ Tài chính:** khai theo thông tin biên lai trường đã đăng ký, ở Tài chính → Khai báo chung hệ thống → Khai báo hệ thống biên lai → \"Thêm mới\". (TC_BienLai/LayDanhSach trả 0.)","ben":"nghiepvu"}
     ]);
     them("apistaichinh/modules/danhmucheso/kehoachthuchi", [
-        {"man":"Tài chính → Khai báo chung hệ thống → Kế hoạch hoạt động tài chính","q":"Ô \"Mô hình phân bổ hoá đơn\" không có lựa chọn nào. Nguyên nhân: danh mục TAICHINH.PHANBOHOADON **chưa được tạo** trên hệ thống. **Nghiệp vụ Tài chính:** cho biết danh sách giá trị cần dùng, hoặc xác nhận ô này không dùng. **Anh:** tạo danh mục và nạp giá trị khớp với cách thủ tục Tài chính đọc (giá trị lưu dạng mã, thủ tục dùng để xử lý — đặt tuỳ ý sẽ không khớp). (Tạo danh mục: Quản trị hệ thống → Danh mục → Danh mục tên bảng; nhập giá trị: → Danh mục dữ liệu.)","ben":"oracle"},
-        {"man":"Tài chính → Khai báo chung hệ thống → Kế hoạch hoạt động tài chính","q":"Ô \"Mô hình phân bổ biên lai\" không có lựa chọn nào. Nguyên nhân: danh mục TAICHINH.PHANBOBIENLAI **chưa được tạo** trên hệ thống. **Nghiệp vụ Tài chính:** cho biết danh sách giá trị cần dùng, hoặc xác nhận ô này không dùng. **Anh:** tạo danh mục và nạp giá trị khớp với cách thủ tục Tài chính đọc (giá trị lưu dạng mã, thủ tục dùng để xử lý — đặt tuỳ ý sẽ không khớp). (Tạo danh mục: Quản trị hệ thống → Danh mục → Danh mục tên bảng; nhập giá trị: → Danh mục dữ liệu.)","ben":"oracle"},
-        {"man":"Tài chính → Khai báo chung hệ thống → Kế hoạch hoạt động tài chính","q":"Ô \"Mô hình phân bổ phiếu thu\" không có lựa chọn nào. Nguyên nhân: danh mục TAICHINH.MOHINH_PHIEUTHU đã có nhưng **chưa có giá trị** nào. **Nghiệp vụ Tài chính:** cho biết danh sách giá trị cần dùng, hoặc xác nhận ô này không dùng. **Anh:** tạo danh mục và nạp giá trị khớp với cách thủ tục Tài chính đọc (giá trị lưu dạng mã, thủ tục dùng để xử lý — đặt tuỳ ý sẽ không khớp). (Tạo danh mục: Quản trị hệ thống → Danh mục → Danh mục tên bảng; nhập giá trị: → Danh mục dữ liệu.)","ben":"oracle"},
-        {"man":"Tài chính → Khai báo chung hệ thống → Kế hoạch hoạt động tài chính","q":"Chưa khai **hệ thống biên lai** (mẫu số, ký hiệu, dải số) → không chọn được mẫu biên lai, chưa xuất / tra cứu biên lai được. **Nghiệp vụ Tài chính:** khai theo thông tin biên lai trường đã đăng ký, ở Tài chính → Khai báo chung hệ thống → Khai báo hệ thống biên lai → \"Thêm mới\". (TC_BienLai/LayDanhSach trả 0.)","ben":"nghiepvu"}
+    ]);
+    them("apistaichinh/modules/phieuthu/thutien", [
+        {"man":"Tài chính → Thu tiền mặt cho sinh viên, học sinh → Khoản nợ chung → Tạo QR thanh toán","q":"Bấm **Tạo QR thanh toán** thì hộp mở trang thanh toán của cổng thông tin nhưng trang báo **không tìm thấy (404)** → chưa tạo được mã QR cho sinh viên nộp tiền. Mã nguồn (cả bản cũ lẫn bản mới) đã hỗ trợ khai địa chỉ cổng sinh viên riêng; host chưa khai nên đang dùng địa chỉ ứng dụng, nơi không có trang này. **Anh:** khai địa chỉ cổng sinh viên (khoá **TSV**) trong Config.js / Init_API() của host. (Đang mở https://con98.api-apis.com/congthongtin/pages/thanhtoan.aspx?strMa=… → 404. Kiểm host 05/10/2026.)","ben":"oracle"}
     ]);
     them("apistaichinh/modules/danhmucheso/hesolophocphan", [
         {"man": "Tài chính → Khai báo hệ số → Khai hệ số lớp học phần", "ben": "oracle", "q": "Mở màn: danh sách **Lớp học phần** bên trái trống; bấm **Tạo mới → Chọn học phần** cũng \"Không có dữ liệu\" → không khai được hệ số cho lớp học phần nào. Nguyên nhân: thủ tục lấy lớp học phần trả **0 dòng** với mọi khoá, thời gian, từ khoá (trong khi hệ thống có lớp học phần — màn Quản lý điểm vẫn thấy). **Anh:** kiểm thủ tục này đọc bảng nào / điều kiện gì, sửa để trả lớp học phần đang có. (pkg_kehoach_thongtin.LayDSKS_DaoTao_HocPhan_Lop → 0 dòng; bản gốc gọi y hệt, tham số lọc để rỗng. Kiểm host 30/09/2026.)"}
@@ -79,8 +72,6 @@
         {"man":"Tài chính → Thu tiền, xuất hóa đơn, biên lai → Danh sách thu tiền qua thiết bị POS","q":"Chưa có **khoản thu nào thu qua máy POS** → danh sách trống. Trong menu không có màn nào để khai. **Nghiệp vụ Tài chính:** xác nhận có thu qua máy POS không, khoản thu nào. **Anh:** nếu có thì cấu hình các khoản thu qua POS. (TC_ThongTinChung/LayDSCacKhoanThuQuaPos trả 0.)","ben":"oracle"}
     ]);
     them("apistaichinh/modules/phieuthu/thutienkhac", [
-        {"man":"Tài chính → Thu tiền, xuất hóa đơn, biên lai → Thu tiền mặt cho đối tác đào tạo","q":"Ô \"Đơn vị / đối tác\" không có lựa chọn nào. Nguyên nhân: danh mục QLTC.DHV **chưa được tạo** trên hệ thống. **Nghiệp vụ Tài chính:** cho biết danh sách giá trị cần dùng, hoặc xác nhận ô này không dùng. **Anh:** tạo danh mục và nạp giá trị khớp với cách thủ tục Tài chính đọc (giá trị lưu dạng mã, thủ tục dùng để xử lý — đặt tuỳ ý sẽ không khớp). (Tạo danh mục: Quản trị hệ thống → Danh mục → Danh mục tên bảng; nhập giá trị: → Danh mục dữ liệu.)","ben":"oracle"},
-        {"man":"Tài chính → Thu tiền, xuất hóa đơn, biên lai → Thu tiền mặt cho đối tác đào tạo","q":"Ô \"Tình trạng người học\" không có lựa chọn nào. Nguyên nhân: danh mục QLSV.TNH **chưa được tạo** trên hệ thống. **Nghiệp vụ Tài chính:** cho biết danh sách giá trị cần dùng, hoặc xác nhận ô này không dùng. **Anh:** tạo danh mục và nạp giá trị khớp với cách thủ tục Tài chính đọc (giá trị lưu dạng mã, thủ tục dùng để xử lý — đặt tuỳ ý sẽ không khớp). (Tạo danh mục: Quản trị hệ thống → Danh mục → Danh mục tên bảng; nhập giá trị: → Danh mục dữ liệu.)","ben":"oracle"},
         {"man":"Tài chính → Thu tiền, xuất hóa đơn, biên lai → Thu tiền mặt cho đối tác đào tạo","q":"Danh sách **người học của đối tác** trống → không chọn được người nộp, chưa thu tiền cho đối tác đào tạo được. **Nghiệp vụ Tài chính:** xác nhận có thu tiền cho đối tác đào tạo không. **Anh:** nếu có thì nạp dữ liệu người học của đối tác. (PKG_CORE_NGUOIHOC_01.LayDSNguoiHoc_All_DoiTac trả 0.)","ben":"oracle"}
     ]);
     them("apiscongcanbo/modules/sanphamkhoahoc/tapchiquocte", [
@@ -125,9 +116,6 @@
     them("apisnhansu/modules/kehoach/dexuathoso", [
         {"man": "Nhân sự → Kế hoạch → Đề xuất hồ sơ", "ben": "oracle", "q": "Thêm hồ sơ đề xuất mới thì máy chủ báo lỗi **thiếu mã ngữ cảnh** của người, không tạo được. Ảnh hưởng: không đề xuất được hồ sơ nhân sự mới từ màn này. **Anh:** sửa thủ tục thêm để tự điền CONTEXT_CODE (API và màn gốc đều không gửi giá trị này). (PKG_CORE_HOSONHANSU_05.InsertCorePerson → ORA-01400 cannot insert NULL into PERSON_CONTEXT.CONTEXT_CODE. Kiểm host 29/09/2026.)"}
     ]);
-    ["kehoach/kehoach", "nhansu/kehoach"].forEach(function (t) { them("apisnhansu/modules/" + t, [
-        {"man": "Nhân sự → Tuyển dụng → Kế hoạch tuyển dụng", "ben": "nghiepvu", "q": "Không thêm được kế hoạch tuyển dụng: ô **\"Phân loại\"** và ô **\"Mẫu hồ sơ\"** không có lựa chọn nào, mà máy chủ bắt buộc có phân loại. **Nghiệp vụ Nhân sự:** cho biết các loại kế hoạch tuyển dụng cần dùng. **Anh:** tạo danh mục **NS.TD.PHANLOAI** và nạp giá trị; khai ít nhất một mẫu hồ sơ tuyển dụng. (CMS_DanhMucThuocTinh NS.TD.PHANLOAI → 0 dòng; LayDSNhanSu_MauHoSo → 0 dòng. Kiểm host 29/09/2026.)"}
-    ]); });
     them("apisnhansu/modules/luong/quydinhphucap", [
         {"man": "Nhân sự → Quản lý lương → Quy định phụ cấp", "ben": "oracle", "q": "Bấm **Thêm mới**, điền đủ ô rồi **Lưu**: máy chủ báo lỗi, không tạo được quy định hưởng phụ cấp nào. Ảnh hưởng: chưa khai được quy định phụ cấp theo ngạch. Nguyên nhân: lớp API gọi thủ tục thêm với số / kiểu tham số không khớp thủ tục trong CSDL. **Anh:** đối chiếu chữ ký thủ tục với lời gọi của API rồi sửa cho khớp. (L_QuyDinhHuongPhuCap/ThemMoi → PLS-00306 wrong number or types of arguments in call to THEM_NHANSU_QUYDINHHUONGPHUCAP; tham số màn gửi khớp bản gốc từng khoá. Kiểm host 30/09/2026 với một Bảng quy định lương thử, đã xoá.)"}
     ]);
@@ -239,14 +227,6 @@
     them("apissinhvien/modules/vexe/xebus", [
         {"man":"Sinh viên → Vé xe → Xe bus","q":"Thêm tuyến xe không gắn được với kế hoạch (thủ tục không nhận id kế hoạch), và \"Chi tiết\" đăng ký thiếu tuyến / tháng đã đăng ký của từng người học. **Anh:** bổ sung tham số / cột. (SV_XeBus/Them_QLSV_XeBus_TuyenXe, LayDSKeHoach_XeBus_DangKy.)","ben":"oracle"}
     ]);
-    ['giayto', 'yeucau', 'canboxuly'].forEach(function (t) {
-        them("apissinhvien/modules/thutuchanhchinh/" + t, [
-            {"man":"Sinh viên → Thủ tục hành chính","q":"Các màn một cửa chỉ dùng được khi có dữ liệu danh mục MOTCUA.TRUONGTHONGTIN, MOTCUA.TINHTRANGXULY, MOTCUA.HINHTHUCTHANHTOAN, MOTCUA.DIEMMOCKIEMTRA, DVMC.YEUCAU. **Nghiệp vụ:** khai các danh mục này.","ben":"nghiepvu"}
-        ]);
-    });
-    them("apissinhvien/modules/hoso/yeucau", [
-        {"man":"Sinh viên → Hồ sơ sinh viên → Yêu cầu","q":"Cùng màn với Thủ tục hành chính → Yêu cầu: cần danh mục DVMC.YEUCAU, MOTCUA.TRUONGTHONGTIN có dữ liệu. **Nghiệp vụ:** khai các danh mục này.","ben":"nghiepvu"}
-    ]);
 
     /* Nhập học (ApisNhapHoc) — ghi lúc chuyển đổi 2026-09-27, CHƯA kiểm trên host. */
     them("apisnhaphoc/modules/taichinh/checkinnhaphoc", [
@@ -301,9 +281,14 @@
         {"man":"Thi phách → Xác nhận (xacnhan — không có trên menu)","q":"Màn là bản chép dở từ Tốt nghiệp: danh sách và lưu xác nhận dùng **TP_XacNhanSauThi**, nhưng các nút tình trạng lấy từ **TN_XacNhan/LayDSTinhTrangXacNhan** (dịch vụ Tốt nghiệp, strPhanLoai_Id rỗng) và **không có lời gọi hủy xác nhận** (nút đang khoá). Ảnh hưởng: nếu nguồn Tốt nghiệp không trả tình trạng thì hộp xác nhận không có nút nào. **Anh:** xác nhận màn này còn dùng không; nếu còn, cho biết nguồn tình trạng đúng (màn anh em dùng TP_Chung/LayTrangThaiSauThi) và thủ tục hủy.","ben":"oracle"}
     ]);
 
+    /* Tốt nghiệp (ApisTotNghiep) — ghi lúc chuyển đổi 2026-10-05, CHƯA kiểm trên host. */
+    them("apistotnghiep/modules/kehoach/dieukiennhom", [
+        {"man":"Tốt nghiệp → Thiết lập điều kiện → Điều kiện nhóm → Xem danh sách các lệnh điều kiện / xếp loại","q":"Nút **Xóa** lệnh đang **khoá**: bản cũ gọi nhầm thủ tục xoá của màn Khoản thu Tài chính (pkg_taichinh_kehoach.Xoa_TC_KhoanThu_QDXuatHD) với id lệnh — bấm ở bản cũ có nguy cơ xoá nhầm dữ liệu Tài chính. Ảnh hưởng: lệnh khai sai chỉ sửa được, chưa xoá được. **Anh:** bổ sung thủ tục + action xoá lệnh từ khoá cho TN_XetDuyet_TuKhoa và TN_XepLoai_TuKhoa (và nên gỡ lời gọi nhầm khỏi bản cũ).","ben":"oracle"}
+    ]);
+
     ums.canQuyet = S;
     /* Phân hệ CHƯA kiểm trên host: mục của các phân hệ này ghi lúc chuyển đổi, chưa xác nhận trên hệ thật — bảng "Màn đang có lỗi backend"
        gắn nhãn "chưa kiểm trên host". Kiểm xong phân hệ nào thì gỡ tiền tố của nó khỏi đây. */
-    ums.canQuyetChuaKiem = ['apissinhvien/', 'apisnhaphoc/', 'apisquanlytuyensinh/', 'apisnckh/', 'apisthiphach/', 'apiskehoachchuongtrinh/'];
+    ums.canQuyetChuaKiem = ['apissinhvien/', 'apisnhaphoc/', 'apisquanlytuyensinh/', 'apisnckh/', 'apisthiphach/', 'apiskehoachchuongtrinh/', 'apistotnghiep/'];
     ums.canQuyetKhoa = function (url) { return String(url || '').replace(/\.html?(\?.*)?$/i, '').replace(/\/html\//i, '/').toLowerCase(); };
 })(window);

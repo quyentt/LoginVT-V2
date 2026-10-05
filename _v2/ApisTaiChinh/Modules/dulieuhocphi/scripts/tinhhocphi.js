@@ -163,6 +163,12 @@
     H.on('thpHe', function () { loadKhoa(v('thpHe')); loadLop('', ''); });
     H.on('thpKhoa', function () { loadLop(v('thpKhoa'), ''); });
     jQuery($id('thpLop')).on('select2:select', loadSinhVien);
+    // gốc 2/10: bỏ chọn Lớp thì nạp lại danh sách sinh viên nếu vùng đang mở
+    var henBoLop = 0;   // select2 bắn cả unselect lẫn clear khi xoá ô → gộp thành một lần nạp
+    jQuery($id('thpLop')).on('select2:unselect select2:clear', function () {
+        clearTimeout(henBoLop);
+        henBoLop = setTimeout(function () { if (!z('sv').hidden) loadSinhVien(); }, 0);
+    });
     H.on('thpThoiGian', function () {
         H.keHoachDangKy(v('thpThoiGian')).then(function (r) { H.fill('thpKeHoach', r, { name: 'TEN' }); }).catch(fail('kế hoạch đăng ký'));
     });

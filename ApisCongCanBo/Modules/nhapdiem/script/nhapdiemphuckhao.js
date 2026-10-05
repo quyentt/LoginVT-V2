@@ -233,7 +233,7 @@ NhapDiemPK.prototype = {
 
             },
             error: function (er) {
-                edu.system.alert("XLHV_NhapDiem/ThemMoi (er): " + JSON.stringify(er), "w");
+                edu.system.alert("" + JSON.stringify(er), "w");
 
             },
             type: obj_list.type,

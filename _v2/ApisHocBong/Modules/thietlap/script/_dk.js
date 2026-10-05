@@ -68,10 +68,12 @@
          chung: { ctl, ds: {tham số lọc thêm}, luu(v, row) → {tham số lưu thêm} },
          rieng: { ctl, ds, luu(v, row) },
          phanCap: 'X/LayDanhSach', keHoach: { call },
-         tuKhoa: 'X_TuKhoa' | null, toolbar: [{ text, icon, mod, onClick }],
+         tuKhoa: 'X_TuKhoa' | { ds, them, sua, size, trang } | null, toolbar: [{ text, icon, mod, onClick }],
          onForm(kieu, row, crud, host), onSaved(kieu, crud, id)       kieu = 'chung' | 'rieng'
      }) → { crud(kieu), ds (vùng danh sách), phu (vùng phụ, ẩn), moPhu(), dongPhu() }
-     ums.hbDk.tuKhoa(host, ctl)       bảng từ khoá sửa trong ô
+     ums.hbDk.tuKhoa(host, ctl)       bảng từ khoá sửa trong ô (ctl chuỗi | đối tượng, xem tại hàm)
+   Dùng thêm ở Tốt nghiệp (ApisTotNghiep/Modules/thietlap — nạp chéo tệp này):
+     thamsochung nạp CHÍNH tệp Học bổng; dieukienxet, xeploaihabac là tệp cấu hình riêng.
      ums.hbDk.gt(crud)                giá trị biểu mẫu, ô chọn nhiều → "a,b"
    ========================================================================= */
 (function () {
@@ -150,7 +152,13 @@
 
     /* ---------- Bảng từ khoá (genTable_TuKhoa / save_TuKhoa) --------------- */
     D.tuKhoa = function (host, ctl) {
-        var st = { page: 1, size: 10, total: 0 };
+        /* ctl: chuỗi controller (Học bổng: X/LayDanhSach phân trang máy chủ, X/ThemMoi | X/CapNhat)
+           hoặc đối tượng (Tốt nghiệp — action / cỡ trang khác):
+             { ds: 'X/LayDanhSach', them: 'X/ThemMoi', sua: 'X/CapNhat', size: 1000000, trang: false }
+           trang: false = không phân trang (gốc TN chú thích bPaginate, nạp một lần size dòng). */
+        var C = typeof ctl === 'string' ? { ds: ctl + '/LayDanhSach', them: ctl + '/ThemMoi', sua: ctl + '/CapNhat' } : ctl;
+        var coTrang = C.trang !== false;
+        var st = { page: 1, size: C.size || 10, total: 0 };
         host.innerHTML = pat.panel({
             title: 'Danh sách từ khóa', icon: 'fa-spell-check', count: 'hbTkDem', flush: true, zone: 'hbTk',
             tools: ui.btn('save', { text: 'Lưu danh sách từ khóa', attr: { 'data-hbtk': 'luu' } }),
@@ -161,7 +169,7 @@
         function nap(p) {
             if (p) st.page = p;
             return ums.api.call({
-                action: ctl + '/LayDanhSach', method: 'GET', silent: true,
+                action: C.ds, method: 'GET', silent: true,
                 strTuKhoa: '', strPhanLoai_Id: '', strNguoiTao_Id: '',
                 pageIndex: st.page, pageSize: st.size
             }).then(function (r) {
@@ -177,11 +185,11 @@
                         { title: 'Tên từ khóa', render: function (d) { return o(d, 'ten', d.TENTUKHOA); } },
                         { title: 'Mô tả', render: function (d) { return o(d, 'mota', d.MOTA); } }
                     ],
-                    page: {
+                    page: coTrang ? {
                         index: st.page, size: st.size, total: st.total,
                         onChange: function (x) { if (x >= 1 && x <= Math.ceil(st.total / st.size)) nap(x); },
                         onSize: function (v) { st.size = Number(v) || 100000; nap(1); }
-                    }
+                    } : null
                 });
             }).catch(function (err) {
                 z.innerHTML = ui.fail(err.message);
@@ -205,7 +213,7 @@
             });
             var calls = Object.keys(doi).filter(function (id) { return doi[id].khac; }).map(function (id) {
                 // Gốc: strId rỗng → ThemMoi — dòng nào cũng có ID nên thực tế luôn CapNhat
-                return { action: ctl + (id ? '/CapNhat' : '/ThemMoi'), strId: id, strTenTuKhoa: doi[id].ten, strMoTa: doi[id].mota };
+                return { action: id ? C.sua : C.them, strId: id, strTenTuKhoa: doi[id].ten, strMoTa: doi[id].mota };
             });
             if (!calls.length) { ui.toast('Không có từ khóa nào thay đổi', 'info'); return; }
             b.disabled = true;

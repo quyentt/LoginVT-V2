@@ -1,4 +1,4 @@
-﻿/*----------------------------------------------
+/*----------------------------------------------
 --Author: Văn Hiệp
 --Phone: 
 --Date of created: 
@@ -118,6 +118,48 @@ QuanLyThongTin.prototype = {
                 //for (var i = 0; i < arrChecked_Id.length; i++) {
                 //    me.save_SinhSoVaoSo(arrChecked_Id[i]);
                 //}
+            });
+        });
+
+        $("#btnGanSoVaoSoTrucTiep").off('click').on('click', function () {
+            var arrChecked_Id = edu.util.getArrCheckedIds("tblQuanLyThongTin", "checkX");
+            if (arrChecked_Id.length == 0) {
+                edu.system.alert("Vui lòng chọn sinh viên cần gán số vào sổ!");
+                return;
+            }
+            if (arrChecked_Id.length > 1) {
+                edu.system.alert("Vui lòng chỉ chọn 1 sinh viên để gán số vào sổ trực tiếp!");
+                return;
+            }
+            me.strCurrentSinhVien_TN_Id = arrChecked_Id[0];
+            me.openModal_GanSoVaoSo();
+        });
+
+        $("#btnXemSoVaoSo_GanSo").off('click').on('click', function () {
+            me.getList_SoVaoSo_ChuaSuDung();
+        });
+
+        $("#txtSoChungTu_GanSo, #txtNamThucHien_GanSo").keypress(function (e) {
+            if (e.which === 13) {
+                e.preventDefault();
+                me.getList_SoVaoSo_ChuaSuDung();
+            }
+        });
+
+        $("#tblSoVaoSo_GanSo").delegate("tbody tr", "click", function (e) {
+            if ($(e.target).is("input[type='radio']")) return;
+            $(this).find("input[name='radSoVaoSo_GanSo']").prop("checked", true);
+        });
+
+        $("#btnDongY_GanSoVaoSo").off('click').on('click', function () {
+            var strSoVaoSoCapBang_Id = $("input[name='radSoVaoSo_GanSo']:checked").val();
+            if (!edu.util.checkValue(strSoVaoSoCapBang_Id)) {
+                edu.system.alert("Vui lòng chọn 1 số vào sổ để gán!");
+                return;
+            }
+            edu.system.confirm("Bạn có chắc chắn gán số vào sổ này không?");
+            $("#btnYes").off('click.ganSoVaoSo').one('click.ganSoVaoSo', function () {
+                me.save_GanSoVaoSoTrucTiep(me.strCurrentSinhVien_TN_Id, strSoVaoSoCapBang_Id);
             });
         });
 
@@ -2024,5 +2066,150 @@ QuanLyThongTin.prototype = {
         }
         edu.system.loadToCombo_data(obj);
     },
-    
+
+    /*------------------------------------------
+    --Discription: Gán số vào sổ trực tiếp
+    -------------------------------------------*/
+    openModal_GanSoVaoSo: function () {
+        var me = this;
+        me.getList_QuyTacSinhSo_GanSo();
+        edu.util.viewValById("txtNamThucHien_GanSo", "");
+        edu.util.viewValById("txtSoChungTu_GanSo", "");
+        $("#modal_GanSoVaoSoTrucTiep").modal("show");
+        me.getList_SoVaoSo_ChuaSuDung();
+    },
+
+    getList_QuyTacSinhSo_GanSo: function () {
+        var me = this;
+        var objList = {
+            action: "TN_VanBang_ChungChi_Chung_MH/DSA4BRIVDx4QNDgVICISKC8pHhIuFyAuEi4eACUP",
+            func: "PKG_VANBANG_CHUNGCHI_CHUNG.LayDSTN_QuyTacSinh_SoVaoSo_Ad",
+            iM: edu.system.iM,
+            strNguoiThucHien_Id: edu.system.userId
+        };
+
+        edu.system.makeRequest({
+            success: function (data) {
+                if (data.Success) {
+                    edu.system.loadToCombo_data({
+                        data: data.Data || [],
+                        renderInfor: {
+                            id: "ID",
+                            parentId: "",
+                            name: "TEN",
+                            code: "",
+                            avatar: ""
+                        },
+                        renderPlace: ["dropQuyTacSinhSo_GanSo"],
+                        type: "",
+                        title: "--Chọn quy tắc sinh số--"
+                    });
+                }
+            },
+            type: "POST",
+            action: objList.action,
+            contentType: true,
+            data: objList,
+            fakedb: []
+        }, false, false, false, null);
+    },
+
+    getList_SoVaoSo_ChuaSuDung: function () {
+        var me = this;
+        var objList = {
+            action: "TN_VanBang_ChungChi_Chung_MH/Ei4CKTQvJhU0Hg0gOAUgLykSICIp",
+            func: "PKG_VANBANG_CHUNGCHI_CHUNG.SoChungTu_LayDanhSach",
+            iM: edu.system.iM,
+            strTN_HeThongChungTu_Ad_Id: edu.util.getValById("dropQuyTacSinhSo_GanSo"),
+            strNamThucHien: edu.util.getValById("txtNamThucHien_GanSo"),
+            strSoChungTu: edu.util.getValById("txtSoChungTu_GanSo"),
+            strNguoiThucHien_Id: edu.system.userId,
+            pageIndex: 1,
+            pageSize: 100000
+        };
+
+        edu.system.makeRequest({
+            success: function (data) {
+                if (data.Success) {
+                    var dtSoVaoSo = data.Data || [];
+                    // Chỉ lọc các bản ghi có tình trạng chưa sử dụng (DA_SU_DUNG != 1)
+                    var dtChuaSuDung = dtSoVaoSo.filter(function (x) {
+                        return String(x.DA_SU_DUNG) !== "1" && String(x.DA_SU_DUNG).toLowerCase() !== "true";
+                    });
+                    me.dtSoVaoSo_GanSo = dtChuaSuDung;
+                    me.genTable_SoVaoSo_GanSo(dtChuaSuDung);
+                }
+                else {
+                    edu.system.alert(objList.action + ": " + data.Message, "w");
+                }
+            },
+            error: function (er) {
+                edu.system.alert(objList.action + " (er): " + JSON.stringify(er), "w");
+            },
+            type: "POST",
+            action: objList.action,
+            contentType: true,
+            data: objList,
+            fakedb: []
+        }, false, false, false, null);
+    },
+
+    genTable_SoVaoSo_GanSo: function (data) {
+        var html = "";
+        if (!data || data.length === 0) {
+            html = '<tr><td colspan="9" class="td-center text-muted" style="padding: 20px;">Không có số vào sổ nào chưa sử dụng</td></tr>';
+            $("#tblSoVaoSo_GanSo tbody").html(html);
+            return;
+        }
+        for (var i = 0; i < data.length; i++) {
+            var row = data[i];
+            var strTuDong = String(row.IS_NHAP_THUCONG) === "1" ? "Thủ công" : "Tự động";
+            var strTinhTrang = String(row.DA_SU_DUNG) === "1" ? '<span class="label label-danger">Đã sử dụng</span>' : '<span class="label label-success">Chưa sử dụng</span>';
+            html += '<tr style="cursor: pointer;">';
+            html += '<td class="td-center"><input type="radio" name="radSoVaoSo_GanSo" value="' + row.ID + '" id="radSoVaoSo_' + row.ID + '"/></td>';
+            html += '<td class="td-center">' + (i + 1) + '</td>';
+            html += '<td class="td-center">' + edu.util.returnEmpty(row.CHISO) + '</td>';
+            html += '<td class="td-center bold" style="color: #0056b3;">' + edu.util.returnEmpty(row.SOCHUNGTU) + '</td>';
+            html += '<td class="td-center">' + edu.util.returnEmpty(row.HETHONGCHUNGTU_MA) + '</td>';
+            html += '<td class="td-center">' + edu.util.returnEmpty(row.NGAYTHUCHIEN) + '</td>';
+            html += '<td class="td-center">' + edu.util.returnEmpty(row.NAMTHUCHIEN) + '</td>';
+            html += '<td class="td-center">' + strTuDong + '</td>';
+            html += '<td class="td-center">' + strTinhTrang + '</td>';
+            html += '</tr>';
+        }
+        $("#tblSoVaoSo_GanSo tbody").html(html);
+    },
+
+    save_GanSoVaoSoTrucTiep: function (strTN_KetQua_CN_VB_Id, strSoVaoSoCapBang_Id) {
+        var me = this;
+        var obj_save = {
+            'action': 'TN_VanBang_ChungChi_MH/BiAvEi4XIC4SLhUzNCIVKCQx',
+            'func': 'PKG_VANBANG_CHUNGCHI.GanSoVaoSoTrucTiep',
+            'iM': edu.system.iM,
+            'strTN_KetQua_CN_VB_Id': strTN_KetQua_CN_VB_Id,
+            'strSoVaoSoCapBang_Id': strSoVaoSoCapBang_Id,
+            'strNguoiThucHien_Id': edu.system.userId
+        };
+
+        edu.system.makeRequest({
+            success: function (data) {
+                if (data.Success) {
+                    edu.system.alert("Gán số vào sổ thành công!", "s");
+                    $("#modal_GanSoVaoSoTrucTiep").modal("hide");
+                    me.getList_QuanLyThongTin();
+                }
+                else {
+                    edu.system.alert("Gán số vào sổ thất bại: " + data.Message, "w");
+                }
+            },
+            error: function (er) {
+                edu.system.alert(" (er): " + JSON.stringify(er), "w");
+            },
+            type: 'POST',
+            action: obj_save.action,
+            contentType: true,
+            data: obj_save,
+            fakedb: []
+        }, false, false, false, null);
+    }
 }

@@ -28,6 +28,33 @@ thì mở các màn ghi `xong 30/9` của phân hệ đó trong `RA-HOP-THOAI.md
 
 ## 1. Làm TRƯỚC — màn đã sửa mã, chờ kiểm lại
 
+### Kết quả kiểm host 5/10 (chiều) — phân hệ ĐÃ hoàn thành + Cổng cán bộ / Cổng SV
+
+- ĐẠT: TC Tính học phí (bỏ chọn Lớp nạp lại SV), CCB Lịch giảng đường nhiều phòng học (lọc phòng trống khoảng ngày, lưới phòng × ngày, hộp đổi lịch —
+  không thử ghi: tài khoản thử không có buổi dạy), CCB hai màn lịch hồi quy, Cổng SV 22 màn đọc sâu (0 lỗi JS / máy chủ) + bảng điểm bấm cả dòng.
+- Khung "Cần làm trước" trên host: hiện đúng ở TC kehoachthuchi (3 danh mục), baocao (2), thutienkhac (2).
+- **ĐÃ UP, KIỂM LẠI ĐẠT (5/10):** nút "Mở Danh mục dữ liệu" khi vai trò không có màn danh mục nhảy nhầm Ký túc xá (404) → sửa: chỉ mục tìm màn
+  đường dẫn đầy đủ + kiểm tệp có trong _v2; Tính học phí gọi hai lần khi xoá Lớp → gộp. Kiểm lại: TC kehoachthuchi bấm "Mở Danh mục dữ liệu" → phải sang
+  Quản trị hệ thống → Danh mục dữ liệu và chọn sẵn TAICHINH.MOHINH_PHIEUTHU (chỉ xem, không thêm giá trị).
+- Backend mới (đã ghi can-quyet): TC Thu tiền → Tạo QR thanh toán 404 — host chưa khai TSV trong Config.js.
+- Không kiểm được: XLHV Kế hoạch xử lý bảng điểm — mọi kế hoạch trên host trỏ người học mất hồ sơ (mã / tên null). DaQHHT không có trên menu host.
+- Còn lại của đợt (chờ người dùng gọi tên): NH Phân lớp, TS Kế hoạch tuyển sinh (new), Tốt nghiệp 13 màn.
+
+### ⚠ Đợt 5/10 — ĐÃ UP (5/10), CHƯA KIỂM HOST, CHƯA COMMIT
+
+**Tốt nghiệp (13 màn, phân hệ MỚI — kiểm khi người dùng gọi tên):** vai trò Xét tốt nghiệp trên host; chốt ở `CAN-QUYET-DA-CHOT.md` mục "Tốt nghiệp".
+Ưu tiên: `dieukiennhom` (nút Xoá lệnh khoá — đã ghi can-quyet), `kehoach` (Lưu ở lại biểu mẫu, tab 1 điều kiện chặn khi chưa Kế thừa),
+`thuchienin` (phôi in: bộ tính biểu thức thay eval, QR từ `CTT_Token/TaoQRCode`), sửa xâu tab 2 điều kiện nhóm có mất Ngày áp dụng không.
+
+**Kéo gốc lần 6 (màn ĐÃ kiểm host trước đây — kiểm lại phần đổi):**
+| Màn | Kiểm gì |
+|---|---|
+| TC Tính học phí | Bỏ chọn Lớp → danh sách SV nạp lại |
+| TC Thu tiền → Tạo QR thanh toán | Mở đúng địa chỉ (Config.js có `TSV` thì dùng `TSV`) |
+| NH Phân lớp | Ô Chương trình "Tên - Mã", có dữ liệu sau khi chọn kế hoạch |
+| TS Kế hoạch tuyển sinh (new) | Cột "Nguồn khai thác", Sửa hồ sơ hiện đúng nguồn; Thêm trùng CCCD bị chặn; mới nhất lên đầu (thử ghi: thêm thì xoá) |
+| TN Xác nhận → Hạ bậc trực tiếp · TN Quản lý thông tin → Gán số vào sổ | Đường GHI mới — chưa có đường hoàn lại rõ → chỉ mở hộp, KHÔNG bấm Đồng ý tới khi người dùng cho |
+
 ### ⚠ 20 màn chuyển từ kéo gốc lần 4 + 5 — ĐÃ UP (1/10 02:52), CHƯA KIỂM HOST, CHƯA COMMIT GIT
 
 Chuyển 1/10 ở workspace đám mây (shell máy không chạy), đã ghi về máy + gói bổ sung 36 tệp người dùng đã up, mốc `.moc-da-up.json` đã cập nhật.

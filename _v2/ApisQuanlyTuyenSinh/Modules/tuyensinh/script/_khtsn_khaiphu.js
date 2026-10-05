@@ -18,6 +18,13 @@
      SV_HoSoHocVien_MH / pkg_hosohocvien.LayDanhSachHoSoNhieuNganh ; KHCT_ThongTin_MH / LayDSKS_DaoTao_LopQuanLy
      Danh mục PERSON_ADDRESS.ADDRESS_TYPE_CODE, PERSON_IDENTIFIER.IDENTIFIER_TYPE_CODE,
               PERSON_FAMILY.RELATION_TYPE_CODE (lưu ID GUID — đối chiếu theo tên như gốc)
+   ---------------------------------------------------------------------------
+   Theo gốc 1–2/10 (47ab8a26, bc5f0bf8, bc5d5f67):
+     · Đọc nguồn khai thác của một người: P.timDoiTac — thử lùi dần KH + Đợt + Người → KH + Người → Người → Người với
+       IS_ACTIVE = 1 (gốc _queryHoSoDoiTacTS). Các bước đầu KHÔNG lọc IS_ACTIVE vì Them_TS_HoSo_DoiTacTS lưu IS_ACTIVE = NULL.
+       Dọn dòng dư sau khi ghi cũng đọc theo cách này.
+     · P.idDoiTacCua / P.tenDoiTacCua: dò thêm tên cột id / tên đối tác (gốc _pickLoose mở rộng).
+     · Khác gốc: d* rỗng vẫn gửi null (gốc 2/10 đổi sang '' trái với ghi chú PLS-00306 của chính gốc).
    ========================================================================= */
 (function () {
     'use strict';
@@ -353,13 +360,47 @@
         var ma = T.pick(d, ['MA', 'Ma', 'MA_HIENTHI']);
         return ten && ma && ma !== ten ? ten + ' (' + ma + ')' : (ten || ma || T.id(d));
     };
-    P.locDoiTac = function (khId, dotId, pid) {
+    /* active: theo gốc 1–2/10 mặc định KHÔNG lọc IS_ACTIVE — Them_TS_HoSo_DoiTacTS lưu IS_ACTIVE = NULL nên lọc 1 là đọc
+       hụt chính bản vừa ghi. Truyền active = 1 cho bước dự phòng cuối (_queryHoSoDoiTacTS bước 4). */
+    P.locDoiTac = function (khId, dotId, pid, active) {
         return { action: A.DoiTac_LayDS, func: HS + 'LayDS_TS_HoSo_DoiTacTS', strHoSo_KH_TS_Id: khId || '', strHoSo_KH_TS_Dot_Id: dotId || '',
             // CỐ Ý RỖNG như gốc: nhánh lọc theo nguyện vọng làm proc lỗi ORA-24338 → lọc tại máy (locTheoNV)
             strNguyenVong_DauRa_Id: '', strCore_Person_Id: pid || '', strTS_DoiTacTuyenSinh_Id: '',
-            dIs_Primary: null, dIs_Current: null, dIs_Active: 1, strTuKhoa: '', strNguoiThucHien_Id: '' };
+            // d* rỗng gửi null (gốc 2/10 gửi '' — giữ null theo ghi chú cũ của gốc: '' cho tham số NUMBER là PLS-00306)
+            dIs_Primary: null, dIs_Current: null, dIs_Active: active === 1 ? 1 : null, strTuKhoa: '', strNguoiThucHien_Id: '' };
     };
-    P.dsHoSoDoiTac = function (khId, dotId, pid) { return goi(P.locDoiTac(khId, dotId, pid)); };
+    P.dsHoSoDoiTac = function (khId, dotId, pid, active) { return goi(P.locDoiTac(khId, dotId, pid, active)); };
+    /** Tra nguồn khai thác đã lưu của MỘT người, thử lùi dần (gốc 2/10 _queryHoSoDoiTacTS):
+        KH + Đợt + Người → KH + Người → chỉ Người → chỉ Người với IS_ACTIVE = 1. Bước nào ra dòng thì dừng.
+        Dù máy chủ lưu theo bộ (kế hoạch + đợt + người) hay chỉ theo người, hoặc đợt lưu lệch / rỗng, vẫn tìm thấy. */
+    P.timDoiTac = function (khId, dotId, pid) {
+        if (!pid) return Promise.resolve([]);
+        var buoc = [];
+        if (khId && dotId) buoc.push([khId, dotId, null]);
+        if (khId) buoc.push([khId, '', null]);
+        buoc.push(['', '', null], ['', '', 1]);
+        var i = 0;
+        return (function thu() {
+            if (i >= buoc.length) return Promise.resolve([]);
+            var b = buoc[i++];
+            return P.dsHoSoDoiTac(b[0], b[1], pid, b[2]).then(function (a) { return a.length ? a : thu(); });
+        })();
+    };
+    /** Id đối tác của một dòng ghi nhận (gốc 1/10 dò thêm nhiều tên cột) */
+    P.idDoiTacCua = function (r) {
+        return T.pickLoose(r, ['TS_DOITACTUYENSINH_ID', 'Ts_DoiTacTuyenSinh_Id', 'TS_DOITAC_TUYENSINH_ID', 'DOITAC_ID', 'DOI_TAC_ID',
+            'DOITACTUYENSINH_ID', 'TS_DOITAC_ID', 'ID_DOITAC']) || '';
+    };
+    /** Tên đối tác của một dòng (ghi nhận hoặc hồ sơ): cột tên có sẵn → tra danh mục đối tác theo id (dm = danh mục đã nạp) */
+    P.tenDoiTacCua = function (r, dm, chiTenRieng) {
+        var ten = T.pickLoose(r, chiTenRieng ? ['TS_DOITACTUYENSINH_TEN', 'DOITAC_TEN']
+            : ['TS_DOITACTUYENSINH_TEN', 'DOITAC_TEN', 'DOITACTUYENSINH_TEN', 'HOTEN', 'TEN', 'FULL_NAME', 'TENDAYDU', 'TEN_DONVI']);
+        if (ten) return ten;
+        var id = P.idDoiTacCua(r);
+        if (!id) return '';
+        var d = (dm || []).filter(function (x) { return String(T.id(x)) === String(id); })[0];
+        return d ? (P.hoTenDoiTac(d) || T.pick(d, ['MA', 'Ma'])) : '';
+    };
     P.dtcRowId = function (r) {
         if (!r) return '';
         var id = T.pickLoose(r, ['ID', 'TS_HOSO_DOITACTS_ID', 'HOSO_DOITACTS_ID', 'HOSO_DOITAC_ID', 'TS_HOSO_DOITAC_ID']);
@@ -395,7 +436,7 @@
     };
     /** Sau khi ghi: đọc lại, GIỮ bản mới nhất, xoá dòng dư (_dtcDonRac) */
     P.donRacDoiTac = function (khId, dotId, pid, nv) {
-        return P.dsHoSoDoiTac(khId, dotId, pid).then(function (rows) {
+        return P.timDoiTac(khId, dotId, pid).then(function (rows) {
             rows = P.locTheoNV(rows, nv);
             if (rows.length <= 1) return;
             var giu = P.dtcRowId(P.dtcMoiNhat(rows));

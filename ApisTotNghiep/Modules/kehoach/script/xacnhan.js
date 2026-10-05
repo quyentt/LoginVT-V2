@@ -1,4 +1,4 @@
-﻿/*----------------------------------------------
+/*----------------------------------------------
 --Author: Văn Hiệp
 --Phone: 
 --Date of created: 
@@ -35,6 +35,7 @@ XacNhan.prototype = {
         //me.getList_NamNhapHoc();
         me.getList_KhoaQuanLy();
         me.getList_PhanLoai();
+        edu.system.loadToCombo_DanhMucDuLieu("VANBANG.XEPLOAI", "dropXepLoai_HaBac", "", "", "Chọn xếp loại hạ bậc");
         //edu.system.loadToCombo_DanhMucDuLieu("TN.PHANLOAI", "dropSearch_PhanLoai,dropPhanLoai");
 
         $("#btnSearch").click(function (e) {
@@ -236,6 +237,50 @@ XacNhan.prototype = {
             }
             $("#modal_XacNhan").modal("show");
         });
+
+        $("#btnHaBacTrucTiep").off('click').on('click', function () {
+            var arrChecked_Id = edu.util.getArrCheckedIds("tblXacNhan", "checkX");
+            if (arrChecked_Id.length == 0) {
+                edu.system.alert("Vui lòng chọn đối tượng cần hạ bậc!");
+                return;
+            }
+            edu.util.viewValById("txtLyDo_HaBac", "");
+            $("#dropXepLoai_HaBac").val("").trigger("change");
+            $("#modal_HaBacTrucTiep").modal("show");
+            if ($.fn.select2) {
+                $("#dropXepLoai_HaBac").select2({
+                    dropdownParent: $("#modal_HaBacTrucTiep")
+                });
+            }
+        });
+
+        $("#btnSave_HaBacTrucTiep").off('click').on('click', function () {
+            var arrChecked_Id = edu.util.getArrCheckedIds("tblXacNhan", "checkX");
+            if (arrChecked_Id.length == 0) {
+                edu.system.alert("Vui lòng chọn đối tượng!");
+                return;
+            }
+            var strXepLoai_HaBac_Id = edu.util.getValById('dropXepLoai_HaBac');
+            var strLyDo = edu.util.getValById('txtLyDo_HaBac');
+            if (!edu.util.checkValue(strXepLoai_HaBac_Id)) {
+                edu.system.alert("Vui lòng chọn xếp loại hạ bậc!");
+                return;
+            }
+            if (!edu.util.checkValue(strLyDo)) {
+                edu.system.alert("Vui lòng nhập lý do thực hiện!");
+                return;
+            }
+            edu.system.confirm("Bạn có chắc chắn thực hiện hạ bậc không?");
+            $("#btnYes").off('click.haBacTrucTiep').one('click.haBacTrucTiep', function () {
+                $("#modal_HaBacTrucTiep").modal('hide');
+                edu.system.alert('<div id="zoneprocessHaBac"></div>');
+                edu.system.genHTML_Progress("zoneprocessHaBac", arrChecked_Id.length);
+                for (var i = 0; i < arrChecked_Id.length; i++) {
+                    me.save_HaBacTrucTiep(arrChecked_Id[i], strXepLoai_HaBac_Id, strLyDo);
+                }
+            });
+        });
+
         $("#btnImportCheck").click(function () {
             edu.system.showBaoCao();
         });
@@ -1826,4 +1871,41 @@ XacNhan.prototype = {
         edu.system.loadToCombo_data(obj);
     },
 
+    save_HaBacTrucTiep: function (strTN_KetQua_CongNhan_Id, strXepLoai_HaBac_Id, strLyDo) {
+        var me = this;
+        var obj_save = {
+            'action': 'TN_TinhToan_MH/CSADICIVMzQiFSgkMQPP',
+            'func': 'pkg_totnghiep_tinhtoan.HaBacTrucTiep',
+            'iM': edu.system.iM,
+            'strTN_KetQua_CongNhan_Id': strTN_KetQua_CongNhan_Id,
+            'strXepLoai_HaBac_Id': strXepLoai_HaBac_Id,
+            'strLyDo': strLyDo,
+            'strNguoiThucHien_Id': edu.system.userId
+        };
+
+        edu.system.makeRequest({
+            success: function (data) {
+                if (data.Success) {
+                    edu.system.alert("Hạ bậc thành công!");
+                }
+                else {
+                    edu.system.alert(data.Message);
+                }
+            },
+            error: function (er) {
+                edu.system.alert(obj_save.action + " (er): " + JSON.stringify(er), "w");
+            },
+            type: 'POST',
+            action: obj_save.action,
+            contentType: true,
+            data: obj_save,
+            complete: function () {
+                edu.system.start_Progress("zoneprocessHaBac", function () {
+                    me.getList_XacNhan();
+                });
+            },
+            async: false,
+            fakedb: []
+        }, false, false, false, null);
+    }
 }

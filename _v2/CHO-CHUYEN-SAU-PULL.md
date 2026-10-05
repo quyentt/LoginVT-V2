@@ -7,7 +7,25 @@ Xem lại đúng thay đổi của một tệp: `git diff -w <từ>..<đến> --
 
 ---
 
-## Hiện KHÔNG có thay đổi gốc nào đang chờ chuyển
+## Lần kéo 6 (5/10) — ĐÃ CHUYỂN HẾT 5/10, CHƯA kiểm host — 13 commit gốc `88f37941..0551deba` (1/10 → 5/10), mốc gốc đã chuyển nay là `0551deba`
+
+Kho máy là bản GỘP một commit (`20b5dbe6`, 2/10) — không chung gốc với kho gốc → KHÔNG `git merge` được; đã ghi đè 20 tệp gốc bằng
+`git checkout origin/main -- <tệp>` (mọi tệp trên máy đúng là bản gốc cũ, chỉ khác CRLF). Lần sau so: `git diff --name-status 0551deba origin/main`.
+
+| Tệp gốc | Gốc đổi gì | `_v2` |
+|---|---|---|
+| CCB / QLD / TP `nhapdiem*`, `tuibai`, `phanquyennhapdiem*` (10 tệp) | Câu báo lỗi bỏ tiền tố "XLHV_NhapDiem/ThemMoi (er):" | Không cần — `_v2` vốn không có tiền tố này |
+| TC `dulieuhocphi/tinhhocphi` | Bỏ chọn Lớp → nạp lại sinh viên (khi vùng SV mở); SV nạp khi mở vùng | ĐÃ CHUYỂN: thêm `select2:unselect/clear` |
+| TC `phieuthu/thutien` | QR thanh toán mở `Init_API().TSV` nếu có | ĐÃ CHUYỂN (`_chung_thutien.js` `taoQR`) |
+| NH `phanlop/phanlop` | Chương trình chỉ nạp khi có kế hoạch; khoá lùi `KHOADAOTAO_ID` / `DAOTAO_KHOAHOC_ID`; nhãn "Tên - Mã" | ĐÃ CHUYỂN (`taiCT`, `tenCT`; chặn khi chưa có kế hoạch vốn đã có) |
+| TN `kehoach/xacnhan` (html + js) | Nút "Hạ bậc trực tiếp" (hộp Xếp loại + Lý do, mỗi người một lời gọi `pkg_totnghiep_tinhtoan.HaBacTrucTiep`); còn lại CSS | ĐÃ CHUYỂN — hộp thoại (thao tác hàng loạt), hỏi lại, chạy tuần tự; đường GHI mới, chưa thử host |
+| TN `vanbang/quanlythongtin` (html + js) | Nút "Gán số vào sổ" (một SV → hộp chọn số chưa dùng theo quy tắc / năm → `PKG_VANBANG_CHUNGCHI.GanSoVaoSoTrucTiep`); còn lại CSS | ĐÃ CHUYỂN — hộp chọn, hỏi lại; đường GHI mới, chưa thử host |
+| TS `tuyensinh/kehoachtuyensinhnew.js` (+540/−363) | Nguồn khai thác (đối tác TS): tra lùi `LayDS_TS_HoSo_DoiTacTS` (vì `Them_TS_HoSo_DoiTacTS` lưu IS_ACTIVE NULL), cột "Nguồn khai thác", tham số mới `strTS_DoiTacTuyenSinh_Id/_id/_Khac` cho Them/Sua_HoSo_TS; chặn trùng CCCD, khoá nút Lưu khi đang lưu; chọn ô theo chữ lỏng; danh sách mới nhất lên đầu (hai commit 1/10 tên "popup … pvp" thật ra là màn này) | ĐÃ CHUYỂN (`_khtsn_chung/khaiphu/khai/kqdk.js`) — bỏ khai báo trùng `_hsDotHienTai/_nvDauRaHienTai` (lỗi lùi của gốc 2/10) |
+| `Core/systemroot.js`, `Corei/systemroot.js` | Gốc nay CÓ SẴN nút "?" Cổng Help (y bản máy); Core đổi hẹn giờ kiểm phiên bản 20 s → 300 s | Vỏ cũ — không chuyển; ghi đè theo gốc (ngoại lệ "nút ?" không còn cần) |
+| `help-sso.aspx`, `help-jwks.aspx` | Gốc nay có hai tệp (y bản máy) | Không đổi |
+| QLTTN + `App_Themes/Cms/Custom_V1/ums/` (lột da) | Gốc nhận phần lột da của máy (+ `modules.rar`, `ums.rar`, `quanlythi.css`, `giamsatthi.js`) | Trên máy đã trùng gốc mới; phân hệ chưa sang `_v2` |
+
+## Trước lần kéo 6
 
 Lần kéo 4 (30/9, merge `cffda56e`) + lần kéo 5 (1/10, merge `c6886b05`) — ĐÃ CHUYỂN 1/10: 20 màn (CCB `lichgiangnhieuphonghoc`, Cổng SV 18 màn,
 màn mới Cổng SV `dicvusinhvien/nguoihocxacnhanthanhtoan`). Điều đã chốt: `CAN-QUYET-DA-CHOT.md` mục "Chốt ngày 2026-10-01". **CHƯA kiểm host, CHƯA commit** — danh sách màn cần kiểm: `_harness/kiem-host/VIEC-PHIEN-SAU.md` mục 1 (nhắc đầu tiên khi người dùng bảo "chuyển" / "kiểm").

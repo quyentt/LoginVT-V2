@@ -4084,3 +4084,70 @@ CHƯA kiểm host.
 - `tinhhinhhocphi` lùi về `QLSV_TRANGTHAINGUOIHOC_*` khi chưa có cột `TRANGTHAINGUOIHOC_N1_*`. `chuontrinhhoc` nhớ số tiết, không gọi lại mỗi lần gõ.
 - Màn mới `dicvusinhvien/nguoihocxacnhanthanhtoan` (Cổng SV) nạp chéo tệp `_v2` phân hệ Sinh viên với `data-kieu="csv"`; bản Sinh viên giữ hành vi cũ.
 - Chưa kiểm host: tên cột thật của `LayDS_LichSu_XacNhanCoSo` (gốc viết `ThoiGianThucHien`).
+
+# Chốt ngày 2026-10-05 — Tốt nghiệp (ApisTotNghiep, 13 màn)
+
+Chuyển bằng 5 tác tử con. Vai trò mẫu **R16**, ID `TN-<module>-<tệp>`. Chi tiết từng màn ở chú thích đầu tệp .js. CHƯA kiểm host.
+Việc dữ liệu: 1 mục ở `can-quyet.js` (thủ tục xoá lệnh từ khoá — `dieukiennhom`).
+
+## Thiết lập (`thamsochung`, `dieukienxet`, `xeploaihabac`) — dùng lại `ums.hbDk` (Học bổng)
+- `thamsochung` nạp THẲNG tệp Học bổng (gốc hai bên lệch một dòng nạp lúc mở màn) — kể cả các lỗi gốc đã sửa ghi ở đầu tệp đó.
+- `dieukienxet`: tab 1 gọi `TN_XepLoai_DieuKien` (trùng tab 1 Xếp loại hạ bậc → hai màn hiện cùng danh sách), tab 2 `TN_XetDuyet_DieuKien_Ad`. Giữ như gốc.
+- Bảng từ khoá TN không phân trang, nạp một lần; `xeploaihabac` dùng `TN_XepLoai_TuKhoa/Sua_TN_XepLoai_TuKhoa` cho cả thêm lẫn sửa. Giữ như gốc.
+- Mở màn không nạp điều kiện riêng ngay (gốc nạp); nạp khi chọn Phân loại rồi tự chọn phân cấp đầu.
+- Tệp Học bổng sửa (cờ, mặc định như cũ): `_dk.js` (`tuKhoa` nhận đối tượng `{ ds, them, sua, size, trang }`), `xeploaihabac.js` (tách `ums.hbXlhb(root, { xepLoai, tuKhoa })`).
+
+## `hoctap/xemdiem_sv` (không có trên menu host)
+- Dùng `ums.diemHoc` (`veTongKet`, `veBangDiem` `chiTiet:false`), học kỳ mới nhất lên trên. Không có người học → "Không xác định được sinh viên." như gốc.
+- Vai trò gửi đi = vai trò Cổng SV (CHOPHEPTHUVAI = 1), không có thì ID viết cứng của gốc. Thêm dòng tổng kết từng học kỳ; cột Đánh giá không tô màu.
+
+## `kehoach/kehoach` — khung riêng `ums.tnKh` (`_tnkh_form.js`, `_tnkh_dieukien.js`)
+- Lưu xong Ở LẠI biểu mẫu (như gốc) để làm tiếp học phần / sinh viên; khối sinh viên + quy tắc sinh số hiện sau lần lưu đầu.
+- Hai hộp "Thêm từ đăng ký học" / "từ kế hoạch khác" thêm dòng "Chưa lưu", ghi khi Lưu kế hoạch; "Thêm thành viên" ghi ngay (như gốc).
+- Tên kế hoạch bắt buộc; Đến ngày ≥ Từ ngày. Hộp học phần Lưu xong thì đóng. Cha → con khoá ở hai hộp (gốc nạp sẵn mọi kế hoạch).
+- `strQLSV_TrangThai_Id`, `dKetQuaChinhThuc` gửi rỗng (ô gốc không có trên màn).
+- Lỗi gốc đã sửa: Lưu tab 1 Điều kiện xét ở kế hoạch chưa có dòng điều kiện ghi đè lên kế hoạch mở trước (nay báo "Kế thừa trước"); xoá học phần chưa lưu gửi ID học phần làm `strIds`; không bắt trùng học phần / cán bộ; cột Nhân sự phân công luôn trống; phân trang gắn `main_doc.KeHoach` không tồn tại; Enter / từ khoá hai hộp tìm SV không chạy.
+
+## `kehoach/dieukiennhom` — khung riêng `ums.tndkn` (`_tndkn_lenh.js`, `_tndkn_dieukien.js`)
+- Nút Xóa lệnh KHOÁ (gốc gọi nhầm `Xoa_TC_KhoanThu_QDXuatHD` của Tài chính) — việc dữ liệu ở can-quyet.js; bỏ cột ô đánh dấu hai bảng lệnh.
+- Ô bắt buộc: Mã / Tên nhóm, Từ khoá lệnh, Tên tham số, Xếp loại, hai ô Kế thừa; kiểm số (làm tròn, Thứ tự) và ngày áp dụng.
+- Kế thừa tham số điền sẵn "Từ khoá đích". Nút đầu khung đổi theo tab; tab 2 Lưu không đổi gì → báo. Hộp hạ bậc: nút Lưu (không xử lý) khoá.
+- Giữ như gốc, nghi sai: sửa xâu tab 2 gửi `strNgayApDung` rỗng (nếu thủ tục ghi đè thì mất ngày áp dụng) — kiểm host; lưu lệnh gửi Phân loại từ ô lọc.
+- Lỗi gốc đã sửa: Sửa nhóm đổ mô tả vào `#txtMoTa` (ô thật `#txtMota`) → Lưu xoá mô tả; Lưu lần hai thêm trùng (nhóm, lệnh, tham số, xếp loại).
+- Mã chết bỏ: nút Xác nhận + `#modal_XacNhan`, nút Kế thừa theo hệ / nhóm (đã chú thích ở html), khối chép từ màn kế hoạch.
+
+## `kehoach/thuchienxet`, `xacnhan`, `tonghop` — dùng lại `ums.hbKh` / `ums.hbTh` + `ums.khxl`
+- "Hủy kết quả xét" gọi `TN_KetQua_CongNhan/Xoa` (xoá công nhận) — giữ chữ + lời gọi như gốc.
+- Bấm mã SV mở bảng điểm bằng `ums.khxl.hocTap` (gốc nhúng diemhoc Cổng SV; `xemdiem_sv` chỉ có trong chú thích gốc).
+- "Thực hiện xét" chỉ gửi dòng đánh dấu chưa xét, hỏi lại. Ô Lớp quản lý giữ dù không gửi đi. Import gửi `strQLSV_NguoiHoc_Id` = dòng đánh dấu ở hộp "Danh sách đạt" lần mở gần nhất (như gốc).
+- Xác nhận: Kế hoạch gửi `strTuKhoa` = ô từ khoá người học (như gốc); lịch sử duyệt nạp khi đánh dấu đúng một người; xác nhận xong nạp lại. "Import để chọn" (`showBaoCao` Corei) dựng trong màn — chỉ đánh dấu dòng khớp, không ghi.
+- Tổng hợp: một cột kết quả `KETQUAXACNHAN_TEN`, tiêu đề = tên các tình trạng nối " / ".
+- Lỗi gốc đã sửa: hỏi lại `#btnYes` cộng dồn trình xử lý; ô tìm hộp "Đã công nhận" không gửi; lịch sử duyệt không nạp; tiêu đề Tổng hợp lệch thân bảng.
+- `_kh_chung.js` (Học bổng) thêm cờ: `H.napPhanCong(host, rows, { action, khoa })`, `H.hopDS` `khoaKQ` / `phanTrang` hàm / `onTim`.
+
+## `vanbang/quanlythongtin`, `vanbang/thuchienin`, `kehoach/quanlysovaso` — khung `ums.tnvb` / `ums.tnvbPhoi`
+- Phôi in: `eval(NOIDUNG)` thay bằng bộ tính biểu thức an toàn (chữ, số, `aData.X`, nối, so sánh, `? :`, phương thức chuỗi / số / mảng, `Math`, `edu.util.returnEmpty`, `makeQRCode` / `makePicture` / `getList_TaoQR`); ngoài phạm vi → ô trống + console.
+- `makeQRCode`: gốc dùng thư viện vỏ không nạp (chưa từng ra QR) → nay ảnh QR từ `CTT_Token/TaoQRCode`. html2canvas 1.4.1 (MIT) đặt trong module, nạp khi bấm "Tải file ảnh".
+- Chế độ test giữ lưu trên trình duyệt cùng khoá màn cũ. In lần lượt hỏi lại mỗi lần; `TN_KetQua_CongNhan_VB/ThemMoi` hai tham số giữ như gốc (nghi).
+- `quanlythongtin`: Lưu bắt phải tìm SV rồi Xem / Kế thừa (gốc gửi id người học rỗng); Tạo QĐ + Duyệt hồ sơ giữ hộp thoại; Sinh số / Tạo QĐ / Xác nhận / Xoá nhiều hỏi lại; bản sao lưu sau bản chính; ba mục Import cứng ẩn khi có mẫu import theo quyền (như Corei).
+- Giữ như gốc: ô "Ngày vào sổ cấp bằng" không gửi; `strDuongDanAnh` gửi đường dẫn tạm; danh sách Quyết định chỉ trang đầu (10).
+- `quanlysovaso`: mở màn tải luôn, đổi ô lọc tải lại (gốc chờ "Xem").
+- Lỗi gốc đã sửa: hộp Chi tiết sổ TypeError (`this` trong `$.each`); thuchienin bảng danh sách luôn trống (đã bỏ bảng), gọi hàm không tồn tại sau in, ô lặp `[x].` hỏng, phôi không ảnh nền chồng nhau, QR / ảnh id trùng chỉ bản đầu có; quanlythongtin lịch sử duyệt không nạp, danh mục tình trạng ghi đè dữ liệu bảng.
+
+## Nợ tầng chung (gom)
+- `ums.hbDk`, `ums.hbKh`, `ums.hbTh`, `ums.khxl` nay 2–3 phân hệ dùng → đưa lên `ums.pat`.
+- `ums.crud`: thêm nút vào thanh lọc, đổi chữ nút tìm, `toolbar` `disabled`, bật/tắt Sửa / Xoá theo dòng.
+- Bảng ô xâu điều kiện sửa trong ô + Lưu ô đã đổi: hai bản (HB `_kh_dieukien`, `_tndkn_dieukien`). Hộp nút xác nhận lớn thêm một bản (`TN.KHOA.MO.DULIEU`).
+- "Import để chọn" → `ums.report`; bộ tính biểu thức an toàn gộp với `giaTri` (NH `phanlop/_chung.js`); html2canvas → `assets/vendor` + `GIU_VENDOR`.
+- `pat.pickSinhVien` thiếu "Thêm từng hệ" + Khoa quản lý; `ui.table` `minWidth`; `ums.diemHoc.veBangDiem` tuỳ chọn sắp học kỳ / tắt tổng kết; nút "Import ▾" bản thứ năm.
+
+# Chốt ngày 2026-10-05 — Kéo gốc lần 6 (13 commit 1/10 → 5/10, mốc `0551deba`)
+
+Bảng thay đổi từng tệp: `_v2/CHO-CHUYEN-SAU-PULL.md` mục "Lần kéo 6". CHƯA kiểm host.
+- TC `tinhhocphi`: bỏ chọn Lớp → nạp lại sinh viên nếu vùng SV đang hiện (gốc: chỉ khi vùng mở).
+- TC thu tiền "Tạo QR thanh toán": dùng `Init_API().TSV` làm gốc địa chỉ nếu có, không thì địa chỉ ứng dụng như cũ.
+- NH `phanlop`: chương trình ghi "Tên - Mã"; khoá lấy `DAOTAO_KHOADAOTAO_ID` → `KHOADAOTAO_ID` → `DAOTAO_KHOAHOC_ID`. Bỏ `console.log` của gốc.
+- TN `xacnhan` "Hạ bậc trực tiếp": giữ hộp thoại (thao tác hàng loạt trên dòng đánh dấu); gửi tuần tự từng người như gốc (`async:false`); biểu tượng `fa-turn-down`.
+- TN `quanlythongtin` "Gán số vào sổ": hộp chọn (không phải thêm / sửa); cột chọn (radio) về cuối bảng (luật 17); bỏ thanh cuộn riêng 450px; câu hỏi lại ghi số sẽ gán; đổi ô lọc không tự tải (như gốc).
+- TS `kehoachtuyensinhnew`: tham số `d*` rỗng của `LayDS_TS_HoSo_DoiTacTS` GIỮ `null` (gốc 2/10 đổi sang `''` — ghi chú cũ của chính gốc nói `''` gây PLS-00306); so ngày không lùi về `Date.parse` (gốc có — `Date.parse("12")` hợp lệ, sai thứ tự khi sắp cột số); bỏ khai báo trùng `_hsDotHienTai` / `_nvDauRaHienTai` (bản sau đè bản trước, mất bước suy đợt từ nguyện vọng).
+- 10 tệp nhập điểm CCB / QLD / TP chỉ bỏ tiền tố câu lỗi — `_v2` không có tiền tố, không đổi. Core / Corei (vỏ cũ) theo gốc: gốc nay có sẵn nút "?" Cổng Help.

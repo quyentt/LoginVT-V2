@@ -22,6 +22,10 @@
    "Các đợt") thay chỗ thân màn con đợt. Chỉ còn Đọc từ API, Tra cứu người học, Đổi nguyện vọng đầu vào là hộp thoại.
    Dùng lại khung ums.khts (ApisNhapHoc/…/trungtuyen/scripts/_khts.js): K.dsDotTS, K.phanCong,
    K.nguonDonVi, K.ngay/ngayGio, K.co, K.tenMa, K.rows.
+   ---------------------------------------------------------------------------
+   Theo gốc 1–2/10 (47ab8a26, bc5f0bf8, bc5d5f67 — hai commit 1/10 mang tên "popup cinematic … pvp" nhưng nội dung
+   ĐÚNG là màn này): T.datChon so chữ lỏng hơn như _setSelectByIdOrText mới (gộp khoảng trắng, bỏ dấu ngoặc, chữ ≥ 4 ký tự
+   nhận cả khi chứa nhau; khớp đúng vẫn được ưu tiên). Thay đổi còn lại ghi ở đầu _khtsn_khai.js, _khtsn_khaiphu.js, _khtsn_kqdk.js.
    ========================================================================= */
 (function () {
     'use strict';
@@ -293,9 +297,15 @@
             ok = Array.prototype.some.call(el.options, function (o) { return o.value === String(id); });
             if (ok) el.value = String(id);
         }
-        if (!ok && text) {
-            var t = String(text).trim().toLowerCase();
-            var hit = Array.prototype.filter.call(el.options, function (o) { return o.text.trim().toLowerCase() === t; })[0];
+        if (!ok && text && String(text).trim()) {
+            /* Gốc 1/10: so chữ sau khi gộp khoảng trắng + bỏ dấu ngoặc; chữ ≥ 4 ký tự thì nhận cả khi chứa nhau
+               (vd tên đối tác "Nguyễn Văn A" khớp mục "Nguyễn Văn A (DT01)") */
+            var chuan = function (x) { return String(x || '').replace(/\s+/g, ' ').trim().toLowerCase(); };
+            var sach = function (x) { return chuan(x).replace(/[()\[\]{}]/g, ' ').replace(/\s+/g, ' ').trim(); };
+            var t = chuan(text), tS = sach(text);
+            var ds = Array.prototype.filter.call(el.options, function (o) { return !!o.value; });
+            var hit = ds.filter(function (o) { return chuan(o.text) === t || sach(o.text) === tS; })[0] ||   // khớp đúng trước
+                (tS.length >= 4 ? ds.filter(function (o) { var oS = sach(o.text); return oS && (oS.indexOf(tS) >= 0 || tS.indexOf(oS) >= 0); })[0] : null);
             if (hit) { el.value = hit.value; ok = true; }
         }
         if (ok && window.jQuery) jQuery(el).trigger('change.select2').trigger('ums:refresh');

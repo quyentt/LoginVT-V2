@@ -383,6 +383,9 @@ window.UMS_CONFIG = {
     /* Bảng "Màn đang có lỗi backend" ở trang vai trò (chưa chọn chức năng) và nút xem tổng ở trang chủ — cho bộ phận backend nhìn thấy việc cần
        làm. Lấy từ sổ can-quyet.js (chỉ mục lỗi máy chủ / CSDL). Đặt false khi giao cho người dùng thật; từng người tự tắt ở Cài đặt → Hành vi. */
     loiBackend: true,
+    /* Khung "Cần làm trước" (assets/js/lamtruoc.js): màn thiếu dữ liệu nghiệp vụ khai được ở màn khác (danh mục chưa có giá trị…) thì tự hiện
+       việc cần làm + liên kết mở màn khai. KHÁC khung Ghi chú: giữ khi giao người dùng thật; đặt false để tắt. */
+    lamTruoc: true,
     /* Thông báo nổi hiện bao lâu (mili giây) theo loại: thành công / thông tin / lưu ý / lỗi. Câu dài hơn 60 ký tự được cộng
        thêm 60 ms mỗi ký tự, tối đa 20 giây; rê chuột vào thông báo thì không tự đóng. */
     toastMs: { ok: 6000, info: 6000, warn: 9000, bad: 12000 },

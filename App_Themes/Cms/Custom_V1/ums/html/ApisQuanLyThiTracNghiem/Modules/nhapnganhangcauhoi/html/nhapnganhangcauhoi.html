@@ -1,521 +1,431 @@
-﻿<section class="content">
+<!--
+    Bản lột da (SPA-V1) — Nhập ngân hàng câu hỏi.
+    Nguồn chỉnh sửa: App_Themes/Cms/Custom_V1/ums/html/ApisQuanLyThiTracNghiem/Modules/nhapnganhangcauhoi/html/nhapnganhangcauhoi.html
+    Áp dụng bằng lệnh: python _harness/skin.py ap
+-->
+<link rel="stylesheet" href="App_Themes/Cms/Custom_V1/ums/ums-skin.css?v=1790964028" />
+
+<section class="content ums-skin">
     <!-- /.left-content -->
     <!-- /.right-content -->
     <div class="col-lg-12">
-        <!-- box Notify_GT -->
-
-        <div class="box box-solid form-container zone-bus" id="zoneGroupQuestion" style="display: none">
-            <div class="box-header with-border">
-                <h3 class="box-title"><span class="myModalLabel"> <i class="fa fa-pencil"></i></span>Thông tin </h3>
-                <div class="pull-right title-note">
-                    <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times"></i></a>
+        <!-- 1. Thông tin nhóm câu hỏi (popup / form chỉnh sửa) -->
+        <div class="zone-bus" id="zoneGroupQuestion" style="display: none">
+            <div class="ums-panel">
+                <div class="ums-panel__head">
+                    <h3 class="ums-panel__title">
+                        <span class="myModalLabel"><i class="fa fa-pencil"></i></span> Thông tin
+                    </h3>
+                    <div class="ums-panel__tools">
+                        <a class="btn ums-btn ums-btn--ghost btnClose" href="#" title="Đóng"><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+                    </div>
                 </div>
-            </div>
-            <div class="box-body">
-                <div class="row zone-box">
-                    <div class="row">
-                        <div class="col-sm-2">
-                            <div class="group-title-name">
-                                <span class="lang" key="">Đơn vị</span>
-                            </div>
-                        </div>
-                        <div class="col-sm-10">
-                            <label id="lblDonVi" style="color: #0073b7"></label>
-                        </div>
-
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-2">
-                            <div class="group-title-name">
-                                <span class="lang" key="">Mã</span>
-                            </div>
-                        </div>
-                        <div class="col-sm-10">
-                            <input type="text" id="txtGroupQuestionCode" class="form-control" />
-                        </div>
-
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-2">
-                            <div class="group-title-name">
-                                <span class="lang" key="">Tên</span>
-                            </div>
-                        </div>
-                        <div class="col-sm-10">
-                            <input type="text" id="txtGroupQuestionName" class="form-control" />
+                <div class="ums-panel__body">
+                    <div class="ums-field ums-field--inline">
+                        <label class="ums-field__label"><span class="lang" key="">Đơn vị</span></label>
+                        <div class="ums-field__control">
+                            <label id="lblDonVi" class="skin-gt"></label>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-sm-2">
-                        </div>
-                        <div class="col-sm-10">
-                            <div class="col-sm-3 item-search">
-                                <select id="drpGroupQuestionStatus" class="select-opt">
-                                    <option value="">Tình trạng (Ẩn/Hiện)</option>
-                                    <option value="0">Ẩn</option>
-                                    <option value="1">Hiện</option>
-                                </select>
-                            </div>
+                    <div class="ums-field ums-field--inline">
+                        <label class="ums-field__label" for="txtGroupQuestionCode"><span class="lang" key="">Mã</span></label>
+                        <div class="ums-field__control">
+                            <input type="text" id="txtGroupQuestionCode" class="form-control ums-input" />
                         </div>
                     </div>
-
+                    <div class="ums-field ums-field--inline">
+                        <label class="ums-field__label" for="txtGroupQuestionName"><span class="lang" key="">Tên</span></label>
+                        <div class="ums-field__control">
+                            <input type="text" id="txtGroupQuestionName" class="form-control ums-input" />
+                        </div>
+                    </div>
+                    <div class="ums-field ums-field--inline">
+                        <span class="ums-field__label"></span>
+                        <div class="ums-field__control">
+                            <select id="drpGroupQuestionStatus" class="select-opt">
+                                <option value="">Tình trạng (Ẩn/Hiện)</option>
+                                <option value="0">Ẩn</option>
+                                <option value="1">Hiện</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="box-footer">
-                <div class="pull-right">
-                    <a class="btn btn-default btnClose" id=""><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
-                    <a class="submit btn btn-primary" id="btnSave_GroupQuestion"><i class="fa fa-save"></i><span class="lang" key=""> Lưu</span></a>
+                <div class="ums-panel__foot ums-row--end">
+                    <a class="btn ums-btn ums-btn--ghost btnClose" id=""><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+                    <a class="submit btn ums-btn ums-btn--save" id="btnSave_GroupQuestion"><i class="fa fa-save"></i><span class="lang" key=""> Lưu</span></a>
                 </div>
             </div>
         </div>
-        <div class="box box-solid form-container zone-bus" id="zoneGroupQuestionDetail" style="display: none">
-            <div class="box box-solid">
-                <div class="col-sm-3">
-                    
-                    <div class="box box-solid">
-                        <div class="box-header with-border">
-                            <h3 class="box-title" title="Danh sách nhóm câu hỏi">
-                                <i class="fa fa-map-signs"></i> Thông tin
-                            </h3>
-                            <span class="pull-right badge bg-light-blue">
-                                <span id="lblDanhMucTenBang_Tong"></span>
-                            </span>
-                        </div>
-                        <div class="box-body">
-                            <div id="zone_GroupQuestionDetail_treejs">
-                                <!--Content of treejs-->
-                            </div>
-                        </div>
+
+        <!-- 2. Chi tiết nhóm câu hỏi -->
+        <div class="zone-bus" id="zoneGroupQuestionDetail" style="display: none">
+            <div class="ums-panel">
+                <div class="ums-panel__head">
+                    <h3 class="ums-panel__title">
+                        <i class="fa fa-th-list"></i> Chi tiết nhóm câu hỏi
+                    </h3>
+                    <div class="ums-panel__tools">
+                        <a class="btn ums-btn ums-btn--ghost btnClose" href="#" title="Close"><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
                     </div>
                 </div>
-
-                <div class="box-body col-sm-9">
-                    <div class="nav-tabs-custom">
-                        <div class="box-header with-border">
-                           
-                            <div class="box-tools pull-right">
-                                <div class="pull-right title-note">
-                                    <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times"></i></a>
+                <div class="ums-panel__body">
+                    <div class="skin-2cot">
+                        <!-- Cột trái: Cây danh mục -->
+                        <div>
+                            <div class="ums-panel">
+                                <div class="ums-panel__head">
+                                    <h3 class="ums-panel__title" title="Danh sách nhóm câu hỏi">
+                                        <i class="fa fa-map-signs"></i> Thông tin
+                                        <span class="ums-badge ums-badge--info">
+                                            <span id="lblDanhMucTenBang_Tong"></span>
+                                        </span>
+                                    </h3>
+                                </div>
+                                <div class="ums-panel__body">
+                                    <div id="zone_GroupQuestionDetail_treejs">
+                                        <!--Content of treejs-->
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <ul class="nav nav-tabs">
-                            <li class="active"> 
-                                    <select id="drpMucPheDuyet" class="select-opt"></select> 
-                            </li>
-                            
-                        </ul>
-                        <div class="tab-content">
-                            <!-- Tab_1: Cấu trúc đề -->
-                            <div class="tab-pane active" id="tab_1_DANHSACHCAUHOI">
-                                <div class="box box-solid">
-                                    <div class="row zone-box">
-                                        <div class="zone-bus-GroupQuestionDetail" id="zonebatdauGroupQuestionDetail">
-                                            <div class="box box-solid">
-                                                <div class="box-header with-border">
-                                                    <h3 class="box-title">
-                                                        <i class="fa fa-hdd-o"></i> Danh sách câu hỏi trong nhóm
-                                                        <span class="pull-right badge bg-light-blue">
-                                                            <span id="lblNhomCauHoi_Tong"></span>
-                                                        </span>
-                                                    </h3>
 
-                                                </div>
-
-                                                <div class="box-body">
-                                                    <div class="row">
-                                                        <div class="box-tools fa-pull-left">
-                                                            <div class="col-sm-2">
-                                                                <select id="drpQuestionStatus" class="select-opt">
-                                                                    <option value="">Tình trạng</option>
-                                                                    <option value="1">Đang dùng</option>
-                                                                    <option value="0">Không dùng</option>
-                                                                </select>
-                                                            </div>
-                                                            <div class="col-sm-3">
-                                                                <select id="drpLoaiCauHoi_Search" class="select-opt"></select>
-                                                            </div>
-                                                            <div class="col-sm-3">
-                                                                <select id="drpMucDoCauHoi_Search" class="select-opt"></select>
-                                                            </div>
-                                                            <div class="col-sm-3">
-                                                                <input type="text" id="txtSearch_CauHoi" class="form-control" placeholder="Nhập từ khóa tìm kiếm">
-                                                            </div>
-                                                            <div class="col-sm-1">
-                                                                <a class="btn btn-primary btnSearch_CauHoi"><i class="fa fa-search"></i> <span class="lang" key="">Tìm kiếm</span></a>
-                                                            </div>
-
-
-                                                        </div>
-                                                    </div>
-                                                    <div class="row"> 
-                                                        
-                                                            <div class="box-tools fa-pull-left">
-                                                                <div class="row">
-                                                                    <div class="col-sm-3">
-                                                                        <select id="drpLoaiCauHoi_Imp" class="select-opt"></select>
-                                                                    </div>
-                                                                    <div class="col-sm-9">
-                                                                        <a id="btnCall_Import_DMIP" class="btn btn-default"><i class="fa fa fa-file-excel-o"></i> <span class="lang" key="">Import dữ liệu</span></a>
-                                                                        <a id="btnAdd_CauHoi_Temp" class="btnAdd btn btn-primary"><i class="fa fa-plus-circle"></i> Tạo mới</a>
-                                                                        <a id="btnMauFileDoc" class="btn btn-default"><i class="fa fa-download"></i> Tải mẫu file doc</a>
-                                                                        <a id="btnAdd_DuaVaoNganHangDe" class="btnSave btn btn-primary"><i class="fa fa-plus-square-o"></i> Đưa vào NH đề</a>
-                                                                        <a id="btnPreview_CauHoi_Temp" class="btnAdd btn btn-primary"><i class="fa fa-eye"></i>Preview</a>
-                                                                        <a class="btn btn-primary btnKhongDuyetDuyetCauHoi"><i class="fa fa-mail-reply"> </i> Không duyệt</a>
-                                                                        <a class="btn btn-primary btnDuyetCauHoi"><i class="fa fa-paper-plane"> </i>Duyệt</a>
-                                                                        <a id="btnDelete_CauHoi_Temp" class="btn btn-default"><i class="fa fa-trash"></i> Xóa</a>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                       
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="scroll-table-x">
-                                                            <table id="tblCauHoi_Temp" class="table table-hover table-bordered">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th class="td-fixed td-center">Stt</th>
-                                                                        <th class="td-fixed td-center">Order</th>
-                                                                        <th class="td-center">Nội dung câu hỏi </th>
-                                                                        <th class="td-center">Đáp án </th>
-                                                                        <th class="td-center">Số đ/a </th>
-                                                                        <th class="td-center">Loại câu hỏi</th>
-                                                                        <th class="td-center">Mức độ</th>
-                                                                        <th class="td-center">Điểm(+/-)</th>
-                                                                        <th class="td-center">Đảo đ/a</th>
-                                                                        <th class="td-center">
-                                                                            Tính theo ý
-                                                                            <input type="checkbox" id="chkSelectAll_Temp_TheoSoY">
-                                                                        </th>
-                                                                        <th class="td-fixed td-center">Sửa</th>
-                                                                        <th class="td-fixed td-center">
-                                                                            <input type="checkbox" id="chkSelectAll_CauHoi_Temp">
-                                                                        </th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    <!-- load from js -->
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="box box-solid form-container zone-bus-GroupQuestionDetail" id="zoneEditGroupQuestionDetail" style="display: none">
-                                            <div class="box-header with-border">
-                                                <h3 class="box-title"><span class="myModalLabel"> <i class="fa fa-pencil"></i></span> Nhóm câu hỏi </h3>
-                                                <div class="pull-right title-note">
-                                                    <a class="btn btn-default btnClose_ThaoTac_GroupQuestionDetail" href="#" title="Close"><i class="fa fa-times"></i></a>
-                                                </div>
-                                            </div>
-                                            <div class="box-body">
-                                                <div class="row zone-box">
-                                                    <div class="row">
-                                                        <div class="col-sm-2">
-                                                            <div class="group-title-name">
-                                                                <span class="lang" key="">Mã nhóm</span>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-sm-10">
-                                                            <input type="text" id="txtMaNhomGroupQuestionDetail" class="form-control " />
-                                                        </div>
-
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-sm-2">
-                                                            <div class="group-title-name">
-                                                                <span class="lang" key="">Tên nhóm</span>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-sm-10">
-                                                            <input type="text" id="txtTenNhomGroupQuestionDetail" class="form-control " />
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-sm-2">
-                                                            <div class="group-title-name">
-                                                                <span class="lang" key="">Là câu hỏi dạng tập các câu hỏi con</span>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-sm-10">
-                                                            <input type="checkbox" id="chkTapHopCacCauHoi" />
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-sm-2">
-                                                            <div class="group-title-name">
-                                                                <span class="lang" key="">Nhóm cha</span>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-sm-10">
-                                                            <select id="drpNhomCauHoiChaGroupQuestionDetail" class="select-opt">
-                                                                <option value="">-- Chọn nhóm cha---</option>
-                                                            </select>
-
-                                                        </div>
-                                                    </div>
-
-                                                </div>
-                                                <div class="box-footer">
-                                                    <div class="pull-right">
-                                                        <a class="btn btn-default btnClose_ThaoTac_GroupQuestionDetail" id=""><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
-                                                        <a class="submit btn btn-primary" id="btnSave_GroupQuestionDetail"><i class="fa fa-save"></i><span class="lang" key=""> Lưu</span></a>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                        </div>
-
-                                        
-
-                                        <!--Preview cau hoi-->
-                                        <div class="box box-solid form-container zone-bus-GroupQuestionDetail" id="zonePreviewCauHoi_TempEdit" style="display: none">
-                                            <div class="box-header with-border">
-                                                <h3 class="box-title"><span class="myModalLabel">  </span> Preview Câu hỏi </h3>
-                                                <div class="pull-right title-note">
-                                                    <a class="btn btn-default btnClose_ThaoTac_GroupQuestionDetail" href="#" title="Close"><i class="fa fa-times"></i></a>
-                                                </div>
-                                            </div>
-                                            <div id="btnIn_PreviewTemp" style="width:30px; text-align:center; background-color: #fff; border-bottom: 1px solid #f1f1f1">
-                                                <a class="btn"><i style="color: #00a65a" class="fa fa-print fa-4x"></i></a>
-                                                <a class="color-active bold lbsymbolHD">In</a>
-                                            </div>
-                                            <div class="box-body">
-                                                <div class="row zone-box" id="zonePrintPreviewTemp">
-                                                    <span id="zonePreviewTableQuestion_Temp">
+                        <!-- Cột phải: Tabs & Sub-zones -->
+                        <div>
+                            <ul class="nav nav-tabs ums-tabs">
+                                <li class="active ums-tabs__item">
+                                    <select id="drpMucPheDuyet" class="select-opt"></select>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <!-- Tab_1: Cấu trúc đề / Danh sách câu hỏi -->
+                                <div class="tab-pane active" id="tab_1_DANHSACHCAUHOI">
+                                    <!-- 1. Danh sách câu hỏi tạm trong nhóm -->
+                                    <div class="zone-bus-GroupQuestionDetail" id="zonebatdauGroupQuestionDetail">
+                                        <div class="ums-panel">
+                                            <div class="ums-panel__head">
+                                                <h3 class="ums-panel__title">
+                                                    <i class="fa fa-hdd-o"></i> Danh sách câu hỏi trong nhóm
+                                                    <span class="ums-badge ums-badge--info">
+                                                        <span id="lblNhomCauHoi_Tong"></span>
                                                     </span>
-                                                </div>
-                                                <div class="row zone-box">
-                                                    <div class="box-footer">
-                                                        <div class="pull-right">
-                                                            <a class="btn btn-default btnClose_ThaoTac_GroupQuestionDetail" id=""><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+                                                </h3>
+                                            </div>
+                                            <div class="ums-panel__body">
+                                                <!-- Bộ lọc tìm kiếm câu hỏi -->
+                                                <div class="skin-filter-panel skin-mb-3">
+                                                    <div class="ums-filter">
+                                                        <div class="ums-field">
+                                                            <select id="drpQuestionStatus" class="select-opt">
+                                                                <option value="">Tình trạng</option>
+                                                                <option value="1">Đang dùng</option>
+                                                                <option value="0">Không dùng</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="ums-field">
+                                                            <select id="drpLoaiCauHoi_Search" class="select-opt"></select>
+                                                        </div>
+                                                        <div class="ums-field">
+                                                            <select id="drpMucDoCauHoi_Search" class="select-opt"></select>
+                                                        </div>
+                                                        <div class="ums-field">
+                                                            <input type="text" id="txtSearch_CauHoi" class="form-control ums-input" placeholder="Nhập từ khóa tìm kiếm">
+                                                        </div>
+                                                        <div class="ums-field ums-field--fit">
+                                                            <a class="btn ums-btn ums-btn--primary btnSearch_CauHoi"><i class="fa fa-search"></i> <span class="lang" key="">Tìm kiếm</span></a>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
 
-                                        </div>
+                                                <!-- Thanh tác vụ toolbar -->
+                                                <div class="skin-toolbar skin-mb-3">
+                                                    <div class="skin-toolbar-group">
+                                                        <select id="drpLoaiCauHoi_Imp" class="select-opt"></select>
+                                                        <a id="btnCall_Import_DMIP" class="btn ums-btn ums-btn--ghost"><i class="fa fa-file-excel-o"></i> <span class="lang" key="">Import dữ liệu</span></a>
+                                                        <a id="btnMauFileDoc" class="btn ums-btn ums-btn--ghost"><i class="fa fa-download"></i> Tải mẫu file doc</a>
+                                                    </div>
+                                                    <div class="skin-toolbar-group skin-toolbar-group--end">
+                                                        <a id="btnAdd_CauHoi_Temp" class="btnAdd btn ums-btn ums-btn--primary"><i class="fa fa-plus-circle"></i> Tạo mới</a>
+                                                        <a id="btnPreview_CauHoi_Temp" class="btnAdd btn ums-btn ums-btn--ghost"><i class="fa fa-eye"></i> Preview</a>
+                                                        <a id="btnAdd_DuaVaoNganHangDe" class="btnSave btn ums-btn ums-btn--save"><i class="fa fa-plus-square-o"></i> Đưa vào NH đề</a>
+                                                        <a class="btn ums-btn ums-btn--ghost btnKhongDuyetDuyetCauHoi"><i class="fa fa-reply"></i> Không duyệt</a>
+                                                        <a class="btn ums-btn ums-btn--primary btnDuyetCauHoi"><i class="fa fa-paper-plane"></i> Duyệt</a>
+                                                        <a id="btnDelete_CauHoi_Temp" class="btn ums-btn ums-btn--delsel"><i class="fa fa-trash"></i> Xóa</a>
+                                                    </div>
+                                                </div>
 
-                                        <!--Move cau hoi-->
-                                        <div class="box box-solid form-container zone-bus-GroupQuestionDetail" id="zoneMove_CauHoi" style="display: none">
-                                            <div class="box-header with-border">
-                                                <h3 class="box-title"><span class="myModalLabel">  </span> Move Câu hỏi </h3>
-
-                                                <div class="pull-right title-note">
-
-                                                    <a class="btn btn-default btnClose_ThaoTac_Move_CauHoi" href="#" title="Close"><i class="fa fa-times"></i></a>
+                                                <div class="ums-tablewrap">
+                                                    <table id="tblCauHoi_Temp" class="ums-table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th class="td-fixed td-center">Stt</th>
+                                                                <th class="td-fixed td-center">Order</th>
+                                                                <th class="td-center">Nội dung câu hỏi</th>
+                                                                <th class="td-center">Đáp án</th>
+                                                                <th class="td-center">Số đ/a</th>
+                                                                <th class="td-center">Loại câu hỏi</th>
+                                                                <th class="td-center">Mức độ</th>
+                                                                <th class="td-center">Điểm(+/-)</th>
+                                                                <th class="td-center">Đảo đ/a</th>
+                                                                <th class="td-center">
+                                                                    Tính theo ý
+                                                                    <input type="checkbox" id="chkSelectAll_Temp_TheoSoY">
+                                                                </th>
+                                                                <th class="td-fixed td-center">Sửa</th>
+                                                                <th class="td-fixed td-center">
+                                                                    <input type="checkbox" id="chkSelectAll_CauHoi_Temp">
+                                                                </th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <!-- load from js -->
+                                                        </tbody>
+                                                    </table>
                                                 </div>
                                             </div>
-                                            <div class="box-body">
-                                                <div class="box box-solid">
-                                                    <div class="box-header with-border">
-                                                        <h3 class="box-title" title="Danh sách nhóm câu hỏi">
-                                                            <i class="fa fa-map-signs"></i> Thông tin
-                                                        </h3>
-                                                        <span class="pull-right badge bg-light-blue">
-                                                            <span id="lblDanhMucTenBang_Tong_Move_CauHoi"></span>
-                                                        </span>
+                                        </div>
+                                    </div>
+
+                                    <!-- 2. Sửa thông tin nhóm câu hỏi con -->
+                                    <div class="zone-bus-GroupQuestionDetail" id="zoneEditGroupQuestionDetail" style="display: none">
+                                        <div class="ums-panel">
+                                            <div class="ums-panel__head">
+                                                <h3 class="ums-panel__title">
+                                                    <span class="myModalLabel"><i class="fa fa-pencil"></i></span> Nhóm câu hỏi
+                                                </h3>
+                                                <div class="ums-panel__tools">
+                                                    <a class="btn ums-btn ums-btn--ghost btnClose_ThaoTac_GroupQuestionDetail" href="#" title="Đóng"><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+                                                </div>
+                                            </div>
+                                            <div class="ums-panel__body">
+                                                <div class="ums-field ums-field--inline">
+                                                    <label class="ums-field__label" for="txtMaNhomGroupQuestionDetail"><span class="lang" key="">Mã nhóm</span></label>
+                                                    <div class="ums-field__control">
+                                                        <input type="text" id="txtMaNhomGroupQuestionDetail" class="form-control ums-input" />
                                                     </div>
-                                                    <div class="box-body">
+                                                </div>
+                                                <div class="ums-field ums-field--inline">
+                                                    <label class="ums-field__label" for="txtTenNhomGroupQuestionDetail"><span class="lang" key="">Tên nhóm</span></label>
+                                                    <div class="ums-field__control">
+                                                        <input type="text" id="txtTenNhomGroupQuestionDetail" class="form-control ums-input" />
+                                                    </div>
+                                                </div>
+                                                <div class="ums-field ums-field--inline">
+                                                    <span class="ums-field__label"><span class="lang" key="">Là câu hỏi dạng tập các câu hỏi con</span></span>
+                                                    <div class="ums-field__control">
+                                                        <input type="checkbox" id="chkTapHopCacCauHoi" />
+                                                    </div>
+                                                </div>
+                                                <div class="ums-field ums-field--inline">
+                                                    <label class="ums-field__label" for="drpNhomCauHoiChaGroupQuestionDetail"><span class="lang" key="">Nhóm cha</span></label>
+                                                    <div class="ums-field__control">
+                                                        <select id="drpNhomCauHoiChaGroupQuestionDetail" class="select-opt">
+                                                            <option value="">-- Chọn nhóm cha---</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="ums-panel__foot ums-row--end">
+                                                <a class="btn ums-btn ums-btn--ghost btnClose_ThaoTac_GroupQuestionDetail" id=""><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+                                                <a class="submit btn ums-btn ums-btn--save" id="btnSave_GroupQuestionDetail"><i class="fa fa-save"></i><span class="lang" key=""> Lưu</span></a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 3. Preview câu hỏi tạm -->
+                                    <div class="zone-bus-GroupQuestionDetail" id="zonePreviewCauHoi_TempEdit" style="display: none">
+                                        <div class="ums-panel">
+                                            <div class="ums-panel__head">
+                                                <h3 class="ums-panel__title">
+                                                    <span class="myModalLabel"></span> Preview Câu hỏi
+                                                </h3>
+                                                <div class="ums-panel__tools">
+                                                    <a class="btn ums-btn ums-btn--ghost btnClose_ThaoTac_GroupQuestionDetail" href="#" title="Đóng"><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+                                                </div>
+                                            </div>
+                                            <div class="ums-panel__body">
+                                                <div class="skin-toolbar skin-mb-3">
+                                                    <div id="btnIn_PreviewTemp" class="btn ums-btn ums-btn--ghost" role="button">
+                                                        <i class="fa fa-print"></i> <span class="color-active bold lbsymbolHD">In</span>
+                                                    </div>
+                                                </div>
+                                                <div class="skin-xemin" id="zonePrintPreviewTemp">
+                                                    <span id="zonePreviewTableQuestion_Temp"></span>
+                                                </div>
+                                            </div>
+                                            <div class="ums-panel__foot ums-row--end">
+                                                <a class="btn ums-btn ums-btn--ghost btnClose_ThaoTac_GroupQuestionDetail" id=""><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 4. Move câu hỏi -->
+                                    <div class="zone-bus-GroupQuestionDetail" id="zoneMove_CauHoi" style="display: none">
+                                        <div class="ums-panel">
+                                            <div class="ums-panel__head">
+                                                <h3 class="ums-panel__title">
+                                                    <span class="myModalLabel"></span> Move Câu hỏi
+                                                </h3>
+                                                <div class="ums-panel__tools">
+                                                    <a class="btn ums-btn ums-btn--ghost btnClose_ThaoTac_Move_CauHoi" href="#" title="Đóng"><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+                                                </div>
+                                            </div>
+                                            <div class="ums-panel__body">
+                                                <div class="ums-panel skin-mb-3">
+                                                    <div class="ums-panel__head">
+                                                        <h3 class="ums-panel__title" title="Danh sách nhóm câu hỏi">
+                                                            <i class="fa fa-map-signs"></i> Thông tin
+                                                            <span class="ums-badge ums-badge--info">
+                                                                <span id="lblDanhMucTenBang_Tong_Move_CauHoi"></span>
+                                                            </span>
+                                                        </h3>
+                                                    </div>
+                                                    <div class="ums-panel__body">
                                                         <div id="zone_Move_CauHoi_treejs">
                                                             <!--Content of treejs-->
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="row zone-box">
-                                                    <div class="box-footer">
-                                                        <div class="pull-right">
-                                                            <label id="lblSoCauChuyen" style="color: #0073b7"></label>
-                                                            <a id="btn_ThucHienChuyenCauHoi" class="btnAdd btn btn-primary"><i class="fa fa-plus-square"></i>Thực hiện chuyển</a>
-                                                            <a class="btn btn-default btnClose_ThaoTac_Move_CauHoi" id=""><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
-                                                        </div>
-                                                    </div>
+                                            </div>
+                                            <div class="ums-panel__foot skin-flex-between">
+                                                <div>
+                                                    <label id="lblSoCauChuyen" class="skin-gt"></label>
+                                                </div>
+                                                <div class="skin-flex-wrap">
+                                                    <a class="btn ums-btn ums-btn--ghost btnClose_ThaoTac_Move_CauHoi" id=""><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+                                                    <a id="btn_ThucHienChuyenCauHoi" class="btnAdd btn ums-btn ums-btn--primary"><i class="fa fa-plus-square"></i> Thực hiện chuyển</a>
                                                 </div>
                                             </div>
-
                                         </div>
+                                    </div>
 
-                                        <!--Show Preview cau hoi-->
-                                        <div class="box box-solid form-container zone-bus-GroupQuestionDetail" id="zoneShowPreviewCauHoiEdit" style="display: none">
-                                            <div class="box-header with-border">
-                                                <h3 class="box-title"><span class="myModalLabel">  </span> Preview Câu hỏi </h3>
-                                                <div class="pull-right title-note">
-
-                                                    <a class="btn btn-default btnClose_ShowPreview_CauHoi" href="#" title="Close"><i class="fa fa-times"></i></a>
+                                    <!-- 5. Show Preview câu hỏi -->
+                                    <div class="zone-bus-GroupQuestionDetail" id="zoneShowPreviewCauHoiEdit" style="display: none">
+                                        <div class="ums-panel">
+                                            <div class="ums-panel__head">
+                                                <h3 class="ums-panel__title">
+                                                    <span class="myModalLabel"></span> Preview Câu hỏi
+                                                </h3>
+                                                <div class="ums-panel__tools">
+                                                    <a class="btn ums-btn ums-btn--ghost btnClose_ShowPreview_CauHoi" href="#" title="Đóng"><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
                                                 </div>
                                             </div>
-                                            <div class="box-body">
-
-                                                <div class="row zone-box" id="divShowPreviewTableQuestion">
-                                                    <span id="zoneShowPreviewTableQuestion">
-                                                    </span>
-                                                </div>
-                                                <div class="row zone-box">
-                                                    <div class="box-footer">
-                                                        <div class="pull-right">
-                                                            <a class="btn btn-default btnClose_ShowPreview_CauHoi" id=""><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
-                                                        </div>
-                                                    </div>
+                                            <div class="ums-panel__body">
+                                                <div class="skin-xemin" id="divShowPreviewTableQuestion">
+                                                    <span id="zoneShowPreviewTableQuestion"></span>
                                                 </div>
                                             </div>
-
+                                            <div class="ums-panel__foot ums-row--end">
+                                                <a class="btn ums-btn ums-btn--ghost btnClose_ShowPreview_CauHoi" id=""><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+                                            </div>
                                         </div>
+                                    </div>
 
-
-                                          <!--Detail cau hoi tam-->
-                                        <div class="box box-solid form-container  zone-bus-GroupQuestionDetail" id="zoneChiTietCauHoiEdit_Temp" style="display: none">
-                                            <div class="box-header with-border">
-                                                <h3 class="box-title"><span class="myModalLabel"> <i class="fa fa-pencil"></i></span> Câu hỏi </h3>
-                                                <div class="pull-right title-note">
-                                                    <a class="btn btn-default btnClose_CauHoiTemp" href="#" title="Close"><i class="fa fa-times"><span class="lang" key="">Đóng</span></i></a>
+                                    <!-- 6. Chi tiết câu hỏi tạm (soạn thảo CKEditor & đáp án) -->
+                                    <div class="zone-bus-GroupQuestionDetail" id="zoneChiTietCauHoiEdit_Temp" style="display: none">
+                                        <div class="ums-panel">
+                                            <div class="ums-panel__head">
+                                                <h3 class="ums-panel__title">
+                                                    <span class="myModalLabel"><i class="fa fa-pencil"></i></span> Câu hỏi
+                                                </h3>
+                                                <div class="ums-panel__tools">
+                                                    <a class="btn ums-btn ums-btn--ghost btnClose_CauHoiTemp" href="#" title="Close"><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
                                                 </div>
                                             </div>
-                                            <div class="box-body">
-                                                <div class="row zone-box">
-                                                    <div class="row">
-                                                        <div class="col-sm-2">
-                                                            <div class="group-title-name">
-                                                                <span class="lang" key="">Nội dung câu hỏi</span>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-sm-10">
-                                                            <!--<input type="text" id="txtNoiDungCauHoi" class="form-control " />-->
-                                                            <!-- This container will become the editable. -->
+                                            <div class="ums-panel__body">
+                                                <!-- Form thông tin câu hỏi -->
+                                                <div class="ums-field ums-field--inline">
+                                                    <label class="ums-field__label"><span class="lang" key="">Nội dung câu hỏi</span></label>
+                                                    <div class="ums-field__control">
+                                                        <!--<input type="text" id="txtNoiDungCauHoi" class="form-control" />-->
+                                                        <textarea name="editor_nhomcauhoi_Temp" id="editor_nhomcauhoi_Temp"></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="ums-field ums-field--inline">
+                                                    <label class="ums-field__label" for="txtOrderNumber_Temp"><span class="lang" key="">STT</span></label>
+                                                    <div class="ums-field__control">
+                                                        <input type="text" class="form-control ums-input" id="txtOrderNumber_Temp" />
+                                                    </div>
+                                                </div>
+                                                <div class="ums-field ums-field--inline">
+                                                    <label class="ums-field__label" for="drpLoaiCauHoi_Temp"><span class="lang" key="">Loại câu hỏi</span></label>
+                                                    <div class="ums-field__control">
+                                                        <select id="drpLoaiCauHoi_Temp" class="select-opt"></select>
+                                                    </div>
+                                                </div>
+                                                <div class="ums-field ums-field--inline">
+                                                    <label class="ums-field__label" for="drpDaoDapAn_Temp"><span class="lang" accesskey="">Đảo đáp án</span></label>
+                                                    <div class="ums-field__control">
+                                                        <select id="drpDaoDapAn_Temp" class="select-opt">
+                                                            <option value="">---Chọn đảo/không đảo đáp án---</option>
+                                                            <option value="1">Đảo đáp án</option>
+                                                            <option value="0">Không đảo đáp án</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="ums-field ums-field--inline">
+                                                    <label class="ums-field__label" for="drpMucDoCauHoi_Temp"><span class="lang" accesskey="">Mức độ</span></label>
+                                                    <div class="ums-field__control">
+                                                        <select id="drpMucDoCauHoi_Temp" class="select-opt"></select>
+                                                    </div>
+                                                </div>
+                                                <div class="ums-field ums-field--inline">
+                                                    <label class="ums-field__label" for="txtDiemCong_Temp"><span class="lang" key="">Điểm cộng</span></label>
+                                                    <div class="ums-field__control">
+                                                        <input type="text" class="form-control ums-input" id="txtDiemCong_Temp" />
+                                                    </div>
+                                                </div>
+                                                <div class="ums-field ums-field--inline">
+                                                    <label class="ums-field__label" for="txtDiemTru_Temp"><span class="lang" key="">Điểm trừ</span></label>
+                                                    <div class="ums-field__control">
+                                                        <input type="text" class="form-control ums-input" id="txtDiemTru_Temp" />
+                                                    </div>
+                                                </div>
+                                                <div class="ums-field ums-field--inline">
+                                                    <label class="ums-field__label" for="txtThoiGian_Temp"><span class="lang" key="">Thời gian (nhập số giây)</span></label>
+                                                    <div class="ums-field__control">
+                                                        <input type="text" class="form-control ums-input" id="txtThoiGian_Temp" />
+                                                    </div>
+                                                </div>
+                                                <div class="ums-field ums-field--inline">
+                                                    <label class="ums-field__label" for="drpTrangThaiCauHoi_Temp"><span class="lang" accesskey="">Trạng thái</span></label>
+                                                    <div class="ums-field__control">
+                                                        <select id="drpTrangThaiCauHoi_Temp" class="select-opt">
+                                                            <option value="">---Chọn trạng thái---</option>
+                                                            <option value="1">Đang dùng</option>
+                                                            <option value="0">Không dùng</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="ums-field ums-field--inline">
+                                                    <span class="ums-field__label"><span class="lang" accesskey="">Tính điểm theo số ý</span></span>
+                                                    <div class="ums-field__control">
+                                                        <input type="checkbox" id="chkCachTinhDiemTheoSoY_Temp">
+                                                    </div>
+                                                </div>
+                                                <div class="skin-flex-end skin-mb-4" style="gap: var(--ums-sp-2);">
+                                                    <a class="submit btn ums-btn ums-btn--save" id="btnSave_CauHoi_Temp"><i class="fa fa-save"></i><span class="lang" key=""> Lưu câu hỏi</span></a>
+                                                    <a class="btn ums-btn ums-btn--ghost btnClose_CauHoiTemp" href="#" title="Close"><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+                                                </div>
 
-                                                            <textarea name="editor_nhomcauhoi_Temp" id="editor_nhomcauhoi_Temp"></textarea>
-
-
-                                                        </div>
-
+                                                <!-- Phần Thông tin đáp án -->
+                                                <div class="ums-panel skin-mb-4" id="zoneDapAn_Temp">
+                                                    <div class="ums-panel__head">
+                                                        <h4 class="ums-panel__title"><i class="fa fa-list-ol"></i> Thông tin đáp án</h4>
                                                     </div>
-                                                    <div class="row">
-                                                        <div class="col-sm-2">
-                                                            <div class="group-title-name">
-                                                                <span class="lang" key="">STT</span>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-sm-10">
-                                                            <input type="text" class="form-control" id="txtOrderNumber_Temp" />
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-sm-2">
-                                                            <div class="group-title-name">
-                                                                <span class="lang" key="">Loại câu hỏi</span>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-sm-10">
-                                                            <select id="drpLoaiCauHoi_Temp" class="select-opt"></select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-sm-2">
-                                                            <div class="group-title-name">
-                                                                <span class="lang" accesskey="">Đảo đáp án</span>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-sm-10">
-                                                            <select id="drpDaoDapAn_Temp" class="select-opt">
-                                                                <option value="">---Chọn đảo/không đảo đáp án---</option>
-                                                                <option value="1">Đảo đáp án</option>
-                                                                <option value="0">Không đảo đáp án</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-sm-2">
-                                                            <div class="group-title-name">
-                                                                <span class="lang" accesskey="">Mức độ</span>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-sm-10">
-                                                            <select id="drpMucDoCauHoi_Temp" class="select-opt"></select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-sm-2">
-                                                            <div class="group-title-name">
-                                                                <span class="lang" key="">Điểm cộng</span>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-sm-10">
-                                                            <input type="text" class="form-control" id="txtDiemCong_Temp" />
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-sm-2">
-                                                            <div class="group-title-name">
-                                                                <span class="lang" key="">Điểm trừ</span>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-sm-10">
-                                                            <input type="text" class="form-control" id="txtDiemTru_Temp" />
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-sm-2">
-                                                            <div class="group-title-name">
-                                                                <span class="lang" key="">Thời gian (nhập số giây)</span>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-sm-10">
-                                                            <input type="text" class="form-control" id="txtThoiGian_Temp" />
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="row">
-                                                        <div class="col-sm-2">
-                                                            <div class="group-title-name">
-                                                                <span class="lang" accesskey="">Trạng thái</span>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-sm-10">
-                                                            <select id="drpTrangThaiCauHoi_Temp" class="select-opt">
-                                                                <option value="">---Chọn trạng thái---</option>
-                                                                <option value="1">Đang dùng</option>
-                                                                <option value="0">Không dùng</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-sm-2">
-                                                            <div class="group-title-name">
-                                                                <span class="lang" accesskey="">Tính điểm theo số ý</span>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-sm-10">
-                                                            <input type="checkbox" id="chkCachTinhDiemTheoSoY_Temp">
-                                                        </div>
-                                                    </div>
-                                                    <div class="box-footer">
-                                                        <div class="pull-right">
-
-                                                            <a class="submit btn btn-primary" id="btnSave_CauHoi_Temp"><i class="fa fa-save"></i><span class="lang" key=""> Lưu câu hỏi</span></a>
-                                                            <a class="btn btn-default btnClose_CauHoiTemp" href="#" title="Close"><i class="fa fa-times"><span class="lang" key="">Đóng</span></i></a>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="box-body" id="zoneDapAn_Temp">
-                                                        <div class="row bg-blue">
-                                                            <p class="group-title-name">
-                                                                <span>THÔNG TIN ĐÁP ÁN</span>
-                                                            </p>
-                                                        </div>
-                                                        <div>
-                                                            <table id="tblDapAn_Temp" class="table table-hover table-bordered">
+                                                    <div class="ums-panel__body">
+                                                        <div class="ums-tablewrap skin-mb-3">
+                                                            <table id="tblDapAn_Temp" class="ums-table">
                                                                 <thead>
                                                                     <tr>
                                                                         <th class="td-fixed td-center">Stt</th>
                                                                         <th class="td-center" style="width: 50px;">Thứ tự</th>
                                                                         <th class="td-center" style="width: 50px;">Fix vị trí</th>
-                                                                        <th class="td-center" style="width: 50px;">Đáp án</th><!--2: MULTICHOICE -->
-                                                                        <th class="td-center" style="width: 50px;">Đáp án</th><!--3: BESTANSWER -->
-                                                                        <th class="td-center">Nội dung đáp án </th>
-                                                                        <th class="td-center">Vế 2 </th><!--5: CROSSLINK -->
-                                                                        <th class="td-center">Nội dung điền </th><!--6: FILLTHEBLANK -->
-                                                                        <th class="td-center">Điểm </th>
+                                                                        <th class="td-center" style="width: 50px;">Đáp án</th>
+                                                                        <th class="td-center" style="width: 50px;">Đáp án</th>
+                                                                        <th class="td-center">Nội dung đáp án</th>
+                                                                        <th class="td-center">Vế 2</th>
+                                                                        <th class="td-center">Nội dung điền</th>
+                                                                        <th class="td-center">Điểm</th>
                                                                         <th class="td-fixed td-center">
                                                                             <input type="checkbox" id="chkSelectAll_DapAn_Temp">
                                                                         </th>
@@ -526,275 +436,241 @@
                                                                 </tbody>
                                                             </table>
                                                         </div>
-                                                    </div>
-                                                </div>
-                                                <div class="box-footer">
-                                                    <div class="row pull-right">
-                                                        <a class="submit btn btn-primary" id="btnSave_DapAn_Temp"><i class="fa fa-save"></i><span class="lang" key=""> Cập nhật đáp án</span></a>
-                                                        <a class="submit btn btn-primary" id="btnXoa_DapAn_Temp"><i class="fa fa-trash"></i><span class="lang" key=""> Xóa</span></a>
-                                                        <a class="btn btn-default btnClose_CauHoiTemp" href="#" title="Close"><i class="fa fa-times"><span class="lang" key="">Đóng</span></i></a>
-                                                    </div>
-                                                </div>
-                                                <div class="box-footer">
-                                                    <div class="row zone-box">
-                                                        <div class="col-sm-1">
-                                                            <div class="group-title-name">
-                                                                <input type="text" id="txtOrder_Temp" class="form-control" placeholder="STT" />
+                                                        <div class="skin-toolbar skin-mb-3">
+                                                            <div class="skin-toolbar-group"></div>
+                                                            <div class="skin-toolbar-group">
+                                                                <a class="submit btn ums-btn ums-btn--save" id="btnSave_DapAn_Temp"><i class="fa fa-save"></i><span class="lang" key=""> Cập nhật đáp án</span></a>
+                                                                <a class="submit btn ums-btn ums-btn--delsel" id="btnXoa_DapAn_Temp"><i class="fa fa-trash"></i><span class="lang" key=""> Xóa</span></a>
+                                                                <a class="btn ums-btn ums-btn--ghost btnClose_CauHoiTemp" href="#" title="Close"><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
                                                             </div>
                                                         </div>
-                                                        <div class="col-sm-1">
-                                                            <input type="checkbox" id="chkDapAnDung_Temp" />
+                                                        <!-- Form thêm đáp án -->
+                                                        <div class="skin-filter-panel">
+                                                            <div class="skin-flex-wrap skin-mb-2" style="gap: var(--ums-sp-2);">
+                                                                <div style="width: 80px;">
+                                                                    <input type="text" id="txtOrder_Temp" class="form-control ums-input" placeholder="STT" />
+                                                                </div>
+                                                                <label style="display: inline-flex; align-items: center; gap: 4px;">
+                                                                    <input type="checkbox" id="chkDapAnDung_Temp" /> Đáp án đúng
+                                                                </label>
+                                                            </div>
+                                                            <div class="skin-mb-2">
+                                                                <textarea name="editor_txtContent_Temp" id="editor_txtContent_Temp"></textarea>
+                                                            </div>
+                                                            <div class="skin-mb-2">
+                                                                <input type="text" id="txtContent2_Temp" class="form-control ums-input" placeholder="Nội dung điền" />
+                                                            </div>
+                                                            <div class="skin-flex-end" style="gap: var(--ums-sp-2);">
+                                                                <a class="submit btn ums-btn ums-btn--primary" id="btnThem_DapAn_Temp"><i class="fa fa-plus-circle"></i><span class="lang" key=""> Thêm đáp án</span></a>
+                                                                <a class="btn ums-btn ums-btn--ghost btnClose_CauHoiTemp" href="#" title="Close"><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+                                                            </div>
                                                         </div>
-                                                        <div class="col-sm-10">
-
-                                                            <textarea name="editor_txtContent_Temp" id="editor_txtContent_Temp"></textarea>
-                                                            <input type="text" id="txtContent2_Temp" class="form-control" placeholder="Nội dung điền" />
-                                                        </div>
-                                                    </div>
-                                                    <div class="row pull-right">
-                                                        <a class="submit btn btn-primary" id="btnThem_DapAn_Temp"><i class="fa fa-save"></i><span class="lang" key=""> Thêm đáp án</span></a>
-
-                                                        <a class="btn btn-default btnClose_CauHoiTemp" href="#" title="Close"><i class="fa fa-times"><span class="lang" key="">Đóng</span></i></a>
                                                     </div>
                                                 </div>
-                                                <div class="box-body" id="zoneDapAn_Ve2_Temp">
-                                                    <div class="row bg-blue">
-                                                        <p class="group-title-name">
-                                                            <span>THÔNG TIN VẾ 2</span>
-                                                        </p>
+
+                                                <!-- Phần Thông tin vế 2 -->
+                                                <div class="ums-panel" id="zoneDapAn_Ve2_Temp">
+                                                    <div class="ums-panel__head">
+                                                        <h4 class="ums-panel__title"><i class="fa fa-columns"></i> Thông tin vế 2</h4>
                                                     </div>
-                                                    <div>
-                                                        <table id="tblDapAn_Ve2_Temp" class="table table-hover table-bordered">
-                                                            <thead>
-                                                                <tr>
-                                                                    <th class="td-center" style="width: 50px;">Stt</th>
-                                                                    <th class="td-center">Nội dung vế 2 </th>
-                                                                    <th class="td-fixed td-center">
-                                                                        <input type="checkbox" id="chkSelectAll_DapAn_Ve2_Temp">
-                                                                    </th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                <!-- load from js -->
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                    <div class="row pull-right">
-                                                        <a class="submit btn btn-primary" id="btnSave_DapAn_Ve2_Temp"><i class="fa fa-save"></i><span class="lang" key=""> Lưu vế 2</span></a>
-                                                        <a class="submit btn btn-primary" id="btnXoa_DapAn_Ve2_Temp"><i class="fa fa-trash"></i><span class="lang" key=""> Xóa</span></a>
-                                                    </div>
-                                                    <div class="box-footer">
-                                                        <div class="row zone-box">
-                                                            <div class="col-sm-2">
-                                                                <div class="group-title-name">
-                                                                    <input type="text" id="txtOrder_Ve2_Temp" class="form-control" placeholder="STT" />
+                                                    <div class="ums-panel__body">
+                                                        <div class="ums-tablewrap skin-mb-3">
+                                                            <table id="tblDapAn_Ve2_Temp" class="ums-table">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th class="td-center" style="width: 50px;">Stt</th>
+                                                                        <th class="td-center">Nội dung vế 2</th>
+                                                                        <th class="td-fixed td-center">
+                                                                            <input type="checkbox" id="chkSelectAll_DapAn_Ve2_Temp">
+                                                                        </th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <!-- load from js -->
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                        <div class="skin-toolbar skin-mb-3">
+                                                            <div class="skin-toolbar-group"></div>
+                                                            <div class="skin-toolbar-group">
+                                                                <a class="submit btn ums-btn ums-btn--save" id="btnSave_DapAn_Ve2_Temp"><i class="fa fa-save"></i><span class="lang" key=""> Lưu vế 2</span></a>
+                                                                <a class="submit btn ums-btn ums-btn--delsel" id="btnXoa_DapAn_Ve2_Temp"><i class="fa fa-trash"></i><span class="lang" key=""> Xóa</span></a>
+                                                            </div>
+                                                        </div>
+                                                        <!-- Form thêm vế 2 -->
+                                                        <div class="skin-filter-panel">
+                                                            <div class="skin-flex-wrap skin-mb-2" style="gap: var(--ums-sp-2);">
+                                                                <div style="width: 80px;">
+                                                                    <input type="text" id="txtOrder_Ve2_Temp" class="form-control ums-input" placeholder="STT" />
+                                                                </div>
+                                                                <div style="flex: 1 1 200px;">
+                                                                    <input type="text" id="txtContent_Ve2_Temp" class="form-control ums-input" placeholder="Nội dung vế 2" />
                                                                 </div>
                                                             </div>
-                                                            <div class="col-sm-10">
-                                                                <input type="text" id="txtContent_Ve2_Temp" class="form-control" placeholder="Nội dung vế 2" />
-                                                            </div>
-
-                                                        </div>
-                                                        <div class="row pull-right">
-                                                            <a class="submit btn btn-primary" id="btnThem_DapAn_Ve2_Temp"><i class="fa fa-save"></i><span class="lang" key=""> Thêm vế 2</span></a>
-
-                                                            <a class="btn btn-default btnClose_CauHoiTemp" href="#" title="Close"><i class="fa fa-times"><span class="lang" key="">Đóng</span></i></a>
-                                                        </div>
-
-
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                        </div>
-
-                                        <div class="box box-solid form-container zone-bus-GroupQuestionDetail" id="zoneImport" style="display: none">
-                                            <div class="box box-solid">
-                                                <div class="box-header with-border">
-                                                    <div class="pull-left">
-                                                        <h3>Import câu hỏi tạm</h3>
-
-                                                    </div>
-                                                    <div class="pull-right">
-                                                        <a class="btn btn-default btnCloseImport" href="#" title="Close"><i class="fa fa-times"></i></a>
-
-                                                    </div>
-                                                </div>
-                                                <div class="box-body">
-                                                    <div class="nav-tabs-custom">
-                                                        <ul class="nav nav-tabs">
-                                                            <li class="active">
-                                                                <a href="#tab_1" data-toggle="tab" aria-expanded="true">
-                                                                    <span class="lang" key="">
-                                                                        1) Kết quả import thành công
-                                                                        <span class="pull-right badge bg-light-blue">
-                                                                            <span id="tblImport_ThanhCong_Tong"></span>
-                                                                        </span>
-                                                                    </span>
-                                                                </a>
-                                                            </li>
-                                                            <li class="">
-                                                                <a href="#tab_2" data-toggle="tab" aria-expanded="true">
-                                                                    <span class="lang" key="">
-                                                                        2) Kết quả import lỗi
-                                                                        <span class="pull-right badge bg-light-blue">
-                                                                            <span id="tblImport_ThatBai_Tong"></span>
-                                                                        </span>
-                                                                    </span>
-                                                                </a>
-                                                            </li>
-                                                        </ul>
-                                                        <div class="tab-content" style="padding-top: 2px">
-                                                            <!--  Kết quả Import thành công-->
-                                                            <div class="tab-pane active" id="tab_1">
-                                                                <div class="row row-align">
-                                                                    <table id="tblImport_ThanhCong" class="table table-hover table-bordered">
-
-                                                                        <tbody>
-                                                                            <!-- load from js -->
-                                                                        </tbody>
-                                                                    </table>
-                                                                </div>
-                                                            </div>
-                                                            <!--  Kết quả Import không thành công-->
-                                                            <div class="tab-pane" id="tab_2">
-                                                                <div class="row row-align">
-                                                                    <table id="tblImport_ThatBai" class="table table-hover table-bordered">
-                                                                        <tbody>
-                                                                            <!-- load from js -->
-                                                                        </tbody>
-                                                                    </table>
-                                                                </div>
+                                                            <div class="skin-flex-end" style="gap: var(--ums-sp-2);">
+                                                                <a class="submit btn ums-btn ums-btn--primary" id="btnThem_DapAn_Ve2_Temp"><i class="fa fa-plus-circle"></i><span class="lang" key=""> Thêm vế 2</span></a>
+                                                                <a class="btn ums-btn ums-btn--ghost btnClose_CauHoiTemp" href="#" title="Close"><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="box-footer">
-                                                    <div class="pull-right">
-                                                        <a class="btn btn-default btnCloseImport" href="#" title="Close"><i class="fa fa-times"></i> Close</a>
-
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
+                                    </div>
 
-                                        <div class="modal fade zone-bus-GroupQuestionDetail" id="myModal_Upload" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                                            <div class="modal-dialog">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                                                        <h4 class="modal-title" id="myModalLabel"><span class="lang" key=""> <i class="fa fa-file-excel-o"></i> Import dữ liệu</span></h4>
+                                    <!-- 7. Import câu hỏi tạm -->
+                                    <div class="zone-bus-GroupQuestionDetail" id="zoneImport" style="display: none">
+                                        <div class="ums-panel">
+                                            <div class="ums-panel__head">
+                                                <h3 class="ums-panel__title">
+                                                    <i class="fa fa-cloud-upload"></i> Import câu hỏi tạm
+                                                </h3>
+                                                <div class="ums-panel__tools">
+                                                    <a class="btn ums-btn ums-btn--ghost btnCloseImport" href="#" title="Đóng"><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+                                                </div>
+                                            </div>
+                                            <div class="ums-panel__body">
+                                                <ul class="nav nav-tabs ums-tabs">
+                                                    <li class="active ums-tabs__item">
+                                                        <a href="#tab_1" data-toggle="tab" aria-expanded="true">
+                                                            <span class="lang" key="">
+                                                                1) Kết quả import thành công
+                                                                <span class="ums-badge ums-badge--info">
+                                                                    <span id="tblImport_ThanhCong_Tong"></span>
+                                                                </span>
+                                                            </span>
+                                                        </a>
+                                                    </li>
+                                                    <li class="ums-tabs__item">
+                                                        <a href="#tab_2" data-toggle="tab" aria-expanded="true">
+                                                            <span class="lang" key="">
+                                                                2) Kết quả import lỗi
+                                                                <span class="ums-badge ums-badge--info">
+                                                                    <span id="tblImport_ThatBai_Tong"></span>
+                                                                </span>
+                                                            </span>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                                <div class="tab-content skin-pad-t-2">
+                                                    <!-- Kết quả Import thành công -->
+                                                    <div class="tab-pane active" id="tab_1">
+                                                        <div class="ums-tablewrap">
+                                                            <table id="tblImport_ThanhCong" class="ums-table">
+                                                                <tbody>
+                                                                    <!-- load from js -->
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
                                                     </div>
-                                                    <div class="modal-body">
-                                                        <div class="row">
-                                                            <div class="col-sm-12">
-                                                                <div class="col-sm-4">
-                                                                    - Chọn file Import:
-                                                                </div>
-                                                                <div class="col-sm-6">
-                                                                    <div id="txtFile_DMIP">
+                                                    <!-- Kết quả Import không thành công -->
+                                                    <div class="tab-pane" id="tab_2">
+                                                        <div class="ums-tablewrap">
+                                                            <table id="tblImport_ThatBai" class="ums-table">
+                                                                <tbody>
+                                                                    <!-- load from js -->
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="ums-panel__foot ums-row--end">
+                                                <a class="btn ums-btn ums-btn--ghost btnCloseImport" href="#" title="Close"><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                                                                    </div>
-                                                                </div>
-                                                            </div>
+                                    <!-- 8. Modal upload file Excel / doc / LaTeX -->
+                                    <div class="modal fade zone-bus-GroupQuestionDetail" id="myModal_Upload" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                                    <h4 class="modal-title" id="myModalLabel"><span class="lang" key=""> <i class="fa fa-file-excel-o"></i> Import dữ liệu</span></h4>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="ums-field ums-field--inline">
+                                                        <label class="ums-field__label">- Chọn file Import:</label>
+                                                        <div class="ums-field__control">
+                                                            <div id="txtFile_DMIP"></div>
                                                         </div>
                                                     </div>
                                                     <div id="notify_import"></div>
-
-                                                    <div class="modal-footer">
-
-                                                        <a class="submit btn btn-primary" id="btnImport_DMIP_Doc"><i class="fa fa-cloud-upload"></i><span class="lang" key=""> Import dữ liệu file doc</span></a>
-                                                        <a class="submit btn btn-primary" id="btnImport_DMIP_LaTeX"><i class="fa fa-cloud-upload"></i><span class="lang" key=""> Import dữ liệu file LaTeX</span></a>
-                                                        <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times-circle-o"></i> <span class="lang" key="">Đóng</span></button>
-                                                    </div>
-
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <a class="submit btn ums-btn ums-btn--primary" id="btnImport_DMIP_Doc"><i class="fa fa-cloud-upload"></i> <span class="lang" key="">Import dữ liệu file doc</span></a>
+                                                    <a class="submit btn ums-btn ums-btn--primary" id="btnImport_DMIP_LaTeX"><i class="fa fa-cloud-upload"></i> <span class="lang" key="">Import dữ liệu file LaTeX</span></a>
+                                                    <button type="button" class="btn ums-btn ums-btn--ghost" data-dismiss="modal"><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></button>
                                                 </div>
                                             </div>
-
                                         </div>
-
                                     </div>
+
                                 </div>
                             </div>
-                             
-
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="box box-solid zone-bus" id="zonebatdau">
-            <div class="box box-solid">
-                <div class="box-header with-border">
-                    <h3 class="box-title"><i class="fa fa-window-restore"></i> Tìm kiếm</h3>
-                </div>
-                <div class="box-body">
-                    <!-- Bộ tìm kiếm -->
-                    <div class="col-sm-12 item-search">
-                        <div class="row">
-                            <div class="col-sm-3 item-search">
-                                <select id="drpDonVi" class="select-opt">
-                                    <option value="">Chọn đơn vị</option>
-                                    <!-- Load from js -->
-                                </select>
 
-                            </div>
-                            <div class="col-sm-3 item-search">
-                                <select id="drpStatus" class="select-opt">
-                                    <option value="">Tình trạng (Ẩn/Hiện)</option>
-                                    <option value="0">Ẩn</option>
-                                    <option value="1">Hiện</option>
-                                </select>
-                            </div>
-
-                        </div>
-                        <div class="row">
-                            <div class="box-tools pull-right">
-                                <a class="btn btn-primary btnSearch_GroupQuestion"><i class="fa fa-search"></i> <span class="lang" key="">Tìm kiếm</span></a>
-                                
-                                
-                            </div>
-                        </div>
-
+        <!-- 3. Màn hình danh sách ban đầu -->
+        <div class="zone-bus" id="zonebatdau">
+            <!-- Bộ tìm kiếm -->
+            <div class="skin-filter-panel skin-mb-3">
+                <div class="ums-filter">
+                    <div class="ums-field">
+                        <select id="drpDonVi" class="select-opt">
+                            <option value="">Chọn đơn vị</option>
+                            <!-- Load from js -->
+                        </select>
+                    </div>
+                    <div class="ums-field">
+                        <select id="drpStatus" class="select-opt">
+                            <option value="">Tình trạng (Ẩn/Hiện)</option>
+                            <option value="0">Ẩn</option>
+                            <option value="1">Hiện</option>
+                        </select>
+                    </div>
+                    <div class="ums-field ums-field--fit">
+                        <a class="btn ums-btn ums-btn--primary btnSearch_GroupQuestion"><i class="fa fa-search"></i> <span class="lang" key="">Tìm kiếm</span></a>
                     </div>
                 </div>
-                <div class="box box-solid">
-                    <div class="box-header with-border">
-                        <h3 class="box-title">
-                            <i class="fa fa-hdd-o"></i> Danh sách
-                            <span class="pull-right badge bg-light-blue">
-                                <span id="lblGroupQuestion_Tong"></span>
-                            </span>
-                        </h3>
-                    </div>
-                    <div class="box-body">
+            </div>
 
-                        <div class="col-sm-12 scroll-table-x">
-                            <table id="tblGroupQuestion" class="table table-hover table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th class="td-fixed td-center">Stt</th>
-                                        <th class="td-center" style="width:20%">Mã</th>
-                                        <th class="td-center">Tên</th>
-                                        <th class="td-center" style="width:10%"> Trạng thái </th>                                        
-                                        <th class="td-fixed td-center" style="width:5%">Chi tiết</th>
-                                        
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <!-- load from js -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+            <!-- Bảng danh sách -->
+            <div class="ums-panel">
+                <div class="ums-panel__head">
+                    <h3 class="ums-panel__title">
+                        <i class="fa fa-hdd-o"></i> Danh sách
+                        <span class="ums-badge ums-badge--info">
+                            <span id="lblGroupQuestion_Tong"></span>
+                        </span>
+                    </h3>
+                </div>
+                <div class="ums-tablewrap">
+                    <table id="tblGroupQuestion" class="ums-table">
+                        <thead>
+                            <tr>
+                                <th class="td-fixed td-center">Stt</th>
+                                <th class="td-center" style="width:20%">Mã</th>
+                                <th class="td-center">Tên</th>
+                                <th class="td-center" style="width:10%">Trạng thái</th>
+                                <th class="td-fixed td-center" style="width:5%">Chi tiết</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- load from js -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
         <div class="clear"></div>
     </div>
-
 </section>
+
 <script src="modules/nhapnganhangcauhoi/script/nhapnganhangcauhoi.js?v=1.0.0.1"></script>
 
 <!--<script src="Scripts/ckeditor/ckeditor.js"></script>
@@ -848,4 +724,3 @@
         main_doc.nhapnganhangcauhoi.init();
     });
 </script>
-

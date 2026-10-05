@@ -356,6 +356,27 @@
                 ['danhmuc', 'Danh mục', 'fa fa-list', [
                     ['danhmucdulieu', 'Danh mục dữ liệu']]]
             ], null, { prefix: 'HB', app: 'ApisHocBong' }),
+            /* Xét tốt nghiệp (R16) — ApisTotNghiep, ID TN-<module>-<tệp>. Tên đặt theo tên tệp (menu host bản xuất 26/9 không có tên màn). */
+            R16: buildMenu([
+                ['thietlap', 'Thiết lập điều kiện', 'fa fa-sliders', [
+                    ['thamsochung', 'Tham số chung'],
+                    ['dieukienxet', 'Điều kiện xét'],
+                    ['xeploaihabac', 'Xếp loại hạ bậc']]],
+                ['kehoach', 'Kế hoạch xét', 'fa fa-calendar', [
+                    ['kehoach', 'Kế hoạch xét tốt nghiệp'],
+                    ['dieukiennhom', 'Điều kiện nhóm'],
+                    ['thuchienxet', 'Thực hiện xét'],
+                    ['xacnhan', 'Xác nhận kết quả'],
+                    ['tonghop', 'Tổng hợp'],
+                    ['quanlysovaso', 'Quản lý số vào sổ']]],
+                ['vanbang', 'Văn bằng - Chứng chỉ', 'fa fa-graduation-cap', [
+                    ['quanlythongtin', 'Quản lý thông tin'],
+                    ['thuchienin', 'Thực hiện in']]],
+                ['hoctap', 'Học tập', 'fa fa-book', [
+                    ['xemdiem_sv', 'Xem điểm sinh viên']]],
+                ['danhmuc', 'Danh mục', 'fa fa-list', [
+                    ['danhmucdulieu', 'Danh mục dữ liệu']]]
+            ], null, { prefix: 'TN', app: 'ApisTotNghiep' }),
             /* Xử lý học vụ (R17) — ApisXuLyHocVu, ID XLHV-<module>-<tệp>. */
             R17: buildMenu([
                 ['dieukienxuly', 'Điều kiện xử lý', 'fa fa-sliders', [

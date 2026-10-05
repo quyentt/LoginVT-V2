@@ -22,6 +22,8 @@
                                pageIndex 1 · pageSize 100000), tên = NGUOICUOI_TENDAYDU bỏ trùng (getList_PhanCong
                                của thuchienxet). Bản kehoach ghi vào #DSPhanCong KHÔNG kèm ID → cột luôn là một
                                nút trống; ở đây hiện tên như thuchienxet (ý định chung của hai màn).
+                               (+) H.napPhanCong(host, dòng, { action, khoa }) — Tốt nghiệp: action
+                               'TN_KeHoach_NhanSu/LayDanhSach', khoa 'strTN_KeHoach_Id' (mặc định như Học bổng).
    H.cotSV({ hocTap, hoTen })  cột người học chung: Mã số · Họ tên · Ngày sinh · Tình trạng · Lớp học · Chương trình
                                học · Khóa học · Khoa quản lý · Hệ đào tạo (chép genTable_QuanSoTheoLop).
                                hocTap: Mã số bấm được → hộp kết quả học tập (btnView_HocTap của thuchienxet).
@@ -31,6 +33,9 @@
              [HB_KETQUA_ID, ID, GIATRI]; ô = GIATRI của (ID dòng, ID cột)),
              columns(), chon: 'khoá thuộc tính ô đánh dấu', ben: true (khung phụ bên phải, lưới 2:1),
              buttons: [{ text, kind, icon, onClick(api) }] (hộp KHÔNG tự đóng), onClick(nút, dòng, api) }
+       (+) o.khoaKQ   tên cột nối rsDuLieu với dòng (mặc định 'HB_KETQUA_ID'; Tốt nghiệp 'TN_KETQUA_ID')
+       (+) o.phanTrang có thể là hàm (đọc lại mỗi lần vẽ — màn đổi giữa danh sách phân trang / không phân trang)
+       (+) o.onTim(api) gọi TRƯỚC khi nạp lại do nút Tìm kiếm / Enter của hộp
        → api = { dlg, rows(), chon(), tai(trang), ben }
    ========================================================================= */
 (function () {
@@ -77,10 +82,13 @@
             return '<span class="ums-u-muted" data-pc="' + esc(r.ID) + '">…</span>';
         } };
     };
-    H.napPhanCong = function (host, rows) {
+    H.napPhanCong = function (host, rows, o) {
+        o = o || {};
         (rows || []).forEach(function (r) {
-            ums.api.call({ action: 'HB_KeHoach_NhanSu/LayDanhSach', method: 'GET', silent: true,
-                strTuKhoa: '', strNguoiDung_Id: '', strHB_KeHoach_Id: r.ID, strNguoiTao_Id: '', pageIndex: 1, pageSize: 100000 })
+            var c = { action: o.action || 'HB_KeHoach_NhanSu/LayDanhSach', method: 'GET', silent: true,
+                strTuKhoa: '', strNguoiDung_Id: '', strNguoiTao_Id: '', pageIndex: 1, pageSize: 100000 };
+            c[o.khoa || 'strHB_KeHoach_Id'] = r.ID;
+            ums.api.call(c)
                 .then(function (kq) {
                     var ten = [];
                     K.ds(kq).forEach(function (x) { var t = e(x.NGUOICUOI_TENDAYDU); if (t && ten.indexOf(t) < 0) ten.push(t); });
@@ -118,6 +126,8 @@
     /* ---------- Hộp danh sách người học ------------------------------------ */
     H.hopDS = function (o) {
         var page = 1, size = 10, total = 0, rows = [], cotDong = [], giaTri = {};
+        var khoaKQ = o.khoaKQ || 'HB_KETQUA_ID';
+        function pt() { return typeof o.phanTrang === 'function' ? o.phanTrang() : o.phanTrang; }
         var bang = '<div data-z="t"></div>';
         var dlg = ui.dialog({
             title: o.title, icon: o.icon || 'fa-user-graduate', size: 'xl',
@@ -151,7 +161,7 @@
             if (o.chon) cols.push(K.cotChon(o.chon));
             ui.table({
                 el: host, rows: rows, empty: o.empty || 'Không có dữ liệu',
-                page: o.phanTrang ? {
+                page: pt() ? {
                     index: page, size: size, total: total,
                     onChange: function (p) { if (p >= 1 && p <= Math.ceil(total / size)) tai(p); },
                     onSize: function (v) { size = v === 'all' ? ui.PAGE_ALL : Number(v); tai(1); }
@@ -166,7 +176,7 @@
             var tuKhoa = o.tim === 'may' && q ? (q.value || '').trim() : '';
             return ums.api.call(o.call(page, size, tuKhoa)).then(function (r) {
                 rows = K.ds(r);
-                total = o.phanTrang ? (Number(r.pager) || rows.length) : rows.length;
+                total = pt() ? (Number(r.pager) || rows.length) : rows.length;
                 ve();
             }).catch(function (err) { K.loi(host, err, o.title); });
         }
@@ -175,18 +185,20 @@
             var b = ev.target.closest('[data-a]');
             if (!b || !B.contains(b) || b.disabled) return;
             var a = b.getAttribute('data-a');
-            if (a === 'tim') return tai(1);
+            if (a === 'tim') { if (o.onTim) o.onTim(api); return tai(1); }
             if (a === 'hoctap') return K.hocTap(b.getAttribute('data-nh'), b.getAttribute('data-ten'));
             if (o.onClick) o.onClick(b, K.tim(rows, b.getAttribute('data-id')), api);
         });
-        if (q && o.tim === 'may') q.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') { ev.preventDefault(); tai(1); } });
+        if (q && o.tim === 'may') q.addEventListener('keydown', function (ev) {
+            if (ev.key === 'Enter') { ev.preventDefault(); if (o.onTim) o.onTim(api); tai(1); }
+        });
 
         if (o.chiTiet) {
             K.dang(host);
             ums.api.call(o.chiTiet).then(function (r) {
                 var d = r.data || {};
                 cotDong = Array.isArray(d.rsCot) ? d.rsCot : [];
-                (Array.isArray(d.rsDuLieu) ? d.rsDuLieu : []).forEach(function (x) { giaTri[x.HB_KETQUA_ID + '_' + x.ID] = x.GIATRI; });
+                (Array.isArray(d.rsDuLieu) ? d.rsDuLieu : []).forEach(function (x) { giaTri[x[khoaKQ] + '_' + x.ID] = x.GIATRI; });
                 tai(1);
             }).catch(function (err) { K.loi(host, err, o.title); });
         } else tai(1);
