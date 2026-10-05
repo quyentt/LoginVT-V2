@@ -5,6 +5,9 @@ trước, làm xong mục nào thì xoá mục đó (ghi điều đã chốt và
 
 Xem lại đúng thay đổi của một tệp: `git diff -w <từ>..<đến> -- <đường dẫn tệp gốc>`.
 
+**Từ 6/10: lúc kéo CHỈ ghi tên tệp + trạng thái "chưa xem", KHÔNG mở diff** (người dùng: "diff như vậy quá tốn"). Diff mở khi tới lượt làm đúng màn đó
+(kiểm host / chuyển phân hệ ấy, hoặc đang sửa màn ấy) rồi đổi thành "đã chuyển". Phân hệ chưa chuyển: không bao giờ mở.
+
 ---
 
 ## Lần kéo 7 (5/10 tối) — ĐÃ CHUYỂN HẾT, mốc gốc đã chuyển nay là `1680e53d` (gốc bị force-push từ `0551deba`)

@@ -296,7 +296,8 @@ Kiểm vỏ CŨ trên máy: `http://localhost:8787/index-old.html` (`_harness/RE
   (khoá = đường dẫn màn TRÊN MENU HOST); việc phiên sau `VIEC-PHIEN-SAU.md`; nhật ký từng ngày `LICH-SU.md`; lỗi backend → mục `ben` trong `_v2/assets/js/can-quyet.js`.
 - **Khi người dùng bảo "kiểm host" / "chuyển": `git fetch origin` + THÔNG BÁO TRƯỚC** rồi mới chạy: (1) lỗi mã treo (`loi-code.js ds`); (2) gói bổ sung đã up chưa
   (`_v2_bo_xung_deploy` còn tệp khác `_KHONG-CON-GI-DE-UP.txt` = chưa up); (3) phân hệ đã / dở / chưa kiểm (`da-kiem.json`); (4) bản ghi thử còn sót;
-  (5) lượt này làm gì, thứ tự; (6) trang mới kéo về từ kho gốc thuộc phân hệ đã chuyển — LÀM TRƯỚC. Phân hệ MỚI chỉ kiểm khi người dùng gọi tên.
+  (5) lượt này làm gì, thứ tự; (6) tệp gốc mới kéo về còn "chưa xem" trong `CHO-CHUYEN-SAU-PULL.md` — CHỈ mở diff của tệp thuộc phân hệ đang kiểm lượt này,
+  chuyển sang `_v2` trước khi thử màn đó (mục 11, luật kéo gốc); tệp phân hệ khác chỉ nêu số lượng. Phân hệ MỚI chỉ kiểm khi người dùng gọi tên.
 - **Cách làm: CUỐN CHIẾU từng phân hệ** — đọc sâu → thử ghi (thêm thì xoá, đối chứng `LayChiTiet`) → sửa mã / ghi backend → ghi sổ → DỪNG báo cáo.
   Ưu tiên thay đổi (kéo gốc / sửa mã) ở phân hệ ĐÃ hoàn thành trong sổ trước. Sau mỗi lượt thử ghi quét dấu `ZKT` (`chay-vaitro.js` in "!! CÒN DẤU THỬ").
 - **(A) Frontend khắc phục được thì PHẢI sửa `_v2` + ghi sổ lỗi mã, KHÔNG báo backend.** (Sai định dạng, ô trống thành `//`, thiếu kiểm bắt buộc / số, câu lỗi thô,
@@ -409,9 +410,12 @@ báo "đã up" → chạy `python _harness\dong-goi.py --da-up`** (lấy gói hi
 ### Git & kéo kho gốc
 
 `_v2/`, `_harness/`, `CLAUDE.md` nằm trong git `quyentt/LoginVT-V2`; máy khác clone là đủ (trừ `tk.md`; `_v2_deploy/` dựng lại bằng `python _harness/dong-goi.py`).
-**Luật sau mỗi lần kéo gốc:** tệp thuộc màn ĐÃ CHUYỂN thì tự chuyển thay đổi sang `_v2` (thuần CSS vỏ cũ thì bỏ; mã mới lỗi rõ → làm theo ý định + ghi `can-quyet.js`);
-ghi `_v2/CHO-CHUYEN-SAU-PULL.md` (mốc gốc + bảng tệp) và `CAN-QUYET-DA-CHOT.md`. Lịch sử 7 lần kéo (mốc hiện tại `1680e53d`, gốc có force-push): `_v2/NHAT-KY-CHUYEN.md`.
-**Khi người dùng bảo "chuyển" / "kiểm": `git fetch origin`, so với mốc, THÔNG BÁO trang mới kéo về thuộc phân hệ đã chuyển và LÀM TRƯỚC** (phân hệ chưa chuyển chỉ nhắc một dòng).
+**⚠ Luật kéo gốc — KHÔNG đọc diff lúc kéo (người dùng 6/10: "diff như vậy quá tốn").** Khi người dùng bảo "chuyển" / "kiểm": `git fetch origin` +
+`git diff --name-status <mốc> origin/main` (chỉ TÊN tệp, vài trăm token) → ghi đè tệp gốc bằng `git checkout origin/main -- <tệp>` → ghi bảng tệp vào
+`_v2/CHO-CHUYEN-SAU-PULL.md` (mốc mới, mỗi tệp một dòng: phân hệ, màn, trạng thái **"chưa xem"**) → THÔNG BÁO số tệp theo phân hệ đã / chưa chuyển → DỪNG.
+**Diff của một tệp chỉ mở khi tới lượt làm đúng màn đó**: người dùng gọi kiểm host / chuyển phân hệ ấy, hoặc đang sửa chính màn ấy — lúc đó đọc `git diff -w <mốc cũ> <mốc mới> -- <tệp>`,
+chuyển sang `_v2` (thuần CSS vỏ cũ thì bỏ; mã mới lỗi rõ → làm theo ý định + ghi `can-quyet.js`), đổi dòng sổ thành "đã chuyển". Màn thuộc phân hệ chưa chuyển: không bao giờ mở diff.
+Mỗi phiên fetch tối đa một lần, ở đầu. Lịch sử 7 lần kéo (mốc hiện tại `1680e53d`, gốc có force-push): `_v2/NHAT-KY-CHUYEN.md`. Đã tắt cảnh báo CRLF (`core.safecrlf false`).
 
 ### Chép tối thiểu
 
