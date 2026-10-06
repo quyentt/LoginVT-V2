@@ -975,7 +975,8 @@ LichGiangNhieuPhong.prototype = {
         }
         var arrTiet = ($("#dropLoc_TietTrong").val() || '1-3').split('-');
         var iTu = parseInt(arrTiet[0], 10), iDen = parseInt(arrTiet[1], 10);
-        var strLoai = (me.strSelectedRoomType && me.strSelectedRoomType !== 'all') ? me.strSelectedRoomType.toUpperCase() : '';
+        // Loại phòng KHÔNG gửi BE (gửi 'LT'/'TH' nghi bị proc trả 0 phòng) — đã lọc ở FE trong locPhongHoc, 1 kết quả/ngày dùng chung mọi loại
+        var strLoai = '';
         var o = me.objLocTrong = { NGAYHOC: arrNgay[0], arrNgay: arrNgay, strThu: strThu !== '' ? $("#dropLoc_ThuTrong option:selected").text() : '', TU: iTu, DEN: iDen, objTrong: {}, objSoNgay: {}, iTrongDu: 0, iTrongMotPhan: 0 };
         // Vẽ dạng bảng phòng × ngày khi lọc nhiều ngày, hoặc 1 ngày nằm ngoài tuần đang xem (lưới tuần không có ngày đó)
         var dNgayDau = me.toDate(arrNgay[0]);
@@ -2045,7 +2046,9 @@ LichGiangNhieuPhong.prototype = {
             'dPhutBatDau': bd.phut,
             'dGioKetThuc': kt.gio,
             'dPhutKetThuc': kt.phut,
-            'strKieuPhong': me.strLoaiPhongDoi || '',
+            // Không lọc loại phòng ở BE: gửi 'LT'/'TH' thì modal ra 0 phòng (nghi proc không so được mã chữ này với cột loại phòng).
+            // Loại phòng đã lọc ở FE qua dtPhongHopLeDoi (cùng loại phòng hiện tại).
+            'strKieuPhong': '',
             'dSucChuaTu': null,     // NUMBER rỗng phải gửi null
             'dSucChuaDen': null,
             'dIdToaNha': null,      // không lọc tòa (ID tòa trên trang là chuỗi, cột BE là NUMBER)
@@ -2065,6 +2068,11 @@ LichGiangNhieuPhong.prototype = {
                 var objTrong = {};
                 dtTrong.forEach(function (r) { objTrong[String(r.ID || r.IDPHONGHOC || r.TKB_PHONGHOC_ID)] = 1; });
                 var dtHienThi = dtHopLe.filter(function (p) { return objTrong[String(p.ID)]; });
+                if (dtTrong.length > 0 && dtHienThi.length === 0) {
+                    // BE có phòng trống mà không phòng nào khớp danh mục được đổi → in ra để so mã phòng 2 bên
+                    console.warn("Đổi lịch: " + dtTrong.length + " phòng trống nhưng 0 phòng khớp danh mục " + dtHopLe.length + " phòng cùng loại '" + me.strLoaiPhongDoi + "'",
+                        { mauPhongTrong: dtTrong.slice(0, 3), mauDanhMuc: dtHopLe.slice(0, 3) });
+                }
                 var strChon = $("#dropDL_PhongHoc").val();
                 var bCon = me.genCombo_PhongDoiLich(dtHienThi, strChon);
                 $("#lblDL_GoiYPhong").text('— ' + dtHienThi.length + ' phòng ' + (strLoai || '') + ' trống ' + strKhung

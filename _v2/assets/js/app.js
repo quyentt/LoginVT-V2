@@ -1617,6 +1617,12 @@
     function route() {
         if (ums.chrome) ums.chrome.reveal();
         global.scrollTo(0, 0);
+        /* 6/10 (kiểm host Cổng SV): đổi màn khi hộp thoại còn mở (nút Back của trình duyệt, gõ địa chỉ) thì hộp
+           của màn CŨ vẫn nằm đè lên màn MỚI (bắt được khi lái tay: hộp "Kết quả đã đăng ký" của Đồng phục còn mở
+           trên màn Công nhận điểm). Đóng hết hộp thoại trước khi vào màn mới. */
+        Array.prototype.forEach.call(document.querySelectorAll('dialog.ums-dialog[open]'), function (d) {
+            try { d.close(); } catch (e) { /* hộp đã tháo khỏi DOM */ }
+        });
         var parts = (location.hash || '#/').replace(/^#\/?/, '').split('/').filter(Boolean);
 
         if (parts[0] === 'cai-dat') {

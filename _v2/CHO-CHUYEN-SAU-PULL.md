@@ -10,6 +10,15 @@ Xem lại đúng thay đổi của một tệp: `git diff -w <từ>..<đến> --
 
 ---
 
+## Lần kéo 8 (6/10) — mốc gốc nay là `3c3b2d70` (gốc lại force-push; `origin/main` trên máy từng bị lệnh push ghi đè thành commit của mình, fetch đã sửa)
+
+Lần sau so: `git diff --name-status 3c3b2d70 origin/main`. Bốn tệp gốc đổi (hai màn), đã ghi đè bằng `git checkout origin/main -- <tệp>`, CHƯA mở diff.
+
+| Phân hệ | Màn | Tệp gốc | Trạng thái |
+|---|---|---|---|
+| Cổng cán bộ (đã chuyển, đã kiểm host) | `lichgiang/lichgiangnhieuphonghoc` | html + js | **chưa xem** — mở diff `git diff -w 1680e53d 3c3b2d70 -- ApisCongCanBo/Modules/lichgiang/...` khi tới lượt kiểm lại màn này |
+| Quản lý tuyển sinh (đã chuyển, chưa kiểm host) | `tuyensinh/kehoachtuyensinhnew` | html + js | **chưa xem** — mở diff khi kiểm host Tuyển sinh |
+
 ## Lần kéo 7 (5/10 tối) — ĐÃ CHUYỂN HẾT, mốc gốc đã chuyển nay là `1680e53d` (gốc bị force-push từ `0551deba`)
 
 Lần sau so: `git diff --name-status 1680e53d origin/main`. Ba tệp gốc đổi, đã ghi đè bằng `git checkout origin/main -- <tệp>`.

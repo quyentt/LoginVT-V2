@@ -2973,6 +2973,15 @@ KeHoachTuyenSinhNew.prototype = {
         me._setSelectByIdOrText('#ddlKQ_CoSoDaoTao',
             pick(d, ['DAOTAO_COSODAOTAO_ID', 'COSODAOTAO_ID', 'HOSO_DAOTAO_COSODAOTAO_ID']),
             pick(d, ['DAOTAO_COSODAOTAO_TEN', 'COSODAOTAO_TEN']));
+        /* Lớp dự kiến đầu ra: options chỉ nạp XONG sau khi chọn Nguyện vọng đầu ra
+           (_loadLopDuKien chạy theo cascade), nên _setSelectByIdOrText phải có retry —
+           hàm này tự thử lại tới ~3,7 giây nên đặt ở đây là đủ.
+           Dò rộng tên cột vì response hồ sơ mỗi bản một kiểu, có bản chưa trả cột này. */
+        me._setSelectByIdOrText('#ddlKQ_LopDuKien',
+            me._pickLoose(d, ['DAOTAO_LOPQUANLY_ID_DK', 'DAOTAO_LOPQUANLY_DUKIEN_ID',
+                'LOPQUANLY_DUKIEN_ID', 'DAOTAO_LOPQUANLY_DUKIEN']),
+            me._pickLoose(d, ['DAOTAO_LOPQUANLY_DUKIEN_MA', 'LOPQUANLY_DUKIEN_MA',
+                'DAOTAO_LOPQUANLY_DUKIEN_TEN', 'LOPQUANLY_DUKIEN_TEN']));
 
         // Về tab 1
         $('#kqdkKhaiTabs .aps-sv-tab').first().trigger('click');
@@ -3510,6 +3519,17 @@ KeHoachTuyenSinhNew.prototype = {
             'strIntake_IntakeTypeCode': g('txtKQ_IntakeTypeCode'),
             'strDaoTao_CoSoDaoTao_Id': g('ddlKQ_CoSoDaoTao'),
             'strNguyenVong_DauRa_Id': g('ddlKQ_NguyenVongDauRa'),
+            /* Lớp dự kiến đầu ra — luồng THÊM MỚI (Them_HoSo_TS) vẫn gửi tham số này từ
+               10/09/2026, nhưng luồng SỬA thì BỎ SÓT nên chọn lớp rồi bấm Cập nhật là mất
+               (sếp Khoa báo 05/10/2026). Tên tham số lấy đúng theo chữ ký Them_HoSo_TS.
+               ⚠ GỬI CẢ HAI TÊN. Trong toàn bộ trang này, tham số lớp dự kiến được gọi là
+               `strDaoTao_LopQuanLy_DuKien` ở MỌI nơi khác: bảng cột file Excel import,
+               danh sách 77 param của Them_HoSo_TS bên "Đọc từ API", và cả tham số lọc của
+               LayDS_HoSo_TS. Chỉ 2 chỗ lưu tay dùng `..._Id_DK` — nhiều khả năng sai tên,
+               nên BE nhận "đủ hàm" mà giá trị vẫn rơi mất (05/10/2026).
+               Tên lạ thì BE bỏ qua chứ không lỗi, nên gửi kèm là an toàn. */
+            'strDaoTao_LopQuanLy_Id_DK': g('ddlKQ_LopDuKien'),
+            'strDaoTao_LopQuanLy_DuKien': g('ddlKQ_LopDuKien'),
             'strTS_DoiTacTuyenSinh_Id': g('ddlKQ_NguonKhaiThac'),
             'strTS_DoiTacTuyenSinh_id': g('ddlKQ_NguonKhaiThac'),
             'strTS_DoiTacTuyenSinh_Khac': g('txtKQ_NguonKhaiThac_GhiChu'),
@@ -7343,9 +7363,8 @@ KeHoachTuyenSinhNew.prototype = {
             'dCorePerson_NamS': dNamS,
             'strCorePerson_GioiTinh_Id': g('ddlKQ_GioiTinh'),
             'strMaSo': '',   // MSSV nội bộ — hệ thống tự sinh
-            // Lớp dự kiến: Them_HoSo_TS CÓ param này (xác nhận theo chữ ký C# 10/09/2026).
-            // Trước đây bị dồn vào strExtra_HoSo_Data vì tưởng signature không có → không lưu được.
             'strDaoTao_LopQuanLy_Id_DK': g('ddlKQ_LopDuKien'),
+            'strDaoTao_LopQuanLy_DuKien': g('ddlKQ_LopDuKien'),
 
             // Profile
             'strPersonProfile_DanToc_Id': g('ddlKQ_DanToc'),

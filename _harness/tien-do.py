@@ -113,7 +113,7 @@ bo = sum(1 for p in tinh for m in p['man'] if m['s'] == 'bo')
 hoan = sum(1 for p in tinh for m in p['man'] if m['s'] == 'hoan')
 luc = datetime.datetime.now().strftime('%H:%M %d/%m/%Y')
 
-daKiem = sum(1 for p in tinh for m in p['man'] if m.get('k'))
+daKiem = sum(1 for p in tinh for m in p['man'] if m.get('k') and m['k']['d'] != 'khong-tren-menu')
 DATA = json.dumps({'phanhe': phanhe, 'tong': tong, 'xong': xong, 'bo': bo, 'hoan': hoan, 'luc': luc, 'daKiem': daKiem}, ensure_ascii=False)
 
 TRANG = r'''<!DOCTYPE html>
@@ -200,6 +200,16 @@ summary .mini { width: 70px; flex: none; }
 .kiem-bang td.lc { min-width: 240px; overflow-wrap: anywhere; }
 .kiem-loc { display: flex; flex-wrap: wrap; gap: 12px; padding: 8px 16px; border-bottom: 1px solid var(--line); font-size: 13px; color: var(--ink-2); }
 .ghichu { margin-top: 20px; color: var(--ink-3); font-size: 12.5px; }
+details.ck { border: 0; display: inline-block; }
+details.ck > summary { padding: 0; display: inline-flex; gap: 4px; font-size: 12.5px; color: var(--warn); }
+details.ck > summary::before { content: "▾"; width: auto; }
+details.ck[open] > summary::before { transform: none; content: "▴"; }
+details.ck ul { margin: 6px 0 0; padding: 8px 10px; list-style: none; background: var(--surface-2); border: 1px solid var(--line); border-radius: 8px; font-size: 12px; max-width: 560px; }
+details.ck li { margin: 2px 0; overflow-wrap: anywhere; }
+details.ck li b { font-weight: 600; }
+details.ck li i { color: var(--ink-3); }
+details.ck li.xau b { color: #a12020; }
+.kiem-ck { padding: 0 16px 8px 36px; }
 </style>
 </head>
 <body>
@@ -231,7 +241,7 @@ summary .mini { width: 70px; flex: none; }
         Ngày cạnh phân hệ đã chuyển = lần sửa gần nhất của tệp màn trong _v2.<br>
         <b>Đã kiểm trên host</b> = màn đã chạy thật trên host bằng bộ thử <code>_harness/kiem-host</code>: <i>đọc sâu</i> (mở màn, chọn ô lọc, bấm tab / trang 2 / Xem / Sửa / Thêm rồi đóng)
         và <i>thử ghi</i> (thêm bản ghi mang dấu ZKT, sửa, xoá chính nó, đối chứng đã mất). Dấu ● cạnh tên màn ở cột "Đã chuyển": xanh = đã kiểm, không vấn đề; vàng = đã kiểm, thử ghi chưa trọn hoặc đã sửa mã đang chờ kiểm lại;
-        đỏ = lỗi mã cần sửa / lỗi máy chủ / còn sót. Bảng đầu khối — cột <b>Tình trạng</b> của từng PHÂN HỆ: <i>Chưa kiểm</i> (chưa chạy trên host) → <i>Chưa CRUD</i> (mới đọc sâu, chưa thử thêm / sửa / xoá) → <i>CRUD dở</i> → <i>Đã hoàn thiện</i> (mọi màn có trên menu host đã đọc sâu và đã thử ghi hoặc đã xếp loại không thử có lý do, không còn lỗi code treo). Cột <b>Tình trạng</b> của từng màn: kết luận về MÃ giao diện mới của màn đó — "Đã kiểm sâu (không phát hiện lỗi từ code)" = đã đọc sâu và đã thử ghi (hoặc đã xếp loại không thử, có lý do), không còn lỗi mã nào treo; lỗi máy chủ / dữ liệu không tính vào đây. Cột <b>Lỗi mã</b>: lỗi của chính giao diện mới — kiểm lại trên host đạt thì mục tự mất khỏi cột. Màn đã chuyển mà không có dấu = chưa kiểm hoặc không có trên menu của host. Việc của quản trị CSDL / nghiệp vụ nằm ở khung "Ghi chú chuyển đổi" trên từng màn.
+        đỏ = lỗi mã cần sửa / lỗi máy chủ / còn sót. Bảng đầu khối — cột <b>Tình trạng</b> của từng PHÂN HỆ: <i>Chưa kiểm</i> (chưa chạy trên host) → <i>Chưa CRUD</i> (mới đọc sâu, chưa thử thêm / sửa / xoá) → <i>CRUD dở</i> → <i>Đã hoàn thiện</i> (mọi màn có trên menu host đã đọc sâu và đã thử ghi hoặc đã xếp loại không thử có lý do, không còn lỗi code treo). Cột <b>Tình trạng</b> của từng màn: kết luận về MÃ giao diện mới của màn đó — "Đã kiểm sâu (không phát hiện lỗi từ code)" = đã đọc sâu và đã thử ghi (hoặc đã xếp loại không thử, có lý do), không còn lỗi mã nào treo; lỗi máy chủ / dữ liệu không tính vào đây. Cột <b>Lỗi mã</b>: lỗi của chính giao diện mới — kiểm lại trên host đạt thì mục tự mất khỏi cột. Màn đã chuyển mà không có dấu = phân hệ chưa đến lượt kiểm. <b>Chưa kiểm (lý do)</b>: màn đã chuyển nhưng không kiểm được trên host — bấm mở dropdown để xem từng màn và lý do (host chưa khai chức năng / có chức năng nhưng chưa gán vai trò thử); màn "CHƯA XẾP LOẠI" là màn có trong _v2 mà sổ chưa ghi gì — phải bổ sung lý do. Việc của quản trị CSDL / nghiệp vụ nằm ở khung "Ghi chú chuyển đổi" trên từng màn.
     </div>
 </div>
 <script>
@@ -282,8 +292,31 @@ function tinhTrang(k) {
 }
 /* Cột "Tình trạng" của TỪNG PHÂN HỆ (người dùng 2026-09-30): Chưa kiểm → Chưa CRUD → (CRUD dở) → Đã hoàn thiện.
    "Đã hoàn thiện" = mọi màn có trên menu host đã đọc sâu VÀ đã thử ghi (hoặc đã xếp loại không thử, có lý do), không còn lỗi code treo. */
+/* Màn CHƯA KIỂM trên host (người dùng 6/10: "những màn không kiểm phải ghi rõ lý do"): màn đã chuyển mà
+   (a) sổ ghi doc = khong-tren-menu (lý do ở ghiChu), hoặc (b) phân hệ đã kiểm nhưng màn không có trong sổ → chưa xếp loại, phải bổ sung. */
+function lyDoNgan(c) { return /CHƯA KHAI/.test(c) ? 'host chưa khai chức năng' : /CÓ chức năng/.test(c) ? 'có chức năng, chưa gán vai trò thử' : 'không có trên menu host'; }
+function dsChuaKiem(p) {
+    if (!p.kiem) return [];
+    return p.man.filter(function (m) { return m.s === 'xong' && (!m.k || m.k.d === 'khong-tren-menu'); }).map(function (m) {
+        return m.k ? { m: m, ngan: lyDoNgan(m.k.c), dai: m.k.c, xau: false } : { m: m, ngan: 'CHƯA XẾP LOẠI', dai: 'Có trong _v2 nhưng không có trong sổ đã kiểm: chưa chạy trên host hoặc không có trên menu — phải ghi sổ (ghi-da-kiem.js / mục tay doc = khong-tren-menu).', xau: true };
+    });
+}
+function daKiem(p) { return p.man.filter(function (m) { return m.k && m.k.d !== 'khong-tren-menu'; }); }
+function tomTatChuaKiem(ck) {
+    if (!ck.length) return '';
+    var dem = {};
+    ck.forEach(function (x) { dem[x.ngan] = (dem[x.ngan] || 0) + 1; });
+    return ck.length + ' màn chưa kiểm (' + Object.keys(dem).map(function (k) { return dem[k] + ' ' + k; }).join(', ') + ')';
+}
+function veChuaKiem(p, moi) {
+    var ck = dsChuaKiem(p);
+    if (!ck.length) return '';
+    return '<details class="ck"' + (moi ? ' open' : '') + '><summary>' + e(tomTatChuaKiem(ck)) + '</summary><ul>' + ck.map(function (x) {
+        return '<li' + (x.xau ? ' class="xau"' : '') + '><b>' + e(x.m.m + '/' + x.m.t) + '</b>' + (x.m.k && x.m.k.n ? ' ' + e(x.m.k.n) : '') + ' — ' + e(x.ngan) + (x.dai ? '<br><i>' + e(x.dai) + '</i>' : '') + '</li>';
+    }).join('') + '</ul></details>';
+}
 function ttPhanHe(p) {
-    var tat = p.man.filter(function (m) { return m.k; });
+    var tat = daKiem(p);
     if (!p.kiem || !tat.length) return ['Chưa kiểm', ''];
     var lc = [];
     tat.forEach(function (m) { m.k.lc.forEach(function (l) { lc.push(l); }); });
@@ -292,19 +325,21 @@ function ttPhanHe(p) {
     var chua = tat.filter(function (m) { return !m.k.g; }).length;
     if (chua === tat.length) return ['Chưa CRUD (mới đọc sâu)', 'vua'];
     if (chua) return ['CRUD dở — còn ' + chua + ' màn', 'vua'];
-    return ['Đã hoàn thiện', 'tot'];
+    var ck = dsChuaKiem(p);
+    if (ck.some(function (x) { return x.xau; })) return ['Đã hoàn thiện — ' + ck.length + ' màn chưa kiểm, CÓ MÀN CHƯA XẾP LOẠI', 'vua'];
+    return [ck.length ? 'Đã hoàn thiện — ' + tomTatChuaKiem(ck) : 'Đã hoàn thiện', 'tot'];
 }
 function veBangPH() {
     var ds = D.phanhe.filter(function (p) { return !p.phu && p.man.some(function (m) { return m.s === 'xong'; }); });
     var thuTu = { 'tot': 0, 'xau': 1, 'vua': 2, '': 3 };
     ds = ds.map(function (p) { return { p: p, tt: ttPhanHe(p) }; }).sort(function (a, b) { return thuTu[a.tt[1]] - thuTu[b.tt[1]] || a.p.thuTu - b.p.thuTu; });
     document.getElementById('bangPH').innerHTML =
-        '<table class="kiem-bang"><thead><tr><th>Phân hệ</th><th>Màn đã chuyển</th><th>Đã đọc sâu trên host</th><th>Đã CRUD / xếp loại</th><th>Tình trạng</th><th>Ngày kiểm</th></tr></thead><tbody>' +
+        '<table class="kiem-bang"><thead><tr><th>Phân hệ</th><th>Màn đã chuyển</th><th>Đã đọc sâu trên host</th><th>Đã CRUD / xếp loại</th><th>Chưa kiểm (lý do)</th><th>Tình trạng</th><th>Ngày kiểm</th></tr></thead><tbody>' +
         ds.map(function (x) {
-            var p = x.p, tat = p.man.filter(function (m) { return m.k; });
+            var p = x.p, tat = daKiem(p);
             var daGhi = tat.filter(function (m) { return m.k.g; }).length;
             return '<tr><td><b>' + e(p.ten) + '</b> <span style="color:var(--ink-3)">' + e(p.id) + '</span></td><td>' + p.man.filter(function (m) { return m.s === 'xong'; }).length +
-                '</td><td>' + (tat.length || '—') + '</td><td>' + (tat.length ? daGhi + '/' + tat.length : '—') + '</td><td>' + nhan(x.tt) + '</td><td>' + (p.kiem ? e(p.kiem.ngay) : '—') + '</td></tr>';
+                '</td><td>' + (tat.length || '—') + '</td><td>' + (tat.length ? daGhi + '/' + tat.length : '—') + '</td><td>' + (p.kiem ? (veChuaKiem(p) || '<span class="nhan tot">0</span>') : '—') + '</td><td>' + nhan(x.tt) + '</td><td>' + (p.kiem ? e(p.kiem.ngay) : '—') + '</td></tr>';
         }).join('') + '</tbody></table>';
 }
 function nhan(b, chu) { return '<span class="nhan ' + b[1] + '">' + e(chu || b[0]) + '</span>'; }
@@ -312,11 +347,11 @@ function veKiem() {
     var q = document.getElementById('tim').value.trim().toLowerCase(), chiLoi = document.getElementById('chiLoi').checked;
     var mo = document.getElementById('moHet').checked || !!q || chiLoi;
     var h = D.phanhe.filter(function (p) { return p.kiem; }).map(function (p) {
-        var tat = p.man.filter(function (m) { return m.k; });
+        var tat = daKiem(p);
         var ds = tat.filter(function (m) {
             return (!chiLoi || mucDo(m.k) === 'xau' || m.k.lc.length) && (!q || (p.ten + ' ' + p.id + ' ' + m.m + ' ' + m.t + ' ' + m.k.n + ' ' + m.k.c).toLowerCase().indexOf(q) >= 0);
         });
-        if (!ds.length) return '';
+        if (!ds.length && !(q && dsChuaKiem(p).some(function (x) { return (x.m.m + '/' + x.m.t + ' ' + (x.m.k ? x.m.k.n : '')).toLowerCase().indexOf(q) >= 0; }))) return '';
         var dem = {};
         tat.forEach(function (m) { dem[m.k.g] = (dem[m.k.g] || 0) + 1; });
         var loiDoc = tat.filter(function (m) { return (DOC[m.k.d] || ['', ''])[1] === 'xau'; }).length;
@@ -327,6 +362,7 @@ function veKiem() {
             '<div class="kiem-dem">' + nhan(['', sach === tat.length ? 'tot' : 'vua'], 'Đã kiểm sâu, không phát hiện lỗi từ code: ' + sach + '/' + tat.length + ' màn') +
             nhan(loiDoc ? DOC['loi-may-chu'] : DOC.ok, 'Đọc sâu: ' + (tat.length - loiDoc) + ' mở tốt' + (loiDoc ? ', ' + loiDoc + ' lỗi' : '')) +
             Object.keys(dem).sort().map(function (k) { return nhan(GHI[k] || [k, ''], 'Thử ghi — ' + (GHI[k] || [k])[0].toLowerCase() + ': ' + dem[k]); }).join('') + '</div>' +
+            (dsChuaKiem(p).length ? '<div class="kiem-ck">' + veChuaKiem(p, !!q) + '</div>' : '') +
             '<div class="bang-cuon"><table class="kiem-bang"><thead><tr><th>Module / màn</th><th>Tên trên menu</th><th>Tình trạng</th><th>Đọc sâu</th><th>Thử ghi</th><th>Lỗi mã (cần sửa / chờ kiểm lại)</th><th>Ghi chú (máy chủ, dữ liệu, lý do không thử)</th></tr></thead><tbody>' +
             ds.map(function (m) {
                 return '<tr><td>' + e(m.m + '/' + m.t) + '</td><td>' + e(m.k.n) + '</td><td>' + nhan(tinhTrang(m.k)) + '</td><td>' + nhan(DOC[m.k.d] || [m.k.d, '']) + '</td><td>' +
@@ -335,7 +371,8 @@ function veKiem() {
             }).join('') + '</tbody></table></div></details>';
     }).join('');
     document.getElementById('dsKiem').innerHTML = h || '<div class="rong">' + (D.daKiem ? 'Không có màn nào khớp.' : 'Chưa có phân hệ nào được ghi vào sổ đã kiểm host.') + '</div>';
-    document.getElementById('nKiem').textContent = D.daKiem + ' màn · ' + D.phanhe.filter(function (p) { return p.kiem; }).length + ' phân hệ';
+    var nCk = D.phanhe.reduce(function (n, p) { return n + dsChuaKiem(p).length; }, 0);
+    document.getElementById('nKiem').textContent = D.daKiem + ' màn · ' + D.phanhe.filter(function (p) { return p.kiem; }).length + ' phân hệ' + (nCk ? ' · ' + nCk + ' màn chưa kiểm có lý do' : '');
 }
 function nhom(man) {
     var g = {};

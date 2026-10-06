@@ -26,6 +26,12 @@ Tài chính thử ghi xong (19 màn sạch), Nhân sự kiểm lại sau khi đ�
 **Đợt chuyển hộp thoại MỚI kiểm trên host ở Nhân sự + 4 màn Tài chính** — 12 phân hệ còn lại chỉ mới dò bằng dữ liệu mẫu trên máy: khi kiểm host phân hệ nào
 thì mở các màn ghi `xong 30/9` của phân hệ đó trong `RA-HOP-THOAI.md` (bấm Thêm / Sửa: không có `dialog[open]`, một nút Đóng, Esc đóng đúng tầng, Lưu chạy đúng).
 
+## 0a. Cổng sinh viên 6/10 (chiều) — ĐÃ HOÀN THIỆN, CHỜ UP app.js
+
+- 22/22 màn trên menu host đọc sâu sạch; thử ghi `dongphuc` sạch; 21 màn xếp loại không thử có lý do (sổ); 15 màn ngoài menu: host chưa khai chức năng.
+- Gói bổ sung: `assets/js/app.js` (đóng hộp thoại khi đổi màn). Sau khi up: mở Đồng phục → "Kết quả đã đăng ký" → bấm Back trình duyệt → không còn hộp đè.
+- Trang tiến độ: cột "Chưa kiểm (lý do)" + `xep-loai-chua-kiem.py` — phân hệ kiểm xong mà còn "CHƯA XẾP LOẠI" thì chạy script này (`--ghi`).
+
 ## 0b. Kiểm host Cổng cán bộ 6/10 (01:00–01:40) — CHỜ UP rồi kiểm lại
 
 - Đọc sâu lại hai vai trò host "Cổng cán bộ" (25 màn) + "Cổng cán bộ(admin)" (87 màn): 0 lỗi mới; 6 màn lỗi cũ đều đã có `ben` (coithi, duyetdiemthitracnghiem: dịch vụ QLTTN

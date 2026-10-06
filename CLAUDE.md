@@ -292,7 +292,8 @@ Kiểm vỏ CŨ trên máy: `http://localhost:8787/index-old.html` (`_harness/RE
 `node dangnhap.js` → `menu.js <roleId>` → `SAU=1 CHI="id1,id2" node chay-vaitro.js <roleId>` (đọc sâu; `THUVAI="Đặng Bác Ái"` cho Cổng SV)
 → `thu-ghi.js` / `thu-ghi-ui.js` (`TIM="Kadara" FULL=1`) → lái tay `node chay.js <role> <cnId|-> '<thân hàm>'` (nháy ĐƠN; có `nut() os() s2() go() bang() bao()`)
 → `va-tam.js` chạy mã vừa sửa trên host trước khi up → `tom-tat.js <6 ký tự>`. Mẫu lệnh lái tay: `kiem-host/mau-lenh/`.
-- **Sổ:** đã kiểm `da-kiem.json` (ghi: `TU=<ngày> node ghi-da-kiem.js <ApisXxx> <roleId…>`, mục tay đặt `"tay": true`); lỗi mã `loi-code.js them|da-sua|xong|ds`
+- **Sổ:** đã kiểm `da-kiem.json` (ghi: `TU=<ngày> node ghi-da-kiem.js <ApisXxx> <roleId…>`, mục tay đặt `"tay": true`); **màn đã chuyển mà không kiểm PHẢI có lý do** (người dùng 6/10) →
+  `python _harness/kiem-host/xep-loai-chua-kiem.py --ghi` (đối chiếu bản xuất mapping host: chưa khai chức năng / có chức năng chưa gán vai trò), trang tiến độ hiện dropdown "Chưa kiểm (lý do)", màn thiếu lý do hiện "CHƯA XẾP LOẠI"; lỗi mã `loi-code.js them|da-sua|xong|ds`
   (khoá = đường dẫn màn TRÊN MENU HOST); việc phiên sau `VIEC-PHIEN-SAU.md`; nhật ký từng ngày `LICH-SU.md`; lỗi backend → mục `ben` trong `_v2/assets/js/can-quyet.js`.
 - **Khi người dùng bảo "kiểm host" / "chuyển": `git fetch origin` + THÔNG BÁO TRƯỚC** rồi mới chạy: (1) lỗi mã treo (`loi-code.js ds`); (2) gói bổ sung đã up chưa
   (`_v2_bo_xung_deploy` còn tệp khác `_KHONG-CON-GI-DE-UP.txt` = chưa up); (3) phân hệ đã / dở / chưa kiểm (`da-kiem.json`); (4) bản ghi thử còn sót;
@@ -433,7 +434,7 @@ Mở bằng `file://` là trắng trang (CORS). Lên host phải nằm TRONG d�
 |---|---|---|---|---|
 | Tài chính `ApisTaiChinh` | 72/73 | R33 `TC-` | 19/9 | đọc sâu + thử ghi xong |
 | Cổng cán bộ `ApisCongCanBo` | 152/152 | R02 `CCB-` | 22/9 | 6/10: **87/152 màn có trên menu host** đọc sâu sạch (6 lỗi backend đã có sổ), thử ghi 17 màn sạch; **65 màn KHÔNG có trên menu host, chưa kiểm được** (sổ `khong-tren-menu`: klgd 28, dashboardv2 9, thi 7, coithi 3…) |
-| Cổng sinh viên `ApisCongSinhVien` | 36/36 | R04 `CSV-` (thủ vai) | 23/9 | đọc sâu xong (chỉ đọc) |
+| Cổng sinh viên `ApisCongSinhVien` | 36/36 | R04 `CSV-` (thủ vai) | 23/9 | **6/10 hoàn thiện:** 22/22 màn trên menu host đọc sâu sạch, thử ghi `dongphuc` sạch, 21 màn không thử có lý do trong sổ; 15 màn ngoài menu = host chưa khai chức năng |
 | Chuyên cần `ApisChuyenCan` | 5/5 | R07 `CC-` | 25/9 | đọc sâu |
 | Quản trị hệ thống `ApisCMS` | 46 | R44 `CMS-` | 25/9 | đọc sâu, thử ghi dở |
 | Đăng ký học `ApisDangKyHoc` | 24 | R19 `DKH-` | 25/9 | đọc sâu |

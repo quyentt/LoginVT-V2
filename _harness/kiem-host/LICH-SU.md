@@ -214,3 +214,19 @@ Luật kiểm host hiện hành nằm ở CLAUDE.md mục 9 (bản rút gọn). 
     4 ô, thêm ZKT0143 → xoá bằng "Xóa kế hoạch" trong biểu mẫu sạch (nút "Xóa (N)" đầu danh sách là ResetKetQuaTaoPhieu — như gốc). Chờ up lần 2 rồi thu-ghi + xong.
   · Up 01:48 → `khaosat/kehoach` thu-ghi thêm / sửa OK, xoá qua biểu mẫu sạch; **sổ lỗi mã trống**, gói bổ sung đã up. Cổng cán bộ kết lượt 6/10.
   · Người dùng: "phải ghi rõ màn không có trong menu" → so 152 màn `_v2` với hai vai trò host: 87 có, **65 không có** → ghi sổ `khong-tren-menu`, trạng thái mới trên tien-do.
+
+## 6/10 (chiều, 14:10–14:30) — Cổng sinh viên: ĐÃ HOÀN THIỆN (22/22 màn trên menu host)
+
+- Người dùng: "đã up đã push; chuyển sang kiểm Cổng SV, chỉ kiểm màn có trên menu host; màn không kiểm phải ghi rõ lý do; dropdown màn chưa kiểm
+  trên tiến độ — làm tiến độ trước". `--da-up` đặt mốc; kéo gốc lần 8 (mốc `3c3b2d70`, 4 tệp / 2 màn CCB + TS, "chưa xem").
+- **Tiến độ:** `tien-do.py` thêm cột "Chưa kiểm (lý do)" = dropdown từng màn + lý do; nhãn phân hệ "Đã hoàn thiện — N màn chưa kiểm (…)"; màn đã chuyển
+  mà sổ không có → "CHƯA XẾP LOẠI" (đỏ). Script mới `xep-loai-chua-kiem.py` (đối chiếu bản xuất mapping host 619 chức năng + ketqua các vai trò):
+  ghi sổ 93 màn ở 10 phân hệ (84 host chưa khai chức năng, 8 có chức năng chưa gán vai trò thử, 1 trên menu chưa ghi sổ). Không còn màn chưa xếp loại.
+- **Cổng SV** (`THUVAI="Đặng Bác Ái" SAU=1 chay-vaitro.js 80CF9E…`): 22/22 mở tốt, 0 lỗi JS. Một lần `LayThongTinChiTietHoSo` ORA-24338 ở Tài chính cá nhân,
+  gọi lại (cả hai tiền tố action) đều OK, đọc lại màn 0 lỗi → nhất thời, không ghi `ben`.
+  Thử ghi lái tay `dongphuc`: xác nhận KHÔNG tham gia (lý do ZKT1430) → Kết quả đã đăng ký → đánh dấu → "Hủy đăng ký (1)" → sạch ("Chưa có đăng ký nào").
+  Bẫy: nhãn nút `ui.xoaChon` đổi thành "Hủy đăng ký (1)" khi có dòng chọn → `nut()` phải tìm bằng regex.
+  21 màn còn lại xếp loại `khong-crud` (8 chỉ xem) / `khong-thu` (13, lý do từng màn trong sổ: dịch vụ một cửa trống, không có kế hoạch nguyện vọng / thi lại /
+  đợt xét TN, phúc khảo chỉ huỷ sau nộp phí, đăng ký lớp thật, sửa hồ sơ thật, xác nhận một lần). 15 màn ngoài menu: host chưa khai chức năng.
+- **Lỗi mã bắt được khi lái tay:** đổi màn qua hash khi hộp thoại còn mở → hộp của màn cũ đè lên màn mới (hộp Kết quả của Đồng phục còn trên màn Công nhận điểm).
+  Sửa `app.js route()`: đóng mọi `dialog.ums-dialog[open]` trước khi vào màn mới. Chưa kiểm trên host (gói bổ sung).
