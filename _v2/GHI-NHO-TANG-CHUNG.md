@@ -170,3 +170,5 @@ CLAUDE.md mục 10 chỉ còn bản tóm tắt; chi tiết từng khối (menu, 
   backwards` để chạy xong không đọng `transform` — đọng lại là phá `sticky` của
   đầu khung nằm bên trong. Tôn trọng `prefers-reduced-motion`.
 
+
+- **Đầu khung nhiều nút (6/10, người dùng: "hệ thống action lớn phải xuống dòng, title không được co cụm")** — `components/panel.css`: `.ums-panel__head` `flex-wrap: wrap`, tiêu đề `flex: 0 0 auto; white-space: nowrap`, `.ums-panel__tools` `flex: 1 1 auto; flex-wrap: wrap; justify-content: flex-end`. Dãy nút dài hơn chỗ còn lại thì cả dãy xuống dòng dưới tiêu đề, nút trong dãy tự xuống dòng tiếp; khung ít nút không đổi (đo: lophocphan đầu khung 139px, tiêu đề 1 dòng; vanban / congthuctinh giữ 63px).
