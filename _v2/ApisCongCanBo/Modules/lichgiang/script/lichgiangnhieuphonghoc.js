@@ -42,7 +42,7 @@
    Kéo gốc 30/9 + 1/10 (fed68f6e..c6886b05) — lọc "Phòng trống", chuyển theo bản gốc MỚI NHẤT:
      · Ô lọc "Phòng trống (từ ngày - đến ngày, thứ, tiết)": Từ / Đến ngày, Thứ (giá trị Date.getDay()), khung tiết (T1-3 …
        T13-15, Sáng T1-6, Chiều T7-12). Lời gọi mới SV_TKB_Chung_MH · TKB_CHUNG.LAYPHONGHOCTRONG (strNgay, giờ / phút bắt đầu –
-       kết thúc của khung tiết, strKieuPhong = loại phòng đang lọc, dSucChuaTu/Den, dIdToaNha = null, strIdLichBoQua) — MỘT ngày
+       kết thúc của khung tiết, strKieuPhong = '' (kéo gốc 6/10, xem dưới), dSucChuaTu/Den, dIdToaNha = null, strIdLichBoQua) — MỘT ngày
        mỗi lời gọi, nhớ 5 phút, tối đa 5 cùng lúc, tối đa 31 ngày (dài hơn thì cắt + báo), khoảng > 1 năm thì chỉ xét một năm.
        Giờ của tiết: lấy từ lịch phòng đã tải, không có thì theo khung chuẩn (arrGioTiet của gốc, tiết 50 phút).
      · Một ngày trong tuần đang xem: lưới chỉ vẽ ngày đó (hiệu suất vẫn tính cả tuần), ô Trống đúng khung tiết viền xanh,
@@ -56,6 +56,8 @@
      · Hộp đổi lịch: đổi ngày / tiết (chờ 400 ms) → hỏi phòng trống (bỏ qua chính buổi đang đổi, cùng loại phòng) → ô phòng
        chỉ còn phòng trống, dòng gợi ý "N phòng … trống T… ngày …"; bắt chọn phòng mới trước khi Kiểm tra / Gửi.
    Kéo gốc — bỏ qua: gỡ khoá cuộn của select2 4.0.3 (lỗi riêng vỏ cũ), ô một ngày dropLoc_NgayTrong (gốc đã thay), CSS, console.log.
+   Kéo gốc lần 8 (6/10, 3c3b2d70): tìm phòng trống (lọc + hộp đổi lịch) KHÔNG gửi strKieuPhong nữa — gửi 'LT'/'TH' thì thủ tục trả 0 phòng;
+   loại phòng đã lọc ở máy khách. Bỏ: console.warn so mã phòng hai bên.
 
    Giữ như bản gốc (chờ nghiệp vụ):
      · Buổi chia 7-12 / 13-15 và bỏ Chủ nhật — màn "nhiều giảng viên" lại chia
@@ -241,7 +243,8 @@
         if (c && Date.now() - c.t < HAN_NHO) return Promise.resolve(c.d);
         if (nho && dangTrong[k]) return dangTrong[k];
         var p = ums.api.call({ action: TRONG.action, func: TRONG.func, silent: true, strNgay: ngay,
-            dGioBatDau: bd.gio, dPhutBatDau: bd.phut, dGioKetThuc: kt.gio, dPhutKetThuc: kt.phut, strKieuPhong: loai || '',
+            dGioBatDau: bd.gio, dPhutBatDau: bd.phut, dGioKetThuc: kt.gio, dPhutKetThuc: kt.phut,
+            strKieuPhong: '',           // kéo gốc 6/10: gửi 'LT'/'TH' thì thủ tục trả 0 phòng — loại phòng đã lọc ở máy khách (dsDong), máy chủ nhận rỗng
             dSucChuaTu: null, dSucChuaDen: null, dIdToaNha: null,       // sức chứa + tòa nhà đã lọc ở máy khách; số rỗng gửi null như gốc
             strIdLichBoQua: boQua || '' }).then(function (r) {
             var d = arr(r.data);
