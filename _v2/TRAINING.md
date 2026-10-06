@@ -284,48 +284,29 @@ Mở [components.html](components.html) trước khi dựng màn hình. Không t
 
 ### Khuôn CRUD cơ bản
 
+> Chữ ký đầy đủ, đối chiếu mã, ở [HUONG-DAN-NGUOI-MOI.md](HUONG-DAN-NGUOI-MOI.md) mục 3. Bản dưới là tối thiểu chạy được
+> (mẫu cũ ở đây dùng khoá `api` / `columns[].key` — KHÔNG phải chữ ký của `ums.crud`, đã sửa 2026-10-06).
+
 ```js
-(function (global) {
+(function () {
     'use strict';
-
-    var ums = global.ums;
-
-    ums.man = function (root) {
-        ums.crud({
-            root: root,
-            title: 'Danh sách mẫu',
-            api: {
-                list: {
-                    action: 'TC_Mau/LayDanhSach',
-                    func: 'PKG_TC_MAU.LayDanhSach'
-                },
-                add: {
-                    action: 'TC_Mau/ThemMoi',
-                    func: 'PKG_TC_MAU.ThemMoi'
-                },
-                update: {
-                    action: 'TC_Mau/CapNhat',
-                    func: 'PKG_TC_MAU.CapNhat'
-                },
-                remove: {
-                    action: 'TC_Mau/Xoa',
-                    func: 'PKG_TC_MAU.Xoa'
-                }
-            },
-            columns: [
-                { key: 'MA', label: 'Mã' },
-                { key: 'TEN', label: 'Tên' }
-            ],
-            fields: [
-                { key: 'MA', label: 'Mã', required: true },
-                { key: 'TEN', label: 'Tên', required: true }
-            ]
-        });
-    };
-})(window);
+    ums.crud({
+        root: document.getElementById('mau'),
+        title: 'Danh sách mẫu', listTitle: 'Danh sách', formTitle: 'mẫu', icon: 'fa-table-list',
+        filters: [{ key: 'q', type: 'text', label: 'Nhập từ khóa tìm kiếm' }],
+        list: { paged: true, call: function (f) { return { action: 'TC_Mau/LayDanhSach', method: 'GET', strTuKhoa: f.q || '' }; } },
+        columns: [{ title: 'Mã', prop: 'MA', cls: 'is-nowrap' }, { title: 'Tên', prop: 'TEN' }],
+        fields: [
+            { key: 'strMa', col: 'MA', label: 'Mã', required: true },
+            { key: 'strTen', col: 'TEN', label: 'Tên', required: true }
+        ],
+        save: function (v, row) { return { action: row ? 'TC_Mau/CapNhat' : 'TC_Mau/ThemMoi', method: 'POST', strId: row ? row.ID : '', strMa: v.strMa, strTen: v.strTen }; },
+        remove: function (ids) { return ids.map(function (id) { return { action: 'TC_Mau/Xoa', method: 'POST', strIds: id }; }); }
+    });
+})();
 ```
 
-Đây là khung minh họa. Khi chuyển màn thật, phải dùng đúng action, func, tên cột và tham số của bản gốc.
+Đây là khung minh họa. Khi chuyển màn thật, phải dùng đúng action, func, tên cột và tham số của bản gốc (`tom-tat-goc.py` mục 4 và 7).
 
 ## 10. Quy ước giao diện bắt buộc
 

@@ -824,6 +824,13 @@ mẫm ở đó; để dành đến khi có host.
 24. Các phân hệ còn lại (Ký túc xá 22 mục menu host, Luận văn 14, Danh hiệu; Thi trắc nghiệm — trang làm bài — dừng). Tổng 859 màn hình, xem mục 7 để biết vì
    sao không thể làm bằng cách đổi CSS.
 
+### Việc hoãn — làm khi người dùng gọi (6/10)
+
+- **"dời"**: script `danhmucdulieu` dùng chung (18 vỏ → 3 script: ĐKH ×15, Tài chính ×2, CMS riêng) về `_v2/assets/js/man-chung/`, 18 vỏ đổi một dòng `src`,
+  `do-man` 17 vai trò, thêm luật "nạp chéo lần 3 thì dời về man-chung" vào CHUYEN-DOI. Lý do: tệp dùng chung mang tên một phân hệ = phụ thuộc ngầm.
+- `fields.js` (ô chuẩn Hệ đào tạo / Thời gian / Cán bộ theo đơn vị — 73 / 59 / 34 màn khai tay): HOÃN vì chỉ còn 52 màn; không gom lại cuối (phải kiểm lại 170 màn).
+- Tài liệu người mới: `_v2/HUONG-DAN-NGUOI-MOI.md` (6/10) là tệp đọc đầu tiên; TRAINING.md mục 9 mẫu CRUD đã sửa cho đúng chữ ký.
+
 ### Cách làm việc đã dùng, nên giữ
 
 Mỗi lần sửa giao diện thì dựng một trang dò tạm trong `_harness/`, nạp

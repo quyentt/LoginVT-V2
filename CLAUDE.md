@@ -405,6 +405,9 @@ báo "đã up" → chạy `python _harness\dong-goi.py --da-up`** (lấy gói hi
 
 ### Mở đầu phiên — ba bước
 
+**Người mới / tác tử mới làm `_v2`: đọc [_v2/HUONG-DAN-NGUOI-MOI.md](_v2/HUONG-DAN-NGUOI-MOI.md) trước** (6/10 — chữ ký thật của `ums.crud` / `ui` / `pat`,
+ba lối: tiếp quản, chuyển màn cũ, viết màn mới; TRAINING.md mục 9 mẫu CRUD cũ đã sửa). Việc hoãn (dời `man-chung`, `fields.js`): `_v2/NHAT-KY-CHUYEN.md` "Việc hoãn".
+
 1. Đọc hết tệp này (mục 5 và 8 tốn nhiều công dò nhất, đừng dò lại). 2. Chạy `_harness\serve.ps1`, mở `http://localhost:8787/_v2/index.html`, bấm vài màn.
 3. Báo đang thấy gì rồi nhận việc. Chỉ chép `_v2` thì chạy bằng DỮ LIỆU MẪU (không có vỏ ASPX → `dataSource: 'auto'` rơi về `demo-data.js`).
 
