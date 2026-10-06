@@ -811,7 +811,13 @@ mẫm ở đó; để dành đến khi có host.
    `kiem-cot-trai` 1/1; biểu tượng 0 lệch; trang dò tạm bấm sâu Thêm / Sửa / Quản lý chuyên mục / Phạm vi / Gửi email / Import (không lỗi console).
    Chốt: `CAN-QUYET-DA-CHOT.md` mục "Chốt ngày 2026-10-05 (tối) — Tin tức"; không có việc dữ liệu (CHƯA kiểm host; thêm vào `ums.canQuyetChuaKiem`).
 
-23. Các phân hệ còn lại (Ký túc xá 22 mục menu host, Luận văn 14, TKGG 12, Danh hiệu; Thi trắc nghiệm — trang làm bài — dừng). Tổng 859 màn hình, xem mục 7 để biết vì
+23. **Thống kê giờ giảng (ApisTKGG) — XONG 12/12 màn host dùng (2026-10-06)**, 11 màn kho không có chức năng trên host → HOÃN (`tien-do.py` HOAN). Vai trò mẫu **R39**,
+   ID `TKGG-<module>-<tệp>`. Tầng chung `_tkgg.js` (ums.tkgg) + `_phamvi.js`, `_kehoach.js`, `_heso.js`. 4 màn hai tác tử đầu làm xong (kehoachchung, kehoachchitiet, phamvicoithi,
+   phamvichamthi); `lophocphan` tác tử viết xong rồi bị cắt (hết hạn mức) — tự kiểm lại; `xacdinhphamvi`, `congthuctinh`, `hesoquymo`, `hesophamvi`, `dongia`, `giangduong`, `dashboard`
+   tự làm. Kiểm: `kiem-dong-bo` 12/12; `thu-crud` 10/12 (2 màn cần chọn bộ lọc kế hoạch tự dựng — kiểm bằng trang dò riêng); icon 0 lệch. Chốt: `CAN-QUYET-DA-CHOT.md`
+   mục "Thống kê giờ giảng"; không có việc dữ liệu (CHƯA kiểm host; thêm `apistkgg/` vào `ums.canQuyetChuaKiem`).
+
+24. Các phân hệ còn lại (Ký túc xá 22 mục menu host, Luận văn 14, Danh hiệu; Thi trắc nghiệm — trang làm bài — dừng). Tổng 859 màn hình, xem mục 7 để biết vì
    sao không thể làm bằng cách đổi CSS.
 
 ### Cách làm việc đã dùng, nên giữ

@@ -88,7 +88,7 @@ document.getElementById('f').onload = async function () {
                         // Luật 2026-09-29: mỗi lúc chỉ MỘT nút Đóng (nút của tầng ngoài tự ẩn khi biểu mẫu mở) — hộp thoại không tính
                         var soDong = [].filter.call(sc.querySelectorAll('button'), function (x) { return vis(x) && !x.closest('dialog') && /^Đóng$/.test((x.textContent || '').trim()); }).length;
                         if (soDong > 1) loi.push(tieuDe + ': ' + soDong + ' nút Đóng cùng hiện khi mở biểu mẫu');
-                        dien(form); calls = [];
+                        dien(form); await wait(900); dien(form); calls = [];   // hai lượt: ô phụ thuộc (Loại theo Phạm vi) nạp xong lượt một mới điền được
                         var sv = btn(form, /^Lưu$/); if (sv) sv.click(); await wait(1500);
                         if (!calls.some(function (c) { return /ThemMoi|Them_|\.Them|_Create|_Ins\b/i.test(c); })) loi.push(tieuDe + ': Lưu không gọi ThemMoi (' + calls.join(',') + ')');
                         else if (vis(form)) loi.push(tieuDe + ': lưu xong biểu mẫu không đóng');
@@ -105,7 +105,7 @@ document.getElementById('f').onload = async function () {
                     else {
                         var co = [].some.call(f2.querySelectorAll('[data-scope="form"]'), function (el) { return el.value && el.type !== 'hidden'; });
                         if (!co) loi.push(tieuDe + ': mở Sửa mà không ô nào có giá trị');
-                        calls = [];
+                        await wait(900); dien(f2); calls = [];   // đợi ô phụ thuộc nạp xong (sửa: Loại theo Phạm vi) rồi điền ô còn trống
                         var sv2 = btn(f2, /^Lưu$/); if (sv2) sv2.click(); await wait(1500);
                         if (!calls.some(function (c) { return /CapNhat|Sua|Capnhat|_Update|_Upd\b/i.test(c); })) loi.push(tieuDe + ': Lưu (sửa) không gọi CapNhat (' + calls.join(',') + ')');
                         else ghi.push(tieuDe + ' ~');

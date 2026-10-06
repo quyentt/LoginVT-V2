@@ -1006,7 +1006,23 @@
                     ['guithongbaoappsinhvien', 'Gửi thông báo app sinh viên']]],
                 ['danhmuc', 'Danh mục', 'fa fa-list', [
                     ['danhmucdulieu', 'Danh mục dữ liệu']]]
-            ], null, { prefix: 'TT', app: 'ApisTinTuc' })
+            ], null, { prefix: 'TT', app: 'ApisTinTuc' }),
+            /* Thống kê giờ giảng (R39) — ApisTKGG, ID TKGG-<module>-<tệp>. Đúng 12 mục trên menu host 6/10 (vai trò 42EC44DF…); 11 màn khác của kho không có trên menu → chưa chuyển. */
+            R39: buildMenu([
+                ['kehoach', 'Tổng hợp giờ', 'fa fa-clock-o', [
+                    ['kehoachchung', 'Lập kế hoạch'],
+                    ['kehoachchitiet', 'Kế hoạch chi tiết'],
+                    ['lophocphan', 'Xác định phạm vi dữ liệu lớp HP'],
+                    ['phamvicoithi', 'Xác định phạm vi coi thi'],
+                    ['phamvichamthi', 'Xác định phạm vi chấm thi'],
+                    ['xacdinhphamvi', 'Khai báo xác nhận phạm vi khác'],
+                    ['giangduong', 'Thống kê lịch giảng theo ngày'],
+                    ['congthuctinh', 'Công thức tính'],
+                    ['hesoquymo', 'Khai hệ số quy mô theo dải'],
+                    ['hesophamvi', 'Khai hệ số theo phạm vi'],
+                    ['dongia', 'Khai đơn giá tính tiền']]],
+                ['dashboard', 'Dashboard', 'fa fa-dashboard', [['dashboard', 'Dashboard']]]
+            ], null, { prefix: 'TKGG', app: 'ApisTKGG' })
         },
 
         /* Cây chức năng của vai trò "Tài chính" — phẳng, đúng như máy chủ trả.

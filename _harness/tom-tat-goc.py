@@ -24,17 +24,19 @@ def doc(p):
 
 
 def main():
-    args = [a for a in sys.argv[1:] if not a.startswith('--')]
+    argv = sys.argv[1:]
+    ham_in = ''
+    for a in argv:
+        if a.startswith('--ham='): ham_in = a[6:]
+    if '--ham' in argv:
+        i = argv.index('--ham'); ham_in = argv[i + 1] if i + 1 < len(argv) else ''
+        argv = argv[:i] + argv[i + 2:]          # giá trị sau --ham không phải đường dẫn
+    args = [a for a in argv if not a.startswith('--')]
     if not args:
         print(__doc__); return
     html_p = args[0].replace('\\', '/')
     js_p = args[1].replace('\\', '/') if len(args) > 1 else re.sub(r'/html/([^/]+)\.html$', r'/script/\1.js', html_p)
     html, js = doc(html_p), doc(js_p)
-    ham_in = ''
-    for a in sys.argv[1:]:
-        if a.startswith('--ham='): ham_in = a[6:]
-    if '--ham' in sys.argv:
-        i = sys.argv.index('--ham'); ham_in = sys.argv[i + 1] if i + 1 < len(sys.argv) else ''
     hl, jl = html.split('\n'), js.split('\n')
     print('# %s (%d dòng)  +  %s (%d dòng)' % (html_p, len(hl), js_p, len(jl)))
 

@@ -450,8 +450,11 @@ Mở bằng `file://` là trắng trang (CORS). Lên host phải nằm TRONG d�
 | Quản lý thi trắc nghiệm `ApisQuanLyThiTracNghiem` | 16/16 | R12 `QLTTN-` | 5/10 | chưa (gói bổ sung chưa up) |
 | Thi trắc nghiệm `ApisThiTracNghiem` (trang làm bài .aspx) | 0 | — | DỪNG (5/10, xác nhận lại 6/10 sau khảo sát: trang ASPX độc lập 3.202 dòng, cổng thí sinh `eIndex.aspx` + `eassets/` không có trong kho, 2 trang thiếu HTML, kiểm host = làm bài thật) | — |
 | Tin tức `ApisTinTuc` | 4/4 | R46 `TT-` | 5/10 | chưa |
-| Còn lại: Ký túc xá, Luận văn, TKGG, Tin tức, Danh hiệu | — | — | chưa | — |
+| Thống kê giờ giảng `ApisTKGG` | 12/12 màn host dùng (11 màn kho hoãn — host chưa khai chức năng) | R39 `TKGG-` | 6/10 | chưa |
+| Còn lại: Ký túc xá, Luận văn, Danh hiệu | — | — | chưa | — |
 
+**Đã xong 6/10:** TKGG 12/12 (chỉ màn host đang dùng — người dùng 6/10; 11 màn kho không có chức năng → trạng thái "hoãn" mới trên tien-do, `HOAN` trong tien-do.py);
+bẫy jQuery `trigger('change.select2')` không gọi handler `on('change')` trơn → ô phụ thuộc phải nghe `'change change.select2'`; `thu-crud` điền hai lượt.
 **Đã xong 5/10 tối:** Tin tức 4/4 (`tintuc` 3.017 dòng gốc → ums.crud + hai khung formTrang Phạm vi / Gửi email + hộp Quản lý chuyên mục & Import Excel;
 `guithongbaoappsinhvien`; `vanban`; `danhmucdulieu` nạp chéo ĐKH); ba trang kiểm 4/4; chốt ở `CAN-QUYET-DA-CHOT.md` mục "Tin tức"; kéo gốc lần 7 (mốc `1680e53d`).
 Hai tác tử con bị cắt vì hết hạn mức giữa chừng — phần dở tự làm nốt; `kiem-icon-chuan.py` chạy với `PYTHONIOENCODING=utf-8` (cp1252 lỗi).

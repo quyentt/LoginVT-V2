@@ -7,6 +7,7 @@
   · màn gốc  = <Apis…>/Modules/<module>/html/<tệp>.html
   · đã chuyển = có _v2/<cùng đường dẫn>
   · BO_QUA   = màn cố ý không chuyển (trang thử, trang trống, đã gộp) — ghi lý do
+  · HOAN     = màn có trong kho nhưng host KHÔNG DÙNG (không có chức năng / không trên menu) → hoãn, chuyển khi host dùng — ghi lý do
   · PHU      = thư mục phụ / bản cũ song song, tách riêng khỏi tổng
   · đã kiểm host = có trong sổ _harness/kiem-host/da-kiem.json (ghi bằng node _harness/kiem-host/ghi-da-kiem.js)
   · lỗi mã      = trường loiCode trong sổ (node _harness/kiem-host/loi-code.js them | da-sua | xong) — kiểm lại đạt thì tự mất khỏi trang
@@ -36,8 +37,21 @@ TEN = {
 # Thứ tự đã chuyển (CLAUDE.md mục 11) — phân hệ mới chuyển thì thêm vào cuối
 THU_TU = ['ApisTaiChinh', 'ApisCongCanBo', 'ApisCongSinhVien', 'ApisChuyenCan', 'ApisCMS', 'ApisDangKyHoc',
           'ApisHocLaiThiLai', 'ApisRenLuyen', 'ApisXuLyHocVu', 'ApisHocBong', 'ApisTotNghiep', 'ApisQuanLyThiTracNghiem', 'ApisThiTracNghiem', 'ApisQuanLyDiem', 'ApisNhanSu', 'ApisSinhVien',
-          'ApisKeHoachChuongTrinh', 'ApisNhapHoc', 'ApisQuanlyTuyenSinh', 'ApisNCKH', 'ApisThiPhach', 'ApisTinTuc']
+          'ApisKeHoachChuongTrinh', 'ApisNhapHoc', 'ApisQuanlyTuyenSinh', 'ApisNCKH', 'ApisThiPhach', 'ApisTinTuc', 'ApisTKGG']
 
+HOAN = {
+    'ApisTKGG/Modules/danhmuc/html/danhmucdulieu.html': 'Host không có chức năng (6/10, người dùng: chỉ chuyển màn đang dùng)',
+    'ApisTKGG/Modules/dinhmuc/html/khungdinhmuc.html': 'Host không có chức năng (6/10, người dùng: chỉ chuyển màn đang dùng)',
+    'ApisTKGG/Modules/dinhmuc/html/khungdinhmuc_nhansu.html': 'Host không có chức năng (6/10, người dùng: chỉ chuyển màn đang dùng)',
+    'ApisTKGG/Modules/heso/html/gioquydoi.html': 'Host không có chức năng (6/10, người dùng: chỉ chuyển màn đang dùng)',
+    'ApisTKGG/Modules/heso/html/tylemiengiam.html': 'Host không có chức năng (6/10, người dùng: chỉ chuyển màn đang dùng)',
+    'ApisTKGG/Modules/heso/html/tylemiengiam_nhansu.html': 'Host không có chức năng (6/10, người dùng: chỉ chuyển màn đang dùng)',
+    'ApisTKGG/Modules/hoatdong/html/coithi.html': 'Host không có chức năng (6/10, người dùng: chỉ chuyển màn đang dùng)',
+    'ApisTKGG/Modules/hoatdong/html/dieuphoi.html': 'Host không có chức năng (6/10, người dùng: chỉ chuyển màn đang dùng)',
+    'ApisTKGG/Modules/hoatdong/html/giangday.html': 'Host không có chức năng (6/10, người dùng: chỉ chuyển màn đang dùng)',
+    'ApisTKGG/Modules/hoatdong/html/hoidong.html': 'Host không có chức năng (6/10, người dùng: chỉ chuyển màn đang dùng)',
+    'ApisTKGG/Modules/hoatdong/html/huongdan.html': 'Host không có chức năng (6/10, người dùng: chỉ chuyển màn đang dùng)',
+}
 BO_QUA = {
     'ApisQuanlyTuyenSinh/Modules/nhapdiem/html/nhapdiemtest.html': 'Trang thử, không phải màn nghiệp vụ',
     'ApisCMS/Modules/danhmuc/html/test.html': 'Trang thử, không phải màn nghiệp vụ',
@@ -75,6 +89,8 @@ for app in sorted(glob.glob('Apis*'), key=lambda a: (a in PHU, a not in THU_TU, 
             tt, ghi = 'xong', ngay(v2)
         elif f in BO_QUA:
             tt, ghi = 'bo', BO_QUA[f]
+        elif f in HOAN:
+            tt, ghi = 'hoan', HOAN[f]
         else:
             tt, ghi = 'chua', ''
         x = {'m': mod, 't': tep, 's': tt, 'g': ghi}
@@ -94,10 +110,11 @@ tinh = [p for p in phanhe if not p['phu']]
 tong = sum(len(p['man']) for p in tinh)
 xong = sum(1 for p in tinh for m in p['man'] if m['s'] == 'xong')
 bo = sum(1 for p in tinh for m in p['man'] if m['s'] == 'bo')
+hoan = sum(1 for p in tinh for m in p['man'] if m['s'] == 'hoan')
 luc = datetime.datetime.now().strftime('%H:%M %d/%m/%Y')
 
 daKiem = sum(1 for p in tinh for m in p['man'] if m.get('k'))
-DATA = json.dumps({'phanhe': phanhe, 'tong': tong, 'xong': xong, 'bo': bo, 'luc': luc, 'daKiem': daKiem}, ensure_ascii=False)
+DATA = json.dumps({'phanhe': phanhe, 'tong': tong, 'xong': xong, 'bo': bo, 'hoan': hoan, 'luc': luc, 'daKiem': daKiem}, ensure_ascii=False)
 
 TRANG = r'''<!DOCTYPE html>
 <html lang="vi">
@@ -157,6 +174,7 @@ summary .mini { width: 70px; flex: none; }
 .mod li { font-size: 12.5px; padding: 2px 9px; border-radius: 99px; background: var(--blue-l); color: var(--navy); overflow-wrap: anywhere; }
 .cot.chua .mod li { background: var(--warn-bg); color: var(--warn); }
 .mod li.bo { background: var(--mute-bg); color: var(--ink-2); text-decoration: line-through; }
+.mod li.hoan { background: var(--mute-bg); color: var(--ink-2); font-style: italic; border-left: 3px dashed var(--ink-2); }
 .mod li[title] { cursor: help; }
 .phu { padding: 0 16px 10px 36px; color: var(--ink-3); font-size: 12px; }
 .rong { padding: 16px; color: var(--ink-3); }
@@ -221,11 +239,12 @@ var D = __DATA__;
 function e(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
 function pct(a, b) { return b ? Math.round(a * 100 / b) : 0; }
 document.getElementById('luc').textContent = D.luc;
-var chua = D.tong - D.xong - D.bo;
+var chua = D.tong - D.xong - D.bo - D.hoan;
 document.getElementById('tong').innerHTML =
     '<div class="the"><b>' + D.tong + '</b><span>màn của bản gốc</span></div>' +
     '<div class="the xong"><b>' + D.xong + '</b><span>đã chuyển (' + pct(D.xong, D.tong) + '%)</span></div>' +
     '<div class="the"><b>' + D.bo + '</b><span>cố ý không chuyển</span></div>' +
+    '<div class="the"><b>' + D.hoan + '</b><span>hoãn — host chưa dùng</span></div>' +
     '<div class="the chua"><b>' + chua + '</b><span>chưa chuyển</span></div>' +
     '<div class="the kiem"><b>' + D.daKiem + '</b><span>đã kiểm trên host (' + pct(D.daKiem, D.xong) + '% màn đã chuyển)</span></div>' +
     '<div class="the" style="grid-column:1/-1"><div class="thanh"><i style="width:' + pct(D.xong + D.bo, D.tong) + '%"></i></div>' +
@@ -341,7 +360,7 @@ function khoi(p, loc, q) {
         '<div class="mod">' + Object.keys(g).map(function (k) {
             return '<h3>' + e(k) + '</h3><ul>' + g[k].map(function (m) {
                 var dau = m.k ? '<span class="dau nhan ' + mucDo(m.k) + '" title="Đã kiểm host — đọc: ' + e((DOC[m.k.d] || [m.k.d])[0]) + '; ghi: ' + e((GHI[m.k.g] || [m.k.g])[0]) + '">●</span>' : '';
-                return '<li' + (m.s === 'bo' ? ' class="bo" title="' + e(m.g) + '"' : '') + '>' + e(m.t) + dau + '</li>';
+                return '<li' + (m.s === 'bo' ? ' class="bo" title="' + e(m.g) + '"' : m.s === 'hoan' ? ' class="hoan" title="' + e(m.g) + '"' : '') + '>' + e(m.t) + dau + '</li>';
             }).join('') + '</ul>';
         }).join('') + '</div></details>';
 }
@@ -369,4 +388,4 @@ veHet();
 out = os.path.join(GOC, '_harness', 'tien-do.html')
 with open(out, 'w', encoding='utf-8', newline='\n') as fh:
     fh.write(TRANG.replace('__DATA__', DATA.replace('</', '<\\/')))
-print('Đã ghi', out, '—', xong, 'đã chuyển +', bo, 'cố ý bỏ /', tong, 'màn (không tính thư mục phụ)')
+print('Đã ghi', out, '—', xong, 'đã chuyển +', bo, 'cố ý bỏ +', hoan, 'hoãn /', tong, 'màn (không tính thư mục phụ)')

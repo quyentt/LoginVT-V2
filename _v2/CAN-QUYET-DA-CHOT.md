@@ -4235,3 +4235,33 @@ Bốn màn, không có việc dữ liệu mới trong `can-quyet.js`; các đi�
   Hiệu lực mặc định 1 khi thêm; tệp đính kèm `TT_Files` mỗi dòng một lời gọi như gốc.
 ### danhmuc/danhmucdulieu
 - Nạp chéo bản Đăng ký học (script gốc giống hệt, chỉ thiếu `page_load`).
+
+## Chốt ngày 2026-10-06 — Thống kê giờ giảng (ApisTKGG, 12/12 màn trên menu host, vai trò R39)
+
+Người dùng 6/10: "phải đăng nhập vào xem những màn đang dùng thì chuyển, chưa dùng thì ghi chú lại". Vai trò host `42EC44DF…` có 12 chức năng (11 màn `kehoach`
++ `dashboard` trống) = đúng 12 chức năng ApisTKGG trong CSDL host (mapping). **11 màn còn lại của kho** (`danhmuc/danhmucdulieu`, `dinhmuc/*` 2, `heso/*` 3,
+`hoatdong/*` 5) host không khai chức năng → HOÃN, ghi `HOAN` trong `tien-do.py`, chuyển khi host dùng. Tầng chung phân hệ: `_tkgg.js` (`ums.tkgg`: bộ lọc nối tầng
+Thời gian → KH tổng hợp → KH chi tiết hai họ lời gọi 'plain' / 'ma', ô Loại theo Phạm vi, hộp xác nhận hàng loạt + lịch sử xác nhận), `_phamvi.js`, `_kehoach.js`, `_heso.js`.
+Chi tiết "Khác gốc / Cố ý bỏ" ghi ở khối chú thích đầu từng tệp. Chưa kiểm host (thêm `apistkgg/` vào `ums.canQuyetChuaKiem`). Không có việc dữ liệu mới.
+
+- `kehoachchung`: ô Thời gian lọc gốc đổ hai nguồn chồng nhau → dùng `LayDSThoiGianTongHopKL`; cột Tên KHCT gốc đọc `Ten` → `TEN`; cột Hiệu lực so số; sửa công thức riêng
+  kế hoạch tìm nhóm chứa loại rồi chọn sẵn; Kế thừa lấy toàn bộ kế hoạch; "Tạo dữ liệu" đợt tách chỉ khi sửa. Cần chốt trên host: `PHAMVIAPDUNG_ID` của
+  `LayDSKLGD_CongThuc_ApDung` là id LOẠI hay NHÓM; `TaoDuLieu_KLGD_TongHopKL_Dot` không hoàn lại — không thử ghi tự động.
+- `kehoachchitiet`: thêm ô "Kế hoạch kế thừa" (gốc gửi nhưng không có ô); phân công nhân sự = khung thay chỗ (gốc có xử lý, không có nút); hàng đợi TINHPHI_KLGD "TinhTien"
+  bỏ (nút / bảng không có trên màn, callback không tồn tại). Cần chốt: "Tính khối lượng" chưa đánh dấu dòng gửi id rỗng như gốc — có bắt buộc chọn dòng?
+- `phamvicoithi` / `phamvichamthi` (`_phamvi.js`, `ums.tkggPV`): khung Thêm gửi ô của chính khung (gốc đọc ô khung ngoài / ô không có); hiện tên KH chi tiết, chưa chọn thì
+  chặn Lưu (gốc gửi rỗng); đổi "Được phân coi/chấm" nạp lại "Người thực hiện phân"; nút "Xóa" bảng gốc đã ghi chú (không lời gọi) → bỏ; chấm thi: ô Đợt phách nạp theo Môn.
+  Cần thử host: lưu lần hai cùng dòng có trùng không; cây tham số chuỗi ô lọc sổ theo dõi dựng từ chữ ký thủ tục.
+- `lophocphan` (tác tử bị cắt sau khi viết xong, đã kiểm lại bằng dữ liệu mẫu: Thêm lớp = khung thay chỗ, không hộp thoại, 0 lỗi; `do-man&sau=1` treo ở nút hàng loạt →
+  chỉ dò không `sau`): "Khác gốc / Cố ý bỏ" ở đầu `lophocphan.js`, `_lophocphan_them.js`, `_lophocphan_xem.js` — chưa rà bằng mắt, KIỂM HOST kỹ màn này trước.
+- `xacdinhphamvi`: lưới Giảng viên = `pat.rows` (+ `pat.pickNhanSu`, dòng mới gắn `rec` tay để biết `strNguoiDung_Id`); "Khóa dữ liệu" gốc không xử lý → disabled;
+  xoá nhiều / tạo dữ liệu / xác nhận tự động gốc có hàm nhưng không có nút → bỏ; Import giờ giảng (`IMPORTWITHPROC_DLKCT`) nối `ums.report.importChung` — KIỂM HOST.
+- `congthuctinh`: sửa công thức dò nhóm chứa loại (`PHAMVIAPDUNG_ID` = id loại — KIỂM HOST); Phạm vi + Loại + Xâu công thức bắt buộc; hộp Kế thừa tham số, hộp Xác nhận,
+  ô Kiểu dữ liệu / Số chữ số làm tròn (không gửi) → bỏ; "theo lớp học phần" = khung thay chỗ, lưu mỗi lớp một lời gọi `ui.batch`.
+- `hesoquymo` / `hesophamvi` (`_heso.js`): tên tham số lưu đảo nhau giữ nguyên; sửa đổ đúng ô (gốc đổ ô không tồn tại); hesophamvi bỏ 3 cột bảng gốc không đổ dữ liệu;
+  từ khoá lọc tại chỗ. Bẫy đã gặp: jQuery `trigger('change.select2')` (bộ kiểm) KHÔNG gọi handler `on('change')` trơn → nghe `'change change.select2'`;
+  crud đổ giá trị cũng bắn change → bỏ qua khi Phạm vi không đổi, bỏ phản hồi cũ bằng số lượt.
+- `dongia`: nhãn Phạm vi áp dụng (gốc `option:seleted` luôn trống) → tên kế hoạch; chặn Thêm khi chưa chọn kế hoạch; Hiệu lực hiện chữ; lưu danh mục xong nạp lại ô chọn.
+- `giangduong`: từ khoá lọc tại chỗ; nút Xem fa-eye; bỏ cột ô đánh dấu không nối nút nào.
+- `thu-crud` còn báo `dongia`, `xacdinhphamvi` "Lưu không gọi" vì bộ kiểm không chọn được bộ lọc kế hoạch tự dựng (màn chặn đúng khi chưa chọn kế hoạch) — đã kiểm
+  bằng trang dò riêng (thêm / sửa / xoá gọi đúng thủ tục). `thu-crud` nay điền hai lượt (ô phụ thuộc nạp xong mới điền).
