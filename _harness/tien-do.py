@@ -241,7 +241,7 @@ details.ck li.xau b { color: #a12020; }
         Ngày cạnh phân hệ đã chuyển = lần sửa gần nhất của tệp màn trong _v2.<br>
         <b>Đã kiểm trên host</b> = màn đã chạy thật trên host bằng bộ thử <code>_harness/kiem-host</code>: <i>đọc sâu</i> (mở màn, chọn ô lọc, bấm tab / trang 2 / Xem / Sửa / Thêm rồi đóng)
         và <i>thử ghi</i> (thêm bản ghi mang dấu ZKT, sửa, xoá chính nó, đối chứng đã mất). Dấu ● cạnh tên màn ở cột "Đã chuyển": xanh = đã kiểm, không vấn đề; vàng = đã kiểm, thử ghi chưa trọn hoặc đã sửa mã đang chờ kiểm lại;
-        đỏ = lỗi mã cần sửa / lỗi máy chủ / còn sót. Bảng đầu khối — cột <b>Tình trạng</b> của từng PHÂN HỆ: <i>Chưa kiểm</i> (chưa chạy trên host) → <i>Chưa CRUD</i> (mới đọc sâu, chưa thử thêm / sửa / xoá) → <i>CRUD dở</i> → <i>Đã hoàn thiện</i> (mọi màn có trên menu host đã đọc sâu và đã thử ghi hoặc đã xếp loại không thử có lý do, không còn lỗi code treo). Cột <b>Tình trạng</b> của từng màn: kết luận về MÃ giao diện mới của màn đó — "Đã kiểm sâu (không phát hiện lỗi từ code)" = đã đọc sâu và đã thử ghi (hoặc đã xếp loại không thử, có lý do), không còn lỗi mã nào treo; lỗi máy chủ / dữ liệu không tính vào đây. Cột <b>Lỗi mã</b>: lỗi của chính giao diện mới — kiểm lại trên host đạt thì mục tự mất khỏi cột. Màn đã chuyển mà không có dấu = phân hệ chưa đến lượt kiểm. <b>Chưa kiểm (lý do)</b>: màn đã chuyển nhưng không kiểm được trên host — bấm mở dropdown để xem từng màn và lý do (host chưa khai chức năng / có chức năng nhưng chưa gán vai trò thử); màn "CHƯA XẾP LOẠI" là màn có trong _v2 mà sổ chưa ghi gì — phải bổ sung lý do. Việc của quản trị CSDL / nghiệp vụ nằm ở khung "Ghi chú chuyển đổi" trên từng màn.
+        đỏ = lỗi mã cần sửa / lỗi máy chủ / còn sót. Bảng đầu khối — cột <b>Tình trạng</b> của từng PHÂN HỆ luôn ghi "N/M màn trên host" (M = màn host có chức năng; màn host chưa khai chức năng không tính): <i>Chưa kiểm</i> → <i>Đọc sâu xong N/M — chưa thử ghi</i> → <i>thử ghi dở</i> → <i>Đã hoàn thiện N/M</i> (mọi màn trên menu host đã đọc sâu và đã thử ghi hoặc đã xếp loại không thử có lý do, không còn lỗi code treo), kèm số màn chưa kiểm và lý do. Cột <b>Tình trạng</b> của từng màn: kết luận về MÃ giao diện mới của màn đó — "Đã kiểm sâu (không phát hiện lỗi từ code)" = đã đọc sâu và đã thử ghi (hoặc đã xếp loại không thử, có lý do), không còn lỗi mã nào treo; lỗi máy chủ / dữ liệu không tính vào đây. Cột <b>Lỗi mã</b>: lỗi của chính giao diện mới — kiểm lại trên host đạt thì mục tự mất khỏi cột. Màn đã chuyển mà không có dấu = phân hệ chưa đến lượt kiểm. <b>Chưa kiểm (lý do)</b>: màn đã chuyển nhưng không kiểm được trên host — bấm mở dropdown để xem từng màn và lý do (host chưa khai chức năng / có chức năng nhưng chưa gán vai trò thử); màn "CHƯA XẾP LOẠI" là màn có trong _v2 mà sổ chưa ghi gì — phải bổ sung lý do. Việc của quản trị CSDL / nghiệp vụ nằm ở khung "Ghi chú chuyển đổi" trên từng màn.
     </div>
 </div>
 <script>
@@ -315,19 +315,23 @@ function veChuaKiem(p, moi) {
         return '<li' + (x.xau ? ' class="xau"' : '') + '><b>' + e(x.m.m + '/' + x.m.t) + '</b>' + (x.m.k && x.m.k.n ? ' ' + e(x.m.k.n) : '') + ' — ' + e(x.ngan) + (x.dai ? '<br><i>' + e(x.dai) + '</i>' : '') + '</li>';
     }).join('') + '</ul></details>';
 }
+/* Người dùng 6/10: nhãn phải ghi rõ "đã … N/M màn trên host" — M = màn host có chức năng (đã chạy trên menu + có chức năng
+   nhưng chưa gán vai trò thử); màn host chưa khai chức năng không tính vào M (không ai mở được). */
 function ttPhanHe(p) {
     var tat = daKiem(p);
     if (!p.kiem || !tat.length) return ['Chưa kiểm', ''];
+    var ck = dsChuaKiem(p), chuaGan = ck.filter(function (x) { return /chưa gán/.test(x.ngan); }).length;
+    var tren = tat.length + '/' + (tat.length + chuaGan) + ' màn trên host';
+    var duoi = ck.length ? ' — ' + tomTatChuaKiem(ck) : '';
     var lc = [];
     tat.forEach(function (m) { m.k.lc.forEach(function (l) { lc.push(l); }); });
-    if (lc.some(function (l) { return l.tt === 'can-sua'; })) return ['Có lỗi code — cần sửa', 'xau'];
-    if (lc.length) return ['Đã sửa lỗi code — chờ kiểm lại', 'vua'];
+    if (lc.some(function (l) { return l.tt === 'can-sua'; })) return ['Có lỗi code — cần sửa (' + tren + ')', 'xau'];
+    if (lc.length) return ['Đã sửa lỗi code — chờ kiểm lại (' + tren + ')', 'vua'];
     var chua = tat.filter(function (m) { return !m.k.g; }).length;
-    if (chua === tat.length) return ['Chưa CRUD (mới đọc sâu)', 'vua'];
-    if (chua) return ['CRUD dở — còn ' + chua + ' màn', 'vua'];
-    var ck = dsChuaKiem(p);
-    if (ck.some(function (x) { return x.xau; })) return ['Đã hoàn thiện — ' + ck.length + ' màn chưa kiểm, CÓ MÀN CHƯA XẾP LOẠI', 'vua'];
-    return [ck.length ? 'Đã hoàn thiện — ' + tomTatChuaKiem(ck) : 'Đã hoàn thiện', 'tot'];
+    if (chua === tat.length) return ['Đọc sâu xong ' + tren + ' — chưa thử ghi' + duoi, 'vua'];
+    if (chua) return ['Đọc sâu xong ' + tren + ' — thử ghi dở, còn ' + chua + ' màn' + duoi, 'vua'];
+    if (ck.some(function (x) { return x.xau; })) return ['Đã hoàn thiện ' + tren + ' — ' + ck.length + ' màn chưa kiểm, CÓ MÀN CHƯA XẾP LOẠI', 'vua'];
+    return ['Đã hoàn thiện ' + tren + duoi, 'tot'];
 }
 function veBangPH() {
     var ds = D.phanhe.filter(function (p) { return !p.phu && p.man.some(function (m) { return m.s === 'xong'; }); });
