@@ -172,3 +172,5 @@ CLAUDE.md mục 10 chỉ còn bản tóm tắt; chi tiết từng khối (menu, 
 
 
 - **Đầu khung nhiều nút (6/10, người dùng: "hệ thống action lớn phải xuống dòng, title không được co cụm")** — `components/panel.css`: `.ums-panel__head` `flex-wrap: wrap`, tiêu đề `flex: 0 0 auto; white-space: nowrap`, `.ums-panel__tools` `flex: 1 1 auto; flex-wrap: wrap; justify-content: flex-end`. Dãy nút dài hơn chỗ còn lại thì cả dãy xuống dòng dưới tiêu đề, nút trong dãy tự xuống dòng tiếp; khung ít nút không đổi (đo: lophocphan đầu khung 139px, tiêu đề 1 dòng; vanban / congthuctinh giữ 63px).
+
+- **Hộp tiến độ `ui.batch` chỉ hiện khi việc kéo dài > 300 ms** (6/10, người dùng: "bấm Lưu hiện modal nhưng tắt ngay lập tức" ở phạm vi chấm thi với dữ liệu mẫu). Lô xong trước 300 ms thì không bật hộp, chỉ còn thông báo nổi; lô dài vẫn có thanh tiến độ như trước.

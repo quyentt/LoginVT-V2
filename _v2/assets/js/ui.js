@@ -906,8 +906,16 @@
         var ok = 0, failed = 0, errors = [], results = [];
         if (!total) return Promise.resolve({ ok: 0, fail: 0, errors: [], results: [] });
 
-        var box = null, bar = null, lbl = null;
-        if (total > 1 || opts.show) {
+        var box = null, bar = null, lbl = null, hen = 0, xong = false;
+        var idx = 0, stop = false, done = 0;
+        function veTienDo() {
+            if (bar) bar.style.width = Math.round(done / total * 100) + '%';
+            if (lbl) lbl.textContent = done + ' / ' + total + (failed ? ' — ' + failed + ' lỗi' : '');
+        }
+        /* Hộp tiến độ chỉ hiện khi việc kéo dài quá 300 ms — lô nhỏ xong tức thì (dữ liệu mẫu, 1–2 lời gọi nhanh) thì hộp
+           bật rồi tắt ngay, người dùng 6/10 tưởng là lỗi ("hiện modal nhưng tắt ngay lập tức"). */
+        function moHop() {
+            if (xong || box) return;
             box = ui.dialog({
                 title: opts.title || 'Đang xử lý', icon: 'fa-spinner fa-spin', size: 'sm',
                 body: '<div class="ums-u-fz13 ums-u-muted ums-u-mb-2" data-b="lbl">0 / ' + total + '</div>' +
@@ -915,15 +923,15 @@
             });
             bar = box.body.querySelector('[data-b="bar"]');
             lbl = box.body.querySelector('[data-b="lbl"]');
+            veTienDo();
         }
+        if (total > 1 || opts.show) hen = setTimeout(moHop, 300);
 
-        var idx = 0, stop = false, done = 0;
         var conc = Math.max(1, opts.concurrency || 1);
 
         function tick() {
             done++;
-            if (bar) bar.style.width = Math.round(done / total * 100) + '%';
-            if (lbl) lbl.textContent = done + ' / ' + total + (failed ? ' — ' + failed + ' lỗi' : '');
+            veTienDo();
         }
 
         function worker() {
@@ -941,6 +949,7 @@
         for (var k = 0; k < conc; k++) pool.push(worker());
 
         return Promise.all(pool).then(function () {
+            xong = true; clearTimeout(hen);
             if (box) box.close();
             if (opts.toast !== false) {
                 if (ok) ui.toast((opts.okText || 'Hoàn thành') + ' ' + ok + '/' + total, failed ? 'warn' : 'ok');

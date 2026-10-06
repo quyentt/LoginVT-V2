@@ -335,7 +335,7 @@ Không bao giờ reject — lỗi từng lời gọi nằm trong r.errors. Hết
 (401) thì dừng và đăng xuất như ums.api.handle.                        
 ```
 
-### `ums.ui.print(what, opts)`  <sub>ui.js:957</sub>
+### `ums.ui.print(what, opts)`  <sub>ui.js:966</sub>
 
 ```text
  ---------- In ----------------------------------------------------------
@@ -344,19 +344,19 @@ chứa nội dung cần in. Nhận id, phần tử, hoặc chuỗi HTML.
 `css` thêm kiểu riêng cho bản in (mẫu phiếu thu, hoá đơn…).          
 ```
 
-### `ums.ui.fail(msg, retryAttr)`  <sub>ui.js:981</sub>
+### `ums.ui.fail(msg, retryAttr)`  <sub>ui.js:990</sub>
 
 ```text
  Khối báo lỗi đặt trong vùng nội dung, kèm nút thử lại 
 ```
 
-### `ums.ui.datepicker(sel, opts)`  <sub>ui.js:992</sub>
+### `ums.ui.datepicker(sel, opts)`  <sub>ui.js:1001</sub>
 
 ```text
  ---------- Gắn thư viện ngoài ----------------------------------------- 
 ```
 
-### `ums.ui.select2(sel, opts)`  <sub>ui.js:1076</sub>
+### `ums.ui.select2(sel, opts)`  <sub>ui.js:1085</sub>
 
 ```text
  ---------- Ô CHỌN — MỘT KIỂU DUY NHẤT CHO CẢ HỆ -------------------------
@@ -373,11 +373,11 @@ dấu `data-no-s2` trên chính thẻ <select>.
 thẻ làm ô cao lên và vỡ hàng lọc.                                     
 ```
 
-### `ums.ui.hoverCard(khung, chon, dung)`  <sub>ui.js:1212</sub>
+### `ums.ui.hoverCard(khung, chon, dung)`  <sub>ui.js:1221</sub>
 
 _(chưa có chú thích trong mã)_
 
-### `ums.ui.file(opts)`  <sub>ui.js:1267</sub>
+### `ums.ui.file(opts)`  <sub>ui.js:1276</sub>
 
 ```text
  ---------- Ô CHỌN TỆP ----------------------------------------------
@@ -393,27 +393,27 @@ Tên tệp do ums.ui.enhance tự cập nhật — màn hình không phải gắ
 và `[data-k]` vẫn nằm trên chính <input> nên mã cũ tìm ô không đổi. 
 ```
 
-### `ums.ui.enhance(root)`  <sub>ui.js:1281</sub>
+### `ums.ui.enhance(root)`  <sub>ui.js:1290</sub>
 
 _(chưa có chú thích trong mã)_
 
-### `ums.ui.chart(canvas, cfg)`  <sub>ui.js:1350</sub>
+### `ums.ui.chart(canvas, cfg)`  <sub>ui.js:1359</sub>
 
 _(chưa có chú thích trong mã)_
 
-### `ums.ui.reveal(el, opts)`  <sub>ui.js:1371</sub>
+### `ums.ui.reveal(el, opts)`  <sub>ui.js:1380</sub>
 
 ```text
  Hiện một vùng đang ẩn, kèm hiệu ứng trượt lên 
 ```
 
-### `ums.ui.swap(out, into, opts)`  <sub>ui.js:1398</sub>
+### `ums.ui.swap(out, into, opts)`  <sub>ui.js:1407</sub>
 
 ```text
  Ẩn vùng này, hiện vùng kia kèm hiệu ứng. Trả về vùng vừa hiện. 
 ```
 
-### `ums.ui.taiTep(ten, kieu, noiDung)`  <sub>ui.js:1476</sub>
+### `ums.ui.taiTep(ten, kieu, noiDung)`  <sub>ui.js:1485</sub>
 
 ```text
  ---------- Tải tệp dựng ở máy khách -----------------------------------
@@ -423,7 +423,7 @@ Excel ở đây là BẢNG HTML lưu đuôi .xls (Excel mở được, không c�
 SheetJS tải từ CDN như vài màn gốc — _v2 không phụ thuộc CDN).        
 ```
 
-### `ums.ui.xuatXls(ten, o)`  <sub>ui.js:1481</sub>
+### `ums.ui.xuatXls(ten, o)`  <sub>ui.js:1490</sub>
 
 _(chưa có chú thích trong mã)_
 
@@ -729,7 +729,7 @@ Không có MathJax (dữ liệu mẫu, host không có tệp) → không làm g�
        hoặc gọn trong .then của lời gọi nạp:  rows = ums.lamTruoc.neuRong(rows, { … })
      Trùng (cùng danh mục / cùng ô) chỉ hiện một lần.
 
-   Tắt: site.config.js → behavior.lamTruoc = false. Chế độ dữ liệu mẫu chỉ bật
+   Tắt: site.config.js → behavior.lamTruoc = false, hoặc Cài đặt → Hành vi (ghi đè localStorage). Chế độ dữ liệu mẫu chỉ bật
    khi URL có `lamtruoc` (dữ liệu mẫu thiếu nhiều danh mục → báo nhiễu).
    Bấm × : ẩn khung của MÀN đó tới hết phiên (sessionStorage), mục mới phát sinh
    sau đó vẫn hiện lại.
@@ -743,35 +743,35 @@ Không có MathJax (dữ liệu mẫu, host không có tệp) → không làm g�
  Vỏ gọi mỗi lần mở một chức năng (app.js openFunction) — xoá khung cũ, bắt đầu gom cho màn mới. 
 ```
 
-### `ums.lamTruoc.danhMucRong(ma)`  <sub>lamtruoc.js:79</sub>
+### `ums.lamTruoc.danhMucRong(ma)`  <sub>lamtruoc.js:80</sub>
 
 ```text
  api.js gọi khi một danh mục dùng chung trả 0 dòng 
 ```
 
-### `ums.lamTruoc.sauGoi(opts)`  <sub>lamtruoc.js:101</sub>
+### `ums.lamTruoc.sauGoi(opts)`  <sub>lamtruoc.js:102</sub>
 
 ```text
  api.js gọi khi MỌI lời gọi trả 0 dòng 
 ```
 
-### `ums.lamTruoc.can(o)`  <sub>lamtruoc.js:111</sub>
+### `ums.lamTruoc.can(o)`  <sub>lamtruoc.js:112</sub>
 
 ```text
  Màn tự khai 
 ```
 
-### `ums.lamTruoc.neuRong(rows, o)`  <sub>lamtruoc.js:112</sub>
+### `ums.lamTruoc.neuRong(rows, o)`  <sub>lamtruoc.js:113</sub>
 
 _(chưa có chú thích trong mã)_
 
-### `ums.lamTruoc.layDanhMucCho()`  <sub>lamtruoc.js:115</sub>
+### `ums.lamTruoc.layDanhMucCho()`  <sub>lamtruoc.js:116</sub>
 
 ```text
  Màn Danh mục dữ liệu đọc một lần sau khi nạp cây danh mục 
 ```
 
-### `ums.lamTruoc.giuViTri()`  <sub>lamtruoc.js:166</sub>
+### `ums.lamTruoc.giuViTri()`  <sub>lamtruoc.js:167</sub>
 
 ```text
  Khung Ghi chú vẽ SAU khung này (veCanQuyet chèn lên đầu) → giữ khung này ngay dưới Ghi chú 
@@ -854,7 +854,7 @@ _(chưa có chú thích trong mã)_
 
 </details>
 
-### `ums.canQuyetKhoa(url)`  <sub>can-quyet.js:293</sub>
+### `ums.canQuyetKhoa(url)`  <sub>can-quyet.js:299</sub>
 
 _(chưa có chú thích trong mã)_
 
