@@ -239,7 +239,7 @@
     /* Phòng trống một ngày + khung tiết. boQua = IDLICHHOC bỏ qua — có truyền (hộp đổi lịch) thì không nhớ kết quả */
     function goiTrong(ngay, tu, den, loai, boQua) {
         var bd = gioTiet(tu, false), kt = gioTiet(den, true), nho = boQua === undefined;
-        var k = ngay + '|' + tu + '|' + den + '|' + loai, c = nho && nhoTrong[k];
+        var k = ngay + '|' + tu + '|' + den, c = nho && nhoTrong[k];   // khoá KHÔNG kèm loại phòng: máy chủ luôn nhận strKieuPhong rỗng → đổi loại dùng lại kết quả đã nhớ (kiểm host 6/10)
         if (c && Date.now() - c.t < HAN_NHO) return Promise.resolve(c.d);
         if (nho && dangTrong[k]) return dangTrong[k];
         var p = ums.api.call({ action: TRONG.action, func: TRONG.func, silent: true, strNgay: ngay,

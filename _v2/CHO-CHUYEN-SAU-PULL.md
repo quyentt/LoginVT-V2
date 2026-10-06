@@ -16,7 +16,7 @@ Lần sau so: `git diff --name-status 3c3b2d70 origin/main`. Bốn tệp gốc �
 
 | Phân hệ | Màn | Tệp gốc | Trạng thái |
 |---|---|---|---|
-| Cổng cán bộ (đã chuyển, đã kiểm host) | `lichgiang/lichgiangnhieuphonghoc` | html + js | **đã chuyển 6/10 chiều**: tìm phòng trống (lọc + hộp đổi lịch) không gửi `strKieuPhong` nữa (gốc: gửi 'LT'/'TH' thì thủ tục trả 0 phòng; loại đã lọc ở máy khách) → `goiTrong` gửi rỗng. Bỏ: đổi version script html, console.warn. Chưa kiểm lại trên host |
+| Cổng cán bộ (đã chuyển, đã kiểm host) | `lichgiang/lichgiangnhieuphonghoc` | html + js | **đã chuyển 6/10 chiều**: tìm phòng trống (lọc + hộp đổi lịch) không gửi `strKieuPhong` nữa (gốc: gửi 'LT'/'TH' thì thủ tục trả 0 phòng; loại đã lọc ở máy khách) → `goiTrong` gửi rỗng. Bỏ: đổi version script html, console.warn. **Kiểm lại trên host 6/10 tối ĐẠT** (thủ tục trả 242–250 phòng / ngày với `strKieuPhong` rỗng; lọc LT / TH ở máy khách 235 / 217 ô; hộp đổi lịch mở – đóng sạch). Sửa thêm: khoá nhớ kết quả bỏ loại phòng (đổi loại không gọi lại) — gói bổ sung chờ up |
 | Quản lý tuyển sinh (đã chuyển, chưa kiểm host) | `tuyensinh/kehoachtuyensinhnew` | html + js | **chưa xem** — mở diff khi kiểm host Tuyển sinh |
 
 ## Lần kéo 7 (5/10 tối) — ĐÃ CHUYỂN HẾT, mốc gốc đã chuyển nay là `1680e53d` (gốc bị force-push từ `0551deba`)
