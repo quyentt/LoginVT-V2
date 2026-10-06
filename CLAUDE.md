@@ -451,7 +451,8 @@ Mở bằng `file://` là trắng trang (CORS). Lên host phải nằm TRONG d�
 | Thi trắc nghiệm `ApisThiTracNghiem` (trang làm bài .aspx) | 0 | — | DỪNG (5/10, xác nhận lại 6/10 sau khảo sát: trang ASPX độc lập 3.202 dòng, cổng thí sinh `eIndex.aspx` + `eassets/` không có trong kho, 2 trang thiếu HTML, kiểm host = làm bài thật) | — |
 | Tin tức `ApisTinTuc` | 4/4 | R46 `TT-` | 5/10 | chưa |
 | Thống kê giờ giảng `ApisTKGG` | 12/12 màn host dùng (11 màn kho hoãn — host chưa khai chức năng) | R39 `TKGG-` | 6/10 | chưa |
-| Còn lại: Ký túc xá, Luận văn, Danh hiệu | — | — | chưa | — |
+| Luận văn, luận án `ApisLuanVanLuanAn` | 1/17 (`danhmuc/danhmucdulieu` nạp chéo DKH; 16 màn kehoach / luanvan / luanan chờ gọi) | R22 `LVLA-` | 6/10 bắt đầu | chưa |
+| Còn lại: Ký túc xá, Danh hiệu | — | — | chưa | — |
 
 **Đã xong 6/10:** TKGG 12/12 (chỉ màn host đang dùng — người dùng 6/10; 11 màn kho không có chức năng → trạng thái "hoãn" mới trên tien-do, `HOAN` trong tien-do.py);
 bẫy jQuery `trigger('change.select2')` không gọi handler `on('change')` trơn → ô phụ thuộc phải nghe `'change change.select2'`; `thu-crud` điền hai lượt.
@@ -467,7 +468,7 @@ CLAUDE.md / BO-CUC), grep hàm trong tệp gốc lớn thay vì đọc nguyên t
 
 | Việc | Công cụ | Thay cho |
 |---|---|---|
-| Hiểu màn gốc | `PYTHONIOENCODING=utf-8 python _harness\tom-tat-goc.py <html gốc> [--ham a,b]` → vùng, hàm, MỌI lời gọi API kèm tham số, hàm edu.* dùng, id lệch (mã chết) | đọc nguyên văn 1.000–3.000 dòng |
+| Hiểu màn gốc | `PYTHONIOENCODING=utf-8 python _harness	om-tat-goc.py <html gốc> [--ham a,b]` → vùng, hàm, MỌI lời gọi API kèm tham số, hàm edu.* dùng, id lệch (mã chết); **mục 7 (6/10): màn gốc khác trùng ≥ 85% đã chuyển → nạp chéo script nào; từng action / danh mục đã chuyển ở tệp `_v2` nào dòng nào; hàm edu.* → tên hàm ums.* thay** | đọc nguyên văn 1.000–3.000 dòng **và dò tay màn cũ xem có giống không** |
 | Chữ ký tầng chung | [_v2/API.md](_v2/API.md) (sinh: `python _harness\sinh-api.py`; `--kiem` = hàm thiếu chú thích) — tra theo tên hàm | grep ui.js / crud.js / patterns.js / ref.js / report.js |
 | Tên lớp CSS | [_v2/CLASS.md](_v2/CLASS.md) (sinh: `python _harness\sinh-class.py`) | đoán lớp rồi grep CSS |
 | Dò một màn vừa chuyển | `_harness/do-man.html?vt=R..&man=<ID>&sau=1&tho=1` qua `chay-cdp.js` — bấm Thêm / Sửa / mọi nút trên dòng, đếm dialog, nút Đóng, lỗi console | viết trang dò riêng mỗi phân hệ |

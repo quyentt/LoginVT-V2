@@ -1007,6 +1007,11 @@
                 ['danhmuc', 'Danh mục', 'fa fa-list', [
                     ['danhmucdulieu', 'Danh mục dữ liệu']]]
             ], null, { prefix: 'TT', app: 'ApisTinTuc' }),
+            /* Luận văn, luận án (R22) — ApisLuanVanLuanAn, ID LVLA-<module>-<tệp>. Mới chuyển module danhmuc (6/10); kehoach / luanvan / luanan thêm sau, thứ tự chép menu host. */
+            R22: buildMenu([
+                ['danhmuc', 'Danh mục', 'fa fa-list', [
+                    ['danhmucdulieu', 'Danh mục dữ liệu']]]
+            ], null, { prefix: 'LVLA', app: 'ApisLuanVanLuanAn' }),
             /* Thống kê giờ giảng (R39) — ApisTKGG, ID TKGG-<module>-<tệp>. Đúng 12 mục trên menu host 6/10 (vai trò 42EC44DF…); 11 màn khác của kho không có trên menu → chưa chuyển. */
             R39: buildMenu([
                 ['kehoach', 'Tổng hợp giờ', 'fa fa-clock-o', [

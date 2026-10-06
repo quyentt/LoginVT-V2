@@ -51,6 +51,10 @@ Trên máy chỉ có `_v2` thì phần này KHÔNG chạy thử được — thi
 `dataSource: 'auto'` luôn rơi về dữ liệu mẫu. Đừng mất công sửa `api.js` mò
 mẫm ở đó; để dành đến khi có host.
 
+24. **Luận văn, luận án (ApisLuanVanLuanAn) — BẮT ĐẦU 1/17 (2026-10-06)**: màn `danhmuc/danhmucdulieu` nạp chéo bản Đăng ký học (script gốc trùng 100% bản
+   Tin tức, lệch DKH đúng dòng `edu.system.page_load()`); mọi lời gọi `CMS_DanhMucDuLieu/...` không phụ thuộc tiền tố phân hệ. Vai trò mẫu **R22**, ID `LVLA-<module>-<tệp>`,
+   menu mẫu mới chỉ nhóm Danh mục; 16 màn `kehoach` (3) / `luanvan` (7) / `luanan` (6) chưa chuyển — làm khi người dùng gọi. Ba trang kiểm + icon chuẩn đạt 1/1. Chưa kiểm host.
+
 ### Việc kế tiếp
 
 1. ~~**Kiểm chứng API thật trên host.**~~ **XONG (2026-09-20)** — người dùng

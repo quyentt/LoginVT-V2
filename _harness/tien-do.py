@@ -37,7 +37,7 @@ TEN = {
 # Thứ tự đã chuyển (CLAUDE.md mục 11) — phân hệ mới chuyển thì thêm vào cuối
 THU_TU = ['ApisTaiChinh', 'ApisCongCanBo', 'ApisCongSinhVien', 'ApisChuyenCan', 'ApisCMS', 'ApisDangKyHoc',
           'ApisHocLaiThiLai', 'ApisRenLuyen', 'ApisXuLyHocVu', 'ApisHocBong', 'ApisTotNghiep', 'ApisQuanLyThiTracNghiem', 'ApisThiTracNghiem', 'ApisQuanLyDiem', 'ApisNhanSu', 'ApisSinhVien',
-          'ApisKeHoachChuongTrinh', 'ApisNhapHoc', 'ApisQuanlyTuyenSinh', 'ApisNCKH', 'ApisThiPhach', 'ApisTinTuc', 'ApisTKGG']
+          'ApisKeHoachChuongTrinh', 'ApisNhapHoc', 'ApisQuanlyTuyenSinh', 'ApisNCKH', 'ApisThiPhach', 'ApisTinTuc', 'ApisTKGG', 'ApisLuanVanLuanAn']
 
 HOAN = {
     'ApisTKGG/Modules/danhmuc/html/danhmucdulieu.html': 'Host không có chức năng (6/10, người dùng: chỉ chuyển màn đang dùng)',
