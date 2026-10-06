@@ -234,3 +234,8 @@ Luật kiểm host hiện hành nằm ở CLAUDE.md mục 9 (bản rút gọn). 
   tay vào sổ: 27 màn chỉ xem / thống kê; 6 màn lỗi backend khi mở (đã có ben); 34 màn không thử có lý do (nhập điểm thật, duyệt / xác nhận một chiều,
   đổi lịch, phân công thi / giảng viên, mượn phòng, mời giảng tạo hồ sơ nhân sự, lý lịch khoa học thật). Trang tiến độ: "Đã hoàn thiện 87/103 màn trên host".
   Bài học: xong một phân hệ thì MỌI màn trên menu phải có kết luận ở cột thử ghi (sạch / chỉ xem / không thử + lý do) — không để trống rồi báo xong.
+- **Chiều 6/10 — 24 màn "có chức năng, chưa gán vai trò thử"** (người dùng: "có chức năng thì màn vẫn mở được, tại sao không kiểm"): tra menu cả 48 vai trò
+  của tài khoản thử → **13 màn nằm ở vai trò khác**: 9 dashboardv2 (vai trò Dashboard), duyethoidong (Chuyên cần), daqhht (Sinh viên), thi/phanphuckhao
+  (Thi phách), DKH kehoachmua (Tài chính) → đọc sâu ngay bằng `CHI=` trên vai trò đó: 13/13 mở tốt, 0 lỗi; ghi sổ (dashboard = chỉ xem; ba màn còn lại
+  không thử ghi có lý do). **11 màn không nằm ở vai trò nào của tài khoản thử** (7 miengiam Tài chính, 4 sổ coi / chấm thi CCB) → chưa mở được;
+  việc cấp chức năng cho vai trò thử là của quản trị / người dùng. Tiến độ CCB: Kiểm xong 99/103 màn trên host.
