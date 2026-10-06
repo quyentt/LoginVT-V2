@@ -135,7 +135,7 @@
 
     function tinhKhoiLuong() {
         var ids = H.daChon(root, 'kct');
-        ui.confirm('Bạn có chắc chắn <span class="ums-u-danger">Tính khối lượng</span> không?', { ok: 'Tính khối lượng' }).then(function (yes) {
+        ui.confirm('Bạn có chắc chắn tính khối lượng cho kế hoạch đã chọn không?', { ok: 'Tính khối lượng' }).then(function (yes) {
             if (!yes) return;
             ums.api.call({ action: 'TKGG_HangDoi/TaoHangDoi_Tinh_KLGD_TuDong', method: 'GET', strTuKhoa: crud.filterValues().q || '', strChucNang_Id: '', strKLGD_KeHoachChiTiet_Id: ids.join(',') })
                 .then(function () { ui.toast('Khởi tạo dữ liệu thành công, vui lòng chạy tiến trình để thực hiện!', 'ok'); if (queue) queue.reload(); })
