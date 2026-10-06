@@ -230,3 +230,7 @@ Luật kiểm host hiện hành nằm ở CLAUDE.md mục 9 (bản rút gọn). 
   đợt xét TN, phúc khảo chỉ huỷ sau nộp phí, đăng ký lớp thật, sửa hồ sơ thật, xác nhận một lần). 15 màn ngoài menu: host chưa khai chức năng.
 - **Lỗi mã bắt được khi lái tay:** đổi màn qua hash khi hộp thoại còn mở → hộp của màn cũ đè lên màn mới (hộp Kết quả của Đồng phục còn trên màn Công nhận điểm).
   Sửa `app.js route()`: đóng mọi `dialog.ums-dialog[open]` trước khi vào màn mới. Chưa kiểm trên host (gói bổ sung).
+- **Chiều 6/10 (người dùng: Cổng cán bộ "rõ ràng đã báo kiểm xong rồi mà"):** 67 màn CCB trên menu host chỉ mới đọc sâu, sổ để trống cột thử ghi → xếp loại
+  tay vào sổ: 27 màn chỉ xem / thống kê; 6 màn lỗi backend khi mở (đã có ben); 34 màn không thử có lý do (nhập điểm thật, duyệt / xác nhận một chiều,
+  đổi lịch, phân công thi / giảng viên, mượn phòng, mời giảng tạo hồ sơ nhân sự, lý lịch khoa học thật). Trang tiến độ: "Đã hoàn thiện 87/103 màn trên host".
+  Bài học: xong một phân hệ thì MỌI màn trên menu phải có kết luận ở cột thử ghi (sạch / chỉ xem / không thử + lý do) — không để trống rồi báo xong.
