@@ -24,6 +24,9 @@
      · Dòng mới đọc tên cột theo bản gốc (MASO, HODEM, TEN, LOP, LOP_ID) và lùi về cột của
        LayDSNguoiHoc (QLSV_NGUOIHOC_MASO …, DAOTAO_LOPQUANLY_*) — gốc chỉ đọc tên cũ nên dòng mới
        hiện "undefined" và gửi LOP_ID rỗng. Kiểm tên cột trên host.
+     · Dòng mới gửi strQLSV_NguoiHoc_Id = QLSV_NGUOIHOC_ID của dòng hộp chọn SV (kiểm host 6/10: LayDSNguoiHoc
+       trả ID = bản ghi đào tạo ≠ QLSV_NGUOIHOC_ID; gốc gửi ID nên máy chủ từ chối "Người học không tồn tại"
+       với MỌI dòng thêm mới — thêm mới ở bản gốc chưa từng lưu được). Dòng sửa gốc cũng gửi QLSV_NGUOIHOC_ID.
      · Chọn trùng một SV đã có trong bảng thì bỏ qua (gốc thêm dòng trùng).
      · Lưu xong nạp lại một lần (gốc: mỗi lời gọi xong đều thử nạp lại).
      · Xoá nhiều dòng = ums.ui.xoaChon (luật chung); dòng mới chưa lưu gỡ bằng nút thùng rác trên dòng.
@@ -59,6 +62,7 @@
     function tuHop(r) {
         return {
             ID: r.ID,
+            NH_ID: e(r.QLSV_NGUOIHOC_ID) || e(r.ID),
             MASO: e(r.MASO) || e(r.QLSV_NGUOIHOC_MASO),
             HODEM: e(r.HODEM) || e(r.QLSV_NGUOIHOC_HODEM),
             TEN: e(r.TEN) || e(r.QLSV_NGUOIHOC_TEN),
@@ -137,7 +141,7 @@
                 var r = moi.filter(function (x) { return x.ID === id; })[0];
                 if (r) {   // gốc: dòng mới không có giá trị cũ → luôn lưu, kể cả lý do trống
                     calls.push({ action: XL + 'FSkkLB4QDRIXHg8JHhU0BikoDykgLx4XKBEpICwP', func: PK + 'Them_QLSV_NH_TuGhiNhan_ViPham',
-                        type: 'POST', strId: '', strQLSV_NguoiHoc_Id: r.ID, strDaoTao_LopQuanLy_Id: r.LOP_ID, strMoTa: mt, strNguoiThucHien_Id: cc.uid() });
+                        type: 'POST', strId: '', strQLSV_NguoiHoc_Id: r.NH_ID, strDaoTao_LopQuanLy_Id: r.LOP_ID, strMoTa: mt, strNguoiThucHien_Id: cc.uid() });
                 }
             } else if (mt !== i.getAttribute('data-cu')) {
                 var d = ds.filter(function (x) { return x.ID === id; })[0];

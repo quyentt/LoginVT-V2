@@ -435,7 +435,7 @@ Mở bằng `file://` là trắng trang (CORS). Lên host phải nằm TRONG d�
 | Tài chính `ApisTaiChinh` | 72/73 | R33 `TC-` | 19/9 | đọc sâu + thử ghi xong |
 | Cổng cán bộ `ApisCongCanBo` | 152/152 | R02 `CCB-` | 22/9 | 6/10: **87/152 màn có trên menu host** đọc sâu sạch (6 lỗi backend đã có sổ), thử ghi 17 màn sạch; **65 màn KHÔNG có trên menu host, chưa kiểm được** (sổ `khong-tren-menu`: klgd 28, dashboardv2 9, thi 7, coithi 3…) |
 | Cổng sinh viên `ApisCongSinhVien` | 36/36 | R04 `CSV-` (thủ vai) | 23/9 | **6/10 hoàn thiện:** 22/22 màn trên menu host đọc sâu sạch, thử ghi `dongphuc` sạch, 21 màn không thử có lý do trong sổ; 15 màn ngoài menu = host chưa khai chức năng |
-| Chuyên cần `ApisChuyenCan` | 5/5 | R07 `CC-` | 25/9 | đọc sâu |
+| Chuyên cần `ApisChuyenCan` | 5/5 | R07 `CC-` | 25/9 | **6/10 xong 3/3 màn trên menu host**: đọc sâu sạch, thử ghi `nhaptheolop` sạch, `khongdiemdanh` thêm/xoá sạch sau sửa mã (đã up, kiểm lại đạt), sửa + `tonghoptheongay` lỗi backend (ben); 2 màn host chưa khai chức năng |
 | Quản trị hệ thống `ApisCMS` | 46 | R44 `CMS-` | 25/9 | đọc sâu, thử ghi dở |
 | Đăng ký học `ApisDangKyHoc` | 24 | R19 `DKH-` | 25/9 | đọc sâu |
 | Học lại thi lại `ApisHocLaiThiLai` | 6/6 | R09 `HLTL-` | 25/9 | đọc sâu |

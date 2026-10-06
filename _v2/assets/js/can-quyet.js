@@ -292,6 +292,14 @@
         {"man":"Tốt nghiệp → Thiết lập điều kiện → Điều kiện nhóm → Xem danh sách các lệnh điều kiện / xếp loại","q":"Nút **Xóa** lệnh đang **khoá**: bản cũ gọi nhầm thủ tục xoá của màn Khoản thu Tài chính (pkg_taichinh_kehoach.Xoa_TC_KhoanThu_QDXuatHD) với id lệnh — bấm ở bản cũ có nguy cơ xoá nhầm dữ liệu Tài chính. Ảnh hưởng: lệnh khai sai chỉ sửa được, chưa xoá được. **Anh:** bổ sung thủ tục + action xoá lệnh từ khoá cho TN_XetDuyet_TuKhoa và TN_XepLoai_TuKhoa (và nên gỡ lời gọi nhầm khỏi bản cũ).","ben":"oracle"}
     ]);
 
+    /* Chuyên cần (ApisChuyenCan) — kiểm host 6/10 (vai trò Chuyên cần). */
+    them("apischuyencan/modules/nhapchuyencan/khongdiemdanh", [
+        {"man":"Chuyên cần → DSSV Không được điểm danh","ben":"oracle","q":"Sửa ô **Lý do** của một sinh viên đã có trong danh sách rồi bấm **Lưu** → máy chủ từ chối \"Du lieu da ton tai\", lý do không đổi → chỉ còn cách xoá dòng rồi thêm lại. Bản gốc gọi y hệt (thủ tục Thêm kèm strId = ID dòng) nên cũng không sửa được. Backend: thủ tục `PKG_CHUYENCAN_THONGTIN.Them_QLSV_NH_TuGhiNhan_ViPham` khi có strId phải cập nhật thay vì kiểm trùng; đồng thời `LayDSQLSV_NH_TuGhiNhan_ViPham` không trả cột LOP_ID (chỉ ID, QLSV_NGUOIHOC_ID, TEN, HODEM, MASO, LOP, MOTA) nên lần sửa gửi lớp rỗng. Kiểm host 6/10 với SV 20233195 (đã thêm được sau khi sửa mã, đã xoá sạch)."}
+    ]);
+    them("apischuyencan/modules/tonghop/tonghoptheongay", [
+        {"man":"Chuyên cần → Tổng hợp theo dõi theo ngày","ben":"oracle","q":"Bấm **Tìm kiếm** với mọi bộ lọc (kiểu chuyên cần, lớp đã có ngày chuyên cần ở danh sách học, khoảng ngày rộng 2020–2032) → bảng chỉ có cột **Tổng**, không có cột ngày nào → không xem / nhập được gì trên màn này. Ngoài ra tìm một sinh viên (vd 20233195) ra 65 dòng giống hệt nhau (chỉ khác ID), 10 dòng mỗi trang. Bản gốc gọi y hệt. Backend: kiểm thủ tục `PKG_CHUYENCAN_THONGTIN.LayKQQLSV_NguoiHoc_ChuyenCan` — rsNgay luôn rỗng trên host (ngày chuyên cần theo lớp lấy từ đâu, có cần khởi tạo ở màn Nhập chuyên cần theo lớp — màn này host chưa khai chức năng — không?) và rs trả trùng theo từng bản ghi đăng ký thay vì gom theo người học. Kiểm host 6/10."}
+    ]);
+
     ums.canQuyet = S;
     /* Phân hệ CHƯA kiểm trên host: mục của các phân hệ này ghi lúc chuyển đổi, chưa xác nhận trên hệ thật — bảng "Màn đang có lỗi backend"
        gắn nhãn "chưa kiểm trên host". Kiểm xong phân hệ nào thì gỡ tiền tố của nó khỏi đây. */

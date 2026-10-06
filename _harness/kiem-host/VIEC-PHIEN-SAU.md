@@ -51,6 +51,12 @@ thì mở các màn ghi `xong 30/9` của phân hệ đó trong `RA-HOP-THOAI.md
 - Chưa thử ghi (không có đường xoá hoặc đụng dữ liệu thật): lichgiangphonghoc (đăng ký phòng), phangiangvien, nhapkl, tuibai/_dst (điểm), thanhtoangiangday, lichhocsv,
   moigiang (tạo hồ sơ nhân sự), dukienhocphan, _qhht_hoso, doilich, thi/_chung phân công. Màn `sukien/sukien` không có trên menu host.
 
+## 0c. Chuyên cần 6/10 (chiều) — ĐÃ HOÀN THIỆN 3/3 màn trên menu (đã up + kiểm lại đạt 16:27)
+
+- Lỗi mã `nhapchuyencan/khongdiemdanh` (dòng mới gửi QLSV_NGUOIHOC_ID) đã sửa, đã up, kiểm lại bằng tệp thật trên host ĐẠT (thêm → xoá sạch) → đã gỡ khỏi sổ lỗi mã.
+- Hai `ben` oracle mới (khongdiemdanh sửa lý do; tonghoptheongay không có cột ngày + dòng trùng) — chờ backend, không thử lại.
+- 2 màn ngoài menu (`danhmuc/danhmucdulieu`, `nhapchuyencan/nhapchuyencan`): host chưa khai chức năng.
+
 ## 1. Làm TRƯỚC — màn đã sửa mã, chờ kiểm lại
 
 ### Kết quả kiểm host 5/10 (chiều) — phân hệ ĐÃ hoàn thành + Cổng cán bộ / Cổng SV

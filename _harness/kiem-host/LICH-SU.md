@@ -239,3 +239,20 @@ Luật kiểm host hiện hành nằm ở CLAUDE.md mục 9 (bản rút gọn). 
   (Thi phách), DKH kehoachmua (Tài chính) → đọc sâu ngay bằng `CHI=` trên vai trò đó: 13/13 mở tốt, 0 lỗi; ghi sổ (dashboard = chỉ xem; ba màn còn lại
   không thử ghi có lý do). **11 màn không nằm ở vai trò nào của tài khoản thử** (7 miengiam Tài chính, 4 sổ coi / chấm thi CCB) → chưa mở được;
   việc cấp chức năng cho vai trò thử là của quản trị / người dùng. Tiến độ CCB: Kiểm xong 99/103 màn trên host.
+
+## 6/10 (chiều, 15:40–16:10) — Chuyên cần: kiểm host 3/3 màn trên menu (vai trò `9FE0F1…`)
+
+- Người dùng: "kiểm chuyên cần". Fetch gốc: không có tệp mới ngoài lần kéo 8 (không tệp Chuyên cần). Sổ lỗi mã / gói bổ sung trống lúc bắt đầu.
+- Đọc sâu lại `SAU=1 CHI=` 3 màn: 0 lỗi JS, 0 lỗi gọi. Thử ghi lái tay (`chay.js`, không màn nào là crud):
+  - `nhapchuyencan/khongdiemdanh`: Thêm SV (20233195) → Lưu bị từ chối "Nguoi hoc khong ton tai" → **lỗi mã**: dòng mới gửi `ID` của hộp chọn SV
+    (LayDSNguoiHoc trả `ID` = bản ghi đào tạo ≠ `QLSV_NGUOIHOC_ID`); gốc gửi y vậy nên thêm mới ở gốc chưa từng lưu được. Sửa `tuHop` → `NH_ID`,
+    `va-tam.js` trên host: thêm OK. Sửa lý do → "Du lieu da ton tai" (thủ tục Thêm kèm strId vẫn kiểm trùng; danh sách không trả LOP_ID) → `ben` oracle.
+    Xoá qua ô đánh dấu + "Xóa (1)" sạch. Ô từ khoá không tìm theo Lý do → tìm dấu ZKT bằng danh sách không lọc.
+  - `nhapchuyencan/nhaptheolop`: danh sách N23 (1 SV), kiểu Vắng mặt, ngày 13/10/2026: thêm (SL 2) → sửa (SL 1, `Sua_` strId) → bỏ dấu, đối chứng
+    `LayKetQuaChuyenCanTheoNgay` từng bước, sạch. Không thử Khởi tạo ngày (không có thủ tục xoá `CC_ThoiGian`), Xác nhận (một chiều). Bẫy: tìm ra đúng 1
+    danh sách thì màn tự chọn và `ui.swap` sang khung 2 → bảng danh sách ẩn.
+  - `tonghop/tonghoptheongay`: không thử được — `LayKQQLSV_NguoiHoc_ChuyenCan` trả `rsNgay` rỗng với mọi bộ lọc (kể cả lớp DCDH13.10 đã có ngày ở
+    danh sách học, 2020–2032) → bảng chỉ có cột Tổng; tìm một SV ra 65 dòng trùng (khác ID). `ben` oracle.
+- Sổ: 3 màn có kết luận thử ghi (sach / tu-choi + ben / khong-thu + ben); lỗi mã `khongdiemdanh` "đã sửa — chờ up"; gói bổ sung dựng lại. Không còn dấu ZKT.
+- "Kadara" là hồ sơ CÁN BỘ của tài khoản thử; màn cần SINH VIÊN thì dùng 20233195 Đặng Bác Ái (SV thủ vai ở Cổng SV), một dòng, xoá ngay.
+- **16:27 — người dùng đã up gói bổ sung** → `--da-up`; kiểm lại `khongdiemdanh` bằng tệp thật trên host (tải lại trang, tệp host có mã mới): thêm SV 20233195 lý do ZKT1627 → Lưu thành công → Xóa (1) sạch, 0 dòng ZKT, 0 hộp thoại. Sổ lỗi mã TRỐNG. Chuyên cần: Đã hoàn thiện 3/3 màn trên menu.
