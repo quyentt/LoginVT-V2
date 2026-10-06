@@ -316,7 +316,9 @@
             if (b.hasAttribute('data-them')) {
                 var t = cfg.them[Number(b.getAttribute('data-them'))];
                 var ct = kh.v('ct'), oCt = kh.el('ct');
-                var ctTen = ct && oCt && oCt.selectedIndex > 0 ? oCt.options[oCt.selectedIndex].text : (ct || '');
+                // Chặn NGAY khi bấm Thêm (người dùng 6/10): chưa chọn kế hoạch chi tiết thì mở khung rồi lọc, đánh dấu xong mới bị chặn ở Lưu là muộn
+                if (!ct) { ui.toast('Chọn Kế hoạch chi tiết ở khung tìm kiếm trước, rồi mới thêm dữ liệu vào kế hoạch đó', 'warn'); if (oCt && window.jQuery) jQuery(oCt).select2('open'); return; }
+                var ctTen = oCt && oCt.selectedIndex > 0 ? oCt.options[oCt.selectedIndex].text : ct;
                 PV.khungThem({ host: root, title: t.text, ho: t.ho, nhanGV: t.nhanGV, nhanPhan: t.nhanPhan, tui: t.tui, ctTen: ctTen,
                     luu: function (id) { return t.luu(id, ct); }, sauLuu: function () { tai(trang.index); } });
                 return;
