@@ -454,7 +454,7 @@ Mở bằng `file://` là trắng trang (CORS). Lên host phải nằm TRONG d�
 | Thi trắc nghiệm `ApisThiTracNghiem` (trang làm bài .aspx) | 0 | — | DỪNG (5/10, xác nhận lại 6/10 sau khảo sát: trang ASPX độc lập 3.202 dòng, cổng thí sinh `eIndex.aspx` + `eassets/` không có trong kho, 2 trang thiếu HTML, kiểm host = làm bài thật) | — |
 | Tin tức `ApisTinTuc` | 4/4 | R46 `TT-` | 5/10 | chưa |
 | Thống kê giờ giảng `ApisTKGG` | 12/12 màn host dùng (11 màn kho hoãn — host chưa khai chức năng) | R39 `TKGG-` | 6/10 | chưa |
-| Luận văn, luận án `ApisLuanVanLuanAn` | 1/17 (`danhmuc/danhmucdulieu` nạp chéo DKH; 16 màn kehoach / luanvan / luanan chờ gọi) | R22 `LVLA-` | 6/10 bắt đầu | chưa |
+| Luận văn, luận án `ApisLuanVanLuanAn` | 2/17 (`danhmuc/danhmucdulieu` nạp chéo DKH, `luanan/dulieu` crud; 15 màn kehoach / luanvan / luanan chờ gọi) | R22 `LVLA-` | 6/10 đang làm | chưa |
 | Còn lại: Ký túc xá, Danh hiệu | — | — | chưa | — |
 
 **Đã xong 6/10:** TKGG 12/12 (chỉ màn host đang dùng — người dùng 6/10; 11 màn kho không có chức năng → trạng thái "hoãn" mới trên tien-do, `HOAN` trong tien-do.py);

@@ -1009,6 +1009,8 @@
             ], null, { prefix: 'TT', app: 'ApisTinTuc' }),
             /* Luận văn, luận án (R22) — ApisLuanVanLuanAn, ID LVLA-<module>-<tệp>. Mới chuyển module danhmuc (6/10); kehoach / luanvan / luanan thêm sau, thứ tự chép menu host. */
             R22: buildMenu([
+                ['luanan', 'Luận án', 'fa fa-graduation-cap', [
+                    ['dulieu', 'Dữ liệu']]],
                 ['danhmuc', 'Danh mục', 'fa fa-list', [
                     ['danhmucdulieu', 'Danh mục dữ liệu']]]
             ], null, { prefix: 'LVLA', app: 'ApisLuanVanLuanAn' }),

@@ -51,9 +51,13 @@ Trên máy chỉ có `_v2` thì phần này KHÔNG chạy thử được — thi
 `dataSource: 'auto'` luôn rơi về dữ liệu mẫu. Đừng mất công sửa `api.js` mò
 mẫm ở đó; để dành đến khi có host.
 
-24. **Luận văn, luận án (ApisLuanVanLuanAn) — BẮT ĐẦU 1/17 (2026-10-06)**: màn `danhmuc/danhmucdulieu` nạp chéo bản Đăng ký học (script gốc trùng 100% bản
+24. **Luận văn, luận án (ApisLuanVanLuanAn) — ĐANG LÀM 2/17 (2026-10-06)**: màn `danhmuc/danhmucdulieu` nạp chéo bản Đăng ký học (script gốc trùng 100% bản
    Tin tức, lệch DKH đúng dòng `edu.system.page_load()`); mọi lời gọi `CMS_DanhMucDuLieu/...` không phụ thuộc tiền tố phân hệ. Vai trò mẫu **R22**, ID `LVLA-<module>-<tệp>`,
-   menu mẫu mới chỉ nhóm Danh mục; 16 màn `kehoach` (3) / `luanvan` (7) / `luanan` (6) chưa chuyển — làm khi người dùng gọi. Ba trang kiểm + icon chuẩn đạt 1/1. Chưa kiểm host.
+   menu mẫu nhóm Luận án + Danh mục; 15 màn `kehoach` (3) / `luanvan` (7) / `luanan` (5) chưa chuyển — làm khi người dùng gọi. Chưa kiểm host.
+   **`luanan/dulieu`** (chiều 6/10): ums.crud một cột, 10 ô biểu mẫu, Import theo mẫu (`ums.report.mount` gắn vào `.ums-panel__tools`), Đơn vị → Cán bộ
+   (`NS_HoSoV2/LayDanhSach` theo đơn vị, chữ "HOTEN - MASO", `pat.chain`). Khác gốc: thêm bắt buộc Hoạt động / Đơn vị / Cán bộ / Thời gian / Số giờ; ô Hệ đào tạo
+   gốc đã chú thích bỏ. Cố ý bỏ 8 id mã chết. Bài học: handler ô phụ thuộc phải nghe `'change change.select2'` (thu-crud điền bằng `trigger('change.select2')`);
+   ô cha của một ô con bắt buộc phải bắt buộc theo, không thì thu-crud (chỉ điền ô bắt buộc) kẹt ở ô con bị khoá. Ba trang kiểm 2/2 + icon chuẩn 0 lệch.
 
 ### Việc kế tiếp
 
