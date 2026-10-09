@@ -458,6 +458,10 @@ Mở bằng `file://` là trắng trang (CORS). Lên host phải nằm TRONG d�
 | Luận văn, luận án `ApisLuanVanLuanAn` | 2/17 (`danhmuc/danhmucdulieu` nạp chéo DKH, `luanan/dulieu` crud; 15 màn kehoach / luanvan / luanan chờ gọi) | R22 `LVLA-` | 6/10 đang làm | chưa |
 | Còn lại: Ký túc xá, Danh hiệu | — | — | chưa | — |
 
+**HEMIS (đồng bộ dữ liệu lên Bộ GD&ĐT, tài liệu người dùng đưa 7/10):** ghi chú đầy đủ ở [HEMIS.md](HEMIS.md) — quy trình 4 bước
+(token → 175 danh mục → ký số XML `db16` → JSON `db1…db13`), trường có / thiếu dữ liệu nhóm nào, lệch kỹ thuật (GUID có gạch, ngày
+`yyyy-MM-dd`, địa giới mới, CCCD bắt buộc), thứ tự việc. **Chưa làm gì**, chủ yếu là việc backend; `_v2` chỉ làm màn ánh xạ / đồng bộ / nhật ký sau.
+
 **Đã xong 6/10:** TKGG 12/12 (chỉ màn host đang dùng — người dùng 6/10; 11 màn kho không có chức năng → trạng thái "hoãn" mới trên tien-do, `HOAN` trong tien-do.py);
 bẫy jQuery `trigger('change.select2')` không gọi handler `on('change')` trơn → ô phụ thuộc phải nghe `'change change.select2'`; `thu-crud` điền hai lượt.
 **Đã xong 5/10 tối:** Tin tức 4/4 (`tintuc` 3.017 dòng gốc → ums.crud + hai khung formTrang Phạm vi / Gửi email + hộp Quản lý chuyên mục & Import Excel;

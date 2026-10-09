@@ -1,0 +1,68 @@
+/* =========================================================================
+   Kiểu riêng của nhóm công cụ ApisCMS/danhmuc (comparetable, exporttable,
+   upcode, cloudupdate, autologdb, cautrucnoidungguiemail).
+   Chỉ những gì tầng chung chưa có: khung mã nguồn đơn cách, vùng thông báo
+   kết quả, khối hướng dẫn, biểu mẫu 7|5 có khung xem trước.
+   ========================================================================= */
+
+/* Khung mã nguồn / lệnh SQL: chữ đơn cách, không tự bẻ dòng */
+.cu-code {
+    font-family: Consolas, "Cascadia Mono", "Courier New", monospace;
+    font-size: 12.5px;
+    line-height: 1.5;
+    white-space: pre;
+    overflow: auto;
+    background: var(--ums-surface-2);
+}
+.cu-code--tall { min-height: 60vh; }
+.cu-code--dlg { min-height: 320px; }
+.cu-code--query { min-height: 96px; white-space: pre-wrap; }
+
+/* Ô lệnh trong bảng so sánh: đơn cách, chiếm hết bề ngang cột */
+.cu-cmd { font-family: Consolas, "Cascadia Mono", "Courier New", monospace; font-size: 12.5px; min-width: 320px; }
+
+/* Vùng kết quả import / upcode (#notify_import của bản gốc) */
+.cu-notify:empty { display: none; }
+.cu-notify {
+    margin-top: var(--ums-sp-3);
+    padding: var(--ums-sp-2) var(--ums-sp-3);
+    border-radius: var(--ums-r-1);
+    background: var(--ums-surface-2);
+    border-left: 3px solid var(--ums-blue);
+    overflow-wrap: anywhere;
+}
+.cu-notify.is-bad { border-left-color: var(--ums-bad); }
+
+/* Khối hướng dẫn (box-guide / title-guide của bản gốc) */
+.cu-guide { line-height: 1.7; color: var(--ums-ink-2); }
+.cu-guide p { margin: 0 0 var(--ums-sp-2); }
+.cu-guide__links { display: flex; flex-wrap: wrap; gap: var(--ums-sp-3); }
+
+/* Ô nhập rộng trong thanh lọc (bản gốc col-sm-9 cạnh col-sm-2 / col-sm-3) */
+.ums-filter > .cu-flex3 { flex: 3 1 360px; }
+
+/* Ô đánh dấu Create Table / Add Column / Modify Column của comparetable */
+.cu-opts { display: flex; flex-wrap: wrap; gap: var(--ums-sp-2) var(--ums-sp-6); margin-top: var(--ums-sp-3); }
+
+/* Hai khung mã đặt cạnh nhau (autologdb: Code hiện tại | Code update) */
+.cu-cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--ums-sp-4); margin-top: var(--ums-sp-4); }
+@media (max-width: 991px) { .cu-cols { grid-template-columns: minmax(0, 1fr); } }
+
+/* cautrucnoidungguiemail: biểu mẫu 7 | 5 như bản gốc (cột phải: xem trước nội dung) */
+.cu-email [data-z$="form"]:not([hidden]) {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: var(--ums-sp-4);
+    align-items: start;
+}
+@media (max-width: 1199px) {
+    .cu-email [data-z$="form"]:not([hidden]) { grid-template-columns: minmax(0, 1fr); }
+}
+.cu-preview {
+    display: block;
+    width: 100%;
+    min-height: 420px;
+    border: 1px solid var(--ums-line);
+    border-radius: var(--ums-r-1);
+    background: #fff;
+}

@@ -1,0 +1,114 @@
+/* xebus (Cổng sinh viên) — kiểu riêng của màn "Đăng ký xe buýt".
+   Bản gốc là MỘT hàng hai cột: .bus-left rộng 340px (Tháng đăng ký) +
+   .bus-right (Tuyến đăng ký, thông tin liên hệ, phí) — assets/css/all.css:3478.
+   Giữ đúng tỉ lệ đó. */
+#csv-xebus .xb-cols {
+    display: grid;
+    grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
+    gap: var(--ums-sp-4);
+    align-items: start;
+}
+
+@media (max-width: 991px) {
+    #csv-xebus .xb-cols { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Cột phải xếp dọc hai khung (bảng tuyến, rồi khối thông tin liên hệ + phí) */
+#csv-xebus .xb-right > .ums-panel + .ums-panel { margin-top: var(--ums-sp-4); }
+
+/* ---- Lưới tháng (bản gốc .month-list / .month-item: 3 ô một hàng, ô đã chọn
+   viền màu + dấu tích ở góc trên bên trái) --------------------------------- */
+.xb-months {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--ums-sp-2);
+}
+
+.xb-month {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    padding: 0 var(--ums-sp-2);
+    border: 1px solid var(--ums-line);
+    border-radius: var(--ums-r-1);
+    background: var(--ums-surface);
+    color: var(--ums-ink);
+    font: inherit;
+    font-size: var(--ums-fz-14);
+    cursor: pointer;
+    transition: border-color var(--ums-t), color var(--ums-t);
+}
+
+.xb-month:hover { border-color: var(--ums-blue); }
+
+.xb-month:focus-visible { outline: none; box-shadow: var(--ums-ring); }
+
+/* Dấu tích ở góc: chỉ hiện khi tháng đang được chọn. KHÔNG đặt font-weight cho
+   phần tử bọc biểu tượng (Font Awesome chọn kiểu bằng font-weight — đặt đậm là
+   mất glyph); chữ đậm để riêng cho thẻ <span>. */
+.xb-month > i {
+    display: none;
+    position: absolute;
+    top: 2px;
+    left: 3px;
+    z-index: 1;
+    font-size: 10px;
+    color: #fff;
+}
+
+.xb-month.is-active {
+    border-color: var(--ums-ok);
+    color: var(--ums-ok);
+}
+
+.xb-month.is-active > span { font-weight: var(--ums-fw-bold); }
+
+.xb-month.is-active > i { display: block; }
+
+.xb-month.is-active::after {
+    content: "";
+    position: absolute;
+    left: -15px;
+    top: -15px;
+    width: 30px;
+    height: 30px;
+    background: var(--ums-ok);
+    transform: rotate(45deg);
+}
+
+/* ---- Khối dưới bảng tuyến: thông tin liên hệ + ảnh | phí + Thanh toán ---- */
+#csv-xebus .xb-info {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--ums-sp-4);
+    align-items: start;
+}
+
+@media (max-width: 767px) {
+    #csv-xebus .xb-info { grid-template-columns: minmax(0, 1fr); }
+}
+
+#csv-xebus .xb-lienhe {
+    display: flex;
+    gap: var(--ums-sp-4);
+    align-items: flex-start;
+}
+
+#csv-xebus .xb-lienhe__form { flex: 1 1 auto; min-width: 0; }
+
+#csv-xebus .xb-anh { flex: 0 0 120px; width: 120px; }
+
+#csv-xebus .xb-phi {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--ums-sp-3);
+}
+
+#csv-xebus .xb-phi__so {
+    color: var(--ums-g-amber);
+    font-size: var(--ums-fz-16);
+}

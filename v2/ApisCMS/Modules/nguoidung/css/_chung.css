@@ -1,0 +1,68 @@
+/* =========================================================================
+   Module nguoidung (ApisCMS) — kiểu dùng chung của bốn màn
+   Chỉ những gì tầng chung chưa có: ảnh đại diện tròn trong danh sách người
+   dùng, lưới 3|9 bên trong khung phải, cây chức năng có ô đánh dấu.
+   ========================================================================= */
+
+/* Ảnh đại diện tròn (bảng tblNguoiDung gốc: .table-img 40×40 bo tròn) */
+.cmsnd-ava {
+    position: relative;
+    flex: 0 0 40px;
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    overflow: hidden;
+    background: var(--ums-surface-3);
+    color: var(--ums-ink-3);
+    font-size: 18px;
+}
+.cmsnd-ava img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.cmsnd-ava--lon { flex-basis: 160px; width: 160px; height: 160px; font-size: 64px; border-radius: var(--ums-r-3); }
+
+.cmsnd-item { cursor: pointer; }
+.cmsnd-item__mail { font-style: italic; overflow-wrap: anywhere; }
+
+/* Lưới 3 | 9 bên trong khung phải (col-sm-3 + col-sm-9 của bản gốc) */
+.cmsnd-hai { grid-template-columns: minmax(200px, 3fr) minmax(0, 9fr); align-items: start; }
+@media (max-width: 991px) { .cmsnd-hai { grid-template-columns: minmax(0, 1fr); } }
+
+.cmsnd-sub { min-width: 0; }
+.cmsnd-sub__head {
+    display: flex;
+    align-items: center;
+    gap: var(--ums-sp-2);
+    min-height: 34px;
+    margin-bottom: var(--ums-sp-3);
+    color: var(--ums-navy, var(--ums-ink));
+}
+.cmsnd-list { display: grid; gap: 2px; }
+
+.cmsnd-form { display: grid; gap: var(--ums-sp-3); max-width: 760px; }
+
+/* Bảng chức năng: thụt theo cấp */
+.cmsnd-cap { display: inline-block; padding-left: calc(var(--cmsnd-cap, 0) * 22px); }
+.cmsnd-cap > i { color: var(--ums-blue); }
+
+/* Cây chức năng có ô đánh dấu */
+.cmsnd-cay { list-style: none; margin: 0; padding: 0 0 0 var(--ums-sp-5); }
+.cmsnd-cayhop > .cmsnd-cay { padding-left: 0; }
+.cmsnd-cay li { margin: 0; }
+.cmsnd-cay__nut {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ums-sp-2);
+    padding: 3px 6px;
+    border-radius: var(--ums-r-1, 4px);
+    cursor: pointer;
+}
+.cmsnd-cay__nut:hover { background: var(--ums-surface-3); }
+.cmsnd-cay__nut > i { color: var(--ums-blue); }
+.cmsnd-cay__nut:has(input:checked) > span { font-weight: var(--ums-fw-semibold); }
+
+/* Hồ sơ: ảnh bên trái, thông tin / biểu mẫu bên phải (col-sm-2|3 + col-sm-10|9 của gốc) */
+.cmsnd-hoso { display: grid; grid-template-columns: 160px minmax(0, 1fr); gap: var(--ums-sp-5); align-items: start; }
+.cmsnd-hoso .ums-kv + .ums-kv { margin-top: var(--ums-sp-2); }
+.cmsnd-full { grid-column: 1 / -1; }
+@media (max-width: 767px) { .cmsnd-hoso { grid-template-columns: minmax(0, 1fr); } }

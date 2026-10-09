@@ -1,0 +1,42 @@
+/* =========================================================================
+   ApisCMS / vaitro — CÂY (ums.cmsCay, script/_chung.js)
+   Thay jstree của bản gốc. Đường chấm nối giống kiểu danh mục của
+   ums.pat.master (patterns.css) để các cây trong ứng dụng cùng một vẻ.
+   Dùng ở: vaitro, vaitrochucnang, vaitronguoidung, ungdung/ungdungchucnang.
+   ========================================================================= */
+.cmsc-cay { --cmsc-line: #9aa4b2; padding: var(--ums-sp-2) var(--ums-sp-3) var(--ums-sp-3); }
+.cmsc-cay ul { list-style: none; margin: 0; padding: 0; }
+.cmsc-cay ul ul { margin-left: 18px; border-left: 1px dotted var(--cmsc-line); }
+.cmsc-cay li { margin: 0; }
+.cmsc-cay li[hidden] { display: none; }
+
+.cmsc-cay__node {
+    position: relative;
+    display: flex; align-items: center; gap: var(--ums-sp-2);
+    width: 100%; margin: 1px 0; padding: 5px 10px;
+    border: 0; border-radius: 4px; background: none;
+    font: inherit; font-size: 13px; line-height: 1.35; color: inherit; text-align: left;
+    cursor: pointer;
+}
+.cmsc-cay ul ul > li > .cmsc-cay__node { padding-left: 20px; }
+/* Đường chấm ngang nối vào thân cây */
+.cmsc-cay ul ul > li > .cmsc-cay__node::before {
+    content: ''; position: absolute; left: 0; top: 50%; width: 14px; border-top: 1px dotted var(--cmsc-line);
+}
+.cmsc-cay__node > i { flex: 0 0 16px; text-align: center; color: var(--ums-blue); }
+.cmsc-cay__node:hover { background: var(--ums-surface-3); }
+.cmsc-cay__node.is-static { cursor: default; }
+.cmsc-cay__node.is-active { background: var(--ums-blue); color: #fff; }
+.cmsc-cay__node.is-active > i,
+.cmsc-cay__node.is-active .cmsc-cay__sub { color: #fff; }
+.cmsc-cay li:has(> ul) > .cmsc-cay__node { font-weight: var(--ums-fw-semibold); }
+.cmsc-cay__ten { flex: 1 1 auto; min-width: 0; }
+.cmsc-cay__sub { color: var(--ums-ink-3); font-size: var(--ums-fz-12); font-weight: var(--ums-fw-regular); }
+.cmsc-cay mark { background: #ffe066; color: inherit; padding: 0 2px; border-radius: 2px; }
+
+/* Cây ô đánh dấu: ô đánh dấu đứng trước biểu tượng */
+.cmsc-cay--chon .cmsc-cay__node { cursor: pointer; user-select: none; }
+
+/* Bảng gộp ô nhiều tầng (ums.cmsCay.bang) */
+.cmsc-bang__nhom { font-weight: var(--ums-fw-semibold); vertical-align: middle; }
+.cmsc-bang__o { vertical-align: middle; }

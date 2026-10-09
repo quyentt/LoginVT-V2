@@ -1,0 +1,67 @@
+/* =========================================================================
+   Coi thi, chấm thi (cổng cán bộ) — kiểu RIÊNG của module coithi
+   Dùng chung cho coithi, chamthituluan, duyetdiemthitracnghiem.
+   ========================================================================= */
+
+/* Hai khối "Thông tin phòng thi" / "Thông tin đề thi" — bản gốc .bl-room hai cột */
+.ct-info { margin-bottom: var(--ums-sp-4); }
+/* Hai khối nằm cạnh nhau trong lưới: bỏ khoảng cách "khung sau khung" của panel (lệch đỉnh 16px) */
+.ct-info.ums-grid > .ums-panel { margin: 0; }
+.ct-info .ums-kv > span { flex-basis: 130px; }
+.ct-matkhau { color: var(--ums-act-del); font-size: 1.15em; }
+
+/* Họ tên thí sinh: đậm (coithi), đỏ khi KHÔNG có trong lịch thi (COTRONGLICHTHI = 0) */
+.ct-ten { font-weight: var(--ums-fw-bold); }
+.ct-ten--ngoai { color: var(--ums-act-del); }
+
+/* "Gian lận" — bản gốc .cssGianLan: chữ đỏ nhấp nháy 700ms, bấm để xem máy đã đăng nhập */
+.ct-gianlan {
+    display: inline-block; margin-top: 2px; padding: 0; border: 0; background: none;
+    font: inherit; font-weight: var(--ums-fw-bold); color: var(--ums-act-del);
+    cursor: pointer; animation: ct-nhapnhay 700ms infinite;
+}
+@keyframes ct-nhapnhay { 50% { color: transparent; } }
+@media (prefers-reduced-motion: reduce) { .ct-gianlan { animation: none; text-decoration: underline; } }
+
+/* Tình trạng làm bài — màu chép đúng bản gốc */
+.ct-tt--chua { color: #198754; }        /* Chưa thi: Green */
+.ct-tt--xong { color: var(--ums-act-del); }   /* Thi xong / Tạm dừng thi: red */
+.ct-tt--het { color: #8f3fbf; }         /* Kết thúc: Violet */
+.ct-dem { font-variant-numeric: tabular-nums; color: #d97706; }   /* đồng hồ: orange */
+.ct-dem--gap { color: var(--ums-act-del); }                       /* ≤ 3 phút: nháy đỏ */
+
+/* Bảng thí sinh: tiêu đề khung không bị bóp khi thanh công cụ dài; họ tên không ngắt từng chữ */
+.ct-ds .ums-panel__title { white-space: nowrap; }
+.ums-table .ct-cot-ten { min-width: 170px; }
+
+/* Ô nhập điểm / ghi chú trong bảng — bản gốc 100px */
+.ct-o { width: 100px; }
+.ct-vipham { display: block; color: var(--ums-act-del); margin-bottom: 2px; }
+.ct-tep { display: block; font-size: var(--ums-fz-13); }
+
+/* Thanh công cụ trên bảng thí sinh — ô chọn phần thi rộng như bản gốc (185px) */
+.ct-tools { display: flex; flex-wrap: wrap; gap: var(--ums-sp-2); align-items: center; }
+.ct-tools .ums-field { width: 200px; margin: 0; }
+.ct-tools__gian { flex: 1 1 auto; }
+
+/* Hộp "Xử lý tình huống thi": ô đánh dấu phần thi, số phút cộng thêm */
+.ct-phan { display: flex; flex-wrap: wrap; gap: var(--ums-sp-2) var(--ums-sp-4); margin-bottom: var(--ums-sp-4); }
+.ct-phut { width: 70px; }
+.ct-hang { display: flex; flex-wrap: wrap; gap: var(--ums-sp-2); align-items: center; margin-bottom: var(--ums-sp-2); }
+.ct-hang .ums-field { width: 240px; margin: 0; }
+
+/* Kết quả bài thi (HTML máy chủ trả) */
+.ct-ketqua { overflow-x: auto; }
+
+/* Ô chọn tác vụ (Mở/Đóng phòng) trong thanh lọc — rộng như bản gốc, không kéo hết hàng */
+.ums-filter > .ct-tacvu { flex: 0 0 220px; }
+
+/* Hàng công cụ riêng dưới thanh lọc (manPhong cfg.toolbar — QLTTN quanlythi): báo cáo bên trái, tác vụ dạt phải */
+.ums-filter > .ct-toolbar { flex: 1 1 100%; display: flex; flex-wrap: wrap; gap: var(--ums-sp-2) var(--ums-sp-4); align-items: center; justify-content: space-between; }
+.ct-toolbar__trai, .ct-toolbar__phai { display: flex; flex-wrap: wrap; gap: var(--ums-sp-2); align-items: center; }
+.ct-toolbar .ums-field { width: 240px; margin: 0; }
+.ct-toolbar .ums-field--fit { width: auto; }
+
+/* Họ tên thí sinh là nút mở biểu mẫu (tenThiSinh bam) — trông như chữ, gạch chân khi rê */
+.ct-tenlink { padding: 0; border: 0; background: none; font: inherit; color: var(--ums-blue); cursor: pointer; text-align: left; }
+.ct-tenlink:hover .ct-ten { text-decoration: underline; }

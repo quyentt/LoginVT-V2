@@ -1,0 +1,57 @@
+/* Kế hoạch đăng ký (kehoachdangky) — kiểu riêng của biểu mẫu dài.
+   Bản gốc: lưới col-sm-* của Bootstrap 3, mỗi khối một "badge" tiêu đề.
+   Ở đây: lưới 12 phần giữ đúng bề rộng từng khối như bản gốc (9|3, 3|9, 6|6,
+   4|3|5), tiêu đề khối là .ums-legend của tầng chung. */
+
+.khdk-form {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: var(--ums-sp-6) var(--ums-sp-6);
+}
+.khdk-s3 { grid-column: span 3; }
+.khdk-s4 { grid-column: span 4; }
+.khdk-s5 { grid-column: span 5; }
+.khdk-s6 { grid-column: span 6; }
+.khdk-s9 { grid-column: span 9; }
+.khdk-s12 { grid-column: 1 / -1; }
+
+/* Câu hỏi Có / Không: chữ bên trái, hai ô chọn một bên phải (bản gốc col-sm-8 + 2 + 2) */
+.khdk-yn {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--ums-sp-2) var(--ums-sp-4);
+    padding: 6px 0;
+    border-bottom: 1px dashed var(--ums-line);
+}
+.khdk-yn:last-child { border-bottom: 0; }
+.khdk-yn__q { flex: 1 1 260px; min-width: 0; }
+.khdk-yn__a { display: inline-flex; gap: var(--ums-sp-4); flex: 0 0 auto; }
+.khdk-yn__x { display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--ums-sp-2) var(--ums-sp-4); flex: 0 0 auto; }
+.khdk-yn__x label { display: inline-flex; align-items: center; gap: var(--ums-sp-2); white-space: nowrap; }
+.khdk-yn__x .ums-input { width: 90px; }
+
+/* Ngày + giờ + phút trên một hàng */
+.khdk-ngaygio { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr); gap: var(--ums-sp-2); }
+
+/* Nhãn phụ trong một khối (bản gốc <b>…</b> giữa các nhóm ô) */
+.khdk-sub { margin: var(--ums-sp-4) 0 var(--ums-sp-2); font-weight: var(--ums-fw-semibold); color: var(--ums-navy); }
+.khdk-form .ums-checklist .ums-check { align-items: flex-start; }
+
+/* Ô số trong bảng phân quyền cán bộ */
+.khdk-o { width: 100%; min-width: 90px; }
+
+@media (max-width: 991px) {
+    .khdk-s3, .khdk-s4, .khdk-s5, .khdk-s6, .khdk-s9 { grid-column: 1 / -1; }
+}
+.khdk-yn__a .ums-check + .ums-check { margin-left: 0; }
+
+/* Hộp "Thiết đặt thêm xử lý lớp HP" / "Chọn lớp học phần" */
+.khdk-bulk { min-width: 320px; }
+.ums-filter > .ums-field.khdk-q { flex: 2 1 260px; }
+
+/* Vùng phân quyền cán bộ: tiêu đề nhóm nằm trong khung thân flush (bảng sát mép) */
+.khdk-pq-legend { margin: var(--ums-sp-4) var(--ums-sp-5); }
+
+/* Bảng kế hoạch: 18 cột — không ép vừa khung (chữ bị bẻ từng từ), cho tràn và vuốt ngang */
+.khdk-ds .ums-tablewrap > .ums-table { min-width: 1680px; }

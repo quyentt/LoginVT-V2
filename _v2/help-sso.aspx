@@ -1,4 +1,4 @@
-<%@ Page Language="C#" AutoEventWireup="true" Inherits="Apis.LoginVT.Index" EnableViewState="false" ResponseEncoding="utf-8" ContentType="text/html" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" Inherits="Apis.LoginVT.Index" EnableViewState="false" ResponseEncoding="utf-8" ContentType="text/html" %>
 <%@ Import Namespace="System.IO" %>
 <%@ Import Namespace="System.Net" %>
 <%@ Import Namespace="System.Text" %>
@@ -246,6 +246,20 @@
         return string.Join(", ", l.ToArray());
     }
 
+    /* Cột nào có chữ MAIL trong bản ghi: "TÊN = giá trị" — để biết email nằm ở cột nào khi cột EMAIL trống. */
+    static string CotMail(JToken r)
+    {
+        var o = r as JObject; if (o == null) return "(không có dòng)";
+        var l = new List<string>();
+        foreach (var p in o.Properties())
+            if (p.Name.IndexOf("MAIL", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                string gt = Convert.ToString(p.Value).Trim();
+                l.Add(p.Name + " = " + (gt.Length > 0 ? gt : "(trống)"));
+            }
+        return l.Count > 0 ? string.Join("; ", l.ToArray()) : "(KHÔNG có cột nào có chữ MAIL)";
+    }
+
     /* Tên tài khoản của người đang đăng nhập — lấy từ HttpContext.User (CustomPrincipal) bằng phản chiếu
        để không phụ thuộc tên thuộc tính; không có thì dùng họ tên làm từ khoá tìm */
     string TuKhoaNguoiDung()
@@ -343,11 +357,28 @@
         // Bản ghi phía API không có email → email của CHÍNH tài khoản đăng nhập ở CSDL xác thực. Ở trường thật hai nơi là một
         // CSDL; host thử con98 thì lệch (đăng nhập = CMCDB, API = hệ khác) nên tài khoản thử chỉ có email ở CSDL đăng nhập.
         string loiDangNhapDb = "";
+        string cotDangNhapDb = "";
         if (email.Length == 0 && ch.emailFromLoginDb)
         {
             try
             {
                 var dt = Apis.Login.BO.Base.UserBo.GetDetail(uid);   // hàm STATIC
+                if (dt == null || dt.Rows.Count == 0) cotDangNhapDb = "(không có dòng nào cho tài khoản này)";
+                else
+                {
+                    var tenCot = new List<string>(); var cotMail = new List<string>();
+                    foreach (System.Data.DataColumn c in dt.Columns)
+                    {
+                        tenCot.Add(c.ColumnName);
+                        if (c.ColumnName.IndexOf("MAIL", StringComparison.OrdinalIgnoreCase) >= 0)
+                        {
+                            string gt = Convert.ToString(dt.Rows[0][c]).Trim();
+                            cotMail.Add(c.ColumnName + " = " + (gt.Length > 0 ? gt : "(trống)"));
+                        }
+                    }
+                    cotDangNhapDb = "cột: " + string.Join(", ", tenCot.ToArray()) +
+                        (cotMail.Count > 0 ? " · cột có chữ MAIL: " + string.Join("; ", cotMail.ToArray()) : " · KHÔNG có cột nào có chữ MAIL");
+                }
                 if (dt != null && dt.Rows.Count > 0)
                     foreach (System.Data.DataColumn c in dt.Columns)
                         if (string.Equals(c.ColumnName, ch.emailColumn, StringComparison.OrdinalIgnoreCase)) { email = Convert.ToString(dt.Rows[0][c]).Trim(); break; }
@@ -389,6 +420,9 @@
                       (kqNguoiDung.loi.Length > 0 ? "<span class=\"do\">LỖI " + Server.HtmlEncode(kqNguoiDung.loi) + "</span>" :
                        kqNguoiDung.data.Count + " dòng, " + (dongNguoiDung != null ? "ĐÃ khớp ID" : "<span class=\"do\">KHÔNG có dòng nào khớp ID người đang đăng nhập</span>")) + "</p>");
             if (dongNguoiDung != null) sb.Append("<p>Bản ghi phía API: tài khoản <b>" + Server.HtmlEncode(Cot(dongNguoiDung, "TAIKHOAN")) + "</b>, tên <b>" + Server.HtmlEncode(Cot(dongNguoiDung, "TENDAYDU")) + "</b></p>");
+            if (dongNguoiDung != null) sb.Append("<p>Cột của bản ghi phía API: <code>" + Server.HtmlEncode(TenCot(new JArray(dongNguoiDung.DeepClone()))) + "</code><br>Cột có chữ MAIL: <code>" + Server.HtmlEncode(CotMail(dongNguoiDung)) + "</code></p>");
+            if (cotDangNhapDb.Length > 0) sb.Append("<p>CSDL đăng nhập — " + Server.HtmlEncode(cotDangNhapDb) + "</p>");
+            sb.Append("<p>Cột email đang cấu hình: <code>" + Server.HtmlEncode(ch.emailColumn) + "</code> — email nằm ở cột khác thì sửa <code>emailColumn</code> trong <code>help-sso.json</code> rồi tải lại trang.</p>");
             if (email.Length > 0) sb.Append("<p>Nguồn email: " + Server.HtmlEncode(nguonEmail) + "</p>");
             if (loiDangNhapDb.Length > 0) sb.Append("<p class=\"do\">Lỗi đọc CSDL đăng nhập: " + Server.HtmlEncode(loiDangNhapDb) + "</p>");
             if (email.Length == 0) sb.Append("<p class=\"do\">Tài khoản chưa có email → Help sẽ trả 401. Bổ sung ở Quản trị → Người dùng.</p>");

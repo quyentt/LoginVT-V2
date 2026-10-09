@@ -1,0 +1,92 @@
+/* Kế hoạch tuyển sinh (new) — lớp riêng của module (ums.khtsn). Không đè lớp tầng chung. */
+
+/* ô trống / số / chữ phụ */
+.khtsn-rong { color: var(--ums-ink-3); font-size: 13px; }
+.khtsn-rong:empty::before { content: '—'; }
+.khtsn-so { max-width: 110px; text-align: right; }
+.khtsn-phu { color: var(--ums-ink-3); font-size: 12.5px; }
+.khtsn-ok { color: var(--ums-ok); }
+.khtsn-bad { color: var(--ums-bad); }
+
+/* ghi chú / cảnh báo */
+.khtsn-note { background: var(--ums-blue-l); border: 1px solid var(--ums-line); border-radius: 6px; padding: 8px 12px; margin-bottom: 12px; }
+.khtsn-note--bad, .khtsn-canhbao { background: var(--ums-warn-bg); border-color: var(--ums-g-amber); }
+.khtsn-canhbao { border: 1px solid var(--ums-g-amber); border-radius: 6px; padding: 8px 12px; margin-bottom: 12px; font-size: 13px; }
+.khtsn-canhbao ul { margin: 6px 0 0 18px; padding: 0; }
+
+/* nhãn kế hoạch › đợt */
+.khtsn-badge { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; background: var(--ums-surface-2);
+    border: 1px solid var(--ums-line); border-radius: 999px; padding: 3px 12px; font-size: 13px; margin-bottom: 10px; }
+.khtsn-badge[hidden] { display: none; }
+.khtsn-badge__sep { color: var(--ums-ink-3); }
+.khtsn-badge__chua { color: var(--ums-warn); font-style: italic; }
+
+/* đầu ra: hai cột 4 | 8 */
+.khtsn-dr { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: 16px; }
+@media (max-width: 767px) { .khtsn-dr { grid-template-columns: minmax(0, 1fr); } }
+
+/* Kết quả đăng ký — thanh công cụ + bảng */
+/* Pull 29/9: thanh công cụ + dải điều kiện lọc GHIM lại khi cuộn danh sách (gốc: .kqdk-toolbar-sticky).
+   Từ 30/9 màn con nằm NGAY TRONG TRANG (ums.pat.formTrang): vùng cuộn là cả trang, đầu khung "Kết quả đăng ký … [Đóng]" đã dính ở
+   --ums-stick-top (shell.css, z 60) → thanh này ghim NGAY DƯỚI đầu khung: --khtsn-dau = chiều cao đầu khung, _khtsn_kqdk.js đo lúc mở.
+   Thân khung (.ums-panel__body) lề 20px như hộp thoại cũ: lề âm + padding bù để nền phủ kín hai mép, dòng dữ liệu không lòi ra hai
+   bên thanh. z-index cao hơn tiêu đề bảng (2), thấp hơn đầu khung. */
+.khtsn-kq__dinh { position: sticky; top: calc(var(--ums-stick-top, 0px) + var(--khtsn-dau, 0px)); z-index: 5; background: var(--ums-surface);
+    /* không kéo lề trên âm: phía trên còn dải "Kế hoạch › Đợt" — kéo lên là che mất nửa dải (người dùng 2026-09-29) */
+    margin: 0 calc(-1 * var(--ums-sp-5)) 0; padding: var(--ums-sp-2) var(--ums-sp-5) 1px;
+    box-shadow: 0 6px 14px -12px rgba(15, 23, 42, .45); }
+.khtsn-kq__bar { flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 8px; }
+/* .ums-chips có lề dưới riêng → trong thanh công cụ làm hai nút Gọn / Đầy đủ lệch lên 10px so với các nút cạnh bên */
+.khtsn-kq__bar .ums-chips { margin: 0; }
+.khtsn-kq__bar > [data-kq="che"] { display: inline-flex; align-items: center; }
+.khtsn-kq__tim { flex: 1 1 260px; min-width: 200px; }
+.khtsn-kq__tong { margin-left: auto; font-size: 13px; white-space: nowrap; }
+.khtsn-kq__chip { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.khtsn-kq__chip[hidden] { display: none; }
+.khtsn-kq__rong { min-width: 180px; }
+.khtsn-kq__bang--gon td { padding-top: 6px; padding-bottom: 6px; }
+.khtsn-kq__ketqua { border-radius: 6px; padding: 8px 12px; font-size: 13px; border: 1px solid var(--ums-line); }
+.khtsn-kq__ketqua.is-ok { background: var(--ums-ok-bg); color: var(--ums-ok); }
+.khtsn-kq__ketqua.is-warn { background: var(--ums-warn-bg); color: var(--ums-warn); }
+.khtsn-kq__ketqua.is-bad { background: var(--ums-bad-bg); color: var(--ums-bad); }
+
+.khtsn-chip { display: inline-flex; align-items: center; gap: 6px; background: var(--ums-blue-l); border-radius: 999px; padding: 2px 10px; font-size: 12.5px; }
+.khtsn-chip--sort { background: var(--ums-g-purple-bg); }
+.khtsn-chip__x { cursor: pointer; color: var(--ums-ink-3); }
+.khtsn-chip__x:hover { color: var(--ums-bad); }
+
+/* tiêu đề cột có lọc kiểu Excel */
+.khtsn-th { display: inline-flex; align-items: center; gap: 6px; }
+.khtsn-th__sort { color: var(--ums-g-purple); }
+.khtsn-th__loc { cursor: pointer; color: var(--ums-ink-3); font-size: 12px; }
+.khtsn-th__loc.is-on { color: var(--ums-blue); }
+.khtsn-fpop { position: fixed; z-index: 3000; width: 280px; background: var(--ums-surface); border: 1px solid var(--ums-line-2);
+    border-radius: 8px; box-shadow: 0 10px 28px rgba(19, 26, 39, .18); padding: 10px; font-size: 13px; }
+.khtsn-fpop__head { font-weight: 700; margin-bottom: 8px; }
+.khtsn-fpop__sort { display: flex; gap: 6px; margin-bottom: 8px; }
+.khtsn-fpop__tim { margin-bottom: 6px; }
+.khtsn-fpop__list { max-height: 240px; overflow: auto; border: 1px solid var(--ums-line); border-radius: 6px; padding: 4px; }
+.khtsn-fpop__item { display: flex; align-items: center; gap: 6px; padding: 3px 4px; cursor: pointer; }
+.khtsn-fpop__item[hidden] { display: none; }
+.khtsn-fpop__item em { margin-left: auto; font-style: normal; color: var(--ums-ink-3); }
+.khtsn-fpop__all { border-bottom: 1px solid var(--ums-line); margin-bottom: 4px; }
+.khtsn-fpop__trong { padding: 6px; }
+.khtsn-fpop__foot { display: flex; justify-content: space-between; gap: 6px; margin-top: 8px; }
+
+/* Khai trực tiếp hồ sơ — mục, hai cột gia đình */
+.khtsn-khai .ums-tabs { margin-bottom: 12px; }
+.khtsn-sec { margin-bottom: 16px; }
+.khtsn-sec__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.khtsn-sec__mo { font-weight: 400; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+.khtsn-sec.is-dong .khtsn-sec__head { opacity: .75; }
+.khtsn-2cot { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; }
+@media (max-width: 767px) { .khtsn-2cot { grid-template-columns: minmax(0, 1fr); } }
+.khtsn-hs--dalu td { background: var(--ums-ok-bg); }
+
+/* Tra cứu: chấm nguồn */
+.khtsn-cham { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+.khtsn-cham--ts { background: var(--ums-g-blue); }
+.khtsn-cham--nh { background: var(--ums-g-green); }
+
+/* Đọc từ API — bảng ghép cột cuộn riêng */
+.khtsn-da__map { max-height: 360px; overflow: auto; }

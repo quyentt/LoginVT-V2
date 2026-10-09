@@ -1,0 +1,79 @@
+/* =========================================================================
+   tintuc / tintuc + tintuc1 (Cổng sinh viên) — tin chia ba nhóm + cột "Tin đã
+   đánh dấu" (bản gốc col-lg-9 / col-lg-3) + khối tin quan trọng của màn tintuc.
+   Khối NHÓM TIN (.csvtt-*) KHÔNG gói trong #csv-tintuc: Trang chính (dashboard)
+   nạp chính tệp này để vẽ ba nhóm tin giống hệt (ums.csvTinTuc.nhomHtml).
+   ========================================================================= */
+#csv-tintuc .tt-nguon { display: flex; flex-wrap: wrap; gap: var(--ums-sp-2); }
+#csv-tintuc .tt-trang { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 1fr); gap: var(--ums-sp-4); align-items: start; }
+#csv-tintuc .tt-trang:has(> .tt-trang__phu[hidden]) { grid-template-columns: minmax(0, 1fr); }
+#csv-tintuc .tt-trang__phu .tt-the { border: 0; border-bottom: 1px solid var(--ums-line); border-radius: 0; box-shadow: none; }
+#csv-tintuc .tt-trang__phu .tt-the__anh { flex-basis: 72px; height: 54px; }
+#csv-tintuc .tt-the { display: flex; gap: var(--ums-sp-3); width: 100%; padding: var(--ums-sp-3); text-align: left; cursor: pointer;
+    border: 1px solid var(--ums-line); border-radius: var(--ums-r-2); background: var(--ums-surface); box-shadow: 0 1px 2px rgba(15,23,42,.04); }
+#csv-tintuc .tt-the:hover { border-color: var(--ums-blue); }
+#csv-tintuc .tt-the__anh { position: relative; flex: 0 0 132px; height: 92px; border-radius: var(--ums-r-1); overflow: hidden; background: var(--ums-surface-2);
+    display: grid; place-items: center; color: var(--ums-ink-3); font-size: 28px; }
+#csv-tintuc .tt-the__anh img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+#csv-tintuc .tt-the__noi { min-width: 0; display: flex; flex-direction: column; gap: var(--ums-sp-2); }
+#csv-tintuc .tt-the__td { color: var(--ums-navy); line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+#csv-tintuc .tt-the__meta { display: flex; flex-wrap: wrap; gap: var(--ums-sp-3); color: var(--ums-ink-3); font-size: var(--ums-fz-13); }
+#csv-tintuc .tt-bai__td { margin: 0 0 var(--ums-sp-2); color: var(--ums-navy); font-size: 22px; line-height: 1.3; }
+#csv-tintuc .tt-bai__nd { line-height: 1.6; overflow-wrap: anywhere; }
+#csv-tintuc .tt-bai__nd img { max-width: 100%; height: auto; }
+#csv-tintuc .tt-bai__tg { margin-top: var(--ums-sp-3); text-align: right; font-weight: var(--ums-fw-semibold); }
+#csv-tintuc .tt-bl { display: flex; gap: var(--ums-sp-3); padding: var(--ums-sp-3) 0; border-bottom: 1px dotted var(--ums-line-2); }
+#csv-tintuc .tt-bl__anh { font-size: 28px; color: var(--ums-ink-3); }
+
+/* Ô nhập ý kiến + nút Gửi (bản gốc để chữ "Gửi" đè lên góc phải ô nhập) */
+#csv-tintuc .tt-gui { display: flex; align-items: flex-start; gap: var(--ums-sp-2); }
+#csv-tintuc .tt-gui .ums-textarea { flex: 1 1 auto; }
+
+/* ---- Khối THÔNG BÁO viết cứng trong HTML gốc của màn tintuc -------------- */
+#csv-tintuc .ctt-tb { margin-bottom: var(--ums-sp-4); }
+#csv-tintuc .ctt-tb__tom { display: flex; align-items: center; gap: var(--ums-sp-3); padding: var(--ums-sp-3) var(--ums-sp-4);
+    list-style: none; cursor: pointer; background: var(--ums-surface); border: 1px solid var(--ums-line);
+    border-radius: var(--ums-r-2); box-shadow: 0 1px 2px rgba(15,23,42,.04); }
+#csv-tintuc .ctt-tb__tom::-webkit-details-marker { display: none; }
+#csv-tintuc .ctt-tb__tom:hover { border-color: var(--ums-blue); }
+#csv-tintuc .ctt-tb__ic { flex: 0 0 48px; height: 48px; display: grid; place-items: center; font-size: 20px;
+    color: #fff; border-radius: var(--ums-r-2); background: var(--ums-blue); }
+#csv-tintuc .ctt-tb__noi { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: var(--ums-sp-2); }
+#csv-tintuc .ctt-tb__td { color: var(--ums-navy); font-weight: var(--ums-fw-bold); line-height: 1.45; }
+#csv-tintuc .ctt-tb__mui { flex: 0 0 auto; color: var(--ums-ink-3); transition: transform .2s ease; }
+#csv-tintuc .ctt-tb[open] .ctt-tb__mui { transform: rotate(90deg); color: var(--ums-blue); }
+#csv-tintuc .ctt-tb[open] .ctt-tb__tom { border-color: var(--ums-blue); border-radius: var(--ums-r-2) var(--ums-r-2) 0 0; }
+#csv-tintuc .ctt-tb__than { padding: var(--ums-sp-4) var(--ums-sp-5); background: var(--ums-surface);
+    border: 1px solid var(--ums-blue); border-top: 0; border-radius: 0 0 var(--ums-r-2) var(--ums-r-2); }
+#csv-tintuc .ctt-tb__than p { margin: 0 0 var(--ums-sp-3); line-height: 1.7; text-align: justify; }
+#csv-tintuc .ctt-tb__nhan { color: var(--ums-bad); font-weight: var(--ums-fw-bold); text-align: center; text-transform: uppercase; }
+#csv-tintuc .ctt-tb__luuy { padding: var(--ums-sp-3) var(--ums-sp-4); border-left: 4px solid var(--ums-g-amber);
+    border-radius: var(--ums-r-1); background: var(--ums-warn-bg); line-height: 1.7; }
+
+@media (max-width: 1199px) { #csv-tintuc .tt-trang { grid-template-columns: minmax(0, 1fr); } }
+
+/* Nút "Bỏ lưu" nổi trên thẻ ở cột "Tin đã đánh dấu" */
+.tt-the__bao { position: relative; }
+.tt-the__bo { position: absolute; top: 6px; right: 6px; z-index: 1; background: var(--ums-surface); }
+.tt-the__bo:hover { background: var(--ums-bad-bg); }
+
+/* ---- Ba nhóm tin (kho gốc 30/09/2026: news-group / tintuc-grid) ---------
+   Cột chính "Tin đào tạo" : cột phụ "Tin nhà trường" + "Hoạt động sinh viên" = 2 : 1 */
+.csvtt-luoi { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: var(--ums-sp-4); align-items: start; }
+.csvtt-luoi__phu { display: flex; flex-direction: column; gap: var(--ums-sp-4); }
+@media (max-width: 991px) { .csvtt-luoi { grid-template-columns: minmax(0, 1fr); } }
+.csvtt-nhom .ums-panel { margin: 0; }
+.csvtt-nhom__them { border: 0; background: none; padding: 0; cursor: pointer; color: var(--ums-blue);
+    font-size: var(--ums-fz-13); font-weight: var(--ums-fw-semibold); }
+.csvtt-nhom__them:hover { text-decoration: underline; }
+.csvtt-muc { display: flex; align-items: flex-start; gap: var(--ums-sp-3); width: 100%; padding: var(--ums-sp-2) 0;
+    border: 0; border-bottom: 1px dashed var(--ums-line); background: none; text-align: left; cursor: pointer; color: inherit; }
+.csvtt-muc[hidden] { display: none; }
+.csvtt-muc:last-child { border-bottom: 0; }
+.csvtt-muc:hover .csvtt-muc__td { color: var(--ums-blue); }
+.csvtt-muc__ic { flex: 0 0 28px; height: 28px; display: grid; place-items: center; border-radius: var(--ums-r-1);
+    background: var(--ums-blue-l); color: var(--ums-blue); font-size: var(--ums-fz-12); }
+.csvtt-muc__noi { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.csvtt-muc__td { color: var(--ums-navy); font-weight: var(--ums-fw-semibold); line-height: 1.4;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.csvtt-muc__meta { color: var(--ums-ink-3); font-size: var(--ums-fz-12); }

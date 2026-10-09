@@ -1,0 +1,151 @@
+/* =========================================================================
+   Đăng ký cơ sở đào tạo — kiểu riêng của màn (tiền tố dkcs-)
+   Bản gốc: khối <style> .aps-dkcs trong html/dangkycosodaotao.html
+   Lưới 2fr | 1fr dùng .ums-grid--main-aside của tầng chung.
+   ========================================================================= */
+
+[data-z="pick"][hidden],
+.dkcs-alert[hidden] { display: none; }
+
+.dkcs-pick { max-width: 640px; }
+
+/* Cột trái của hàng 3 bám đỉnh; hàng 2 kéo giãn hai hộp bằng nhau */
+.dkcs-top { align-items: start; }
+.dkcs-fill { display: flex; flex-direction: column; }
+.dkcs-fill > .dkcs-alert:not([hidden]) { flex: 1 1 auto; margin-bottom: 0; }
+
+/* ---------- 1. Kế hoạch + người học ---------- */
+.dkcs-plan__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--ums-sp-2);
+    margin-bottom: var(--ums-sp-3);
+}
+.dkcs-plan__head > i { color: var(--ums-blue); font-size: var(--ums-fz-18); }
+.dkcs-plan__head > b { color: var(--ums-navy); font-size: var(--ums-fz-16); }
+.dkcs-plan__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--ums-sp-2);
+    margin-top: var(--ums-sp-1);
+    color: var(--ums-ink);
+}
+.dkcs-plan__row > i { width: 16px; text-align: center; color: var(--ums-ink-3); }
+.dkcs-plan__row > span:first-of-type { color: var(--ums-ink-2); }
+
+.dkcs-learner {
+    display: flex;
+    gap: var(--ums-sp-3);
+    height: 100%;
+    padding: var(--ums-sp-3) var(--ums-sp-4);
+    background: var(--ums-surface-2);
+    border: 1px solid var(--ums-line);
+    border-radius: var(--ums-r-2);
+    line-height: 1.6;
+}
+.dkcs-learner > i { color: var(--ums-blue); font-size: var(--ums-fz-20); margin-top: 2px; }
+.dkcs-learner__cap { color: var(--ums-ink-3); font-size: var(--ums-fz-12); }
+.dkcs-learner__name { color: var(--ums-navy); font-weight: var(--ums-fw-semibold); font-size: var(--ums-fz-15); }
+.dkcs-sep { margin: 0 var(--ums-sp-1); color: var(--ums-line-2); }
+
+/* ---------- Hộp thông báo ---------- */
+.dkcs-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--ums-sp-3);
+    padding: var(--ums-sp-3) var(--ums-sp-4);
+    margin-bottom: var(--ums-sp-3);
+    border: 1px solid var(--ums-line);
+    border-radius: var(--ums-r-2);
+    background: var(--ums-surface);
+    line-height: 1.55;
+}
+.dkcs-alert > i { font-size: var(--ums-fz-18); margin-top: 2px; }
+.dkcs-alert > p { flex: 1 1 auto; margin: 0; min-width: 0; }
+.dkcs-alert > p > span { color: var(--ums-ink-2); }
+.dkcs-alert > .ums-btn { flex: 0 0 auto; align-self: center; }
+.dkcs-alert--info { background: var(--ums-blue-l); border-color: #bcd3fb; }
+.dkcs-alert--info > i { color: var(--ums-blue); }
+.dkcs-alert--warn { background: var(--ums-warn-bg); border-color: #f1dca6; }
+.dkcs-alert--warn > i { color: var(--ums-warn); }
+.dkcs-alert--bad { background: var(--ums-bad-bg); border-color: #f4c3c9; }
+.dkcs-alert--bad > i,
+.dkcs-alert--bad > p > b { color: var(--ums-bad); }
+.dkcs-alert--plain { background: var(--ums-surface-2); }
+.dkcs-alert--plain > i { color: var(--ums-ink-3); }
+
+/* ---------- Thẻ cơ sở đào tạo (chọn MỘT) ---------- */
+.dkcs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+    gap: var(--ums-sp-3);
+    margin-bottom: var(--ums-sp-3);
+}
+.dkcs-grid > .ums-empty { grid-column: 1 / -1; }
+.dkcs-campus {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--ums-sp-3);
+    padding: var(--ums-sp-3) var(--ums-sp-4);
+    border: 1px solid var(--ums-line);
+    border-radius: var(--ums-r-2);
+    background: var(--ums-surface);
+    cursor: pointer;
+    transition: border-color var(--ums-t), background var(--ums-t);
+}
+.dkcs-campus:hover { border-color: #a9c3f0; }
+.dkcs-campus > input { margin-top: 3px; }
+.dkcs-campus.is-selected {
+    border-color: var(--ums-blue);
+    background: var(--ums-blue-l);
+    box-shadow: 0 0 0 1px var(--ums-blue);
+}
+.dkcs-campus.is-disabled { opacity: .6; cursor: not-allowed; }
+.dkcs-campus__img {
+    width: 96px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: var(--ums-r-1);
+    flex: 0 0 auto;
+    background: var(--ums-surface-3);
+}
+.dkcs-campus__body { flex: 1 1 auto; min-width: 0; }
+.dkcs-campus__body > p { margin: 0 0 2px; }
+.dkcs-campus__name { color: var(--ums-navy); font-weight: var(--ums-fw-semibold); font-size: var(--ums-fz-15); }
+.dkcs-campus__line { display: flex; align-items: baseline; gap: var(--ums-sp-2); color: var(--ums-ink); }
+.dkcs-campus__line > i { width: 16px; text-align: center; color: var(--ums-ink-3); }
+.dkcs-campus__note { color: var(--ums-ink-2); font-style: italic; }
+
+/* ---------- Cột phải ---------- */
+.dkcs-current {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--ums-sp-2);
+    margin-top: var(--ums-sp-4);
+    padding-top: var(--ums-sp-3);
+    border-top: 1px dashed var(--ums-line);
+}
+.dkcs-current > i { color: var(--ums-blue); }
+.dkcs-current > span { margin-left: auto; }
+
+.dkcs-fromto {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: var(--ums-sp-2) var(--ums-sp-3);
+}
+.dkcs-fromto__lbl { color: var(--ums-ink-2); }
+.dkcs-fromto__arrow { grid-column: 2; color: var(--ums-blue); padding-left: var(--ums-sp-4); }
+.dkcs-last {
+    display: flex;
+    gap: var(--ums-sp-3);
+    margin-top: var(--ums-sp-4);
+    padding-top: var(--ums-sp-3);
+    border-top: 1px solid var(--ums-line);
+    color: var(--ums-ink-2);
+}
+.dkcs-last > i { color: var(--ums-ink-3); margin-top: 3px; }
+.dkcs-last b { color: var(--ums-ink); }

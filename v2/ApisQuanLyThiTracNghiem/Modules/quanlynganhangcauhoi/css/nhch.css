@@ -1,0 +1,88 @@
+/* =========================================================================
+   Ngân hàng câu hỏi (thi trắc nghiệm) — kiểu RIÊNG của module quanlynganhangcauhoi
+   Dùng cho quanlynganhangcauhoi, viewquanlynganhangcauhoi và nhapnganhangcauhoi (nạp chéo).
+   ========================================================================= */
+
+/* Vùng đầu khung danh sách: thanh lọc + thanh nút (khung flush nên tự có lề) */
+.nhch-dau { padding: var(--ums-sp-4) var(--ums-sp-4) 0; }
+.nhch-dau > .ums-panel { box-shadow: none; border: 0; margin: 0 0 var(--ums-sp-3); }
+.nhch-dau > .ums-panel > .ums-panel__body { padding: 0; }
+
+/* Thanh nút hai nhóm (báo cáo bên trái · tác vụ bên phải) — bản gốc .skin-toolbar */
+.nhch-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--ums-sp-3); margin-bottom: var(--ums-sp-3); }
+.nhch-toolbar__nhom { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ums-sp-2); }
+.nhch-toolbar__nhom .ums-select { width: 260px; }
+/* Luật chung .select2-container { width: 100% !important } làm ô chọn chiếm cả hàng, đẩy nút xuống dòng → cố định bề ngang trong thanh nút */
+.nhch-toolbar__nhom .select2-container { width: 260px !important; flex: 0 0 auto; }
+@media (max-width: 720px) { .nhch-toolbar__nhom .select2-container, .nhch-toolbar__nhom .ums-select { width: 100% !important; } }
+.nhch-toolbar__nhom--phai { margin-left: auto; }
+
+/* Nội dung câu hỏi / đáp án là HTML soạn bằng CKEditor */
+.nhch-nd { min-width: 240px; }
+.nhch-html { max-width: 560px; overflow-wrap: anywhere; }
+.nhch-html img { max-width: 100%; height: auto; }
+.nhch-html p:last-child { margin-bottom: 0; }
+.nhch-da { padding: 1px 0; }
+/* Nội dung CKEditor bọc trong <p> — trong dòng đáp án / câu trả lời xem trước phải nằm cùng hàng với "A." */
+.nhch-da p, .nhch-xt__da p, .nhch-ls p { display: inline; margin: 0; }
+.nhch-da--loi { color: var(--ums-act-del); }           /* đáp án chưa có thứ tự — gốc tô đỏ */
+.nhch-sl { color: #b45309; }                           /* số lượt đã thi — gốc màu chocolate */
+.nhch-nutnho { margin-top: 2px; }
+.nhch-stt { width: 64px; text-align: center; }
+tr.nhch-loi > td { background: var(--ums-bad-bg); }    /* dòng câu hỏi lỗi sau "Kiểm tra" (gốc .flash-red) */
+
+/* Biểu mẫu câu hỏi */
+.nhch-form__luoi { margin-top: var(--ums-sp-4); }
+.nhch-form__dapan { margin-top: var(--ums-khoi-gap, 40px); }
+.nhch-form__dapan .ums-panel + .ums-panel,
+.nhch-form__dapan > [data-k="ve2"] > .ums-panel { margin-top: var(--ums-sp-5); }
+
+/* Hàng thêm đáp án / vế 2 dưới bảng */
+.nhch-them { border-top: 1px solid var(--ums-line); }
+.nhch-them__hang { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ums-sp-3); margin-bottom: var(--ums-sp-3); }
+.nhch-them__hang .ums-input--so { width: 90px; flex: 0 0 auto; }
+.nhch-them__hang .ums-check { margin: 0; white-space: nowrap; }
+.nhch-them__hang > input:not(.ums-input--so) { flex: 1 1 220px; }
+.nhch-them__hang .ums-btn { flex: 0 0 auto; }
+.nhch-them > textarea { width: 100%; margin-bottom: var(--ums-sp-3); }
+.nhch-them .ums-row--end { display: flex; justify-content: flex-end; }
+.nhch-ed { margin-top: var(--ums-sp-2); min-width: 320px; }
+.nhch-ed textarea { width: 100%; }
+
+/* Cây chọn nhóm đích trong hộp "Chuyển câu hỏi" */
+.nhch-cay { border: 1px solid var(--ums-line); border-radius: var(--ums-r-2); padding: var(--ums-sp-2) var(--ums-sp-3); max-height: 60vh; overflow: auto; }
+.nhch-cay .ums-master__list { padding: 0; }
+
+/* Xem trước câu hỏi — bố cục bản gốc genTable_PreviewCauHoi (chữ to, số câu đỏ, hướng dẫn xanh) */
+.nhch-xemtruoc { font-size: var(--ums-fz-15); }
+.nhch-xt { padding: var(--ums-sp-4) 0; border-bottom: 1px solid var(--ums-ink-2); }
+.nhch-xt:last-child { border-bottom: 0; }
+.nhch-xt--loi { background: var(--ums-bad-bg); padding-inline: var(--ums-sp-3); }
+.nhch-xt__so { font-weight: var(--ums-fw-bold); color: var(--ums-act-del); text-decoration: underline; font-size: var(--ums-fz-16); }
+.nhch-xt__hd { color: var(--ums-blue); margin: var(--ums-sp-1) 0; }
+.nhch-xt__nd { font-size: var(--ums-fz-18); margin: var(--ums-sp-2) 0; }
+.nhch-xt__nd img { max-width: 100%; height: auto; }
+.nhch-xt__tl { font-weight: var(--ums-fw-bold); color: #0066ff; margin: var(--ums-sp-2) 0; }
+.nhch-xt__da { display: block; margin: 0 0 var(--ums-sp-2) var(--ums-sp-4); }
+.nhch-xt__sel { display: inline-block; width: auto; min-width: 140px; vertical-align: middle; margin: 0 var(--ums-sp-2); }
+.nhch-xt__inp { display: inline-block; width: 200px; vertical-align: middle; margin-left: var(--ums-sp-2); }
+
+/* Lịch sử: giá trị cũ khác giá trị hiện tại — gốc tô đỏ */
+.nhch-ls { color: var(--ums-act-del); }
+
+/* Ô "Mức phê duyệt" đặt trên tiêu đề khung (màn nhập — gốc đặt trong dải tab) */
+.nhch-muc { margin: 0; min-width: 240px; }
+.nhch-muc .select2-container { min-width: 240px; }
+
+/* Khung chi tiết: cây nhóm bên trái không có ô tìm — bỏ đệm trống trên danh sách; nút nhóm (Thêm / Sửa / Xóa) là nút biểu tượng */
+.nhch-khung .ums-master__side .ums-master__list { padding-top: var(--ums-sp-3); }
+.nhch-khung .ums-master__side .ums-panel__tools { flex-wrap: nowrap; gap: 2px; }
+.nhch-khung .ums-master__side .ums-panel__title { white-space: nowrap; }
+/* Đầu khung (biểu mẫu trong trang) nhiều nút: cho dãy nút xuống dòng, tiêu đề không bị bóp dọc */
+.nhch-khung .ums-panel__head { flex-wrap: wrap; row-gap: var(--ums-sp-2); }
+.nhch-khung .ums-panel__title { white-space: nowrap; }
+.nhch-khung .ums-panel__tools { flex-wrap: wrap; justify-content: flex-end; }
+
+@media print {
+    .nhch-xt { break-inside: avoid; }
+}
