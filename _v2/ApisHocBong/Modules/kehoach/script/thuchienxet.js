@@ -62,10 +62,9 @@
         pat.panel({ title: false, cls: 'ums-u-mb-4', body: '<div data-z="hd"></div>' }) +
         pat.panel({
             title: 'Danh sách kế hoạch', icon: 'fa-clipboard-list-check', count: 'n', flush: true, zone: 't',
-            tools: ui.btn('search', { text: 'Thực hiện xét', mod: 'primary', icon: 'fa-user-gear', attr: { 'data-a': 'hangdoi' } }) +
-                ui.btn('confirm', { text: 'Thực hiện công nhận kết quả chính thức', attr: { 'data-a': 'congnhan' } }),
-            foot: '<div class="hbkh-foot">' +
-                ui.xoaChon('input[data-khx]', { goc: '.ums-panel', text: 'Hủy kết quả xét', attr: { 'data-a': 'huy' } }) + '</div>'
+            tools: ui.xoaChon('input[data-khx]', { goc: '.ums-panel', text: 'Hủy kết quả xét', attr: { 'data-a': 'huy' } }) +
+                ui.btn('search', { text: 'Thực hiện xét', mod: 'primary', icon: 'fa-user-gear', attr: { 'data-a': 'hangdoi' } }) +
+                ui.btn('confirm', { text: 'Thực hiện công nhận kết quả chính thức', attr: { 'data-a': 'congnhan' } })
         });
 
     function q(sel) { return root.querySelector(sel); }

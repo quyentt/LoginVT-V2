@@ -65,7 +65,8 @@
        đã bị comment trong mẫu) — ĐVT chọn từng dòng chỉ đi theo "Thu tiền
        không sinh HĐBL" / HĐĐT.
      · Phân bổ gửi cho MỌI dòng, kể cả dòng chưa nhập số tiền (dSoTien rỗng).
-     · strTenNguoiThu gửi rỗng (ô #strTenNguoiThu không có trên màn gốc).
+     · Họ tên người mua hàng (gốc 12/10): strTenNguoiThu + strNhap_HoTenNguoiMuaHang = tên đối tượng,
+       bTenNguoiThu khi có tên — chỉ ở thuTienPayload; ô #strTenNguoiThu không có trên màn.
    Cố ý bỏ
      · Nút Xoá khoản phải nộp / đã nộp trong hộp sửa: bản gốc ẩn cứng
        (display:none), không có đường bật.
@@ -952,6 +953,7 @@
         var g = gom();
         // bản gốc: dt_HS.find(ID === strHSSV_Id) — không thấy thì lỗi JS; ở đây dùng dòng đang chọn
         var a = S.dtHS.filter(function (x) { return x.ID === S.hsId; })[0] || S.dt || {};
+        var tenNguoiMua = String(a.TENDOITUONG || '').trim();
         return {
             action: 'TC_DaNop/ThemMoi', versionAPI: 'v1.0',
             strLoaiDoiTuong: 'DOITUONGKHAC',
@@ -977,7 +979,9 @@
             strNguonDuLieu_Id: '',
             dKhongSinhChungTu: 0,
             strPhieuThuTheoPhoiSan_Id: '',
-            strTenNguoiThu: '',
+            strTenNguoiThu: tenNguoiMua,
+            strNhap_HoTenNguoiMuaHang: tenNguoiMua,
+            bTenNguoiThu: tenNguoiMua !== '',
             strNganHang_SoTaiKhoan: a.NGANHANG_SOTAIKHOAN,
             strNganHang_ThuocNganHang_Id: a.NGANHANG_THUOCNGANHANG_ID,
             strNganHang_ThuocNganHang_Ten: a.NGANHANG_THUOCNGANHANG_TEN,

@@ -29,6 +29,9 @@
      SV_QuyetDinh_MH/… CapNhat_LopQuanLy_QD_NH  strQLSV_QD_NguoiHoc_Id · strDaoTao_LopQuanLy_Moi_Id
      SV_QuyetDinh_MH/… CapNhat_LopQuanLy_N2_QD_NH  strQLSV_QD_NguoiHoc_Id · strDaoTao_LopQuanLy_N2_Id
      SV_QuyetDinh_MH/… CapNhat_PhanTramPhi_QD_NH   strQLSV_QD_NguoiHoc_Id · dPhamTramTinhPhi
+     SV_QuyetDinh_MH/… PKG_HOSOHOCVIEN_QUYETDINH.QD_NhanSu_LayDanhSach   strTuKhoa '' · strQLSV_QuyetDinh_Id   (gốc 12/10: "Phân công nhân sự")
+     SV_QuyetDinh_MH/… QD_NhanSu_ThemMoi      (sau khi lưu, mỗi nhân sự mới) strQLSV_QuyetDinh_Id · strNguoiDung_Id
+     SV_QuyetDinh_MH/… QD_NhanSu_Xoa          strId (dòng đã lưu — hỏi xác nhận; dòng chưa lưu chỉ bỏ khỏi bảng)
      SV_HSSV_ThongTin_MH/… pkg_hososinhvien_thongtin.Them_QLSV_QD_ThoiGian   strQLSV_NguoiHoc_Id · strDaoTao_ThoiGianDaoTao_Id · strQLSV_QuyetDinh_Id
      SV_HSSV_ThongTin_MH/… LayDSKetQuaNhieuKy   strQLSV_NguoiHoc_Id · strQLSV_QuyetDinh_Id  ·  Xoa_QLSV_QD_ThoiGian  strId
      SV_QuyetDinh_HocPhan/LayDSQLSV_QuyetDinh_HocPhan  GET  type · strTuKhoa '' · strDaoTao_HocPhan_Id '' · strQLSV_QuyetDinh_Id ·
@@ -186,7 +189,7 @@
     function x(k) { return st.extra ? st.extra.querySelector('[data-z="' + k + '"]') : null; }
     function moBieuMau(row, extra) {
         st.id = row ? row.ID : '';
-        st.sv = []; st.moi = []; st.hp = []; st.hpMoi = [];
+        st.sv = []; st.moi = []; st.hp = []; st.hpMoi = []; st.ns = []; st.nsMoi = [];
         st.extra = extra;
         extra.innerHTML =
             '<div class="ums-grid ums-grid--2 ums-cols ums-u-mb-4">' +
@@ -204,12 +207,15 @@
                             ui.btn('edit', { text: 'Chọn lớp ngành 2', mod: 'out-primary', icon: 'fa-people-arrows', attr: { 'data-a': 'sv-lop', 'data-n': 'N2' } }) +
                             ui.btn('edit', { text: 'Nhập % tính phí', mod: 'out-primary', icon: 'fa-percent', attr: { 'data-a': 'sv-phi' } }) +
                             ui.btn('edit', { text: 'Cập nhật kỳ hiệu lực', mod: 'out-primary', attr: { 'data-a': 'sv-ky' } }) +
-                        '</div></div><div data-z="svt"></div>' });
+                        '</div></div><div data-z="svt"></div>' }) +
+            pat.panel({ title: 'Phân công nhân sự', icon: 'fa-user-gear', count: 'nsn',
+                body: '<div data-z="nst"></div><div class="ums-row ums-u-mt-2">' +
+                    ui.btn('add', { text: 'Thêm nhân sự', mod: 'out-success', attr: { 'data-a': 'ns-them' } }) + '</div>' });
         st.tep = ums.files.mount(x('tep'), { api: 'SV_Files' });
         if (st.id) st.tep.load(st.id); else st.tep.clear();
         if (row) napHinhThuc(e(row.HINHTHUCQUYETDINH_ID)); else napHinhThuc('');
-        veHP(); veSV();
-        if (st.id) { taiHP(); taiSV(); }
+        veHP(); veSV(); veNS();
+        if (st.id) { taiHP(); taiSV(); taiNS(); }
     }
 
     /* ---------- Học phần của quyết định ------------------------------------------ */
@@ -263,6 +269,48 @@
             ums.api.call({ action: 'SV_QuyetDinh_HocPhan/Xoa_QLSV_QuyetDinh_HocPhan', type: 'POST', strIds: id, strNguoiThucHien_Id: '' })
                 .then(function () { ui.toast('Xóa thành công!', 'ok'); taiHP(); })
                 .catch(function (err) { ums.api.handle(err, 'xoá học phần'); });
+        });
+    }
+
+    /* ---------- Phân công nhân sự (QD_NhanSu) ---------------------------------------- */
+    function taiNS() {
+        var id = st.id;
+        ums.api.call({ action: MH + 'EAUeDykgLxI0Hg0gOAUgLykSICIp', func: PK + 'QD_NhanSu_LayDanhSach', strTuKhoa: '', strQLSV_QuyetDinh_Id: id, strNguoiThucHien_Id: '' })
+            .then(function (r) { if (id === st.id) { st.ns = arr(r.data); veNS(); } })
+            .catch(function (err) { ums.api.handle(err, 'nhân sự của quyết định'); });
+    }
+    function veNS() {
+        var host = x('nst');
+        if (!host) return;
+        var rows = st.ns.map(function (r) { return { r: r }; }).concat(st.nsMoi.map(function (m, i) { return { m: m, i: i }; }));
+        var n = x('nsn');
+        if (n) n.textContent = '(' + rows.length + ')';
+        ui.table({ el: host, rows: rows, empty: 'Chưa phân công nhân sự', columns: [
+            { title: 'Stt', cls: 'is-center', width: '64px', render: function (o, i) { return String(i + 1); } },
+            { title: 'Mã số', render: function (o) { return esc(o.r ? e(o.r.NGUOIDUNG_TAIKHOAN) : e(o.m.MASO)); } },
+            { title: 'Họ tên', render: function (o) { return esc(o.r ? e(o.r.NGUOIDUNG_TENDAYDU) : e(o.m.HOTEN)); } },
+            { title: 'Xóa', cls: 'is-center', width: '72px', render: function (o) {
+                return o.r ? '<button type="button" class="ums-iconbtn ums-iconbtn--del" data-a="ns-xoa" data-id="' + esc(o.r.ID) + '" title="Xóa"><i class="fa-light fa-trash-can"></i></button>'
+                    : '<button type="button" class="ums-iconbtn ums-iconbtn--del" data-a="ns-bo" data-i="' + o.i + '" title="Bỏ dòng chưa lưu"><i class="fa-light fa-trash-can"></i></button>';
+            } }
+        ] });
+    }
+    function themNS() {
+        pat.pickNhanSu({ title: 'Tìm kiếm nhân sự', onPick: function (rows) {
+            var co = {}, bo = 0;
+            st.ns.forEach(function (r) { co[r.NGUOIDUNG_ID] = 1; });
+            st.nsMoi.forEach(function (m) { co[m.ID] = 1; });
+            rows.forEach(function (r) { if (co[r.ID]) { bo++; return; } co[r.ID] = 1; st.nsMoi.push(r); });
+            if (bo) ui.toast('Đã tồn tại: ' + bo + ' nhân sự', 'warn');
+            veNS();
+        } });
+    }
+    function xoaNS(id) {
+        ui.confirm('Bạn có chắc chắn muốn xóa dữ liệu?', { tone: 'bad', ok: 'Xoá', title: 'Xoá nhân sự khỏi quyết định' }).then(function (yes) {
+            if (!yes) return;
+            ums.api.call({ action: MH + 'EAUeDykgLxI0HhkuIAPP', func: PK + 'QD_NhanSu_Xoa', strId: id, strNguoiThucHien_Id: '' })
+                .then(function () { ui.toast('Xóa thành công!', 'ok'); taiNS(); })
+                .catch(function (err) { ums.api.handle(err, 'xoá nhân sự'); });
         });
     }
 
@@ -453,11 +501,13 @@
             return mh('Them_QLSV_QuyetDinh_NguoiHoc', 'FSkkLB4QDRIXHhA0OCQ1BSgvKR4PJjQuKAkuIgPP', {
                 strQLSV_NguoiHoc_Id: a.QLSV_NGUOIHOC_ID, strQLSV_QuyetDinh_Id: id, strDaoTao_LopQuanLy_Id: a.DAOTAO_LOPQUANLY_ID,
                 strDaoTao_ToChucCT_Id: a.DAOTAO_TOCHUCCHUONGTRINH_ID, strTrangThaiNguoiHoc_Id: a.QLSV_TRANGTHAINGUOIHOC_ID, strTrack_Id: a.TRACK_ID });
-        }).concat(st.hpMoi.map(function (m) {
+        }).concat(st.nsMoi.map(function (m) {
+            return mh('QD_NhanSu_ThemMoi', 'EAUeDykgLxI0HhUpJCwMLigP', { strQLSV_QuyetDinh_Id: id, strNguoiDung_Id: m.ID });
+        })).concat(st.hpMoi.map(function (m) {
             return { action: 'SV_QuyetDinh_HocPhan/Them_QLSV_QuyetDinh_HocPhan', type: 'POST', strQLSV_QuyetDinh_Id: id, strXauCongThuc: '',
                 strDaoTao_HocPhan_Id: m.hp.DAOTAO_HOCPHAN_ID, strDaoTao_ThoiGianDaoTao_Id: m.ky || '', strNguoiThucHien_Id: '' };
         }));
-        st.moi = []; st.hpMoi = [];
+        st.moi = []; st.hpMoi = []; st.nsMoi = [];
         var tep = st.tep;
         (tep ? tep.save(id) : Promise.resolve()).then(function () {
             if (calls.length) return ui.batch(calls, { title: 'Đang lưu sinh viên, học phần', okText: 'Thêm thành công', show: true });
@@ -710,6 +760,9 @@
             case 'sv-them': themSV(); break;
             case 'sv-xoa': xoaSV(); break;
             case 'sv-bo': st.moi = st.moi.filter(function (m) { return String(m.ID) !== String(id); }); veSV(); break;
+            case 'ns-them': themNS(); break;
+            case 'ns-xoa': xoaNS(id); break;
+            case 'ns-bo': st.nsMoi.splice(Number(b.getAttribute('data-i')), 1); veNS(); break;
             case 'sv-tt': hopTrangThai(); break;
             case 'sv-lop': hopLop(b.getAttribute('data-n')); break;
             case 'sv-phi': hopPhi(); break;

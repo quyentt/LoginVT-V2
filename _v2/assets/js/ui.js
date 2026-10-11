@@ -1327,6 +1327,93 @@
             if (el._flatpickr || el.hasAttribute('data-no-fp')) return;
             try { ui.datepicker(el); } catch (e) {}
         });
+        try { ui.khoangNgay(root); } catch (e) { /* luật khoảng ngày hỏng không được làm chết màn */ }
+    };
+
+    /* ---------- Khoảng ngày Từ → Đến (người dùng chốt 2026-10-12) -------------------------------------------------
+       Ô "Đến ngày / Kết thúc / Hết hạn" KHÔNG được nhỏ hơn ô "Từ ngày / Bắt đầu / Hiệu lực" đứng ngay trước nó.
+         · lịch của ô Đến khoá các ngày trước ô Từ (minDate), tính lại mỗi lần mở lịch;
+         · đổi Từ (hoặc gõ Đến) làm Đến < Từ thì TỰ đặt Đến = Từ — không thông báo (mẫu: Lịch giảng nhiều phòng học);
+         · không chặn gửi, không đụng giá trị nạp sẵn lúc mở biểu mẫu (chỉ xử lý khi người dùng đổi).
+       Ghép cặp TỰ ĐỘNG, một chỗ duy nhất, màn không phải làm gì: trong cùng một dòng bảng / bộ lọc / hộp thoại / biểu mẫu,
+       hai ô ngày LIỀN NHAU mà nhãn (nhãn ô, placeholder, hoặc tiêu đề cột nếu ô nằm trong bảng) là Từ… rồi Đến… thì thành một cặp.
+       Nhãn lạ thì khai tay: data-range="<khoá>:tu" trên ô đầu, data-range="<khoá>:den" trên ô cuối (cùng khoá = một cặp).
+       Tắt cho một ô: data-range="off". Màn dựng riêng bằng flatpickr (không qua ui.enhance) gọi ui.khoangNgay(root) sau khi gắn lịch. */
+    var RANGE_SCOPE = 'tr, dialog, .ums-filter, [data-ft="body"], .ums-panel__body, .ums-grid, form';
+    function nhanNgay(el) {
+        var t = '', f = el.closest('.ums-field'), lab = f && f.querySelector('label, .ums-field__label');
+        if (lab) t = lab.textContent;
+        if (!t) t = el.getAttribute('placeholder') || el.getAttribute('data-ph') || el.getAttribute('aria-label') || el.title || '';
+        if (!t) {
+            var td = el.closest('td'), tb = td && td.closest('table');
+            if (td && tb && tb.tHead && tb.tHead.rows.length) {
+                var hd = tb.tHead.rows[tb.tHead.rows.length - 1].cells[td.cellIndex];
+                if (hd) t = hd.textContent;
+            }
+        }
+        return String(t || '').replace(/\s+/g, ' ').trim().toLowerCase();
+    }
+    function vaiTroNgay(el) {
+        var d = el.getAttribute('data-range');
+        if (d === 'off') return '';
+        if (d && /:tu$/.test(d)) return 'tu';
+        if (d && /:den$/.test(d)) return 'den';
+        var t = nhanNgay(el);
+        if (!t) return '';
+        if (t.indexOf('đến') === 0 || t.indexOf('kết thúc') >= 0 || t.indexOf('hết hạn') >= 0 || t.indexOf('hết hiệu lực') >= 0) return 'den';
+        if (t.indexOf('từ') === 0 || t.indexOf('bắt đầu') >= 0 || t.indexOf('hiệu lực') >= 0) return 'tu';
+        return '';
+    }
+    function ngayCuaO(el) {
+        var v = String(el.value || '').trim();
+        if (!v || typeof flatpickr === 'undefined') return null;
+        var d = flatpickr.parseDate(v, 'd/m/Y');
+        return d && !isNaN(d) ? d : null;
+    }
+    function ghepKhoang(a, b) {
+        if (a._khoangB === b) return;
+        a._khoangB = b; b._khoangA = a;
+        var fa = a._flatpickr, fb = b._flatpickr;
+        /* flatpickr: đặt minDate thì XOÁ giá trị đang chọn nếu nó nhỏ hơn mốc → phải đọc Đến TRƯỚC, rồi mới đặt mốc. */
+        function dongBo(sua) {
+            var s = ngayCuaO(a), e = ngayCuaO(b);
+            if (!s) { fb.set('minDate', null); return; }
+            if (e && e < s) {
+                if (!sua) return;                         // dữ liệu nạp sẵn đang ngược: không xoá, chỉ không khoá lịch
+                fb.set('minDate', s);
+                fb.setDate(s, true);                      // Đến < Từ → Đến = Từ (kéo theo sự kiện change cho màn đang nghe)
+                return;
+            }
+            fb.set('minDate', s);
+        }
+        /* Gõ tay Đến nhỏ hơn Từ: flatpickr vứt giá trị ngoài khoảng (ô thành rỗng) → nhớ chữ vừa gõ để đặt lại Đến = Từ. */
+        b.addEventListener('input', function () { b._go = b.value; });
+        fb.config.onChange.push(function () {
+            if (!b.value && b._go) {
+                var s = ngayCuaO(a), g = flatpickr.parseDate(b._go, 'd/m/Y');
+                if (s && g && !isNaN(g) && g < s) { b._go = ''; fb.setDate(s, true); return; }
+            }
+            b._go = '';
+        });
+        fa.config.onChange.push(function () { dongBo(true); });
+        fb.config.onChange.push(function () { dongBo(true); });
+        fb.config.onOpen.push(function () { dongBo(false); });
+        dongBo(false);
+    }
+    ui.khoangNgay = function (root) {
+        var ds = qa(root, 'input').filter(function (el) { return el._flatpickr && el.getAttribute('data-range') !== 'off'; });
+        var xong = [];
+        ds.forEach(function (el) {
+            var sc = el.closest(RANGE_SCOPE) || document.body;
+            if (xong.indexOf(sc) >= 0) return;
+            xong.push(sc);
+            var tat = qa(sc, 'input').filter(function (x) { return x._flatpickr && x.getAttribute('data-range') !== 'off'; });
+            for (var i = 0; i + 1 < tat.length; i++) {
+                var k1 = tat[i].getAttribute('data-range'), k2 = tat[i + 1].getAttribute('data-range');
+                if (vaiTroNgay(tat[i]) === 'tu' && vaiTroNgay(tat[i + 1]) === 'den' &&
+                    (!k1 || !k2 || k1.split(':')[0] === k2.split(':')[0])) { ghepKhoang(tat[i], tat[i + 1]); i++; }
+            }
+        });
     };
 
     function qa(root, sel) {

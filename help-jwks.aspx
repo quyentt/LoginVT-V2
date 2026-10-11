@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" EnableViewState="false" EnableSessionState="false" ResponseEncoding="utf-8" ContentType="application/json" %>
+<%@ Page Language="C#" AutoEventWireup="true" EnableViewState="false" EnableSessionState="false" ResponseEncoding="utf-8" ContentType="application/json" %>
 <%@ Import Namespace="System.IO" %>
 <%@ Import Namespace="System.Text" %>
 <%@ Import Namespace="System.Security.Cryptography" %>

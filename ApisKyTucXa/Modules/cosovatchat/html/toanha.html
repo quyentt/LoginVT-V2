@@ -32,7 +32,7 @@
             </div>
             <div class="box box-solid aps-ds-toanha pl20 pr20 mt-10 pb10">
                 <div class="box-header pd0 pb5 line-38">
-                    <h3 class="box-title"><i class="fa fa-building"></i> Danh sách tòa nhà</h3>
+                    <h3 class="box-title"><i class="fa fa-building"></i> Danh sách tòa nhà <span class="tn-summary" id="lblToaNha_TongQuan"></span></h3>
                     <div class="box-tools pull-right">
                         <a id="btnAddNew_Toanha" class="btn btn-success btnAdd"><i class="fa fa-plus"></i> Thêm</a>
                     </div>
@@ -46,26 +46,26 @@
         <!-- Zone list Phong -->
         <div class="box box-solid form-container zone-bus" id="zone_list_phong">
             <div class="box-header with-border">
-                <h3 class="box-title"> Danh sách phòng thuộc tòa nhà</h3>
+                <h3 class="box-title">Danh sách phòng thuộc tòa nhà <span class="tn-summary tn-summary-blue" id="lblPhong_ToaNha_Ten"></span> <span class="tn-summary tn-summary-blue" id="lblPhong_TongSo"></span></h3>
                 <div class="pull-right">
-                    <a class="submit btn btn-default btnAdd" id="btnAddNew"><i class="fa fa-plus color-active"></i> <span class="lang" key="">Thêm</span></a>
+                    <a class="submit btn btn-success btnAdd" id="btnAddNew"><i class="fa fa-plus"></i> <span class="lang" key="">Thêm</span></a>
                     <a class="btn btn-default btnClose" href="#" title="Close"><i class="fa fa-times"></i> Đóng</a>
                 </div>
             </div>
             <div class="box-body">
                 <div class="box box-solid">
-                    <div class="box-body">
+                    <div class="box-body tn-table-wrap">
                         <table id="tblPhong" class="table table-hover">
                             <thead>
                                 <tr>
                                     <th class="td-center td-fixed">Stt</th>
-                                    <th class="td-center">Tòa nhà</th>
-                                    <th class="td-center">Tên phòng</th>
-                                    <th class="td-center">Mã Phòng</th>
-                                    <th class="td-right">Tầng</th>
-                                    <th class="td-center">Tính chất</th>
-                                    <th class="td-center">Loại phòng</th>
-                                    <th class="td-right">Diện tích (M2)</th>
+                                    <th class="td-left">Tòa nhà</th>
+                                    <th class="td-left">Tên phòng</th>
+                                    <th class="td-left">Mã phòng</th>
+                                    <th class="td-center">Tầng</th>
+                                    <th class="td-left">Tính chất</th>
+                                    <th class="td-left">Loại phòng</th>
+                                    <th class="td-right">Diện tích (m²)</th>
                                     <th class="td-right">Số giường</th>
                                     <th class="td-right">Số người ở tối đa</th>
                                     <th class="td-center td-fixed">Sửa</th>
@@ -75,6 +75,15 @@
                             <tbody>
                                 <!-- load from js -->
                             </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="7" class="td-right">Tổng cộng</th>
+                                    <th class="td-right" id="lblPhong_TongDienTich">0</th>
+                                    <th class="td-right" id="lblPhong_TongGiuong">0</th>
+                                    <th class="td-right" id="lblPhong_TongNguoi">0</th>
+                                    <th colspan="2"></th>
+                                </tr>
+                            </tfoot>
                         </table>
                     </div>
                 </div>
@@ -89,125 +98,71 @@
                 </div>
             </div>
             <div class="box-body">
-                <div class="col-sm-12 box-view">
+                <div class="tn-form">
+                    <div class="tn-form-sec"><i class="fa fa-info-circle"></i> Thông tin chung</div>
+                    <div class="tn-form-grid">
+                        <div class="tn-field">
+                            <label>Tòa nhà</label>
+                            <select id="dropPhong_ToaNha" class="select-opt"></select>
+                        </div>
+                        <div class="tn-field">
+                            <label>Tầng số</label>
+                            <select id="dropPhong_TangSo" class="select-opt"></select>
+                        </div>
+                        <div class="tn-field">
+                            <label>Tên phòng</label>
+                            <input type="text" id="txtPhong_Ten" class="form-control" placeholder="Nhập tên phòng" />
+                        </div>
+                        <div class="tn-field">
+                            <label>Mã phòng</label>
+                            <input type="text" id="txtPhong_Ma" class="form-control" placeholder="Nhập mã phòng" />
+                        </div>
+                    </div>
 
-                    <div class="row zone-box">
-                        <div class="row">
-                            <div class="col-sm-2">
-                                <div class="title-name">
-                                    Tòa nhà<span class="title-colon">:</span>
-                                </div>
-                            </div>
-                            <div class="col-sm-4">
-                                <select id="dropPhong_ToaNha" class="select-opt"></select>
-                            </div>
-                            <div class="col-sm-2">
-                                <div class="title-name">
-                                    Tầng số<span class="title-colon">:</span>
-                                </div>
-                            </div>
-                            <div class="col-sm-4">
-                                <select id="dropPhong_TangSo" class="select-opt"></select>
-                            </div>
+                    <div class="tn-form-sec"><i class="fa fa-arrows-alt"></i> Quy mô và tình trạng</div>
+                    <div class="tn-form-grid">
+                        <div class="tn-field">
+                            <label>Diện tích (m²)</label>
+                            <input type="text" id="txtPhong_DienTichSuDung" class="form-control" placeholder="Nhập diện tích" />
                         </div>
+                        <div class="tn-field">
+                            <label>Số giường</label>
+                            <input type="text" id="txtPhong_SoGiuong" class="form-control" placeholder="Nhập số giường" />
+                        </div>
+                        <div class="tn-field">
+                            <label>Số người ở tối đa</label>
+                            <input type="text" id="txtPhong_SoLuongToiDa" class="form-control" placeholder="Nhập số người tối đa" />
+                        </div>
+                        <div class="tn-field">
+                            <label>Tình trạng</label>
+                            <select id="dropPhong_TinhTrang" class="select-opt"></select>
+                        </div>
+                    </div>
 
-                        <div class="row">
-                            <div class="col-sm-2">
-                                <div class="title-name">
-                                    Tên phòng<span class="title-colon">:</span>
-                                </div>
-                            </div>
-                            <div class="col-sm-4">
-                                <input type="text" id="txtPhong_Ten" class="form-control" placeholder="Nhập tên phòng" />
-                            </div>
-                            <div class="col-sm-2">
-                                <div class="title-name">
-                                    Mã phòng<span class="title-colon">:</span>
-                                </div>
-                            </div>
-                            <div class="col-sm-4">
-                                <input type="text" id="txtPhong_Ma" class="form-control" placeholder="Nhập mã phòng" />
-                            </div>
+                    <div class="tn-form-sec"><i class="fa fa-tags"></i> Phân loại</div>
+                    <div class="tn-form-grid">
+                        <div class="tn-field">
+                            <label>Loại phòng</label>
+                            <select id="dropPhong_LoaiPhong" class="select-opt"></select>
                         </div>
+                        <div class="tn-field">
+                            <label>Tính chất</label>
+                            <select id="dropPhong_TinhChat" class="select-opt"></select>
+                        </div>
+                        <div class="tn-field tn-span-2">
+                            <label>Loại đối tượng</label>
+                            <select id="dropPhong_LoaiDoiTuong" class="select-opt" multiple="multiple"></select>
+                        </div>
+                    </div>
 
-                        <div class="row">
-                            <div class="col-sm-2">
-                                <div class="title-name">
-                                    Diện tích<span class="title-colon">:</span>
-                                </div>
-                            </div>
-                            <div class="col-sm-4">
-                                <input type="text" id="txtPhong_DienTichSuDung" class="form-control" />
-                            </div>
-                            <div class="col-sm-2">
-                                <div class="title-name">
-                                    Số giường<span class="title-colon">:</span>
-                                </div>
-                            </div>
-                            <div class="col-sm-4">
-                                <input type="text" id="txtPhong_SoGiuong" class="form-control" />
-                            </div>
-                        </div>
-
-
-                        <div class="row">
-                            <div class="col-sm-2">
-                                <div class="title-name">
-                                    Loại phòng<span class="title-colon">:</span>
-                                </div>
-                            </div>
-                            <div class="col-sm-4">
-                                <select id="dropPhong_LoaiPhong" class="select-opt"></select>
-                            </div>
-                            <div class="col-sm-2">
-                                <div class="title-name">
-                                    Tính chất<span class="title-colon">:</span>
-                                </div>
-                            </div>
-                            <div class="col-sm-4">
-                                <select id="dropPhong_TinhChat" class="select-opt"></select>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-2">
-                                <div class="title-name">
-                                    Số người ở tối đa<span class="title-colon">:</span>
-                                </div>
-                            </div>
-                            <div class="col-sm-4">
-                                <input type="text" id="txtPhong_SoLuongToiDa" class="form-control" />
-                            </div>
-                            <div class="col-sm-2">
-                                <div class="title-name">
-                                    Loại đối tượng<span class="title-colon">:</span>
-                                </div>
-                            </div>
-                            <div class="col-sm-4">
-                                <select id="dropPhong_LoaiDoiTuong" class="select-opt" multiple="multiple"></select>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-2">
-                                <div class="title-name">
-                                    Tình trạng<span class="title-colon">:</span>
-                                </div>
-                            </div>
-                            <div class="col-sm-4">
-                                <select id="dropPhong_TinhTrang" class="select-opt"></select>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-2">
-                                <div class="title-name">
-                                    Mô tả<span class="title-colon">:</span>
-                                </div>
-                            </div>
-                            <div class="col-sm-10">
-                                <input type="text" id="txtPhong_MoTa" class="form-control" placeholder="Nhập nội dung mô tả" />
-                            </div>
+                    <div class="tn-form-sec"><i class="fa fa-align-left"></i> Mô tả</div>
+                    <div class="tn-form-grid">
+                        <div class="tn-field tn-span-all">
+                            <input type="text" id="txtPhong_MoTa" class="form-control" placeholder="Nhập nội dung mô tả" />
                         </div>
                     </div>
                 </div>
+            </div>
             <div class="box-footer">
                 <div class="pull-right">
                     <a class="btn btn-default btnCloseThemPhong"><span class="lang" key="lb_dong"><i class="fa fa-times-circle"></i> Đóng</span></a>
@@ -306,7 +261,7 @@
     </div>
 </div>
 <!-- page script -->
-<script src="modules/cosovatchat/script/toanha.js?v=1.0.0.0"></script>
+<script src="modules/cosovatchat/script/toanha.js?v=1.0.0.3"></script>
 <script type="text/javascript">
     var main_doc = {};
     main_doc['ToaNha'] = new ToaNha();
@@ -341,5 +296,387 @@
     .modal .select2-results__options {
         max-height: 220px !important;
         overflow-y: auto !important;
+    }
+</style>
+<!-- Thẻ tòa nhà: scope theo trang (.aps-csvc-toanha), không dùng .small-box để khỏi
+     bị CSS dùng chung đè. Màu tone (rosybrown) chỉ ở icon + viền trái, nền thẻ trắng. -->
+<style>
+    .aps-csvc-toanha .tn-summary {
+        display: inline-block;
+        margin-left: 10px;
+        padding: 2px 10px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #475569;
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        border-radius: 999px;
+        vertical-align: middle;
+    }
+    .aps-csvc-toanha .zoneBox_ToaNha {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
+        gap: 18px;
+        padding: 6px 0 10px;
+    }
+    .aps-csvc-toanha .tn-card {
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        padding: 16px 16px 12px;
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-left: 4px solid #bc8f8f;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+    }
+    .aps-csvc-toanha .tn-card:hover {
+        transform: translateY(-2px);
+        border-color: #d1d5db;
+        border-left-color: #a56a6a;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, .08);
+    }
+    .aps-csvc-toanha .tn-card-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .aps-csvc-toanha .tn-card-ico {
+        flex: none;
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        color: #a56a6a;
+        background: rgba(188, 143, 143, .18);
+        border-radius: 12px;
+    }
+    .aps-csvc-toanha .tn-card-title {
+        margin: 0;
+        font-size: 17px;
+        font-weight: 700;
+        line-height: 1.3;
+        color: #0f172a;
+        overflow-wrap: anywhere;
+    }
+    .aps-csvc-toanha .tn-card-body {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 10px;
+    }
+    .aps-csvc-toanha .tn-count {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+    .aps-csvc-toanha .tn-count-lbl {
+        font-size: 12px;
+        font-weight: 500;
+        color: #64748b;
+    }
+    .aps-csvc-toanha .tn-count b {
+        font-size: 28px;
+        font-weight: 700;
+        line-height: 1;
+        color: #0f172a;
+    }
+    .aps-csvc-toanha .tn-xem {
+        font-size: 13px;
+        font-weight: 600;
+        color: #2563eb;
+        white-space: nowrap;
+    }
+    .aps-csvc-toanha .tn-xem i {
+        font-size: 11px;
+        margin-left: 4px;
+        transition: transform .15s ease;
+    }
+    .aps-csvc-toanha .tn-card:hover .tn-xem i {
+        transform: translateX(3px);
+    }
+    .aps-csvc-toanha .tn-card-foot {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding-top: 12px;
+        border-top: 1px solid #eef0f4;
+    }
+    .aps-csvc-toanha .tn-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 12px;
+        font-size: 13px;
+        font-weight: 600;
+        line-height: 1.4;
+        text-decoration: none;
+        background: #fff;
+        border: 1px solid;
+        border-radius: 8px;
+        transition: background-color .15s ease, color .15s ease;
+    }
+    .aps-csvc-toanha .tn-btn-del {
+        color: #dc2626;
+        border-color: #fca5a5;
+    }
+    .aps-csvc-toanha .tn-btn-edit {
+        color: #1d4ed8;
+        border-color: #93c5fd;
+    }
+    .aps-csvc-toanha .tn-btn-del:hover,
+    .aps-csvc-toanha .tn-btn-del:focus {
+        color: #fff;
+        background: #dc2626;
+        border-color: #dc2626;
+        text-decoration: none;
+    }
+    .aps-csvc-toanha .tn-btn-edit:hover,
+    .aps-csvc-toanha .tn-btn-edit:focus {
+        color: #fff;
+        background: #1d4ed8;
+        border-color: #1d4ed8;
+        text-decoration: none;
+    }
+    .aps-csvc-toanha .tn-empty {
+        grid-column: 1 / -1;
+        padding: 36px 0;
+        text-align: center;
+        font-size: 14px;
+        color: #64748b;
+    }
+    .aps-csvc-toanha .tn-empty i {
+        margin-right: 6px;
+    }
+
+    /* ===== Màn danh sách phòng + form phòng ===== */
+    /* Chữ "Đóng" bị nhân đôi: indexi.aspx bản cũ còn ::after { content: "Đóng" } trên .btnClose,
+       nút ở trang này đã có sẵn chữ nên tắt ::after trong phạm vi trang. */
+    .aps-csvc-toanha .btnClose::after,
+    .aps-csvc-toanha .btnCloseThemPhong::after {
+        content: none !important;
+    }
+
+    /* Thanh tiêu đề xanh: tiêu đề trái, cụm nút phải (trước đây nút Thêm bị đẩy xuống dưới và bị bảng che) */
+    .aps-csvc-toanha .form-container.zone-bus .box-header.with-border {
+        display: flex !important;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        height: auto !important;
+        min-height: 56px;
+        padding: 10px 20px !important;
+    }
+    .aps-csvc-toanha .form-container.zone-bus .box-header.with-border::before,
+    .aps-csvc-toanha .form-container.zone-bus .box-header.with-border::after {
+        display: none !important;
+    }
+    .aps-csvc-toanha .form-container.zone-bus .box-header .box-title {
+        flex: 1 1 auto;
+        min-width: 0;
+        margin: 0;
+        line-height: 1.4;
+    }
+    .aps-csvc-toanha .form-container.zone-bus .box-header > .pull-right {
+        float: none !important;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex: none;
+    }
+    .aps-csvc-toanha .form-container.zone-bus .box-header .btnClose,
+    .aps-csvc-toanha .form-container.zone-bus .box-header .btnCloseThemPhong {
+        position: static !important;
+        margin: 0 !important;
+    }
+    .aps-csvc-toanha .tn-summary.tn-summary-blue {
+        font-size: 12px;
+        font-weight: 600;
+        color: #fff;
+        background: rgba(255, 255, 255, .18);
+        border-color: rgba(255, 255, 255, .45);
+        vertical-align: middle;
+    }
+
+    /* Bảng phòng */
+    .aps-csvc-toanha .tn-table-wrap {
+        padding: 0;
+        overflow-x: auto;
+    }
+    .aps-csvc-toanha #tblPhong {
+        width: 100%;
+        margin: 0;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+    .aps-csvc-toanha #tblPhong thead th {
+        padding: 11px 12px;
+        font-size: 13px;
+        font-weight: 700;
+        color: #0f172a;
+        white-space: nowrap;
+        vertical-align: middle;
+        background: #f1f5f9;
+        border: 0 !important;
+        border-bottom: 1px solid #e2e8f0 !important;
+    }
+    .aps-csvc-toanha #tblPhong tbody td {
+        padding: 9px 12px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #0f172a;
+        vertical-align: middle;
+        border: 0 !important;
+        border-bottom: 1px solid #eef0f4 !important;
+    }
+    .aps-csvc-toanha #tblPhong tbody tr:hover td {
+        background: #f8fafc;
+    }
+    .aps-csvc-toanha #tblPhong tbody td:nth-child(3) {
+        font-weight: 700;
+    }
+    .aps-csvc-toanha #tblPhong tfoot th {
+        padding: 11px 12px;
+        font-size: 13px;
+        font-weight: 700;
+        color: #0f172a;
+        background: #f8fafc;
+        border: 0 !important;
+        border-top: 2px solid #e2e8f0 !important;
+    }
+    .aps-csvc-toanha #tblPhong th:nth-last-child(-n+2),
+    .aps-csvc-toanha #tblPhong tbody td:nth-last-child(-n+2) {
+        padding-left: 6px;
+        padding-right: 6px;
+    }
+    .aps-csvc-toanha #tblPhong tfoot th:last-child {
+        padding: 0;
+    }
+    .aps-csvc-toanha .tn-chip {
+        display: inline-block;
+        padding: 2px 10px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #334155;
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        border-radius: 999px;
+    }
+    .aps-csvc-toanha .tn-na {
+        color: #94a3b8;
+    }
+    .aps-csvc-toanha .tn-icon-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+        text-decoration: none;
+        background: #fff;
+        border: 1px solid;
+        border-radius: 8px;
+        transition: background-color .15s ease, color .15s ease;
+    }
+    .aps-csvc-toanha .tn-icon-edit {
+        color: #1d4ed8;
+        border-color: #93c5fd;
+    }
+    .aps-csvc-toanha .tn-icon-del {
+        color: #dc2626;
+        border-color: #fca5a5;
+    }
+    .aps-csvc-toanha .tn-icon-edit:hover,
+    .aps-csvc-toanha .tn-icon-edit:focus {
+        color: #fff;
+        background: #1d4ed8;
+        border-color: #1d4ed8;
+        text-decoration: none;
+    }
+    .aps-csvc-toanha .tn-icon-del:hover,
+    .aps-csvc-toanha .tn-icon-del:focus {
+        color: #fff;
+        background: #dc2626;
+        border-color: #dc2626;
+        text-decoration: none;
+    }
+
+    /* Form thêm/sửa phòng: nhãn trên ô nhập, chia nhóm, lưới tự co theo bề ngang */
+    .aps-csvc-toanha .tn-form {
+        padding: 0 6px 6px;
+    }
+    .aps-csvc-toanha .tn-form-sec {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 20px 0 12px;
+        padding-bottom: 8px;
+        font-size: 14px;
+        font-weight: 700;
+        color: #0f172a;
+        border-bottom: 1px solid #eef0f4;
+    }
+    .aps-csvc-toanha .tn-form-sec:first-child {
+        margin-top: 6px;
+    }
+    .aps-csvc-toanha .tn-form-sec i {
+        width: 16px;
+        text-align: center;
+        color: #a56a6a;
+    }
+    .aps-csvc-toanha .tn-form-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 14px 18px;
+    }
+    .aps-csvc-toanha .tn-field {
+        min-width: 0;
+    }
+    .aps-csvc-toanha .tn-field > label {
+        display: block;
+        margin: 0 0 5px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #334155;
+    }
+    .aps-csvc-toanha .tn-field .form-control {
+        width: 100%;
+    }
+    .aps-csvc-toanha .tn-field select:not(.select2-hidden-accessible),
+    .aps-csvc-toanha .tn-field .select2-container {
+        width: 100% !important;
+    }
+    .aps-csvc-toanha .tn-span-2 {
+        grid-column: span 2;
+    }
+    .aps-csvc-toanha .tn-span-all {
+        grid-column: 1 / -1;
+    }
+    .aps-csvc-toanha #zone_input_phong .box-footer {
+        padding: 14px 20px;
+        border-top: 1px solid #eef0f4;
+    }
+    .aps-csvc-toanha #zone_input_phong .box-footer .pull-right {
+        display: flex;
+        gap: 10px;
+    }
+    @media (max-width: 991px) {
+        .aps-csvc-toanha .tn-form-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+    @media (max-width: 575px) {
+        .aps-csvc-toanha .tn-form-grid {
+            grid-template-columns: minmax(0, 1fr);
+        }
+        .aps-csvc-toanha .tn-span-2,
+        .aps-csvc-toanha .tn-span-all {
+            grid-column: auto;
+        }
     }
 </style>

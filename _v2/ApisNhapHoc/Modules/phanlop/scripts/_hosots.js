@@ -116,7 +116,7 @@
 
         var fields = [
             { type: 'legend', label: 'Thông tin cơ bản' },
-            { type: 'avatar', key: 'strAnhCaNhan', col: 'ANHCANHAN', label: 'Ảnh' },
+            { type: 'avatar', key: 'strAnhCaNhan', col: 'ANHCANHAN', label: '' },
             { type: 'static', key: '_maSo', col: 'MASO', label: 'Mã số dự tuyển' },
             { key: 'strHoDem', col: 'HODEM', label: 'Họ đệm', required: true },
             { key: 'strTen', col: 'TEN', label: 'Tên', required: true },

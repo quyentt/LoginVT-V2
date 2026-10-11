@@ -332,38 +332,59 @@ CongToNuoc.prototype = {
         var me = this;
         var html = '';
         var strCongToNuoc_Id = "";
+        var strCongToNuoc_Ten = "";
         var strCongToNuoc_Ma = "";
         var iCongToNuoc_NamSanXuat = "";
         var iCongToNuoc_HangSanXuat = "";
         var iCongToNuoc_MoTa = "";
+        //giá trị trống (null/rỗng) hiện dấu gạch thay vì chữ "null"
+        var fnVal = function (v) {
+            return edu.util.checkValue(v) ? v : '<span class="ct-na">—</span>';
+        };
 
         $("#zoneBox_CongToNuoc").html(html);
         //
         for (var i = 0; i < data.length; i++) {
             strCongToNuoc_Id = data[i].ID;
+            strCongToNuoc_Ten = data[i].TEN;
             strCongToNuoc_Ma = data[i].MA;
             iCongToNuoc_NamSanXuat = data[i].NAMSANXUAT;
             iCongToNuoc_HangSanXuat = data[i].HANGSANXUAT;
             iCongToNuoc_MoTa = data[i].MOTA;
 
-            html += '<div class="col-sm-2 col-xs-4 btnView" id="view_' + strCongToNuoc_Id + '">';
-            html += '<div class="small-box">';
-            html += '<div class="inner">';
-            html += '<h4>' + strCongToNuoc_Ma + '</h4>';
-            html += '<p>Sản xuất ' + iCongToNuoc_NamSanXuat + '</p>';
+            html += '<div class="ct-card ct-water btnView" id="view_' + strCongToNuoc_Id + '">';
+            html += '<div class="ct-card-head">';
+            html += '<span class="ct-card-ico"><i class="fa fa-tint"></i></span>';
+            html += '<div class="ct-card-name">';
+            if (edu.util.checkValue(strCongToNuoc_Ten)) {
+                html += '<h4 class="ct-card-title">' + strCongToNuoc_Ten + '</h4>';
+                if (edu.util.checkValue(strCongToNuoc_Ma) && strCongToNuoc_Ma != strCongToNuoc_Ten) html += '<div class="ct-card-code">Mã: ' + strCongToNuoc_Ma + '</div>';
+            }
+            else if (edu.util.checkValue(strCongToNuoc_Ma)) {
+                html += '<h4 class="ct-card-title">' + strCongToNuoc_Ma + '</h4>';
+            }
+            else {
+                html += '<h4 class="ct-card-title ct-noname">Chưa đặt tên</h4>';
+            }
             html += '</div>';
-            html += '<div class="icon">';
-            html += '<i class="fa fa-safari cl-powderblue"></i>';
             html += '</div>';
-            html += '<div class="small-box-footer">';
-            html += '<a id="delete_' + strCongToNuoc_Id + '" class="btn btn-default poiter btnDelete pull-right"><i class="fa fa-trash"></i> Xóa</a>';
-            html += '<a id="edit_' + strCongToNuoc_Id + '" class="btn btn-default poiter btnEdit "><i class="fa fa-pencil"></i> Chỉnh sửa</a>';
+            html += '<div class="ct-card-meta">';
+            html += '<div class="ct-meta"><span class="ct-meta-lbl">Năm sản xuất</span><b>' + fnVal(iCongToNuoc_NamSanXuat) + '</b></div>';
+            html += '<div class="ct-meta"><span class="ct-meta-lbl">Hãng sản xuất</span><b>' + fnVal(iCongToNuoc_HangSanXuat) + '</b></div>';
+            html += '</div>';
+            if (edu.util.checkValue(iCongToNuoc_MoTa)) html += '<div class="ct-card-desc">' + iCongToNuoc_MoTa + '</div>';
+            html += '<div class="ct-card-foot">';
+            html += '<a id="delete_' + strCongToNuoc_Id + '" class="ct-btn ct-btn-del poiter btnDelete"><i class="fa fa-trash"></i> Xóa</a>';
+            html += '<a id="edit_' + strCongToNuoc_Id + '" class="ct-btn ct-btn-edit poiter btnEdit"><i class="fa fa-pencil"></i> Chỉnh sửa</a>';
             html += '</div>';
             html += '</div>';
-            html += '</div >';
+        }
+        if (data.length == 0) {
+            html = '<div class="ct-empty"><i class="fa fa-tint"></i> Chưa có công tơ nước nào</div>';
         }
         //
         $("#zoneBox_CongToNuoc").html(html);
+        $("#lblCongToNuoc_Tong").html(data.length + ' công tơ');
     },
 
     viewEdit_CongToNuoc: function (data) {

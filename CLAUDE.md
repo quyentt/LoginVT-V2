@@ -199,45 +199,8 @@ viên. Trạng thái ở `localStorage.pendingThuVaiSV` + `sessionStorage.thuvai
 
 ---
 
-## 6. Giao diện quản trị (ApisCMS — 18 module, 49 màn hình)
-
-| Nhóm | Màn hình | Làm được gì |
-|---|---|---|
-| Người dùng | `nguoidung`, `nguoidungvaitro`, `nguoidungchucnang`, `canbochucnang` | Tạo/sửa tài khoản, đặt lại mật khẩu, gán vai trò, gán chức năng riêng ngoài vai trò |
-| Vai trò | `vaitro`, `vaitrochucnang`, `vaitronguoidung` | Tạo/sửa/xoá vai trò, gán chức năng, gán quyền thêm/sửa/xoá/xem |
-| Chức năng & ứng dụng | `chucnang`, `configurechucnang`, `sodoquytrinh`, `testchucnang`, `ungdung`, `ungdungchucnang`, `filebaocao` | Khai báo mã, tên, **icon (= `TENANH`, kiêm router)**, đường dẫn hiển thị/tệp/thư mục/hướng dẫn, chức năng cha, thứ tự, phạm vi truy cập |
-| Phân quyền dữ liệu | `quantriquyendulieu` (3 bản), `diem`, `baocaoimport`, `canbonhaphoso*`, `sinhvientunhap`, `canhantunhaphoso` | Gán phạm vi dữ liệu theo chiều; phân quyền tới mức người dùng × vai trò × chức năng; quy định trường nào cán bộ nhập, trường nào SV tự nhập |
-| Danh mục & công cụ DB | `danhmucdulieu`, `danhmucthuoctinh`, `danhmuctenbang`, `danhmuctukhoa`, `danhmucimport/export`, `mauphoiin`, `comparetable`, `exporttable`, `upcode`, `cloudupdate`, `autologdb` | Danh mục nghiệp vụ **và** công cụ tác động cấu trúc DB: so sánh bảng, xuất bảng, cập nhật code từ cloud |
-| Hệ thống | `config_app`, `crypto`, `guiemail`, `accessedhistory`, `chuyendulieu`, `quanlytientrinhguiemail` | Cấu hình, mã hoá, gửi email hàng loạt + theo dõi tiến trình, lịch sử truy cập |
-
-Lưu ý: người quản trị có thể **vô tình đổi shell của một chức năng** chỉ bằng
-cách đổi icon ở màn hình `chucnang`.
-
----
-
-## 7. Mức tập trung của markup — quan trọng khi đổi giao diện
-
-| | Số liệu |
-|---|---:|
-| `loadToTable_data` (dựng bảng chung) | **1.876** lời gọi — nhưng **chỉ sinh `<tr>/<td>`**; `<table>`, `<thead>`, wrapper nằm rải rác trong 859 tệp HTML |
-| `loadToCombo_data` | 3.477 lời gọi |
-| Tệp JS tự dựng `<tr>/<td>` bằng tay | **382** |
-| `makeRequest` | 8.664 lời gọi (~1 lời gọi / 39 dòng JS) |
-| Dòng nối chuỗi HTML trong JS | 23.471 |
-| Dòng có `class=` trong JS | **17.336** |
-| Thẻ `<div>` trong 859 màn hình | 68.294 (79 div/màn) |
-| CSS: `App_Themes` + `assets/css` + `assets/css-new` + CSS module | 117 tệp, **228.197 dòng** |
-
-Class cũ xuất hiện nhiều nhất **trong JS**: `td-center` 2.795 · `btn` 1.871 ·
-`td-left` 1.528 · `form-control` 1.521 · `btn-default` 1.296 · `select-opt` 653.
-
-Không có helper sinh nút trong `Core`/`Corei` — mỗi `mRender` tự viết chuỗi tay
-(369 chỗ `btn btn-default btnEdit`, 87 chỗ `btnDelete`…).
-
-→ **Đổi CSS mà bỏ quên 17.336 dòng JS này thì mọi bảng và mọi nút trong ô bảng
-sẽ vỡ.**
-
----
+## 6–7. Giao diện quản trị CMS · Mức tập trung của markup
+Nằm ở [_v2/CLAUDE-CHI-TIET.md](_v2/CLAUDE-CHI-TIET.md) mục 6 và 7. Điều cần nhớ: đổi CSS mà bỏ quên ~17.336 dòng JS tự dựng class cũ thì mọi bảng và nút trong ô bảng vỡ; đổi icon (`TENANH`) ở màn `chucnang` = đổi shell.
 
 ## 8. Cạm bẫy — đọc trước khi sửa
 
@@ -288,37 +251,7 @@ Kiểm vỏ CŨ trên máy: `http://localhost:8787/index-old.html` (`_harness/RE
 **Lột da màn cũ (spa-v1) — CHỈ khi người dùng nói "spa v1"**; "chuyển <phân hệ>" mặc định = sang `_v2`. Tài liệu: `spa-v1.md`; công cụ
 `python _harness/skin.py css|them|kiem|ap|nhan|dong-goi`; nguồn `App_Themes/Cms/Custom_V1/ums/`; sau mỗi lần kéo gốc chạy `skin.py kiem` → `ap`.
 
-**Kiểm host** (`_harness/kiem-host/`, Edge có cửa sổ qua DevTools cổng 9333, tài khoản `tk.md`, kết quả ở `%TEMP%/ums-kiem-host`):
-`node dangnhap.js` → `menu.js <roleId>` → `SAU=1 CHI="id1,id2" node chay-vaitro.js <roleId>` (đọc sâu; `THUVAI="Đặng Bác Ái"` cho Cổng SV)
-→ `thu-ghi.js` / `thu-ghi-ui.js` (`TIM="Kadara" FULL=1`) → lái tay `node chay.js <role> <cnId|-> '<thân hàm>'` (nháy ĐƠN; có `nut() os() s2() go() bang() bao()`)
-→ `va-tam.js` chạy mã vừa sửa trên host trước khi up → `tom-tat.js <6 ký tự>`. Mẫu lệnh lái tay: `kiem-host/mau-lenh/`.
-- **Sổ:** đã kiểm `da-kiem.json` (ghi: `TU=<ngày> node ghi-da-kiem.js <ApisXxx> <roleId…>`, mục tay đặt `"tay": true`); **màn đã chuyển mà không kiểm PHẢI có lý do** (người dùng 6/10) →
-  `python _harness/kiem-host/xep-loai-chua-kiem.py --ghi` (đối chiếu bản xuất mapping host: chưa khai chức năng / có chức năng chưa gán vai trò), trang tiến độ hiện dropdown "Chưa kiểm (lý do)", màn thiếu lý do hiện "CHƯA XẾP LOẠI"; lỗi mã `loi-code.js them|da-sua|xong|ds`
-  (khoá = đường dẫn màn TRÊN MENU HOST); việc phiên sau `VIEC-PHIEN-SAU.md`; nhật ký từng ngày `LICH-SU.md`; lỗi backend → mục `ben` trong `_v2/assets/js/can-quyet.js`.
-- **Khi người dùng bảo "kiểm host" / "chuyển": `git fetch origin` + THÔNG BÁO TRƯỚC** rồi mới chạy: (1) lỗi mã treo (`loi-code.js ds`); (2) gói bổ sung đã up chưa
-  (`_v2_bo_xung_deploy` còn tệp khác `_KHONG-CON-GI-DE-UP.txt` = chưa up); (3) phân hệ đã / dở / chưa kiểm (`da-kiem.json`); (4) bản ghi thử còn sót;
-  (5) lượt này làm gì, thứ tự; (6) tệp gốc mới kéo về còn "chưa xem" trong `CHO-CHUYEN-SAU-PULL.md` — CHỈ mở diff của tệp thuộc phân hệ đang kiểm lượt này,
-  chuyển sang `_v2` trước khi thử màn đó (mục 11, luật kéo gốc); tệp phân hệ khác chỉ nêu số lượng. Phân hệ MỚI chỉ kiểm khi người dùng gọi tên.
-- **Cách làm: CUỐN CHIẾU từng phân hệ** — đọc sâu → thử ghi (thêm thì xoá, đối chứng `LayChiTiet`) → sửa mã / ghi backend → ghi sổ → DỪNG báo cáo.
-  Ưu tiên thay đổi (kéo gốc / sửa mã) ở phân hệ ĐÃ hoàn thành trong sổ trước. Sau mỗi lượt thử ghi quét dấu `ZKT` (`chay-vaitro.js` in "!! CÒN DẤU THỬ").
-- **(A) Frontend khắc phục được thì PHẢI sửa `_v2` + ghi sổ lỗi mã, KHÔNG báo backend.** (Sai định dạng, ô trống thành `//`, thiếu kiểm bắt buộc / số, câu lỗi thô,
-  thiếu GET, gửi ô ẩn, lưu lần hai thêm trùng…). Chỉ ghi `ben` khi mã không làm gì được: thiếu / sai chữ ký thủ tục, gói lỗi, dịch vụ không chạy, cấu hình host,
-  thủ tục làm sai. Trước khi ghi backend: so tham số với màn khác gọi cùng controller (bài học `dTrangThai` ↔ `iTrangThai`).
-  **Thiếu dữ liệu người dùng tự khai được ở màn khác (danh mục trống, chưa có bản ghi cha, mẫu import) → KHÔNG phải backend: khung "Cần làm trước" tự bắt**
-  (mục 10) — thêm dòng vào `ums.lamTruoc.NGUON` nếu cần.
-- **(B) Mục `ben` do người kiểm VIẾT THẲNG**: bấm gì / ở đâu → thấy gì → ảnh hưởng → ai làm gì (chi tiết kỹ thuật trong ngoặc). Không bê câu lỗi thô.
-  Mọi màn `doc: loi-may-chu` / `ghi: tu-choi` / `con-sot` trong sổ phải có mục `ben` cùng khoá; từ chối do dữ liệu thử sai ghi `ghi: hop-le`.
-- **(C) Thiếu dữ liệu đầu vào mà tạo được trong ứng dụng** thì sang màn đó tạo (dấu ZKT), thử, rồi xoá cả bản ghi thử lẫn dữ liệu phụ (con trước cha). Làm đến đâu sạch đến đó.
-- **Quyền thử ghi (người dùng 30/9): thêm / sửa / xoá TẤT CẢ miễn xoá lại được**, kể cả dữ liệu người học thật (kỳ xa `2031_2032_2`, một ô / một dòng, xoá ngay).
-  KHÔNG bấm thao tác không hoàn lại: tổng hợp / xếp loại / tính phí hàng loạt, chốt, xuất hoá đơn – biên lai, gạch nợ, gửi thư, nhập từ tệp, thứ máy chủ chặn gỡ.
-  Phạm vi thử an toàn đã dùng: hệ "Đào tạo khác" → khoá Tập huấn / Bổ sung kiến thức, khoản "Võ phục", kỳ `2031_2032_2`.
-- **Bản ghi thử còn sót (cần CSDL xoá tay):** `quatrinhcongtac/nhiemvuchienluoc` id `71F5751A5EA94D4983F8E45EB1B95456`; `D_CongThucDiem_ApDung` id
-  `4084811E199B4D1EB4478890442FCE91` (lớp `TTKT.03.K11.01.LH.C04BS.1_LT`); CCB `khaosat/phieu` nhóm câu hỏi `ZKT0119` id `D3D0DA37A248400BAB4FDC2A8B6D532D`
-  trên phiếu `AF61B8BE…` (6/10 — thủ tục xoá nhóm từ chối vì còn liên kết phiếu–nhóm, đã ghi `ben`). Đừng thử ghi ba chỗ đó tới khi sửa.
-- **Ngày sinh ba ô** Ngày / Tháng / Năm: kiểm trước khi gửi bằng `ums.util.ngaySinh(ngay, thang, nam, maMuc)` (api.js) — sai thì báo, không gửi `//`.
-  Câu ORA-20000…20999 hiện gọn (`cauKiem`, câu gốc ở `err.goc`).
-- Bẫy bộ thử: Edge bị che / có DevTools cạnh → trình duyệt bóp đồng hồ (màn "đứng im" > 25 giây, 0 lời gọi → chạy lại bằng `CHI=`); hộp thoại đã `.close()`
-  vẫn trong DOM và vùng "Khai nhanh" ẩn cùng `data-k` → gắn id theo đúng vùng đang mở.
+**Kiểm host** — quy trình, sổ, bản ghi thử còn sót, quyền thử ghi, bẫy bộ thử: [_v2/CLAUDE-CHI-TIET.md](_v2/CLAUDE-CHI-TIET.md) mục "Kiểm host". **Khi người dùng bảo "kiểm host" / "chuyển": đọc mục đó trước**, `git fetch origin` + THÔNG BÁO TRƯỚC rồi mới chạy. Công cụ: `_harness/kiem-host/`. Luật cốt lõi: frontend khắc phục được thì sửa `_v2` + ghi sổ lỗi mã, KHÔNG báo backend; thử ghi miễn xoá lại được; làm cuốn chiếu từng phân hệ rồi DỪNG báo cáo. **Bản ghi thử còn sót cần CSDL xoá tay: xem mục đó, đừng thử ghi ở đó.**
 
 ### Thư mục dựng thử — chỉ có trên máy, chưa từng đưa lên remote
 
@@ -377,30 +310,8 @@ báo "đã up" → chạy `python _harness\dong-goi.py --da-up`** (lấy gói hi
 | `assets/js/app.js` | Điều hướng ba tầng `#/` → `#/r/<vaiTro>` → `#/r/<vaiTro>/<chucNang>` |
 | `assets/js/demo-data.js` | Dữ liệu dựng thử, giữ đúng hình dạng máy chủ trả |
 
-### Điểm cần nhớ (tóm tắt — bản đầy đủ: [_v2/GHI-NHO-TANG-CHUNG.md](_v2/GHI-NHO-TANG-CHUNG.md))
-
-- `api.dataSource = 'auto'`: có `AXYZCLRVN()` (vỏ ASPX) → API thật, không → `demo-data.js`. `index.html?demo` ép dữ liệu mẫu; `index.html` tự sang `index.aspx` ngoài localhost.
-- **Màn mới đặt đúng cây thư mục gốc trong `_v2/`** (`_v2/<MAUNGDUNG><DUONGDANFILE>`); có tệp là tự bật, chưa có thì hiện "chưa chuyển đổi" — không nạp màn cũ.
-- `api.js` gửi form-urlencoded; chỉ mã hoá `{A: AE(...)}` khi có `func`; action kiểu cũ đi thẳng. Màn danh sách + biểu mẫu = `ums.crud`; tên tham số / cột chép nguyên gốc.
-- **Menu: không sắp xếp** (thứ tự = procedure trả); vẽ ĐỦ mọi tầng (theo indexi); mục mồ côi gom nhóm "Khác" (`behavior.menuOrphans`); `#dashboard` ẩn; `TENANH` FA4 → `ums.iconFA4`.
-- **select2 bắn `change` bằng jQuery** → `ums.ui.select2` bắn thêm một `change` thật; màn nghe kiểu nào cũng chạy đúng một lần.
-- Phân trang: `ums.ui.pager` có số dòng / trang (`page.sizes`, `page.onSize`, ô `data-no-s2`). Thông báo nổi 6 / 9 / 12 giây + 60 ms mỗi ký tự dư (`behavior.toastMs`).
-- Ô chọn tệp dùng `ums.ui.file`. Một tab thì KHÔNG vẽ dải tab (bỏ hẳn khung tab trong mã). Xoá nhiều dòng = `ums.ui.xoaChon`; trong hộp thoại nút Xoá ở chân, dạt trái.
-- **Nút "Đóng" luôn ngoài cùng BÊN TRÁI nhóm nút**, không mũi tên ←; `kiem-dong-bo` báo nếu sai. Màu nút chép gốc; chữ nút giữ gốc (vỏ indexi: "Xuất báo cáo"); nút gốc không có xử lý thì giữ + `disabled`.
-- JS chung trong `index.aspx` phải kèm `?v=<%= V("…") %>`; **sửa CSS xong chạy `python _harness\gop-css.py`** (vỏ `.aspx` nạp bản gộp).
-- **Khung "Cần làm trước"** (`assets/js/lamtruoc.js`, `ums.lamTruoc`, 2026-10-05): mọi lời gọi trả 0 dòng qua `ums.api.call` → `sauGoi`: danh mục dùng chung trống →
-  "Danh mục X chưa có giá trị" + nút mở Danh mục dữ liệu (vai trò đang mở → bản CMS → phân hệ khác; `ums.app.timManTheoDuongDan`, kiểm tệp có trong `_v2`;
-  màn đích tự chọn sẵn danh mục); **bảng nguồn `ums.lamTruoc.NGUON`** (action / tên thủ tục → ô, việc, đuôi đường dẫn màn khai); màn tự khai `lamTruoc.can()` / `neuRong()`.
-  Nằm ngay dưới khung Ghi chú, dấu × ẩn tới hết phiên, giữ khi giao người dùng thật (tắt: `behavior.lamTruoc = false`); dữ liệu mẫu chỉ bật khi URL có `lamtruoc`.
-- **Khung "Ghi chú chuyển đổi"** (`can-quyet.js`, `behavior.canQuyet`): CHỈ giữ việc dữ liệu / backend (`ben: 'oracle'` = "Lỗi đã kiểm trên hệ thống thật — yêu cầu backend",
-  `nghiepvu`); câu cần quyết cách màn chạy thì TỰ CHỐT vào `CAN-QUYET-DA-CHOT.md`. **Bảng "Màn đang có lỗi backend"** ở trang vai trò + nút tổng ở trang chủ
-  (`behavior.loiBackend`); phân hệ chưa kiểm host khai ở `ums.canQuyetChuaKiem` — kiểm xong thì gỡ tiền tố.
-- Ô tìm duy nhất trên thanh trên (`timMan`: lọc menu vai trò đang dùng, rồi mọi vai trò; chỉ mục sessionStorage `ums.timMan.*` v4 có đường dẫn `p`); Ctrl K hoặc `/`.
-- Khối chung hay dùng: `pat.cotTrai`, `pat.dsNhanSu` / `masterNhanSu`, `pat.boLocNguoiHoc`, `pat.dauDoiTuong`, `pat.anhNguoi`, `pat.formTrang`, `pat.chain`, `pat.haiLuoi`,
-  `ui.btn('reload')`, `ui.money`, `ums.editor` (`tao` / `toan` / `html` — CKEditor + MathJax nạp từ `../Scripts/` của ứng dụng cha, không có thì lùi về textarea). Bảng tra nhanh: `_v2/BO-CUC.md`.
-- **Cổng Help:** nút "?" mọi màn theo `site.config.js → help.url` (mẫu `{functionId}`…), xuất mapping ở màn Cài đặt (`ums.app.xuatMapping`) hoặc gõ `<ứng dụng>/mapping.aspx` (bản sao ở gốc, trường chỉ chạy v1 cũng tải được; `?xem=1` xem ngay); SSO soạn bài `_v2/help-sso.aspx` +
-  `help-jwks.aspx` (bản sao ở gốc dự án; `App_Data/help-sso/`; đã chạy `?xem=1` trên host, chưa gửi thật). Bẫy ASPX: không viết nguyên thẻ đóng script trong khối `runat="server"`.
-- Dính đỉnh bằng `:has()` (`objects/shell.css`); đổi vùng có hiệu ứng `ums.ui.swap` (`animation-fill-mode: backwards` để không phá sticky); thanh trượt cột trái tự vẽ (`scroll.js`).
+### Điểm cần nhớ của `_v2`
+Bản đầy đủ: [_v2/CLAUDE-CHI-TIET.md](_v2/CLAUDE-CHI-TIET.md) mục "Điểm cần nhớ" và [_v2/GHI-NHO-TANG-CHUNG.md](_v2/GHI-NHO-TANG-CHUNG.md). **Đọc trước khi sửa tầng chung `_v2/assets`.** Vài điều cốt lõi: `api.dataSource` auto; màn mới đặt đúng cây thư mục trong `_v2/`; JS chung trong `index.aspx` kèm `?v=<%= V("…") %>`; sửa CSS xong chạy `python _harness\gop-css.py`; nút "Đóng" luôn ngoài cùng bên trái.
 
 ## 11. Làm tiếp trên máy khác
 
@@ -428,49 +339,8 @@ Mỗi phiên fetch tối đa một lần, ở đầu. Lịch sử 7 lần kéo (
 Mở bằng `file://` là trắng trang (CORS). Lên host phải nằm TRONG dự án thật (thư mục `_v2` ngay dưới gốc ứng dụng): phiên đăng nhập, `Config.js`, `bin/`, `Web.config`,
 `Handler/*.ashx`, `Upload/`, `Scripts/` (CKEditor, MathJax) là của ứng dụng cha. Bảng đầy đủ: `_v2/TRIEN-KHAI.md` mục 2. ĐỪNG chép `Upload/` (695 MB dữ liệu thật).
 
-### Tiến độ chuyển đổi (chi tiết từng phân hệ: [_v2/NHAT-KY-CHUYEN.md](_v2/NHAT-KY-CHUYEN.md); trang `_harness/tien-do.html`)
-
-| Phân hệ | Màn | Vai trò mẫu | Xong | Kiểm host |
-|---|---|---|---|---|
-| Tài chính `ApisTaiChinh` | 72/73 | R33 `TC-` | 19/9 | đọc sâu + thử ghi xong |
-| Cổng cán bộ `ApisCongCanBo` | 152/152 | R02 `CCB-` | 22/9 | 6/10: **87/152 màn có trên menu host** đọc sâu sạch (6 lỗi backend đã có sổ), thử ghi 17 màn sạch; **65 màn KHÔNG có trên menu host, chưa kiểm được** (sổ `khong-tren-menu`: klgd 28, dashboardv2 9, thi 7, coithi 3…) |
-| Cổng sinh viên `ApisCongSinhVien` | 36/36 | R04 `CSV-` (thủ vai) | 23/9 | **6/10 hoàn thiện:** 22/22 màn trên menu host đọc sâu sạch, thử ghi `dongphuc` sạch, 21 màn không thử có lý do trong sổ; 15 màn ngoài menu = host chưa khai chức năng |
-| Chuyên cần `ApisChuyenCan` | 5/5 | R07 `CC-` | 25/9 | **6/10 xong 3/3 màn trên menu host**: đọc sâu sạch, thử ghi `nhaptheolop` sạch, `khongdiemdanh` thêm/xoá sạch sau sửa mã (đã up, kiểm lại đạt), sửa + `tonghoptheongay` lỗi backend (ben); 2 màn host chưa khai chức năng |
-| Quản trị hệ thống `ApisCMS` | 46 | R44 `CMS-` | 25/9 | đọc sâu, thử ghi dở |
-| Đăng ký học `ApisDangKyHoc` | 24 | R19 `DKH-` | 25/9 | đọc sâu |
-| Học lại thi lại `ApisHocLaiThiLai` | 6/6 | R09 `HLTL-` | 25/9 | đọc sâu |
-| Điểm rèn luyện `ApisRenLuyen` | 8/8 | R18 `RL-` | 25/9 | xong |
-| Xử lý học vụ `ApisXuLyHocVu` | 8/8 | R17 `XLHV-` | 25/9 | xong |
-| Xét học bổng `ApisHocBong` | 12/12 | R35 `HB-` | 25/9 | đọc sâu (host thiếu API `HB`) |
-| Quản lý điểm `ApisQuanLyDiem` | 42/42 | R13 `QLD-` | 25/9 | đọc sâu, thử ghi dở |
-| Nhân sự `ApisNhanSu` | 121/121 | R36 `NS-` | 26/9 | xong |
-| Sinh viên `ApisSinhVien` | 35/35 | R38 `SV-` | 26/9 | chưa |
-| Kế hoạch chương trình `ApisKeHoachChuongTrinh` | 28/28 | R21 `KHCT-` | 27/9 | chưa |
-| Nhập học `ApisNhapHoc` | 31/31 | R24 `NH-` | 27/9 | chưa |
-| Tuyển sinh `ApisQuanlyTuyenSinh` | 15/15 | R31 `TS-` | 27/9 | chưa |
-| Nghiên cứu khoa học `ApisNCKH` | 55/55 | R23 `NCKH-` | 27/9 | chưa |
-| Thi phách `ApisThiPhach` | 18/18 | R14 `TP-` | 29/9 | chưa |
-| Tốt nghiệp `ApisTotNghiep` | 13/13 | R16 `TN-` | 5/10 | chưa (đã up) |
-| Quản lý thi trắc nghiệm `ApisQuanLyThiTracNghiem` | 16/16 | R12 `QLTTN-` | 5/10 | chưa (gói bổ sung chưa up) |
-| Thi trắc nghiệm `ApisThiTracNghiem` (trang làm bài .aspx) | 0 | — | DỪNG (5/10, xác nhận lại 6/10 sau khảo sát: trang ASPX độc lập 3.202 dòng, cổng thí sinh `eIndex.aspx` + `eassets/` không có trong kho, 2 trang thiếu HTML, kiểm host = làm bài thật) | — |
-| Tin tức `ApisTinTuc` | 4/4 | R46 `TT-` | 5/10 | chưa |
-| Thống kê giờ giảng `ApisTKGG` | 12/12 màn host dùng (11 màn kho hoãn — host chưa khai chức năng) | R39 `TKGG-` | 6/10 | chưa |
-| Luận văn, luận án `ApisLuanVanLuanAn` | 2/17 (`danhmuc/danhmucdulieu` nạp chéo DKH, `luanan/dulieu` crud; 15 màn kehoach / luanvan / luanan chờ gọi) | R22 `LVLA-` | 6/10 đang làm | chưa |
-| Còn lại: Ký túc xá, Danh hiệu | — | — | chưa | — |
-
-**HEMIS (đồng bộ dữ liệu lên Bộ GD&ĐT, tài liệu người dùng đưa 7/10):** ghi chú đầy đủ ở [HEMIS.md](HEMIS.md) — quy trình 4 bước
-(token → 175 danh mục → ký số XML `db16` → JSON `db1…db13`), trường có / thiếu dữ liệu nhóm nào, lệch kỹ thuật (GUID có gạch, ngày
-`yyyy-MM-dd`, địa giới mới, CCCD bắt buộc), thứ tự việc. **Chưa làm gì**, chủ yếu là việc backend; `_v2` chỉ làm màn ánh xạ / đồng bộ / nhật ký sau.
-
-**Đã xong 6/10:** TKGG 12/12 (chỉ màn host đang dùng — người dùng 6/10; 11 màn kho không có chức năng → trạng thái "hoãn" mới trên tien-do, `HOAN` trong tien-do.py);
-bẫy jQuery `trigger('change.select2')` không gọi handler `on('change')` trơn → ô phụ thuộc phải nghe `'change change.select2'`; `thu-crud` điền hai lượt.
-**Đã xong 5/10 tối:** Tin tức 4/4 (`tintuc` 3.017 dòng gốc → ums.crud + hai khung formTrang Phạm vi / Gửi email + hộp Quản lý chuyên mục & Import Excel;
-`guithongbaoappsinhvien`; `vanban`; `danhmucdulieu` nạp chéo ĐKH); ba trang kiểm 4/4; chốt ở `CAN-QUYET-DA-CHOT.md` mục "Tin tức"; kéo gốc lần 7 (mốc `1680e53d`).
-Hai tác tử con bị cắt vì hết hạn mức giữa chừng — phần dở tự làm nốt; `kiem-icon-chuan.py` chạy với `PYTHONIOENCODING=utf-8` (cp1252 lỗi).
-**Đã xong 5/10:** QLTTN 16/16 (ba màn cuối `quanlybode`, `taodethucong`, `quanlythi` tự làm, không tác tử); chốt ở `CAN-QUYET-DA-CHOT.md`; ApisThiTracNghiem DỪNG.
-Việc kế: người dùng up gói bổ sung → `--da-up`; phân hệ mới chỉ làm khi người dùng gọi tên.
-Tầng chung mới 5/10: `ums.editor` (`assets/js/editor.js`). **Giao việc: tối đa 2 tác tử con một lúc (người dùng 5/10); mỗi tác tử chỉ đọc đúng mục cần (không "đọc hết"
-CLAUDE.md / BO-CUC), grep hàm trong tệp gốc lớn thay vì đọc nguyên tệp, lưu tệp sớm.**
+### Tiến độ chuyển đổi
+Bảng từng phân hệ (màn / vai trò mẫu / ngày xong / kiểm host), HEMIS, nhật ký "đã xong" và quy tắc giao tác tử con: [_v2/CLAUDE-CHI-TIET.md](_v2/CLAUDE-CHI-TIET.md) mục "Tiến độ". **Đọc khi người dùng hỏi tiến độ / gọi tên phân hệ.** Tóm tắt: ~25 phân hệ đã chuyển; còn Ký túc xá, Danh hiệu, Luận văn (2/17); ThiTracNghiem DỪNG; phân hệ mới chỉ làm khi người dùng gọi tên; giao tối đa 2 tác tử con.
 
 ### Bộ công cụ tiết kiệm token khi chuyển màn (6/10 — dùng TRƯỚC khi mở bất kỳ tệp mã nào)
 
@@ -563,4 +433,7 @@ gấp đôi, nút `×` của select2 đè chữ, `transform` đọng sau hiệu 
   chứ không suy đoán. Codebase này có nhiều chỗ tệp CSS ghi một đằng, kết quả
   chạy một nẻo (ví dụ `root.css` ghi `--color-link: #018ed5` nhưng giá trị thật
   khi chạy là `#0d6efd`).
+## graphify
 
+Có đồ thị tri thức ở `graphify-out/` (đã loại `Upload/`, vendor, mockup, `v2/` qua `.graphifyignore`). **Làm việc như cũ** — dùng `tom-tat-goc.py`, `_v2/API.md`, `_v2/CLASS.md` trước.
+KHÔNG tự gọi graphify. Khi gặp câu hỏi quan hệ nhiều tệp mà công cụ trên không trả lời được (ví dụ "hàm tầng chung này ai gọi"), **báo người dùng** là nên dùng graph (`graphify query|path|explain`), chờ họ đồng ý. Cập nhật graph (`graphify update . --force`, ~3 phút) chỉ khi người dùng bảo.

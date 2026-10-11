@@ -3582,6 +3582,8 @@ PhieuThuKhac.prototype = {
             if (tempcheck != undefined && tempcheck != 'undefined' && tempcheck != 'null') {
                 strHinhThucThu_TEN = tempcheck;
             }
+            // Họ tên người mua hàng trên hóa đơn = tên đối tượng, gửi tường minh để BE không tự ghép từ Mã đối tượng
+            var strTenNguoiMua = $.trim($("#strTenNguoiThu").val() || (aNguoiHoc && aNguoiHoc.TENDOITUONG) || '');
             var obj_save = {
                 'action': 'TC_DaNop/ThemMoi',
                 'versionAPI': 'v1.0',
@@ -3608,9 +3610,9 @@ PhieuThuKhac.prototype = {
                 'strNguonDuLieu_Id': '',
                 'dKhongSinhChungTu': 0,
                 'strPhieuThuTheoPhoiSan_Id': '',
-                'strTenNguoiThu': $("#strTenNguoiThu").val(),
-                //'strNhap_HoTenNguoiMuaHang': $("#strTenNguoiThu").val(),
-                //'bTenNguoiThu': true,
+                'strTenNguoiThu': strTenNguoiMua,
+                'strNhap_HoTenNguoiMuaHang': strTenNguoiMua,
+                'bTenNguoiThu': strTenNguoiMua != '',
                 'strNganHang_SoTaiKhoan': aNguoiHoc.NGANHANG_SOTAIKHOAN,
                 'strNganHang_ThuocNganHang_Id': aNguoiHoc.NGANHANG_THUOCNGANHANG_ID,
                 'strNganHang_ThuocNganHang_Ten': aNguoiHoc.NGANHANG_THUOCNGANHANG_TEN,

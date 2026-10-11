@@ -93,6 +93,8 @@
         justify-content: center;
     }
 
+    /* [2026-10-09] Khối CSS 2 icon sát nhau (xem các buổi / đổi lịch) — đã thay bằng nút "⋮" + menu ở cuối <style>.
+       Comment lại (không xóa) để mở lại khi cần; đồng thời bật lại 2 <a> cũ đã comment trong lichgiang.js (genTable_ThongTin).
     .task-1 .task-actions {
         display: inline-flex !important;
         gap: 4px;
@@ -139,6 +141,7 @@
     .task-1 .task-actions .btnKhoiTaoDoiLich {
         background: #dc2626;
     }
+    */
 
     #tblLichGiang_LG tbody tr {
         cursor: pointer;
@@ -246,6 +249,595 @@
     #my_calendar .tblNhapChuyenCan td .btnView_HocTap:hover {
         box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6);
         text-decoration: none;
+    }
+
+    /* =====================================================================
+       [2026-10-09] LÀM LẠI GIAO DIỆN: thẻ buổi học + modal Đổi lịch + modal Điểm danh.
+       Chỉ áp dụng trong trang này (không sửa CSS dùng chung).
+       ===================================================================== */
+
+    /* ---------- 1. Thẻ buổi học ----------
+       Trước: 2 icon (xem các buổi / đổi lịch) đặt sát nhau, đè lên tiêu đề => dễ bấm nhầm, chữ bị che.
+       Nay: header 2 cột (chữ bên trái, 1 nút "⋮" bên phải). Hai thao tác phụ nằm trong menu có nhãn chữ;
+       bấm vào thân thẻ vẫn là "điểm danh buổi này". */
+    .task-1 {
+        transition: box-shadow 0.15s ease;
+    }
+    .task-1:hover {
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.28) !important;
+        z-index: 3;
+    }
+    .task-1 .task-header {
+        display: flex !important;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 8px 6px 8px 10px;
+    }
+    /* Header không bị co khi thẻ thấp; thân thẻ lấy phần còn lại (trước đây height:calc(100% - 40px) làm thân đè lên dòng giờ) */
+    .task-1 .task-header {
+        flex-shrink: 0;
+    }
+    .day-of-week .task.task-1 .task-description {
+        flex: 1 1 0;
+        height: auto;
+        min-height: 0;
+        margin-top: 0;
+        /* thẻ thấp: chữ dài hơn chỗ chứa thì căn từ trên (cắt dòng cuối) thay vì cắt cả đầu lẫn cuối;
+           trình duyệt cũ không hiểu "safe center" thì giữ "center" như trước */
+        align-items: flex-start;
+        align-items: safe center;
+    }
+    .task-1 .task-header .text {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+    .task-1 .task-header .title {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+        word-break: break-word;
+    }
+    .task-1 .task-header .task-date {
+        opacity: 0.9;
+    }
+    .task-1 .task-actions {
+        flex: 0 0 auto;
+        display: flex;
+    }
+    .task-1 .card-menu-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        padding: 0;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        background: rgba(255, 255, 255, 0.18);
+        color: #fff;
+        line-height: 1;
+        cursor: pointer;
+        transition: background 0.15s ease, color 0.15s ease;
+    }
+    .task-1 .card-menu-btn i {
+        font-size: 15px;
+    }
+    .task-1 .card-menu-btn:hover,
+    .task-1 .card-menu-btn:focus-visible,
+    .task-1 .card-menu-btn[aria-expanded="true"] {
+        background: #fff;
+        color: #223771;
+        outline: none;
+    }
+    /* Popover xem nhanh (copy HTML thẻ ra <body>) không có chức năng => ẩn nút */
+    .popover .card-menu-btn {
+        display: none !important;
+    }
+
+    /* Menu thao tác (JS tạo 1 lần, gắn vào <body>) */
+    .card-action-menu {
+        position: fixed;
+        z-index: 1070;
+        min-width: 240px;
+        padding: 6px;
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.22);
+    }
+    .card-action-menu .card-action-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 12px;
+        border-radius: 8px;
+        color: #0f172a;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    .card-action-menu .card-action-item:hover,
+    .card-action-menu .card-action-item:focus-visible {
+        background: #f1f5f9;
+        outline: none;
+    }
+    .card-action-menu .card-action-item i {
+        flex: 0 0 auto;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        color: #fff;
+        font-size: 14px;
+    }
+    .card-action-menu .card-action-item[data-act="cacbuoi"] i { background: #16a34a; }
+    .card-action-menu .card-action-item[data-act="doilich"] i { background: #ea580c; }
+    .card-action-menu .card-action-sep {
+        height: 1px;
+        margin: 4px 6px;
+        background: #e2e8f0;
+    }
+
+    /* ---------- 2. Modal Yêu cầu đổi lịch / Xem yêu cầu đổi lịch ----------
+       Trước: hàng "cũ → mới" dùng flex + min-width cứng nên cột bên phải tràn ra ngoài modal,
+       chữ "Đổi sang" bị gạch xuyên. Nay: lưới 5 cột cố định [nhãn | ô cũ | mũi tên | nhãn | ô mới]. */
+    #modalDoiLich .change-calendar .form-item,
+    #modalXemLich .change-calendar .form-item {
+        align-items: center;
+        margin-bottom: 14px;
+        text-align: left;
+    }
+    #modalDoiLich .change-calendar .form-item > label,
+    #modalXemLich .change-calendar .form-item > label,
+    #modalDoiLich .change-calendar .form-item .right > label,
+    #modalXemLich .change-calendar .form-item .right > label {
+        flex: 0 0 156px;
+        width: 156px;
+        margin: 0 !important;
+        padding-right: 16px;
+        box-sizing: border-box;
+        text-align: right;
+        font-weight: 500;
+        color: #64748b;
+    }
+    /* responsive.css (680-1024px) ép ẩn nhãn bên phải bằng display:none !important => ô mới bị trượt sang cột nhãn.
+       Lưới mới đã đủ chỗ nên luôn hiện lại nhãn. */
+    #modalDoiLich .change-calendar .form-item .right > label,
+    #modalXemLich .change-calendar .form-item .right > label {
+        display: block !important;
+    }
+    /* Hàng có ô nhiều dòng (Nội dung xin đổi lịch): nhãn canh theo mép trên của ô */
+    #modalDoiLich .change-calendar .form-item.item-top,
+    #modalXemLich .change-calendar .form-item.item-top {
+        align-items: flex-start;
+    }
+    #modalDoiLich .change-calendar .form-item.item-top > label,
+    #modalXemLich .change-calendar .form-item.item-top > label {
+        margin-top: 9px !important;
+    }
+    /* all.css: .modal-body .caledar-input .input-group { height: 38px } làm ô nhiều dòng bị đè lên hàng dưới */
+    #modalDoiLich .change-calendar .form-item.item-top > .input-group,
+    #modalXemLich .change-calendar .form-item.item-top > .input-group {
+        height: auto !important;
+    }
+    #modalDoiLich .change-calendar .form-item > .input-group,
+    #modalXemLich .change-calendar .form-item > .input-group,
+    #modalDoiLich .change-calendar .form-item > .input-group-textarea,
+    #modalXemLich .change-calendar .form-item > .input-group-textarea {
+        flex: 1 1 0;
+        width: auto !important;
+        min-width: 0 !important;
+    }
+    #modalDoiLich .change-calendar .form-item.on-row,
+    #modalXemLich .change-calendar .form-item.on-row {
+        display: grid;
+        grid-template-columns: 156px minmax(0, 1fr) 96px 156px minmax(0, 1fr);
+        align-items: center;
+    }
+    /* .right chỉ là khung bọc: để các phần tử con (mũi tên, nhãn, ô mới) nhập thẳng vào lưới */
+    #modalDoiLich .change-calendar .form-item.on-row .right,
+    #modalXemLich .change-calendar .form-item.on-row .right {
+        display: contents;
+    }
+    #modalDoiLich .change-calendar .form-item.on-row .input-group,
+    #modalXemLich .change-calendar .form-item.on-row .input-group {
+        width: auto !important;
+        min-width: 0 !important;
+    }
+    #modalDoiLich .change-calendar .form-item .form-control,
+    #modalXemLich .change-calendar .form-item .form-control {
+        height: 38px;
+        padding: 6px 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px !important;
+        color: #0f172a;
+        font-weight: 500;
+    }
+    #modalDoiLich .change-calendar .form-item textarea.form-control,
+    #modalXemLich .change-calendar .form-item textarea.form-control {
+        height: auto;
+        min-height: 76px;
+    }
+    #modalDoiLich .change-calendar .form-item .form-control:disabled,
+    #modalXemLich .change-calendar .form-item .form-control:disabled {
+        background: #f1f5f9;
+        border-color: #e2e8f0;
+        color: #334155;
+        opacity: 1;
+    }
+    /* Mũi tên "Đổi sang": chữ nằm trên, đường kẻ + đầu mũi tên nằm dưới (không còn chồng nhau) */
+    #modalDoiLich .change-calendar .form-item.on-row .right .arrow,
+    #modalXemLich .change-calendar .form-item.on-row .right .arrow {
+        flex: none;
+        width: auto;
+        min-width: 0 !important;
+        /* vô hiệu rule .arrow kiểu popover cũ (App_Themes/Cms/Custom_V1/styles-content.css:11705)
+           đang vẽ 1 tam giác đen + ép height:6px => đó là tam giác lạ ở đầu mũi tên */
+        border: 0 !important;
+        height: 38px !important;
+        margin: 0 10px !important;
+        position: relative;
+    }
+    #modalDoiLich .change-calendar .form-item.on-row .right .arrow span,
+    #modalXemLich .change-calendar .form-item.on-row .right .arrow span {
+        position: absolute;
+        top: 1px;
+        left: 50%;
+        margin: 0 !important;
+        transform: translateX(-50%);
+        font-size: 12px;
+        line-height: 14px;
+        font-weight: 700;
+        white-space: nowrap;
+        color: #223771;
+    }
+    #modalDoiLich .change-calendar .form-item.on-row .right .arrow::before,
+    #modalXemLich .change-calendar .form-item.on-row .right .arrow::before {
+        top: 18px;
+        background: #223771;
+    }
+    #modalDoiLich .change-calendar .form-item.on-row .right .arrow::after,
+    #modalXemLich .change-calendar .form-item.on-row .right .arrow::after {
+        top: 14px;
+        border-left-color: #223771;
+    }
+    #modalDoiLich .change-calendar .form-item.on-row .right .arrow.none-title::before,
+    #modalXemLich .change-calendar .form-item.on-row .right .arrow.none-title::before {
+        background: #cbd5e1;
+    }
+    #modalDoiLich .change-calendar .form-item.on-row .right .arrow.none-title::after,
+    #modalXemLich .change-calendar .form-item.on-row .right .arrow.none-title::after {
+        border-left-color: #cbd5e1;
+    }
+    /* Ô chọn giảng viên (plugin searchBox): bám đúng bề rộng ô, danh sách thả không tràn */
+    #modalDoiLich .change-calendar .refineText {
+        width: 100% !important;
+        height: 38px;
+        padding: 6px 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+    }
+    #modalDoiLich .change-calendar .searchBoxElement {
+        width: 100% !important;
+        max-height: 220px;
+        margin-top: 4px;
+        padding: 6px 0;
+        overflow-y: auto;
+        border-radius: 10px;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.15);
+    }
+    /* Footer: 2 nút nằm ngang, cách nhau 12px, dồn phải (CTA chính là nút đặc bên phải) */
+    #modalDoiLich .modal-footer {
+        padding: 14px 20px;
+    }
+    #modalDoiLich .modal-footer .gv-button-group {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 12px;
+        width: 100%;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    #modalDoiLich .modal-footer .gv-button-group .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        height: 40px;
+        min-width: 160px;
+        margin: 0 !important;
+        border-radius: 8px;
+        font-weight: 600;
+    }
+    #modalDoiLich .modal-footer .gv-button-group .btn i {
+        margin: 0 !important;
+    }
+    @media (min-width: 700px) and (max-width: 991px) {
+        /* Modal hẹp (~780px): thu nhỏ cột nhãn/mũi tên để ô nhập (nhất là tên giảng viên) không bị cắt */
+        #modalDoiLich .change-calendar .form-item.on-row,
+        #modalXemLich .change-calendar .form-item.on-row {
+            grid-template-columns: 124px minmax(0, 1fr) 76px 124px minmax(0, 1fr);
+        }
+        #modalDoiLich .change-calendar .form-item > label,
+        #modalXemLich .change-calendar .form-item > label,
+        #modalDoiLich .change-calendar .form-item .right > label,
+        #modalXemLich .change-calendar .form-item .right > label {
+            flex-basis: 124px;
+            width: 124px;
+            padding-right: 12px;
+        }
+        #modalDoiLich .change-calendar .form-item.on-row .right .arrow,
+        #modalXemLich .change-calendar .form-item.on-row .right .arrow {
+            margin: 0 6px !important;
+        }
+    }
+    @media (max-width: 699px) {
+        /* Màn hình hẹp: xếp dọc, "Đổi sang" thành dòng chữ nhỏ phía trên ô mới */
+        #modalDoiLich .change-calendar .form-item.on-row,
+        #modalXemLich .change-calendar .form-item.on-row {
+            grid-template-columns: minmax(0, 1fr);
+            row-gap: 6px;
+        }
+        #modalDoiLich .change-calendar .form-item:not(.on-row),
+        #modalXemLich .change-calendar .form-item:not(.on-row) {
+            flex-wrap: wrap;
+            row-gap: 4px;
+        }
+        #modalDoiLich .change-calendar .form-item > label,
+        #modalXemLich .change-calendar .form-item > label,
+        #modalDoiLich .change-calendar .form-item .right > label,
+        #modalXemLich .change-calendar .form-item .right > label {
+            flex: 0 0 100%;
+            width: 100%;
+            padding-right: 0;
+            text-align: left;
+        }
+        #modalDoiLich .change-calendar .form-item > .input-group,
+        #modalXemLich .change-calendar .form-item > .input-group,
+        #modalDoiLich .change-calendar .form-item > .input-group-textarea,
+        #modalXemLich .change-calendar .form-item > .input-group-textarea {
+            flex: 1 1 100%;
+        }
+        #modalDoiLich .change-calendar .form-item.on-row .right .arrow,
+        #modalXemLich .change-calendar .form-item.on-row .right .arrow {
+            height: auto !important;
+            margin: 2px 0 !important;
+        }
+        /* mũi tên rỗng (không có chữ "Đổi sang") chỉ có nghĩa khi nằm ngang => ẩn khi xếp dọc */
+        #modalDoiLich .change-calendar .form-item.on-row .right .arrow.none-title,
+        #modalXemLich .change-calendar .form-item.on-row .right .arrow.none-title {
+            display: none !important;
+        }
+        #modalDoiLich .change-calendar .form-item.on-row .right .arrow::before,
+        #modalDoiLich .change-calendar .form-item.on-row .right .arrow::after,
+        #modalXemLich .change-calendar .form-item.on-row .right .arrow::before,
+        #modalXemLich .change-calendar .form-item.on-row .right .arrow::after {
+            display: none;
+        }
+        #modalDoiLich .change-calendar .form-item.on-row .right .arrow span,
+        #modalXemLich .change-calendar .form-item.on-row .right .arrow span {
+            position: static;
+            transform: none;
+        }
+    }
+
+    /* ---------- 3. Modal Điểm danh buổi học (#my_calendar) ----------
+       Trước: 3 cột Vắng mặt / Có phép / Có mặt rộng khác nhau, ô số tiết co giãn theo cột,
+       checkbox "chọn tất cả" ở tiêu đề lệch so với checkbox từng dòng. Nay: cột đều nhau, căn giữa. */
+    @media (min-width: 992px) {
+        #my_calendar .modal-header {
+            gap: 16px;
+            align-items: center;
+        }
+        #my_calendar .modal-header .finance-user-info {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+        #my_calendar .modal-header .form-item.form-add-info {
+            flex: 0 0 220px;
+            width: 220px;
+            max-width: 220px;
+        }
+    }
+    #my_calendar .tblNhapChuyenCan th,
+    #my_calendar .tblNhapChuyenCan td {
+        vertical-align: middle;
+    }
+    /* Độ rộng các cột cố định: STT | Vắng mặt(...) | Mã số | Họ đệm | Tên | IP | Tự điểm danh.
+       width = độ rộng ưu tiên, min-width = mức tối thiểu; tổng min-width = min-width của bảng
+       => màn hình hẹp thì bảng cuộn ngang (trong .scroll-table-x) chứ không bị bóp méo từng cột. */
+    #my_calendar .tblNhapChuyenCan {
+        min-width: 1112px !important;
+    }
+    #my_calendar .tblNhapChuyenCan thead th:nth-child(1) { width: 56px;  min-width: 56px; }
+    #my_calendar .tblNhapChuyenCan thead th:nth-child(2) { width: 150px; min-width: 110px; }
+    #my_calendar .tblNhapChuyenCan thead th:nth-child(3) { width: 140px; min-width: 130px; }
+    #my_calendar .tblNhapChuyenCan thead th:nth-child(4) { width: 200px; min-width: 130px; }
+    #my_calendar .tblNhapChuyenCan thead th:nth-child(5) { width: 100px; min-width: 70px; }
+    #my_calendar .tblNhapChuyenCan thead th:nth-child(6) { width: 210px; min-width: 130px; }
+    #my_calendar .tblNhapChuyenCan thead th:nth-child(7) { width: 110px; min-width: 90px; }
+    /* Mọi cột "kiểu chuyên cần" (Vắng mặt, Có phép, Có mặt...) bằng nhau */
+    #my_calendar .tblNhapChuyenCan thead th.cothocphan {
+        width: 132px !important;
+        min-width: 132px !important;
+    }
+    /* Căn giữa đồng bộ giữa tiêu đề và dữ liệu */
+    #my_calendar .tblNhapChuyenCan th:nth-child(1),
+    #my_calendar .tblNhapChuyenCan td:nth-child(1),
+    #my_calendar .tblNhapChuyenCan th:nth-child(2),
+    #my_calendar .tblNhapChuyenCan td:nth-child(2),
+    #my_calendar .tblNhapChuyenCan th:nth-child(6),
+    #my_calendar .tblNhapChuyenCan td:nth-child(6),
+    #my_calendar .tblNhapChuyenCan th:nth-child(7),
+    #my_calendar .tblNhapChuyenCan td:nth-child(7),
+    #my_calendar .tblNhapChuyenCan th.cothocphan,
+    #my_calendar .tblNhapChuyenCan td:nth-child(n+8) {
+        text-align: center !important;
+    }
+    #my_calendar .tblNhapChuyenCan td:nth-child(6) {
+        font-size: 13px;
+        word-break: break-all;
+    }
+    /* Ô tick + ô số tiết: luôn là 1 cặp [☐ 60px] căn giữa ô, kích thước như nhau ở mọi cột */
+    #my_calendar .tblNhapChuyenCan td:nth-child(n+8) {
+        white-space: nowrap;
+    }
+    #my_calendar .tblNhapChuyenCan td:nth-child(n+8) input.checkChuyenCan {
+        display: inline-block !important;
+        vertical-align: middle;
+        width: 16px;
+        height: 16px;
+        margin: 0 8px 0 0 !important;
+        cursor: pointer;
+    }
+    #my_calendar .tblNhapChuyenCan td:nth-child(n+8) input.inputChuyenCan {
+        display: inline-block;
+        float: none !important;
+        vertical-align: middle;
+        width: 60px !important;
+        min-width: 60px !important;
+        height: 30px !important;
+        margin: 0 !important;
+        border-radius: 6px;
+        text-align: center;
+    }
+    /* Checkbox "chọn tất cả" ở tiêu đề thẳng hàng với checkbox từng dòng
+       (lệch trái = (rộng ô số tiết 60 + khoảng cách 8) / 2) */
+    #my_calendar .tblNhapChuyenCan thead th.cothocphan input.chkSelectAll {
+        position: relative;
+        left: -34px;
+        width: 16px;
+        height: 16px;
+        margin: 6px 0 0 0 !important;
+        cursor: pointer;
+    }
+
+    /* ---------- 4. Nút trên 2 thanh "Điểm danh tự động" (nền xanh) / "Điểm danh thủ công" (nền cam) ----------
+       Trước: nút xanh lá nhạt trên nền xanh dương, nút trắng chữ cam mảnh trên nền cam => khó nhìn, 3 nút 3 kiểu.
+       Nay (theo quy ước nút đặc, cùng nhóm cùng tông): 2 nút "Lưu điểm danh..." là CTA xanh lá đặc viền trắng,
+       cùng kích thước; "Lưu từ khóa" là nút navy đặc dính liền ô nhập (hành động phụ). Ghi đè bằng ID + !important
+       vì .btn-success / .btn-outline-orange toàn cục đã dùng !important. */
+    #my_calendar .summary-atten {
+        padding: 8px 12px 8px 16px;
+    }
+    #my_calendar .summary-atten .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        height: 38px;
+        padding: 0 18px;
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: 0.2px;
+        text-transform: none !important;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.28);
+        transition: background-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    #my_calendar .summary-atten .btn i {
+        position: static !important;
+        margin: 0 !important;
+        color: inherit !important;
+        font-size: 15px;
+        line-height: 1;
+    }
+    #my_calendar .summary-atten .btn span {
+        position: static !important;
+        width: auto !important;   /* có rule chung ép span trong .btn rộng 100% => icon dính mép trái, chữ lệch giữa */
+        margin: 0 !important;
+        color: inherit !important;
+        line-height: 1.2;
+    }
+    /* responsive.css (<=680px) đẩy riêng nút Lưu từ khóa xuống 10px => lệch khỏi ô nhập */
+    #my_calendar .summary-atten #btnSaveTuKhoa {
+        margin-top: 0 !important;
+    }
+    #my_calendar .summary-atten .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.32);
+    }
+    #my_calendar .summary-atten .btn:focus-visible {
+        outline: 3px solid rgba(255, 255, 255, 0.85);
+        outline-offset: 2px;
+    }
+    /* CTA chính: 2 nút lưu điểm danh */
+    #my_calendar #btnDiemDanhTuDong,
+    #my_calendar #btnDiemDanh {
+        background: #16a34a !important;
+        background-image: none !important;
+        border: 2px solid #fff !important;
+        color: #fff !important;
+    }
+    #my_calendar #btnDiemDanhTuDong:hover,
+    #my_calendar #btnDiemDanh:hover {
+        background: #15803d !important;
+        border-color: #fff !important;
+        color: #fff !important;
+    }
+    /* Hành động phụ: Lưu từ khóa — dính liền ô nhập, cao bằng ô nhập */
+    #my_calendar #btnSaveTuKhoa {
+        background: #1e3a8a !important;
+        background-image: none !important;
+        border: 2px solid #fff !important;
+        border-left-width: 1px !important;
+        color: #fff !important;
+        border-radius: 0 8px 8px 0 !important;
+        margin-left: 0 !important;
+        box-shadow: none;
+    }
+    #my_calendar #btnSaveTuKhoa:hover {
+        background: #172554 !important;
+        color: #fff !important;
+        transform: none;
+        box-shadow: none;
+    }
+    #my_calendar #txtTuKhoaDiemDanh {
+        height: 38px !important;
+        border: 2px solid #fff;
+        border-right-width: 1px;
+        border-radius: 8px 0 0 8px !important;
+        font-weight: 600;
+    }
+    #my_calendar .summary-atten .btn {
+        white-space: nowrap;
+    }
+    @media (min-width: 992px) {
+        /* 2 nút lưu bằng nhau => mép trái/phải của chúng thẳng hàng giữa hai thanh */
+        #my_calendar #btnDiemDanhTuDong,
+        #my_calendar #btnDiemDanh {
+            min-width: 230px;
+        }
+    }
+    @media (max-width: 699px) {
+        /* Điện thoại: hàng 1 = [ô từ khóa + Lưu từ khóa], hàng 2 = nút lưu tự động; nút lưu thủ công rộng hết dòng */
+        #my_calendar .aps-diemdanh-tudong .aps-all-button {
+            flex-wrap: wrap;
+            gap: 8px;
+            width: 100%;
+        }
+        #my_calendar .aps-diemdanh-tudong .aps-all-button .form-item {
+            flex: 1 1 0;
+            min-width: 0;
+        }
+        #my_calendar #txtTuKhoaDiemDanh {
+            width: 100% !important;
+        }
+        #my_calendar #btnSaveTuKhoa {
+            flex: 0 0 auto;
+        }
+        #my_calendar #btnDiemDanhTuDong {
+            flex: 1 1 100%;
+            margin-left: 0 !important;
+        }
+        #my_calendar #btnDiemDanh {
+            width: 100%;
+        }
     }
 </style>
 <div class="one-door study-space">
@@ -480,7 +1072,7 @@
 <!-- modal khối kiến thức chuyên ngành-->
 <div class="modal fade finance-modal my-calendar modalDoiLich" id="modalDoiLich" tabindex="-1"
     aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-1140">
         <div class="modal-content">
             <div class="modal-header">
                 <div class="finance-user-info in-modal ">
@@ -492,7 +1084,7 @@
             <div class="modal-body change-calendar">
                 <form class="" action="">
                     <div class="caledar-input">
-                        <div class=".form-item">
+                        <div class="form-item item-top">
                             <label for="">Nội dung xin đổi lịch</label>
                             <div class="input-group-textarea w-100">
                                 <textarea class="form-control min-h-68" id="txtNoiDungDoiLich" rows="2"></textarea>
@@ -623,7 +1215,7 @@
 <!-- modal khối kiến thức chuyên ngành-->
 <div class="modal fade finance-modal my-calendar" id="modalXemLich" tabindex="-1" aria-labelledby="exampleModalLabel"
     aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-1140">
         <div class="modal-content">
             <div class="modal-header">
                 <div class="finance-user-info in-modal ">
@@ -635,7 +1227,7 @@
             <div class="modal-body change-calendar">
                 <form class="" action="">
                     <div class="caledar-input">
-                        <div class="form-item">
+                        <div class="form-item item-top">
                             <label for="">Nội dung xin đổi lịch</label>
                             <div class="input-group">
 
@@ -931,7 +1523,7 @@
     </div>
 </div>
 
-<script src="modules/lichgiang/script/lichgiang.js?v=1.0.0.3"></script>
+<script src="modules/lichgiang/script/lichgiang.js?v=1.0.0.4"></script>
 <script src="modules/lichgiang/script/jquery-searchbox.js"></script>
 <script type="text/javascript">
     var main_doc = {};
@@ -944,6 +1536,9 @@
             var $modal = $(this);
             $modal.find('select.select-opt, select[id^="drop"]').each(function () {
                 var $sel = $(this);
+                // 2026-10-09: select đã được plugin searchBox thay thế (ô chọn giảng viên) thì KHÔNG bọc thêm select2,
+                // nếu không sẽ hiện 2 khung chồng nhau (tùy API trả về trước hay sau khi modal mở xong).
+                if ($sel.siblings('.refineText').length) return;
                 try {
                     if ($sel.hasClass('select2-hidden-accessible')) $sel.select2('destroy');
                 } catch (e) {}

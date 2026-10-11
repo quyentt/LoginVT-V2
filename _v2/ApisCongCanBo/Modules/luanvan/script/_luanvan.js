@@ -223,7 +223,7 @@
     L.man = function (root, cfg) {
         var st = { page: 1, size: 10, rows: [] }, don = null;
         root.innerHTML = '<div data-lv="list">' + pat.page(cfg.tieuDe) +
-            pat.filterBar([{ key: 'kh', type: 'select', label: 'Chọn kế hoạch thực hiện' }], { searchText: 'Xem danh sách' }) +
+            pat.filterBar([{ key: 'kh', type: 'select', label: 'Chọn kế hoạch thực hiện' }].concat(cfg.tuKhoa ? [{ key: 'q', type: 'text', label: 'Nhập từ khóa tìm kiếm' }] : []), { searchText: cfg.tuKhoa ? 'Tìm kiếm' : 'Xem danh sách' }) +
             pat.panel({ title: 'Danh sách', icon: 'fa-list-ul', count: 'lvn', flush: true, zone: 'lvbang', tools: cfg.tools || '' }) +
             '</div><div data-lv="view" hidden></div>';
         ui.enhance(root);
@@ -234,7 +234,7 @@
         function tai(page) {
             if (page) st.page = page;
             bang.innerHTML = DANG_TAI;
-            return ums.api.call(Object.assign({ method: 'GET' }, cfg.list(kh.value, st.page, st.size))).then(function (r) {
+            return ums.api.call(Object.assign({ method: 'GET' }, cfg.list(kh.value, st.page, st.size, cfg.tuKhoa ? (list.querySelector('[data-f="q"]').value || '').trim() : ''))).then(function (r) {
                 st.rows = arr(r.data);
                 var tong = Number(r.pager) || st.rows.length;
                 list.querySelector('[data-z="lvn"]').textContent = '(' + tong + ')';
@@ -264,6 +264,7 @@
 
         L.keHoach(kh, cfg.keHoach).then(function () { tai(1); });
         if (window.jQuery) jQuery(kh).on('select2:select select2:clear', function () { tai(1); });
+        if (cfg.tuKhoa) list.querySelector('[data-f="q"]').addEventListener('keydown', function (ev) { if (ev.key === 'Enter') { ev.preventDefault(); tai(1); } });
         list.addEventListener('click', function (ev) {
             var t = ev.target;
             if (t.closest('[data-a="search"]')) { tai(1); return; }

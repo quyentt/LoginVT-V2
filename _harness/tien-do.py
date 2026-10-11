@@ -37,7 +37,7 @@ TEN = {
 # Thứ tự đã chuyển (CLAUDE.md mục 11) — phân hệ mới chuyển thì thêm vào cuối
 THU_TU = ['ApisTaiChinh', 'ApisCongCanBo', 'ApisCongSinhVien', 'ApisChuyenCan', 'ApisCMS', 'ApisDangKyHoc',
           'ApisHocLaiThiLai', 'ApisRenLuyen', 'ApisXuLyHocVu', 'ApisHocBong', 'ApisTotNghiep', 'ApisQuanLyThiTracNghiem', 'ApisThiTracNghiem', 'ApisQuanLyDiem', 'ApisNhanSu', 'ApisSinhVien',
-          'ApisKeHoachChuongTrinh', 'ApisNhapHoc', 'ApisQuanlyTuyenSinh', 'ApisNCKH', 'ApisThiPhach', 'ApisTinTuc', 'ApisTKGG', 'ApisLuanVanLuanAn']
+          'ApisKeHoachChuongTrinh', 'ApisNhapHoc', 'ApisQuanlyTuyenSinh', 'ApisNCKH', 'ApisThiPhach', 'ApisTinTuc', 'ApisTKGG', 'ApisLuanVanLuanAn', 'ApisKyTucXa']
 
 HOAN = {
     'ApisTKGG/Modules/danhmuc/html/danhmucdulieu.html': 'Host không có chức năng (6/10, người dùng: chỉ chuyển màn đang dùng)',
@@ -64,6 +64,8 @@ BO_QUA = {
     'ApisDangKyHoc/Modules/phanconglophocphan/html/phanconglophocphan.html': 'Bản gốc html trống',
     'ApisQuanLyDiem/Modules/nhapdiem/html/nhapdiemtest.html': 'Trang thử (bản chép của nhapdiem, tên "test")',
     'ApisTaiChinh/Modules/danhmucheso/html/mucphisotien.html': 'Bản gốc rỗng, không có gì để chuyển',
+    'ApisKyTucXa/Modules/dangky/html/dangky.html': 'Bản gốc rỗng (vỏ HTML trống, dangky.js 0 dòng), không có trên menu host',
+    'ApisKyTucXa/Modules/kehoach/html/phandoituongdangky.html': 'Bản gốc rỗng (vỏ HTML trống, phandoituongdangky.js 0 dòng), không có trên menu host',
 }
 PHU = {'ApisCongSinhVien-1': 'Bản cũ song song của ApisCongSinhVien (khác vài màn) — chưa rõ còn dùng; không tính vào tổng'}
 

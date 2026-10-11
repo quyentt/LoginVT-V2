@@ -391,7 +391,11 @@
         /* `span` (cả dòng) chỉ giữ cho Ô DÀI; ô ngắn luôn nửa hàng (người dùng 2026-09-26: "2 dòng 1 hàng").
            Ép cả dòng cho ô ngắn: `caDong: true`. Lưới 12 (formCols 12) giữ nguyên `cols`. */
         var full = f.caDong || ((f.span || this.tuHaiCot) && Crud.oDai(f));
-        var span = full ? ' style="grid-column:1 / -1"' : (!this.tuHaiCot && f.cols ? ' style="grid-column:span ' + Number(f.cols) + '"' : '');
+        /* `hang`: ô chiếm N HÀNG lưới (grid-row: span) — ảnh hồ sơ đứng bên trái, các ô Mã số / Họ tên / Ngày sinh xếp bên phải
+           (người dùng 2026-10-12). Chỉ có nghĩa với lưới 12 (formCols 12). */
+        var st = full ? ['grid-column:1 / -1'] : (!this.tuHaiCot && f.cols ? ['grid-column:span ' + Number(f.cols)] : []);
+        if (f.hang && !this.tuHaiCot) st.push('grid-row:span ' + Number(f.hang));
+        var span = st.length ? ' style="' + st.join(';') + '"' : '';
         var ctl;
 
         switch (f.type) {
@@ -409,8 +413,9 @@
             case 'avatar':
                 // Ảnh (edu.system.uploadAvatar) — ô ẩn chỉ để formValues / fillForm
                 // nhận ra khoá; giá trị đọc/ghi qua ums.files.avatar
+                // Ảnh tự nói lên nó là ảnh: label rỗng thì KHÔNG dựng nhãn (người dùng 2026-10-12: "đã là ảnh thì không cần label ảnh")
                 return '<div class="ums-field"' + span + '>' +
-                    '<label class="ums-field__label">' + esc(f.label || '') + '</label>' +
+                    (f.label ? '<label class="ums-field__label">' + esc(f.label) + '</label>' : '') +
                     '<input type="hidden" ' + attr + '><div data-cavatar="' + this.uid + '" data-k="' + esc(f.key) + '"></div></div>';
             case 'files':
                 // Tệp đính kèm (ums.files) — không phải ô nhập nên không mang

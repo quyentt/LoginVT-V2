@@ -369,6 +369,16 @@ sang bộ mới thành chỗ hộp thoại chỗ biểu mẫu, chỗ có select2
 
 ---
 
+21. **Bảng trong biểu mẫu TRÀN hết bề ngang khung; nút thao tác của khung nằm ở ĐẦU KHUNG, dạt phải** (người dùng 2026-10-12, màn Bảo vệ luận văn).
+    Khung con có thân `flush` (bảng) đặt trong thân biểu mẫu (`pat.formTrang`) tự kéo ra sát hai mép khung — CSS ở patterns.css, màn không làm gì.
+    "Thêm dòng mới", "Hủy…", "Xóa", "Đánh giá chung" của một bảng đặt trong `tools` của `pat.panel` (đầu khung, phải), KHÔNG đặt ở `foot` — chân khung
+    chỉ cho ghi chú / ô tổng. Bảng luôn khép bằng đường kẻ cuối (luật 15), kể cả khung con đã bỏ viền trong biểu mẫu (CSS tự giữ).
+22. **Khoảng Từ ngày → Đến ngày: Đến không bao giờ nhỏ hơn Từ** (người dùng 2026-10-12). Tầng chung `ums.ui.khoangNgay` (ui.js, `ui.enhance` tự gọi):
+    hai ô ngày LIỀN NHAU có nhãn "Từ… / Bắt đầu… / Hiệu lực…" rồi "Đến… / Kết thúc… / Hết hạn…" (nhãn ô, placeholder hoặc tiêu đề cột) thành một cặp —
+    lịch ô Đến khoá ngày trước Từ; đổi Từ hoặc gõ Đến nhỏ hơn Từ thì Đến tự = Từ, KHÔNG toast. Nhãn lạ: `data-range="k:tu"` / `data-range="k:den"`;
+    tắt: `data-range="off"`. Màn chưa tự ghép được khi kiểm thử → khai `data-range`, không viết xử lý riêng trong màn. Dữ liệu nạp sẵn đang ngược không bị xoá.
+23. **Ô nhiều dòng (`textarea`) luôn có đệm trên dưới** — `textarea.ums-input` cũng được `field.css` cho `height:auto; min-height:82px; padding` như `.ums-textarea`.
+
 ## Chi tiết từng bố cục
 
 ### 1. Danh sách + biểu mẫu — `ums.crud`

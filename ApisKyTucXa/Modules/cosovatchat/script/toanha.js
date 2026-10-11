@@ -38,6 +38,7 @@ ToaNha.prototype = {
         });
         $(".btnClose").click(function () {
             me.toggle_list_toanha();
+            me.getCount_Phong();
         });
         $(".btnCloseThemPhong").click(function () {
             me.toggle_list_phong();
@@ -256,6 +257,7 @@ ToaNha.prototype = {
                     me.dtToaNha = dtResult;
                     me.genBox_ToaNha(dtResult, iPager)
                     me.genCombo_ToaNha(dtResult);
+                    me.getCount_Phong();
                 }
                 else {
                     edu.system.alert("KTX_ToaNha/LayDanhSach: " + data.Message, "w");
@@ -442,37 +444,92 @@ ToaNha.prototype = {
         var html = '';
         var strToaNha_Id = "";
         var strToaNha_Ten = "";
-        var iToaNha_SoPhong = "";
-        
+        var iToaNha_SoPhong = 0;
+        var iTongSoPhong = 0;
+
         $("#zoneBox_ToaNha").html(html);
         //
         for (var i = 0; i < data.length; i++) {
             strToaNha_Id = data[i].ID;
             strToaNha_Ten = data[i].TEN;
-            iToaNha_SoPhong = data[i].TONGSOPHONG;
+            //số phòng đếm từ danh sách phòng (khớp màn "Xem phòng"); chưa có thì dùng TONGSOPHONG của API tòa nhà
+            if (me.objSoPhong_ToaNha) iToaNha_SoPhong = me.objSoPhong_ToaNha[strToaNha_Id] || 0;
+            else iToaNha_SoPhong = data[i].TONGSOPHONG || 0;
+            iTongSoPhong += parseInt(iToaNha_SoPhong, 10) || 0;
 
-            html += '<div class="col-sm-3 col-xs-6 btnView" id="view_' + strToaNha_Id + '">';
-            html += '<div class="small-box">';
-            html += '<div class="inner">';
-            html += '<h4>' + strToaNha_Ten + '</h4>';
-            html += '<p>Số phòng: ' + iToaNha_SoPhong + ' <a id="view_' + strToaNha_Id + '" class="poiter">[Xem]</a></p>';
+            html += '<div class="tn-card btnView" id="view_' + strToaNha_Id + '">';
+            html += '<div class="tn-card-head">';
+            html += '<span class="tn-card-ico"><i class="fa fa-building"></i></span>';
+            html += '<h4 class="tn-card-title">' + strToaNha_Ten + '</h4>';
             html += '</div>';
-            html += '<div class="icon">';
-            html += '<i class="fa fa-building cl-rosybrown"></i>';
+            html += '<div class="tn-card-body">';
+            html += '<div class="tn-count"><span class="tn-count-lbl">Số phòng</span><b>' + iToaNha_SoPhong + '</b></div>';
+            html += '<span class="tn-xem poiter">Xem phòng <i class="fa fa-arrow-right"></i></span>';
             html += '</div>';
-            html += '<div class="small-box-footer">';
-            html += '<a id="delete_' + strToaNha_Id + '" class="btn btn-default poiter btnDelete pull-right"><i class="fa fa-trash"></i> Xóa</a>';
-            html += '<a id="edit_' + strToaNha_Id + '" class="btn btn-default poiter btnEdit"><i class="fa fa-pencil"></i> Chỉnh sửa</a>';
+            html += '<div class="tn-card-foot">';
+            html += '<a id="delete_' + strToaNha_Id + '" class="tn-btn tn-btn-del poiter btnDelete"><i class="fa fa-trash"></i> Xóa</a>';
+            html += '<a id="edit_' + strToaNha_Id + '" class="tn-btn tn-btn-edit poiter btnEdit"><i class="fa fa-pencil"></i> Chỉnh sửa</a>';
             html += '</div>';
             html += '</div>';
-            html += '</div >';
+        }
+        if (data.length == 0) {
+            html = '<div class="tn-empty"><i class="fa fa-building-o"></i> Chưa có tòa nhà nào</div>';
         }
         //
         $("#zoneBox_ToaNha").html(html);
+        $("#lblToaNha_TongQuan").html(data.length + ' tòa nhà · ' + iTongSoPhong + ' phòng');
     },
     /*------------------------------------------
     --Discription: [3] AcessDB Phong
     -------------------------------------------*/
+    //Đếm số phòng theo từng tòa từ KTX_Phong/LayDanhSach (không lọc) để hiển thị trên thẻ tòa nhà,
+    //vì TONGSOPHONG của KTX_ToaNha/LayDanhSach có tòa trả 0 dù đã có phòng
+    getCount_Phong: function () {
+        var me = this;
+        var obj_list = {
+            'action': 'KTX_Phong/LayDanhSach',
+
+            'strTuKhoa': "",
+            'strKTX_ToaNha_Id': "",
+            'strPhanLoaiDoiTuong_Id': "",
+            'strTangThu_Id': "",
+            'strLoaiPhong_Id': "",
+            'strTinhChat_Id': "",
+            'strTinhTrang_Id': "",
+            'strNguoiThucHien_Id': "",
+            'pageIndex': 1,
+            'pageSize': 1000000000
+        };
+        edu.system.makeRequest({
+            success: function (data) {
+                if (data.Success) {
+                    var objSoPhong = {};
+                    var dtResult = edu.util.checkValue(data.Data) ? data.Data : [];
+                    for (var i = 0; i < dtResult.length; i++) {
+                        var strId = dtResult[i].KTX_TOANHA_ID;
+                        objSoPhong[strId] = (objSoPhong[strId] || 0) + 1;
+                    }
+                    me.objSoPhong_ToaNha = objSoPhong;
+                    me.genBox_ToaNha(me.dtToaNha, 0);
+                }
+                else {
+                    edu.system.alert("KTX_Phong/LayDanhSach: " + data.Message, "w");
+                }
+            },
+            error: function (er) {
+                edu.system.alert("KTX_Phong/LayDanhSach (er): " + JSON.stringify(er), "w");
+            },
+            type: "GET",
+            action: obj_list.action,
+
+            contentType: true,
+
+            data: obj_list,
+            fakedb: [
+
+            ]
+        }, false, false, false, null);
+    },
     getList_Phong: function (strToaNha_Id, strTuKhoa) {
         var me = this;
         if (strToaNha_Id == undefined) {
@@ -717,6 +774,15 @@ ToaNha.prototype = {
     genTable_Phong: function (data, iPager, strToaNha_Id) {
         var me = this;
         edu.util.viewHTMLById("", iPager);
+        me.genHeader_Phong(data);
+        me.genTfoot_Phong(data);
+        //ô không có dữ liệu hiện dấu gạch thay vì để trống
+        var fnCell = function (strCol, bChip) {
+            return function (nRow, aData) {
+                if (!edu.util.checkValue(aData[strCol])) return '<span class="tn-na">—</span>';
+                return bChip ? '<span class="tn-chip">' + aData[strCol] + '</span>' : aData[strCol];
+            };
+        };
 
         var jsonForm = {
             strTable_Id: "tblPhong",
@@ -729,9 +795,9 @@ ToaNha.prototype = {
             bHiddenHeader: true,
             //bHiddenOrder: true,
             colPos: {
-                left: [],
-                right: [],
-                center: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+                left: [1, 2, 3, 5, 6],
+                right: [7, 8, 9],
+                center: [0, 4, 10, 11],
                 fix: [0]
             },
             aoColumns: [
@@ -745,40 +811,72 @@ ToaNha.prototype = {
                     "mDataProp": "MA"
                 },
                 {
-                    "mDataProp": "TANGTHU_TEN"
+                    "mData": "tang",
+                    "mRender": fnCell("TANGTHU_TEN")
                 },
                 {
-                    "mDataProp": "TINHCHAT_TEN"
+                    "mData": "tinhchat",
+                    "mRender": fnCell("TINHCHAT_TEN", true)
                 }
                 , {
-                    "mDataProp": "LOAIPHONG_TEN"
+                    "mData": "loaiphong",
+                    "mRender": fnCell("LOAIPHONG_TEN")
                 }
                 , {
-                    "mDataProp": "DIENTICHSUDUNG"
+                    "mData": "dientich",
+                    "mRender": fnCell("DIENTICHSUDUNG")
                 }
                 , {
-                    "mDataProp": "SOGIUONG"
+                    "mData": "sogiuong",
+                    "mRender": fnCell("SOGIUONG")
                 }
                 , {
-                    "mDataProp": "SOSINHVIENTOIDA"
+                    "mData": "songuoitoida",
+                    "mRender": fnCell("SOSINHVIENTOIDA")
                 }
                 , {
                     "mData": "edit",
                     "mRender": function (nRow, aData) {
-                        return '<a title="Sửa" class="btn btn-default color-active btnEdit" id="edit_' + aData.ID + '" href="#"><i class="fa fa-pencil"></i></a>';
+                        return '<a title="Sửa" class="tn-icon-btn tn-icon-edit btnEdit" id="edit_' + aData.ID + '" href="#"><i class="fa fa-pencil"></i></a>';
                     }
                 }
                 , {
                     "mData": "delete",
                     "mRender": function (nRow, aData) {
-                        return '<a title="Xóa" class="btn btn-default color-active btnDelete" id="delete_' + aData.ID + '" href="#"><i class="fa fa-trash"></i></a>';
+                        return '<a title="Xóa" class="tn-icon-btn tn-icon-del btnDelete" id="delete_' + aData.ID + '" href="#"><i class="fa fa-trash"></i></a>';
                     }
                 }
             ]
         };
         edu.system.loadToTable_data(jsonForm);
         /*III. Callback*/
-        
+
+    },
+    //Tiêu đề màn phòng: tên (mã) tòa nhà đang xem + số phòng
+    genHeader_Phong: function (data) {
+        var me = this;
+        var strTen = "Tất cả tòa nhà";
+        for (var i = 0; i < me.dtToaNha.length; i++) {
+            if (me.dtToaNha[i].ID == me.strToaNha_Id) {
+                strTen = me.dtToaNha[i].TEN;
+                if (edu.util.checkValue(me.dtToaNha[i].MA) && me.dtToaNha[i].MA != me.dtToaNha[i].TEN) strTen += " (" + me.dtToaNha[i].MA + ")";
+                break;
+            }
+        }
+        $("#lblPhong_ToaNha_Ten").html(strTen);
+        $("#lblPhong_TongSo").html(data.length + " phòng");
+    },
+    //Dòng tổng ở chân bảng: diện tích, số giường, số người ở tối đa
+    genTfoot_Phong: function (data) {
+        var dDienTich = 0, iGiuong = 0, iNguoi = 0;
+        for (var i = 0; i < data.length; i++) {
+            dDienTich += parseFloat(data[i].DIENTICHSUDUNG) || 0;
+            iGiuong += parseInt(data[i].SOGIUONG, 10) || 0;
+            iNguoi += parseInt(data[i].SOSINHVIENTOIDA, 10) || 0;
+        }
+        $("#lblPhong_TongDienTich").html(Math.round(dDienTich * 100) / 100);
+        $("#lblPhong_TongGiuong").html(iGiuong);
+        $("#lblPhong_TongNguoi").html(iNguoi);
     },
 
     genCombo_ToaNha: function (data) {

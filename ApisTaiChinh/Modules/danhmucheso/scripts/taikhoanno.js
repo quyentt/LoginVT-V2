@@ -10,6 +10,7 @@ function TaiKhoanNo() { };
 TaiKhoanNo.prototype = {
     strTaiKhoanNo_Id: '',
     dtTaiKhoanNo: [],
+    dtCoSoDaoTao: [],
 
     init: function () {
         var me = this;
@@ -20,6 +21,7 @@ TaiKhoanNo.prototype = {
         me.getList_TaiKhoanNo();
         me.getList_DoiTac();
         me.getList_KhoanThu();
+        me.getList_CoSoDaoTao();
         //me.getList_ThoiGianDaoTao();
         edu.system.loadToCombo_DanhMucDuLieu("QLTC.HTTHU", "dropSearch_HinhThuc,dropHinhThuc");
         //edu.system.loadToCombo_DanhMucDuLieu("KLGD.HOATDONG", "dropSearch_HoatDong,dropHoatDong");
@@ -78,6 +80,7 @@ TaiKhoanNo.prototype = {
         edu.util.viewValById("dropKhoanThu", edu.util.getValById("dropSearch_KhoanThu"));
         edu.util.viewValById("dropDoiTac", edu.util.getValById("dropSearch_DoiTac"));
         edu.util.viewValById("dropHinhThuc", edu.util.getValById("dropSearch_HinhThuc"));
+        edu.util.viewValById("dropCoSoDaoTao", edu.util.getValById("dropSearch_CoSoDaoTao"));
         //edu.util.viewValById("dropPhamVi", edu.util.getValById("dropSearch_PhamVi"));
         //edu.util.viewValById("dropMoHinhHoc", edu.util.getValById("dropSearch_MoHinhHoc"));
         edu.util.viewValById("txtTKNo", "");
@@ -165,6 +168,42 @@ TaiKhoanNo.prototype = {
             ]
         }, false, false, false, null);
     },
+    //edu.system.getList_CoSoDaoTao gọi proc pkg_kehoach_thongtin.LayDSDaoTao_CoSoDaoTao, không dùng danh mục KHCT.COSODAOTAO vì trả rỗng ở CMC
+    getList_CoSoDaoTao: function () {
+        var me = this;
+        var objList = {
+            strNguoiThucHien_Id: "",
+            strTuKhoa: "",
+            pageIndex: 1,
+            pageSize: 100000
+        };
+        edu.system.getList_CoSoDaoTao(objList, "", "", function (data) {
+            me.genCombo_CoSoDaoTao(data);
+        });
+    },
+    genCombo_CoSoDaoTao: function (data) {
+        var me = this;
+        me.dtCoSoDaoTao = data;
+        var obj = {
+            data: data,
+            renderInfor: {
+                id: "ID",
+                parentId: "",
+                name: "TEN",
+                code: "MA",
+                //Hiển thị "TEN (MA)" theo chuẩn dropdown danh mục
+                mRender: function (j, aData) {
+                    var strTen = edu.util.returnEmpty(aData.TEN);
+                    var strMa = edu.util.returnEmpty(aData.MA);
+                    if (strMa && strMa != strTen) return strTen + " (" + strMa + ")";
+                    return strTen ? strTen : strMa;
+                }
+            },
+            renderPlace: ["dropSearch_CoSoDaoTao", "dropCoSoDaoTao"],
+            title: "Chọn cơ sở đào tạo"
+        };
+        edu.system.loadToCombo_data(obj);
+    },
     genCombo_DoiTac: function (data) {
         var obj = {
             data: data,
@@ -196,6 +235,7 @@ TaiKhoanNo.prototype = {
             'strKeToan_TKNo': edu.util.getValById('txtTKNo'),
             'strKeToan_TKCo': edu.util.getValById('txtTKCo'),
             'strAPI_DoiTac_Id': edu.util.getValById('dropDoiTac'),
+            'strDaoTao_CoSoDaoTao_Id': edu.util.getValById('dropCoSoDaoTao'),
             'strNguoiThucHien_Id': edu.system.userId,
         };
         if (obj_save.strId) {
@@ -241,6 +281,7 @@ TaiKhoanNo.prototype = {
             'strNguoiThucHien_Id': edu.system.userId,
             'strAPI_DoiTac_Id': edu.util.getValById('dropSearch_DoiTac'),
             'strHinhThucThu_Id': edu.util.getValById('dropSearch_HinhThuc'),
+            'strDaoTao_CoSoDaoTao_Id': edu.util.getValById('dropSearch_CoSoDaoTao'),
         };
         //
         
@@ -330,6 +371,7 @@ TaiKhoanNo.prototype = {
     --ULR:  Modules
     -------------------------------------------*/
     genTable_TaiKhoanNo: function (data, iPager) {
+        var me = this;
         $("#lblTaiKhoanNo_Tong").html(iPager);
         var jsonForm = {
             strTable_Id: "tblTaiKhoanNo",
@@ -339,7 +381,7 @@ TaiKhoanNo.prototype = {
             //    iDataRow: iPager
             //},
             colPos: {
-                center: [0, 3,7,8],
+                center: [0, 3, 4, 8],
                 //right: [5]
             },
             aoColumns: [
@@ -356,6 +398,17 @@ TaiKhoanNo.prototype = {
                 },
                 {
                     "mDataProp": "API_DOITAC_TEN"
+                },
+                {
+                    "mRender": function (nRow, aData) {
+                        var strMa = aData.DAOTAO_COSODAOTAO_MA;
+                        //API danh sách chưa trả mã thì tra theo ID trong danh sách cơ sở đào tạo
+                        if (!strMa) {
+                            var objCoSo = me.dtCoSoDaoTao.find(e => e.ID == aData.DAOTAO_COSODAOTAO_ID);
+                            if (objCoSo) strMa = objCoSo.MA;
+                        }
+                        return edu.util.returnEmpty(strMa);
+                    }
                 },
                 {
                     "mDataProp": "KETOAN_TAIKHOANNO"
@@ -390,6 +443,7 @@ TaiKhoanNo.prototype = {
         edu.util.viewValById("dropKhoanThu", data.TAICHINH_CACKHOANTHU_ID);
         edu.util.viewValById("dropDoiTac", data.API_DOITAC_ID);
         edu.util.viewValById("dropHinhThuc", data.HINHTHUCTHU_ID);
+        edu.util.viewValById("dropCoSoDaoTao", data.DAOTAO_COSODAOTAO_ID);
         edu.util.viewValById("txtTKNo", data.KETOAN_TAIKHOANNO);
         edu.util.viewValById("txtTKCo", data.KETOAN_TAIKHOANCO);
         me.strTaiKhoanNo_Id = data.ID;

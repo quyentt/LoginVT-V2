@@ -159,6 +159,53 @@ LichGiang.prototype = {
             me.xemCacBuoi_open(strIdLop);
         });
 
+        // ===== Menu thao tác trên thẻ buổi học (nút "⋮") — thay cho 2 icon sát nhau (2026-10-09) =====
+        // Menu gắn vào <body> nên dùng handler cấp document, có namespace + off() trước để vào lại trang không bị nhân đôi.
+        $("#cardActionMenu").remove();
+        $(document).off(".cardMenu");
+        if (me._cardMenuScrollHandler) document.removeEventListener("scroll", me._cardMenuScrollHandler, true);
+        $("body").append(
+            '<div id="cardActionMenu" class="card-action-menu" role="menu" style="display:none">'
+            + '<a class="card-action-item" role="menuitem" tabindex="0" data-act="cacbuoi"><i class="fas fa-clipboard-list"></i><span>Xem các buổi điểm danh</span></a>'
+            + '<div class="card-action-sep"></div>'
+            + '<a class="card-action-item" role="menuitem" tabindex="0" data-act="doilich"><i class="fas fa-calendar-alt"></i><span>Yêu cầu đổi lịch</span></a>'
+            + '</div>'
+        );
+        // Nút "⋮" nằm trong thẻ (thẻ có handler điểm danh) => chặn lan lên thẻ để không mở nhầm modal điểm danh
+        $("#datebody").delegate(".btnMenuThe", "click", function (event) {
+            event.stopImmediatePropagation();
+            event.preventDefault();
+            // event.detail === 0: kích hoạt bằng bàn phím (Enter/Space) => chuyển focus vào menu
+            me.cardMenu_toggle(this, event.detail === 0);
+        });
+        $(document).on("click.cardMenu", "#cardActionMenu .card-action-item", function (event) {
+            event.preventDefault();
+            var strAct = $(this).attr("data-act");
+            var strId = me.cardMenu_Id, strIdLop = me.cardMenu_IdLop;
+            me.cardMenu_close();
+            if (strAct === "cacbuoi") {
+                if (strIdLop) me.xemCacBuoi_open(strIdLop);
+            } else if (strAct === "doilich") {
+                me.openDoiLich(strId);
+            }
+        });
+        $(document).on("keydown.cardMenu", "#cardActionMenu .card-action-item", function (event) {
+            if (event.which === 13 || event.which === 32) {
+                event.preventDefault();
+                $(this).trigger("click");
+            }
+        });
+        $(document).on("click.cardMenu", function (event) {
+            if (!$(event.target).closest("#cardActionMenu, .btnMenuThe").length) me.cardMenu_close();
+        });
+        $(document).on("keydown.cardMenu", function (event) {
+            if (event.which === 27) me.cardMenu_close();
+        });
+        $(window).off("resize.cardMenu").on("resize.cardMenu", function () { me.cardMenu_close(); });
+        // scroll không nổi bọt => bắt ở pha capture để đóng menu khi cuộn lưới lịch / trang
+        me._cardMenuScrollHandler = function () { me.cardMenu_close(); };
+        document.addEventListener("scroll", me._cardMenuScrollHandler, true);
+
         // ===== Modal Các buổi học theo thời khóa biểu (LG) =====
         edu.system.loadToCombo_DanhMucDuLieu("QLSV.KIEUCHUYENCAN", "", "", function (data) {
             me.xemCacBuoi_dtKieuChuyenCan = data;
@@ -473,6 +520,50 @@ LichGiang.prototype = {
             var aData = me.dtCanBoTimKiem.find(e => e.ID === strId);
             me.action_NguoiDung(aData);
         });
+    },
+
+    /*------------------------------------------
+    --2026-10-09: Menu thao tác trên thẻ buổi học (nút "⋮") + mở modal đổi lịch.
+    -------------------------------------------*/
+    cardMenu_Id: '',
+    cardMenu_IdLop: '',
+    cardMenu_toggle: function (btn, bFocus) {
+        var me = this;
+        var $btn = $(btn);
+        var $menu = $("#cardActionMenu");
+        // Bấm lại đúng nút đang mở => đóng
+        if ($menu.is(":visible") && me.cardMenu_Id === $btn.attr("data-id")) {
+            me.cardMenu_close();
+            return;
+        }
+        me.cardMenu_close();
+        me.cardMenu_Id = $btn.attr("data-id");
+        me.cardMenu_IdLop = $btn.attr("data-idlop");
+        // Lớp không có mã lớp học phần thì không có "các buổi" để xem
+        $menu.find('[data-act="cacbuoi"]').toggle(!!me.cardMenu_IdLop);
+        $menu.find(".card-action-sep").toggle(!!me.cardMenu_IdLop);
+        // Đo kích thước khi đang ẩn-mờ, rồi đặt vị trí theo nút (tự lật lên trên nếu hết chỗ phía dưới)
+        $menu.css({ display: "block", visibility: "hidden", top: 0, left: 0 });
+        var rect = btn.getBoundingClientRect();
+        var w = $menu.outerWidth(), h = $menu.outerHeight();
+        var left = Math.max(8, Math.min(rect.right - w, window.innerWidth - w - 8));
+        var top = rect.bottom + 6;
+        if (top + h > window.innerHeight - 8) top = Math.max(8, rect.top - h - 6);
+        $menu.css({ left: left, top: top, visibility: "visible" });
+        $btn.attr("aria-expanded", "true");
+        if (bFocus) $menu.find(".card-action-item:visible").first().focus();
+    },
+    cardMenu_close: function () {
+        $("#cardActionMenu").hide();
+        $(".btnMenuThe[aria-expanded='true']").attr("aria-expanded", "false");
+    },
+    openDoiLich: function (strId) {
+        var me = this;
+        var objLich = me.dtLichHoc.find(function (e) { return e.ID === strId; });
+        if (!objLich) return;
+        me.strLichHoc_Id = strId;
+        $("#modalDoiLich").modal("show");
+        me.getList_KhoiTaoDoiLich(objLich);
     },
 
     /*------------------------------------------
@@ -943,17 +1034,24 @@ LichGiang.prototype = {
             html += '<div class="task task-1 btnLichHoc" id="' + e.ID + '" style="top:' + e.PHUTBATDAU + 'px; height: ' + iTop + 'px; background-color: ' + strMauNen + '; cursor: pointer" title="' + JSON.stringify(arrLopHocPhanMau.find(ele => ele.ID == e.IDLOPHOCPHAN)) +'">';
             html += '<div class="task-header">';
             html += '<div class="text">';
-            html += '<div class="title">' + e.TENHOCPHAN + '</div>';
+            html += '<div class="title" title="' + String(e.TENHOCPHAN).replace(/"/g, '&quot;') + '">' + e.TENHOCPHAN + '</div>';
             html += '<div class="task-date">' + me.returnTwo(e.GIOBATDAU) + ':' + me.returnTwo(e.PHUTBATDAU) + ' - ' + me.returnTwo(e.GIOKETTHUC) + ':' + me.returnTwo(e.PHUTKETTHUC) + ' (Tiết ' + edu.util.returnEmpty(e.TIETBATDAU) + '-' + edu.util.returnEmpty(e.TIETKETTHUC) + ')</div>';
             html += '</div>';
-            html += '<div class="student-num task-actions">';
-            html += '<a class="card-icon-btn btnXemCacBuoi" title="Xem các buổi điểm danh" data-idlop="' + e.IDLOPHOCPHAN + '">';
-            html += '<i class="fas fa-clipboard-list"></i>';
-            html += '</a>';
-            html += '<a class="card-icon-btn btnKhoiTaoDoiLich" title="Yêu cầu đổi lịch" id="' + e.ID + '">';
-            html += '<i class="fas fa-calendar-alt"></i>';
-            html += '</a>';
+            // [2026-10-09] 1 nút "⋮" mở menu (Xem các buổi điểm danh / Yêu cầu đổi lịch) thay cho 2 icon sát nhau — tránh bấm nhầm.
+            // Bản cũ (2 icon) comment lại bên dưới để mở lại khi cần (kèm khối CSS đã comment trong lichgiang.html).
+            html += '<div class="task-actions">';
+            html += '<button type="button" class="card-menu-btn btnMenuThe" title="Thao tác: xem các buổi điểm danh / yêu cầu đổi lịch" aria-haspopup="true" aria-expanded="false" aria-label="Thao tác" data-id="' + e.ID + '" data-idlop="' + edu.util.returnEmpty(e.IDLOPHOCPHAN) + '">';
+            html += '<i class="fas fa-ellipsis-v"></i>';
+            html += '</button>';
             html += '</div>';
+            //html += '<div class="student-num task-actions">';
+            //html += '<a class="card-icon-btn btnXemCacBuoi" title="Xem các buổi điểm danh" data-idlop="' + e.IDLOPHOCPHAN + '">';
+            //html += '<i class="fas fa-clipboard-list"></i>';
+            //html += '</a>';
+            //html += '<a class="card-icon-btn btnKhoiTaoDoiLich" title="Yêu cầu đổi lịch" id="' + e.ID + '">';
+            //html += '<i class="fas fa-calendar-alt"></i>';
+            //html += '</a>';
+            //html += '</div>';
             //html += '<div class="title">' + e.TENHOCPHAN + '</div>';
             //html += '<div class="task-date">' + e.TIETBATDAU + ' - ' + e.TIETKETTHUC + '</div>';
             //html += '</div>';

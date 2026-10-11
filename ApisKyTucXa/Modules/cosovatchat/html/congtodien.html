@@ -1,10 +1,10 @@
-﻿<section class="content">
+﻿<section class="content aps-kyTucXa">
     <div class="row">
         <div class="box box-solid">
             <div class="box-header with-border">
-                <h3 class="box-title"><i class="fa fa-simplybuilt"></i> Công tơ điện</h3>
+                <h3 class="box-title"><i class="fa fa-bolt"></i> Công tơ điện <span class="ct-summary" id="lblCongToDien_Tong"></span></h3>
                 <div class="box-tools pull-right">
-                    <a id="btnAddNew_CongToDien" class="btn btn-default color-active btnAdd"><i class="fa fa-plus"></i> Thêm</a>
+                    <a id="btnAddNew_CongToDien" class="btn btn-success btnAdd"><i class="fa fa-plus"></i> Thêm</a>
                 </div>
             </div>
             <div class="box-body">
@@ -15,7 +15,7 @@
         </div>
     </div>
 </section>
-<div class="modal fade" id="myModal_CongToDien" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade ktx-modal" id="myModal_CongToDien" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -23,56 +23,31 @@
                 <h4 class="modal-title"><span class="myModalLabel"><i class="fa fa-plus"></i> Thêm mới - </span> <span class="lang" key="">Công tơ điện</span></h4>
             </div>
             <div class="modal-body">
-                <div class="row zone-box">
+                <div class="ct-form-grid">
                     <!--Ten cong to-->
-                    <div class="row">
-                        <div class="col-sm-3">
-                            <label style="font-weight: normal"><span class="lang" key="">Tên công tơ</span></label>
-                        </div>
-                        <div class="col-sm-9">
-                            <input type="text" id="txtCongToDien_Ten" class="form-control" />
-                        </div>
-                        <div class="clear"></div>
+                    <div class="ct-field">
+                        <label><span class="lang" key="">Tên công tơ</span></label>
+                        <input type="text" id="txtCongToDien_Ten" class="form-control" placeholder="Nhập tên công tơ" />
                     </div>
                     <!--Ma cong to-->
-                    <div class="row">
-                        <div class="col-sm-3">
-                            <label style="font-weight: normal"><span class="lang" key="">Mã công tơ</span></label>
-                        </div>
-                        <div class="col-sm-9">
-                            <input type="text" id="txtCongToDien_Ma" class="form-control" />
-                        </div>
-                        <div class="clear"></div>
+                    <div class="ct-field">
+                        <label><span class="lang" key="">Mã công tơ</span></label>
+                        <input type="text" id="txtCongToDien_Ma" class="form-control" placeholder="Nhập mã công tơ" />
                     </div>
                     <!--Nam san xuat-->
-                    <div class="row">
-                        <div class="col-sm-3">
-                            <label style="font-weight: normal"><span class="lang" key="">Năm sản xuất</span></label>
-                        </div>
-                        <div class="col-sm-9">
-                            <input type="text" id="txtCongToDien_NamSanXuat" class="form-control" />
-                        </div>
-                        <div class="clear"></div>
+                    <div class="ct-field">
+                        <label><span class="lang" key="">Năm sản xuất</span></label>
+                        <input type="text" id="txtCongToDien_NamSanXuat" class="form-control" placeholder="Ví dụ: 2024" />
                     </div>
                     <!--Hang san xuat-->
-                    <div class="row">
-                        <div class="col-sm-3">
-                            <label style="font-weight: normal"><span class="lang" key="">Hãng sản xuất</span></label>
-                        </div>
-                        <div class="col-sm-9">
-                            <select id="dropCongToDien_HangSanXuat" class="form-control select-opt"></select>
-                        </div>
-                        <div class="clear"></div>
+                    <div class="ct-field">
+                        <label><span class="lang" key="">Hãng sản xuất</span></label>
+                        <select id="dropCongToDien_HangSanXuat" class="form-control select-opt"></select>
                     </div>
                     <!--Mo ta chi tiet-->
-                    <div class="row">
-                        <div class="col-sm-3">
-                            <label style="font-weight: normal"><span class="lang" key="">Mô tả chi tiết</span></label>
-                        </div>
-                        <div class="col-sm-9">
-                            <input type="text" id="txtCongToDien_MoTa" class="form-control" />
-                        </div>
-                        <div class="clear"></div>
+                    <div class="ct-field ct-span-all">
+                        <label><span class="lang" key="">Mô tả chi tiết</span></label>
+                        <input type="text" id="txtCongToDien_MoTa" class="form-control" placeholder="Nhập nội dung mô tả" />
                     </div>
                 </div>
                 <div id="notify"></div>
@@ -84,8 +59,20 @@
         </div>
     </div>
 </div>
+<!-- nạp giao diện chung KTX. Bộ nạp trang (loadPage) chỉ tự thêm thư mục ứng dụng cho thẻ nhúng file js, không thêm cho thẻ nhúng css,
+     nên đường dẫn được dựng bằng edu.system.appCode (cùng quy ước với file js của trang) -->
+<script type="text/javascript">
+    (function () {
+        if (document.getElementById('ktx-ui-css')) return;
+        var l = document.createElement('link');
+        l.id = 'ktx-ui-css';
+        l.rel = 'stylesheet';
+        l.href = ((window.edu && edu.system && edu.system.appCode) ? edu.system.appCode + '/' : '') + 'modules/common/ktx-ui.css?v=1.0.1.0';
+        document.head.appendChild(l);
+    })();
+</script>
 <!-- page script -->
-<script src="modules/cosovatchat/script/congtodien.js?v=1.0.0.0"></script>
+<script src="modules/cosovatchat/script/congtodien.js?v=1.0.0.1"></script>
 <script type="text/javascript">
     var main_doc = {};
     main_doc['CongToDien'] = new CongToDien();

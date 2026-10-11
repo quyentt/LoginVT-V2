@@ -64,7 +64,7 @@
         detail: function (row) { return { action: 'NS_HoSoV2/LayChiTiet', method: 'GET', strId: row.ID }; },
         formCols: 12,
         fields: [
-            { key: 'strAnh', col: 'ANH', label: 'Ảnh', type: 'avatar', cols: 2 },
+            { key: 'strAnh', col: 'ANH', label: '', type: 'avatar', cols: 2 },
             { key: 'strHoDem', col: 'HODEM', label: 'Họ đệm', required: true, cols: 5 },
             { key: 'strTen', col: 'TEN', label: 'Tên', required: true, cols: 5 },
             { key: 'strTenGoiKhac', col: 'TENGOIKHAC', label: 'Bí danh', cols: 4 },

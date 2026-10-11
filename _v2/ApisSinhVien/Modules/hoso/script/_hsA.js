@@ -664,7 +664,15 @@
             if (inv.dt || inv.ten || inv.mst || inv.dc || inv.em || inv.sdt || inv.qhns || ivId) calls.push(function () { return luuHoaDon(pid, inv, ivId); });
             return pDC.then(function (dc) { return ui.batch(calls.concat(dc), { title: 'Đang lưu hồ sơ', toast: false }); });
         }
+        /* Tra trước khi ghi (gốc 07/10, zoneEditModal_inject): Thêm hay Sửa KHÔNG suy từ st.inv (nạp bất đồng bộ lúc mở —
+           bấm Lưu sớm là Thêm ra bản trùng, hoá đơn vẫn đọc bản cũ) mà hỏi lại máy chủ hồ sơ này đã có bản ghi hiện hành chưa. */
         function luuHoaDon(pid, v, ivId) {
+            return ums.api.call(gop({ action: NH + 'DSA4BRIeESQzMi4vCC83LigiJAgvJy4P', func: PNH + 'LayDS_PersonInvoiceInfo', silent: true, strPerson_Id: pid, dChiHienHanh: 1 }, chung()))
+                .then(function (x) { var r = arr(x.data)[0]; return r && r.ID ? e(r.ID) : ''; },
+                    function () { return ivId; })   // hỏi không được thì vẫn lưu, theo bản đã nạp lúc mở
+                .then(function (id) { return ghiHoaDon(pid, v, id); });
+        }
+        function ghiHoaDon(pid, v, ivId) {
             var upd = ivId.length === 32;
             var p = gop({
                 action: NH + (upd ? 'EjQgHhEkMzIuLwgvNy4oIiQILycu' : 'FSkkLB4RJDMyLi8ILzcuKCIkCC8nLgPP'), func: PNH + (upd ? 'Sua_PersonInvoiceInfo' : 'Them_PersonInvoiceInfo'),

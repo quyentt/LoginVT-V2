@@ -1009,11 +1009,75 @@
             ], null, { prefix: 'TT', app: 'ApisTinTuc' }),
             /* Luận văn, luận án (R22) — ApisLuanVanLuanAn, ID LVLA-<module>-<tệp>. Mới chuyển module danhmuc (6/10); kehoach / luanvan / luanan thêm sau, thứ tự chép menu host. */
             R22: buildMenu([
+                ['kehoach', 'Kế hoạch', 'fa fa-calendar', [
+                    ['kehoach', 'Kế hoạch'],
+                    ['giaodetai', 'Giao đề tài'],
+                    ['thuchienxet', 'Thực hiện xét']]],
+                ['luanvan', 'Luận văn', 'fa fa-book', [
+                    ['kehoach', 'Kế hoạch'],
+                    ['dangkydecuong', 'Đăng ký đề cương'],
+                    ['decuongchinhthuc', 'Đề cương chính thức'],
+                    ['hoidongthongqua', 'Hội đồng thông qua đề cương'],
+                    ['baovecapcoso', 'Bảo vệ cấp cơ sở'],
+                    ['baovecaptruong', 'Bảo vệ cấp trường'],
+                    ['baoveluanvan', 'Bảo vệ luận văn']]],
                 ['luanan', 'Luận án', 'fa fa-graduation-cap', [
-                    ['dulieu', 'Dữ liệu']]],
+                    ['dulieu', 'Dữ liệu'],
+                    ['kehoach', 'Kế hoạch'],
+                    ['dangky', 'Đăng ký chuyên đề'],
+                    ['decuongchinhthuc', 'Đề cương chính thức'],
+                    ['hoidongthongqua', 'Hội đồng thông qua'],
+                    ['baoveluanvan', 'Bảo vệ luận án']]],
                 ['danhmuc', 'Danh mục', 'fa fa-list', [
                     ['danhmucdulieu', 'Danh mục dữ liệu']]]
             ], null, { prefix: 'LVLA', app: 'ApisLuanVanLuanAn' }),
+            /* Ký túc xá (R32) — ApisKyTucXa, ID KTX-<module>-<tệp>. Chép ĐÚNG thứ tự + tầng của menu host 12/10 (vai trò 958101B4…, 22 mục có tệp,
+               cây 3 tầng: Quản lý người ở → Thêm người ở mới vào KTX → 3 màn). Hai màn host gắn ở HAI chỗ (xepphongdangky, chuacohopdong) → mục thứ hai
+               mang ID đuôi "-2" (cùng tệp). 11 màn kho không có trên menu host gom vào nhóm cuối "Ngoài menu host" để mở thử; 2 vỏ trống (dangky,
+               phandoituongdangky) bỏ (tien-do.py BO_QUA). Viết bằng cn() thay vì nhóm buildMenu vì có mục rời cấp 1 và nhóm lồng. */
+            R32: buildMenu([], [
+                cn('KTX-danhmuc-danhmucdulieu', 'Khai báo danh mục', '', 1, 'ApisKyTucXa:/Modules/danhmuc/html/danhmucdulieu.html', 'fa fa-cogs'),
+                cn('KTX-dashboard-dashboard', 'Dashboard', '', 2, 'ApisKyTucXa:/Modules/dashboard/html/dashboard.html', 'fa fa-dashboard'),
+                cn('G-KTX-nguoio', 'Quản lý người ở', '', 3, '', 'fa fa-folder-o'),
+                cn('G-KTX-nguoio-them', 'Thêm người ở mới vào KTX', 'G-KTX-nguoio', 1, '', 'fa fa-folder-o'),
+                cn('KTX-kehoach-xepphongdangky', 'Hỗ trợ tìm kiếm phòng ở phù hợp', 'G-KTX-nguoio-them', 1, 'ApisKyTucXa:/Modules/kehoach/html/xepphongdangky.html', 'fa fa-angle-double-right'),
+                cn('KTX-hoso-dangkynguoio', 'Đăng ký người ở', 'G-KTX-nguoio-them', 2, 'ApisKyTucXa:/Modules/hoso/html/dangkynguoio.html', 'fa fa-angle-double-right'),
+                cn('KTX-hopdong-chuacohopdong', 'Tạo và in hợp đồng', 'G-KTX-nguoio-them', 3, 'ApisKyTucXa:/Modules/hopdong/html/chuacohopdong.html', 'fa fa-angle-double-right'),
+                cn('KTX-hoso-taomoihoso', 'Danh sách người ở', 'G-KTX-nguoio', 2, 'ApisKyTucXa:/Modules/hoso/html/taomoihoso.html', 'fa fa-angle-double-right'),
+                cn('G-KTX-cosovatchat', 'Cơ sở vật chất', '', 4, '', 'fa fa-folder-o'),
+                cn('KTX-cosovatchat-congtodien', 'Công tơ điện', 'G-KTX-cosovatchat', 1, 'ApisKyTucXa:/Modules/cosovatchat/html/congtodien.html', 'fa fa-angle-double-right'),
+                cn('KTX-cosovatchat-congtonuoc', 'Công tơ nước', 'G-KTX-cosovatchat', 2, 'ApisKyTucXa:/Modules/cosovatchat/html/congtonuoc.html', 'fa fa-angle-double-right'),
+                cn('KTX-cosovatchat-toanha', 'Tòa nhà - số phòng', 'G-KTX-cosovatchat', 3, 'ApisKyTucXa:/Modules/cosovatchat/html/toanha.html', 'fa fa-angle-double-right'),
+                cn('KTX-cosovatchat-phong', 'Phòng & công tơ', 'G-KTX-cosovatchat', 4, 'ApisKyTucXa:/Modules/cosovatchat/html/phong.html', 'fa fa-angle-double-right'),
+                cn('KTX-cosovatchat-thietbi', 'Thiết bị trong phòng', 'G-KTX-cosovatchat', 5, 'ApisKyTucXa:/Modules/cosovatchat/html/thietbi.html', 'fa fa-angle-double-right'),
+                cn('KTX-cosovatchat-quanlythietbi', 'Quản lý thiết bị', 'G-KTX-cosovatchat', 6, 'ApisKyTucXa:/Modules/cosovatchat/html/quanlythietbi.html', 'fa fa-angle-double-right'),
+                cn('G-KTX-mucphi', 'Quy định mức phí', '', 5, '', 'fa fa-folder-o'),
+                cn('KTX-taichinh-phidichvu', 'Phí dịch vụ điện - nước', 'G-KTX-mucphi', 1, 'ApisKyTucXa:/Modules/taichinh/html/phidichvu.html', 'fa fa-angle-double-right'),
+                cn('KTX-taichinh-phitheophong', 'Đơn giá phòng ở', 'G-KTX-mucphi', 2, 'ApisKyTucXa:/Modules/taichinh/html/phitheophong.html', 'fa fa-angle-double-right'),
+                cn('G-KTX-hopdong', 'Quản lý hợp đồng', '', 6, '', 'fa fa-folder-o'),
+                cn('KTX-hopdong-chuacohopdong-2', 'Chưa có hợp đồng', 'G-KTX-hopdong', 1, 'ApisKyTucXa:/Modules/hopdong/html/chuacohopdong.html', 'fa fa-angle-double-right'),
+                cn('KTX-hopdong-dacohopdong', 'Đã có hợp đồng', 'G-KTX-hopdong', 2, 'ApisKyTucXa:/Modules/hopdong/html/dacohopdong.html', 'fa fa-angle-double-right'),
+                cn('KTX-kehoach-kehoach', 'Kế hoạch đăng ký', '', 7, 'ApisKyTucXa:/Modules/kehoach/html/kehoach.html', 'fa fa-registered'),
+                cn('KTX-diennuoc-diennuoc', 'Quản lý điện - nước', '', 8, 'ApisKyTucXa:/Modules/diennuoc/html/diennuoc.html', 'fa fa-sort-numeric-asc'),
+                cn('KTX-kehoach-xepphongdangky-2', 'Xếp phòng đăng ký', '', 9, 'ApisKyTucXa:/Modules/kehoach/html/xepphongdangky.html', 'fa fa-free-code-camp'),
+                cn('G-KTX-tinhtoan', 'Tính toán tài chính', '', 10, '', 'fa fa-folder-o'),
+                cn('KTX-taichinh-apdungcongthucphi', 'Công thức tính phí', 'G-KTX-tinhtoan', 1, 'ApisKyTucXa:/Modules/taichinh/html/apdungcongthucphi.html', 'fa fa-angle-double-right'),
+                cn('KTX-taichinh-tinhphi', 'Tính phí', 'G-KTX-tinhtoan', 2, 'ApisKyTucXa:/Modules/taichinh/html/tinhphi.html', 'fa fa-angle-double-right'),
+                cn('KTX-taichinh-chuyendulieuketoan', 'Chuyển dữ liệu kế toán', 'G-KTX-tinhtoan', 3, 'ApisKyTucXa:/Modules/taichinh/html/chuyendulieuketoan.html', 'fa fa-angle-double-right'),
+                /* 11 màn kho KHÔNG có trên menu host (mapping 26/9) — tên đặt theo tiêu đề màn gốc */
+                cn('G-KTX-ngoaimenu', 'Ngoài menu host', '', 11, '', 'fa fa-folder-open-o'),
+                cn('KTX-hopdong-chinhsach', 'Chính sách hợp đồng', 'G-KTX-ngoaimenu', 1, 'ApisKyTucXa:/Modules/hopdong/html/chinhsach.html', 'fa fa-file-o'),
+                cn('KTX-hopdong-miengiam', 'Miễn giảm hợp đồng', 'G-KTX-ngoaimenu', 2, 'ApisKyTucXa:/Modules/hopdong/html/miengiam.html', 'fa fa-file-o'),
+                cn('KTX-hoso-hoso', 'Hồ sơ người ở', 'G-KTX-ngoaimenu', 3, 'ApisKyTucXa:/Modules/hoso/html/hoso.html', 'fa fa-file-o'),
+                cn('KTX-hoso-khongtinhmien', 'Không tính miễn', 'G-KTX-ngoaimenu', 4, 'ApisKyTucXa:/Modules/hoso/html/khongtinhmien.html', 'fa fa-file-o'),
+                cn('KTX-hoso-khongtinhphi', 'Không tính phí', 'G-KTX-ngoaimenu', 5, 'ApisKyTucXa:/Modules/hoso/html/khongtinhphi.html', 'fa fa-file-o'),
+                cn('KTX-kehoach-kehoachdangky', 'Kế hoạch đăng ký (chi tiết)', 'G-KTX-ngoaimenu', 6, 'ApisKyTucXa:/Modules/kehoach/html/kehoachdangky.html', 'fa fa-file-o'),
+                cn('KTX-kehoach-phanphongdangky', 'Phân phòng đăng ký', 'G-KTX-ngoaimenu', 7, 'ApisKyTucXa:/Modules/kehoach/html/phanphongdangky.html', 'fa fa-file-o'),
+                cn('KTX-taichinh-khoanthu', 'Khoản thu', 'G-KTX-ngoaimenu', 8, 'ApisKyTucXa:/Modules/taichinh/html/khoanthu.html', 'fa fa-file-o'),
+                cn('KTX-taichinh-mucluyke', 'Mức luỹ kế', 'G-KTX-ngoaimenu', 9, 'ApisKyTucXa:/Modules/taichinh/html/mucluyke.html', 'fa fa-file-o'),
+                cn('KTX-taichinh-phitheoloaiphong', 'Phí theo loại phòng', 'G-KTX-ngoaimenu', 10, 'ApisKyTucXa:/Modules/taichinh/html/phitheoloaiphong.html', 'fa fa-file-o'),
+                cn('KTX-xacnhandangkyphong-xacnhandangkyphong', 'Xác nhận đăng ký phòng', 'G-KTX-ngoaimenu', 11, 'ApisKyTucXa:/Modules/xacnhandangkyphong/html/xacnhandangkyphong.html', 'fa fa-file-o')
+            ], { prefix: 'KTX', app: 'ApisKyTucXa' }),
             /* Thống kê giờ giảng (R39) — ApisTKGG, ID TKGG-<module>-<tệp>. Đúng 12 mục trên menu host 6/10 (vai trò 42EC44DF…); 11 màn khác của kho không có trên menu → chưa chuyển. */
             R39: buildMenu([
                 ['kehoach', 'Tổng hợp giờ', 'fa fa-clock-o', [

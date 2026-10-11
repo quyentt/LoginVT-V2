@@ -10,6 +10,63 @@ Xem lại đúng thay đổi của một tệp: `git diff -w <từ>..<đến> --
 
 ---
 
+## Lần kéo 9 (12/10) — mốc gốc nay là `c42e11e1` (gốc force-push; `origin/main` cũ trên máy là `df26f98b`)
+
+Lần sau so: `git diff --name-status c42e11e1 origin/main`. 46 tệp gốc đổi, đã ghi đè bằng `git checkout origin/main -- <tệp>`, CHƯA mở diff.
+Số theo phân hệ: Ký túc xá 34 (đang chuyển 12/10: 28 tệp của màn đã chuyển, 5 của màn chưa làm, 1 CSS không chép) · Sinh viên 7 · Tài chính 3 · Cổng cán bộ 2.
+Không chép `ApisKyTucXa.zip` (gói nén, 285 KB, gốc thêm mới).
+
+| Phân hệ | Màn | Tệp gốc | Trạng thái |
+|---|---|---|---|
+| Cổng cán bộ (đã chuyển, đã kiểm host) | `lichgiang/lichgiang` | `ApisCongCanBo/Modules/lichgiang/html/lichgiang.html` | **đã chuyển 12/10** |
+| Cổng cán bộ (đã chuyển, đã kiểm host) | `lichgiang/lichgiang` | `ApisCongCanBo/Modules/lichgiang/script/lichgiang.js` | **đã chuyển 12/10** |
+| Ký túc xá (đang chuyển 12/10) | `common/ktx-ui` | `ApisKyTucXa/Modules/common/ktx-ui.css` | **không chép** — CSS vỏ cũ, chỉ bám bố cục (12/10) |
+| Ký túc xá (đang chuyển 12/10) | `cosovatchat/congtodien` | `ApisKyTucXa/Modules/cosovatchat/html/congtodien.html` | **đã chuyển 12/10** (chuyển cả màn từ bản gốc mới nhất, không mở diff) |
+| Ký túc xá (đang chuyển 12/10) | `cosovatchat/congtonuoc` | `ApisKyTucXa/Modules/cosovatchat/html/congtonuoc.html` | **đã chuyển 12/10** (chuyển cả màn từ bản gốc mới nhất, không mở diff) |
+| Ký túc xá (đang chuyển 12/10) | `cosovatchat/phong` | `ApisKyTucXa/Modules/cosovatchat/html/phong.html` | **đã chuyển 12/10** (chuyển cả màn từ bản gốc mới nhất, không mở diff) |
+| Ký túc xá (đang chuyển 12/10) | `cosovatchat/quanlythietbi` | `ApisKyTucXa/Modules/cosovatchat/html/quanlythietbi.html` | chưa chuyển (màn chưa làm — người dùng 12/10 bảo dừng; làm tiếp thì chuyển thẳng từ bản gốc hiện có, không cần diff) |
+| Ký túc xá (đang chuyển 12/10) | `cosovatchat/thietbi` | `ApisKyTucXa/Modules/cosovatchat/html/thietbi.html` | **đã chuyển 12/10** (chuyển cả màn từ bản gốc mới nhất, không mở diff) |
+| Ký túc xá (đang chuyển 12/10) | `cosovatchat/toanha` | `ApisKyTucXa/Modules/cosovatchat/html/toanha.html` | **đã chuyển 12/10** (chuyển cả màn từ bản gốc mới nhất, không mở diff) |
+| Ký túc xá (đang chuyển 12/10) | `cosovatchat/congtodien` | `ApisKyTucXa/Modules/cosovatchat/script/congtodien.js` | **đã chuyển 12/10** (chuyển cả màn từ bản gốc mới nhất, không mở diff) |
+| Ký túc xá (đang chuyển 12/10) | `cosovatchat/congtonuoc` | `ApisKyTucXa/Modules/cosovatchat/script/congtonuoc.js` | **đã chuyển 12/10** (chuyển cả màn từ bản gốc mới nhất, không mở diff) |
+| Ký túc xá (đang chuyển 12/10) | `cosovatchat/toanha` | `ApisKyTucXa/Modules/cosovatchat/script/toanha.js` | **đã chuyển 12/10** (chuyển cả màn từ bản gốc mới nhất, không mở diff) |
+| Ký túc xá (đang chuyển 12/10) | `danhmuc/danhmucdulieu` | `ApisKyTucXa/Modules/danhmuc/html/danhmucdulieu.html` | **đã chuyển 12/10** (chuyển cả màn từ bản gốc mới nhất, không mở diff) |
+| Ký túc xá (đang chuyển 12/10) | `diennuoc/diennuoc` | `ApisKyTucXa/Modules/diennuoc/html/diennuoc.html` | **đã chuyển 12/10** (chuyển cả màn từ bản gốc mới nhất, không mở diff) |
+| Ký túc xá (đang chuyển 12/10) | `hopdong/chinhsach` | `ApisKyTucXa/Modules/hopdong/html/chinhsach.html` | **đã chuyển 12/10** (chuyển cả màn từ bản gốc mới nhất, không mở diff) |
+| Ký túc xá (đang chuyển 12/10) | `hopdong/chuacohopdong` | `ApisKyTucXa/Modules/hopdong/html/chuacohopdong.html` | **đã chuyển 12/10** (chuyển cả màn từ bản gốc mới nhất, không mở diff) |
+| Ký túc xá (đang chuyển 12/10) | `hopdong/dacohopdong` | `ApisKyTucXa/Modules/hopdong/html/dacohopdong.html` | **đã chuyển 12/10** (chuyển cả màn từ bản gốc mới nhất, không mở diff) |
+| Ký túc xá (đang chuyển 12/10) | `hopdong/miengiam` | `ApisKyTucXa/Modules/hopdong/html/miengiam.html` | **đã chuyển 12/10** (chuyển cả màn từ bản gốc mới nhất, không mở diff) |
+| Ký túc xá (đang chuyển 12/10) | `hoso/dangkynguoio` | `ApisKyTucXa/Modules/hoso/html/dangkynguoio.html` | **đã chuyển 12/10** (chuyển cả màn từ bản gốc mới nhất, không mở diff) |
+| Ký túc xá (đang chuyển 12/10) | `hoso/hoso` | `ApisKyTucXa/Modules/hoso/html/hoso.html` | **đã chuyển 12/10** (chuyển cả màn từ bản gốc mới nhất, không mở diff) |
+| Ký túc xá (đang chuyển 12/10) | `hoso/khongtinhmien` | `ApisKyTucXa/Modules/hoso/html/khongtinhmien.html` | **đã chuyển 12/10** (chuyển cả màn từ bản gốc mới nhất, không mở diff) |
+| Ký túc xá (đang chuyển 12/10) | `hoso/khongtinhphi` | `ApisKyTucXa/Modules/hoso/html/khongtinhphi.html` | **đã chuyển 12/10** (chuyển cả màn từ bản gốc mới nhất, không mở diff) |
+| Ký túc xá (đang chuyển 12/10) | `hoso/taomoihoso` | `ApisKyTucXa/Modules/hoso/html/taomoihoso.html` | **đã chuyển 12/10** (chuyển cả màn từ bản gốc mới nhất, không mở diff) |
+| Ký túc xá (đang chuyển 12/10) | `kehoach/kehoach` | `ApisKyTucXa/Modules/kehoach/html/kehoach.html` | **đã chuyển 12/10** (chuyển cả màn từ bản gốc mới nhất, không mở diff) |
+| Ký túc xá (đang chuyển 12/10) | `kehoach/kehoachdangky` | `ApisKyTucXa/Modules/kehoach/html/kehoachdangky.html` | chưa chuyển (màn chưa làm — người dùng 12/10 bảo dừng; làm tiếp thì chuyển thẳng từ bản gốc hiện có, không cần diff) |
+| Ký túc xá (đang chuyển 12/10) | `kehoach/phanphongdangky` | `ApisKyTucXa/Modules/kehoach/html/phanphongdangky.html` | chưa chuyển (màn chưa làm — người dùng 12/10 bảo dừng; làm tiếp thì chuyển thẳng từ bản gốc hiện có, không cần diff) |
+| Ký túc xá (đang chuyển 12/10) | `kehoach/xepphongdangky` | `ApisKyTucXa/Modules/kehoach/html/xepphongdangky.html` | chưa chuyển (màn chưa làm — người dùng 12/10 bảo dừng; làm tiếp thì chuyển thẳng từ bản gốc hiện có, không cần diff) |
+| Ký túc xá (đang chuyển 12/10) | `taichinh/apdungcongthucphi` | `ApisKyTucXa/Modules/taichinh/html/apdungcongthucphi.html` | **đã chuyển 12/10** (chuyển cả màn từ bản gốc mới nhất, không mở diff) |
+| Ký túc xá (đang chuyển 12/10) | `taichinh/chuyendulieuketoan` | `ApisKyTucXa/Modules/taichinh/html/chuyendulieuketoan.html` | **đã chuyển 12/10** (chuyển cả màn từ bản gốc mới nhất, không mở diff) |
+| Ký túc xá (đang chuyển 12/10) | `taichinh/khoanthu` | `ApisKyTucXa/Modules/taichinh/html/khoanthu.html` | **đã chuyển 12/10** (chuyển cả màn từ bản gốc mới nhất, không mở diff) |
+| Ký túc xá (đang chuyển 12/10) | `taichinh/mucluyke` | `ApisKyTucXa/Modules/taichinh/html/mucluyke.html` | **đã chuyển 12/10** (chuyển cả màn từ bản gốc mới nhất, không mở diff) |
+| Ký túc xá (đang chuyển 12/10) | `taichinh/phidichvu` | `ApisKyTucXa/Modules/taichinh/html/phidichvu.html` | **đã chuyển 12/10** (chuyển cả màn từ bản gốc mới nhất, không mở diff) |
+| Ký túc xá (đang chuyển 12/10) | `taichinh/phitheoloaiphong` | `ApisKyTucXa/Modules/taichinh/html/phitheoloaiphong.html` | **đã chuyển 12/10** (chuyển cả màn từ bản gốc mới nhất, không mở diff) |
+| Ký túc xá (đang chuyển 12/10) | `taichinh/phitheophong` | `ApisKyTucXa/Modules/taichinh/html/phitheophong.html` | **đã chuyển 12/10** (chuyển cả màn từ bản gốc mới nhất, không mở diff) |
+| Ký túc xá (đang chuyển 12/10) | `taichinh/tinhphi` | `ApisKyTucXa/Modules/taichinh/html/tinhphi.html` | **đã chuyển 12/10** (chuyển cả màn từ bản gốc mới nhất, không mở diff) |
+| Ký túc xá (đang chuyển 12/10) | `xacnhandangkyphong/xacnhandangkyphong` | `ApisKyTucXa/Modules/xacnhandangkyphong/html/xacnhandangkyphong.html` | chưa chuyển (màn chưa làm — người dùng 12/10 bảo dừng; làm tiếp thì chuyển thẳng từ bản gốc hiện có, không cần diff) |
+| Sinh viên (đã chuyển, chưa kiểm host) | `hoso/hoso_capnhat` | `ApisSinhVien/Modules/hoso/html/hoso_capnhat.html` | **đã chuyển 12/10** |
+| Sinh viên (đã chuyển, chưa kiểm host) | `hoso/hoso_danhsach` | `ApisSinhVien/Modules/hoso/html/hoso_danhsach.html` | **đã chuyển 12/10** |
+| Sinh viên (đã chuyển, chưa kiểm host) | `hoso/quanlytoanbo` | `ApisSinhVien/Modules/hoso/html/quanlytoanbo.html` | **đã chuyển 12/10** |
+| Sinh viên (đã chuyển, chưa kiểm host) | `hoso/xemhoso` | `ApisSinhVien/Modules/hoso/html/xemhoso.html` | **đã chuyển 12/10** |
+| Sinh viên (đã chuyển, chưa kiểm host) | `hoso/zoneEditModal_inject` | `ApisSinhVien/Modules/hoso/script/zoneEditModal_inject.js` | **đã chuyển 12/10** |
+| Sinh viên (đã chuyển, chưa kiểm host) | `quyetdinh/quyetdinh` | `ApisSinhVien/Modules/quyetdinh/html/quyetdinh.html` | **đã chuyển 12/10** |
+| Sinh viên (đã chuyển, chưa kiểm host) | `quyetdinh/quyetdinh` | `ApisSinhVien/Modules/quyetdinh/script/quyetdinh.js` | **đã chuyển 12/10** |
+| Tài chính (đã chuyển, đã kiểm host) | `danhmucheso/taikhoanno` | `ApisTaiChinh/Modules/danhmucheso/html/taikhoanno.html` | **đã chuyển 12/10** |
+| Tài chính (đã chuyển, đã kiểm host) | `danhmucheso/taikhoanno` | `ApisTaiChinh/Modules/danhmucheso/scripts/taikhoanno.js` | **đã chuyển 12/10** |
+| Tài chính (đã chuyển, đã kiểm host) | `phieuthu/thutienkhac` | `ApisTaiChinh/Modules/phieuthu/scripts/thutienkhac.js` | **đã chuyển 12/10** |
+
+---
+
 ## Lần kéo 8 (6/10) — mốc gốc nay là `3c3b2d70` (gốc lại force-push; `origin/main` trên máy từng bị lệnh push ghi đè thành commit của mình, fetch đã sửa)
 
 Lần sau so: `git diff --name-status 3c3b2d70 origin/main`. Bốn tệp gốc đổi (hai màn), đã ghi đè bằng `git checkout origin/main -- <tệp>`, CHƯA mở diff.

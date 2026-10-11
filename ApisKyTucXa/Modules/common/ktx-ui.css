@@ -1,0 +1,668 @@
+/* =====================================================================
+   ktx-ui.css - giao diện dùng chung cho module Ký túc xá (ApisKyTucXa)
+   Triển khai: copy file này sang  modules/common/ktx-ui.css  trên máy khách.
+   Mỗi trang nhúng bằng:  <link rel="stylesheet" href="modules/common/ktx-ui.css?v=..." />
+   ===================================================================== */
+
+/* ---------- A. Thẻ công tơ điện / nước (congtodien, congtonuoc) ---------- */
+[id^="zoneBox_CongTo"] {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(250px, 100%), 1fr));
+    gap: 16px;
+    padding: 14px 20px 18px;
+}
+.ct-summary {
+    display: inline-block;
+    margin-left: 10px;
+    padding: 2px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #475569;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 999px;
+    vertical-align: middle;
+}
+.ct-card {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px 16px 12px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-left: 4px solid #d2b48c;
+    border-radius: 12px;
+    transition: transform .15s ease, box-shadow .15s ease;
+}
+.ct-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, .08);
+}
+.ct-card-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.ct-card-ico {
+    flex: none;
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: #a9803f;
+    background: rgba(210, 180, 140, .28);
+    border-radius: 12px;
+}
+.ct-card-name {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+.ct-card-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.3;
+    color: #0f172a;
+    overflow-wrap: anywhere;
+}
+.ct-card-title.ct-noname {
+    font-weight: 500;
+    font-style: italic;
+    color: #94a3b8;
+}
+.ct-card-code {
+    margin-top: 2px;
+    font-size: 12px;
+    color: #64748b;
+    overflow-wrap: anywhere;
+}
+.ct-card-meta {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    padding: 10px 0;
+    border-top: 1px solid #eef0f4;
+    border-bottom: 1px solid #eef0f4;
+}
+.ct-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+.ct-meta-lbl {
+    font-size: 12px;
+    font-weight: 500;
+    color: #64748b;
+}
+.ct-meta b {
+    font-size: 14px;
+    font-weight: 700;
+    color: #0f172a;
+    overflow-wrap: anywhere;
+}
+.ct-na {
+    font-weight: 500;
+    color: #94a3b8;
+}
+.ct-card-desc {
+    font-size: 13px;
+    color: #475569;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+}
+.ct-card-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: auto;
+}
+.ct-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.4;
+    text-decoration: none;
+    background: #fff;
+    border: 1px solid;
+    border-radius: 8px;
+    transition: background-color .15s ease, color .15s ease;
+}
+.ct-btn-del {
+    color: #dc2626;
+    border-color: #fca5a5;
+}
+.ct-btn-edit {
+    color: #1d4ed8;
+    border-color: #93c5fd;
+}
+.ct-btn-del:hover,
+.ct-btn-del:focus {
+    color: #fff;
+    background: #dc2626;
+    border-color: #dc2626;
+    text-decoration: none;
+}
+.ct-btn-edit:hover,
+.ct-btn-edit:focus {
+    color: #fff;
+    background: #1d4ed8;
+    border-color: #1d4ed8;
+    text-decoration: none;
+}
+.ct-empty {
+    grid-column: 1 / -1;
+    padding: 36px 0;
+    text-align: center;
+    font-size: 14px;
+    color: #64748b;
+}
+.ct-empty i {
+    margin-right: 6px;
+}
+
+/* Form thêm/sửa công tơ: nhãn trên ô nhập, lưới 2 cột */
+.ct-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px 18px;
+}
+.ct-field {
+    min-width: 0;
+}
+.ct-field > label {
+    display: block;
+    margin: 0 0 5px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #334155;
+}
+.ct-field .form-control {
+    width: 100%;
+}
+.ct-field select:not(.select2-hidden-accessible),
+.ct-field .select2-container {
+    width: 100% !important;
+}
+.ct-span-all {
+    grid-column: 1 / -1;
+}
+@media (max-width: 575px) {
+    .ct-form-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/* biến thể công tơ nước: tông xanh dương */
+.ct-card.ct-water {
+    border-left-color: #7dd3fc;
+}
+.ct-card.ct-water .ct-card-ico {
+    color: #0284c7;
+    background: rgba(14, 165, 233, .16);
+}
+
+
+/* =====================================================================
+   B. Khung giao diện chung cho các trang KTX
+   Điều kiện: <section class="content aps-kyTucXa"> và nhúng file này.
+   (html body.skin-blue #main-content-wrapper .aps-kyTucXa = html body.skin-blue #main-content-wrapper .aps-kyTucXa — đủ mạnh để thắng
+    các quy tắc reskin !important trong indexi.aspx)
+   ===================================================================== */
+
+/* B1. Thanh tiêu đề của box trắng: tiêu đề bên trái, cụm nút bên phải */
+html body.skin-blue #main-content-wrapper .aps-kyTucXa :not(.form-container) > .box-header.with-border {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 12px;
+    padding: 14px 20px;
+}
+@media (max-width: 575px) {
+    html body.skin-blue #main-content-wrapper .aps-kyTucXa :not(.form-container) > .box-header.with-border {
+        flex-wrap: wrap;
+    }
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .box-header.with-border::before,
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .box-header.with-border::after {
+    display: none !important;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .box-header > .box-title {
+    flex: 1 1 0%;
+    min-width: 0;
+    margin: 0;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .box-header > div.pull-right,
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .box-header > .box-tools {
+    float: none !important;
+    position: static !important;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    flex: none;
+    margin: 0;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .box-header > div.pull-right > div[style*="float"] {
+    float: none !important;
+}
+
+/* B2. Nút mặc định trong tiêu đề trắng: indexi.aspx ép trong suốt + chữ trắng (đúng cho tiêu đề xanh)
+       nên trên nền trắng nút và icon biến mất -> trả lại dạng viền xám, chữ đậm */
+html body.skin-blue #main-content-wrapper .aps-kyTucXa :not(.form-container) > .box-header .pull-right > .btn.btn-default:not(.btn-search):not(.btnSave),
+html body.skin-blue #main-content-wrapper .aps-kyTucXa :not(.form-container) > .box-header .pull-right > a.btn.btn-default:not(.btn-search):not(.btnSave),
+html body.skin-blue #main-content-wrapper .aps-kyTucXa :not(.form-container) > .box-header .box-tools > .btn.btn-default {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    line-height: 1.4 !important;
+    color: #334155 !important;
+    background: #fff !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 8px !important;
+    opacity: 1 !important;
+    box-shadow: none !important;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa :not(.form-container) > .box-header .pull-right > .btn.btn-default:not(.btn-search):not(.btnSave):hover,
+html body.skin-blue #main-content-wrapper .aps-kyTucXa :not(.form-container) > .box-header .pull-right > a.btn.btn-default:not(.btn-search):not(.btnSave):hover,
+html body.skin-blue #main-content-wrapper .aps-kyTucXa :not(.form-container) > .box-header .box-tools > .btn.btn-default:hover {
+    color: #0f172a !important;
+    background: #f1f5f9 !important;
+    border-color: #94a3b8 !important;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa :not(.form-container) > .box-header .pull-right > .btn.btn-default i,
+html body.skin-blue #main-content-wrapper .aps-kyTucXa :not(.form-container) > .box-header .box-tools > .btn.btn-default i {
+    color: inherit !important;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa :not(.form-container) > .box-header .btn.btn-default i.color-active,
+html body.skin-blue #main-content-wrapper .aps-kyTucXa :not(.form-container) > .box-header .btn.btn-default i.cl-active {
+    color: #16a34a !important;
+}
+
+/* B3. Thanh tiêu đề xanh của vùng nhập liệu (form-container): luôn xanh, chữ trắng, nút Đóng nằm trong thanh */
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .form-container > .box-header.with-border {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    height: auto !important;
+    min-height: 52px;
+    padding: 10px 20px !important;
+    background: var(--color-blue, #0d6efd);
+    border-radius: 12px 12px 0 0;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .form-container > .box-header .box-title,
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .form-container > .box-header .box-title i {
+    color: #fff !important;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .form-container > .box-header .box-title {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+    line-height: 1.4;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .form-container > .box-header > .pull-right {
+    float: none !important;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: none;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .form-container > .box-header .btnClose,
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .form-container > .box-header .btnCloseToggle,
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .form-container > .box-header .btnCloseInput {
+    position: static !important;
+    margin: 0 !important;
+}
+/* chữ "Đóng" bị nhân đôi do quy tắc ::after cũ trong indexi.aspx bản chưa cập nhật */
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .btnClose::after,
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .btnCloseToggle::after,
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .btnCloseInput::after {
+    content: none !important;
+}
+
+/* B4. Bảng: bỏ kẻ dọc và dòng sọc, dòng thoáng, hover nhẹ (giữ tông tiêu đề cột tím nhạt của indexi.aspx) */
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .table {
+    margin-bottom: 0;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .table-bordered {
+    border: 0;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .table > thead > tr > th,
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .table > thead > tr > td {
+    padding: 10px 12px;
+    vertical-align: middle;
+    border: 0 !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .table > tbody > tr {
+    background: #fff;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .table > tbody > tr > td {
+    padding: 9px 12px;
+    vertical-align: middle;
+    border: 0 !important;
+    border-bottom: 1px solid #eef0f4 !important;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .table-hover > tbody > tr:hover,
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .table-hover > tbody > tr:hover > td {
+    background: #eef2ff !important;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .table > tfoot > tr > th,
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .table > tfoot > tr > td {
+    padding: 10px 12px;
+    font-weight: 700;
+    background: #f8fafc;
+    border: 0 !important;
+    border-top: 2px solid #e2e8f0 !important;
+}
+
+/* B5. Nút Sửa / Xóa trong dòng bảng: nút vuông viền màu, hover tô đặc */
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .table td .btn.btnEdit,
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .table td a.btnEdit,
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .table td .btn.btnDelete,
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .table td a.btnDelete {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0 !important;
+    font-size: 14px;
+    background: #fff !important;
+    border: 1px solid !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+    transition: background-color .15s ease, color .15s ease;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .table td .btn.btnEdit,
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .table td a.btnEdit {
+    color: #1d4ed8 !important;
+    border-color: #93c5fd !important;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .table td .btn.btnDelete,
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .table td a.btnDelete {
+    color: #dc2626 !important;
+    border-color: #fca5a5 !important;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .table td .btn.btnEdit:hover,
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .table td a.btnEdit:hover {
+    color: #fff !important;
+    background: #1d4ed8 !important;
+    border-color: #1d4ed8 !important;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .table td .btn.btnDelete:hover,
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .table td a.btnDelete:hover {
+    color: #fff !important;
+    background: #dc2626 !important;
+    border-color: #dc2626 !important;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .table td .btn.btnEdit i,
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .table td .btn.btnDelete i {
+    color: inherit !important;
+}
+
+/* B6. Form nhập liệu kiểu "nhãn trái - ô phải": nhãn căn giữa với ô nhập, bỏ dấu ":" lẻ, các hàng cách nhau */
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .title-name,
+html body.skin-blue #main-content-wrapper .aps-kyTucXa div.group-title-name {
+    display: flex;
+    align-items: center;
+    min-height: 38px;
+    padding-right: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #334155;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa [class*="col-"]:not(:first-child) > .title-name {
+    padding-left: 12px;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .title-colon {
+    display: none;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .box-view .row > [class*="col-"] {
+    margin-bottom: 12px;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .zone-box {
+    padding: 18px 16px 6px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+}
+/* tiêu đề nhóm trong form: "1) Nhóm thông tin cơ bản", "- Thông tin kế hoạch" */
+html body.skin-blue #main-content-wrapper .aps-kyTucXa p.group-title-name {
+    display: block;
+    width: 100%;
+    margin: 4px 0 14px;
+    padding: 2px 0 2px 10px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #0f172a;
+    border-left: 4px solid var(--color-blue, #0d6efd);
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa p.group-title-name .badge {
+    padding: 0;
+    font-size: 14px;
+    font-weight: 700;
+    color: #0f172a !important;
+    background: transparent !important;
+}
+
+/* B7. Modal của các trang KTX (thêm class ktx-modal vào .modal): hàng nhãn - ô nhập thoáng, nhãn căn giữa */
+html body.skin-blue .ktx-modal .modal-body > .row,
+html body.skin-blue .ktx-modal .modal-body > .zone-box > .row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+}
+html body.skin-blue .ktx-modal .modal-body > .row::before,
+html body.skin-blue .ktx-modal .modal-body > .row::after,
+html body.skin-blue .ktx-modal .modal-body > .zone-box > .row::before,
+html body.skin-blue .ktx-modal .modal-body > .zone-box > .row::after {
+    display: none;
+}
+html body.skin-blue .ktx-modal .modal-body label {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 600 !important;
+    color: #334155;
+}
+html body.skin-blue .ktx-modal .modal-body .zone-box {
+    background: transparent;
+    border: 0;
+    padding: 0;
+}
+html body.skin-blue .ktx-modal .modal-body .form-control,
+html body.skin-blue .ktx-modal .modal-body .select2-container {
+    width: 100% !important;
+}
+
+/* B8. Khung tìm kiếm: có lề trong, các ô cách nhau */
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .box-search > .box-body,
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .box-body:has(> .item-search),
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .box-body:has(> .col-sm-12 > .item-search),
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .box-body:has(> .group-title),
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .box-body:has(> .area-search) {
+    padding: 14px 20px 6px;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .titleSearchContent {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 12px;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--color-blue, #0d6efd);
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .box-search .item-search {
+    margin-bottom: 10px;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .bs-item:not(:last-child) {
+    margin-bottom: 8px;
+}
+
+/* B9. Menu thả xuống (Import...) luôn nằm trên ô select2 (indexi.aspx ép .select2-container z-index 99999) */
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .dropdown-menu {
+    z-index: 100000 !important;
+}
+
+/* B10. Khối ô tìm kiếm / thanh hành động không nằm trong .box (apdungcongthucphi, tinhphi, chuyendulieuketoan...) */
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .group-title:has(+ .area-search) {
+    padding: 14px 20px 4px;
+    background: #fff;
+    border-radius: 12px 12px 0 0;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .group-title + .area-search {
+    padding: 0 20px 8px;
+    background: #fff;
+    border-radius: 0 0 12px 12px;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .zone-action {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    margin-top: 14px;
+    padding: 12px 20px;
+    background: #fff;
+    border-radius: 12px 12px 0 0;
+    border-bottom: 1px solid #eef0f4;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .zone-action::before,
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .zone-action::after {
+    display: none;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .zone-action > .pull-left,
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .zone-action > .pull-right {
+    float: none !important;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .zone-action .titleSearchContent {
+    margin: 0;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa .zone-action + .zone-content {
+    padding-bottom: 8px;
+    background: #fff;
+    border-radius: 0 0 12px 12px;
+}
+
+/* B11. Thẻ tòa nhà dựng bằng JS cũ (#zoneBox_ToaNha: xepphongdangky, xacnhandangkyphong...):
+        lưới tự xuống hàng, thẻ trắng viền trái, "Xem phòng" là link cuối thẻ */
+html body.skin-blue #main-content-wrapper .aps-kyTucXa #zoneBox_ToaNha {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(250px, 100%), 1fr));
+    gap: 16px;
+    padding: 14px 20px 18px;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa #zoneBox_ToaNha::before,
+html body.skin-blue #main-content-wrapper .aps-kyTucXa #zoneBox_ToaNha::after,
+html body.skin-blue #main-content-wrapper .aps-kyTucXa #zoneBox_ToaNha > .clear {
+    display: none;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa #zoneBox_ToaNha > .box-header {
+    display: contents;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa #zoneBox_ToaNha > [class*="col-"],
+html body.skin-blue #main-content-wrapper .aps-kyTucXa #zoneBox_ToaNha > .box-header > [class*="col-"] {
+    float: none;
+    width: auto;
+    min-width: 0;
+    padding: 0;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa #zoneBox_ToaNha .small-box {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    height: 100%;
+    min-height: 0;
+    margin: 0;
+    padding: 16px 16px 12px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-left: 4px solid #bc8f8f;
+    border-radius: 12px;
+    transition: transform .15s ease, box-shadow .15s ease;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa #zoneBox_ToaNha .small-box:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, .08) !important;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa #zoneBox_ToaNha .btnViewAll .small-box {
+    background: #f8fbff;
+    border-left-color: #2563eb;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa #zoneBox_ToaNha .small-box .inner {
+    padding: 0 48px 0 0;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa #zoneBox_ToaNha .btnViewAll .small-box .inner {
+    padding-right: 0;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa #zoneBox_ToaNha .small-box .inner h4 {
+    margin: 0 0 6px;
+    font-size: 17px;
+    font-weight: 700;
+    color: #0f172a;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa #zoneBox_ToaNha .small-box .inner p {
+    margin: 0 0 3px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #475569;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa #zoneBox_ToaNha .small-box .icon {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    max-width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(188, 143, 143, .18);
+    border-radius: 12px;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa #zoneBox_ToaNha .small-box .icon i {
+    font-size: 18px;
+    color: #a56a6a;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa #zoneBox_ToaNha .small-box .small-box-footer {
+    display: block !important;
+    align-self: stretch !important;
+    margin: auto 0 0 !important;
+    padding: 10px 0 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-top: 1px solid #eef0f4 !important;
+    border-radius: 0 !important;
+    text-align: left;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa #zoneBox_ToaNha .small-box .small-box-footer a {
+    font-size: 13px;
+    font-weight: 600;
+    color: #2563eb !important;
+}
+html body.skin-blue #main-content-wrapper .aps-kyTucXa #zoneBox_ToaNha .small-box .small-box-footer a::after {
+    content: "\f061";
+    margin-left: 6px;
+    font-family: FontAwesome;
+    font-size: 11px;
+    font-weight: normal;
+}

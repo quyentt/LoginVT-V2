@@ -825,7 +825,15 @@ mẫm ở đó; để dành đến khi có host.
    tự làm. Kiểm: `kiem-dong-bo` 12/12; `thu-crud` 10/12 (2 màn cần chọn bộ lọc kế hoạch tự dựng — kiểm bằng trang dò riêng); icon 0 lệch. Chốt: `CAN-QUYET-DA-CHOT.md`
    mục "Thống kê giờ giảng"; không có việc dữ liệu (CHƯA kiểm host; thêm `apistkgg/` vào `ums.canQuyetChuaKiem`).
 
-24. Các phân hệ còn lại (Ký túc xá 22 mục menu host, Luận văn 14, Danh hiệu; Thi trắc nghiệm — trang làm bài — dừng). Tổng 859 màn hình, xem mục 7 để biết vì
+24. **Ký túc xá (ApisKyTucXa) — 26/31 màn (2026-10-12, DỪNG theo người dùng "làm hết màn đang làm thì dừng")**. Vai trò mẫu **R32**, ID `KTX-<module>-<tệp>`;
+   menu mẫu viết bằng `cn()` chép đúng cây 3 tầng + hai mục trùng tệp của host (`-2`); 11 màn kho ngoài menu host gom nhóm "Ngoài menu host". 4 tác tử đợt 1 (cosovatchat 5/6,
+   hoso 5/5, hopdong 4/4 + diennuoc 1/1, taichinh 8/8) + 1 đợt 2 (kehoach 1/3); tự làm `danhmucdulieu` (nạp chéo ĐKH), `dashboard` (gốc trống). Khung module: `cosovatchat/_ktx.js`
+   (`ums.ktx`), `_congto.js`; `hoso/_hoso.js` (`ums.ktxHoSo`), `_khongtinh.js`; `hopdong/_hopdong.js` (`ums.ktxHopDong`), `_chinhsach.js`; `taichinh/_taichinh.js` (`ums.ktxTC`), `_hangdoi.js`.
+   **CHƯA LÀM 5 màn:** `cosovatchat/quanlythietbi`, `kehoach/kehoachdangky`, `kehoach/phanphongdangky`, `kehoach/xepphongdangky` (menu host ×2) + `xacnhandangkyphong` (giống 92% → một khung chung,
+   chưa giao). Bỏ 2 vỏ trống `dangky`, `kehoach/phandoituongdangky` (BO_QUA). Chốt + ghi chú cho lượt sau: `CAN-QUYET-DA-CHOT.md` mục "Ký túc xá"; không có việc dữ liệu (CHƯA kiểm host,
+   `apiskytucxa/` trong `ums.canQuyetChuaKiem`). Ba bản ô Toà nhà → Phòng ở ba module → gộp khi làm tiếp.
+
+25. Các phân hệ còn lại: Danh hiệu; Ký túc xá 5 màn (mục 24); Thi trắc nghiệm — trang làm bài — dừng. Tổng 859 màn hình, xem mục 7 để biết vì
    sao không thể làm bằng cách đổi CSS.
 
 ### Việc hoãn — làm khi người dùng gọi (6/10)

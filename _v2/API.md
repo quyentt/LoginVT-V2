@@ -7,7 +7,7 @@ Lớp CSS có sẵn: `_v2/CLASS.md`. Tóm tắt màn gốc: `python _harness\tom
 ## Mục lục
 
 - **api.js** (4 hàm): `ums.util.xorB64`, `ums.util.unXor`, `ums.util.ngaySinh`, `ums.util.uuid`
-- **ui.js** (43 hàm): `ums.ui.escBr`, `ums.ui.money`, `ums.ui.so`, `ums.ui.docSo`, `ums.ui.truot`, `ums.ui.moDetails`, `ums.ui.ngayGio`, `ums.ui.empty`, `ums.ui.btn`, `ums.ui.iconBtn`, `ums.ui.actions`, `ums.ui.badge`, `ums.ui.chips`, `ums.ui.tabs`, `ums.ui.tabsActive`, `ums.ui.tile`, `ums.ui.cell`, `ums.ui.meter`, `ums.ui.table`, `ums.ui.oTheoGoc`, `ums.ui.pagerBind`, `ums.ui.pager`, `ums.ui.options`, `ums.ui.filterInput`, `ums.ui.filterSelect`, `ums.ui.field`, `ums.ui.toast`, `ums.ui.confirm`, `ums.ui.xoaChon`, `ums.ui.dialog`, `ums.ui.batch`, `ums.ui.print`, `ums.ui.fail`, `ums.ui.datepicker`, `ums.ui.select2`, `ums.ui.hoverCard`, `ums.ui.file`, `ums.ui.enhance`, `ums.ui.chart`, `ums.ui.reveal`, `ums.ui.swap`, `ums.ui.taiTep`, `ums.ui.xuatXls`
+- **ui.js** (44 hàm): `ums.ui.escBr`, `ums.ui.money`, `ums.ui.so`, `ums.ui.docSo`, `ums.ui.truot`, `ums.ui.moDetails`, `ums.ui.ngayGio`, `ums.ui.empty`, `ums.ui.btn`, `ums.ui.iconBtn`, `ums.ui.actions`, `ums.ui.badge`, `ums.ui.chips`, `ums.ui.tabs`, `ums.ui.tabsActive`, `ums.ui.tile`, `ums.ui.cell`, `ums.ui.meter`, `ums.ui.table`, `ums.ui.oTheoGoc`, `ums.ui.pagerBind`, `ums.ui.pager`, `ums.ui.options`, `ums.ui.filterInput`, `ums.ui.filterSelect`, `ums.ui.field`, `ums.ui.toast`, `ums.ui.confirm`, `ums.ui.xoaChon`, `ums.ui.dialog`, `ums.ui.batch`, `ums.ui.print`, `ums.ui.fail`, `ums.ui.datepicker`, `ums.ui.select2`, `ums.ui.hoverCard`, `ums.ui.file`, `ums.ui.enhance`, `ums.ui.khoangNgay`, `ums.ui.chart`, `ums.ui.reveal`, `ums.ui.swap`, `ums.ui.taiTep`, `ums.ui.xuatXls`
 - **crud.js** (1 hàm): `ums.crud`
 - **patterns.js** (0 hàm): 
 - **ref.js** (0 hàm): 
@@ -397,23 +397,27 @@ và `[data-k]` vẫn nằm trên chính <input> nên mã cũ tìm ô không đ�
 
 _(chưa có chú thích trong mã)_
 
-### `ums.ui.chart(canvas, cfg)`  <sub>ui.js:1359</sub>
+### `ums.ui.khoangNgay(root)`  <sub>ui.js:1403</sub>
 
 _(chưa có chú thích trong mã)_
 
-### `ums.ui.reveal(el, opts)`  <sub>ui.js:1380</sub>
+### `ums.ui.chart(canvas, cfg)`  <sub>ui.js:1446</sub>
+
+_(chưa có chú thích trong mã)_
+
+### `ums.ui.reveal(el, opts)`  <sub>ui.js:1467</sub>
 
 ```text
  Hiện một vùng đang ẩn, kèm hiệu ứng trượt lên 
 ```
 
-### `ums.ui.swap(out, into, opts)`  <sub>ui.js:1407</sub>
+### `ums.ui.swap(out, into, opts)`  <sub>ui.js:1494</sub>
 
 ```text
  Ẩn vùng này, hiện vùng kia kèm hiệu ứng. Trả về vùng vừa hiện. 
 ```
 
-### `ums.ui.taiTep(ten, kieu, noiDung)`  <sub>ui.js:1485</sub>
+### `ums.ui.taiTep(ten, kieu, noiDung)`  <sub>ui.js:1572</sub>
 
 ```text
  ---------- Tải tệp dựng ở máy khách -----------------------------------
@@ -423,7 +427,7 @@ Excel ở đây là BẢNG HTML lưu đuôi .xls (Excel mở được, không c�
 SheetJS tải từ CDN như vài màn gốc — _v2 không phụ thuộc CDN).        
 ```
 
-### `ums.ui.xuatXls(ten, o)`  <sub>ui.js:1490</sub>
+### `ums.ui.xuatXls(ten, o)`  <sub>ui.js:1577</sub>
 
 _(chưa có chú thích trong mã)_
 
@@ -854,7 +858,7 @@ _(chưa có chú thích trong mã)_
 
 </details>
 
-### `ums.canQuyetKhoa(url)`  <sub>can-quyet.js:299</sub>
+### `ums.canQuyetKhoa(url)`  <sub>can-quyet.js:307</sub>
 
 _(chưa có chú thích trong mã)_
 

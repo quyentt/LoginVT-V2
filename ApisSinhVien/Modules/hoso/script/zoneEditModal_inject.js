@@ -3617,3 +3617,81 @@ if (typeof document !== 'undefined' && !window._zeTrimHooked) {
         try { window._zeTrimTatCaO(); } catch (er) { }
     }, true);
 }
+
+/*==============================================================================
+== HOÁ ĐƠN: PHẢI LƯU HAI LẦN MỚI LÊN  (07/10/2026)
+==
+== Người dùng báo: sửa thông tin xuất hoá đơn, bấm Lưu, hệ thống báo đã lưu,
+== nhưng hoá đơn in ra vẫn mang địa chỉ cũ và không có mã số thuế. Lưu thêm lần
+== nữa mới đúng.
+==
+== Nguyên nhân nằm ở save_PersonInvoice (dexuathoso.js:5447):
+==     var invoiceId = me._currentInvoiceId || '';
+==     var isUpdate  = !!(invoiceId && invoiceId.length === 32);
+== Nó quyết định Thêm hay Sửa HOÀN TOÀN dựa vào một biến nhớ tạm, mà biến đó
+== được nạp bất đồng bộ lúc mở form. Bấm Lưu trước khi danh sách hoá đơn kịp về
+== là biến còn rỗng → chạy Them_PersonInvoiceInfo → ĐẺ THÊM một bản ghi nữa
+== trong khi bản cũ vẫn là bản hiện hành → hoá đơn vẫn đọc bản cũ.
+== Mở lại form lần hai thì biến đã có Id nên đi Sua_ đúng bản, vì vậy lần hai
+== mới thấy ăn.
+==
+== Cách xử lý đúng — cũng là quy tắc đã chốt bên hồ sơ tuyển sinh: TRA TRƯỚC KHI
+== GHI. Mỗi lần lưu đều hỏi lại máy chủ hồ sơ này đã có bản ghi hoá đơn chưa,
+== có thì Sửa, chưa có mới Thêm. Không bao giờ suy ra từ biến nhớ tạm.
+==
+== Tốn thêm một request mỗi lần lưu, đổi lại không còn đẻ bản ghi trùng.
+==============================================================================*/
+if (typeof DeXuatHoSo === 'function' && DeXuatHoSo.prototype.save_PersonInvoice
+    && !DeXuatHoSo.prototype._zeTraTruocKhiGhiHDHooked) {
+    DeXuatHoSo.prototype._zeTraTruocKhiGhiHDHooked = true;
+
+    // Lấy nguyên của _loadXHD_Section — không tự bịa
+    var _ZE_HD_GET = 'SV_NGUOIHOC_01_MH/DSA4BRIeESQzMi4vCC83LigiJAgvJy4P';
+
+    var _origSaveHD = DeXuatHoSo.prototype.save_PersonInvoice;
+    DeXuatHoSo.prototype.save_PersonInvoice = function () {
+        var dx = this;
+        var pid = ((dx.strDeXuatHoSo_Id || dx._lockedPersonId || '') + '').trim();
+        // Không biết đang ở hồ sơ nào thì để bản gốc tự xử, đừng tra mò
+        if (!pid) return _origSaveHD.apply(dx, arguments);
+
+        var chay = function () {
+            try { _origSaveHD.call(dx); } catch (e) { console.warn('[ZE Hoá đơn] lưu lỗi:', e); }
+        };
+
+        edu.system.makeRequest({
+            success: function (data) {
+                try {
+                    var rows = (data && data.Success && data.Data) || [];
+                    if (rows.length && rows[0].ID) {
+                        if (!dx._currentInvoiceId) {
+                            console.warn('[ZE Hoá đơn] hồ sơ đã có bản ghi hoá đơn ('
+                                + rows[0].ID + ') → chuyển sang Sửa thay vì Thêm mới.');
+                        }
+                        dx._currentInvoiceId = rows[0].ID;
+                    } else {
+                        dx._currentInvoiceId = '';     // chắc chắn chưa có → Thêm mới là đúng
+                    }
+                } catch (e) { }
+                chay();
+            },
+            // Hỏi không được thì vẫn phải lưu, cứ để bản gốc quyết như cũ
+            error: function (er) { console.warn('[ZE Hoá đơn] không tra được bản ghi cũ:', er); chay(); },
+            type: 'POST',
+            contentType: true,
+            action: _ZE_HD_GET,
+            data: {
+                'action': _ZE_HD_GET,
+                'func': 'PKG_CORE_NGUOIHOC_01.LayDS_PersonInvoiceInfo',
+                'iM': edu.system.iM,
+                'strPerson_Id': pid,
+                'dChiHienHanh': 1,
+                'strNguoiThucHien_Id': edu.system.userId,
+                'strVaiTroDangNhap_Id': edu.system.vaiTroDangNhap_Id || '',
+                'strChucNangHeThong_Id': edu.system.chucNangHeThong_Id || edu.system.strChucNang_Id,
+                'strHanhDong_Code': ''
+            },
+            fakedb: []
+        }, false, false, false, null);
+    };
+}

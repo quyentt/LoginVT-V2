@@ -11,6 +11,8 @@
        pkg_taichinh_thuchi.LayDSCacKhoanThu            khoản thu
        pkg_taichinh_ketoan.LayDMucAPI_DoiTac           đối tác (TENDOITAC)
        danh mục QLTC.HTTHU                             hình thức thu
+       pkg_kehoach_thongtin.LayDSDaoTao_CoSoDaoTao     cơ sở đào tạo (gốc 12/10; không dùng danh mục
+                                                       KHCT.COSODAOTAO vì trả rỗng ở CMC)
    ========================================================================= */
 (function () {
     'use strict';
@@ -38,6 +40,25 @@
 
     var HINHTHUC = { dm: 'QLTC.HTTHU' };
 
+    var COSO = {
+        call: {
+            action: 'KHCT_ThongTin_MH/DSA4BRIFIC4VIC4eAi4SLgUgLhUgLgPP',
+            func: 'pkg_kehoach_thongtin.LayDSDaoTao_CoSoDaoTao',
+            strNguoiThucHien_Id: '', strTuKhoa: '', pageIndex: 1, pageSize: 100000
+        },
+        /* "TEN (MA)" theo chuẩn ô chọn danh mục */
+        name: function (r) {
+            var t = r.TEN || '', m = r.MA || '';
+            return m && m !== t ? t + ' (' + m + ')' : (t || m);
+        }
+    };
+
+    /* Cột "Mã cơ sở đào tạo": danh sách chưa chắc trả mã → tra theo ID trong danh sách cơ sở */
+    var maCoSo = {};
+    ums.api.call(COSO.call).then(function (d) {
+        (Array.isArray(d) ? d : (d && d.rs) || []).forEach(function (r) { maCoSo[r.ID] = r.MA; });
+    }).catch(function () { /* không có danh sách thì cột chỉ hiện mã do danh sách trả */ });
+
     function pair(ten, ma) { return ums.ui.esc((ten || '') + (ma ? ' - ' + ma : '')); }
 
     var main = ums.crud({
@@ -50,6 +71,7 @@
             { key: 'khoanThu', type: 'select', label: 'Chọn khoản thu', source: KHOANTHU },
             { key: 'doiTac', type: 'select', label: 'Chọn đối tác', source: DOITAC },
             { key: 'hinhThuc', type: 'select', label: 'Chọn hình thức thu', source: HINHTHUC },
+            { key: 'coSo', type: 'select', label: 'Chọn cơ sở đào tạo', source: COSO },
             { key: 'q', type: 'text', label: 'Nhập từ khóa tìm kiếm' }
         ],
 
@@ -60,7 +82,8 @@
                     func: 'pkg_taichinh_ketoan.LayDSAPI_KeToan_Khoan_HT',
                     strTaiChinh_CacKhoanThu_Id: f.khoanThu,
                     strAPI_DoiTac_Id: f.doiTac,
-                    strHinhThucThu_Id: f.hinhThuc
+                    strHinhThucThu_Id: f.hinhThuc,
+                    strDaoTao_CoSoDaoTao_Id: f.coSo
                 };
             },
             /* Ô "Nhập từ khóa tìm kiếm" CÓ trong bản gốc và bấm Tìm là gọi lại
@@ -80,6 +103,9 @@
             { title: 'Khoản thu', render: function (r) { return pair(r.TAICHINH_CACKHOANTHU_TEN, r.TAICHINH_CACKHOANTHU_MA); } },
             { title: 'Hình thức', render: function (r) { return pair(r.HINHTHUCTHU_TEN, r.HINHTHUCTHU_MA); } },
             { title: 'Đối tác', prop: 'API_DOITAC_TEN' },
+            { title: 'Mã cơ sở đào tạo', cls: 'is-center', render: function (r) {
+                return ums.ui.esc(r.DAOTAO_COSODAOTAO_MA || maCoSo[r.DAOTAO_COSODAOTAO_ID] || '');
+            } },
             { title: 'TK Nợ', prop: 'KETOAN_TAIKHOANNO', cls: 'is-center is-nowrap' },
             { title: 'TK Có', prop: 'KETOAN_TAIKHOANCO', cls: 'is-center is-nowrap' }
         ],
@@ -88,6 +114,7 @@
             { key: 'strTaiChinh_CacKhoanThu_Id', col: 'TAICHINH_CACKHOANTHU_ID', label: 'Khoản thu', type: 'select', source: KHOANTHU, required: true, span: true },
             { key: 'strHinhThucThu_Id', col: 'HINHTHUCTHU_ID', label: 'Hình thức thu', type: 'select', source: HINHTHUC },
             { key: 'strAPI_DoiTac_Id', col: 'API_DOITAC_ID', label: 'Đối tác', type: 'select', source: DOITAC },
+            { key: 'strDaoTao_CoSoDaoTao_Id', col: 'DAOTAO_COSODAOTAO_ID', label: 'Cơ sở đào tạo', type: 'select', source: COSO },
             { key: 'strKeToan_TKNo', col: 'KETOAN_TAIKHOANNO', label: 'Tài khoản Nợ' },
             { key: 'strKeToan_TKCo', col: 'KETOAN_TAIKHOANCO', label: 'Tài khoản Có' }
         ],

@@ -83,11 +83,53 @@
         /* ---------- Lịch tuần -------------------------------------------- */
         function noiDung(r) {
             return '<b>' + esc(e(r.TENHOCPHAN)) + '</b><span class="ums-ltuan__tg">' + esc(ums.lich.khungGio(r)) + ' (Tiết ' + esc(e(r.TIETBATDAU)) + '-' + esc(e(r.TIETKETTHUC)) + ')</span>' +
-                '<div class="ums-ltuan__act">' +
-                    (o.admin ? '' : '<button type="button" class="is-ok" data-lg="cacbuoi" title="Xem các buổi điểm danh"><i class="fa-light fa-clipboard-list"></i></button>') +
-                    '<button type="button" class="is-bad" data-lg="doilich" title="Yêu cầu đổi lịch"><i class="fa-light fa-calendar-pen"></i></button></div>' +
+                '<div class="ums-ltuan__act">' + (o.admin
+                    ? '<button type="button" class="is-bad" data-lg="doilich" title="Yêu cầu đổi lịch"><i class="fa-light fa-calendar-pen"></i></button>'
+                    /* gốc 09/10: một nút "⋮" mở menu có nhãn thay cho hai icon sát nhau — tránh bấm nhầm */
+                    : '<button type="button" data-lg="menu" title="Thao tác: xem các buổi điểm danh / yêu cầu đổi lịch" aria-haspopup="true"><i class="fa-light fa-ellipsis-vertical"></i></button>') + '</div>' +
                 '<div>' + esc(e(r.TENLOPHOCPHAN)) + '<br>' + esc(e(r.TENPHONGHOC)) + '</div><div class="ums-ltuan__cx" data-cx="' + esc(r.ID) + '"></div>';
         }
+        /* Menu thao tác trên thẻ buổi học (gắn vào <body>; đóng khi bấm ra ngoài, cuộn, đổi cỡ cửa sổ, Esc) */
+        var menu = null;
+        function dongMenu() { if (menu) { menu.remove(); menu = null; } }
+        function moMenu(btn, r) {
+            var lai = menu && menu.btn === btn;
+            dongMenu();
+            if (lai) return;
+            var m = document.createElement('div');
+            m.className = 'lg-menu'; m.setAttribute('role', 'menu');
+            m.innerHTML = (e(r.IDLOPHOCPHAN) ? '<button type="button" role="menuitem" data-m="cacbuoi"><i class="fa-light fa-clipboard-list"></i><span>Xem các buổi điểm danh</span></button><hr>' : '') +
+                '<button type="button" role="menuitem" data-m="doilich"><i class="fa-light fa-calendar-pen"></i><span>Yêu cầu đổi lịch</span></button>';
+            m.style.visibility = 'hidden';
+            document.body.appendChild(m);
+            var rc = btn.getBoundingClientRect(), w = m.offsetWidth, h = m.offsetHeight;
+            var top = rc.bottom + 6;
+            if (top + h > window.innerHeight - 8) top = Math.max(8, rc.top - h - 6);
+            m.style.left = Math.max(8, Math.min(rc.right - w, window.innerWidth - w - 8)) + 'px';
+            m.style.top = top + 'px'; m.style.visibility = '';
+            m.btn = btn; menu = m;
+            m.addEventListener('click', function (ev) {
+                var it = ev.target.closest('[data-m]');
+                if (!it) return;
+                var k = it.getAttribute('data-m');
+                dongMenu();
+                if (k === 'cacbuoi') lg.xemCacBuoi(r, L.rows, { host: root });
+                else lg.doiLich.khoiTao(r, taiDoiLich, { host: root });
+            });
+        }
+        function ngoai(ev) {
+            if (!root.isConnected) { huy(); return; }
+            if (menu && !menu.contains(ev.target) && !ev.target.closest('[data-lg="menu"]')) dongMenu();
+        }
+        function phim(ev) { if (menu && ev.key === 'Escape') { ev.preventDefault(); dongMenu(); } }
+        function huy() {
+            dongMenu();
+            document.removeEventListener('click', ngoai); document.removeEventListener('keydown', phim, true);
+            document.removeEventListener('scroll', dongMenu, true); window.removeEventListener('resize', dongMenu);
+        }
+        document.addEventListener('click', ngoai); document.addEventListener('keydown', phim, true);
+        document.addEventListener('scroll', dongMenu, true); window.addEventListener('resize', dongMenu);
+
         var L = ums.lich.tao({
             thang: z('thang'), tuan: z('tuan'), mau: 'IDLOPHOCPHAN', noiDung: noiDung,
             onChon: function (t) { taiKLCT(t.ngay); },
@@ -110,6 +152,7 @@
             },
             onClick: function (r, t) {
                 var a = t.closest('[data-lg]');
+                if (a && a.getAttribute('data-lg') === 'menu') { moMenu(a, r); return; }
                 if (a && a.getAttribute('data-lg') === 'cacbuoi') { lg.xemCacBuoi(r, L.rows, { host: root }); return; }
                 if (a && a.getAttribute('data-lg') === 'doilich') { lg.doiLich.khoiTao(r, taiDoiLich, { host: root }); return; }
                 if (!e(r.TENLOPHOCPHAN)) return;                     // bản gốc: buổi không có lớp thì bấm không mở

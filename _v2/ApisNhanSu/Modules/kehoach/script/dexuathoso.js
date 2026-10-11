@@ -112,7 +112,7 @@
             { key: 'strLastName', col: 'LAST_NAME', label: 'Họ', cols: 3 },
             { key: 'strMiddleName', col: 'MIDDLE_NAME', label: 'Tên đệm', cols: 2 },
             { key: 'strFirstName', col: 'FIRST_NAME', label: 'Tên', cols: 3 },
-            { key: 'strPortraitFileId', col: 'PORTRAIT_FILE_ID', label: 'Ảnh', type: 'avatar', cols: 4 },
+            { key: 'strPortraitFileId', col: 'PORTRAIT_FILE_ID', label: '', type: 'avatar', cols: 4 },
             { key: 'strFullName', col: 'FULL_NAME', label: 'Tên đầy đủ', cols: 4 },
             { key: 'strDobPrecisionLevel', col: 'DOB_PRECISION_LEVEL', label: 'Chọn mức độ ngày sinh', type: 'select', cols: 4, source: { dm: 'CORE_PERSON.DOB_PRECISION_LEVEL' } },
             { key: 'dBirthDay', col: 'BIRTH_DAY', label: 'Ngày sinh', cols: 2 },

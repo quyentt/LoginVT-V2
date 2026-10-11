@@ -1597,6 +1597,10 @@ button.ums-searchbar__icon:hover { color: var(--ums-blue); }
 
 .ums-panel__body { padding: var(--ums-sp-5); }
 .ums-panel__body--flush { padding: 0; }
+/* Thân sát mép (bảng tràn hết bề ngang) nhưng có phần KHÔNG phải bảng (ô lọc, ô nhập dưới bảng): bọc phần đó bằng .ums-panel__dem
+   để lấy lại đệm thân, thẳng hàng với tiêu đề khung (kehoachdangky KTX 2026-10-12: bộ lọc + ô Ngày vào / Ngày ra quanh bảng "chưa thêm"). */
+.ums-panel__body--flush > .ums-panel__dem { padding: var(--ums-sp-5); }
+.ums-panel__body--flush > .ums-panel__dem + * > .ums-tablewrap:first-child { border-top: 1px solid var(--ums-line); }
 
 .ums-panel__foot {
     display: flex;
@@ -1632,6 +1636,8 @@ button.ums-searchbar__icon:hover { color: var(--ums-blue); }
    luôn cách khối trên một khoảng rõ (--ums-khoi-gap = 40px; lần đầu 24px bị chê "quá thấp") — không để tiêu đề khối sau dính đáy bảng khối trước. */
 :not(input, script, style, template, [hidden]) + .ums-legend,
 .ums-legend.ums-legend--cach { margin-top: var(--ums-khoi-gap, 40px); }
+/* Khung đứng sau một khối khác cũng cách đúng khoảng khối (hai khung "đã thêm" / "chưa thêm" trong một biểu mẫu — kehoachdangky KTX) */
+.ums-panel.ums-panel--cach { margin-top: var(--ums-khoi-gap, 40px); }
 /* Lưới nhiều KHỐI (mỗi ô bắt đầu bằng tiêu đề nhóm — khung chi tiết chỉ xem, biểu mẫu chia khối): tiêu đề đứng đầu ô nên luật
    trên không áp → dùng khe lưới: dọc bằng khoảng cách khối, ngang đủ rộng để hai cột không dính (người dùng 2026-09-27:
    "các box quá sát nhau") */
@@ -1856,7 +1862,8 @@ button.ums-searchbar__icon:hover { color: var(--ums-blue); }
     transition: border-color var(--ums-t), box-shadow var(--ums-t);
 }
 
-.ums-textarea {
+.ums-textarea,
+textarea.ums-input {      /* ô nhiều dòng dùng nhầm lớp ums-input (cao một dòng, đệm dọc 0) vẫn có đệm trên dưới */
     height: auto;
     min-height: 82px;
     padding: var(--ums-sp-2) var(--ums-sp-3);
@@ -3712,6 +3719,10 @@ button.ums-crumb__help { border: 0; background: none; padding: 0; cursor: pointe
     border-radius: 50%; overflow: hidden; background: var(--ums-surface-3); color: var(--ums-ink-3); font-size: 18px; }
 .ums-ava img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .ums-master__item.is-active .ums-ava { background: rgba(255, 255, 255, .2); color: #fff; }
+/* Mục có ảnh (pat.anhNguoi) ở MỌI màn: ảnh một cột, khối chữ (tên + mã số + phòng…) một cột — không để dòng phụ tụt xuống
+   dưới ảnh (người dùng 2026-10-12, cột trái Hợp đồng KTX: "sắp xếp ảnh tên mã số không hợp lý"). Dòng phụ lồng TRONG __main. */
+.ums-master__item:has(> .ums-ava) { display: flex; align-items: center; gap: var(--ums-sp-3); text-align: left; }
+.ums-master__item:has(> .ums-ava) > .ums-master__item__main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 .ums-master__item.ums-dsns__item { display: flex; align-items: center; gap: var(--ums-sp-3); text-align: left; }
 .ums-dsns__item .ums-master__item__main { display: flex; flex-direction: column; min-width: 0; }
 .ums-dsns__nut { display: flex; flex-wrap: wrap; gap: var(--ums-sp-2); margin-bottom: var(--ums-sp-2); }
@@ -3750,10 +3761,25 @@ button.ums-crumb__help { border: 0; background: none; padding: 0; cursor: pointe
 [data-ft-mo] > :not(.ums-formtrang) { display: none !important; }
 .ums-formtrang .ums-formtrang > .ums-panel,
 .ums-formtrang [data-ft="body"] .ums-panel { border: 0; box-shadow: none; background: transparent; }
+/* Bỏ đệm ngang của khung trong CHỈ khi thân biểu mẫu ngoài CÓ đệm (đệm ngoài thay cho đệm trong). Biểu mẫu ngoài sát mép
+   (flush: true — vd khung phòng của màn Tòa nhà KTX, thân = ums.crud nhúng) thì khung trong GIỮ đệm, không thì tiêu đề và nút
+   dính viền (người dùng 2026-10-12: "bị sát mép"). */
 .ums-formtrang .ums-formtrang > .ums-panel > .ums-panel__head,
-.ums-formtrang [data-ft="body"] .ums-panel > .ums-panel__head { padding-left: 0; padding-right: 0; }
+.ums-formtrang > .ums-panel > .ums-panel__body:not(.ums-panel__body--flush) > [data-ft="body"] .ums-panel > .ums-panel__head { padding-left: 0; padding-right: 0; }
 .ums-formtrang .ums-formtrang > .ums-panel > .ums-panel__body,
-.ums-formtrang [data-ft="body"] .ums-panel > .ums-panel__body { padding-left: 0; padding-right: 0; }
+.ums-formtrang > .ums-panel > .ums-panel__body:not(.ums-panel__body--flush) > [data-ft="body"] .ums-panel > .ums-panel__body { padding-left: 0; padding-right: 0; }
+/* Khung con có BẢNG sát viền (thân --flush) trong thân biểu mẫu: bảng TRÀN ra hết bề ngang khung biểu mẫu như bảng của màn danh sách
+   (người dùng 2026-10-12: "bảng vẫn có khoảng trống 2 bên, phải tràn ra"). Kéo khung con ra bằng lề âm đúng bằng đệm thân biểu mẫu;
+   đầu khung / chân khung lấy lại đệm để tiêu đề và nút vẫn thẳng hàng với các ô biểu mẫu. */
+.ums-formtrang > .ums-panel > .ums-panel__body:not(.ums-panel__body--flush) > [data-ft="body"] .ums-panel:has(> .ums-panel__body--flush) {
+    margin-left: calc(-1 * var(--ums-sp-5)); margin-right: calc(-1 * var(--ums-sp-5)); }
+.ums-formtrang > .ums-panel > .ums-panel__body:not(.ums-panel__body--flush) > [data-ft="body"] .ums-panel:has(> .ums-panel__body--flush) > .ums-panel__head,
+.ums-formtrang > .ums-panel > .ums-panel__body:not(.ums-panel__body--flush) > [data-ft="body"] .ums-panel:has(> .ums-panel__body--flush) > .ums-panel__foot {
+    padding-left: var(--ums-sp-5); padding-right: var(--ums-sp-5); }
+/* Khung con trong biểu mẫu đã bỏ viền → đường kẻ đáy của khung không còn; bảng sát viền KHÔNG có chân khung phải tự giữ kẻ cuối
+   (quy ước: bảng luôn khép bằng một đường kẻ — table.css). Có chân khung thì viền trên của chân khung đã là đường kẻ. */
+.ums-formtrang [data-ft="body"] .ums-panel:not(:has(> .ums-panel__foot)) > .ums-panel__body--flush > .ums-tablewrap:last-child {
+    border-bottom: 1px solid var(--ums-line); }
 
 /* ---------- Bảng "Màn đang có lỗi backend" (trang vai trò / trang chủ — app.js lbBang) ---------- */
 .ums-table.ums-lb > tbody > tr > td { vertical-align: top; line-height: 1.5; }

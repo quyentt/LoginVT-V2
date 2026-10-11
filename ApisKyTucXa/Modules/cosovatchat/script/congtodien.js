@@ -332,40 +332,61 @@ CongToDien.prototype = {
         var me = this;
         var html = '';
         var strCongToDien_Id = "";
+        var strCongToDien_Ten = "";
         var strCongToDien_Ma = "";
         var iCongToDien_NamSanXuat = "";
         var iCongToDien_HangSanXuat = "";
         var iCongToDien_MoTa = "";
+        //giá trị trống (null/rỗng) hiện dấu gạch thay vì chữ "null"
+        var fnVal = function (v) {
+            return edu.util.checkValue(v) ? v : '<span class="ct-na">—</span>';
+        };
 
         $("#zoneBox_CongToDien").html(html);
         //
         for (var i = 0; i < data.length; i++) {
             strCongToDien_Id = data[i].ID;
-            strCongToDien_Ma = data[i].TEN;
+            strCongToDien_Ten = data[i].TEN;
+            strCongToDien_Ma = data[i].MA;
             iCongToDien_NamSanXuat = data[i].NAMSANXUAT;
             iCongToDien_HangSanXuat = data[i].HANGSANXUAT;
             iCongToDien_MoTa = data[i].MOTA;
 
-            html += '<div class="col-sm-2 col-xs-4 btnView" id="view_' + strCongToDien_Id + '">';
-            html += '<div class="small-box">';
-            html += '<div class="inner">';
-            html += '<h4>' + strCongToDien_Ma + '</h4>';
-            html += '<p>Sản xuất ' + iCongToDien_NamSanXuat + '</p>';
+            html += '<div class="ct-card btnView" id="view_' + strCongToDien_Id + '">';
+            html += '<div class="ct-card-head">';
+            html += '<span class="ct-card-ico"><i class="fa fa-bolt"></i></span>';
+            html += '<div class="ct-card-name">';
+            if (edu.util.checkValue(strCongToDien_Ten)) {
+                html += '<h4 class="ct-card-title">' + strCongToDien_Ten + '</h4>';
+                if (edu.util.checkValue(strCongToDien_Ma) && strCongToDien_Ma != strCongToDien_Ten) html += '<div class="ct-card-code">Mã: ' + strCongToDien_Ma + '</div>';
+            }
+            else if (edu.util.checkValue(strCongToDien_Ma)) {
+                html += '<h4 class="ct-card-title">' + strCongToDien_Ma + '</h4>';
+            }
+            else {
+                html += '<h4 class="ct-card-title ct-noname">Chưa đặt tên</h4>';
+            }
             html += '</div>';
-            html += '<div class="icon">';
-            html += '<i class="fa fa-simplybuilt cl-tan"></i>';
             html += '</div>';
-            html += '<div class="small-box-footer">';
-            html += '<a id="delete_' + strCongToDien_Id + '" class="btn btn-default poiter btnDelete pull-right"><i class="fa fa-trash"></i> Xóa</a>';
-            html += '<a id="edit_' + strCongToDien_Id + '" class="btn btn-default poiter btnEdit "><i class="fa fa-pencil"></i> Chỉnh sửa</a>';
+            html += '<div class="ct-card-meta">';
+            html += '<div class="ct-meta"><span class="ct-meta-lbl">Năm sản xuất</span><b>' + fnVal(iCongToDien_NamSanXuat) + '</b></div>';
+            html += '<div class="ct-meta"><span class="ct-meta-lbl">Hãng sản xuất</span><b>' + fnVal(iCongToDien_HangSanXuat) + '</b></div>';
+            html += '</div>';
+            if (edu.util.checkValue(iCongToDien_MoTa)) html += '<div class="ct-card-desc">' + iCongToDien_MoTa + '</div>';
+            html += '<div class="ct-card-foot">';
+            html += '<a id="delete_' + strCongToDien_Id + '" class="ct-btn ct-btn-del poiter btnDelete"><i class="fa fa-trash"></i> Xóa</a>';
+            html += '<a id="edit_' + strCongToDien_Id + '" class="ct-btn ct-btn-edit poiter btnEdit"><i class="fa fa-pencil"></i> Chỉnh sửa</a>';
             html += '</div>';
             html += '</div>';
-            html += '</div >';
+        }
+        if (data.length == 0) {
+            html = '<div class="ct-empty"><i class="fa fa-bolt"></i> Chưa có công tơ điện nào</div>';
         }
         //
         $("#zoneBox_CongToDien").html(html);
+        $("#lblCongToDien_Tong").html(data.length + ' công tơ');
     },
-    
+
     viewEdit_CongToDien: function (data) {
         var me = main_doc.CongToDien;
         //edu.util.viewValById("txtCongToDien_Ten", data[0].TEN); chưa trả về tên công tơ

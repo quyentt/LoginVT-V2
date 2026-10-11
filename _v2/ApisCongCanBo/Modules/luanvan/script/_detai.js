@@ -31,7 +31,8 @@
     function esc(s) { return ui.esc(s); }
     var KH = L.KH;
 
-    L.deTai = function (root, kieu) {
+    L.deTai = function (root, kieu, opt) {
+        opt = opt || {};   // opt.gon: bản gọn như gốc ApisLuanVanLuanAn (không kho đề tài / Tải file / Thêm người hướng dẫn hàng loạt); opt.tuKhoa: ô từ khoá
         var giao = kieu === 'giaodetai';
         var ctxMan = null;
 
@@ -103,9 +104,9 @@
             var h = khung.host, ds = [];
             h.innerHTML = L.thongTin(sv, { deTai: false, quyetDinh: false }) +
                 ums.pat.panel({ title: 'Đề tài', icon: 'fa-book', flush: true, zone: 'dt', count: 'dtn', cls: 'lv-khoi', tools: giao
-                    ? ui.btn('excel', { text: 'Tải file', icon: 'fa-upload', attr: { disabled: 'disabled', title: 'Bản gốc chưa có xử lý lưu tệp này' } }) +
+                    ? (opt.gon ? '' : ui.btn('excel', { text: 'Tải file', icon: 'fa-upload', attr: { disabled: 'disabled', title: 'Bản gốc chưa có xử lý lưu tệp này' } })) +
                       ui.xoaChon('input[data-ck]', { goc: '.ums-panel', attr: { 'data-dt-a': 'xoa' } }) +
-                      ui.btn('add', { text: 'Thêm người hướng dẫn', mod: 'out-primary', icon: 'fa-user-plus', attr: { 'data-dt-a': 'hd' } }) +
+                      (opt.gon ? '' : ui.btn('add', { text: 'Thêm người hướng dẫn', mod: 'out-primary', icon: 'fa-user-plus', attr: { 'data-dt-a': 'hd' } })) +
                       ui.btn('add', { text: 'Thêm đề tài - bản giao đề tài cho Người học chọn', mod: 'out-success', attr: { 'data-dt-a': 'giao' } })
                     : ui.btn('del', { text: 'Xóa', mod: 'out-danger', attr: { disabled: 'disabled', title: 'Bản gốc: bảng không có ô đánh dấu nên nút này không chạy' } }) +
                       ui.btn('add', { text: 'Thêm', attr: { disabled: 'disabled', title: 'Bản gốc: hộp Thêm không có nút lưu' } }) });
@@ -242,10 +243,11 @@
             tieuDeChiTiet: 'Chi tiết đề tài',
             keHoach: 'tatCa',
             phanTrang: true,
-            tools: giao ? ui.btn('add', { text: 'Thêm đề tài', attr: { 'data-lv-tool': 'kho' } }) : '',
+            tuKhoa: !!opt.tuKhoa,
+            tools: giao && !opt.gon ? ui.btn('add', { text: 'Thêm đề tài', attr: { 'data-lv-tool': 'kho' } }) : '',
             onTool: function (k, ctx) { if (k === 'kho') khoDeTai(ctx); },
-            list: function (kh, page, size) {
-                return { action: KH + 'LayDSBV_Kehoach_NguoiHoc', strTuKhoa: '', strBV_KeHoach_Id: kh, strNguoiThucHien_Id: L.uid(), pageIndex: page, pageSize: size };
+            list: function (kh, page, size, q) {
+                return { action: KH + 'LayDSBV_Kehoach_NguoiHoc', strTuKhoa: q || '', strBV_KeHoach_Id: kh, strNguoiThucHien_Id: L.uid(), pageIndex: page, pageSize: size };
             },
             columns: function () {
                 // Ánh xạ cột chép ĐÚNG gốc (tiêu đề và dữ liệu lệch nhau ở gốc — xem can-quyet.js)
