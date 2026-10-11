@@ -76,7 +76,9 @@
             role('R46', 'Tin tức', 'TT'),
             role('R47', 'Đối tượng chính sách miễn giảm', 'DTMG'),
 
-            role('R48', 'Khảo sát trực tuyến', 'KSTT')
+            role('R48', 'Khảo sát trực tuyến', 'KSTT'),
+
+            role('R49', 'Danh hiệu', 'DH')
         ],
 
         /* Cây chức năng mẫu của vai trò "Cổng cán bộ" (R02) — đủ màn của
@@ -1078,6 +1080,15 @@
                 cn('KTX-taichinh-phitheoloaiphong', 'Phí theo loại phòng', 'G-KTX-ngoaimenu', 10, 'ApisKyTucXa:/Modules/taichinh/html/phitheoloaiphong.html', 'fa fa-file-o'),
                 cn('KTX-xacnhandangkyphong-xacnhandangkyphong', 'Xác nhận đăng ký phòng', 'G-KTX-ngoaimenu', 11, 'ApisKyTucXa:/Modules/xacnhandangkyphong/html/xacnhandangkyphong.html', 'fa fa-file-o')
             ], { prefix: 'KTX', app: 'ApisKyTucXa' }),
+            /* Danh hiệu (R49) — ApisDanhHieu, ID DH-<module>-<tệp>. Host 26/9 chưa khai chức năng phân hệ này (không có trong
+               mapping-chuc-nang) → thứ tự theo cây thư mục gốc; 3 màn, chuyển 12/10 (kehoach / thuchienxet dùng khung Học bổng). */
+            R49: buildMenu([
+                ['kehoach', 'Kế hoạch', 'fa fa-calendar', [
+                    ['kehoach', 'Kế hoạch xét danh hiệu'],
+                    ['thuchienxet', 'Thực hiện xét']]],
+                ['danhmuc', 'Danh mục', 'fa fa-list', [
+                    ['danhmucdulieu', 'Danh mục dữ liệu']]]
+            ], null, { prefix: 'DH', app: 'ApisDanhHieu' }),
             /* Thống kê giờ giảng (R39) — ApisTKGG, ID TKGG-<module>-<tệp>. Đúng 12 mục trên menu host 6/10 (vai trò 42EC44DF…); 11 màn khác của kho không có trên menu → chưa chuyển. */
             R39: buildMenu([
                 ['kehoach', 'Tổng hợp giờ', 'fa fa-clock-o', [

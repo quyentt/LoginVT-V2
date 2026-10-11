@@ -36,7 +36,8 @@ Nguyên văn các mục dài, chỉ đọc khi tới việc liên quan.
 | Thống kê giờ giảng `ApisTKGG` | 12/12 màn host dùng (11 màn kho hoãn — host chưa khai chức năng) | R39 `TKGG-` | 6/10 | chưa |
 | Luận văn, luận án `ApisLuanVanLuanAn` | 17/17 (khung `_lv_chung.js` / `_lv_baove.js`, luanan nạp chéo luanvan) | R22 `LVLA-` | 12/10 | chưa |
 | Ký túc xá `ApisKyTucXa` | 26/31 (còn 5: quanlythietbi, kehoachdangky, phanphongdangky, xepphongdangky, xacnhandangkyphong — người dùng 12/10 bảo dừng) | R32 `KTX-` | 12/10 (dở) | chưa |
-| Còn lại: Danh hiệu | — | — | chưa | — |
+| Danh hiệu `ApisDanhHieu` | 3/3 (kehoach / thuchienxet dùng khung Học bổng `ums.hbKh` + bộ lời gọi riêng `_dh_chung.js`; danhmucdulieu nạp chéo ĐKH) | R49 `DH-` | 12/10 | chưa (host 26/9 chưa khai chức năng phân hệ này) |
+| Còn lại: — (Thi trắc nghiệm trang làm bài DỪNG) | — | — | — | — |
 
 **HEMIS (đồng bộ dữ liệu lên Bộ GD&ĐT, tài liệu người dùng đưa 7/10):** ghi chú đầy đủ ở [HEMIS.md](HEMIS.md) — quy trình 4 bước
 (token → 175 danh mục → ký số XML `db16` → JSON `db1…db13`), trường có / thiếu dữ liệu nhóm nào, lệch kỹ thuật (GUID có gạch, ngày

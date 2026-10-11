@@ -4356,3 +4356,17 @@ Cần kiểm trên host:
 - `toanha`: `KTX_Phong_ApDung/ThemMoi` gốc gửi trùng khoá strPhanLoaiDoiTuong_Id hai lần (giữ một); số phòng mỗi toà đếm bằng `KTX_Phong/LayDanhSach` pageSize 1000000000 như gốc — host nhiều phòng chậm thì dùng cột TONGSOPHONG nếu có.
 - `phong`: `KTX_CongToDien_Phong/LayDanhSach` gốc coi `Message` khác rỗng là lỗi dù Success → bỏ.
 Nợ tầng chung: crud `checks` chỉ nhận items tĩnh; `cfg.save` chỉ một lời gọi (lưu N bản ghi tự batch); `fields[].value` tĩnh; `pat.formTrang` cùng host không lồng (tầng hai thay tầng một). Ba bản ô Toà nhà → Phòng ĐÃ GỘP 12/10 về `ums.ktx.noiToaNhaPhong(selToa, selPhong, { tenPhong, head, napSan, onToaNha, onPhong, onChange })` → `{ nap, dat(toaId, phongId), sanSang, sync }` (tác tử); `_hoso.js` / `_hopdong.js` bỏ bản riêng, 9 HTML hoso / hopdong nạp chéo `_ktx.js`; dữ liệu mẫu toà / phòng của hoso / hopdong dùng kho `_ktx.demo.js`. Còn `diennuoc.demo.js`, `taichinh/phitheophong.demo.js` tự khai toà / phòng riêng — nếu màn đó nạp chéo `_ktx.js` thì gộp tương tự.
+
+## Danh hiệu (ApisDanhHieu) — 3/3 màn, 2026-10-12 (chưa kiểm host — host 26/9 chưa khai chức năng phân hệ này)
+
+### kehoach (2/2) + danhmuc (1/1) — khung Học bổng `ums.hbKh` + `ums.khxl` (nạp chéo), lớp mỏng `kehoach/script/_dh_chung.js` (`ums.dhKh`), `_dh_form.js`, `_dh_dieukien.js`; `danhmucdulieu` nạp chéo ĐKH (trùng 100%)
+Đã chốt:
+- `kehoach`: sinh viên / khoá / chương trình / lớp chọn xong GỬI NGAY (gốc gom vào bảng + ba mảng rồi gửi lúc bấm Lưu; kế hoạch mới thì gửi ID rỗng vì chưa có ID máy chủ) → khối sinh viên ẨN khi đang thêm mới, lưu xong kế hoạch mới thì nhớ ID máy chủ trả, chuyển "Chỉnh sửa" và hiện khối (gốc không nhớ ID → Lưu lần hai thêm trùng). Cùng cách Học bổng / Tốt nghiệp; vì thế thu-crud báo "lưu xong biểu mẫu không đóng" — cố ý giữ.
+- `kehoach`: bắt buộc Tên kế hoạch (gốc validInputForm trên ô không tồn tại); cán bộ phân công gửi lại mọi dòng mỗi lần Lưu qua `Them_XLDH_KeHoach_NhanSu` (strId = ID dòng đã lưu, như gốc); chọn cán bộ đã có → "Đã tồn tại!" (gốc so ID nhân sự với ID DÒNG nên không bắt được).
+- `kehoach` vùng điều kiện: chỉ gửi ô đã đổi, hỏi lại trước khi lưu; nút "Kế thừa mặc định từ điều kiện chuẩn" giữ nhưng disabled (gốc không có xử lý); không có "Kế thừa theo nhóm" (gốc Danh hiệu không có); danh sách tiêu chuẩn lấy pageSize 100000 (gốc pageSize mặc định không có bộ phân trang → chỉ thấy trang đầu).
+- `kehoach` hộp "Xem kết quả": phân trang máy chủ đúng kế hoạch đang xem (gốc bật bFilter nhưng tên hàm phân trang trỏ nhầm sang nạp lại danh sách kế hoạch).
+- `thuchienxet`: như bản Luận văn đã chốt (công nhận kết quả gọi `Them_HB_KetQua_CongNhan` từng kế hoạch — gốc gom hai lời gọi vào một object khoá trùng nên không bao giờ gọi; hỏi lại bằng `ui.confirm`; hộp không đạt dùng ID kế hoạch đang xem thay biến không tồn tại), chỉ khác khoá `strXLDH_KeHoach_Id` và cột nối `XLDH_KETQUA_ID`.
+Cần kiểm trên host:
+- `kehoach`: gốc XOÁ KẾ HOẠCH bằng action xoá tiêu chuẩn `HB_XepLoaiDanhHieu/Xoa_XLDH_TieuChuan_AD` (strIds = ID kế hoạch) — kho không có action xoá kế hoạch nào khác → chép nguyên; lên host thử xoá một kế hoạch thử xem có mất khỏi danh sách không.
+- `kehoach`: `Them_XLDH_KeHoach` có trả `Id` của kế hoạch mới không (biểu mẫu dựa vào đó để lưu cán bộ / sinh viên ngay sau khi tạo).
+- `thuchienxet`: hàng đợi `XET_DH` / `HB_DanhHieuHangDoi/TaoHangDoi_XLDH_TuDong` chưa chạy thật lần nào (Luận văn cũng chưa kiểm host).

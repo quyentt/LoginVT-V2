@@ -833,7 +833,20 @@ mẫm ở đó; để dành đến khi có host.
    chưa giao). Bỏ 2 vỏ trống `dangky`, `kehoach/phandoituongdangky` (BO_QUA). Chốt + ghi chú cho lượt sau: `CAN-QUYET-DA-CHOT.md` mục "Ký túc xá"; không có việc dữ liệu (CHƯA kiểm host,
    `apiskytucxa/` trong `ums.canQuyetChuaKiem`). Ba bản ô Toà nhà → Phòng ở ba module → gộp khi làm tiếp.
 
-25. Các phân hệ còn lại: Danh hiệu; Ký túc xá 5 màn (mục 24); Thi trắc nghiệm — trang làm bài — dừng. Tổng 859 màn hình, xem mục 7 để biết vì
+25. **Danh hiệu (ApisDanhHieu) — 3/3 màn (2026-10-12)**. Vai trò mẫu **R49**, ID `DH-<module>-<tệp>` (host 26/9 KHÔNG khai chức năng phân hệ này
+   → thứ tự menu theo cây thư mục gốc). Gốc là bản chép của Học bổng (`kehoach` 90%, `thuchienxet` 93%; Luận văn lại chép `thuchienxet` của
+   màn này 98%) → dựng trên CHÍNH khung Học bổng `ums.hbKh` (`_kh_chung.js`, css `_kh.css`) + `ums.khxl`, thêm lớp mỏng
+   `kehoach/script/_dh_chung.js` (`ums.dhKh`: `XL` = `HB_XepLoaiDanhHieu/`, `napLoai`, `dsKeHoach`, `napPhanCong` (khoá `strXLDH_KeHoach_Id`),
+   `hopDoiTuong`, `hopKetQua({ chiTiet })` nối cột động bằng `XLDH_KETQUA_ID`) + `_dh_chung.demo.js` (kho mẫu giữ trạng thái trong phiên).
+   `kehoach`: ba vùng thay chỗ như gốc — danh sách / `_dh_form.js` (Tên · Học kỳ · Loại danh hiệu · Từ · Đến · Mô tả, cán bộ phân công, sinh viên
+   xét duyệt — chọn sinh viên / khoá / chương trình / lớp gửi NGAY qua `Them_XLDH_KeHoach_PhamVi` / `_PhamViKhoa` / `_PhamViCT` / `_PhamViLop`) /
+   `_dh_dieukien.js` (xâu điều kiện sửa trong bảng, không có "Kế thừa theo nhóm"). `thuchienxet`: chép bản Luận văn, đổi khoá. `danhmucdulieu`:
+   nạp chéo ĐKH (trùng 100%). Kiểm: do-man 3/3 không lỗi console, kiem-dong-bo 3/3, kiem-cot-trai 1/1, icon chuẩn 0 lệch; thu-crud 2/3 —
+   `kehoach` báo "lưu xong biểu mẫu không đóng" **cố ý giữ** (gốc + Học bổng + Tốt nghiệp cùng khung: lưu kế hoạch mới xong chuyển sang
+   "Chỉnh sửa" để thêm cán bộ / sinh viên ngay; Học bổng `kehoach` chạy thu-crud cũng báo đúng dòng này). Chốt: `CAN-QUYET-DA-CHOT.md` mục
+   "Danh hiệu". Chưa kiểm host (host chưa có chức năng).
+
+26. Các phân hệ còn lại: Thi trắc nghiệm — trang làm bài — dừng (Ký túc xá mục 24, Danh hiệu mục 25). Tổng 859 màn hình, xem mục 7 để biết vì
    sao không thể làm bằng cách đổi CSS.
 
 ### Việc hoãn — làm khi người dùng gọi (6/10)

@@ -340,7 +340,7 @@ Mở bằng `file://` là trắng trang (CORS). Lên host phải nằm TRONG d�
 `Handler/*.ashx`, `Upload/`, `Scripts/` (CKEditor, MathJax) là của ứng dụng cha. Bảng đầy đủ: `_v2/TRIEN-KHAI.md` mục 2. ĐỪNG chép `Upload/` (695 MB dữ liệu thật).
 
 ### Tiến độ chuyển đổi
-Bảng từng phân hệ (màn / vai trò mẫu / ngày xong / kiểm host), HEMIS, nhật ký "đã xong" và quy tắc giao tác tử con: [_v2/CLAUDE-CHI-TIET.md](_v2/CLAUDE-CHI-TIET.md) mục "Tiến độ". **Đọc khi người dùng hỏi tiến độ / gọi tên phân hệ.** Tóm tắt: ~25 phân hệ đã chuyển; còn Ký túc xá, Danh hiệu, Luận văn (2/17); ThiTracNghiem DỪNG; phân hệ mới chỉ làm khi người dùng gọi tên; giao tối đa 2 tác tử con.
+Bảng từng phân hệ (màn / vai trò mẫu / ngày xong / kiểm host), HEMIS, nhật ký "đã xong" và quy tắc giao tác tử con: [_v2/CLAUDE-CHI-TIET.md](_v2/CLAUDE-CHI-TIET.md) mục "Tiến độ". **Đọc khi người dùng hỏi tiến độ / gọi tên phân hệ.** Tóm tắt: 27 phân hệ đã chuyển (Danh hiệu 3/3 xong 12/10 — R49 `DH-`, khung Học bổng); ThiTracNghiem DỪNG; phân hệ mới chỉ làm khi người dùng gọi tên; giao tối đa 2 tác tử con.
 
 ### Bộ công cụ tiết kiệm token khi chuyển màn (6/10 — dùng TRƯỚC khi mở bất kỳ tệp mã nào)
 
