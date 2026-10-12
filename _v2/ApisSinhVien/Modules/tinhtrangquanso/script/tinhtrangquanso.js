@@ -126,7 +126,8 @@
     var moRong = ums.api.dm('QLSV.QUANSO.MORONG').catch(function (err) { ums.api.handle(err, 'tiêu chí mở rộng quân số'); return []; });
 
     /* ---------- Vẽ bảng cây × cột ----------------------------------------------------
-       cols: [{ id, ten, bam }] — bam: ô bấm được (mở chi tiết). o.tong: thêm cột "Tổng số" + ô tổng chung. */
+       cols: [{ id, ten, bam, moRong }] — bam: ô bấm được (mở chi tiết); moRong: tiêu chí mở rộng, KHÔNG cộng vào Tổng số (gốc 12/10).
+       o.tong: thêm cột "Tổng số" + ô tổng chung. */
     var luot = 0, st = null;
 
     function veBang(ds, cols, o) {
@@ -208,14 +209,14 @@
         st.cols.forEach(function (c, j) {
             var t = 0;
             st.dong.forEach(function (r) { t += so((st.gt[e(r.la.THANHPHAN_ID)] || {})[c.id]); });
-            tat += t;
+            if (!c.moRong) tat += t;   // gốc 12/10: tiêu chí mở rộng (Nữ, DTTS…) là tập con của trạng thái → không cộng vào tổng
             var td = z('bang').querySelector('[data-ct="' + j + '"]');
             if (td) td.innerHTML = '<b>' + t + '</b>';
         });
         if (!st.tong) return;
         st.dong.forEach(function (r, i) {
             var g = st.gt[e(r.la.THANHPHAN_ID)] || {}, t = 0;
-            st.cols.forEach(function (c) { t += so(g[c.id]); });
+            st.cols.forEach(function (c) { if (!c.moRong) t += so(g[c.id]); });
             var td = z('bang').querySelector('[data-dt="' + i + '"]');
             if (td) td.textContent = t;
         });
@@ -262,7 +263,7 @@
             .then(function (x) {
                 if (l !== luot) return;
                 var cols = tts.map(function (r) { return { id: r.ID, ten: r.TEN, bam: true }; })
-                    .concat(arr(x[0]).map(function (r) { return { id: r.ID, ten: r.TEN, bam: true }; }));
+                    .concat(arr(x[0]).map(function (r) { return { id: r.ID, ten: r.TEN, bam: true, moRong: true }; }));
                 veBang(arr(x[1].data), cols, { tieuDe: tieuDe, tong: true });
                 var tasks = [];
                 st.dong.forEach(function (r, i) {

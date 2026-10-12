@@ -155,6 +155,8 @@
         }
         extra.innerHTML =
             panel('sv', 'fa-user-group', 'Danh sách học sinh - sinh viên xét duyệt',
+                // gốc 12/10: nút Xoá đã chọn + thanh nút đặt TRÊN bảng (danh sách dài vẫn thấy nút)
+                ui.xoaChon('input[data-sv]', { goc: '.ums-panel', sm: true, attr: { 'data-h': 'delsvchon' } }) + ' ' +
                 '<button type="button" class="ums-btn ums-btn--out-success ums-btn--sm" data-h="addsv"><i class="fa-light fa-plus"></i><span>Thêm thành viên</span></button>') +
             panel('cs', 'fa-scale-balanced', 'Chính sách áp dụng',
                 '<button type="button" class="ums-btn ums-btn--out-success ums-btn--sm" data-h="addcs"><i class="fa-light fa-plus"></i><span>Thêm dòng mới</span></button>') +
@@ -200,8 +202,33 @@
                 { title: '', cls: 'is-actions', width: '90px', render: function (r, i) {
                     return (r.isNew ? ui.badge('Mới', 'info') + ' ' : '') +
                         '<button type="button" class="ums-iconbtn ums-iconbtn--del" data-h="delsv" data-i="' + i + '" title="Xoá"><i class="fa-light fa-trash-can"></i></button>';
+                } },
+                // gốc 12/10: ô đánh dấu để xoá nhiều sinh viên cùng lúc (chọn tất cả ở tiêu đề)
+                { head: '<input type="checkbox" data-h-all="sv" title="Chọn tất cả">', cls: 'is-center', width: '48px', render: function (r, i) {
+                    return '<input type="checkbox" data-sv="' + i + '">';
                 } }
             ]
+        });
+    }
+    /* Xoá nhiều sinh viên đã đánh dấu (gốc 12/10 deleteMulti_SinhVien): dòng mới thêm (chưa lưu) chỉ gỡ khỏi danh sách;
+       dòng đã lưu gọi TC_NguoiHoc_QuanLy/Xoa từng Id, 5 luồng, báo gộp rồi nạp lại. */
+    function delSvChon() {
+        var idx = Array.prototype.filter.call(x('sv').querySelectorAll('input[data-sv]'), function (c) { return c.checked; })
+            .map(function (c) { return Number(c.getAttribute('data-sv')); });
+        if (!idx.length) { ui.toast('Vui lòng chọn sinh viên cần xóa!', 'warn'); return; }
+        ui.confirm('Bạn có chắc chắn xóa ' + idx.length + ' sinh viên đã chọn không?', { tone: 'bad', ok: 'Xoá' }).then(function (yes) {
+            if (!yes) return;
+            var daLuu = [], moi = 0;
+            idx.forEach(function (i) { if (svRows[i].isNew) moi++; else daLuu.push(svRows[i]); });
+            svRows = svRows.filter(function (r, i) { return !(idx.indexOf(i) >= 0 && r.isNew); });
+            if (!daLuu.length) { drawSv(); ui.toast('Đã xóa ' + moi + '/' + idx.length + ' sinh viên.', 'ok'); return; }
+            var calls = daLuu.map(function (r) { return { action: 'TC_NguoiHoc_QuanLy/Xoa', strIds: r.ID, strNguoiThucHien_Id: '' }; });
+            return ui.batch(calls, { title: 'Đang xóa sinh viên', concurrency: 5, toast: false }).then(function (kq) {
+                var xong = (kq.ok || 0) + moi;
+                if (kq.fail) ui.toast('Đã xóa ' + xong + '/' + idx.length + ' sinh viên. Không xóa được ' + kq.fail + ': ' + kq.errors.join(' · '), 'warn');
+                else ui.toast('Đã xóa ' + xong + '/' + idx.length + ' sinh viên.', 'ok');
+                loadSv();
+            });
         });
     }
     function addSv() {
@@ -383,12 +410,18 @@
     }
 
     /* ---------- Sự kiện vùng bảng con (gắn trên root) ----------------------- */
+    // "Chọn tất cả" ở tiêu đề bảng sinh viên (chiều CON → CHA tầng chung lo)
+    root.addEventListener('change', function (e) {
+        if (e.target.getAttribute('data-h-all') !== 'sv' || !x('sv')) return;
+        Array.prototype.forEach.call(x('sv').querySelectorAll('input[data-sv]'), function (c) { c.checked = e.target.checked; });
+    });
     root.addEventListener('click', function (e) {
         var b = e.target.closest('[data-h]');
         if (!b || !root.contains(b)) return;
         switch (b.getAttribute('data-h')) {
             case 'addsv': addSv(); break;
             case 'delsv': delSv(Number(b.getAttribute('data-i'))); break;
+            case 'delsvchon': delSvChon(); break;
             case 'addcs': csAdd('cs', null); break;
             case 'addcsr': csAdd('csr', null); break;
             case 'delrow': delRow(b); break;

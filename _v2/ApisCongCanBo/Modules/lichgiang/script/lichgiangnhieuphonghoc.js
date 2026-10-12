@@ -41,7 +41,7 @@
 
    Kéo gốc 30/9 + 1/10 (fed68f6e..c6886b05) — lọc "Phòng trống", chuyển theo bản gốc MỚI NHẤT:
      · Ô lọc "Phòng trống (từ ngày - đến ngày, thứ, tiết)": Từ / Đến ngày, Thứ (giá trị Date.getDay()), khung tiết (T1-3 …
-       T13-15, Sáng T1-6, Chiều T7-12). Lời gọi mới SV_TKB_Chung_MH · TKB_CHUNG.LAYPHONGHOCTRONG (strNgay, giờ / phút bắt đầu –
+       T13-15, Sáng T1-6, Chiều T7-12, Sáng + chiều T1-12, Cả ngày T1-15 — hai mục cuối gốc thêm 12/10). Lời gọi mới SV_TKB_Chung_MH · TKB_CHUNG.LAYPHONGHOCTRONG (strNgay, giờ / phút bắt đầu –
        kết thúc của khung tiết, strKieuPhong = '' (kéo gốc 6/10, xem dưới), dSucChuaTu/Den, dIdToaNha = null, strIdLichBoQua) — MỘT ngày
        mỗi lời gọi, nhớ 5 phút, tối đa 5 cùng lúc, tối đa 31 ngày (dài hơn thì cắt + báo), khoảng > 1 năm thì chỉ xét một năm.
        Giờ của tiết: lấy từ lịch phòng đã tải, không có thì theo khung chuẩn (arrGioTiet của gốc, tiết 50 phút).
@@ -522,7 +522,7 @@
                 '<select class="ums-select" data-f="thu" data-no-s2 title="Chỉ xét thứ này trong khoảng ngày">' +
                     opt([['', 'Mọi thứ'], ['1', 'Thứ 2'], ['2', 'Thứ 3'], ['3', 'Thứ 4'], ['4', 'Thứ 5'], ['5', 'Thứ 6'], ['6', 'Thứ 7'], ['0', 'CN']]) + '</select>' +
                 '<select class="ums-select" data-f="tiet" data-no-s2 title="Khung tiết">' +
-                    opt([['1-3', 'T1-3'], ['4-6', 'T4-6'], ['7-9', 'T7-9'], ['10-12', 'T10-12'], ['13-15', 'T13-15'], ['1-6', 'Sáng (T1-6)'], ['7-12', 'Chiều (T7-12)']]) + '</select>' +
+                    opt([['1-3', 'T1-3'], ['4-6', 'T4-6'], ['7-9', 'T7-9'], ['10-12', 'T10-12'], ['13-15', 'T13-15'], ['1-6', 'Sáng (T1-6)'], ['7-12', 'Chiều (T7-12)'], ['1-12', 'Sáng + chiều (T1-12)'], ['1-15', 'Cả ngày (T1-15)']]) + '</select>' +   // hai mục cuối: gốc 12/10
                 '</div>') + '</div>' +
             ui.field('Cách tính hiệu suất', '<select class="ums-select" data-f="hieusuat" data-no-s2>' + opt(CHE_DO.map(function (c) { return [c.v, c.ten]; })) + '</select>') + '</div>',
         nut: ui.btn('search', { text: 'Xem lịch phòng', attr: { 'data-a': 'xem' }, icon: 'fa-eye' }) +

@@ -12,23 +12,22 @@ Xem lại đúng thay đổi của một tệp: `git diff -w <từ>..<đến> --
 
 ## Lần kéo 10 (12/10 tối) — mốc gốc nay là `2254204a` (gốc lại force-push; mốc cũ `c42e11e1`)
 
-Lần sau so: `git diff --name-status 2254204a origin/main`. 11 tệp gốc đổi, đã ghi đè bằng `git checkout origin/main -- <tệp>`, CHƯA mở diff.
+Lần sau so: `git diff --name-status 2254204a origin/main`. 11 tệp gốc đổi, đã ghi đè bằng `git checkout origin/main -- <tệp>`. **ĐÃ CHUYỂN HẾT 12/10 tối** (người dùng bảo "chuyển"), do-man 4 màn sạch, CHƯA kiểm host.
 Số theo phân hệ: Sinh viên 7 · Cổng cán bộ 2 · Tài chính 2. **Cả 11 tệp đều của màn ĐÃ chuyển** — không có màn mới, không có phân hệ chưa chuyển.
-Mở diff khi: kiểm host Sinh viên (chưa kiểm) · kiểm lại Tài chính `hopdong` · sửa `lichgiangnhieuphonghoc` (đã kiểm host 6/10, nay gốc đổi tiếp).
 
 | Phân hệ | Màn | Tệp gốc | Trạng thái |
 |---|---|---|---|
-| Cổng cán bộ (đã chuyển, đã kiểm host 6/10) | `lichgiang/lichgiangnhieuphonghoc` | `ApisCongCanBo/Modules/lichgiang/html/lichgiangnhieuphonghoc.html` | chưa xem |
-| Cổng cán bộ (đã chuyển, đã kiểm host 6/10) | `lichgiang/lichgiangnhieuphonghoc` | `ApisCongCanBo/Modules/lichgiang/script/lichgiangnhieuphonghoc.js` | chưa xem |
-| Sinh viên (đã chuyển, chưa kiểm host) | `hoso/hoso_capnhat` | `ApisSinhVien/Modules/hoso/html/hoso_capnhat.html` | chưa xem (lần 9 đã chuyển 12/10, gốc đổi tiếp) |
-| Sinh viên (đã chuyển, chưa kiểm host) | `hoso/hoso_danhsach` | `ApisSinhVien/Modules/hoso/html/hoso_danhsach.html` | chưa xem (lần 9 đã chuyển 12/10, gốc đổi tiếp) |
-| Sinh viên (đã chuyển, chưa kiểm host) | `hoso/quanlytoanbo` | `ApisSinhVien/Modules/hoso/html/quanlytoanbo.html` | chưa xem (lần 9 đã chuyển 12/10, gốc đổi tiếp) |
-| Sinh viên (đã chuyển, chưa kiểm host) | `hoso/xemhoso` | `ApisSinhVien/Modules/hoso/html/xemhoso.html` | chưa xem (lần 9 đã chuyển 12/10, gốc đổi tiếp) |
-| Sinh viên (đã chuyển, chưa kiểm host) | `hoso/zoneEditModal_inject` | `ApisSinhVien/Modules/hoso/script/zoneEditModal_inject.js` | chưa xem (lần 9 đã chuyển 12/10, gốc đổi tiếp) |
-| Sinh viên (đã chuyển, chưa kiểm host) | `tinhtrangquanso/tinhtrangquanso` | `ApisSinhVien/Modules/tinhtrangquanso/html/tinhtrangquanso.html` | chưa xem |
-| Sinh viên (đã chuyển, chưa kiểm host) | `tinhtrangquanso/tinhtrangquanso` | `ApisSinhVien/Modules/tinhtrangquanso/script/tinhtrangquanso.js` | chưa xem |
-| Tài chính (đã chuyển, đã kiểm host 30/9) | `dulieuhocphi/hopdong` | `ApisTaiChinh/Modules/dulieuhocphi/html/hopdong.html` | chưa xem |
-| Tài chính (đã chuyển, đã kiểm host 30/9) | `dulieuhocphi/hopdong` | `ApisTaiChinh/Modules/dulieuhocphi/scripts/hopdong.js` | chưa xem |
+| Cổng cán bộ (đã chuyển, đã kiểm host 6/10) | `lichgiang/lichgiangnhieuphonghoc` | `ApisCongCanBo/Modules/lichgiang/html/lichgiangnhieuphonghoc.html` | **đã chuyển 12/10** — thêm 2 mục ô Tiết: "Sáng + chiều (T1-12)", "Cả ngày (T1-15)" (+ đổi version script, bỏ) |
+| Cổng cán bộ (đã chuyển, đã kiểm host 6/10) | `lichgiang/lichgiangnhieuphonghoc` | `ApisCongCanBo/Modules/lichgiang/script/lichgiangnhieuphonghoc.js` | **đã chuyển 12/10** — gốc: đang lọc phòng trống theo khoảng ngày thì mọi lần vẽ lại (đổi cách tính, tải thêm phòng) đều vẽ bảng phòng × ngày; `_v2` đã đúng sẵn (khung `_nhieu.veLai` luôn hỏi `veThay` trước) → không sửa |
+| Sinh viên (đã chuyển, chưa kiểm host) | `hoso/hoso_capnhat` | `ApisSinhVien/Modules/hoso/html/hoso_capnhat.html` | **đã chuyển 12/10** — chỉ đổi version `zoneEditModal_inject.js?v=…73`, không có gì chuyển |
+| Sinh viên (đã chuyển, chưa kiểm host) | `hoso/hoso_danhsach` | `ApisSinhVien/Modules/hoso/html/hoso_danhsach.html` | **đã chuyển 12/10** — chỉ đổi version script |
+| Sinh viên (đã chuyển, chưa kiểm host) | `hoso/quanlytoanbo` | `ApisSinhVien/Modules/hoso/html/quanlytoanbo.html` | **đã chuyển 12/10** — chỉ đổi version script |
+| Sinh viên (đã chuyển, chưa kiểm host) | `hoso/xemhoso` | `ApisSinhVien/Modules/hoso/html/xemhoso.html` | **đã chuyển 12/10** — chỉ đổi version script |
+| Sinh viên (đã chuyển, chưa kiểm host) | `hoso/zoneEditModal_inject` | `ApisSinhVien/Modules/hoso/script/zoneEditModal_inject.js` | **đã chuyển 12/10** → `_v2/…/hoso/script/_hsA.js`: (1) Giới tính trống thì KHÔNG lưu, tô đỏ ô + mở tab Thông tin cơ bản (gốc 09/10: ô không có dòng trống nên rơi về "Nam" rồi ghi đè; `_v2` đã có dòng trống sẵn, chỉ thêm chặn lưu); (2) tab Xuất hoá đơn: ô bỏ trống mà người dùng không tự gõ thì lấp lại giá trị bản ghi hiện hành (`st.hdCham`, `giuHoaDonCu`), không ghi rỗng đè |
+| Sinh viên (đã chuyển, chưa kiểm host) | `tinhtrangquanso/tinhtrangquanso` | `ApisSinhVien/Modules/tinhtrangquanso/html/tinhtrangquanso.html` | **đã chuyển 12/10** — chỉ đổi version script |
+| Sinh viên (đã chuyển, chưa kiểm host) | `tinhtrangquanso/tinhtrangquanso` | `ApisSinhVien/Modules/tinhtrangquanso/script/tinhtrangquanso.js` | **đã chuyển 12/10** — cột tiêu chí mở rộng (Nữ, DTTS…) là tập con của trạng thái → KHÔNG cộng vào "Tổng số" dòng và tổng chung (cờ `moRong` trên cột, hàm `tong()`); tổng từng cột vẫn hiện |
+| Tài chính (đã chuyển, đã kiểm host 30/9) | `dulieuhocphi/hopdong` | `ApisTaiChinh/Modules/dulieuhocphi/html/hopdong.html` | **đã chuyển 12/10** — nút "Xoá đã chọn" + cột ô đánh dấu (chọn tất cả) ở bảng sinh viên, thanh nút đặt trên bảng |
+| Tài chính (đã chuyển, đã kiểm host 30/9) | `dulieuhocphi/hopdong` | `ApisTaiChinh/Modules/dulieuhocphi/scripts/hopdong.js` | **đã chuyển 12/10** — `delSvChon`: dòng mới chỉ gỡ khỏi danh sách, dòng đã lưu xoá `TC_NguoiHoc_QuanLy/Xoa` từng Id qua `ui.batch` 5 luồng, báo gộp, nạp lại; nút = `ui.xoaChon` (tự đếm, mờ khi chưa chọn) |
 
 ---
 

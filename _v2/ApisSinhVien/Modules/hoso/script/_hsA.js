@@ -248,7 +248,7 @@
         ui.enhance(host);
         var anh = ums.files.avatar(z('anh'), { icon: 'fa-user' });
         var bang = X.ddlh(z('ddlh'), { motCot: true, boQuaRong: true, motChinh: true, locHieuLuc: true, boQuaTrungMinh: true, xoaMem: true });
-        var st = { p: null, pid: '', dm: null, profile: null, bank: null, inv: null, dc: [], dcCham: {}, chamLH: {}, tt: null, luot: 0 };
+        var st = { p: null, pid: '', dm: null, profile: null, bank: null, inv: null, dc: [], dcCham: {}, chamLH: {}, hdCham: {}, tt: null, luot: 0 };
 
         /* ---------- Tab ---------- */
         function moTab(k) {
@@ -373,6 +373,10 @@
         /* _zeAutoFillHoaDon: địa chỉ vừa sửa tự điền sang "Địa chỉ trên hoá đơn" — không đè giá trị lấy từ CSDL / người dùng gõ */
         var hdTuDien = false, hdCham = false;
         F('hdDiaChi').addEventListener('input', function () { hdCham = true; });
+        /* Ô hoá đơn người dùng TỰ TAY sửa (gốc 09/10, zoneEditModal_inject "ghi rỗng đè"): chỉ ô này mới được ghi rỗng;
+           ô trống vì chưa nạp kịp / không đụng tới thì lúc lưu lấp lại giá trị cũ của bản ghi hiện hành. */
+        var HD_O = ['hdDiaChi', 'hdMST', 'hdQHNS', 'hdEmail', 'hdSDT', 'hdTenDonVi', 'hdNguoiMua'];
+        HD_O.forEach(function (k) { var el = F(k); if (el) el.addEventListener('input', function () { st.hdCham[k] = 1; }); });
         function dienDiaChiHD(k) {
             if (hdCham || (val('hdDiaChi') && !hdTuDien)) return;
             var b = cumGT(k);
@@ -451,7 +455,7 @@
             st.luot++;
             var luot = st.luot;
             st.p = p; st.pid = e(p.id); st.profile = null; st.bank = null; st.inv = null; st.dc = []; st.dcCham = {}; st.tt = null;
-            hdTuDien = false; hdCham = false;
+            hdTuDien = false; hdCham = false; st.hdCham = {};
             if (!giuTab) { loi(''); moTab('tt'); }
             Array.prototype.forEach.call(host.querySelectorAll('input[data-hs]'), function (el) { el.value = ''; el.classList.remove('is-invalid'); });
             bang.xoa();
@@ -578,6 +582,14 @@
             // Ngày sinh kiểm trước khi gửi (ums.util.ngaySinh, 2026-09-30) — sai thì báo, không gửi
             var nsKt = ums.util.ngaySinh(val('ngay'), val('thang'), val('nam'), '');
             if (nsKt.loi) { ['ngay', 'thang', 'nam'].forEach(function (k) { if (F(k)) F(k).classList.add('is-invalid'); }); loi('Không lưu được: ' + nsKt.loi + '.'); return; }
+            /* Giới tính trống thì KHÔNG lưu (gốc 09/10, zoneEditModal_inject): gốc cũ không có dòng trống nên hồ sơ không đọc được
+               giới tính thì lặng lẽ thành "Nam" rồi ghi đè khi Lưu. Ở đây ô đã có dòng trống (X.chon không khớp → ''), chỉ cần bắt chọn rõ. */
+            if (!val('gioiTinh')) {
+                if (F('gioiTinh')) F('gioiTinh').classList.add('is-invalid');
+                moTab('tt');
+                loi('Chưa chọn Giới tính nên không lưu được. Hệ thống không đọc được giới tính của hồ sơ này, vui lòng chọn ở tab Thông tin cơ bản rồi bấm Lưu lại.');
+                return;
+            }
             var luot = st.luot, duongAnh = '';
             Promise.all([bang.loai, bang.kiemTra(pid)]).then(function (x) {
                 var tr = x[1];
@@ -668,9 +680,25 @@
            bấm Lưu sớm là Thêm ra bản trùng, hoá đơn vẫn đọc bản cũ) mà hỏi lại máy chủ hồ sơ này đã có bản ghi hiện hành chưa. */
         function luuHoaDon(pid, v, ivId) {
             return ums.api.call(gop({ action: NH + 'DSA4BRIeESQzMi4vCC83LigiJAgvJy4P', func: PNH + 'LayDS_PersonInvoiceInfo', silent: true, strPerson_Id: pid, dChiHienHanh: 1 }, chung()))
-                .then(function (x) { var r = arr(x.data)[0]; return r && r.ID ? e(r.ID) : ''; },
-                    function () { return ivId; })   // hỏi không được thì vẫn lưu, theo bản đã nạp lúc mở
-                .then(function (id) { return ghiHoaDon(pid, v, id); });
+                .then(function (x) { var r = arr(x.data)[0]; return r && r.ID ? r : null; },
+                    function () { return st.inv; })   // hỏi không được thì vẫn lưu, theo bản đã nạp lúc mở
+                .then(function (cu) { return ghiHoaDon(pid, giuHoaDonCu(v, cu), cu && cu.ID ? e(cu.ID) : ivId); });
+        }
+        /* Ô bỏ trống mà người dùng KHÔNG tự tay xoá → lấp lại giá trị của bản ghi hiện hành, không ghi rỗng đè
+           (gốc 09/10: chỉ sửa giới tính ở tab Thông tin cơ bản mà địa chỉ / MST hoá đơn bị xoá sạch). */
+        var HD_CU = [['dc', 'BUYER_ADDR_DIACHI', ['hdDiaChi']], ['mst', 'BUYER_TAX_MST', ['hdMST']], ['qhns', 'BUYER_BUDGET_MAQHNS', ['hdQHNS']],
+                     ['em', 'BUYER_EMAIL', ['hdEmail']], ['sdt', 'BUYER_PHONE_SDT', ['hdSDT']], ['ten', 'BUYER_NAME_TENNM', ['hdTenDonVi', 'hdNguoiMua']]];
+        function giuHoaDonCu(v, cu) {
+            if (!cu) return v;
+            var r = gop({}, v);
+            HD_CU.forEach(function (m) {
+                if (e(r[m[0]]).trim()) return;                                                   // có nhập thì thôi
+                if (m[2].some(function (k) { return st.hdCham[k]; })) return;                    // người dùng cố ý xoá
+                var gtCu = cu[m[1]];
+                if (gtCu === null || gtCu === undefined || gtCu === '') return;
+                r[m[0]] = gtCu;
+            });
+            return r;
         }
         function ghiHoaDon(pid, v, ivId) {
             var upd = ivId.length === 32;
