@@ -251,7 +251,7 @@ Kiểm vỏ CŨ trên máy: `http://localhost:8787/index-old.html` (`_harness/RE
 **Lột da màn cũ (spa-v1) — CHỈ khi người dùng nói "spa v1"**; "chuyển <phân hệ>" mặc định = sang `_v2`. Tài liệu: `spa-v1.md`; công cụ
 `python _harness/skin.py css|them|kiem|ap|nhan|dong-goi`; nguồn `App_Themes/Cms/Custom_V1/ums/`; sau mỗi lần kéo gốc chạy `skin.py kiem` → `ap`.
 
-**Kiểm host** — quy trình, sổ, bản ghi thử còn sót, quyền thử ghi, bẫy bộ thử: [_v2/CLAUDE-CHI-TIET.md](_v2/CLAUDE-CHI-TIET.md) mục "Kiểm host". **Khi người dùng bảo "kiểm host" / "chuyển": đọc mục đó trước**, `git fetch origin` + THÔNG BÁO TRƯỚC rồi mới chạy. Công cụ: `_harness/kiem-host/`. Luật cốt lõi: frontend khắc phục được thì sửa `_v2` + ghi sổ lỗi mã, KHÔNG báo backend; thử ghi miễn xoá lại được; làm cuốn chiếu từng phân hệ rồi DỪNG báo cáo. **Bản ghi thử còn sót cần CSDL xoá tay: xem mục đó, đừng thử ghi ở đó.**
+**Kiểm host** — quy trình, sổ, bản ghi thử còn sót, quyền thử ghi, bẫy bộ thử: [_v2/CLAUDE-CHI-TIET.md](_v2/CLAUDE-CHI-TIET.md) mục "Kiểm host". **Khi người dùng bảo "kiểm host" / "chuyển": đọc mục đó trước**, `git fetch origin` + THÔNG BÁO TRƯỚC rồi mới chạy. Công cụ: `_harness/kiem-host/`. Luật cốt lõi: frontend khắc phục được thì sửa `_v2` + ghi sổ lỗi mã, KHÔNG báo backend; thử ghi miễn xoá lại được; làm cuốn chiếu từng phân hệ rồi DỪNG báo cáo; **MỘT màn = MỘT lượt** — mở màn là đi hết mọi thao tác, có CRUD thì thử ghi luôn, không tách đọc → đọc sâu → CRUD (12/10). **Bản ghi thử còn sót cần CSDL xoá tay: xem mục đó, đừng thử ghi ở đó.**
 
 ### Thư mục dựng thử — chỉ có trên máy, chưa từng đưa lên remote
 

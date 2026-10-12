@@ -99,7 +99,9 @@ CLAUDE.md / BO-CUC), grep hàm trong tệp gốc lớn thay vì đọc nguyên t
   (`_v2_bo_xung_deploy` còn tệp khác `_KHONG-CON-GI-DE-UP.txt` = chưa up); (3) phân hệ đã / dở / chưa kiểm (`da-kiem.json`); (4) bản ghi thử còn sót;
   (5) lượt này làm gì, thứ tự; (6) tệp gốc mới kéo về còn "chưa xem" trong `CHO-CHUYEN-SAU-PULL.md` — CHỈ mở diff của tệp thuộc phân hệ đang kiểm lượt này,
   chuyển sang `_v2` trước khi thử màn đó (mục 11, luật kéo gốc); tệp phân hệ khác chỉ nêu số lượng. Phân hệ MỚI chỉ kiểm khi người dùng gọi tên.
-- **Cách làm: CUỐN CHIẾU từng phân hệ** — đọc sâu → thử ghi (thêm thì xoá, đối chứng `LayChiTiet`) → sửa mã / ghi backend → ghi sổ → DỪNG báo cáo.
+- **Cách làm: CUỐN CHIẾU từng phân hệ, MỘT màn = MỘT lượt** (người dùng 12/10: "đọc 1 màn thì phải đọc hết các thao tác có trên màn, có crud thì làm luôn,
+  không phải đọc → đọc sâu → crud, rất mất thời gian") — mở màn là đi hết mọi tab / trang / nút trên dòng / Thêm mới, có thêm-sửa-xoá thì thử ghi ngay
+  (thêm thì xoá, đối chứng `LayChiTiet`) → sửa mã / ghi backend → ghi sổ → DỪNG báo cáo. Không chạy riêng lượt mở, lượt `SAU=1`, lượt `thu-ghi.js`.
   Ưu tiên thay đổi (kéo gốc / sửa mã) ở phân hệ ĐÃ hoàn thành trong sổ trước. Sau mỗi lượt thử ghi quét dấu `ZKT` (`chay-vaitro.js` in "!! CÒN DẤU THỬ").
 - **(A) Frontend khắc phục được thì PHẢI sửa `_v2` + ghi sổ lỗi mã, KHÔNG báo backend.** (Sai định dạng, ô trống thành `//`, thiếu kiểm bắt buộc / số, câu lỗi thô,
   thiếu GET, gửi ô ẩn, lưu lần hai thêm trùng…). Chỉ ghi `ben` khi mã không làm gì được: thiếu / sai chữ ký thủ tục, gói lỗi, dịch vụ không chạy, cấu hình host,
