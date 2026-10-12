@@ -299,3 +299,7 @@ Luật kiểm host hiện hành nằm ở CLAUDE.md mục 9 (bản rút gọn). 
   (chay.js): thiếu Học kỳ → ORA-01400 cột `DAOTAO_THOIGIANDAOTAO_ID`; đủ Loại + Số + Ngày QĐ + Ngày hiệu lực + Học kỳ → thêm OK, `SV_QuyetDinh/Xoa` theo Id trả về sạch
   (ZKT1455 không tạo, ZKT1456 đã xoá). Gốc không kiểm ô nào. `_v2` nay `required` đúng 5 ô; gói bổ sung 1 tệp **chờ up lần 3** → thu-ghi lại → `loi-code.js xong`.
   Bài học: máy chủ báo thiếu TỪNG ô một → dò thủ tục trực tiếp (tạo thì xoá ngay) cho ra đủ danh sách trong một lượt, không up nhiều lần.
+- **16:00 — up lần 3 nhưng tệp trên host vẫn là bản up 2** (Last-Modified 14:43, thiếu required Ngày hiệu lực + Học kỳ; thu-ghi lại vẫn bị đòi Ngày hiệu lực). Mốc đã bị
+  `--da-up` đặt → gói trống. Dựng lại bằng `--moc-tu-host`: ra 33 tệp, nhưng tải lại so từng tệp thì **32 tệp giống hệt host** (tải lỗi nhất thời bị coi "chưa có") →
+  sửa mốc tay cho 32 tệp, `dong-goi.py` thêm thử lại 3 lần khi tải lỗi. Gói bổ sung còn đúng 1 tệp `quyetdinh.js` — chờ người dùng up lại.
+  Bài học: trước khi `--da-up` nên xem tệp vừa up có thật trên host (fetch `?nocache` + Last-Modified), nhất là khi thử ghi lại không đổi kết quả.

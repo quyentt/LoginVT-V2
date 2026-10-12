@@ -249,11 +249,14 @@ def moc_tu_host():
     def tai(k):
         if k.lower().endswith(('.aspx', '.config', '.ashx', '.cs')):
             return k, moi[k], 'khong-tai'      # máy chủ chạy / chặn, không trả nguyên văn
-        try:
-            with urllib.request.urlopen(goc + k.replace(' ', '%20'), timeout=60, context=ctx) as r:
-                return k, hashlib.sha1(r.read()).hexdigest(), 'ok'
-        except Exception as e:
-            return k, None, str(e)[:80]
+        loi = ''
+        for lan in range(3):                   # 12/10: tải lỗi nhất thời làm 32 tệp giống hệt bị coi "chưa có" → thử lại 3 lần
+            try:
+                with urllib.request.urlopen(goc + k.replace(' ', '%20'), timeout=60, context=ctx) as r:
+                    return k, hashlib.sha1(r.read()).hexdigest(), 'ok'
+            except Exception as e:
+                loi = str(e)[:80]
+        return k, None, loi
     moc, loi, bo = {}, [], []
     with ThreadPoolExecutor(8) as ex:
         for k, h, tt in ex.map(tai, sorted(moi)):
