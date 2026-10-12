@@ -814,6 +814,7 @@ LichGiangNhieuPhong.prototype = {
 
     appendRoomsToGrid: function (newRooms) {
         var me = this;
+        if (me.objLocTrong && me.objLocTrong.bBang) return; // bảng khoảng ngày đã vẽ đủ mọi phòng
         var arrDays = me.getNgayHienThi();
         $(".scroll-notice").remove();
         $("#scheduleGrid").append(me.genHtml_DongPhong(newRooms, arrDays, me.dtLichHoc));
@@ -1333,6 +1334,14 @@ LichGiangNhieuPhong.prototype = {
 
     genTable_ThongTin: function (data) {
         var me = this;
+
+        // Đang lọc phòng trống theo khoảng nhiều ngày → luôn vẽ bảng phòng × ngày. Các đường vẽ lại khác
+        // (đổi "Cách tính hiệu suất", tải thêm phòng...) trước đây rơi vào lưới tuần 1 ngày → chỉ thấy ngày đầu tiên.
+        if (me.objLocTrong && me.objLocTrong.bBang) {
+            me.genTable_KhoangNgay();
+            return;
+        }
+        $("#scheduleGrid").removeClass("lgnp-khoang");
 
         if (me.dtPhongHoc.length === 0) {
             $("#scheduleGrid").html('<div class="schedule-empty"><i class="fa-solid fa-door-closed"></i><div>Không có dữ liệu phòng học</div></div>');

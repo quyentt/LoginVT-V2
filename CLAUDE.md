@@ -331,7 +331,7 @@ ba lối: tiếp quản, chuyển màn cũ, viết màn mới; TRAINING.md mục
 `_v2/CHO-CHUYEN-SAU-PULL.md` (mốc mới, mỗi tệp một dòng: phân hệ, màn, trạng thái **"chưa xem"**) → THÔNG BÁO số tệp theo phân hệ đã / chưa chuyển → DỪNG.
 **Diff của một tệp chỉ mở khi tới lượt làm đúng màn đó**: người dùng gọi kiểm host / chuyển phân hệ ấy, hoặc đang sửa chính màn ấy — lúc đó đọc `git diff -w <mốc cũ> <mốc mới> -- <tệp>`,
 chuyển sang `_v2` (thuần CSS vỏ cũ thì bỏ; mã mới lỗi rõ → làm theo ý định + ghi `can-quyet.js`), đổi dòng sổ thành "đã chuyển". Màn thuộc phân hệ chưa chuyển: không bao giờ mở diff.
-Mỗi phiên fetch tối đa một lần, ở đầu. Lịch sử 7 lần kéo (mốc hiện tại `1680e53d`, gốc có force-push): `_v2/NHAT-KY-CHUYEN.md`. Đã tắt cảnh báo CRLF (`core.safecrlf false`).
+Mỗi phiên fetch tối đa một lần, ở đầu. Lịch sử 10 lần kéo (mốc hiện tại `2254204a`, gốc hay force-push): `_v2/NHAT-KY-CHUYEN.md`. Đã tắt cảnh báo CRLF (`core.safecrlf false`).
 
 ### Chép tối thiểu
 

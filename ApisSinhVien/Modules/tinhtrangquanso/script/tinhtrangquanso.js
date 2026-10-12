@@ -747,15 +747,12 @@ TinhTrangQuanSo.prototype = {
     endGetQuanSo: function () {
         var me = main_doc.TinhTrangQuanSo;
         for (var i = 0; i < me.arrHead_Id.length; i++) {
+            //Tổng số chỉ cộng các cột trạng thái; cột tiêu chí mở rộng (Nữ, Dân tộc thiểu số...) là tập con nên không cộng
             var iTongDong = 0;
             for (var j = 0; j < me.arrTrangThai_Id.length; j++) {
                 var iValue = parseInt($("#lblQuanSo" + me.arrHead_Id[i] + "_" + me.arrTrangThai_Id[j]).html());
                 if (!isNaN(iValue)) iTongDong += iValue;
             }
-            me.dtTrangThaiMoRong.forEach(e => {
-                var iValue = parseInt($("#lblQuanSo" + me.arrHead_Id[i] + "_" + e.ID).html());
-                if (!isNaN(iValue)) iTongDong += iValue;
-            });
             $("#lblTongCong_" + me.arrHead_Id[i]).html(iTongDong);
         }
         $("#tblViewCauTrucQuanSo tfoot").html('<tr><th style="text-align: center" colspan="' + (me.iMaxLength + 1) + '">Tổng số</th></tr>');
@@ -777,7 +774,7 @@ TinhTrangQuanSo.prototype = {
                 var iValue = parseInt(arrClass[j].innerHTML);
                 if (!isNaN(iValue)) idemSoLuong += iValue;
             }
-            iTongToanBang += idemSoLuong;
+            //Không cộng vào iTongToanBang (xem ghi chú ở trên)
             $("#tblViewCauTrucQuanSo tfoot tr").append('<th style="text-align: center">' + idemSoLuong + '</th>');
         });
         $("#tblViewCauTrucQuanSo tfoot tr").append('<th style="text-align: center">' + iTongToanBang + '</th>');

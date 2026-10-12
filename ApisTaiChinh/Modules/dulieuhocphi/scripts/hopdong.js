@@ -105,7 +105,28 @@ HopDong.prototype = {
                 });
             }
         });
-        
+        /*------------------------------------------
+        --Discription: [2] Xóa nhiều sinh viên cùng lúc
+        -------------------------------------------*/
+        $("#chkSelectAll_SinhVien").on("click", function () {
+            $("#tblInput_DTSV_SinhVien tbody .chkSinhVien").prop("checked", this.checked);
+            me.update_SinhVienChon();
+        });
+        $("#tblInput_DTSV_SinhVien").delegate(".chkSinhVien", "click", function () {
+            me.update_SinhVienChon();
+        });
+        $("#btnDelete_SinhVien_Chon").click(function () {
+            var arrRow = me.getArr_SinhVienChon();
+            if (arrRow.length == 0) {
+                edu.system.alert("Vui lòng chọn sinh viên cần xóa!");
+                return;
+            }
+            edu.system.confirm("Bạn có chắc chắn xóa " + arrRow.length + " sinh viên đã chọn không?");
+            $("#btnYes").off("click.delSVChon").on("click.delSVChon", function () {
+                me.deleteMulti_SinhVien(arrRow);
+            });
+        });
+
         /*------------------------------------------
         --Discription: [2] Action SinhVien
         --Order:
@@ -179,6 +200,7 @@ HopDong.prototype = {
         edu.util.viewValById("txtNgayKy", "");
         edu.util.viewValById("dropNguyenTac", "");
         $("#tblInput_DTSV_SinhVien tbody").html("");
+        me.update_SinhVienChon();
         $("#tblChinhSach tbody").html("");
         for (var i = 0; i < 1; i++) {
             var id = edu.util.randomString(30, "");
@@ -589,6 +611,7 @@ HopDong.prototype = {
             html += "<td class='td-left'><span>" + edu.util.returnEmpty(data[i].DAOTAO_CHUONGTRINH_TEN) + "</span></td>";
             html += "<td class='td-left'><span>" + edu.util.returnEmpty(data[i].DAOTAO_KHOADAOTAO_TEN) + "</span></td>";
             html += "<td class='td-center'><a id='remove_nhansu" + data[i].ID + "' name='true' class='btnDeletePoiter poiter'><i class='fa fa-trash'></i></a></td>";
+            html += "<td class='td-center'><input type='checkbox' class='chkSinhVien'></td>";
             html += "</tr>";
             //4. fill into tblNhanSu
             $("#tblInput_DTSV_SinhVien tbody").append(html);
@@ -596,6 +619,7 @@ HopDong.prototype = {
             me.arrSinhVien_Id.push(data[i].QLSV_NGUOIHOC_ID);
             me.arrSinhVien.push(data[i]);
         }
+        me.update_SinhVienChon();
     },
     addHTMLinto_SinhVien: function (strNhanSu_Id) {
         var me = main_doc.HopDong;
@@ -633,9 +657,11 @@ HopDong.prototype = {
         html += "<td class='td-left'><span>" + edu.util.returnEmpty(aData.DAOTAO_CHUONGTRINH_TEN) + "</span></td>";
         html += "<td class='td-left'><span>" + edu.util.returnEmpty(aData.DAOTAO_KHOADAOTAO_TEN) + "</span></td>";
         html += "<td class='td-center'><a id='remove_nhansu" + strNhanSu_Id + "' class='btnDeletePoiter poiter'><i class='fa fa-trash'></i></a></td>";
+        html += "<td class='td-center'><input type='checkbox' class='chkSinhVien'></td>";
         html += "</tr>";
         //4. fill into tblNhanSu
         $("#tblInput_DTSV_SinhVien tbody").append(html);
+        me.update_SinhVienChon();
     },
     removeHTMLoff_SinhVien: function (strNhanSu_Id) {
         var me = main_doc.HopDong;
@@ -643,8 +669,101 @@ HopDong.prototype = {
         edu.util.arrExcludeVal(me.arrSinhVien_Id, strNhanSu_Id);
         if (me.arrSinhVien_Id.length === 0) {
             $("#tblInput_DTSV_SinhVien tbody").html("");
-            $("#tblInput_DTSV_SinhVien tbody").html('<tr><td colspan="6">Không tìm thấy dữ liệu!</td></tr>');
+            $("#tblInput_DTSV_SinhVien tbody").html('<tr><td colspan="9">Không tìm thấy dữ liệu!</td></tr>');
         }
+    },
+    /*------------------------------------------
+    --Discription: [2] Xóa nhiều sinh viên cùng lúc
+    --Row đã lưu (name="true"): gọi API xóa từng id; row mới thêm (chưa lưu): chỉ gỡ khỏi form
+    -------------------------------------------*/
+    update_SinhVienChon: function () {
+        var $chk = $("#tblInput_DTSV_SinhVien tbody .chkSinhVien");
+        var iChon = $chk.filter(":checked").length;
+        $("#lblSinhVien_DaChon").html(iChon > 0 ? "(" + iChon + ")" : "");
+        $("#chkSelectAll_SinhVien").prop("checked", $chk.length > 0 && iChon == $chk.length);
+    },
+    getArr_SinhVienChon: function () {
+        var arr = [];
+        $("#tblInput_DTSV_SinhVien tbody .chkSinhVien:checked").each(function () {
+            var $tr = $(this).closest("tr");
+            var $btn = $tr.find(".btnDeletePoiter");
+            arr.push({
+                strRow_Id: $tr.attr("id").replace(/rm_row/g, ""), //khóa trong arrSinhVien_Id
+                strLink_Id: edu.util.cutPrefixId(/remove_nhansu/g, $btn.attr("id")), //Id bản ghi TC_NguoiHoc_QuanLy
+                bDaLuu: edu.util.checkValue($btn.attr("name"))
+            });
+        });
+        return arr;
+    },
+    renumber_SinhVien: function () {
+        $("#tblInput_DTSV_SinhVien tbody tr[id^='rm_row']").each(function (i) {
+            $(this).children("td").first().html(i + 1);
+        });
+    },
+    deleteMulti_SinhVien: function (arrRow) {
+        var me = this;
+        var arrDaLuu = [];
+        var iXoaXong = 0, arrLoi = [];
+        for (var i = 0; i < arrRow.length; i++) {
+            if (arrRow[i].bDaLuu) arrDaLuu.push(arrRow[i]);
+            else me.removeHTMLoff_SinhVien(arrRow[i].strRow_Id);
+        }
+        var iChuaLuu = arrRow.length - arrDaLuu.length;
+        function finish() {
+            me.renumber_SinhVien();
+            me.update_SinhVienChon();
+            var strMsg = "Đã xóa " + (iXoaXong + iChuaLuu) + "/" + arrRow.length + " sinh viên.";
+            if (arrLoi.length > 0) {
+                strMsg += "<br/>Không xóa được " + arrLoi.length + " sinh viên:<br/>" + arrLoi.join("<br/>");
+                edu.system.alert(strMsg, "w");
+            }
+            else edu.system.alert(strMsg);
+        }
+        if (arrDaLuu.length == 0) {
+            finish();
+            return;
+        }
+        edu.system.alert('<div id="zoneprocessSinhVien"></div>');
+        edu.system.genHTML_Progress("zoneprocessSinhVien", arrDaLuu.length);
+        var iNext = 0, iMaxSong = 5; //tối đa 5 request chạy cùng lúc
+        function runNext() {
+            if (iNext >= arrDaLuu.length) return;
+            var objRow = arrDaLuu[iNext++];
+            me.deleteOne_SinhVien(objRow.strLink_Id, function (strLoi) {
+                if (strLoi) {
+                    var strMa = $("#rm_row" + objRow.strRow_Id + " td").eq(2).text();
+                    arrLoi.push((strMa ? strMa + ": " : "") + strLoi);
+                }
+                else {
+                    iXoaXong++;
+                    me.removeHTMLoff_SinhVien(objRow.strRow_Id);
+                }
+                edu.system.start_Progress("zoneprocessSinhVien", finish);
+                runNext();
+            });
+        }
+        for (var k = 0; k < Math.min(iMaxSong, arrDaLuu.length); k++) runNext();
+    },
+    deleteOne_SinhVien: function (strId, fnDone) {
+        //fnDone(strLoi): strLoi rỗng nếu xóa thành công
+        edu.system.makeRequest({
+            success: function (data) {
+                fnDone(data.Success ? "" : (data.Message || "Lỗi không xác định"));
+            },
+            error: function (er) {
+                fnDone(JSON.stringify(er));
+            },
+            type: 'POST',
+            action: 'TC_NguoiHoc_QuanLy/Xoa',
+            contentType: true,
+            data: {
+                'action': 'TC_NguoiHoc_QuanLy/Xoa',
+                'strIds': strId,
+                'strNguoiThucHien_Id': edu.system.userId
+            },
+            fakedb: [
+            ]
+        }, false, false, false, null);
     },
 
     /*----------------------------------------------

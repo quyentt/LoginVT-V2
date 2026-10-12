@@ -3669,8 +3669,11 @@ if (typeof DeXuatHoSo === 'function' && DeXuatHoSo.prototype.save_PersonInvoice
                                 + rows[0].ID + ') → chuyển sang Sửa thay vì Thêm mới.');
                         }
                         dx._currentInvoiceId = rows[0].ID;
+                        // Giữ lại bản ghi cũ để lấp vào những ô bỏ trống, tránh ghi rỗng đè
+                        dx._zeHoaDonCu = rows[0];
                     } else {
                         dx._currentInvoiceId = '';     // chắc chắn chưa có → Thêm mới là đúng
+                        dx._zeHoaDonCu = null;
                     }
                 } catch (e) { }
                 chay();
@@ -3693,5 +3696,184 @@ if (typeof DeXuatHoSo === 'function' && DeXuatHoSo.prototype.save_PersonInvoice
             },
             fakedb: []
         }, false, false, false, null);
+    };
+}
+
+/*==============================================================================
+== GIỚI TÍNH TỰ NHẢY VỀ "NAM"  (09/10/2026)
+==
+== Người dùng báo: đổi giới tính sang Nữ, lưu báo thành công, mở lại vẫn Nam.
+==
+== Gốc rễ: ô Giới tính là ô dropdown DUY NHẤT trong form không có dòng trống
+== đứng đầu. So trong markup:
+==    dropQuocTich / dropDanToc / dropTonGiao → đều có <option value=""> …
+==    dropGioiTinh                           → KHÔNG có
+== Danh mục CORE_PERSON.GENDER_ID nạp vào thì "Nam" là mục đầu tiên. Nên hễ
+== luồng mở hồ sơ KHÔNG đọc ra được giới tính (cột trong danh sách trả về rỗng
+== hoặc mang tên khác), ô này lặng lẽ hiển thị "Nam" — trông y như dữ liệu thật.
+==
+== Hậu quả nặng hơn chuyện hiển thị: bấm Lưu là nó gửi luôn mã của "Nam" xuống
+== máy chủ, GHI ĐÈ giới tính thật. Người dùng sửa sang Nữ, lưu, mở lại thấy Nam
+== nên lưu tiếp — mỗi lần lưu lại ghi "Nam" một lần nữa.
+==
+== Hai việc ở đây:
+==   1) Chèn dòng trống "-- Chọn giới tính --" lên đầu, và khi hồ sơ không xác
+==      định được giới tính thì để ô ở dòng trống đó, không để rơi vào "Nam".
+==   2) Chặn lưu khi ô đang trống, bắt chọn rõ ràng — thà hỏi một câu còn hơn
+==      âm thầm ghi sai giới tính của người ta.
+==============================================================================*/
+if (typeof DeXuatHoSo === 'function' && DeXuatHoSo.prototype.openEditByPerson
+    && !DeXuatHoSo.prototype._zeGioiTinhHooked) {
+    DeXuatHoSo.prototype._zeGioiTinhHooked = true;
+
+    var _zeChenDongTrongGT = function () {
+        var sel = document.getElementById('dropGioiTinh');
+        if (!sel || !sel.options || !sel.options.length) return false;
+        if (!sel.querySelector('option[value=""]')) {
+            var o = document.createElement('option');
+            o.value = '';
+            o.textContent = '-- Chọn giới tính --';
+            sel.insertBefore(o, sel.firstChild);
+        }
+        return true;
+    };
+
+    var _origOpenGT = DeXuatHoSo.prototype.openEditByPerson;
+    DeXuatHoSo.prototype.openEditByPerson = function (person) {
+        var kq = _origOpenGT.apply(this, arguments);
+        var biet = !!((person && person.gioiTinh) || (person && person.gioiTinhMa));
+        // Danh mục nạp bất đồng bộ nên phải thử lại vài mốc; mốc cuối đứng sau
+        // _setDrop (1500ms) của luồng gốc.
+        [0, 300, 800, 1600, 2400].forEach(function (ms) {
+            setTimeout(function () {
+                try {
+                    if (!_zeChenDongTrongGT()) return;
+                    if (biet) return;
+                    var $g = $('#dropGioiTinh');
+                    if ($g.attr('data-user-touched')) return;   // người dùng đã tự chọn
+                    $g.val('');                                  // không rõ thì để trống, đừng để "Nam"
+                } catch (e) { }
+            }, ms);
+        });
+        return kq;
+    };
+}
+
+/*------------------------------------------
+-- Chặn lưu khi chưa xác định giới tính. Đặt ở tầng gửi request nên mọi đường
+-- vào lưu đều đi qua, kể cả chốt tự gọi lại khi chuỗi gốc tắc.
+-------------------------------------------*/
+if (typeof edu !== 'undefined' && edu.system && edu.system.makeRequest
+    && !edu.system._zeChanThieuGioiTinh) {
+    edu.system._zeChanThieuGioiTinh = true;
+
+    var _zeBaoThieuGT = function (msg) {
+        var modal = document.getElementById('zoneEdit');
+        if (!modal) return;
+        var el = document.getElementById('zeChanLuu');
+        if (!el) {
+            el = document.createElement('div');
+            el.id = 'zeChanLuu';
+            el.style.cssText = 'margin:0;padding:11px 24px;background:#fef2f2;'
+                + 'border-bottom:1px solid #fca5a5;color:#b91c1c;font-size:13.5px;'
+                + 'font-weight:600;line-height:1.5;';
+            var moc = document.getElementById('zeThanhSV') || modal.querySelector('.box-header');
+            if (moc && moc.parentNode) moc.parentNode.insertBefore(el, moc.nextSibling);
+            else modal.insertBefore(el, modal.firstChild);
+        }
+        el.textContent = msg;
+        el.style.display = '';
+    };
+
+    var _mrGT = edu.system.makeRequest;
+    edu.system.makeRequest = function (o) {
+        try {
+            var f = (o && o.data && o.data.func) || '';
+            if (/CorePerson/.test(f) && /Insert|Update/.test(f)) {
+                var gt = (((o.data.strGenderId || '') + '')).trim();
+                if (!gt && document.getElementById('dropGioiTinh')) {
+                    var dx = (window.main_doc && window.main_doc.DeXuatHoSo) || null;
+                    if (dx) dx.icheck = false;          // khỏi báo "Lưu thành công" giả
+                    _zeBaoThieuGT('Chưa chọn Giới tính nên không lưu được.'
+                        + ' Hệ thống không đọc được giới tính của hồ sơ này, vui lòng chọn'
+                        + ' ở tab Thông tin cơ bản rồi bấm Lưu lại.');
+                    try {
+                        $('#dropGioiTinh').css({ 'border': '1px solid #dc2626', 'background': '#fef2f2' })
+                            .off('.zegt').on('change.zegt', function () {
+                                $(this).css({ 'border': '', 'background': '' });
+                            });
+                    } catch (e) { }
+                    console.warn('[ZE] CHẶN lưu CorePerson: strGenderId rỗng.');
+                    return;                              // không gửi request
+                }
+            }
+        } catch (e) { }
+        return _mrGT.apply(this, arguments);
+    };
+}
+
+/*==============================================================================
+== TAB XUẤT HOÁ ĐƠN GHI RỖNG ĐÈ LÊN DỮ LIỆU CŨ  (09/10/2026)
+==
+== Phát hiện qua log thật: người dùng chỉ sửa giới tính ở tab Thông tin cơ bản,
+== không đụng tab Xuất hoá đơn, vậy mà lệnh lưu vẫn gửi:
+==     strBuyer_Addr = ""   strBuyer_Tax_Mst = ""
+==     strBuyer_Email = ""  strBuyer_Phone   = ""
+== save_PersonInvoice đọc thẳng các ô trên form, ô nào trống thì gửi rỗng — mà ô
+== trống phần lớn là vì luồng nạp chưa kịp đổ dữ liệu vào, chứ không phải người
+== dùng muốn xoá. Hồ sơ nào đang có địa chỉ / mã số thuế hoá đơn là bị xoá sạch
+== chỉ vì một lần lưu ở tab khác.
+==
+== Cách xử lý giống hệt bài học bên Email/Điện thoại: ô trống KHÔNG có nghĩa là
+== muốn xoá. Bản vá "tra trước khi ghi" ở trên đã có sẵn bản ghi hoá đơn hiện
+== hành trong tay, nên lấy luôn giá trị cũ lấp vào những ô bỏ trống. Chỉ ô nào
+== người dùng TỰ TAY xoá mới thật sự ghi rỗng.
+==============================================================================*/
+if (typeof edu !== 'undefined' && edu.system && edu.system.makeRequest
+    && !edu.system._zeGiuHoaDonCuHooked) {
+    edu.system._zeGiuHoaDonCuHooked = true;
+
+    // Tham số gửi đi  →  ô trên form  →  cột trong bản ghi cũ
+    var _ZE_HD_MAP = [
+        ['strBuyer_Addr', 'txtKQ_HD_DiaChi', 'BUYER_ADDR_DIACHI'],
+        ['strBuyer_Tax_Mst', 'txtKQ_HD_MST', 'BUYER_TAX_MST'],
+        ['strBuyer_Budget_Qhns', 'txtKQ_HD_MaQHNS', 'BUYER_BUDGET_MAQHNS'],
+        ['strBuyer_Email', 'txtKQ_HD_Email', 'BUYER_EMAIL'],
+        ['strBuyer_Phone', 'txtKQ_HD_SDT', 'BUYER_PHONE_SDT'],
+        ['strBuyer_Name', 'txtKQ_HD_TenDonVi', 'BUYER_NAME_TENNM']
+    ];
+
+    // Đánh dấu ô nào người dùng tự tay sửa — chỉ những ô đó mới được phép ghi rỗng
+    $(document).on('input.zehd',
+        '#txtKQ_HD_DiaChi, #txtKQ_HD_MST, #txtKQ_HD_MaQHNS, #txtKQ_HD_Email,'
+        + ' #txtKQ_HD_SDT, #txtKQ_HD_TenDonVi, #txtKQ_HD_NguoiMua',
+        function () { $(this).attr('data-user-touched', '1'); });
+
+    var _mrHD = edu.system.makeRequest;
+    edu.system.makeRequest = function (o) {
+        try {
+            var f = (o && o.data && o.data.func) || '';
+            if (/Sua_PersonInvoiceInfo/.test(f) && o.data) {
+                var dx = (window.main_doc && window.main_doc.DeXuatHoSo) || null;
+                var cu = (dx && dx._zeHoaDonCu) || null;
+                if (cu) {
+                    var giuLai = [];
+                    _ZE_HD_MAP.forEach(function (m) {
+                        var dangGui = ((o.data[m[0]] || '') + '').trim();
+                        if (dangGui) return;                                  // có nhập thì thôi
+                        if ($('#' + m[1]).attr('data-user-touched')) return;  // người dùng cố ý xoá
+                        var giaTriCu = cu[m[2]];
+                        if (giaTriCu === null || giaTriCu === undefined || giaTriCu === '') return;
+                        o.data[m[0]] = giaTriCu;                              // lấp lại giá trị cũ
+                        giuLai.push(m[1]);
+                    });
+                    if (giuLai.length) {
+                        console.warn('[ZE Hoá đơn] các ô bỏ trống được giữ nguyên giá trị cũ,'
+                            + ' không ghi rỗng đè: ' + giuLai.join(', '));
+                    }
+                }
+            }
+        } catch (e) { }
+        return _mrHD.apply(this, arguments);
     };
 }

@@ -10,6 +10,28 @@ Xem lại đúng thay đổi của một tệp: `git diff -w <từ>..<đến> --
 
 ---
 
+## Lần kéo 10 (12/10 tối) — mốc gốc nay là `2254204a` (gốc lại force-push; mốc cũ `c42e11e1`)
+
+Lần sau so: `git diff --name-status 2254204a origin/main`. 11 tệp gốc đổi, đã ghi đè bằng `git checkout origin/main -- <tệp>`, CHƯA mở diff.
+Số theo phân hệ: Sinh viên 7 · Cổng cán bộ 2 · Tài chính 2. **Cả 11 tệp đều của màn ĐÃ chuyển** — không có màn mới, không có phân hệ chưa chuyển.
+Mở diff khi: kiểm host Sinh viên (chưa kiểm) · kiểm lại Tài chính `hopdong` · sửa `lichgiangnhieuphonghoc` (đã kiểm host 6/10, nay gốc đổi tiếp).
+
+| Phân hệ | Màn | Tệp gốc | Trạng thái |
+|---|---|---|---|
+| Cổng cán bộ (đã chuyển, đã kiểm host 6/10) | `lichgiang/lichgiangnhieuphonghoc` | `ApisCongCanBo/Modules/lichgiang/html/lichgiangnhieuphonghoc.html` | chưa xem |
+| Cổng cán bộ (đã chuyển, đã kiểm host 6/10) | `lichgiang/lichgiangnhieuphonghoc` | `ApisCongCanBo/Modules/lichgiang/script/lichgiangnhieuphonghoc.js` | chưa xem |
+| Sinh viên (đã chuyển, chưa kiểm host) | `hoso/hoso_capnhat` | `ApisSinhVien/Modules/hoso/html/hoso_capnhat.html` | chưa xem (lần 9 đã chuyển 12/10, gốc đổi tiếp) |
+| Sinh viên (đã chuyển, chưa kiểm host) | `hoso/hoso_danhsach` | `ApisSinhVien/Modules/hoso/html/hoso_danhsach.html` | chưa xem (lần 9 đã chuyển 12/10, gốc đổi tiếp) |
+| Sinh viên (đã chuyển, chưa kiểm host) | `hoso/quanlytoanbo` | `ApisSinhVien/Modules/hoso/html/quanlytoanbo.html` | chưa xem (lần 9 đã chuyển 12/10, gốc đổi tiếp) |
+| Sinh viên (đã chuyển, chưa kiểm host) | `hoso/xemhoso` | `ApisSinhVien/Modules/hoso/html/xemhoso.html` | chưa xem (lần 9 đã chuyển 12/10, gốc đổi tiếp) |
+| Sinh viên (đã chuyển, chưa kiểm host) | `hoso/zoneEditModal_inject` | `ApisSinhVien/Modules/hoso/script/zoneEditModal_inject.js` | chưa xem (lần 9 đã chuyển 12/10, gốc đổi tiếp) |
+| Sinh viên (đã chuyển, chưa kiểm host) | `tinhtrangquanso/tinhtrangquanso` | `ApisSinhVien/Modules/tinhtrangquanso/html/tinhtrangquanso.html` | chưa xem |
+| Sinh viên (đã chuyển, chưa kiểm host) | `tinhtrangquanso/tinhtrangquanso` | `ApisSinhVien/Modules/tinhtrangquanso/script/tinhtrangquanso.js` | chưa xem |
+| Tài chính (đã chuyển, đã kiểm host 30/9) | `dulieuhocphi/hopdong` | `ApisTaiChinh/Modules/dulieuhocphi/html/hopdong.html` | chưa xem |
+| Tài chính (đã chuyển, đã kiểm host 30/9) | `dulieuhocphi/hopdong` | `ApisTaiChinh/Modules/dulieuhocphi/scripts/hopdong.js` | chưa xem |
+
+---
+
 ## Lần kéo 9 (12/10) — mốc gốc nay là `c42e11e1` (gốc force-push; `origin/main` cũ trên máy là `df26f98b`)
 
 Lần sau so: `git diff --name-status c42e11e1 origin/main`. 46 tệp gốc đổi, đã ghi đè bằng `git checkout origin/main -- <tệp>`, CHƯA mở diff.
