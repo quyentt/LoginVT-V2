@@ -328,7 +328,7 @@ ba lối: tiếp quản, chuyển màn cũ, viết màn mới; TRAINING.md mục
 `_v2/`, `_harness/`, `CLAUDE.md` nằm trong git `quyentt/LoginVT-V2`; máy khác clone là đủ (trừ `tk.md`; `_v2_deploy/` dựng lại bằng `python _harness/dong-goi.py`).
 **⚠ Luật kéo gốc — KHÔNG đọc diff lúc kéo (người dùng 6/10: "diff như vậy quá tốn").** Khi người dùng bảo "chuyển" / "kiểm": `git fetch origin` +
 `git diff --name-status <mốc> origin/main` (chỉ TÊN tệp, vài trăm token) → ghi đè tệp gốc bằng `git checkout origin/main -- <tệp>` → ghi bảng tệp vào
-`_v2/CHO-CHUYEN-SAU-PULL.md` (mốc mới, mỗi tệp một dòng: phân hệ, màn, trạng thái **"chưa xem"**) → THÔNG BÁO số tệp theo phân hệ đã / chưa chuyển → DỪNG.
+`_v2/CHO-CHUYEN-SAU-PULL.md` (mốc mới, mỗi tệp một dòng: phân hệ, màn, trạng thái **"chưa xem"**) → THÔNG BÁO số tệp theo phân hệ đã / chưa chuyển → **HỎI "chuyển sang `_v2` ngay không?"** (người dùng 12/10) rồi dừng chờ trả lời. Tệp gốc KHÔNG up host (người dùng chỉ làm `_v2`).
 **Diff của một tệp chỉ mở khi tới lượt làm đúng màn đó**: người dùng gọi kiểm host / chuyển phân hệ ấy, hoặc đang sửa chính màn ấy — lúc đó đọc `git diff -w <mốc cũ> <mốc mới> -- <tệp>`,
 chuyển sang `_v2` (thuần CSS vỏ cũ thì bỏ; mã mới lỗi rõ → làm theo ý định + ghi `can-quyet.js`), đổi dòng sổ thành "đã chuyển". Màn thuộc phân hệ chưa chuyển: không bao giờ mở diff.
 Mỗi phiên fetch tối đa một lần, ở đầu. Lịch sử 10 lần kéo (mốc hiện tại `2254204a`, gốc hay force-push): `_v2/NHAT-KY-CHUYEN.md`. Đã tắt cảnh báo CRLF (`core.safecrlf false`).
