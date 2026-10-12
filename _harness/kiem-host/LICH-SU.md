@@ -295,3 +295,7 @@ Luật kiểm host hiện hành nằm ở CLAUDE.md mục 9 (bản rút gọn). 
   "Kiểm tra lại: Loại yêu cầu" — danh mục Loại yêu cầu trên host trống nên không thêm được (khai ở Dịch vụ một cửa trước); Chế độ chính sách: ô bắt buộc chạy, máy chủ từ chối
   "Doi tuong da duoc khai bao roi" với mọi đối tượng — host 21/21 đối tượng đều đã có dòng (mỗi đối tượng một chế độ, thủ tục kiểm trùng theo đối tượng) → từ chối hợp lệ;
   Quyết định: Loại đã điền được, máy chủ đòi tiếp Ngày quyết định → thêm `required`, gói bổ sung 1 tệp **chờ up lần 2**. Sổ lỗi mã còn 1 (quyetdinh). Không còn dấu ZKT.
+- **15:40 — up lần 2 → thu-ghi Quyết định: máy chủ đòi tiếp Ngày hiệu lực.** Thay vì up từng ô, dò thẳng thủ tục `Them_QLSV_QuyetDinh` qua `ums.api.call` trong trang
+  (chay.js): thiếu Học kỳ → ORA-01400 cột `DAOTAO_THOIGIANDAOTAO_ID`; đủ Loại + Số + Ngày QĐ + Ngày hiệu lực + Học kỳ → thêm OK, `SV_QuyetDinh/Xoa` theo Id trả về sạch
+  (ZKT1455 không tạo, ZKT1456 đã xoá). Gốc không kiểm ô nào. `_v2` nay `required` đúng 5 ô; gói bổ sung 1 tệp **chờ up lần 3** → thu-ghi lại → `loi-code.js xong`.
+  Bài học: máy chủ báo thiếu TỪNG ô một → dò thủ tục trực tiếp (tạo thì xoá ngay) cho ra đủ danh sách trong một lượt, không up nhiều lần.

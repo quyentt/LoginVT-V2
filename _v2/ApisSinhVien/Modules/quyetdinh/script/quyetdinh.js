@@ -115,13 +115,13 @@
             { key: 'strLoaiQuyetDinh_Id', col: 'LOAIQUYETDINH_ID', label: 'Loại quyết định', type: 'select', placeholder: 'Chọn loại quyết định', required: true,   // kiểm host 12/10: máy chủ từ chối khi trống
               source: { call: { action: 'SV_QuyetDinh_ThucThi/LayDSLoaiQuyetDinh', method: 'GET', type: 'GET', strNguoiDung_Id: Q.uid() }, name: 'TEN' } },
             { key: 'strCapQuyetDinh_Id', col: 'CAPQUYETDINH_ID', label: 'Cấp quyết định', type: 'select', source: { dm: 'QLSV.CQD' } },
-            { key: 'strDaoTao_ThoiGianDaoTao_Id', col: 'DAOTAO_THOIGIANDAOTAO_ID', label: 'Học kỳ', type: 'select', placeholder: 'Chọn học kỳ',
+            { key: 'strDaoTao_ThoiGianDaoTao_Id', col: 'DAOTAO_THOIGIANDAOTAO_ID', label: 'Học kỳ', type: 'select', placeholder: 'Chọn học kỳ', required: true,   // kiểm host 12/10: cột NOT NULL (ORA-01400)
               source: { call: { action: 'KHCT_ThongTin_MH/DSA4BRIFIC4VIC4eFSkuKAYoIC8FIC4VIC4P', func: 'pkg_kehoach_thongtin.LayDSDaoTao_ThoiGianDaoTao',
                   strDAOTAO_Nam_Id: '', strNguoiThucHien_Id: '', strTuKhoa: '', pageIndex: 1, pageSize: 100000 }, name: 'DAOTAO_THOIGIANDAOTAO' } },
             { key: 'strSoQuyetDinh', col: 'SOQUYETDINH', label: 'Số quyết định', required: true },
             { key: 'strNgayQuyetDinh', col: 'NGAYQUYETDINH', label: 'Ngày quyết định', type: 'date', required: true },   // kiểm host 12/10: máy chủ từ chối khi trống
             { type: 'gap' },
-            { key: 'strNgayHieuLuc', col: 'NGAYHIEULUC', label: 'Ngày hiệu lực', type: 'date' },
+            { key: 'strNgayHieuLuc', col: 'NGAYHIEULUC', label: 'Ngày hiệu lực', type: 'date', required: true },   // kiểm host 12/10: máy chủ từ chối khi trống
             { key: 'strNgayHetHieuLuc', col: 'NGAYHETHIEULUC', label: 'Ngày hết hiệu lực', type: 'date' },
             { key: 'strHinhThucQuyetDinh_Id', label: 'Hình thức', type: 'select', placeholder: 'Chọn hình thức' },
             { key: 'strNguyenNhan_LyDo', col: 'NGUYENNHAN_LYDO', label: 'Nội dung quyết định', type: 'textarea', span: true }
