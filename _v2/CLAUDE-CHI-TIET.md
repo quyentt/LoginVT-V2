@@ -89,6 +89,8 @@ CLAUDE.md / BO-CUC), grep hàm trong tệp gốc lớn thay vì đọc nguyên t
 ## Kiểm host (quy trình đầy đủ)
 
 **Kiểm host** (`_harness/kiem-host/`, Edge có cửa sổ qua DevTools cổng 9333, tài khoản `tk.md`, kết quả ở `%TEMP%/ums-kiem-host`):
+- **Host từ 12/10/2026: `https://qldt.eaut.edu.vn/qtdh/_v2/index.aspx`** (gốc ứng dụng `/qtdh/`; host thử cũ `con98.api-apis.com/qtdhgit` không dùng nữa). Địa chỉ chỉ khai ở dòng 1 `tk.md`,
+  mọi script đọc từ đó. Sổ `da-kiem.json`, mốc up `.moc-da-up.json` là của host cũ → lần đầu kiểm host mới chạy `dong-goi.py --moc-tu-host` để biết host đang ở bản nào.
 `node dangnhap.js` → `menu.js <roleId>` → `SAU=1 CHI="id1,id2" node chay-vaitro.js <roleId>` (đọc sâu; `THUVAI="Đặng Bác Ái"` cho Cổng SV)
 → `thu-ghi.js` / `thu-ghi-ui.js` (`TIM="Kadara" FULL=1`) → lái tay `node chay.js <role> <cnId|-> '<thân hàm>'` (nháy ĐƠN; có `nut() os() s2() go() bang() bao()`)
 → `va-tam.js` chạy mã vừa sửa trên host trước khi up → `tom-tat.js <6 ký tự>`. Mẫu lệnh lái tay: `kiem-host/mau-lenh/`.
@@ -103,6 +105,8 @@ CLAUDE.md / BO-CUC), grep hàm trong tệp gốc lớn thay vì đọc nguyên t
   không phải đọc → đọc sâu → crud, rất mất thời gian") — mở màn là đi hết mọi tab / trang / nút trên dòng / Thêm mới, có thêm-sửa-xoá thì thử ghi ngay
   (thêm thì xoá, đối chứng `LayChiTiet`) → sửa mã / ghi backend → ghi sổ → DỪNG báo cáo. Không chạy riêng lượt mở, lượt `SAU=1`, lượt `thu-ghi.js`.
   Ưu tiên thay đổi (kéo gốc / sửa mã) ở phân hệ ĐÃ hoàn thành trong sổ trước. Sau mỗi lượt thử ghi quét dấu `ZKT` (`chay-vaitro.js` in "!! CÒN DẤU THỬ").
+- **Cặp Từ ngày / Đến ngày (người dùng 12/10): màn nào có cặp ngày (Từ–Đến, Ngày đi–Ngày về, Bắt đầu–Kết thúc…) thì kiểm `ums.ui.khoangNgay` có ghép đúng không**
+  (chọn Đến < Từ → tự thành Từ). Không tự ghép (nhãn lạ, hai ô không liền nhau) → thêm `data-range="k:tu"` / `"k:den"` ngay trong lượt kiểm, ghi sổ lỗi mã. Luật 22 `BO-CUC.md`.
 - **(A) Frontend khắc phục được thì PHẢI sửa `_v2` + ghi sổ lỗi mã, KHÔNG báo backend.** (Sai định dạng, ô trống thành `//`, thiếu kiểm bắt buộc / số, câu lỗi thô,
   thiếu GET, gửi ô ẩn, lưu lần hai thêm trùng…). Chỉ ghi `ben` khi mã không làm gì được: thiếu / sai chữ ký thủ tục, gói lỗi, dịch vụ không chạy, cấu hình host,
   thủ tục làm sai. Trước khi ghi backend: so tham số với màn khác gọi cùng controller (bài học `dTrangThai` ↔ `iTrangThai`).
