@@ -61,7 +61,7 @@ thì mở các màn ghi `xong 30/9` của phân hệ đó trong `RA-HOP-THOAI.md
 
 - Đăng nhập / vai trò / mapping y như host cũ (619 chức năng) → sổ `da-kiem.json` dùng tiếp. Gói bổ sung đã up 13:32 (4 tệp kéo gốc lần 10).
 - Kéo gốc lần 10, màn ở phân hệ đã kiểm xong: CCB `lichgiangnhieuphonghoc` kiểm lại ĐẠT (2 mục Tiết mới); TC `dulieuhocphi/hopdong` host không khai chức năng → chưa kiểm.
-- **Sinh viên (14:10–15:05): KIỂM XONG 27/27 màn trên menu** (sổ đủ kết luận). Chờ người dùng up gói bổ sung (4 tệp) rồi chạy lại:
+- **Sinh viên: ĐÃ HOÀN THIỆN 27/27 màn trên menu, sổ lỗi mã TRỐNG, gói trống (up lần 4 ~16:00).** Lịch sử bốn lần up ở LICH-SU; các dòng dưới chỉ còn là nhật ký:
   `node thu-ghi.js 2BD6D7679D854642A8C1C726817E4B12 5604EFCC3B684224B09CEC287A6F69FD 88140D4614DD46C1AF2269A8FB7BC8E5 55748952A6434F8F9B991C7C01853035 4CDC89FC487E4764B3CAEE1D1839236C`
   → **Up 1 (15:20): giayto sạch, yeucau chặn đúng (danh mục trống), chedochinhsach required chạy (máy chủ từ chối vì mọi đối tượng đã khai) → 3 lỗi mã đã gỡ. Quyết định: máy chủ đòi 5 ô (Loại, Số, Ngày QĐ, Ngày hiệu lực, Học kỳ — dò thẳng thủ tục 15:40), `_v2` đã required đủ, CHỜ UP LẦN 3** rồi `node thu-ghi.js 2BD6D7679D854642A8C1C726817E4B12 88140D4614DD46C1AF2269A8FB7BC8E5` → sạch thì `loi-code.js xong ApisSinhVien quyetdinh/quyetdinh`. 3 màn Nhập chế độ chính sách lỗi backend ORA-24338 (ben).
 - Còn chờ (cũ): 7 tệp Sinh viên lần kéo 9 + 10 ĐÃ kiểm 12/10 chiều — bỏ dòng này khi đọc lại. Gốc: (`hoso/_hsA.js` chặn thiếu giới tính, hoá đơn; `tinhtrangquanso` tổng không cộng tiêu chí mở rộng) — kiểm khi người dùng gọi phân hệ Sinh viên.

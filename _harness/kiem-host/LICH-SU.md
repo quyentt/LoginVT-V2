@@ -303,3 +303,5 @@ Luật kiểm host hiện hành nằm ở CLAUDE.md mục 9 (bản rút gọn). 
   `--da-up` đặt → gói trống. Dựng lại bằng `--moc-tu-host`: ra 33 tệp, nhưng tải lại so từng tệp thì **32 tệp giống hệt host** (tải lỗi nhất thời bị coi "chưa có") →
   sửa mốc tay cho 32 tệp, `dong-goi.py` thêm thử lại 3 lần khi tải lỗi. Gói bổ sung còn đúng 1 tệp `quyetdinh.js` — chờ người dùng up lại.
   Bài học: trước khi `--da-up` nên xem tệp vừa up có thật trên host (fetch `?nocache` + Last-Modified), nhất là khi thử ghi lại không đổi kết quả.
+- **Up lần 4 (tệp host 56.822 byte, 14:54:46 — đã kiểm trước bằng fetch) → thu-ghi Quyết định: thêm (đủ 5 ô) → sửa → Xoá đã chọn SẠCH.** Sổ lỗi mã TRỐNG. Gói bổ sung trống.
+  **Sinh viên: ĐÃ HOÀN THIỆN 27/27 màn trên menu host** (4 sạch, 1 từ chối hợp lệ, 1 chặn đúng, 8 chỉ xem, 13 không thử có lý do; 3 lỗi backend ORA-24338 có `ben`).
