@@ -291,3 +291,7 @@ Luật kiểm host hiện hành nằm ở CLAUDE.md mục 9 (bản rút gọn). 
   `/^X[oó][áa]$/`; khi lái tay nên tìm nút xoá theo lớp `ums-btn--danger`. Nút trên dòng là nút icon: `chu()` rỗng, phải đọc `title`.
 - Sổ: 27 màn trên menu đều có kết luận cột thử ghi (3 sạch, 4 từ chối + lỗi mã đã sửa, 7 chỉ xem, 13 không thử có lý do); 8 màn ngoài menu = host chưa khai (`xep-loai`).
   `can-quyet.js` thêm `ben` 3 màn chính sách. Không còn dấu ZKT (ZKT1418 hai màn vé xe đã xoá, ZKT1450 đã xoá). **Việc kế: người dùng up gói → `thu-ghi.js` lại 4 màn → `loi-code.js xong`.**
+- **15:20 — người dùng "đã up" → `--da-up`; thu-ghi lại 4 màn bằng tệp thật:** Giấy tờ thêm → sửa → xoá SẠCH (đối chứng LayChiTiet có → không); Yêu cầu: Lưu bị chặn tại màn
+  "Kiểm tra lại: Loại yêu cầu" — danh mục Loại yêu cầu trên host trống nên không thêm được (khai ở Dịch vụ một cửa trước); Chế độ chính sách: ô bắt buộc chạy, máy chủ từ chối
+  "Doi tuong da duoc khai bao roi" với mọi đối tượng — host 21/21 đối tượng đều đã có dòng (mỗi đối tượng một chế độ, thủ tục kiểm trùng theo đối tượng) → từ chối hợp lệ;
+  Quyết định: Loại đã điền được, máy chủ đòi tiếp Ngày quyết định → thêm `required`, gói bổ sung 1 tệp **chờ up lần 2**. Sổ lỗi mã còn 1 (quyetdinh). Không còn dấu ZKT.
