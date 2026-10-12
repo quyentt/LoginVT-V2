@@ -227,6 +227,12 @@
             {"man":"Sinh viên","q":"Ô **\"Năm nhập học\"** sẽ trống: lời gọi danh sách năm nhập học đang trả 404 trên host (đã gặp ở Cổng cán bộ → Thống kê → Hẹn gánh). **Anh:** bật lại API. (KHCT_NamNhapHoc/LayDanhSach.)","ben":"oracle"}
         ]);
     });
+    /* Kiểm host 12/10 (host mới) */
+    ['chinhsach/chinhsachphantram', 'chinhsach/chinhsachsotien', 'chinhsach/chinhsachdoituong'].forEach(function (t) {
+        them("apissinhvien/modules/" + t, [
+            {"man":"Sinh viên → Chính sách → Nhập chế độ chính sách (phần trăm / số tiền / đối tượng)","q":"Bấm Tìm kiếm thì **ô kết quả miễn giảm của từng sinh viên trống hết** — lời gọi lấy kết quả theo người học trả lỗi ORA-24338 (statement handle not executed) với MỌI sinh viên, dù đã chọn đủ học kỳ, khoản thu, kiểu học, chế độ, đối tượng (bản gốc gửi y hệt tham số). Màn chỉ báo lỗi một lần, không lặp. **Anh:** sửa thủ tục `PKG_HOSOSINHVIEN_CHINHSACH.LayKQChinhSach_PhanTram` / `SV_ChinhSach/LayKQChinhSach_SoTien` / `LayKQChinhSach_DoiTuong` — mở con trỏ trả về cả khi không có dòng (kiểm host 12/10).","ben":"oracle"}
+        ]);
+    });
     them("apissinhvien/modules/kehoach/kehoach", [
         {"man":"Sinh viên → Kế hoạch → Kế hoạch","q":"Không có lời gọi **xoá kế hoạch** người học (bản cũ gọi nhầm thủ tục xoá phạm vi với id kế hoạch nên chưa bao giờ xoá được) → nút Xoá đã bỏ. **Anh:** bổ sung thủ tục xoá kế hoạch nếu cần. **Nghiệp vụ:** có dùng \"Cán bộ phân công xét\" không (bản cũ đã tắt lưu, nút đang khoá).","ben":"oracle"}
     ]);

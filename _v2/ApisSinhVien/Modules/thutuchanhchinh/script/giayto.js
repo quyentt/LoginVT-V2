@@ -92,8 +92,8 @@
             { title: 'Ngày làm việc', cls: 'is-center', render: function (r) { return nutXem('nlv', r); } }
         ],
         fields: [
-            { key: 'strMa', col: 'MA', label: 'Mã', cols: 12 },
-            { key: 'strTen', col: 'TEN', label: 'Tên', cols: 12 },
+            { key: 'strMa', col: 'MA', label: 'Mã', cols: 12, required: true },   // kiểm host 12/10: máy chủ đòi cả Tên và Mã
+            { key: 'strTen', col: 'TEN', label: 'Tên', cols: 12, required: true },
             { key: 'strDonViPhuTrach_Id', col: 'DONVIPHUTRACH_ID', label: 'Đơn vị', type: 'select', source: CCTC, placeholder: 'Chọn đơn vị', cols: 12 },
             { key: 'dSoNgay_XuLy', col: 'SONGAY_XULY', label: 'Thời gian xử lý — Ngày', cols: 4 },
             { key: 'dSoGio_XuLy', col: 'SOGIO_XULY', label: 'Giờ', cols: 4 },

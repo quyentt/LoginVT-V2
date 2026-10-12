@@ -66,7 +66,7 @@
             { title: 'Hiệu lực', cls: 'is-center', render: function (r) { return String(r.HIEULUC) === '0' ? 'Không' : 'Có'; } }
         ],
         fields: [
-            { key: 'strYeuCau_Id', col: 'YEUCAU_ID', label: 'Loại yêu cầu', type: 'select', source: DM, placeholder: 'Chọn loại yêu cầu' },
+            { key: 'strYeuCau_Id', col: 'YEUCAU_ID', label: 'Loại yêu cầu', type: 'select', source: DM, placeholder: 'Chọn loại yêu cầu', required: true },   // kiểm host 12/10: máy chủ từ chối khi trống
             { key: 'strNoiDung', col: 'NOIDUNG', label: 'Nội dung', type: 'textarea' },
             { key: 'dDongThu', col: 'DONGTHU', label: 'Dòng thứ' },
             { key: 'dKichThuocDong', col: 'KICHTHUOCDONG', label: 'Kích thước' },

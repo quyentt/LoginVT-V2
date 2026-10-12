@@ -51,8 +51,8 @@
             { title: 'Ghi chú', prop: 'GHICHU' }
         ],
         fields: [
-            { key: 'strCheDoChinhSach_Id', col: 'CHEDOCHINHSACH_ID', label: 'Chế độ', type: 'select', source: CHEDO },
-            { key: 'strDoiTuong_Id', col: 'DOITUONG_ID', label: 'Đối tượng', type: 'select', source: { dm: 'QLTC.DTMG' } },
+            { key: 'strCheDoChinhSach_Id', col: 'CHEDOCHINHSACH_ID', label: 'Chế độ', type: 'select', source: CHEDO, required: true },   // kiểm host 12/10: máy chủ từ chối khi trống
+            { key: 'strDoiTuong_Id', col: 'DOITUONG_ID', label: 'Đối tượng', type: 'select', source: { dm: 'QLTC.DTMG' }, required: true },
             { key: 'strDonViTinh_Id', col: 'DONVITINH_ID', label: 'Đơn vị tính', type: 'select', source: { dm: 'QLTC.DONVITINH' } },
             { key: 'dHieuLuc', col: 'HIEULUC', label: 'Hiệu lực', type: 'select', source: HIEULUC, value: '1', required: true },
             { key: 'dPhanTramHuong', col: 'PHANTRAMHUONG', label: 'Phần trăm hưởng' },

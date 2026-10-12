@@ -23,7 +23,7 @@ Nguyên văn các mục dài, chỉ đọc khi tới việc liên quan.
 | Xét học bổng `ApisHocBong` | 12/12 | R35 `HB-` | 25/9 | đọc sâu (host thiếu API `HB`) |
 | Quản lý điểm `ApisQuanLyDiem` | 42/42 | R13 `QLD-` | 25/9 | đọc sâu, thử ghi dở |
 | Nhân sự `ApisNhanSu` | 121/121 | R36 `NS-` | 26/9 | xong |
-| Sinh viên `ApisSinhVien` | 35/35 | R38 `SV-` | 26/9 | chưa |
+| Sinh viên `ApisSinhVien` | 35/35 | R38 `SV-` | 26/9 | **12/10 (host mới): 27/27 màn trên menu đọc sâu 0 lỗi JS; thử ghi Vé xe tháng / Xe buýt / Gói hỗ trợ sạch; 4 màn (chế độ chính sách, quyết định, giấy tờ, yêu cầu) thiếu `required` → đã sửa, chờ up + thu-ghi lại; 3 màn Nhập chế độ chính sách lỗi backend ORA-24338 (`ben`); 8 màn ngoài menu = host chưa khai |
 | Kế hoạch chương trình `ApisKeHoachChuongTrinh` | 28/28 | R21 `KHCT-` | 27/9 | chưa |
 | Nhập học `ApisNhapHoc` | 31/31 | R24 `NH-` | 27/9 | chưa |
 | Tuyển sinh `ApisQuanlyTuyenSinh` | 15/15 | R31 `TS-` | 27/9 | chưa |

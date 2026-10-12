@@ -112,7 +112,7 @@
         formCols: 3,
         fields: [
             { type: 'legend', label: 'Thông tin quyết định' },
-            { key: 'strLoaiQuyetDinh_Id', col: 'LOAIQUYETDINH_ID', label: 'Loại quyết định', type: 'select', placeholder: 'Chọn loại quyết định',
+            { key: 'strLoaiQuyetDinh_Id', col: 'LOAIQUYETDINH_ID', label: 'Loại quyết định', type: 'select', placeholder: 'Chọn loại quyết định', required: true,   // kiểm host 12/10: máy chủ từ chối khi trống
               source: { call: { action: 'SV_QuyetDinh_ThucThi/LayDSLoaiQuyetDinh', method: 'GET', type: 'GET', strNguoiDung_Id: Q.uid() }, name: 'TEN' } },
             { key: 'strCapQuyetDinh_Id', col: 'CAPQUYETDINH_ID', label: 'Cấp quyết định', type: 'select', source: { dm: 'QLSV.CQD' } },
             { key: 'strDaoTao_ThoiGianDaoTao_Id', col: 'DAOTAO_THOIGIANDAOTAO_ID', label: 'Học kỳ', type: 'select', placeholder: 'Chọn học kỳ',

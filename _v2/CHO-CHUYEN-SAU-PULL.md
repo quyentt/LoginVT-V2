@@ -12,20 +12,20 @@ Xem lại đúng thay đổi của một tệp: `git diff -w <từ>..<đến> --
 
 ## Lần kéo 10 (12/10 tối) — mốc gốc nay là `2254204a` (gốc lại force-push; mốc cũ `c42e11e1`)
 
-Lần sau so: `git diff --name-status 2254204a origin/main`. 11 tệp gốc đổi, đã ghi đè bằng `git checkout origin/main -- <tệp>`. **ĐÃ CHUYỂN HẾT 12/10 tối** (người dùng bảo "chuyển"), do-man 4 màn sạch. **Kiểm host 12/10 (host mới):** CCB `lichgiangnhieuphonghoc` ĐẠT; TC `hopdong` host không khai chức năng → không mở được; 7 tệp Sinh viên chờ phân hệ Sinh viên kiểm.
+Lần sau so: `git diff --name-status 2254204a origin/main`. 11 tệp gốc đổi, đã ghi đè bằng `git checkout origin/main -- <tệp>`. **ĐÃ CHUYỂN HẾT 12/10 tối** (người dùng bảo "chuyển"), do-man 4 màn sạch. **Kiểm host 12/10 (host mới):** CCB `lichgiangnhieuphonghoc` ĐẠT; TC `hopdong` host không khai chức năng → không mở được; 7 tệp Sinh viên kiểm host 12/10 chiều: `_hsA.js` chặn thiếu giới tính ĐẠT, `tinhtrangquanso` tổng đúng (danh mục mở rộng host trống).
 Số theo phân hệ: Sinh viên 7 · Cổng cán bộ 2 · Tài chính 2. **Cả 11 tệp đều của màn ĐÃ chuyển** — không có màn mới, không có phân hệ chưa chuyển.
 
 | Phân hệ | Màn | Tệp gốc | Trạng thái |
 |---|---|---|---|
 | Cổng cán bộ (đã chuyển, đã kiểm host 6/10) | `lichgiang/lichgiangnhieuphonghoc` | `ApisCongCanBo/Modules/lichgiang/html/lichgiangnhieuphonghoc.html` | **đã chuyển 12/10, kiểm host 12/10 ĐẠT** — thêm 2 mục ô Tiết: "Sáng + chiều (T1-12)", "Cả ngày (T1-15)" (+ đổi version script, bỏ); host: hai mục gọi LAYPHONGHOCTRONG 06:45–18:25 / 06:45–21:10 đúng |
 | Cổng cán bộ (đã chuyển, đã kiểm host 6/10) | `lichgiang/lichgiangnhieuphonghoc` | `ApisCongCanBo/Modules/lichgiang/script/lichgiangnhieuphonghoc.js` | **đã chuyển 12/10** — gốc: đang lọc phòng trống theo khoảng ngày thì mọi lần vẽ lại (đổi cách tính, tải thêm phòng) đều vẽ bảng phòng × ngày; `_v2` đã đúng sẵn (khung `_nhieu.veLai` luôn hỏi `veThay` trước) → không sửa |
-| Sinh viên (đã chuyển, chưa kiểm host) | `hoso/hoso_capnhat` | `ApisSinhVien/Modules/hoso/html/hoso_capnhat.html` | **đã chuyển 12/10** — chỉ đổi version `zoneEditModal_inject.js?v=…73`, không có gì chuyển |
-| Sinh viên (đã chuyển, chưa kiểm host) | `hoso/hoso_danhsach` | `ApisSinhVien/Modules/hoso/html/hoso_danhsach.html` | **đã chuyển 12/10** — chỉ đổi version script |
-| Sinh viên (đã chuyển, chưa kiểm host) | `hoso/quanlytoanbo` | `ApisSinhVien/Modules/hoso/html/quanlytoanbo.html` | **đã chuyển 12/10** — chỉ đổi version script |
-| Sinh viên (đã chuyển, chưa kiểm host) | `hoso/xemhoso` | `ApisSinhVien/Modules/hoso/html/xemhoso.html` | **đã chuyển 12/10** — chỉ đổi version script |
-| Sinh viên (đã chuyển, chưa kiểm host) | `hoso/zoneEditModal_inject` | `ApisSinhVien/Modules/hoso/script/zoneEditModal_inject.js` | **đã chuyển 12/10** → `_v2/…/hoso/script/_hsA.js`: (1) Giới tính trống thì KHÔNG lưu, tô đỏ ô + mở tab Thông tin cơ bản (gốc 09/10: ô không có dòng trống nên rơi về "Nam" rồi ghi đè; `_v2` đã có dòng trống sẵn, chỉ thêm chặn lưu); (2) tab Xuất hoá đơn: ô bỏ trống mà người dùng không tự gõ thì lấp lại giá trị bản ghi hiện hành (`st.hdCham`, `giuHoaDonCu`), không ghi rỗng đè |
-| Sinh viên (đã chuyển, chưa kiểm host) | `tinhtrangquanso/tinhtrangquanso` | `ApisSinhVien/Modules/tinhtrangquanso/html/tinhtrangquanso.html` | **đã chuyển 12/10** — chỉ đổi version script |
-| Sinh viên (đã chuyển, chưa kiểm host) | `tinhtrangquanso/tinhtrangquanso` | `ApisSinhVien/Modules/tinhtrangquanso/script/tinhtrangquanso.js` | **đã chuyển 12/10** — cột tiêu chí mở rộng (Nữ, DTTS…) là tập con của trạng thái → KHÔNG cộng vào "Tổng số" dòng và tổng chung (cờ `moRong` trên cột, hàm `tong()`); tổng từng cột vẫn hiện |
+| Sinh viên (đã chuyển, kiểm host 12/10) | `hoso/hoso_capnhat` | `ApisSinhVien/Modules/hoso/html/hoso_capnhat.html` | **đã chuyển 12/10** — chỉ đổi version `zoneEditModal_inject.js?v=…73`, không có gì chuyển |
+| Sinh viên (đã chuyển, kiểm host 12/10) | `hoso/hoso_danhsach` | `ApisSinhVien/Modules/hoso/html/hoso_danhsach.html` | **đã chuyển 12/10** — chỉ đổi version script |
+| Sinh viên (đã chuyển, kiểm host 12/10) | `hoso/quanlytoanbo` | `ApisSinhVien/Modules/hoso/html/quanlytoanbo.html` | **đã chuyển 12/10** — chỉ đổi version script |
+| Sinh viên (đã chuyển, kiểm host 12/10) | `hoso/xemhoso` | `ApisSinhVien/Modules/hoso/html/xemhoso.html` | **đã chuyển 12/10** — chỉ đổi version script |
+| Sinh viên (đã chuyển, kiểm host 12/10) | `hoso/zoneEditModal_inject` | `ApisSinhVien/Modules/hoso/script/zoneEditModal_inject.js` | **đã chuyển 12/10** → `_v2/…/hoso/script/_hsA.js`: (1) Giới tính trống thì KHÔNG lưu, tô đỏ ô + mở tab Thông tin cơ bản (gốc 09/10: ô không có dòng trống nên rơi về "Nam" rồi ghi đè; `_v2` đã có dòng trống sẵn, chỉ thêm chặn lưu); (2) tab Xuất hoá đơn: ô bỏ trống mà người dùng không tự gõ thì lấp lại giá trị bản ghi hiện hành (`st.hdCham`, `giuHoaDonCu`), không ghi rỗng đè |
+| Sinh viên (đã chuyển, kiểm host 12/10) | `tinhtrangquanso/tinhtrangquanso` | `ApisSinhVien/Modules/tinhtrangquanso/html/tinhtrangquanso.html` | **đã chuyển 12/10** — chỉ đổi version script |
+| Sinh viên (đã chuyển, kiểm host 12/10) | `tinhtrangquanso/tinhtrangquanso` | `ApisSinhVien/Modules/tinhtrangquanso/script/tinhtrangquanso.js` | **đã chuyển 12/10** — cột tiêu chí mở rộng (Nữ, DTTS…) là tập con của trạng thái → KHÔNG cộng vào "Tổng số" dòng và tổng chung (cờ `moRong` trên cột, hàm `tong()`); tổng từng cột vẫn hiện |
 | Tài chính (đã chuyển, đã kiểm host 30/9) | `dulieuhocphi/hopdong` | `ApisTaiChinh/Modules/dulieuhocphi/html/hopdong.html` | **đã chuyển 12/10** — nút "Xoá đã chọn" + cột ô đánh dấu (chọn tất cả) ở bảng sinh viên, thanh nút đặt trên bảng. Host 12/10: màn không có trên menu / mapping (host chưa khai) → chưa kiểm được |
 | Tài chính (đã chuyển, đã kiểm host 30/9) | `dulieuhocphi/hopdong` | `ApisTaiChinh/Modules/dulieuhocphi/scripts/hopdong.js` | **đã chuyển 12/10** — `delSvChon`: dòng mới chỉ gỡ khỏi danh sách, dòng đã lưu xoá `TC_NguoiHoc_QuanLy/Xoa` từng Id qua `ui.batch` 5 luồng, báo gộp, nạp lại; nút = `ui.xoaChon` (tự đếm, mờ khi chưa chọn) |
 
@@ -75,13 +75,13 @@ Không chép `ApisKyTucXa.zip` (gói nén, 285 KB, gốc thêm mới).
 | Ký túc xá (đang chuyển 12/10) | `taichinh/phitheophong` | `ApisKyTucXa/Modules/taichinh/html/phitheophong.html` | **đã chuyển 12/10** (chuyển cả màn từ bản gốc mới nhất, không mở diff) |
 | Ký túc xá (đang chuyển 12/10) | `taichinh/tinhphi` | `ApisKyTucXa/Modules/taichinh/html/tinhphi.html` | **đã chuyển 12/10** (chuyển cả màn từ bản gốc mới nhất, không mở diff) |
 | Ký túc xá (đang chuyển 12/10) | `xacnhandangkyphong/xacnhandangkyphong` | `ApisKyTucXa/Modules/xacnhandangkyphong/html/xacnhandangkyphong.html` | chưa chuyển (màn chưa làm — người dùng 12/10 bảo dừng; làm tiếp thì chuyển thẳng từ bản gốc hiện có, không cần diff) |
-| Sinh viên (đã chuyển, chưa kiểm host) | `hoso/hoso_capnhat` | `ApisSinhVien/Modules/hoso/html/hoso_capnhat.html` | **đã chuyển 12/10** |
-| Sinh viên (đã chuyển, chưa kiểm host) | `hoso/hoso_danhsach` | `ApisSinhVien/Modules/hoso/html/hoso_danhsach.html` | **đã chuyển 12/10** |
-| Sinh viên (đã chuyển, chưa kiểm host) | `hoso/quanlytoanbo` | `ApisSinhVien/Modules/hoso/html/quanlytoanbo.html` | **đã chuyển 12/10** |
-| Sinh viên (đã chuyển, chưa kiểm host) | `hoso/xemhoso` | `ApisSinhVien/Modules/hoso/html/xemhoso.html` | **đã chuyển 12/10** |
-| Sinh viên (đã chuyển, chưa kiểm host) | `hoso/zoneEditModal_inject` | `ApisSinhVien/Modules/hoso/script/zoneEditModal_inject.js` | **đã chuyển 12/10** |
-| Sinh viên (đã chuyển, chưa kiểm host) | `quyetdinh/quyetdinh` | `ApisSinhVien/Modules/quyetdinh/html/quyetdinh.html` | **đã chuyển 12/10** |
-| Sinh viên (đã chuyển, chưa kiểm host) | `quyetdinh/quyetdinh` | `ApisSinhVien/Modules/quyetdinh/script/quyetdinh.js` | **đã chuyển 12/10** |
+| Sinh viên (đã chuyển, kiểm host 12/10) | `hoso/hoso_capnhat` | `ApisSinhVien/Modules/hoso/html/hoso_capnhat.html` | **đã chuyển 12/10** |
+| Sinh viên (đã chuyển, kiểm host 12/10) | `hoso/hoso_danhsach` | `ApisSinhVien/Modules/hoso/html/hoso_danhsach.html` | **đã chuyển 12/10** |
+| Sinh viên (đã chuyển, kiểm host 12/10) | `hoso/quanlytoanbo` | `ApisSinhVien/Modules/hoso/html/quanlytoanbo.html` | **đã chuyển 12/10** |
+| Sinh viên (đã chuyển, kiểm host 12/10) | `hoso/xemhoso` | `ApisSinhVien/Modules/hoso/html/xemhoso.html` | **đã chuyển 12/10** |
+| Sinh viên (đã chuyển, kiểm host 12/10) | `hoso/zoneEditModal_inject` | `ApisSinhVien/Modules/hoso/script/zoneEditModal_inject.js` | **đã chuyển 12/10** |
+| Sinh viên (đã chuyển, kiểm host 12/10) | `quyetdinh/quyetdinh` | `ApisSinhVien/Modules/quyetdinh/html/quyetdinh.html` | **đã chuyển 12/10** |
+| Sinh viên (đã chuyển, kiểm host 12/10) | `quyetdinh/quyetdinh` | `ApisSinhVien/Modules/quyetdinh/script/quyetdinh.js` | **đã chuyển 12/10** |
 | Tài chính (đã chuyển, đã kiểm host) | `danhmucheso/taikhoanno` | `ApisTaiChinh/Modules/danhmucheso/html/taikhoanno.html` | **đã chuyển 12/10** |
 | Tài chính (đã chuyển, đã kiểm host) | `danhmucheso/taikhoanno` | `ApisTaiChinh/Modules/danhmucheso/scripts/taikhoanno.js` | **đã chuyển 12/10** |
 | Tài chính (đã chuyển, đã kiểm host) | `phieuthu/thutienkhac` | `ApisTaiChinh/Modules/phieuthu/scripts/thutienkhac.js` | **đã chuyển 12/10** |

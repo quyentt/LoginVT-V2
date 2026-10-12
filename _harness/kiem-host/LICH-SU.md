@@ -272,3 +272,22 @@ Luật kiểm host hiện hành nằm ở CLAUDE.md mục 9 (bản rút gọn). 
   thoại, 0 lỗi JS. Không thử đổi lịch (tài khoản thử không có buổi dạy — như 6/10).
 - **TC Hợp đồng: KHÔNG kiểm được** — menu vai trò Tài chính (68 mục) không có, mapping host không khai chức năng (như host cũ). Giữ sổ `khong-tren-menu`, ghi chú 12/10.
 - Sổ: `da-kiem.json` 2 mục tay; `CHO-CHUYEN-SAU-PULL.md` lần kéo 10 ghi kết quả kiểm host. Không thử ghi gì → không có dấu ZKT. Mapping mới: `_harness/gui-help/mapping-chuc-nang_20261012.json`.
+
+## 12/10 (14:10–15:05) — Sinh viên (ApisSinhVien): kiểm host lần đầu, vai trò "Sinh viên" `2BD6D7…` — 27/27 màn trên menu
+
+- Người dùng: "sinh viên trong tiến độ đã hoàn thành nên cần kiểm" (phân hệ cán bộ quản lý SV, KHÔNG phải Cổng sinh viên). Sổ chưa có phân hệ này.
+- **Đọc sâu `SAU=1 chay-vaitro.js`:** 29 mục có tệp (27 màn SV + Đa QHHT của CCB + Kiểm tra thông tin cá nhân), tất cả DA_CHAY, **0 lỗi JS**. Lỗi máy chủ duy nhất:
+  3 màn Nhập chế độ chính sách (phần trăm / số tiền / đối tượng) — ô kết quả từng SV `LayKQChinhSach_*` trả **ORA-24338** với 39/39 SV, gốc gửi y hệt tham số → `ben` oracle
+  (màn báo một lần nhờ `silent` + cờ `baoLoi`).
+- **Thử ghi `thu-ghi.js` 6 màn crud có đường xoá:** Vé xe tháng, Xe buýt: thêm → sửa → Xoá đã chọn SẠCH. **4 màn máy chủ từ chối vì biểu mẫu `_v2` thiếu `required`**
+  (lỗi mã, luật A): Chế độ chính sách (Chế độ, Đối tượng), Quyết định (Loại quyết định), Giấy tờ (Tên + Mã), Yêu cầu (Loại yêu cầu) → đã thêm `required: true`,
+  sổ lỗi mã "đã sửa — chờ up", gói bổ sung 4 tệp. Không thử: Kế hoạch (không có thủ tục xoá kế hoạch), Quản lý toàn bộ SV (Xoá = SV_HoSo/Xoa), Thực thi quyết định
+  (đổi trạng thái người học), Khởi tạo hồ sơ / Gán lớp (người học thật), Xác nhận kết quả (một chiều), Cán bộ xử lý (0 yêu cầu).
+- **Lái tay (`chay.js`):** Quân số (ĐHCQ, 426 dòng): tổng dòng / chân bảng cộng đúng; danh mục `QLSV.QUANSO.MORONG` host TRỐNG → luật kéo gốc lần 10 chưa thấy được.
+  Cập nhật hồ sơ: host đã có `_hsA.js` mới; bỏ trống Giới tính → Lưu: ô đỏ, báo trong biểu mẫu, không gửi lời gọi ghi — ĐẠT. Đa QHHT → Khởi tạo định danh mới → Thêm mới:
+  31/02/2000, 13/13/2000, "abc" đều chặn tại màn ("Kiểm tra lại: …"), không gọi InsertCorePerson, Hủy sạch — ĐẠT (việc treo 30/9). Gói hỗ trợ: thêm gói ZKT1450 →
+  Sửa → Xóa → sạch (thu-ghi-ui không thấy nút Thêm vì phải chọn lọc trước). Khai báo danh mục: vỏ nạp chéo script ĐKH đã thử ở Nhân sự / Rèn luyện → không thử lại.
+- **Bẫy mẫu lệnh:** chữ trên nút là "Xóa" (ó + a, U+00F3) còn regex `/^Xo[áa]$/` trong `mau-lenh` tìm "Xoá" (o + á) → không khớp, bản ghi thử suýt sót. Đã đổi mẫu thành
+  `/^X[oó][áa]$/`; khi lái tay nên tìm nút xoá theo lớp `ums-btn--danger`. Nút trên dòng là nút icon: `chu()` rỗng, phải đọc `title`.
+- Sổ: 27 màn trên menu đều có kết luận cột thử ghi (3 sạch, 4 từ chối + lỗi mã đã sửa, 7 chỉ xem, 13 không thử có lý do); 8 màn ngoài menu = host chưa khai (`xep-loai`).
+  `can-quyet.js` thêm `ben` 3 màn chính sách. Không còn dấu ZKT (ZKT1418 hai màn vé xe đã xoá, ZKT1450 đã xoá). **Việc kế: người dùng up gói → `thu-ghi.js` lại 4 màn → `loi-code.js xong`.**
