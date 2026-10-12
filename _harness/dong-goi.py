@@ -24,10 +24,6 @@ GÓI BỔ SUNG (người dùng 2026-09-27: "thêm thư mục _v2_bo_xung_deploy 
     riêng tệp MỚI / ĐỔI vào _v2_bo_xung_deploy/ (cùng cây thư mục — chép đè vào _v2 trên host). Tệp đã bỏ khỏi gói
     ghi ở _v2_bo_xung_deploy/_XOA-TREN-HOST.txt (để lại trên host cũng không sao, chỉ thừa).
     python _harness\dong-goi.py --da-up        người dùng báo "đã up" → lấy gói hiện tại làm mốc mới
-    python _harness\dong-goi.py --goc <tệp gốc>…  tệp GỐC ứng dụng vừa kéo từ kho gốc (ngoài _v2) cần up lên host: ghi vào
-                                               _harness/.goc-can-up.txt, mỗi lần đóng gói chép vào _v2_bo_xung_deploy/_GOC-UNG-DUNG/
-                                               (chép vào GỐC ứng dụng trên host, KHÔNG vào _v2 — đường dẫn trùng tên màn _v2).
-                                               "--da-up" xoá danh sách. (người dùng 2026-10-12: "đưa những file vừa kéo về vào deploy bổ xung")
     python _harness\dong-goi.py --moc-tu-host  dựng mốc bằng cách tải từng tệp từ host (URL trong tk.md) và băm —
                                                dùng khi mất mốc / không chắc host đang ở bản nào. Tệp máy chủ không
                                                trả nguyên văn (.aspx, .config) coi như đã khớp → nếu có sửa thì tự chép tay.
@@ -39,8 +35,6 @@ V2 = os.path.join(GOC, '_v2')
 DICH = os.path.join(GOC, '_v2_deploy')
 BO_XUNG = os.path.join(GOC, '_v2_bo_xung_deploy')
 MOC = os.path.join(GOC, '_harness', '.moc-da-up.json')
-GOC_CAN_UP = os.path.join(GOC, '_harness', '.goc-can-up.txt')   # tệp gốc ứng dụng chờ up (--goc)
-TM_GOC = '_GOC-UNG-DUNG'                                           # thư mục con trong gói bổ sung
 
 GIU_VENDOR = [
     'jquery/jquery-3.7.1.min.js',
@@ -238,52 +232,6 @@ def bo_xung():
         print('  … còn %d tệp' % (len(doi) - 40))
 
 
-def doc_goc_can_up():
-    if not os.path.exists(GOC_CAN_UP):
-        return []
-    with open(GOC_CAN_UP, encoding='utf-8') as f:
-        return [d.strip().replace(os.sep, '/') for d in f if d.strip()]
-
-
-def them_goc_can_up(teps):
-    """--goc: thêm tệp gốc ứng dụng vào danh sách chờ up (bỏ trùng, giữ thứ tự)."""
-    ds = doc_goc_can_up()
-    for t in teps:
-        t = t.replace(os.sep, '/').strip('/')
-        if t.startswith('_v2/'):
-            sys.exit('--goc chỉ nhận tệp GỐC ứng dụng (ngoài _v2): ' + t)
-        if not os.path.isfile(os.path.join(GOC, t)):
-            sys.exit('--goc: không thấy tệp ' + t)
-        if t not in ds:
-            ds.append(t)
-    with open(GOC_CAN_UP, 'w', encoding='utf-8') as f:
-        f.write(''.join(x + '\n' for x in ds))
-    print('Tệp gốc chờ up: %d (ghi ở %s)' % (len(ds), GOC_CAN_UP))
-
-
-def goc_bo_xung():
-    """Chép tệp gốc ứng dụng trong danh sách chờ up vào _v2_bo_xung_deploy/_GOC-UNG-DUNG/ (gọi SAU bo_xung())."""
-    ds = [t for t in doc_goc_can_up() if os.path.isfile(os.path.join(GOC, t))]
-    if not ds:
-        return
-    tm = os.path.join(BO_XUNG, TM_GOC)
-    for t in ds:
-        dich = os.path.join(tm, t)
-        os.makedirs(os.path.dirname(dich), exist_ok=True)
-        shutil.copy2(os.path.join(GOC, t), dich)
-    with open(os.path.join(tm, '_CHEP-VAO-GOC-UNG-DUNG.txt'), 'w', encoding='utf-8') as f:
-        f.write('Tệp GỐC ứng dụng kéo từ kho gốc (quyentt/loginVT-main) — chép đè vào THƯ MỤC GỐC ứng dụng trên host,\n'
-                'KHÔNG chép vào _v2 (đường dẫn trùng tên với màn _v2, chép nhầm là hỏng màn mới).\n'
-                'Up xong chạy: python _harness\\dong-goi.py --da-up\n\n' + ''.join(x + '\n' for x in ds))
-    # tệp ghi chú "không còn gì" không còn đúng khi có tệp gốc
-    gc = os.path.join(BO_XUNG, GHI_CHU)
-    if os.path.exists(gc):
-        os.remove(gc)
-    print('Gói bổ sung — tệp GỐC ứng dụng: %d tệp → %s (chép vào gốc ứng dụng, không vào _v2)' % (len(ds), tm))
-    for t in ds:
-        print('  ' + t)
-
-
 def moc_tu_host():
     """Mốc = nội dung ĐANG CÓ trên host (tải từng tệp của _v2_deploy về và băm)."""
     import urllib.request, ssl
@@ -331,20 +279,10 @@ if __name__ == '__main__':
         ghi_moc(bam_goi())
         don_bo_xung('Không còn tệp nào cần up: host đã có bản mới nhất (đặt mốc "đã up" lúc %(luc)s).\n'
                     'Các tệp của gói vừa up:\n%(ds)s')
-        if os.path.exists(GOC_CAN_UP):
-            os.remove(GOC_CAN_UP)
-        print('Đã lấy _v2_deploy hiện tại làm mốc "đã up" (%s); danh sách tệp gốc chờ up đã xoá.' % MOC)
-    elif '--goc' in sys.argv:
-        them_goc_can_up(sys.argv[sys.argv.index('--goc') + 1:])
-        if not os.path.exists(MOC):
-            sys.exit('Chưa có mốc — chạy đóng gói / --da-up trước.')
-        bo_xung()
-        goc_bo_xung()
+        print('Đã lấy _v2_deploy hiện tại làm mốc "đã up" (%s).' % MOC)
     elif '--moc-tu-host' in sys.argv:
         moc_tu_host()
         bo_xung()
-        goc_bo_xung()
     else:
         main()
         bo_xung()
-        goc_bo_xung()

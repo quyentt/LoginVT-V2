@@ -293,8 +293,7 @@ Lên host đặt tên thư mục `_v2` (đường dẫn tương đối `../Confi
 **Sửa gì trong `_v2` thì chạy lại lệnh này** — không sửa tay trong `_v2_deploy`.
 **Gói BỔ SUNG `_v2_bo_xung_deploy/`** (người dùng 2026-09-27: "copy cho nhẹ"): mỗi lần đóng gói tự so với mốc lần up trước
 (`_harness/.moc-da-up.json`) và chép riêng tệp mới / đổi — người dùng chép đè thư mục này vào `_v2` trên host. **Khi người dùng
-báo "đã up" → chạy `python _harness\dong-goi.py --da-up`** (lấy gói hiện tại làm mốc). **Thư mục `_v2_bo_xung_deploy` KHÔNG BAO GIỜ bị xoá** (người dùng 30/9: "bạn đã xoá deploy bổ sung của tôi") — `--da-up` chỉ dọn nội dung và để lại `_KHONG-CON-GI-DE-UP.txt` (ghi giờ đặt mốc + danh sách tệp vừa up); "chưa up" = trong thư mục còn tệp KHÁC tệp ghi chú đó. **Tệp GỐC ứng dụng vừa kéo từ kho gốc cần up (12/10): `python _harness\dong-goi.py --goc <tệp>…`** → chép vào
-`_v2_bo_xung_deploy/_GOC-UNG-DUNG/` kèm ghi chú (chép vào GỐC ứng dụng trên host, KHÔNG vào `_v2` — trùng đường dẫn màn `_v2`); `--da-up` xoá danh sách. Không chắc host đang ở bản nào →
+báo "đã up" → chạy `python _harness\dong-goi.py --da-up`** (lấy gói hiện tại làm mốc). **Thư mục `_v2_bo_xung_deploy` KHÔNG BAO GIỜ bị xoá** (người dùng 30/9: "bạn đã xoá deploy bổ sung của tôi") — `--da-up` chỉ dọn nội dung và để lại `_KHONG-CON-GI-DE-UP.txt` (ghi giờ đặt mốc + danh sách tệp vừa up); "chưa up" = trong thư mục còn tệp KHÁC tệp ghi chú đó. Không chắc host đang ở bản nào →
 `--moc-tu-host` (tải từng tệp từ host về băm; .aspx/.config không so được, sửa thì tự nhắc). Báo người dùng: up `_v2_bo_xung_deploy`.
 
 **Trang tiến độ: `python _harness\tien-do.py` → `_harness/tien-do.html`** (2026-09-25) — hai cột Đã chuyển / Chưa chuyển theo phân hệ → module → màn, tự đọc cây thư mục (gốc vs `_v2`). Chuyển xong phân hệ mới: thêm tên vào `THU_TU`; màn cố ý bỏ: thêm vào `BO_QUA` kèm lý do.
