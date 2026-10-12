@@ -57,6 +57,13 @@ thì mở các màn ghi `xong 30/9` của phân hệ đó trong `RA-HOP-THOAI.md
 - Hai `ben` oracle mới (khongdiemdanh sửa lý do; tonghoptheongay không có cột ngày + dòng trùng) — chờ backend, không thử lại.
 - 2 màn ngoài menu (`danhmuc/danhmucdulieu`, `nhapchuyencan/nhapchuyencan`): host chưa khai chức năng.
 
+## 0d. 12/10 (14:00) — Host MỚI `qldt.eaut.edu.vn/qtdh/_v2`: kiểm lần đầu
+
+- Đăng nhập / vai trò / mapping y như host cũ (619 chức năng) → sổ `da-kiem.json` dùng tiếp. Gói bổ sung đã up 13:32 (4 tệp kéo gốc lần 10).
+- Kéo gốc lần 10, màn ở phân hệ đã kiểm xong: CCB `lichgiangnhieuphonghoc` kiểm lại ĐẠT (2 mục Tiết mới); TC `dulieuhocphi/hopdong` host không khai chức năng → chưa kiểm.
+- Còn chờ: 7 tệp Sinh viên lần kéo 9 + 10 (`hoso/_hsA.js` chặn thiếu giới tính, hoá đơn; `tinhtrangquanso` tổng không cộng tiêu chí mở rộng) — kiểm khi người dùng gọi phân hệ Sinh viên.
+  Ký túc xá 31/31 + Danh hiệu 3/3 đã chuyển 12/10, chưa kiểm host (chờ gọi tên).
+
 ## 1. Làm TRƯỚC — màn đã sửa mã, chờ kiểm lại
 
 ### Kết quả kiểm host 5/10 (chiều) — phân hệ ĐÃ hoàn thành + Cổng cán bộ / Cổng SV

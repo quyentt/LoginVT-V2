@@ -259,3 +259,16 @@ Luật kiểm host hiện hành nằm ở CLAUDE.md mục 9 (bản rút gọn). 
 - **16:50 — bàn khoảng Từ / Đến ngày.** Người dùng nêu màn Lịch giảng nhiều phòng học (theo dõi bận / rỗi) tự đặt Đến = Từ khi Đến < Từ — màn `_v2` đã làm (dòng 616). Nhân tới lượt màn này, mở diff kéo gốc lần 8: `strKieuPhong` gửi rỗng khi tìm phòng trống (gốc: gửi LT/TH thì thủ tục trả 0 phòng) → đã chuyển vào `goiTrong` (lọc + hộp đổi lịch), gói bổ sung 1 tệp, CHƯA kiểm lại trên host. Luật chung khoảng ngày (khoá lịch hai chiều + toast khi gõ tay) chưa làm, chờ chốt.
 - **20:30–20:50 — người dùng báo "vừa up" → `--da-up`; kiểm lại `lichgiang/lichgiangnhieuphonghoc` trên host (vai trò Cổng cán bộ, lái tay):** bản script trên host đã là bản mới; lọc Từ 08/10 → Đến 06/10 tự kéo Đến = 08/10, không toast (đúng hướng đã bàn); khoảng 08–09/10 → `LAYPHONGHOCTRONG` 2 lời gọi, `strKieuPhong` rỗng, trả 242 / 250 phòng; lọc loại LT 235 ô, TH 217 ô (máy khách); bấm ô Trống → hộp "Đổi lịch vào phòng trống" gọi `LayDSLichGiang` n=0 → "Bạn không có buổi dạy nào trong tuần này", Đóng sạch (0 dialog, 0 ô đang chọn). Hộp Yêu cầu đổi lịch (bước 2) vẫn chưa thử được vì tài khoản không có buổi dạy. Phát hiện khoá nhớ kết quả còn kèm loại phòng → đổi loại gọi lại máy chủ dù kết quả giống nhau → sửa `goiTrong` (khoá = ngày|tiết), gói bổ sung 1 tệp chờ up. Luật chung khoảng Từ / Đến ngày vẫn CHƯA làm (chờ người dùng bảo).
 - **21:00 — người dùng báo "up rồi" → `--da-up` (gói trống). Kiểm lại khoá nhớ phòng trống trên host ĐẠT:** đổi loại all → LT → TH → all → LT chỉ 1 lời gọi `LAYPHONGHOCTRONG` cho 08/10 (trước sửa: mỗi loại gọi lại); một ngày trong tuần đang xem → tô lưới tuần (128 phòng trống, 50 ô/trang), thêm Đến 09/10 → bảng phòng × ngày 232 ô. Giờ gửi lên 06:45 rồi 07:00 là chủ ý gốc (`gioTiet` ưu tiên giờ lịch thật đã tải). Màn này xong; gói bổ sung trống.
+
+## 12/10 (14:00–14:05) — Kiểm host MỚI lần đầu: màn vừa đổi (kéo gốc lần 10) ở phân hệ đã kiểm xong
+
+- Người dùng: "kiểm host những màn vừa thay đổi mà modul đó đã kiểm hoàn thiện". Fetch gốc: không có tệp mới. Sổ lỗi mã trống, gói bổ sung đã up (mốc 12/10 13:32,
+  4 tệp lần kéo 10), `dong-goi.py` dựng lại không lệch. Phạm vi: CCB `lichgiang/lichgiangnhieuphonghoc` + TC `dulieuhocphi/hopdong`; `lichgiang/lichgiang` (kéo 9)
+  không đổi gì trong `_v2`; 7 tệp Sinh viên bỏ qua (phân hệ chưa kiểm host).
+- Host mới `qldt.eaut.edu.vn/qtdh/_v2` đăng nhập bằng `dangnhap.js` bình thường, 48 vai trò (cùng tài khoản thử). Mapping xuất 12/10: 619 chức năng — BẰNG host cũ
+  (26/9) → sổ `da-kiem.json` cũ vẫn dùng được cho host mới.
+- **CCB Lịch giảng đường nhiều phòng (lái tay `chay.js`): ĐẠT.** Tệp trên host đã là bản mới (ô Tiết 9 mục). Từ 14/10 → Đến 12/10 tự thành 14/10. Tiết "Sáng + chiều
+  (T1-12)" → `LAYPHONGHOCTRONG` 06:45–18:25, "Cả ngày (T1-15)" → 06:45–21:10, mỗi mục một lời gọi, 145 phòng trống (T1-3: 192); dòng tóm tắt in đúng khung giờ; 0 hộp
+  thoại, 0 lỗi JS. Không thử đổi lịch (tài khoản thử không có buổi dạy — như 6/10).
+- **TC Hợp đồng: KHÔNG kiểm được** — menu vai trò Tài chính (68 mục) không có, mapping host không khai chức năng (như host cũ). Giữ sổ `khong-tren-menu`, ghi chú 12/10.
+- Sổ: `da-kiem.json` 2 mục tay; `CHO-CHUYEN-SAU-PULL.md` lần kéo 10 ghi kết quả kiểm host. Không thử ghi gì → không có dấu ZKT. Mapping mới: `_harness/gui-help/mapping-chuc-nang_20261012.json`.
