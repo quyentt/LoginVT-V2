@@ -317,6 +317,9 @@ Bản đầy đủ: [_v2/CLAUDE-CHI-TIET.md](_v2/CLAUDE-CHI-TIET.md) mục "Đi�
 
 ### Mở đầu phiên — ba bước
 
+**Người dùng hỏi "tôi cần làm gì" (sau phiên đánh giá 14/10 trên máy phụ): đọc [_v2/DANH-GIA-2026-10-14.md](_v2/DANH-GIA-2026-10-14.md) mục 3, báo danh sách
+theo thứ tự rồi chờ chọn.** Việc A (đưa `_v2/web.config` vào kho — đang bị dòng `Web.config` của `.gitignore` nuốt) làm trước, không rủi ro; chưa chạy được bộ kiểm thì không sửa `_v2/assets`.
+
 **Người mới / tác tử mới làm `_v2`: đọc [_v2/HUONG-DAN-NGUOI-MOI.md](_v2/HUONG-DAN-NGUOI-MOI.md) trước** (6/10 — chữ ký thật của `ums.crud` / `ui` / `pat`,
 ba lối: tiếp quản, chuyển màn cũ, viết màn mới; TRAINING.md mục 9 mẫu CRUD cũ đã sửa). Việc hoãn (dời `man-chung`, `fields.js`): `_v2/NHAT-KY-CHUYEN.md` "Việc hoãn".
 

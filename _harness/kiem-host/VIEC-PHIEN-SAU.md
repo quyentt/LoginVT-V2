@@ -14,6 +14,9 @@ Quy ước bắt buộc (chi tiết ở CLAUDE.md mục 9 và bộ nhớ):
 
 ## 0. Thông báo phải đưa ra đầu phiên
 
+**14/10 (máy phụ, không sửa mã):** đã đánh giá toàn bộ `_v2`; việc cần làm theo thứ tự A → J ở `_v2/DANH-GIA-2026-10-14.md` mục 3.
+Việc A: `_v2/web.config` không có trong kho (bị `.gitignore` gốc nuốt) — về máy gốc `git add -f _v2/web.config` + thêm `!_v2/web.config` vào `.gitignore` ngay.
+
 Chạy rồi tóm tắt cho người dùng:
 ```
 node _harness/kiem-host/loi-code.js ds          # lỗi mã đang treo
