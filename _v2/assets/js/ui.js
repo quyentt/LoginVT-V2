@@ -241,8 +241,8 @@
         var d = ICONBTN[kind] || ICONBTN.view;
         return '<button type="button" class="ums-iconbtn ums-iconbtn--' + kind + '"' +
             (id ? ' data-id="' + esc(id) + '"' : '') +
-            ' data-act="' + kind + '" title="' + esc(d.title) + '">' +
-            '<i class="' + d.icon + '"></i></button>';
+            ' data-act="' + kind + '" title="' + esc(d.title) + '" aria-label="' + esc(d.title) + '">' +   // aria-label: nút chỉ có biểu tượng (việc J 15/10)
+            '<i class="' + d.icon + '" aria-hidden="true"></i></button>';
     };
 
     ui.actions = function (id, kinds) {
@@ -354,7 +354,7 @@
         var depth = 1 + cols.reduce(function (m, c) { return Math.max(m, (c.group || []).length); }, 0);
         function leaf(c, rs) {
             // `head` là HTML dựng sẵn (vd ô chọn tất cả), `title` là chữ thường
-            return '<th class="' + esc(c.cls || '') + '"' + goc(c) + (rs > 1 ? ' rowspan="' + rs + '"' : '') +
+            return '<th scope="col" class="' + esc(c.cls || '') + '"' + goc(c) + (rs > 1 ? ' rowspan="' + rs + '"' : '') +   // scope: trình đọc màn hình đọc tiêu đề cột (việc J 15/10)
                 (c.width ? ' style="width:' + esc(c.width) + '"' : '') + '>' +
                 (c.head !== undefined ? c.head : esc(c.title || '')) + '</th>';
         }
@@ -366,14 +366,14 @@
         }
         for (var L = 0; L < depth; L++) {
             if (L) h += '</tr><tr>';
-            if (!L && stt) h += '<th class="is-center" style="width:56px"' + (depth > 1 ? ' rowspan="' + depth + '"' : '') + '>Stt</th>';
+            if (!L && stt) h += '<th scope="col" class="is-center" style="width:56px"' + (depth > 1 ? ' rowspan="' + depth + '"' : '') + '>Stt</th>';
             for (var i = 0; i < cols.length;) {
                 var g = cols[i].group || [];
                 if (g.length < L) { i++; continue; }
                 if (g.length === L) { h += leaf(cols[i], depth - L); i++; continue; }
                 var j = i + 1;
                 while (j < cols.length && cung(cols[j].group, g, L)) j++;
-                h += '<th class="is-center ums-table__grp" colspan="' + (j - i) + '">' + esc(g[L]) + '</th>';
+                h += '<th scope="colgroup" class="is-center ums-table__grp" colspan="' + (j - i) + '">' + esc(g[L]) + '</th>';
                 i = j;
             }
         }

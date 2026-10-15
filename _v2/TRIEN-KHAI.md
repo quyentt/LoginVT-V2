@@ -295,6 +295,13 @@ localStorage.setItem('strIM', 'false'); location.reload();
 
 Bật lại: `localStorage.removeItem('strIM')`.
 
+## 8.2. Trình duyệt hỗ trợ (ghi 2026-10-15, việc I đánh giá 14/10)
+
+`_v2` chạy trên **Chrome / Edge ≥ 105** (và trình duyệt cùng nhân Chromium cùng mốc). Lý do kỹ thuật: CSS `:has()` (38 chỗ, Chrome 105),
+`fetch` + `AbortController`, Web Animations API, `<dialog>`, `Element.closest`. Mã JS viết cú pháp ES5 nhưng KHÔNG chạy trên IE / Edge cũ
+(EdgeHTML) vì các API trên. Không có bước biên dịch / bundler — cố ý (xem `DANH-GIA-2026-10-14.md` mục 2 điểm 7). Firefox / Safari mới
+nhìn chung chạy được nhưng CHƯA kiểm; mọi lần kiểm host đều bằng Edge.
+
 ## 9. Đăng nhập một lần (SSO) sang Cổng Help để soạn bài
 
 Yêu cầu gốc: `yeu-cau-sso-cho-doi-app.md` (Help, 27/09/2026). Việc này **không liên quan

@@ -17,6 +17,7 @@ test('cột Stt, prop escape HTML, render(row, i), data-id trên dòng', functio
         rows: [{ ID: 'X1', TEN: '<i>a</i>', MA: 'm' }, { ID: 'X2', TEN: 'b', MA: 'n' }]
     });
     assert.deepEqual(chu(el.querySelector('thead tr')), ['Stt', 'Tên', 'Mã']);
+    assert.ok([].every.call(el.querySelectorAll('thead th'), function (t) { return t.getAttribute('scope') === 'col'; }), 'mọi th có scope="col" (việc J 15/10)');
     var tr = el.querySelectorAll('tbody tr');
     assert.equal(tr.length, 2);
     assert.equal(tr[0].getAttribute('data-id'), 'X1');
@@ -53,7 +54,7 @@ test('nhóm tiêu đề: cột liền nhau cùng group gộp colspan, cột khô
     var h0 = hang[0].querySelectorAll('th');
     assert.equal(h0[0].getAttribute('rowspan'), '2', 'Stt kéo hết tầng');
     assert.equal(h0[1].textContent, 'Tên'); assert.equal(h0[1].getAttribute('rowspan'), '2');
-    assert.equal(h0[2].textContent, 'Số tiết'); assert.equal(h0[2].getAttribute('colspan'), '2');
+    assert.equal(h0[2].textContent, 'Số tiết'); assert.equal(h0[2].getAttribute('colspan'), '2'); assert.equal(h0[2].getAttribute('scope'), 'colgroup');
     assert.equal(h0[3].textContent, 'Ghi chú'); assert.equal(h0[3].getAttribute('rowspan'), '2');
     assert.deepEqual(chu(hang[1]), ['LT', 'TH']);
 });
@@ -95,4 +96,13 @@ test('sum: true cộng số trên các dòng đang hiện (bỏ dấu ngăn ngh�
     assert.match(el2.querySelector('tfoot td:last-child').textContent, /30/);
     var el3 = bang(w, { columns: [{ title: 'Tiền', prop: 'TIEN', sum: true }], rows: [] });
     assert.equal(el3.querySelector('tfoot'), null, 'không dòng thì không có tổng');
+});
+
+test('ui.iconBtn: nút chỉ biểu tượng có title + aria-label cùng chữ, icon aria-hidden (việc J 15/10)', function () {
+    var w = tao();
+    var el = w.document.createElement('div'); el.innerHTML = w.ums.ui.iconBtn('edit', 'X1') + w.ums.ui.iconBtn('khong-co');
+    var b = el.querySelectorAll('button');
+    assert.equal(b[0].getAttribute('aria-label'), 'Sửa'); assert.equal(b[0].getAttribute('title'), 'Sửa'); assert.equal(b[0].getAttribute('data-id'), 'X1');
+    assert.equal(b[0].querySelector('i').getAttribute('aria-hidden'), 'true');
+    assert.equal(b[1].getAttribute('aria-label'), 'Xem chi tiết', 'kind lạ rơi về view');
 });
