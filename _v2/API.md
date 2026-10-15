@@ -6,16 +6,16 @@ Lớp CSS có sẵn: `_v2/CLASS.md`. Tóm tắt màn gốc: `python _harness\tom
 
 ## Mục lục
 
-- **api.js** (4 hàm): `ums.util.xorB64`, `ums.util.unXor`, `ums.util.ngaySinh`, `ums.util.uuid`
+- **api.js** (10 hàm): `ums.api.call`, `ums.api.json`, `ums.api.call`, `ums.api.all`, `ums.api.dm`, `ums.api.handle`, `ums.util.xorB64`, `ums.util.unXor`, `ums.util.ngaySinh`, `ums.util.uuid`
 - **ui.js** (44 hàm): `ums.ui.escBr`, `ums.ui.money`, `ums.ui.so`, `ums.ui.docSo`, `ums.ui.truot`, `ums.ui.moDetails`, `ums.ui.ngayGio`, `ums.ui.empty`, `ums.ui.btn`, `ums.ui.iconBtn`, `ums.ui.actions`, `ums.ui.badge`, `ums.ui.chips`, `ums.ui.tabs`, `ums.ui.tabsActive`, `ums.ui.tile`, `ums.ui.cell`, `ums.ui.meter`, `ums.ui.table`, `ums.ui.oTheoGoc`, `ums.ui.pagerBind`, `ums.ui.pager`, `ums.ui.options`, `ums.ui.filterInput`, `ums.ui.filterSelect`, `ums.ui.field`, `ums.ui.toast`, `ums.ui.confirm`, `ums.ui.xoaChon`, `ums.ui.dialog`, `ums.ui.batch`, `ums.ui.print`, `ums.ui.fail`, `ums.ui.datepicker`, `ums.ui.select2`, `ums.ui.hoverCard`, `ums.ui.file`, `ums.ui.enhance`, `ums.ui.khoangNgay`, `ums.ui.chart`, `ums.ui.reveal`, `ums.ui.swap`, `ums.ui.taiTep`, `ums.ui.xuatXls`
 - **crud.js** (1 hàm): `ums.crud`
-- **patterns.js** (0 hàm): 
-- **ref.js** (0 hàm): 
-- **report.js** (1 hàm): `ums.upload`
+- **patterns.js** (46 hàm): `ums.pat.num`, `ums.pat.money`, `ums.pat.page`, `ums.pat.panel`, `ums.pat.filterBar`, `ums.pat.fill`, `ums.pat.chain`, `ums.pat.haiLuoi`, `ums.pat.loc`, `ums.pat.dmTitle`, `ums.pat.val`, `ums.pat.checks`, `ums.pat.matrix`, `ums.pat.formTrang`, `ums.pat.pivot`, `ums.pat.master`, `ums.pat.masterItem`, `ums.pat.cards`, `ums.pat.groupTable`, `ums.pat.footSum`, `ums.pat.cardRow`, `ums.pat.pickSinhVien`, `ums.pat.pickSinhVienNganh`, `ums.pat.pickNhanSu`, `ums.pat.xacNhanChiTiet`, `ums.pat.sections`, `ums.pat.rows`, `ums.pat.phamVi`, `ums.pat.diaChi`, `ums.pat.chonPhamVi`, `ums.pat.emailHopLe`, `ums.pat.guiEmail`, `ums.pat.soDo`, `ums.pat.anhNguoi`, `ums.pat.dsNhanSuLoc`, `ums.pat.dsNhanSu`, `ums.pat.cotTrai`, `ums.pat.noCo`, `ums.pat.dauDoiTuong`, `ums.pat.datNoCo`, `ums.pat.datDau`, `ums.pat.thanhThu`, `ums.pat.datDaChon`, `ums.pat.datTongTab`, `ums.pat.masterNhanSu`, `ums.pat.boLocNguoiHoc`
+- **ref.js** (18 hàm): `ums.ref.heDaoTao`, `ums.ref.khoaDaoTao`, `ums.ref.chuongTrinh`, `ums.ref.lopQuanLy`, `ums.ref.hocPhan`, `ums.ref.thoiGianDaoTao`, `ums.ref.khoaQuanLy`, `ums.ref.coCauToChuc`, `ums.ref.nhanSu`, `ums.ref.nhanSuPage`, `ums.ref.tenNhanSu`, `ums.ref.xoaQuyetDinhKem`, `ums.ref.quaTrinhCuoiCung`, `ums.ref.sinhVien`, `ums.ref.sinhVienPage`, `ums.ref.dm`, `ums.ref.cascade`, `ums.ref.cascadeQuyen`
+- **report.js** (10 hàm): `ums.report.navigate`, `ums.report.mount`, `ums.report.run`, `ums.report.taiBangNhap`, `ums.report.nhapBangTuTep`, `ums.report.importChung`, `ums.upload`, `ums.queue.mount`, `ums.files.mount`, `ums.files.avatar`
 - **editor.js** (5 hàm): `ums.editor.sanSang`, `ums.editor.tao`, `ums.editor.donDep`, `ums.editor.toan`, `ums.editor.html`
 - **lamtruoc.js** (7 hàm): `ums.lamTruoc.batDau`, `ums.lamTruoc.danhMucRong`, `ums.lamTruoc.sauGoi`, `ums.lamTruoc.can`, `ums.lamTruoc.neuRong`, `ums.lamTruoc.layDanhMucCho`, `ums.lamTruoc.giuViTri`
-- **app.js** (0 hàm): 
-- **session.js** (0 hàm): 
+- **app.js** (6 hàm): `ums.app.openPath`, `ums.app.openHash`, `ums.app.timManTheoDuongDan`, `ums.app.hrefChucNang`, `ums.app.soanBaiChoPhep`, `ums.app.xuatMapping`
+- **session.js** (2 hàm): `ums.session.init`, `ums.session.logout`
 - **can-quyet.js** (1 hàm): `ums.canQuyetKhoa`
 - **diemhoc.js** (0 hàm): 
 - **lich.js** (0 hàm): 
@@ -62,6 +62,50 @@ Lớp CSS có sẵn: `_v2/CLASS.md`. Tóm tắt màn gốc: `python _harness\tom
 ```
 
 </details>
+
+### `ums.api.call(opts)`  <sub>api.js:74</sub>
+
+```text
+ums.api.call({ action, func, ...tham số })
+
+Trả Promise:
+  resolve → { data, pager, raw }
+  reject  → Error kèm .status, .action, .payload
+
+Tuỳ chọn thêm (không gửi lên máy chủ):
+  method   'POST' | 'GET'   mặc định POST
+  silent   true = không hiện chỉ báo đang tải
+  timeout  mili giây, mặc định 120000
+```
+
+### `ums.api.json(action, body, opts)`  <sub>api.js:216</sub>
+
+```text
+Gửi THÂN JSON nguyên văn — dùng cho các API nhận JSON của bản gốc
+(`contentType2: 'application/json', data: JSON.stringify(obj)`), vd
+SYS_Report/ThemMoi, SYS_Report/AllTable_Element, SYS_Import/SImport.
+Bản gốc gán tham số hệ thống lên một CHUỖI nên không có tác dụng — ở
+đây cũng không chèn gì, không mã hoá. Trả { data, pager, message, raw }.
+    ums.api.json('SYS_Report/ThemMoi', { arrTuKhoa: [...], … })
+```
+
+### `ums.api.call(opts)`  <sub>api.js:252</sub>
+
+_(chưa có chú thích trong mã)_
+
+### `ums.api.all(list)`  <sub>api.js:263</sub>
+
+```text
+ Gọi nhiều lời gọi song song, trả mảng kết quả theo đúng thứ tự 
+```
+
+### `ums.api.dm(code, sortBy)`  <sub>api.js:274</sub>
+
+_(chưa có chú thích trong mã)_
+
+### `ums.api.handle(err, where)`  <sub>api.js:385</sub>
+
+_(chưa có chú thích trong mã)_
 
 ### `ums.util.xorB64(chuoi, khoa)`  <sub>api.js:421</sub>
 
@@ -518,6 +562,555 @@ _(chưa có chú thích trong mã)_
 
 </details>
 
+### `ums.pat.num(v)`  <sub>patterns.js:48</sub>
+
+```text
+ Bỏ dấu phẩy ngăn nghìn để lấy số thật (bản gốc: edu.util.convertStrToNum) 
+```
+
+### `ums.pat.money(v)`  <sub>patterns.js:53</sub>
+
+```text
+ Tiền trong Ô NHẬP: dấu phẩy ngăn nghìn, đúng như edu.util.formatCurrency của hệ cũ — đọc ngược ra số
+được (pat.num). Giữ phần thập phân sau dấu chấm (dùng được cho USD). Hiển thị chỉ đọc: ums.ui.money —
+cùng kiểu dấu phẩy (site.config.js `money`, chốt 2026-09-26). 
+```
+
+### `ums.pat.page(title, actionsHtml)`  <sub>patterns.js:65</sub>
+
+```text
+ Đầu trang: tiêu đề + vùng nút (nút dính đỉnh khi cuộn, xem shell.css) 
+```
+
+### `ums.pat.panel(o)`  <sub>patterns.js:76</sub>
+
+```text
+Khung nội dung.
+o = { title, icon, tools, body (HTML), zone (data-z của phần thân),
+      count (data-z của ô đếm), flush (bỏ đệm thân), cls, foot }
+```
+
+### `ums.pat.filterBar(fields, opts)`  <sub>patterns.js:97</sub>
+
+```text
+Thanh lọc. fields = [{ key, label, type: 'select'|'text'|'date', multiple, value }]
+Ô chọn để trống, màn hình tự đổ dữ liệu vào bằng pat.fill.
+Nút tìm kiếm mang data-a="search".
+```
+
+### `ums.pat.fill(el, rows, o)`  <sub>patterns.js:120</sub>
+
+```text
+ Đổ dữ liệu vào một ô chọn; giữ giá trị đang chọn nếu còn trong danh sách 
+```
+
+### `ums.pat.chain(list, o)`  <sub>patterns.js:161</sub>
+
+```text
+Nối tầng Hệ → Khoá → Chương trình → Lớp
+ums.pat.chain([F.he, F.khoa, F.ct, F.lop]);
+
+Ba luật (luật 1 và 2 người dùng yêu cầu 2026-09-21, bản gốc KHÔNG có):
+1. Tầng trên chưa chọn → mọi tầng dưới bị KHOÁ (disabled). Bản gốc
+nạp sẵn toàn bộ Khoá nên chọn được Khoá khi chưa có Hệ.
+2. Chọn hoặc XOÁ một tầng → xoá trắng mọi tầng dưới. Bản gốc chỉ bắt
+'select2:select', và pat.fill giữ giá trị cũ nếu còn trong danh
+sách mới — bỏ Hệ thì Khoá cũ vẫn nằm nguyên.
+3. Xoá một tầng (trừ tầng cuối) → phát lại 'select2:select' để trình
+xử lý sẵn có của màn nạp lại tầng con. Màn / bộ nối tầng đã tự nghe
+lúc xoá thì truyền { phatLai: false } để khỏi nạp hai lần.
+
+Bốn bộ nối tầng dùng chung (ums.ref.cascade, ums.ref.cascadeQuyen,
+ums.dmhsB.cascadeQuyen, ums.dmhsB.mucPhi) đã tự gọi hàm này. Màn tự viết
+nối tầng thì gọi thêm một dòng SAU KHI gắn trình xử lý của nó.
+```
+
+### `ums.pat.haiLuoi(host, o)`  <sub>patterns.js:246</sub>
+
+```text
+KHUNG "CHƯA đăng ký / ĐÃ đăng ký" — ums.pat.haiLuoi
+Hai bảng xếp dọc: bảng trên có ô đánh dấu + nút "Đăng ký", bảng dưới có
+ô đánh dấu + nút "Hủy đăng ký".
+Dùng ở: dangkyhoc/nguyenvong, dangkyhoc/thilai, sukien/sukien,
+xebus/vethang (trước 2026-09-23 nằm ở dangkyhoc/script/_hailuoi.js,
+hai màn sau phải với sang thư mục module khác để nạp).
+Bản gốc mỗi màn tự dựng hai <table> + ô "chọn tất cả" (checkedAll_BgRow /
+lớp chkSystemSelectAll) + hai nút đặt dưới bảng. Ở đây:
+· bảng qua ums.ui.table, cột ô đánh dấu do khung tự thêm ở CUỐI (như gốc);
+· nút "Đăng ký" (xanh lá như btn-success gốc) ở đầu khung bảng trên;
+· "Hủy đăng ký" là nút xoá nhiều dòng chuẩn (ums.ui.xoaChon) ở đầu khung
+bảng dưới — tự đếm, khoá khi chưa chọn (luật chung 2026-09-22);
+· `nhom: 'COT'` — đánh dấu một dòng thì đánh dấu mọi dòng cùng giá trị
+cột đó (thilai: các thành phần điểm của cùng một học phần — gốc làm
+bằng lớp CSS = DAOTAO_HOCPHAN_ID).
+
+var hl = ums.pat.haiLuoi(host, {
+chua: { title, icon, columns, empty, nut: { text, icon }, canChon: 'Vui lòng chọn…', onDangKy(rows),
+kiemTra() → false thì dừng (chạy TRƯỚC khi đếm dòng chọn, như gốc nguyenvong) },
+da:   { title, icon, columns, empty, nut: { text },                                 onHuy(rows) },
+nhom: 'DAOTAO_HOCPHAN_ID'            // tuỳ chọn
+});
+hl.ve('chua' | 'da', rows, cột?)  vẽ lại bảng   hl.nhac(k, chữ)  khung lời nhắc
+(cột truyền vào thay cho cfg[k].columns — dùng khi số cột đổi theo dữ liệu)
+hl.dang(k)                   "Đang tải…"        hl.loi(k, chữ)   khung lỗi
+hl.bang(k)                   phần tử chứa bảng (đọc ô chọn trong dòng)
+```
+
+### `ums.pat.loc(rows, q, cols)`  <sub>patterns.js:344</sub>
+
+_(chưa có chú thích trong mã)_
+
+### `ums.pat.dmTitle(rows)`  <sub>patterns.js:352</sub>
+
+_(chưa có chú thích trong mã)_
+
+### `ums.pat.val(el)`  <sub>patterns.js:358</sub>
+
+```text
+ Giá trị một ô lọc: ô chọn nhiều trả "a,b" như edu.util.getValCombo 
+```
+
+### `ums.pat.checks(host, rows, o)`  <sub>patterns.js:397</sub>
+
+```text
+Nhóm ô đánh dấu có ô "Tất cả"
+Hệ cũ: genList_TrangThaiSV / genList_DMLKT. Đợt chuyển Tài chính sinh
+ra NĂM bản chép tay, mỗi bản một tên thuộc tính nên không dùng lại
+được của nhau: hoadon/_chung.js H.checks (data-all + value),
+phieuthu/_chung_khac.js PK.checks (data-id), sinhviennotien.js
+checklist (data-ck), dulieuhocphi/_chung.js checkGroup (data-tt),
+danhmucheso/khongbatno.js (data-tt, dựng thẳng trong hộp chọn SV).
+Nay một bản.
+
+pat.checks(host, rows, {
+all: 'Tất cả' | false,    ô "Tất cả" ở đầu (mặc định có)
+checked: true,            đánh dấu sẵn (mặc định có)
+id: 'ID', name: 'TEN',    cột lấy giá trị / nhãn (name nhận hàm)
+cols: 3,                  số cột lưới (mặc định 2 = .ums-checkgrid)
+cls: '',                  lớp thêm cho lưới
+empty: 'Không có dữ liệu',
+onChange(input)
+})
+`rows` là mảng HOẶC Promise — Promise thì hiện "Đang tải…" rồi tự vẽ,
+lỗi thì báo bằng toast và để trống.
+
+trả { ids()  → mảng id đang đánh dấu, đúng thứ tự trên màn
+(= edu.extend.getCheckedCheckBoxByClassName)
+val()  → chuỗi "a,b"
+picked() → chính các DÒNG đang đánh dấu (khỏi nhét dữ liệu vào
+data-* rồi đọc ngược như bản hoadon cũ)
+set(ids) | setAll(on) | draw(rowsMới) | el }
+```
+
+### `ums.pat.matrix(o)`  <sub>patterns.js:492</sub>
+
+```text
+BỐ CỤC: lưới nhập (dòng × cột)
+Thay các lưới nhập hệ số / đơn giá / mức phí của hệ cũ, nơi mỗi ô là
+một bản ghi và người dùng sửa thẳng trong ô rồi bấm "Cập nhật".
+
+o = {
+el, rows, cols,                    dòng và cột
+rowKey(row) → id, colKey(col) → id, colTitle(col) → chữ
+cells: [],  cellKey(rec) → { r, c } để ghép ô ↔ bản ghi
+value(rec) → giá trị trong ô
+lead: [{ title, prop | render(row), cls, width }]   các cột đầu
+money: true,                        ô tiền (định dạng lúc rời ô)
+onEdit(rec, row, col),              nút sửa trong ô (bỏ thì không có nút)
+readonly: true                      chỉ xem
+}
+trả { dirty() → [{ row, col, rec, value, old }], el }
+```
+
+### `ums.pat.formTrang(o)`  <sub>patterns.js:614</sub>
+
+```text
+BỐ CỤC: biểu mẫu THAY CHỖ màn — cho màn KHÔNG dựng bằng ums.crud
+BO-CUC luật 1: thêm / sửa bản ghi chính là biểu mẫu ngay trong trang, KHÔNG bật hộp thoại (người dùng nhắc lại 2026-09-30 với
+các màn lưới nhập Tài chính: "màn hình thêm mới hiện bật modal"). Hàm này nhận đúng cấu hình của ui.dialog và trả đúng hình
+dạng { body, close() } nên màn đang dùng hộp thoại chỉ phải đổi tên hàm gọi.
+
+o = { host: vùng gốc của màn (mọi phần tử con đang hiện sẽ ẩn đi, đóng thì hiện lại),
+title, icon, body: HTML | phần tử, cols: 1 | 2 (mặc định 2 — ô ngắn hai ô một hàng),
+buttons: [{ text, kind, mod, icon, keepOpen, onClick(api) }]   — Y HỆT ui.dialog: bấm xong tự đóng, trừ khi onClick trả false
+hoặc nút có keepOpen (lưu bất đồng bộ: trả false rồi tự gọi api.close())
+xoa: { chon, trong, text, onClick(api) }   — nút "Xoá đã chọn" (ui.xoaChon) như tuỳ chọn cùng tên của ui.dialog
+flush: true    — thân sát mép (bảng / màn con chiếm hết bề ngang khung)
+onClose() }
+Cũng dùng cho MÀN CON (danh sách + biểu mẫu của bản ghi con, vd ums.crud({ embedded: true })): truyền thân là vùng chứa, không cần buttons.
+host là vùng sẽ bị thay chỗ: cả màn (root) hoặc một khung con đang mở (khi đó biểu mẫu là tầng hai, nút Đóng của khung ngoài tự ẩn).
+Nút: "Đóng" ngoài cùng bên trái, rồi Xoá, rồi các nút còn lại (Lưu cuối) — đầu khung dính khi cuộn như biểu mẫu crud.
+```
+
+### `ums.pat.pivot(o)`  <sub>patterns.js:709</sub>
+
+```text
+BỐ CỤC: bảng xoay, tiêu đề hai tầng
+Dùng cho "học kỳ × khoản thu × kiểu học" và các bảng chéo khác: tầng
+trên gom nhóm, tầng dưới là cột con. Ô hiện giá trị; rê chuột vào ô
+mới hiện nút sửa/xoá nên bảng không rối.
+
+o = {
+el,
+groups: [{ title, cols: [{ title, key }] }],   hai tầng tiêu đề
+lead:   [{ title, prop | render(row), cls, width }],
+rows,
+value(row, col) → chuỗi đã sẵn sàng hiển thị (hoặc '' nếu trống)
+has(row, col)   → có bản ghi hay không (quyết định hiện nút sửa/xoá)
+onEdit(row, col), onDelete(row, col)
+}
+```
+
+### `ums.pat.master(o)`  <sub>patterns.js:796</sub>
+
+```text
+BỐ CỤC: hai cột — danh sách bên trái, nội dung bên phải
+Dùng cho: chọn sinh viên rồi thu tiền, chọn chương trình rồi xem học
+phần, chọn đối tượng rồi xem định mức…
+
+o = { el, title, actions,
+side: { title, icon, tools: HTML (nút ở đầu khung trái),
+search: 'chữ gợi ý' | false, filter: HTML (tự có đệm),
+footer: HTML (phân trang dưới danh sách), width,
+kieu: 'danhmuc' — danh sách là DANH MỤC: vẽ kiểu cây thư mục
+(đường chấm, biểu tượng thư mục, số lượng thành nhãn tròn).
+Cây lồng: <ul><li><button class="ums-master__item">…</li></ul> },
+main: { title, icon, tools } }
+trả { el, side, main, sideBody, sideFoot, sideCount, mainBody, search }
+
+Mục trong danh sách trái: `<button class="ums-master__item">` — mục có
+nút thao tác riêng thì dùng `<div class="ums-master__item">` (nút lồng
+nút là HTML sai) và đặt nút trong `<span class="ums-master__item__act">`.
+```
+
+### `ums.pat.masterItem(o)`  <sub>patterns.js:867</sub>
+
+```text
+Một mục trong danh sách bên trái của pat.master.
+o = { text, sub, active, id, act: HTML nút thao tác }
+Có `act` thì dựng bằng <div> (không lồng nút trong nút).
+```
+
+### `ums.pat.cards(o)`  <sub>patterns.js:892</sub>
+
+```text
+BỐ CỤC: lưới thẻ
+Tra cứu số phiếu / hoá đơn: mỗi bản ghi là một thẻ bấm được, phân
+trang phía dưới.
+
+o = { el, items, render(item, i) → HTML bên trong thẻ, tone(item) →
+'' | 'ok' | 'bad' | 'warn' | 'mute' | 'info', onPick(item, i),
+title(item) / attrs(item) → thuộc tính đặt lên thẻ,
+actions(item, i) → HTML nút trong thẻ (khi có: thẻ dựng bằng
+<div>, vì nút lồng trong nút là HTML sai; phần nội dung vẫn
+bấm được nếu có onPick),
+page: { index, size, total, onChange } }
+```
+
+### `ums.pat.groupTable(o)`  <sub>patterns.js:953</sub>
+
+```text
+BỐ CỤC: bảng gộp ô theo nhóm
+Thay `edu.system.actionRowSpan` của hệ cũ: mỗi nhóm (khối kiến thức,
+đợt, loại…) chiếm một khối dòng, các cột của NHÓM gộp lại bằng
+rowspan, các cột của DÒNG liệt kê bình thường.
+
+o = {
+el, groups: [{ row: <dòng nhóm>, rows: [<dòng con>] }],
+head: [[{ title, colspan }], …]        tiêu đề nhiều tầng (tuỳ chọn)
+groupCols: [{ title, prop | render(g), cls, width }]   cột của nhóm
+cols:      [{ title, prop | render(row, i), cls, width }]  cột của dòng
+stt: true      thêm cột Stt đánh số trong từng nhóm
+foot: HTML     nội dung vùng ums-tablefoot dưới bảng
+empty
+}
+```
+
+### `ums.pat.footSum(label, value)`  <sub>patterns.js:1003</sub>
+
+```text
+ Một ô tổng trong ums-tablefoot: nhãn + số 
+```
+
+### `ums.pat.cardRow(label, value)`  <sub>patterns.js:1008</sub>
+
+```text
+ Một dòng trong thẻ: nhãn trái, giá trị phải 
+```
+
+### `ums.pat.pickSinhVien(o)`  <sub>patterns.js:1037</sub>
+
+```text
+BỐ CỤC: hộp chọn sinh viên
+Thay edu.extend.genModal_SinhVien. Ba module từng tự viết ba bản —
+nay dùng chung một bản.
+
+Hai kiểu, chọn bằng `filters`:
+
+a) GỌN (mặc định) — ô tìm + bảng, mỗi dòng một nút "Chọn":
+o = { params() → tham số lọc lúc mở,
+searchParams() → tham số khi bấm Tìm (mặc định = params),
+isPicked(id), onPick(row) → false nếu không nhận,
+title, size, multi: false → chọn xong đóng hộp }
+
+b) ĐẦY ĐỦ — `filters: true`: thêm bộ lọc nối tầng Hệ → Khoá → Chương
+trình → Lớp (chọn nhiều), khối trạng thái người học, ô đánh dấu
+chọn nhiều dòng, nút "Chọn sinh viên" ở chân hộp:
+o = { filters: true, status: fn(el) → { ids() }, columns: [...],
+call(p, page, size) → tham số lời gọi (mặc định
+pkg_hosohocvien.LayDanhSachHoSo),
+group: { khoa(), chuongTrinh(), lop() }  → nút "Thêm từng…",
+onPick(rows) }
+
+Trả về hộp thoại (ums.ui.dialog) — gọi .close() khi cần.
+```
+
+### `ums.pat.pickSinhVienNganh(opts)`  <sub>patterns.js:1125</sub>
+
+```text
+Hộp chọn sinh viên — bản NHIỀU NGÀNH
+Hệ cũ: edu.extend.genModal_SinhVien (Core/systemextend.js:918). Khác
+pat.pickSinhVien ở nguồn: pkg_hosohocvien.LayDanhSachHoSoNhieuNganh
+(một người học nhiều ngành → mỗi ngành một dòng), nên cột và tên khoá
+cũng khác (QLSV_NGUOIHOC_*). Đây là bản dùng ở dulieuhocphi,
+giahanthu và danhmucheso/khongbatno — trước có hai bản chép tay.
+
+ums.pat.pickSinhVienNganh({
+onPick:  function (rows) { … },       // nút "Chọn sinh viên"
+onGroup: function (kind, ids, names) { … }   // "Thêm từng khoá/chương trình/lớp"
+});                                        //  (chỉ hiện khi có onGroup; names = chữ các mục đã chọn)
+
+rows là dòng của LayDanhSachHoSoNhieuNganh (ID, QLSV_NGUOIHOC_ID,
+DAOTAO_TOCHUCCHUONGTRINH_ID, QLSV_NGUOIHOC_MASO…). Chọn giữ qua các
+trang (bản gốc chỉ lấy trang đang hiện).
+```
+
+### `ums.pat.pickNhanSu(o)`  <sub>patterns.js:1201</sub>
+
+```text
+Hộp chọn NHÂN SỰ — ums.pat.pickNhanSu
+Thay edu.extend.genModal_NhanSu + getList_NhanSu (Core/systemextend.js:67,
+186) — hơn 100 màn gốc dùng. Bộ lọc: Đơn vị (cơ cấu tổ chức, chọn nhiều),
+Cán bộ trong / ngoài trường (-1 / 0 / 1), từ khoá; phân trang ở máy chủ.
+Lời gọi: ums.ref.nhanSuPage (pkg_nhansu_hoso_v2.LayDSNhanSu_HoSo_v2).
+
+ums.pat.pickNhanSu({
+title: 'Tìm kiếm giảng viên',        // chữ bản gốc
+onPick: function (rows, hop) { … },   // dòng máy chủ: ID, MASO, HOTEN, HODEM, TEN…
+footExtra: HTML,                      // tuỳ chọn — ô thêm ở chân hộp
+loaiCanBo: '1'                        // tuỳ chọn — đặt sẵn ô Trong/ngoài trường ('-1' | '0' | '1')
+});
+
+Khác bản gốc: "Chọn nhân sự" khi chưa đánh dấu ai thì báo (bản gốc vẫn
+gọi callback với mảng rỗng rồi đóng hộp); chọn giữ qua các trang (bản
+gốc chỉ lấy trang đang hiện). "Thêm từng đơn vị" bản gốc không có xử lý
+→ giữ nút, đặt disabled.
+```
+
+### `ums.pat.xacNhanChiTiet(o)`  <sub>patterns.js:1476</sub>
+
+```text
+HỎI LẠI KÈM CHI TIẾT — ums.pat.xacNhanChiTiet(o) → Promise<boolean>
+Bản viết lại của showFancyConfirm (hoatdong/DaQHHT.js) — hộp hỏi lại
+liệt kê đúng những gì sắp ghi, người dùng đánh dấu "đã kiểm tra" mới
+bấm được. Dùng khi một lần bấm ghi nhiều trường khó hoàn tác.
+
+ums.pat.xacNhanChiTiet({
+title, subTitle, icon, okText, tone: 'bad' (nút đỏ),
+warning: 'chữ cảnh báo',
+subject: { name, extra: [{ label, value }] },
+sections: [{ title, tone: 'blue'|'green'|'orange'|'red', rows: [[nhãn, giá trị], …] }],
+requireCheckbox: true (mặc định)
+}).then(function (dongY) { … });
+Ô trống hiện "— chưa nhập —" như gốc.
+```
+
+### `ums.pat.sections(o)`  <sub>patterns.js:1532</sub>
+
+```text
+NHIỀU TAB × NHIỀU DANH SÁCH — ums.pat.sections
+Dạng màn hồ sơ của Cổng cán bộ / Nhân sự (vd quatrinhdaotao): một dải
+tab, mỗi tab một hay vài khung "danh sách + nút Thêm mới + Tải lại",
+mỗi khung một biểu mẫu riêng. Bản gốc: Bootstrap tab + panel collapse,
+nạp dữ liệu khi mở tab lần đầu; mở biểu mẫu thì
+edu.util.toggle_overide("zonecontent", …) giấu CẢ vùng tab, chỉ còn
+biểu mẫu. Ở đây giữ đúng hai hành vi đó.
+
+var pg = ums.pat.sections({
+el: root, title: 'Quá trình đào tạo',
+tabs: [
+{ key: 'daotao', text: 'Quá trình đào tạo', icon: 'fa-graduation-cap',
+sections: [cfgDaoTao, cfgBoiDuong] },     // cfg của ums.crud
+{ key: 'hocvi', text: 'Học vị', sections: [cfgHocVi] }
+]
+});
+pg.crud('daotao', 0) · pg.show('hocvi')
+
+Mỗi khung là ums.crud({ embedded: true, autoload: false, … }) — cfg của
+màn truyền nguyên, khung tự thêm hai cờ đó. Chỉ MỘT tab thì không vẽ
+dải tab (bản gốc có dải tab một mục chỉ để làm tiêu đề — tiêu đề trang
+đã nói điều đó).
+```
+
+### `ums.pat.rows(hostEl, o)`  <sub>patterns.js:1631</sub>
+
+```text
+LƯỚI DÒNG NHẬP (nằm trong biểu mẫu) — ums.pat.rows
+Dạng "bảng có nút Thêm dòng mới" của hệ cũ (vd Gia hạn / Tiến độ học
+tập trong quatrinhdaotao): mỗi dòng là một bản ghi con của bản ghi
+đang sửa, lưu từng dòng SAU khi bản ghi cha đã có id.
+
+var g = ums.pat.rows(host, {
+title: 'Tiến độ học tập', icon: 'fa-list-check',
+columns: [
+{ key: 'strNgayBaoCao', col: 'NGAYBAOCAO', title: 'Ngày', type: 'date' },
+{ key: 'strTienDo_Id', col: 'TIENDO_ID', title: 'Tình trạng', type: 'select',
+source: { dm: 'NS.TIENDOHOCTAP' }, placeholder: 'Chọn tình trạng' },
+{ key: 'strMoTa', col: 'MOTA', title: 'Mô tả' },
+{ key: '_tep', title: 'File đính kèm', type: 'files', api: 'NS_Files' }
+],
+minRows: 4,                       // bản gốc luôn vẽ đủ 4 dòng
+minRowsNew: 4,                    // (tuỳ chọn) số dòng trống khi bản ghi cha mới thêm
+list: function (parentId) → lời gọi lấy các dòng đã lưu,
+filled: function (v) → true thì mới lưu dòng đó (bản gốc bỏ qua dòng trống),
+save: function (v, row, parentId) → lời gọi ThemMoi/CapNhat,
+remove: function (row) → lời gọi xoá dòng đã lưu
+});
+g.load(parentId) · g.clear() · g.save(parentId) → Promise · g.addNew(dòngNguồn)
+
+Ô chọn trong lưới là ô gốc (BO-CUC luật 2 — ít mục, không select2);
+danh sách dài thì đặt `s2: true` trên cột. Thêm nữa:
+group: 'Thời gian bắt đầu'   cột liền nhau cùng group → tiêu đề hai tầng
+source: { load: fn → Promise<dòng>, name: 'TEN' | fn(dòng) }
+tools: '<button…>'          nút thêm ở đầu khung, trước "Thêm dòng mới"
+type: 'static'              cột chỉ hiện (vd Ngày tạo, Người tạo), không gửi khi lưu
+Tệp đính kèm của dòng gắn vào id máy chủ trả cho CHÍNH dòng đó.
+```
+
+### `ums.pat.phamVi(hostEl, o)`  <sub>patterns.js:1812</sub>
+
+```text
+PHẠM VI ÁP DỤNG — ums.pat.phamVi
+Khối "Phạm vi áp dụng" trong biểu mẫu kế hoạch của hệ cũ (sukien/kehoach,
+sukien/sukien, khaosat/kehoach…): bảng tên phạm vi, nút Thêm mở
+edu.extend.genModal_SinhVien, nút Xóa xoá các dòng ĐÃ LƯU được đánh
+dấu. Dòng mới chỉ nằm trên màn, bấm Lưu kế hoạch xong mới gửi — mỗi
+phạm vi một lời gọi, gắn vào id kế hoạch máy chủ trả.
+
+var pv = ums.pat.phamVi(host, {
+list:   function (id)       { return { action: 'X/LayDS…PhamVi', … }; },
+save:   function (pvId, id) { return { action: 'X/Them…PhamVi', strPhamViApDung_Id: pvId, … }; },
+remove: function (rowId)    { return { action: 'X/Xoa…PhamVi', strId: rowId, … }; },
+name:   function (row) { … }            // mặc định PHAMVIAPDUNG_TEN
+});
+pv.load(idKeHoach) · pv.clear() · pv.save(idKeHoach) → Promise
+
+Chọn sinh viên → gửi QLSV_NGUOIHOC_ID (save_SinhVien của bản gốc đổi
+id dòng hộp chọn sang id người học). "Thêm từng khóa / chương trình /
+lớp" → gửi thẳng id khoá/CT/lớp; bấm lại cùng loại thì THAY danh sách
+cũ (bản gốc gán đè edu.extend.arrKhoa…), hiện dòng "Áp dụng cho …".
+```
+
+### `ums.pat.diaChi(input, o)`  <sub>patterns.js:1953</sub>
+
+_(chưa có chú thích trong mã)_
+
+### `ums.pat.chonPhamVi(o)`  <sub>patterns.js:2048</sub>
+
+```text
+Chọn phạm vi thao tác hàng loạt — "chỉ dòng đã đánh dấu" / "toàn bộ"
+(bản gốc: hộp #myModalChonPhamVi của sinhviennotien, inbangdiem…)
+pat.chonPhamVi({ title, icon, soChon, daChon, tatCa, warn }) → Promise<'daChon' | 'tatCa' | null>
+soChon = 0 thì nút "đã đánh dấu" bị khoá.
+```
+
+### `ums.pat.emailHopLe(s)`  <sub>patterns.js:2083</sub>
+
+_(chưa có chú thích trong mã)_
+
+### `ums.pat.guiEmail(o)`  <sub>patterns.js:2084</sub>
+
+_(chưa có chú thích trong mã)_
+
+### `ums.pat.soDo(host, rows, o)`  <sub>patterns.js:2146</sub>
+
+```text
+SƠ ĐỒ CÂY kiểu sơ đồ tổ chức (cha ở trên, các con dàn ngang bên dưới, nối bằng đường kẻ)
+pat.soDo(host, rows, {
+id: 'ID', cha: 'CHA_ID',          // tên cột khoá / khoá cha
+nhan: function (r, laCha) → html,  // nội dung một ô (đã tự thoát ký tự thì trả html)
+attr: function (r) → { tên: giá trị } // thuộc tính gắn lên nút (vd data-c / data-i của ums.crud)
+})
+Dòng mồ côi (cha không có trong danh sách) và vòng cha–con của dữ liệu hỏng → vẽ ở tầng trên cùng,
+không treo. Rộng hơn khung thì cuộn ngang (kéo chuột như bảng). Mỗi ô là <button class="ums-sodo__nut">
+— màn tự nghe click. CSS: components/sodo.css. Dùng ở ApisRenLuyen tieuchidiem (2026-09-25). 
+```
+
+### `ums.pat.anhNguoi(path)`  <sub>patterns.js:2209</sub>
+
+_(chưa có chú thích trong mã)_
+
+### `ums.pat.dsNhanSuLoc(o)`  <sub>patterns.js:2214</sub>
+
+_(chưa có chú thích trong mã)_
+
+### `ums.pat.dsNhanSu(m, o)`  <sub>patterns.js:2228</sub>
+
+_(chưa có chú thích trong mã)_
+
+### `ums.pat.cotTrai(m, o)`  <sub>patterns.js:2368</sub>
+
+```text
+ÁP LUẬT CỘT TRÁI (BO-CUC luật 12) lên một pat.master ĐÃ DỰNG — cho màn tự dựng cột trái
+pat.cotTrai(m, { tai: function () {…nạp lại trang 1…}, moSan: false, tuTaiLoc: true })
+m = kết quả pat.master, hoặc { side, search } khi ô tìm tự dựng; tuTaiLoc: false khi màn ĐÃ tự tải lúc đổi ô lọc
+tuTim: false khi ô tìm ĐÃ tự lọc tại chỗ lúc gõ (vd lọc cây) — khỏi nạp lại từ máy chủ mỗi lần gõ.
+Phần tử con của vùng lọc mang data-cot-giu (vd nhãn "Hệ / Khoá" đang lọc) thì giữ nguyên, luôn hiện.
+· nút trên tiêu đề cột: kính lúp → Tải lại (giữ nguyên thuộc tính data-* nên trình xử lý cũ vẫn chạy);
+chưa có nút Tải lại thì thêm (gọi o.tai); có ô lọc thì thêm nút "Bộ lọc nâng cao" (fa-sliders)
+· mọi ô chọn / ô chữ lọc trong .ums-master__filter (trừ ô tìm) dồn vào khung .ums-master__adv ẨN SẴN
+ngay dưới ô tìm (moSan: true = mở sẵn — dùng khi ô lọc bắt buộc chọn trước)
+· ẩn nút "Tìm kiếm" trong cột; gõ ô tìm là tự tìm sau 400ms; đổi ô lọc là tự tải
+Gộp 2026-09-26: 18 màn tự dựng vi phạm (người dùng: "kiểm toàn bộ chưa") — gọi MỘT dòng sau khi dựng xong.
+Kiểm: _harness/kiem-cot-trai.html.
+```
+
+### `ums.pat.noCo(so, chuaRo)`  <sub>patterns.js:2478</sub>
+
+_(chưa có chú thích trong mã)_
+
+### `ums.pat.dauDoiTuong(o)`  <sub>patterns.js:2485</sub>
+
+_(chưa có chú thích trong mã)_
+
+### `ums.pat.datNoCo(khung, so, chuaRo)`  <sub>patterns.js:2497</sub>
+
+_(chưa có chú thích trong mã)_
+
+### `ums.pat.datDau(panel, o)`  <sub>patterns.js:2501</sub>
+
+_(chưa có chú thích trong mã)_
+
+### `ums.pat.thanhThu(o)`  <sub>patterns.js:2511</sub>
+
+_(chưa có chú thích trong mã)_
+
+### `ums.pat.datDaChon(vung, so)`  <sub>patterns.js:2524</sub>
+
+_(chưa có chú thích trong mã)_
+
+### `ums.pat.datTongTab(vung, so)`  <sub>patterns.js:2528</sub>
+
+_(chưa có chú thích trong mã)_
+
+### `ums.pat.masterNhanSu(o)`  <sub>patterns.js:2533</sub>
+
+_(chưa có chú thích trong mã)_
+
+### `ums.pat.boLocNguoiHoc(host, o)`  <sub>patterns.js:2671</sub>
+
+_(chưa có chú thích trong mã)_
+
 
 ---
 
@@ -558,6 +1151,108 @@ _(chưa có chú thích trong mã)_
 ```
 
 </details>
+
+### `ums.ref.heDaoTao(o)`  <sub>ref.js:51</sub>
+
+```text
+ Core/systemroot.js:3714 
+```
+
+### `ums.ref.khoaDaoTao(o)`  <sub>ref.js:66</sub>
+
+```text
+ Core/systemroot.js:3792 
+```
+
+### `ums.ref.chuongTrinh(o)`  <sub>ref.js:81</sub>
+
+```text
+ Core/systemroot.js:3868 
+```
+
+### `ums.ref.lopQuanLy(o)`  <sub>ref.js:99</sub>
+
+```text
+ Core/systemroot.js:4035 
+```
+
+### `ums.ref.hocPhan(o)`  <sub>ref.js:118</sub>
+
+```text
+ Core/systemroot.js:4332 
+```
+
+### `ums.ref.thoiGianDaoTao(o)`  <sub>ref.js:132</sub>
+
+```text
+ Core/systemroot.js:3638 
+```
+
+### `ums.ref.khoaQuanLy()`  <sub>ref.js:146</sub>
+
+```text
+ Core/systemroot.js:4186 
+```
+
+### `ums.ref.coCauToChuc(o)`  <sub>ref.js:160</sub>
+
+```text
+ edu.system.getList_CoCauToChuc (Corei/systemroot.js:4455). Bản gốc hay
+tách kết quả thành cha (không có DAOTAO_COCAUTOCHUC_CHA_ID) và con. 
+```
+
+### `ums.ref.nhanSu(o)`  <sub>ref.js:189</sub>
+
+_(chưa có chú thích trong mã)_
+
+### `ums.ref.nhanSuPage(o)`  <sub>ref.js:191</sub>
+
+```text
+ Bản có phân trang — hộp chọn nhân sự (ums.pat.pickNhanSu) → { rows, total } 
+```
+
+### `ums.ref.tenNhanSu(r)`  <sub>ref.js:198</sub>
+
+_(chưa có chú thích trong mã)_
+
+### `ums.ref.xoaQuyetDinhKem(ids)`  <sub>ref.js:212</sub>
+
+```text
+ XOÁ QUYẾT ĐỊNH SINH KÈM (người dùng quyết 2026-09-30). Thêm kỷ luật / khen thưởng / danh hiệu / học hàm có số quyết định thì máy chủ tự
+sinh một quyết định (NS_ThongTinQuyetDinh, NGUONDULIEU_ID = id dòng); xoá dòng thì quyết định ở lại, mồ côi. Màn gọi hàm này SAU khi xoá
+dòng thành công. CHỈ xoá quyết định có NGUONDULIEU_ID ĐÚNG BẰNG id vừa xoá (phòng khi máy chủ bỏ qua tham số lọc mà trả mọi quyết định).
+Lỗi khi dọn không chặn màn — dòng chính đã xoá xong.
+Kiểm host 2026-09-30: kỷ luật / khen thưởng / danh hiệu máy chủ nay tự xoá quyết định kèm; HỌC HÀM thì không — hàm này dọn. Quyết định
+sinh kèm khen thưởng mang TRANGTHAI = 0 nên tìm ở CẢ HAI trạng thái (danh sách chỉ trả một trạng thái mỗi lần gọi). 
+```
+
+### `ums.ref.quaTrinhCuoiCung(strMaBang)`  <sub>ref.js:235</sub>
+
+_(chưa có chú thích trong mã)_
+
+### `ums.ref.sinhVien(o)`  <sub>ref.js:246</sub>
+
+```text
+ Core/systemroot.js:4783 — bản gốc lấy phân trang mặc định của hệ 
+```
+
+### `ums.ref.sinhVienPage(o)`  <sub>ref.js:266</sub>
+
+```text
+ Như ref.sinhVien nhưng trả kèm tổng số dòng — cần cho hộp chọn có phân trang 
+```
+
+### `ums.ref.dm(code, sortBy)`  <sub>ref.js:290</sub>
+
+_(chưa có chú thích trong mã)_
+
+### `ums.ref.cascade(o)`  <sub>ref.js:310</sub>
+
+_(chưa có chú thích trong mã)_
+
+### `ums.ref.cascadeQuyen(o)`  <sub>ref.js:409</sub>
+
+_(chưa có chú thích trong mã)_
 
 
 ---
@@ -622,12 +1317,94 @@ _(chưa có chú thích trong mã)_
 
 </details>
 
+### `ums.report.navigate(url)`  <sub>report.js:210</sub>
+
+```text
+ Chuyển trang tới báo cáo — tách riêng để trang dò thay tạm được 
+```
+
+### `ums.report.mount(hostEl, opts)`  <sub>report.js:240</sub>
+
+```text
+ums.report.mount — getList_MauImport (Core:6670) + cbGenCombo_MauImport (Core:6768)
+
+Bản gốc vẽ hai vùng: #<zone> (báo cáo) và #<zone>_Import. Ở đây cả hai
+nút nằm chung trong `host`. Số thứ tự "1., 2., …" đánh trên TOÀN danh
+sách như bản gốc (nên mục Import có thể bắt đầu từ số lớn).
+
+Bản gốc có lối tắt "chỉ một mẫu thì bấm nút là chạy luôn" (Core:6698),
+nhưng so `attr("class") == "btnBaoCao_LHD"` trong khi lớp thật là
+"dropdown-item btnBaoCao_LHD" nên lối tắt đó chưa bao giờ chạy. Không chép.
+```
+
+### `ums.report.run(code, opts)`  <sub>report.js:356</sub>
+
+```text
+ums.report.run — edu.system.report (Core:6847)
+
+Gửi SYS_Report/ThemMoi thân JSON { arrTuKhoa, arrDuLieu, strNguoiThucHien_Id },
+máy chủ trả id báo cáo ở Message, rồi mở trang báo cáo với ?id=.
+Bốn cặp đầu luôn có, đúng thứ tự bản gốc: strTable_Id (null khi báo cáo
+thường — bản gốc cũng gửi undefined → null), strLoaiBaoCao, strReportCode,
+strNguoiThucHien_Id; rồi saveFile nếu mẫu có XEMFILE; rồi các cặp của collect.
+
+Khác bản gốc: bản gốc gọi me.dtMauBaoCao.find(...).XEMFILE không kiểm
+tra — gọi report() với mã không có trong danh sách mẫu (hoặc trước khi
+danh sách nạp xong) là TypeError. Ở đây thiếu mẫu thì coi như không XEMFILE.
+```
+
+### `ums.report.taiBangNhap(table)`  <sub>report.js:909</sub>
+
+```text
+Hai nút của màn nhập điểm (edu.system.reportAllTable_User / showReportAndImportTable_User(true),
+Core:7392 / Core:7557):
+  R.taiBangNhap(table)   — "Tải bảng điểm": lưu từng ô (kèm id ô nhập) rồi mở BaoCao.aspx?type=input
+  R.nhapBangTuTep(opts)  — "Nhập điểm qua file": hộp chỉ có ô tải tệp; nạp giá trị NGƯỢC vào các ô
+                           nhập theo id rồi opts.onDone(). KHÔNG lưu — người dùng bấm Lưu sau.
+Bảng phải có id (và thuộc tính colreport nếu có), ô nhập phải có id — tệp tải ra mang id đó,
+nạp ngược dựa vào id đó (như bản gốc).
+```
+
+### `ums.report.nhapBangTuTep(opts)`  <sub>report.js:910</sub>
+
+_(chưa có chú thích trong mã)_
+
+### `ums.report.importChung(title, maDanhMuc, opts)`  <sub>report.js:922</sub>
+
+_(chưa có chú thích trong mã)_
+
 ### `ums.upload(files, opts)`  <sub>report.js:1097</sub>
 
 ```text
 ghi chú "Khac ban chinh"). SYS_Import/* nhận đúng chuỗi đó. opts.raw = true
 để lấy nguyên văn.
 ```
+
+### `ums.queue.mount(hostEl, opts)`  <sub>report.js:1159</sub>
+
+```text
+Vẽ các hàng đợi CHƯA xong (TONGDULIEUDAHOANTHANH ≠ TONGDULIEUCANTHUCHIEN)
+kèm thanh tiến độ và nút "Bắt đầu", cùng bảng lịch sử mọi hàng đợi.
+
+Khác bản gốc:
+ · bản gốc chỉ gọi callback khi bộ đếm tiến độ chạm ĐÚNG tổng (bắt đầu
+   từ số đã hoàn thành trước đó) — số nhiệm vụ còn lại lệch một chút là
+   không bao giờ báo xong. Ở đây báo xong khi mọi lời gọi đã trả về.
+ · lỗi kết nối của từng nhiệm vụ bản gốc chỉ alert, không tính là thất
+   bại; ở đây tính là thất bại để còn hỏi "chạy lại".
+ · nút Huỷ (.btnCancle) của bản gốc không làm gì — không vẽ.
+ · taskControl (thanh tác vụ ở đầu trang, #sysTask_Content) không chép:
+   updateStatus_Task dùng biến `me` chưa khai báo nên sẽ ném lỗi nếu
+   có lúc chạy tới; màn hình Tài chính cũng không dùng.
+```
+
+### `ums.files.mount(hostEl, o)`  <sub>report.js:1375</sub>
+
+_(chưa có chú thích trong mã)_
+
+### `ums.files.avatar(hostEl, o)`  <sub>report.js:1539</sub>
+
+_(chưa có chú thích trong mã)_
 
 
 ---
@@ -805,6 +1582,49 @@ _(chưa có chú thích trong mã)_
 
 </details>
 
+### `ums.app.openPath(path)`  <sub>app.js:824</sub>
+
+_(chưa có chú thích trong mã)_
+
+### `ums.app.openHash(ma)`  <sub>app.js:837</sub>
+
+```text
+ Mở chức năng theo MÃ HIỂN THỊ (DUONGDANHIENTHI, vd "#tintuc") — thay
+edu.system.triggerChucNang_MaHienThi (Core/systemroot.js:6514). 
+```
+
+### `ums.app.timManTheoDuongDan(duoi)`  <sub>app.js:847</sub>
+
+```text
+ Tìm màn theo ĐUÔI đường dẫn (đầy đủ, có tiền tố phân hệ như screenUrl — vd 'apiscms/modules/danhmuc/html/danhmucdulieu.html'
+hoặc chỉ '/danhmuc/html/danhmucdulieu.html') cho khung "Cần làm trước" (lamtruoc.js). Trả Promise<mảng { r, rn, id, n, url, hash }>:
+màn của vai trò đang mở trước, sau đó chỉ mục mọi vai trò của ô tìm màn (nạp một lần mỗi phiên). Không kiểm tệp có trong _v2 —
+lamtruoc.js tự kiểm trước khi nhảy. 
+```
+
+### `ums.app.hrefChucNang(id)`  <sub>app.js:863</sub>
+
+```text
+ Đường dẫn hash mở một chức năng theo id — cho thẻ <a> (lối tắt ở bảng điều khiển) 
+```
+
+### `ums.app.soanBaiChoPhep()`  <sub>app.js:870</sub>
+
+_(chưa có chú thích trong mã)_
+
+### `ums.app.xuatMapping(onTienDo)`  <sub>app.js:891</sub>
+
+```text
+ Xuất MAPPING chức năng (màn Cài đặt, nút "Xuất mapping" — 2026-09-26). Danh mục Function ID chuẩn để nạp vào
+Cổng Help (tài liệu _v2/docs: STR-03 / STR-05 import danh mục chức năng, HELP-08 / CTX-01 mapping Function ID ↔ bài
+Help) và để theo dõi chuyển đổi (cờ `converted`).
+NGUỒN = TOÀN BỘ CSDL (người dùng: "phải lấy đủ trong csdl vì sẽ phải chuyển hết"), KHÔNG theo menu của tài khoản:
+CMS_QuanLyNguoiDung_MH · pkg_chung_quanlynguoidung.LayDanhSachUngDung → với TỪNG ứng dụng LayDanhSachChucNang
+(đúng lời gọi của màn Quản trị → Chức năng, ApisCMS/chucnang). Tài khoản xuất phải có quyền gọi hai thủ tục đó.
+Chế độ dựng thử: không có CSDL → lấy cây menu mẫu của mọi vai trò (source "demo").
+converted: tệp màn đã có trong _v2 chưa (GET đúng đường dẫn vỏ nạp — screenUrl). onTienDo(chữ). 
+```
+
 
 ---
 
@@ -833,6 +1653,18 @@ _(chưa có chú thích trong mã)_
 ```
 
 </details>
+
+### `ums.session.init()`  <sub>session.js:93</sub>
+
+```text
+ ---------- Khởi tạo -------------------------------------------------- 
+```
+
+### `ums.session.logout()`  <sub>session.js:133</sub>
+
+```text
+ ---------- Kết thúc phiên -------------------------------------------- 
+```
 
 
 ---

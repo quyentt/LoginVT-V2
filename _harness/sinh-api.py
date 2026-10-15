@@ -21,9 +21,12 @@ TEP = ['api.js', 'ui.js', 'crud.js', 'patterns.js', 'ref.js', 'report.js', 'edit
        'can-quyet.js', 'diemhoc.js', 'lich.js', 'phieu.js', 'thuvai.js', 'scroll.js', 'icon-fa4.js']
 MAX_CT = 60
 
-RE_DEF = re.compile(r'^ {4}([A-Za-z_]\w*)\.([A-Za-z_]\w*)\s*=\s*function\s*\(([^)]*)\)')
+# Bí danh có thể là đường chấm (`ums.app.openPath = function` trong app.js — việc G, 15/10)
+RE_DEF = re.compile(r'^ {4}([A-Za-z_]\w*(?:\.[A-Za-z_]\w*)*)\.([A-Za-z_]\w*)\s*=\s*function\s*\(([^)]*)\)')
 RE_ALIAS = re.compile(r'(?:var\s+)?([A-Za-z_]\w*)\s*=\s*(ums(?:\.[A-Za-z_]\w*)+)\s*=')
 RE_ALIAS2 = re.compile(r'var\s+([A-Za-z_]\w*)\s*=\s*(ums(?:\.[A-Za-z_]\w*)+)\s*(?:\|\||;|$)')
+# Gán NGƯỢC ở cuối tệp (patterns.js `ums.pat = pat;`, ref.js, app.js) — thiếu mẫu này thì ba tệp đó ra 0 hàm (việc G, 15/10)
+RE_ALIAS3 = re.compile(r'^\s*(ums(?:\.[A-Za-z_]\w*)+)\s*=\s*([A-Za-z_]\w*)\s*;')
 
 
 def chu_thich_truoc(lines, i):
@@ -83,12 +86,14 @@ def xu_ly(ten):
         for m in RE_ALIAS.finditer(s): alias[m.group(1)] = m.group(2)
         m = RE_ALIAS2.search(s)
         if m and m.group(1) not in alias: alias[m.group(1)] = m.group(2)
+        m = RE_ALIAS3.match(s)
+        if m and m.group(2) not in alias: alias[m.group(2)] = m.group(1)
     hams, thieu = [], []
     for i, s in enumerate(lines):
         m = RE_DEF.match(s)
         if not m: continue
         a, ten_ham, tham = m.group(1), m.group(2), m.group(3).strip()
-        ns = alias.get(a)
+        ns = alias.get(a) or (a if a.startswith('ums.') else None)   # `ums.app.x = function` → ns = ums.app
         if not ns: continue
         ct = chu_thich_truoc(lines, i)
         hams.append((ns + '.' + ten_ham, tham, i + 1, ct))
