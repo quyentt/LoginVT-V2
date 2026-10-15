@@ -14,6 +14,8 @@ Quy ước bắt buộc (chi tiết ở CLAUDE.md mục 9 và bộ nhớ):
 
 ## 0. Thông báo phải đưa ra đầu phiên
 
+**15/10 (máy gốc):** đã làm hết A → J (trừ D bỏ theo người dùng, I nửa: "dời man-chung" chờ nói "dời"). Người dùng hỏi "tôi cần làm gì" → đọc khung "Tình hình 15/10" đầu `_v2/DANH-GIA-2026-10-14.md`: còn up gói 6 tệp rồi kiểm F (cache theo dấu gói) trên host.
+
 **14/10 (máy phụ, không sửa mã):** đã đánh giá toàn bộ `_v2`; việc cần làm theo thứ tự A → J ở `_v2/DANH-GIA-2026-10-14.md` mục 3.
 Việc A: `_v2/web.config` không có trong kho (bị `.gitignore` gốc nuốt) — về máy gốc `git add -f _v2/web.config` + thêm `!_v2/web.config` vào `.gitignore` ngay.
 
