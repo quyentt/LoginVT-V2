@@ -115,6 +115,7 @@ def main():
         if ph.startswith('Apis') and os.path.isdir(os.path.join(V2, ph)):
             chep_thu_muc(ph, bo=lambda p: p.endswith('.demo.js') or p.endswith('.md'))
 
+    sinh_phien_ban()
     kiem()
 
 
@@ -157,6 +158,23 @@ def kiem():
         sys.exit(1)
     print('Kiểm đường dẫn: đủ.')
 
+
+PHIEN_BAN = 'assets/phien-ban.js'
+def sinh_phien_ban():
+    """Việc F (đánh giá 14/10, làm 15/10): assets/phien-ban.js đặt ums.ban = DẤU GÓI = sha1 của (đường dẫn, sha1) mọi tệp trong gói
+    (trừ chính nó), cắt 12 ký tự. app.js dùng dấu này làm ?v= cho mọi tệp màn nạp động → trình duyệt cache được; gói đổi là dấu đổi.
+    Không đổi gì trong gói thì dấu giữ nguyên → gói bổ sung không bị thêm tệp thừa. Tệp này chỉ có trong gói, KHÔNG có trong _v2 nguồn."""
+    bam = bam_goi()
+    bam.pop(PHIEN_BAN, None)
+    h = hashlib.sha1()
+    for k in sorted(bam):
+        h.update((k + '\n' + bam[k] + '\n').encode('utf-8'))
+    dau = h.hexdigest()[:12]
+    with open(os.path.join(DICH, PHIEN_BAN.replace('/', os.sep)), 'w', encoding='utf-8', newline='\n') as f:
+        f.write('/* Sinh tự động bởi _harness/dong-goi.py — dấu gói (băm nội dung mọi tệp trong gói). Đừng sửa tay; index.aspx nạp trước app.js. */\n'
+                'window.ums = window.ums || {}; window.ums.ban = "' + dau + '";\n')
+    print('Dấu gói (ums.ban): ' + dau)
+    return dau
 
 def bam_goi():
     """{đường dẫn tương đối (dấu /): sha1} của mọi tệp trong _v2_deploy"""

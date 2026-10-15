@@ -172,6 +172,8 @@
     <script src="assets/js/can-quyet.js?v=<%= V("assets/js/can-quyet.js") %>"></script>
     <script src="assets/js/lamtruoc.js?v=<%= V("assets/js/lamtruoc.js") %>"></script>
     <script src="assets/js/thuvai.js?v=<%= V("assets/js/thuvai.js") %>"></script>
+    <%-- Dấu gói do _harness/dong-goi.py sinh (việc F 15/10): ums.ban → cache tệp màn theo phiên bản. Nguồn _v2 không có tệp này, chỉ có trong gói. --%>
+    <script src="assets/phien-ban.js?v=<%= V("assets/phien-ban.js") %>"></script>
     <script src="assets/js/app.js?v=<%= V("assets/js/app.js") %>"></script>
 </body>
 

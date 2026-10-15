@@ -1131,9 +1131,17 @@
      * KHÔNG thử lại khi máy chủ ĐÃ trả lời (404, 500…): đó là lỗi thật, thử nữa
      * chỉ tốn thềm một lượt chờ rồi vẫn báo đúng lỗi đó.
      */
+    /* PHIÊN BẢN TỆP MÀN (việc F đánh giá 14/10, làm 15/10). Trên host, dong-goi.py sinh assets/phien-ban.js đặt ums.ban = DẤU GÓI
+       (băm nội dung mọi tệp trong gói) → mọi tệp màn nạp động (.html / .js / .css) mang ?v=<dấu>, trình duyệt cache được, up gói mới
+       là dấu đổi nên tải lại. Không có ums.ban (chạy trên máy từ _v2 nguồn / index.html) → Date.now() + no-store như trước.
+       Hệ quả: lên host PHẢI qua dong-goi.py (tự sinh dấu); chép tay một tệp lên host mà không up phien-ban.js mới thì trình duyệt
+       vẫn dùng bản cũ cho tới khi hết hạn cache — đúng cái lỗi "sửa rồi mà vẫn vậy" (21/9) mà no-store từng che đi. */
+    function banTep() { return ums.ban ? String(ums.ban) : String(Date.now()); }
+    function tuyChonTai() { return ums.ban ? {} : { cache: 'no-store' }; }
+
     function fetchScreen(url, lanHai) {
         if (!url) return Promise.resolve(null);
-        return fetch(url + (url.indexOf('?') < 0 ? '?' : '&') + 'v=' + Date.now(), { cache: 'no-store' })
+        return fetch(url + (url.indexOf('?') < 0 ? '?' : '&') + 'v=' + banTep(), tuyChonTai())
             .then(function (r) {
                 if (r.status === 404) return null;
                 if (!r.ok) {
@@ -1544,7 +1552,7 @@
     function inject(host, html, baseUrl) {
         host.innerHTML = html;
         var base = new URL(baseUrl || location.href, location.href);
-        var ver = String(Date.now());
+        var ver = banTep();   // dấu gói trên host, Date.now() trên máy — xem fetchScreen
 
         host.querySelectorAll('link[href]').forEach(function (l) {
             var u = new URL(l.getAttribute('href'), base);
