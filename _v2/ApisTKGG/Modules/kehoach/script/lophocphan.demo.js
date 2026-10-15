@@ -44,7 +44,9 @@
             return rows.filter(function (r) { return !o.strDaoTao_CoCauToChuc_Id || r.DVID === o.strDaoTao_CoCauToChuc_Id; });
         },
         'pkg_klgv_v2_chung.LayDSHinhThucHoc': [{ ID: 'HT1', TENHINHTHUCHOC: 'Lý thuyết', MAHINHTHUCHOC: 'LT' }, { ID: 'HT2', TENHINHTHUCHOC: 'Thực hành', MAHINHTHUCHOC: 'TH' }],
-        'CMS_DanhMucThuocTinh/LayDanhSachDuLieuTheoBangDM#KLGD.PHANLOAIXACNHAN': [dm('PL1', 'KHOA', 'Khoa duyệt'), dm('PL2', 'PDT', 'Phòng ĐT duyệt')],
+        /* Cùng ba mục với _tkgg.demo.js / _kehoach.demo.js / _heso.demo.js — "bản đăng ký sau thắng": trước đây (15/10) mục riêng PL1/PL2
+           đè lên PV1–PV3 làm ô "Loại" của congthuctinh / hesoquymo / hesophamvi trống khi mở sau màn này (thu-crud TKGG 7/12). */
+        'CMS_DanhMucThuocTinh/LayDanhSachDuLieuTheoBangDM#KLGD.PHANLOAIXACNHAN': [dm('PV1', 'LOPHP', 'Lớp học phần'), dm('PV2', 'COITHI', 'Coi thi'), dm('PV3', 'KHAC', 'Phạm vi khác')],
         /* Khung Thêm mới — Đăng ký học */
         'DKH_Chung/LayThoiGianDangKyHoc': [{ ID: 'TGD1', DAOTAO_THOIGIANDAOTAO: '2025-2026_1' }, { ID: 'TGD2', DAOTAO_THOIGIANDAOTAO: '2025-2026_2' }],
         'DKH_PhanCong_LopHP/LayDSKhoaToChuc': [{ ID: 'K67', TENKHOA: 'Khóa 67' }, { ID: 'K68', TENKHOA: 'Khóa 68' }],
