@@ -354,6 +354,7 @@ Bảng từng phân hệ (màn / vai trò mẫu / ngày xong / kiểm host), HEM
 | Tên lớp CSS | [_v2/CLASS.md](_v2/CLASS.md) (sinh: `python _harness\sinh-class.py`) | đoán lớp rồi grep CSS |
 | Dò một màn vừa chuyển | `_harness/do-man.html?vt=R..&man=<ID>&sau=1&tho=1` qua `chay-cdp.js` — bấm Thêm / Sửa / mọi nút trên dòng, đếm dialog, nút Đóng, lỗi console | viết trang dò riêng mỗi phân hệ |
 | Giao tác tử con | chép [_v2/BRIEF-TAC-TU.md](_v2/BRIEF-TAC-TU.md), điền chỗ `<…>` | soạn brief mới, tác tử đọc lại cả bộ tài liệu |
+| Sửa tầng chung `assets/js` | `node --test _harness/test/*.test.js` (15/10 — 28 kiểm api / crud / ui.table / pat.chain, ~3 giây, jsdom; `cd _harness/test && npm install` một lần) | chạy ba trang kiểm ~75 phút chỉ để biết tầng chung còn chạy |
 
 Sửa tầng chung (`assets/js`, `assets/css`) xong thì chạy lại `sinh-api.py` / `sinh-class.py` (dong-goi không tự gọi). Script Python in tiếng Việt cần `PYTHONIOENCODING=utf-8`.
 
