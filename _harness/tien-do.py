@@ -239,6 +239,7 @@ details.ck li.xau b { color: #a12020; }
 
     <div class="ghichu">
         Màn = một tệp <code>Modules/&lt;module&gt;/html/&lt;tệp&gt;.html</code> của bản gốc; "đã chuyển" = có cùng đường dẫn trong <code>_v2</code>.
+        <b>"Đã chuyển" không có nghĩa "chạy được trên host"</b> — chạy được = đã kiểm trên host (thẻ và cột dưới) và không còn lỗi mã / việc backend treo.
         Số thứ tự cạnh tên phân hệ là thứ tự đã chuyển. Màn gạch ngang = cố ý không chuyển (rê chuột để xem lý do), đã tính là xong phần việc.
         Ngày cạnh phân hệ đã chuyển = lần sửa gần nhất của tệp màn trong _v2.<br>
         <b>Đã kiểm trên host</b> = màn đã chạy thật trên host bằng bộ thử <code>_harness/kiem-host</code>: <i>đọc sâu</i> (mở màn, chọn ô lọc, bấm tab / trang 2 / Xem / Sửa / Thêm rồi đóng)

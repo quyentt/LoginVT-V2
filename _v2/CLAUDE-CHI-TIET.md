@@ -9,6 +9,8 @@ Nguyên văn các mục dài, chỉ đọc khi tới việc liên quan.
 
 ### Tiến độ chuyển đổi (chi tiết từng phân hệ: [_v2/NHAT-KY-CHUYEN.md](_v2/NHAT-KY-CHUYEN.md); trang `_harness/tien-do.html`)
 
+**"Đã chuyển" KHÔNG có nghĩa "chạy được trên host"** (việc H đánh giá 14/10, ghi 15/10): đã chuyển = có tệp cùng đường dẫn trong `_v2` (810/837 màn); chạy được = đã mở thật trên host bằng `_harness/kiem-host` (401 màn = 50% màn đã chuyển, sổ `da-kiem.json`), và trong đó còn màn mang lỗi mã treo / việc backend (`ben`). Số đúng từng phân hệ: cột "Đã đọc sâu / Đã CRUD / Chưa kiểm / Tình trạng" ở `_harness/tien-do.html` (`python _harness	ien-do.py`); 49 việc backend treo ở `can-quyet.js`.
+
 | Phân hệ | Màn | Vai trò mẫu | Xong | Kiểm host |
 |---|---|---|---|---|
 | Tài chính `ApisTaiChinh` | 72/73 | R33 `TC-` | 19/9 | đọc sâu + thử ghi xong |
