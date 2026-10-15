@@ -302,7 +302,7 @@
             var j = JSON.parse(txt);
             m = j.Message || j.message || j.ExceptionMessage || j.error_description || j.error || '';
         } catch (e) {
-            m = String(txt).replace(/<[^>]*>/g, ' ').replace(/s+/g, ' ').trim();
+            m = String(txt).replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();   // \s+ (trước 15/10 viết /s+/ → xoá mọi chữ "s" trong câu lỗi IIS)
         }
         m = String(m).trim();
         if (!m) return '';

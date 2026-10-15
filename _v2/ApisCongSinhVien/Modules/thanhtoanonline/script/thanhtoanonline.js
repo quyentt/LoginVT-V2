@@ -548,7 +548,7 @@
         }).then(function (r) {
             st.khoanNT = arr(r.data);
             if (st.khoanNT.length) z('nt').hidden = false;
-        }).catch(function (err) { console.log(err.message); });
+        }).catch(function (err) { console.warn('[thanhtoanonline] khoản nộp trước:', err.message); });   // silent: true — chỉ ghi console, không toast
     }
 
     /* Biểu mẫu thêm MỘT khoản nộp trước — ngay trong trang, thay chỗ màn (ums.pat.formTrang, BO-CUC luật 1; gốc là modal,

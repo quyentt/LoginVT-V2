@@ -471,7 +471,7 @@ _(chưa có chú thích trong mã)_
 
 </details>
 
-### `ums.crud(cfg)`  <sub>crud.js:946</sub>
+### `ums.crud(cfg)`  <sub>crud.js:951</sub>
 
 _(chưa có chú thích trong mã)_
 
@@ -858,7 +858,7 @@ _(chưa có chú thích trong mã)_
 
 </details>
 
-### `ums.canQuyetKhoa(url)`  <sub>can-quyet.js:307</sub>
+### `ums.canQuyetKhoa(url)`  <sub>can-quyet.js:313</sub>
 
 _(chưa có chú thích trong mã)_
 
