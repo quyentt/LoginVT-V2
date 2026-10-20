@@ -24,6 +24,14 @@ Lần 6 (2026-10-05, 13 commit gốc `88f37941..0551deba`, 1/10 → 5/10) — **
 
 Lần 7 (2026-10-05 tối, gốc force-push `0551deba` → `1680e53d`, 3 tệp) — **ĐÃ CHUYỂN cùng tối**: KHCT `danhmuc/danhmucdulieu.html` mở lại ba ô lọc Dữ liệu cha / Trạng thái / Từ khoá (bản nạp chéo `_v2` bỏ `data-loc="q"`, đã đo đủ ba ô); Core / Corei chỉ đổi độ dài `?v=` chống cache → không chuyển. Bảng tệp: `_v2/CHO-CHUYEN-SAU-PULL.md` "Lần kéo 7".
 
+Lần 8 (6/10, `3c3b2d70`) · 9 (12/10, `c42e11e1`) · 10 (12/10 tối, `2254204a`) — gốc force-push liên tiếp; đã chuyển hết (12/10). Bảng tệp ở `CHO-CHUYEN-SAU-PULL.md`.
+
+Lần 11 (2026-10-20, gốc force-push `2254204a` → `ab5b4f19`, 32 tệp, +2.716/−143 dòng) — **chuyển 3 màn đổi lớn nhất 20/10 theo lệnh "chuyển 3 màn trước"**: CCB `khaosat/kehoach`
+(Xuất Excel toàn bộ kết quả chi tiết, hộp ba pha, `_kehoach_xuat.js`); SV `quyetdinh` (tab "Danh sách chi tiết" + "Xuất báo cáo", `_qd_chitiet.js`; Thực thi sửa trường trạng thái);
+KHCT `cthp` (tab Dạng thẻ | Dạng cây dựng ở tệp dùng chung Tài chính chế độ KHCT; sắp xếp theo cột; nhãn Học kỳ dự kiến ở hộp Khối bắt buộc). Tầng chung: `ums.ui.napXLSX` (gộp 4 bản
+chép tay), `ui.table` cfg.sort + `ums.ui.sortRows` (kiểm 30/30). 21/10 người dùng báo trên cthp: Đóng / Esc ở vùng con nhảy ra danh sách (gốc màn dùng chung bắt nhầm `data-a="dong"`) —
+đã sửa + đưa nút vùng con lên đầu khung (BO-CUC luật 1 ghi thêm bẫy nạp chéo). **CHƯA kiểm host. Còn 22 tệp màn + 3 tệp vỏ cũ chưa xem.** Bảng tệp: `CHO-CHUYEN-SAU-PULL.md` "Lần kéo 11".
+
 **Cùng ngày — ba luật bảng ở tầng chung** (BO-CUC luật 17 + ghi nhớ): cột ô đánh dấu chọn dòng tự về CUỐI bảng (`ums.ui.table`, `data-cot-goc`, `ums.ui.oTheoGoc` cho báo cáo / import); ô đánh dấu trong ô bảng căn giữa theo chữ; "Thông tin lịch" nhiều khối thành danh sách `.ums-dsl` (`ui.escBr`); mục cột trái mã dài tự xuống dòng. `thu-crud` nhận thêm tên thủ tục `_Create` / `_Update`.
 
 ### Đã làm đến đâu
