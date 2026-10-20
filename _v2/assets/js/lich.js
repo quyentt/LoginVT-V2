@@ -155,7 +155,9 @@
                 return '<div class="ums-ltuan__cot" style="height:' + cao + 'px">' + gio.map(function () { return '<div class="ums-ltuan__o"></div>'; }).join('') +
                     ds.map(function (r) {
                         var top = r._bd - kg.min * 60, h = r._kt - r._bd, w = 100 / r._soLan;
-                        return '<div class="ums-ltuan__ev" data-ev="' + r._i + '" style="top:' + top + 'px;height:' + h + 'px;left:calc(' + (w * r._lan) + '% + 2px);width:calc(' + w + '% - 4px);background:' +
+                        // Thẻ < 70px (1 tiết) không đủ chỗ cho hàng nút riêng → is-ngan: nút ⋮ lên góc phải trên, tên / giờ một dòng
+                        // (gốc lichgiang 13/10 .task-compact — kéo gốc lần 11)
+                        return '<div class="ums-ltuan__ev' + (h < 70 ? ' is-ngan' : '') + '" data-ev="' + r._i + '" style="top:' + top + 'px;height:' + h + 'px;left:calc(' + (w * r._lan) + '% + 2px);width:calc(' + w + '% - 4px);background:' +
                             mauCua[e(r[o.mau || 'IDLOPHOCPHAN'])] + '">' + o.noiDung(r) + '</div>';
                     }).join('') + '</div>';
             }).join('');

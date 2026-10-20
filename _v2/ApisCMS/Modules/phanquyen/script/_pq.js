@@ -201,7 +201,7 @@
             columns.push({ head: '<span class="pq-cot">Tất cả</span><input type="checkbox" data-pqall title="Chọn cả bảng">', cls: 'is-center pq-o',
                 render: function (r) { return '<input type="checkbox" data-pqdong="' + r.i + '" title="Chọn cả dòng">'; } });
 
-            ui.table({ el: bang, rows: dong, columns: columns, stt: false, tableCls: 'ums-table--lined ums-gtable pq-bang' });
+            ui.table({ el: bang, rows: dong, columns: columns, stt: false, tableCls: 'ums-table--lined ums-gtable pq-bang' + (cfg.cao ? ' pq-bang--cao' : '') });
 
             /* Gộp ô cây */
             qa(bang, 'tbody [data-pqo]').forEach(function (s) {

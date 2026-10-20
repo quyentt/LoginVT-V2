@@ -27,7 +27,7 @@
     }
     function nutXem(i, loai) { return '<button type="button" class="ums-btn ums-btn--out-primary ums-btn--sm" data-ls="' + i + '" data-loai="' + loai + '"><i class="fa-light fa-magnifying-glass"></i><span>Xem</span></button>'; }
     ums.lg.nguoiHoc(document.getElementById('lg-nguoihoctheokhoa'), {
-        tieuDe: 'Danh sách người học theo khoa quản lý', coHe: true, chonDau: true,
+        tieuDe: 'Danh sách người học theo khoa quản lý', coHe: true, chonDau: true, dangKyLop: true,
         dsThoiGian: function () { return get('LayDSThoiGianTheoKhoaQL'); },
         dsHocPhan: function (v) { return get('LayDSHocPhanTheoKhoaQL', { strDaoTao_ThoiGianDaoTao_Id: v('tg') }); },
         dsHe: function (v) { return get('LayDSHeDaoTaoTheoKhoaQL', { strDaoTao_HocPhan_Id: v('hp'), strDaoTao_ThoiGianDaoTao_Id: v('tg') }); },

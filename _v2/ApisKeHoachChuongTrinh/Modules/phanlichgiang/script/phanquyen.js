@@ -25,6 +25,9 @@
                 strNgayBatDau / strNgayKetThuc '' (ô txtAAAA không tồn tại), strHanhDong_Id, strUngDung_Id (vai trò),
                 strToHopBoDuLieuQuyen = ID LÁ, strNguoiDung_Id = ID CỘT, strMoTa ''
        xoá      KHCT_PhanQuyen_DuLieu/Xoa POST strIds = QUYEN_ID của ô
+   Kéo gốc 20/10 (lần 11): gốc thêm CSS bảng — khung cuộn cao tối đa max(320px, 100vh − 330px) + thead dính, cột giảng viên
+     min 110px, ô lá min 220px, thanh cuộn ngang giả phía trên bảng (initScrollTop). Bản này: cfg.cao → .pq-bang--cao (khung
+     cao + thead dính của tầng chung); min-width cột đã có ở _pq.css; thanh cuộn giả KHÔNG chép (bảng tầng chung kéo chuột vuốt ngang).
    Khác gốc (lỗi rõ):
      · Bộ lọc của lời gọi từng lá và lúc Phân quyền lấy theo lúc bấm Tìm kiếm.
      · Chưa chọn chức năng / quyền cần thiết lập thì chặn Tìm kiếm (gốc vẫn gọi với id rỗng) và Phân quyền.
@@ -55,6 +58,7 @@
     function get(a, o) { return ums.api.call(pq.gop({ action: a, method: 'GET', silent: true, strNguoiThucHien_Id: pq.uid() }, o)); }
 
     var Lu = pq.luoi(root.querySelector('[data-z="bang"]'), {
+        cao: true,   // gốc 20/10: khung bảng cao tối đa theo màn hình, thead dính khi cuộn dọc (_pq.css .pq-bang--cao)
         tieuDe: 'Thông tin lớp học phần được thiết lập quyền',
         tenCot: pq.tenNguoi,
         dong: function (id) {

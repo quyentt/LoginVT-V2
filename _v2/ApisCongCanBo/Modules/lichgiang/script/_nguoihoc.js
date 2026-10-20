@@ -13,7 +13,8 @@
    Loại xác nhận: XACNHAN_HOANTHANH_DIEMDANH (hoàn thành điểm danh);
    XACNHAN_HOANTHANH_NHAP (hoàn thành nhập điểm — chỉ xem lịch sử, nguoihoctheokhoa).
    Mẫu báo cáo: strNhanSu_HoSoCanBo_Id, strDaoTao_HocPhan_Id, strDaoTao_ThoiGianDaoTao_Id,
-   và strDaoTao_LopHocPhan_Id lặp lại cho MỖI lớp đã chọn (như gốc).
+   và strDaoTao_LopHocPhan_Id lặp lại cho MỖI lớp đã chọn (như gốc); cfg.dangKyLop → thêm strDangKy_LopHocPhan_Id
+   cùng giá trị (gốc nguoihoctheokhoa 20/10 — kéo gốc lần 11; nguoihoc gốc chưa có).
 
    Không chép (lỗi rõ của bản gốc):
      · Đồng ý khi chưa chọn trạng thái; một cảnh báo cho MỖI lớp; không nạp lại.
@@ -144,7 +145,10 @@
 
         ums.report.mount(z('bc'), { collect: function (add) {
             add('strNhanSu_HoSoCanBo_Id', uid()); add('strDaoTao_HocPhan_Id', v('hp')); add('strDaoTao_ThoiGianDaoTao_Id', v('tg'));
-            daChon().forEach(function (r) { add('strDaoTao_LopHocPhan_Id', r.ID); });
+            daChon().forEach(function (r) {
+                add('strDaoTao_LopHocPhan_Id', r.ID);
+                if (cfg.dangKyLop) add('strDangKy_LopHocPhan_Id', r.ID);   // gốc nguoihoctheokhoa 20/10 gửi thêm tên này (nguoihoc gốc không)
+            });
         } });
         root.addEventListener('click', function (ev) {
             var b;
