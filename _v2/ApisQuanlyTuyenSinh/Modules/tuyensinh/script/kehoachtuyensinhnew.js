@@ -24,8 +24,10 @@
      · Ô "Còn hiệu lực không" trong biểu mẫu: gốc có ô nhưng Create/Update KHÔNG gửi dIs_Active
        → hiện dạng chỉ xem (không cho tick một ô không có tác dụng).
      · Mã + Tên bắt buộc (gốc không kiểm, gửi rỗng lên máy chủ). Mã khoá khi Sửa (_khoaMaKeHoach).
-     · "Quy định phí", "Mẫu khai hồ sơ": gốc trỏ tới hộp #quy-dinh-phi / #mau-khai-hs KHÔNG tồn tại
-       → giữ nút, khoá. Ô "Mẫu hồ sơ" gốc không nạp danh sách nào → giữ ô trống như gốc.
+     · "Quy định phí", "Mẫu khai hồ sơ": gốc 20/10 thêm hộp giữ chỗ "Chức năng đang phát triển" (trước đó trỏ tới hộp
+       không tồn tại) → nút mở hộp cùng nội dung (T.nutXem khoa → T.dangPhatTrien). Ô "Mẫu hồ sơ" gốc không nạp danh sách nào → giữ ô trống như gốc.
+   Kéo gốc 20/10 (lần 11): thay đổi còn lại nằm ở hộp Kết quả đăng ký — xem đầu _khtsn_kqdk.js / _khtsn_khai.js (nguyện vọng id
+     khi Sửa / Xoá hồ sơ, Sua_HoSo_TS lưu được lớp dự kiến, Phân lớp tự động một action).
      · Đổi ô chọn lọc là tự tìm (khung chung ums.crud); Enter trong ô chữ = Tìm kiếm như gốc.
    Pull 29/9 (gốc v1.0.13.1): thay đổi nằm cả ở hộp "Kết quả đăng ký" — xem đầu _khtsn_kqdk.js (17 cột bổ sung ở chế độ
      Đầy đủ + tệp xuất, xuất đúng danh sách đang lọc, sửa phễu lọc khi gõ tìm, ghim thanh công cụ). Tệp này không đổi mã.
@@ -211,6 +213,7 @@
         var b = ev.target.closest('[data-xem]');
         if (!b || !root.contains(b) || b.disabled) return;
         if (b.closest('.ums-formtrang')) return;      // nút "Xem" của bảng ĐỢT trong màn con — _khtsn_dot.js tự xử lý
+        if (T.dangPhatTrien(b)) return;               // Quy định phí / Mẫu khai hồ sơ: hộp "đang phát triển" như gốc
         var id = b.getAttribute('data-id');
         var kh = main.rows.filter(function (r) { return String(r.ID) === id; })[0] || { ID: id };
         T.S.khId = id;

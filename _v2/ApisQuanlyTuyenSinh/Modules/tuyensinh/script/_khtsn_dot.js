@@ -10,8 +10,8 @@
    Nút cuối hộp của gốc → nút đầu khung danh sách: Đọc từ API · Import trúng tuyển · Khai trực tiếp
    hồ sơ · Thêm mới (ba nút đầu KHÔNG mang đợt → phạm vi cả kế hoạch, như gốc).
    Nút trên dòng: Kế hoạch đầu ra (mức ĐỢT — cho thêm đầu ra), Kết quả đăng ký (theo đợt),
-   Khai (danh mục hồ sơ giấy tờ của đợt). "Phương thức tuyển" / "Mẫu khai hồ sơ": gốc trỏ tới hộp
-   KHÔNG tồn tại (#phuong-thuc-tuyen, #mau-khai-hs) → giữ nút, khoá.
+   Khai (danh mục hồ sơ giấy tờ của đợt). "Phương thức tuyển" / "Mẫu khai hồ sơ": gốc 20/10 mở hộp giữ chỗ
+   "Chức năng đang phát triển" (#phuong-thuc-tuyen, #mau-khai-hs — trước đó là hộp không tồn tại) → T.dangPhatTrien.
    Thêm / Xem-sửa đợt: biểu mẫu thay chỗ danh sách đợt (gốc: hộp chồng hộp). "Đọc từ API" vẫn là hộp thoại (việc phụ).
    Tự chốt: Ins gửi dSo_Da_* = 0 (gốc đọc 5 nhãn "Số đã…" — lúc thêm mới luôn là 0); Upd không gửi (như gốc).
    ========================================================================= */
@@ -171,6 +171,7 @@
         host.addEventListener('click', function (ev) {
             var b = ev.target.closest('[data-xem]');
             if (!b || !host.contains(b) || b.disabled) return;
+            if (T.dangPhatTrien(b)) return;
             var id = b.getAttribute('data-id');
             var dot = crud.rows.filter(function (r) { return String(r.ID) === id; })[0] || { ID: id };
             var k = b.getAttribute('data-xem');

@@ -34,6 +34,10 @@
      · Lưu nguồn khai thác xong cập nhật ngay tên ở cột danh sách. Tra hồ sơ vừa tạo: lần hai bỏ lọc đợt.
      · KHÔNG theo: gốc 2/10 khai lại _hsDotHienTai / _nvDauRaHienTai lần hai ở cuối đối tượng (bản sau đè bản trước, mất bước
        suy đợt từ nguyện vọng / lấy nguyện vọng từ danh sách) — bản này giữ dotHienTai / nvHienTai có đủ hai bước đó.
+   Kéo gốc 20/10 (lần 11): Sua_HoSo_TS gửi thêm strTS_HoSo_NV_Id (= TS_HOSO_NGUYENVONG_ID của dòng được bấm Sửa — BE mở thêm
+     4 tham số: NV id, nguyện vọng đầu ra, cơ sở đào tạo, lớp dự kiến strDaoTao_LopQuanLy_Id_DK) → ba ô đó nay LƯU ĐƯỢC khi sửa;
+     gửi kèm strDaoTao_LopQuanLy_DuKien như gốc (tên đoán cũ, BE bỏ qua). Dải "Đang sửa hồ sơ" nêu rõ ô CHƯA lưu được
+     (Số QĐ trúng tuyển, Mã/Loại đợt nhập học, tab Xét tuyển) như gốc.
    ========================================================================= */
 (function () {
     'use strict';
@@ -146,7 +150,7 @@
                 ui.btn('confirm', { text: 'Đổi nguyện vọng đầu vào', mod: 'out-warn', icon: 'fa-arrows-rotate', attr: { 'data-kq': 'doinv', hidden: 'hidden' } }) +
                 ui.btn('save', { text: 'Lưu hồ sơ', attr: { 'data-kq': 'luu' } }),
             body:
-                '<div class="khtsn-note ums-u-fz13" data-kq="bansua" hidden><i class="fa-light fa-pen-to-square"></i> <b>Đang sửa hồ sơ.</b> Các ô bạn thay đổi sẽ được lưu qua Sua_HoSo_TS.</div>' +
+                '<div class="khtsn-note ums-u-fz13" data-kq="bansua" hidden><i class="fa-light fa-pen-to-square"></i> <b>Đang sửa hồ sơ.</b> Một số ô <b>chưa lưu được</b> khi sửa (hệ thống dưới chưa mở tham số): <b>Số QĐ trúng tuyển, Mã/Loại đợt nhập học</b> và toàn bộ tab <b>Xét tuyển</b>. Các ô còn lại lưu bình thường.</div>' +
                 '<div class="khtsn-note khtsn-note--bad ums-u-fz13" data-kq="canhbaoluu" hidden><i class="fa-light fa-triangle-exclamation"></i> <b>Hồ sơ vừa tạo chưa lưu đủ thông tin bổ sung</b> ' +
                     '(địa chỉ, hóa đơn, gia đình, ngân hàng, nguồn khai thác). Mở hồ sơ đó trong danh sách rồi bấm "Cập nhật hồ sơ" một lần là xong.</div>' +
                 '<div class="ums-row ums-row--between"><div data-kq="tabs"></div><span data-kq="vm">' +
@@ -543,7 +547,7 @@
 
         /* ---------- đặt lại / mở ---------- */
         function xoaTrang() {
-            S.sua = false; S.hosoId = ''; S.pid = ''; S.d = null; S.intake = ''; S.dtc = {};
+            S.sua = false; S.hosoId = ''; S.nvId = ''; S.pid = ''; S.d = null; S.intake = ''; S.dtc = {};
             Array.prototype.forEach.call(host.querySelectorAll('input[data-kq], select[data-kq]'), function (x) {
                 if (x.type === 'checkbox') return;
                 x.removeAttribute('data-cham');
@@ -565,7 +569,7 @@
         }
         function moSua(d) {
             xoaTrang();
-            S.sua = true; S.d = d; S.hosoId = T.hid(d); S.pid = T.pid(d);
+            S.sua = true; S.d = d; S.hosoId = T.hid(d); S.nvId = T.nvId(d); S.pid = T.pid(d);
             S.intake = T.pick(d, ['CORE_PERSON_INTAKE_ID', 'COREPERSON_INTAKE_ID', 'CorePerson_Intake_Id', 'INTAKE_ID']);
             q('bansua').hidden = false; q('doinv').hidden = false;
             q('luu').querySelector('span').textContent = 'Cập nhật hồ sơ';
@@ -884,7 +888,7 @@
             var o = {
                 action: 'SV_Core_TS_HoSo_MH/EjQgHgkuEi4eFRIP', func: HS + 'Sua_HoSo_TS',
                 strNguoiThucHien_Id: '', strVaiTroDangNhap_Id: '', strChucNangHeThong_Id: '', strHanhDong_Code: 'SUA',
-                strHoSo_Id: S.hosoId, strCorePerson_HoTen: g('txtKQ_HoTen'), strCorePerson_NgaySinh: T.ngayUI(g('txtKQ_NgaySinh')),
+                strHoSo_Id: S.hosoId, strTS_HoSo_NV_Id: S.nvId || '', strCorePerson_HoTen: g('txtKQ_HoTen'), strCorePerson_NgaySinh: T.ngayUI(g('txtKQ_NgaySinh')),
                 strCorePerson_GioiTinh_Id: g('ddlKQ_GioiTinh'), strPersonContact_DienThoai: g('txtKQ_DienThoai'), strPersonContact_Email: g('txtKQ_Email'),
                 strPersonIden_SoCCCD: g('txtKQ_SoCCCD'), strHoSo_MaHoSo: g('txtKQ_MaHoSo'), strHoSo_SoBaoDanh: g('txtKQ_SBD'),
                 strPersonProfile_DanToc_Id: g('ddlKQ_DanToc'), strPersonProfile_TonGiao_Id: g('ddlKQ_TonGiao'), strPersonProfile_QuocTich_Id: g('ddlKQ_QuocTich'),
@@ -900,10 +904,11 @@
                 strPersonBank_ChuTaiKhoan: g('txtKQ_HD_ChuTK'), strPersonBank_GhiChu: g('txtKQ_HD_GhiChu'),
                 strKetQua_QuyetDinh_Id: g('txtKQ_QDMa'), strIntake_IntakeCode: g('txtKQ_IntakeCode'), strIntake_IntakeTypeCode: g('txtKQ_IntakeTypeCode'),
                 strDaoTao_CoSoDaoTao_Id: g('ddlKQ_CoSoDaoTao'), strNguyenVong_DauRa_Id: g('ddlKQ_NguyenVongDauRa'),
+                strDaoTao_LopQuanLy_Id_DK: g('ddlKQ_LopDuKien'), strDaoTao_LopQuanLy_DuKien: g('ddlKQ_LopDuKien'),
                 strTS_DoiTacTuyenSinh_Id: g('ddlKQ_NguonKhaiThac'), strTS_DoiTacTuyenSinh_id: g('ddlKQ_NguonKhaiThac'), strTS_DoiTacTuyenSinh_Khac: g('txtKQ_NguonKhaiThac_GhiChu'),
                 strExtra_Data: vuaExtra(extra)
             };
-            var giu = ['action', 'func', 'strNguoiThucHien_Id', 'strVaiTroDangNhap_Id', 'strChucNangHeThong_Id', 'strHanhDong_Code', 'strHoSo_Id', 'strCorePerson_HoTen', 'strExtra_Data'];
+            var giu = ['action', 'func', 'strNguoiThucHien_Id', 'strVaiTroDangNhap_Id', 'strChucNangHeThong_Id', 'strHanhDong_Code', 'strHoSo_Id', 'strTS_HoSo_NV_Id', 'strCorePerson_HoTen', 'strExtra_Data'];
             Object.keys(o).forEach(function (k) {
                 if (giu.indexOf(k) >= 0) return;
                 if (o[k] === '' || o[k] == null) { delete o[k]; return; }

@@ -27,8 +27,13 @@
     fx['SV_ThongTin/LayKetQuaTichLuyTheoKhoi'] = { rows: { rsTongHop: [{ MAKHOI: 'DC', TENKHOI: 'Đại cương', TONGSOTINCHICUAKHOI: 40, SOBATBUOC: 30, SODATICHLUY: 28 }],
         rsChiTiet: [{ MAKHOI: 'DC', TENKHOI: 'Đại cương', DAOTAO_HOCPHAN_MA: 'MI1110', DAOTAO_HOCPHAN_TEN: 'Giải tích 1', DAOTAO_HOCPHAN_HOCTRINH: 4, DIEM: 7, KETQUA: 1 }] } };
     fx['SV_ThongTin/LayDSThoiGianLichHoc'] = [{ ID: 'TG1', THOIGIAN: '2026_2027_1' }];
-    fx['SV_ThongTin/LayKetQuaDangKyHocCaNhan'] = { rows: { rsKetQuaDangKy: [{ DANGKY_LOPHOCPHAN_MA: 'IT3100.01', DANGKY_LOPHOCPHAN_TEN: 'Lập trình HĐT', DAOTAO_HOCPHAN_HOCTRINH: 3,
-        QLSV_NGUOIHOC_HODEM: 'Nguyễn Văn', QLSV_NGUOIHOC_TEN: 'An', QLSV_NGUOIHOC_MASO: 'BIT220101', KIEUHOC_TEN: 'Học đi', THOIGIAN: '2026_2027_1' }], rsLichSuDangKy: [] } };
+    // Gốc 20/10: một học phần có nhiều lớp HP (lý thuyết + thực hành) → dòng tổng "Số tín" chỉ tính một lần (3 + 4 = 7, không phải 10)
+    var SVKQ = { QLSV_NGUOIHOC_HODEM: 'Nguyễn Văn', QLSV_NGUOIHOC_TEN: 'An', QLSV_NGUOIHOC_MASO: 'BIT220101', KIEUHOC_TEN: 'Học đi', THOIGIAN: '2026_2027_1' };
+    fx['SV_ThongTin/LayKetQuaDangKyHocCaNhan'] = { rows: { rsKetQuaDangKy: [
+        Object.assign({ DANGKY_LOPHOCPHAN_MA: 'IT3100.01', DANGKY_LOPHOCPHAN_TEN: 'Lập trình HĐT (LT)', DAOTAO_HOCPHAN_ID: 'HP1', DAOTAO_HOCPHAN_MA: 'IT3100', DAOTAO_HOCPHAN_HOCTRINH: 3 }, SVKQ),
+        Object.assign({ DANGKY_LOPHOCPHAN_MA: 'IT3100.01.TH', DANGKY_LOPHOCPHAN_TEN: 'Lập trình HĐT (TH)', DAOTAO_HOCPHAN_ID: 'HP1', DAOTAO_HOCPHAN_MA: 'IT3100', DAOTAO_HOCPHAN_HOCTRINH: 3 }, SVKQ),
+        Object.assign({ DANGKY_LOPHOCPHAN_MA: 'MI1110.02', DANGKY_LOPHOCPHAN_TEN: 'Giải tích 1', DAOTAO_HOCPHAN_ID: 'HP2', DAOTAO_HOCPHAN_MA: 'MI1110', DAOTAO_HOCPHAN_HOCTRINH: 4 }, SVKQ)
+    ], rsLichSuDangKy: [] } };
     fx['SV_ThongTin/LayDSHocPhanChuHoanThanh'] = [{ DAOTAO_HOCPHAN_MA: 'IT3200', DAOTAO_HOCPHAN_TEN: 'Cơ sở dữ liệu', DAOTAO_HOCPHAN_HOCTRINH: 3, DIEM: 3.5, DANHGIA_TEN: 'Chưa đạt', LANHOC: 1, LANTHI: 2 }];
     fx['SV_ThongTin/LayDSQDCaNhan'] = [{ SOQUYETDINH: '123/QĐ-ĐHMT', NGAYQUYETDINH: '01/09/2022', NGAYHIEULUC: '05/09/2022', NOIDUNG: 'Công nhận trúng tuyển', LOAIQUYETDINH_TEN: 'Nhập học' }];
     fx['pkg_congthongtin_hssv_thongtin.LayDSKetQuaXuLyHocVu'] = [];

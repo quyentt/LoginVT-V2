@@ -12,8 +12,10 @@
        LayDSNguoiHoc_All + LayDSKS_DaoTao_LopQuanLy (mã lớp QL), LayDS_TS_HoSo_DoiTacTS (nguồn khai thác, thử cả lô trước),
        chế độ Đầy đủ: LayTT_HoSo_TS + Get_Person_Family + LayDS_PersonInvoiceInfo + Get_Person_Address mỗi người
        (quá 60 người / trang thì không tự nạp — hiện nút "Nạp chi tiết").
-     Xoá hồ sơ: Xoa_HoSo_TS (strHoSo_Id). Phân lớp tự động: PKG_CORE_NhapHoc_ThuTien.PhanLop_TuDong
-       (strCore_Person_Id, strNguonSuKien_Code 'TS_KQDK_AUTO_CLASS'), thử lần lượt ba action như gốc.
+     Xoá hồ sơ: Xoa_HoSo_TS (strHoSo_Id + strTS_HoSo_NV_Id = TS_HOSO_NGUYENVONG_ID của dòng — gốc 20/10).
+     Phân lớp tự động: PKG_CORE_NhapHoc_ThuTien.PhanLop_TuDong (strCore_Person_Id, strNguonSuKien_Code 'TS_KQDK_AUTO_CLASS')
+       — gốc 20/10 chốt MỘT action, bỏ ba action thử lần lượt; phản hồi chỉ có Success + Message (không có giá trị Out).
+     Gốc 20/10: một hồ sơ có nhiều dòng nguyện vọng → nút Sửa / Xoá và dòng mang data-nv để mở / xoá đúng dòng được bấm.
      Mẫu báo cáo / import (getList_MauImport "zonebtnBaoCao_KHTS") → ums.report.mount.
    Bố cục như gốc: thanh công cụ (tìm nhanh, Tìm, Tải lại, Xuất kết quả, Phân lớp tự động, Gọn / Đầy đủ, Tổng,
    báo cáo) + dải điều kiện lọc + bảng (Gọn 8 cột / Đầy đủ 50 cột, tiêu đề hai tầng) + phân trang tại máy.
@@ -310,9 +312,11 @@
     };
 
     /* ---------- Khai / Sửa từ danh sách ------------------------------------ */
-    T.kqMoSua = function (id) {
+    T.kqMoSua = function (id, nv) {
         if (!Q) return;
-        var d = Q.rows.filter(function (r) { return T.hid(r) === id; })[0];
+        var cung = Q.rows.filter(function (r) { return T.hid(r) === id; });
+        // Một hồ sơ có thể có nhiều dòng nguyện vọng → ưu tiên đúng dòng được bấm (nv); không có thì dòng đầu như trước
+        var d = (nv && cung.filter(function (r) { return T.nvId(r) === nv; })[0]) || cung[0];
         if (!d) { ui.toast('Không tìm thấy hồ sơ trong danh sách — vui lòng Tải lại', 'warn'); return; }
         if (!Q.khai) Q.khai = T.kqKhai(Q);
         Q.vaoTuList = true;
@@ -366,15 +370,15 @@
             else if (k2 === 'phanlop') phanLop();
             else if (k2 === 'xoahet') { Q.filters = {}; Q.sort = null; host.querySelector('[data-kq="q"]').value = ''; apDung(); }
             else if (k2 === 'napct') { napChiTiet(trangHienTai(), true); }
-            else if (k2 === 'sua') T.kqMoSua(b.getAttribute('data-id'));
-            else if (k2 === 'xoa') xoaHoSo(b.getAttribute('data-id'));
+            else if (k2 === 'sua') T.kqMoSua(b.getAttribute('data-id'), b.getAttribute('data-nv') || '');
+            else if (k2 === 'xoa') xoaHoSo(b.getAttribute('data-id'), b.getAttribute('data-nv') || '');
             else if (!b || ['sel', 'all'].indexOf(k2) < 0) {
                 // Bấm vào dòng → mở hồ sơ (bỏ qua nút / ô chọn / khi đang bôi đen chữ)
                 var tr = ev.target.closest('tbody tr[data-id]');
                 if (!tr || ev.target.closest('a,button,input,label,select')) return;
                 var sel = window.getSelection && window.getSelection();
                 if (sel && String(sel).length) return;
-                T.kqMoSua(tr.getAttribute('data-id'));
+                T.kqMoSua(tr.getAttribute('data-id'), tr.getAttribute('data-nv') || '');
             }
         });
         host.addEventListener('change', function (ev) {
@@ -519,9 +523,9 @@
             { head: '<input type="checkbox" data-kq="all" title="Chọn tất cả">', cls: 'is-center khtsn-kq__c2', width: '44px',
               render: function (d, i) { return '<input type="checkbox" data-kq="sel" data-i="' + (from + i) + '">'; } },
             { title: 'Thao tác', cls: 'is-actions khtsn-kq__c3', width: '88px', render: function (d) {
-                var id = ui.esc(T.hid(d));
-                return '<button type="button" class="ums-iconbtn ums-iconbtn--edit" data-kq="sua" data-id="' + id + '" title="Sửa hồ sơ"><i class="fa-light fa-pen-to-square"></i></button>' +
-                    '<button type="button" class="ums-iconbtn ums-iconbtn--del" data-kq="xoa" data-id="' + id + '" title="Xóa hồ sơ"><i class="fa-light fa-trash-can"></i></button>'; } }
+                var id = ui.esc(T.hid(d)), nv = ui.esc(T.nvId(d));
+                return '<button type="button" class="ums-iconbtn ums-iconbtn--edit" data-kq="sua" data-id="' + id + '" data-nv="' + nv + '" title="Sửa hồ sơ"><i class="fa-light fa-pen-to-square"></i></button>' +
+                    '<button type="button" class="ums-iconbtn ums-iconbtn--del" data-kq="xoa" data-id="' + id + '" data-nv="' + nv + '" title="Xóa hồ sơ"><i class="fa-light fa-trash-can"></i></button>'; } }
         ];
         if (Q.mode === 'gon') {
             GON.forEach(function (c) {
@@ -544,7 +548,9 @@
                 onSize: function (v) { Q.size = v; Q.page = 1; veTrang(); } }
         });
         // tr mang data-id = HOSO_ID (ui.table chỉ gắn khi có cột ID)
-        Array.prototype.forEach.call(host.querySelectorAll('tbody tr'), function (tr, i) { if (shown[i]) tr.setAttribute('data-id', T.hid(shown[i])); });
+        Array.prototype.forEach.call(host.querySelectorAll('tbody tr'), function (tr, i) {
+            if (shown[i]) { tr.setAttribute('data-id', T.hid(shown[i])); tr.setAttribute('data-nv', T.nvId(shown[i])); }
+        });
         lamGiau(shown);
     }
     /* Làm giàu các dòng vừa vẽ, xong vẽ lại MỘT lần (lượt sau mọi id đã nằm trong nhớ tạm → dừng) */
@@ -739,30 +745,25 @@
     }
 
     /* ---------- Xoá hồ sơ (deleteHoSo_TS) ---------------------------------- */
-    function xoaHoSo(id) {
+    function xoaHoSo(id, nv) {
         if (!id) return;
         ui.confirm('Bạn có chắc chắn xóa hồ sơ này không?', { tone: 'bad', ok: 'Xoá', title: 'Xoá hồ sơ' }).then(function (yes) {
             if (!yes) return;
             return ums.api.call({ action: 'SV_Core_TS_HoSo_MH/GS4gHgkuEi4eFRIP', func: 'PKG_CORE_TS_HOSO.Xoa_HoSo_TS',
-                strNguoiThucHien_Id: '', strVaiTroDangNhap_Id: '', strChucNangHeThong_Id: '', strHanhDong_Code: 'XOA', strHoSo_Id: id
+                strNguoiThucHien_Id: '', strVaiTroDangNhap_Id: '', strChucNangHeThong_Id: '', strHanhDong_Code: 'XOA', strHoSo_Id: id,
+                strTS_HoSo_NV_Id: nv || ''      // = TS_HOSO_NGUYENVONG_ID của dòng đang xoá (ParamTS_HoSo_NV_Id của thủ tục) — gốc 20/10
             }).then(function () { ui.toast('Xóa hồ sơ thành công', 'ok'); napDS(); });
         }).catch(function (err) { ums.api.handle(err, 'Xoa_HoSo_TS'); });
     }
 
-    /* ---------- Phân lớp tự động cho các dòng đã tick --------------------- */
-    var API_PL = ['SV_CORE_NhapHoc_ThuTien_MH/ESkgLw0uMR4VNAUuLyYeLi0lcgPP', 'SV_CORE_NhapHoc_ThuTien_MH/ESkgLw0uMR4VNAUuLyYeLi0lcwPP',
-        'SV_CORE_NhapHoc_ThuTien_MH/ESkgLw0uMR4VNAUuLyYeLi0l'];
+    /* ---------- Phân lớp tự động cho các dòng đã tick ---------------------
+       Gốc 20/10: MỘT action (bỏ ba action thử lần lượt), tham số như gốc; phản hồi chỉ có Success + Message. */
+    var API_PL = 'SV_CORE_NhapHoc_ThuTien_MH/ESkgLw0uMR4VNAUuLyYP';
     function phanLopMot(pid) {
-        var loi = [], i = 0;
-        return new Promise(function (ok) {
-            (function thu() {
-                if (i >= API_PL.length) { ok({ ok: false, message: loi.join(' | ') || 'Không gọi được API phân lớp' }); return; }
-                var a = API_PL[i++];
-                ums.api.call({ action: a, func: 'PKG_CORE_NhapHoc_ThuTien.PhanLop_TuDong', strCore_Person_Id: pid,
-                    strNguonSuKien_Code: 'TS_KQDK_AUTO_CLASS', strNguoiThucHien_Id: '', strVaiTroDangNhap_Id: '', strChucNangHeThong_Id: '', silent: true
-                }).then(function () { ok({ ok: true }); }, function (err) { loi.push((a.split('/')[1] || a) + ': ' + err.message); thu(); });
-            })();
-        });
+        if (!pid) return Promise.resolve({ ok: false, message: 'Thiếu CorePerson_Id' });
+        return ums.api.call({ action: API_PL, func: 'PKG_CORE_NhapHoc_ThuTien.PhanLop_TuDong', strCore_Person_Id: pid,
+            strNguonSuKien_Code: 'TS_KQDK_AUTO_CLASS', strNguoiThucHien_Id: '', silent: true
+        }).then(function () { return { ok: true }; }, function (err) { return { ok: false, message: (err && err.message) || 'BE từ chối phân lớp' }; });
     }
     function phanLop() {
         var chon = Array.prototype.map.call(Q.v.list.querySelectorAll('input[data-kq="sel"]:checked'), function (x) { return Q.view[Number(x.getAttribute('data-i'))]; })

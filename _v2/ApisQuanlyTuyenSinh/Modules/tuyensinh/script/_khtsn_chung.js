@@ -312,13 +312,26 @@
         return ok;
     };
 
-    /* Nút "Xem" trong ô bảng (btnview của gốc); khoa=true → giữ nút, khoá (hộp đích không tồn tại ở gốc) */
+    /* Nút "Xem" trong ô bảng (btnview của gốc). khoa=true = màn đích chưa có: gốc 20/10 thêm ba hộp giữ chỗ "Chức năng đang
+       phát triển" (#quy-dinh-phi, #mau-khai-hs, #phuong-thuc-tuyen — trước đó trỏ tới hộp không tồn tại, bấm không ra gì;
+       bản này từng khoá nút) → nút mang data-xem-dev = tên màn, trình xử lý bấm gọi T.dangPhatTrien(b) trước. */
+    var TEN_DEV = { phi: 'Quy định phí', maukhai: 'Mẫu khai hồ sơ', phuongthuc: 'Phương thức tuyển' };
     T.nutXem = function (k, id, chu, khoa, them) {
         var attr = { 'data-xem': k, 'data-id': e(id) };
         Object.keys(them || {}).forEach(function (x) { attr[x] = them[x]; });
-        if (khoa) { attr.disabled = 'disabled'; attr.title = 'Bản gốc chưa có màn này (nút không mở gì)'; }
+        if (khoa) { attr['data-xem-dev'] = TEN_DEV[k] || chu || 'Xem'; attr.title = 'Chức năng đang phát triển'; }
         return ui.btn('view', { text: chu || 'Xem', cls: 'ums-btn--sm', attr: attr });
     };
+    /** Nút giữ chỗ (data-xem-dev) → hộp "Chức năng đang phát triển" như gốc; trả true khi đã xử lý */
+    T.dangPhatTrien = function (b) {
+        var ten = b && b.getAttribute && b.getAttribute('data-xem-dev');
+        if (!ten) return false;
+        ui.dialog({ title: ten, icon: 'fa-screwdriver-wrench', size: 'sm',
+            body: ui.empty('Chức năng đang phát triển — màn hình "' + ten + '" đang được xây dựng, vui lòng quay lại sau.', 'fa-screwdriver-wrench') });
+        return true;
+    };
+    /** TS_HOSO_NGUYENVONG_ID của dòng hồ sơ (gốc 20/10: ParamTS_HoSo_NV_Id của Sua_HoSo_TS / Xoa_HoSo_TS; không phân biệt hoa thường) */
+    T.nvId = function (d) { return e(T.pickFuzzy(d, /^TS_HOSO_NGUYENVONG_ID$/i)); };
     T.rong = function (t, cls) { return '<div class="' + (cls || 'khtsn-rong') + '">' + ui.esc(t) + '</div>'; };
 
     /** Hàng đợi N luồng cho các việc trả Promise (gốc tự viết ở nhiều chỗ, MAX = 6) */

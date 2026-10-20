@@ -19,6 +19,9 @@
      · Lịch học mở lần nào dựng lại lần đó (trình xử lý chồng), ghi đè nhãn "Điểm toàn bộ" → mỗi lần một hộp riêng.
      · Tài chính: tiêu đề mục trông như nút mà không bấm được → tiêu đề thường; căn phải cột tiền cho mọi mục.
    Chờ nghiệp vụ: Điểm rèn luyện đọc họ tên QLSV_NGUOIHOC_HODEM/TEN (bản gốc) — veRenLuyen đọc HODEM/TEN trước, thiếu thì cột QLSV_…
+   Kéo gốc 20/10 (lần 11): Kết quả ĐK — dòng tổng "Số tín" cộng theo HỌC PHẦN (một học phần có nhiều lớp HP lý thuyết / thực hành
+     chỉ tính một lần — tongTinChi), nhãn "Học kỳ, đợt" cho ô chọn thời gian; gốc thêm dấu cách họ đệm – tên (bản này có sẵn).
+     CSS hộp gốc (#myModal_KetQuaDangKy: tiêu đề, thead dính, màu dòng) là vỏ cũ → không chép.
    ========================================================================= */
 (function () {
     'use strict';
@@ -81,9 +84,21 @@
     };
 
     /* ---------- Kết quả đăng ký ---------------------------------------- */
+    /* Gốc 20/10: tổng tín chỉ tính theo học phần — một học phần có nhiều lớp học phần (lý thuyết, thực hành…) chỉ cộng một
+       lần, KHÔNG cộng theo từng dòng như insertSumAfterTable (khoá = DAOTAO_HOCPHAN_ID, thiếu thì MA, thiếu nữa thì từng dòng) */
+    function tongTinChi(rows) {
+        var da = {}, t = 0;
+        rows.forEach(function (r, i) {
+            var k = r.DAOTAO_HOCPHAN_ID || r.DAOTAO_HOCPHAN_MA || ('row_' + i);
+            if (da[k]) return;
+            da[k] = true;
+            t += parseFloat(r.DAOTAO_HOCPHAN_HOCTRINH) || 0;
+        });
+        return '<b>' + (Math.round(t * 100) / 100) + '</b>';
+    }
     ibd.ketQuaDK = function (r) {
         var dlg = hop('Kết quả đăng ký', 'fa-clipboard-list', r, 'xl',
-            '<div class="ums-filter"><div class="ums-field"><select class="ums-select" data-x="tg" data-ph="Chọn thời gian"><option value=""></option></select></div></div>' +
+            '<div class="ums-filter"><div class="ums-field"><label class="ums-field__label">Học kỳ, đợt</label><select class="ums-select" data-x="tg" data-ph="Chọn thời gian"><option value=""></option></select></div></div>' +
             '<div data-x="kq"></div><div class="ums-legend ums-legend--cach">Lịch sử đăng ký học</div><div data-x="ls"></div>');
         ui.enhance(dlg.body);
         function tai() {
@@ -93,7 +108,7 @@
                 var d = x.data || {};
                 ui.table({ el: kq, rows: arr(d.rsKetQuaDangKy), empty: 'Chưa có dữ liệu', columns: [
                     { title: 'Mã lớp học phần', prop: 'DANGKY_LOPHOCPHAN_MA', cls: 'is-nowrap' }, { title: 'Tên lớp học phần', prop: 'DANGKY_LOPHOCPHAN_TEN' },
-                    { title: 'Số tín', prop: 'DAOTAO_HOCPHAN_HOCTRINH', cls: 'is-center', sum: true },
+                    { title: 'Số tín', prop: 'DAOTAO_HOCPHAN_HOCTRINH', cls: 'is-center', sum: tongTinChi },
                     { title: 'Người học', render: function (y) { return esc(e(y.QLSV_NGUOIHOC_HODEM) + ' ' + e(y.QLSV_NGUOIHOC_TEN) + ' - ' + e(y.QLSV_NGUOIHOC_MASO)); } },
                     { title: 'Kiểu học', prop: 'KIEUHOC_TEN', cls: 'is-center' }, { title: 'Thời gian thực hiện', prop: 'NGAYTAO_DD_MM_YYYY_HHMMSS', cls: 'is-center is-nowrap' },
                     { title: 'Người thực hiện', prop: 'NGUOITAO_TAIKHOAN' }, { title: 'Học kỳ, đợt', prop: 'THOIGIAN', cls: 'is-center' }, { title: 'Chương trình', prop: 'DAOTAO_CHUONGTRINH_TEN' }] });
