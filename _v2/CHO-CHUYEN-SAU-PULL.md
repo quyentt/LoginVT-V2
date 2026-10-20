@@ -15,7 +15,7 @@ Xem lại đúng thay đổi của một tệp: `git diff -w <từ>..<đến> --
 Lần sau so: `git diff --name-status ab5b4f19 origin/main`. 32 tệp gốc đổi (bỏ `.claude/settings.local.json` của gốc — không lấy), đã ghi đè bằng
 `git checkout origin/main -- <tệp>`; `skin.py kiem` 11/11 OK. **Cả 29 tệp màn đều thuộc màn ĐÃ chuyển** — không có màn mới, không có phân hệ chưa chuyển.
 3 tệp vỏ cũ (`Corei/systemroot.js` +13 dòng, `index.aspx` +12, `indexi.aspx` +12) — chưa xem, mở khi làm tầng chung `_v2`.
-**20/10 (người dùng: "chuyển 3 màn trước"):** 3 màn đổi lớn nhất đã chuyển — CCB `khaosat/kehoach`, SV `quyetdinh`, KHCT `cthp` (7 tệp). Tầng chung thêm `ums.ui.napXLSX` (gộp 4 bản chép tay), `ui.table` cfg.sort + `ums.ui.sortRows`. CHƯA kiểm host. Còn 22 tệp chưa xem. **Sửa thêm 20/10 (người dùng báo trên màn cthp):** Đóng / Esc ở vùng con (Chi tiết, Tình trạng học, Chọn học phần, Khối, Định hướng) nhảy thẳng ra danh sách — gốc màn Tài chính bắt nhầm `data-a="dong"` nổi bọt; nay chỉ nhận nút vùng list / view. Hệ nút vùng con: Đóng → Xoá → Lưu ở đầu khung, bỏ chân khung; "Thêm tất cả" của khung ghép lên đầu khung. Đo lại 9 lối vào: mỗi tầng một Đóng, Esc về đúng một lớp.
+**20/10 (người dùng: "chuyển 3 màn trước"):** 3 màn đổi lớn nhất đã chuyển — CCB `khaosat/kehoach`, SV `quyetdinh`, KHCT `cthp` (7 tệp). Tầng chung thêm `ums.ui.napXLSX` (gộp 4 bản chép tay), `ui.table` cfg.sort + `ums.ui.sortRows`. CHƯA kiểm host. Còn 22 tệp chưa xem. 21/10: 3 tệp vỏ cũ đã xem, không cần chuyển. **Sửa thêm 20/10 (người dùng báo trên màn cthp):** Đóng / Esc ở vùng con (Chi tiết, Tình trạng học, Chọn học phần, Khối, Định hướng) nhảy thẳng ra danh sách — gốc màn Tài chính bắt nhầm `data-a="dong"` nổi bọt; nay chỉ nhận nút vùng list / view. Hệ nút vùng con: Đóng → Xoá → Lưu ở đầu khung, bỏ chân khung; "Thêm tất cả" của khung ghép lên đầu khung. Đo lại 9 lối vào: mỗi tầng một Đóng, Esc về đúng một lớp.
 Số theo phân hệ: Cổng cán bộ 7 · Tài chính 6 · Sinh viên 5 · KHCT 4 · ĐKH 3 · Tuyển sinh 2 · Tốt nghiệp 1 · Xử lý học vụ 1 · Vỏ cũ 3.
 
 | Phân hệ | Màn | Tệp gốc | Trạng thái |
@@ -49,9 +49,9 @@ Số theo phân hệ: Cổng cán bộ 7 · Tài chính 6 · Sinh viên 5 · KHC
 | Tài chính (đã chuyển) | `phieuthu/import_sotienmiengiam` | `ApisTaiChinh/Modules/phieuthu/scripts/import_sotienmiengiam.js` | chưa xem |
 | Tốt nghiệp (đã chuyển) | `vanbang/quanlythongtin` | `ApisTotNghiep/Modules/vanbang/html/quanlythongtin.html` | chưa xem |
 | Xử lý học vụ (đã chuyển) | `kehoachxuly/kehoachxuly` | `ApisXuLyHocVu/Modules/kehoachxuly/script/kehoachxuly.js` | chưa xem |
-| Vỏ cũ | — | `Corei/systemroot.js` (+13 dòng) | chưa xem |
-| Vỏ cũ | — | `index.aspx` (+12 dòng) | chưa xem |
-| Vỏ cũ | — | `indexi.aspx` (+12 dòng) | chưa xem |
+| Vỏ cũ | — | `Corei/systemroot.js` (+13 dòng) | đã xem 21/10 — `makeRequest` đối chiếu `func` với `action`: phần mã hoá của action = `AE(tên thủ tục sau dấu chấm, "A")` thay `=` → `P`; lệch thì gắn cờ "Sai hàm" (chỉ theo dõi, không chặn). Không cần chuyển; ghi cách sinh action vào CLAUDE.md mục 3 |
+| Vỏ cũ | — | `index.aspx` (+12 dòng) | đã xem 21/10 — chatbot CMC, chỉ bật khi `DONVI == CMC` hoặc tên miền `*.cmcu.edu.vn`; host EAUT không ảnh hưởng → không chuyển (muốn thì chép khối có điều kiện vào `_v2/index.aspx`) |
+| Vỏ cũ | — | `indexi.aspx` (+12 dòng) | đã xem 21/10 — như `index.aspx` (chatbot CMC) → không chuyển |
 
 ## Lần kéo 10 (12/10 tối) — mốc gốc nay là `2254204a` (gốc lại force-push; mốc cũ `c42e11e1`)
 

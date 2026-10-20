@@ -72,6 +72,8 @@ var obj = {
 
 - `action` dạng `<PREFIX>_<Controller>/<method đã mã hoá>`. **Không đọc được** —
   muốn biết nó làm gì phải nhìn `func` đi kèm.
+  **Cách sinh (gốc 20/10, `Corei/systemroot.js` makeRequest):** `<method đã mã hoá>` = `AE(<tên thủ tục sau dấu chấm của func>, "A")`
+  rồi thay `=` → `P`. Gốc dùng để đối chiếu `func` ↔ `action` (lệch thì gắn cờ "Sai hàm", không chặn).
 - PREFIX quyết định gọi microservice nào. 30 base URL khai báo trong
   `Init_API()` ([indexi.aspx:1891](indexi.aspx#L1891)), lấy từ `web.config`.
 - Tự động chèn: `strChucNang_Id`, `strNguoiThucHien_Id`, `strVaiTroDangNhap_Id`,
