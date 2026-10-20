@@ -305,3 +305,12 @@ Luật kiểm host hiện hành nằm ở CLAUDE.md mục 9 (bản rút gọn). 
   Bài học: trước khi `--da-up` nên xem tệp vừa up có thật trên host (fetch `?nocache` + Last-Modified), nhất là khi thử ghi lại không đổi kết quả.
 - **Up lần 4 (tệp host 56.822 byte, 14:54:46 — đã kiểm trước bằng fetch) → thu-ghi Quyết định: thêm (đủ 5 ô) → sửa → Xoá đã chọn SẠCH.** Sổ lỗi mã TRỐNG. Gói bổ sung trống.
   **Sinh viên: ĐÃ HOÀN THIỆN 27/27 màn trên menu host** (4 sạch, 1 từ chối hợp lệ, 1 chặn đúng, 8 chỉ xem, 13 không thử có lý do; 3 lỗi backend ORA-24338 có `ben`).
+
+## 21/10 (01:50–02:25) — Kéo gốc lần 11: kiểm host 14 màn vừa chuyển ở phân hệ ĐÃ kiểm đạt
+
+- Người dùng: "kiểm lần lượt các trang vừa chuyển đối với những modul kiểm đạt". Fetch gốc: không có tệp mới (mốc `ab5b4f19`). Sổ lỗi mã trống; gói bổ sung đã up hết (mốc 21/10 01:42, có đủ 45 tệp lần kéo 11); `dong-goi.py` dựng lại không lệch.
+- Phạm vi: Sinh viên 3 (quyetdinh, thucthiquyetdinh, tinhtrangquanso) · XLHV 1 (kehoachxuly) · Cổng cán bộ 4 (khaosat/kehoach, lichgiang, nguoihoctheokhoa, inbangdiem) · Tài chính 4 (import_*) · Đăng ký học 2 (dangky, ketqua — phân hệ mới "đọc sâu", kiểm luôn vì chỉ đọc). KHÔNG kiểm: KHCT cthp / phanquyen, TS kehoachtuyensinhnew, TN quanlythongtin (phân hệ chưa kiểm host — chờ gọi tên).
+- **13/14 ĐẠT**, chi tiết từng màn ở `da-kiem.json` (ghiChu "21/10 kéo gốc 11"). Một việc backend mới: **SV Quân số — máy chủ bỏ qua `strNganhDT_Id`** (818 lớp dù chọn 0 / 1 / 2 ngành, gọi thẳng thủ tục cũng vậy, gốc gửi y hệt) → `ben` oracle trong `can-quyet.js`. Không có lỗi mã.
+- Điểm đáng nhớ: Quyết định > 500 QĐ hộp hỏi "826 lần gọi" → Huỷ sạch; Xuất Excel khảo sát 360 lời gọi chạy 4 s rồi tự đóng hộp sau 2,5 s; XLHV SV áp dụng 6.431 dòng phân trang máy chủ; Import đã nộp thử lại 2 lần (lỗi giả bằng bọc `ums.api.call`) đúng 3 lời gọi.
+- Bẫy bộ thử: ô lọc khung `_nguoihoc.js` chỉ nghe `select2:select` → phải chọn qua `s2()`; `jQuery.val().trigger('change')` không gọi trình xử lý native; chay.js không có `hop()` (ở `mau-lenh/pre.txt`).
+- Dữ liệu thử: không ghi CSDL; một tệp `zkt-thu-doc_26-10-21-2-14_….xlsx` (1 sheet, 1 dòng giả) còn lại ở `Upload/File` trên host do ô chọn tệp tự tải lên — không có đường xoá từ giao diện, vô hại.

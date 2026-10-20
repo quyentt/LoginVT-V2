@@ -233,6 +233,10 @@
             {"man":"Sinh viên → Chính sách → Nhập chế độ chính sách (phần trăm / số tiền / đối tượng)","q":"Bấm Tìm kiếm thì **ô kết quả miễn giảm của từng sinh viên trống hết** — lời gọi lấy kết quả theo người học trả lỗi ORA-24338 (statement handle not executed) với MỌI sinh viên, dù đã chọn đủ học kỳ, khoản thu, kiểu học, chế độ, đối tượng (bản gốc gửi y hệt tham số). Màn chỉ báo lỗi một lần, không lặp. **Anh:** sửa thủ tục `PKG_HOSOSINHVIEN_CHINHSACH.LayKQChinhSach_PhanTram` / `SV_ChinhSach/LayKQChinhSach_SoTien` / `LayKQChinhSach_DoiTuong` — mở con trỏ trả về cả khi không có dòng (kiểm host 12/10).","ben":"oracle"}
         ]);
     });
+    /* Kiểm host 21/10 (kéo gốc lần 11) */
+    them("apissinhvien/modules/tinhtrangquanso/tinhtrangquanso", [
+        {"man":"Sinh viên → Tình trạng quân số","q":"Chọn một hay nhiều **Ngành học** rồi Tìm kiếm thì danh sách **không đổi** — máy chủ trả cùng 818 lớp (Đại học chính quy) dù chọn 0, 1 hay 2 ngành; gọi thẳng thủ tục với strNganhDT_Id cũng vậy (bản gốc 20/10 gửi y hệt). Bộ lọc ngành mới thêm chưa có tác dụng trên host. **Anh:** cập nhật thủ tục `SV_CauTrucQuanSo/LayDanhSach` (và LayDSKyTheoCauTruc, mẫu báo cáo) nhận tham số strNganhDT_Id — chuỗi Id ngành nối phẩy, tối đa 100. (Kiểm host 21/10/2026.)","ben":"oracle"}
+    ]);
     them("apissinhvien/modules/kehoach/kehoach", [
         {"man":"Sinh viên → Kế hoạch → Kế hoạch","q":"Không có lời gọi **xoá kế hoạch** người học (bản cũ gọi nhầm thủ tục xoá phạm vi với id kế hoạch nên chưa bao giờ xoá được) → nút Xoá đã bỏ. **Anh:** bổ sung thủ tục xoá kế hoạch nếu cần. **Nghiệp vụ:** có dùng \"Cán bộ phân công xét\" không (bản cũ đã tắt lưu, nút đang khoá).","ben":"oracle"}
     ]);

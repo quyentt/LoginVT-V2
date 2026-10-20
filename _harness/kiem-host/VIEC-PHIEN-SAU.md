@@ -17,8 +17,7 @@ Quy ước bắt buộc (chi tiết ở CLAUDE.md mục 9 và bộ nhớ):
 **20–21/10 (máy gốc) — kéo gốc lần 11 (mốc `ab5b4f19`, 32 tệp):** ĐÃ CHUYỂN 3 màn đổi lớn nhất theo lệnh "chuyển 3 màn trước": CCB `khaosat/kehoach`
 (Xuất Excel kết quả chi tiết), SV `quyetdinh` (tab Danh sách chi tiết + Xuất báo cáo), KHCT `cthp` (Dạng cây, sắp xếp cột, nhãn học kỳ ở Khối bắt buộc;
 21/10 sửa thêm: Đóng / Esc vùng con về đúng một tầng, nút Đóng → Xoá → Lưu lên đầu khung). Tầng chung mới: `ums.ui.napXLSX`, `ui.table` cfg.sort +
-`ums.ui.sortRows`. **CHƯA kiểm host** cả 3 màn; gói bổ sung 27 tệp CHỜ UP. 21/10: 3 vỏ cũ đã xem (không chuyển), thêm 2 màn đã chuyển (TS `kehoachtuyensinhnew`, CCB `inbangdiem` — chưa kiểm host; TC `thutienkhac.html` chỉ CSS; lượt 2: CCB `lichgiang` + `nguoihoctheokhoa`, KHCT `phanquyen`). lượt 3: 12 tệp còn lại đã xong — **lần kéo 11 hết tệp "chưa xem" (32/32)**, cả 11 màn chuyển 20–21/10 CHƯA kiểm host (`_v2/CHO-CHUYEN-SAU-PULL.md`
-"Lần kéo 11") — chuyển tiếp khi người dùng bảo. Commit `be0b5864`, `4ce8db44`.
+`ums.ui.sortRows`. **CHƯA kiểm host** cả 3 màn; gói bổ sung 27 tệp CHỜ UP. 21/10: 3 vỏ cũ đã xem (không chuyển), thêm 2 màn đã chuyển (TS `kehoachtuyensinhnew`, CCB `inbangdiem` — chưa kiểm host; TC `thutienkhac.html` chỉ CSS; lượt 2: CCB `lichgiang` + `nguoihoctheokhoa`, KHCT `phanquyen`). lượt 3: 12 tệp còn lại đã xong — **lần kéo 11 hết tệp "chưa xem" (32/32)**, **21/10 02:25 kiểm host xong 14 màn ở phân hệ đã kiểm đạt (13 ĐẠT, Quân số lọc ngành → `ben`), xem LICH-SU 21/10; còn 4 màn KHCT / TS / TN chờ gọi tên phân hệ** (`_v2/CHO-CHUYEN-SAU-PULL.md` "Lần kéo 11"). Commit `be0b5864`, `4ce8db44`.
 
 **15/10 (máy gốc):** đã làm hết A → J (trừ D bỏ theo người dùng, I nửa: "dời man-chung" chờ nói "dời"). Người dùng hỏi "tôi cần làm gì" → đọc khung "Tình hình 15/10" đầu `_v2/DANH-GIA-2026-10-14.md`: còn up gói 6 tệp rồi kiểm F (cache theo dấu gói) trên host.
 
