@@ -60,7 +60,8 @@
 
     var S = K.vung('sua',
         pat.panel({ title: 'Chỉnh sửa học phần', icon: 'fa-pen-to-square', count: 'ten', cls: 'khct-vung', flush: true,
-            tools: ui.btn('close', { attr: { 'data-a': 'dong' } }),
+            // Đóng (trái) → Xóa học phần → Lưu ở đầu khung (BO-CUC luật 18, 21; người dùng 20/10)
+            tools: ui.btn('close', { attr: { 'data-a': 'dong' } }) + ui.btn('del', { text: 'Xóa học phần', attr: { 'data-a': 'xoaHP' } }) + ui.btn('save', { attr: { 'data-a': 'luu' } }),
             body:
                 '<div class="khct-pad">' +
                     '<div class="ums-legend">Thông tin học phần</div>' +
@@ -107,9 +108,7 @@
                     themO('n', 'Nội dung', inp('bhNoiDung', 'Nội dung')) +
                     '<div class="ums-field ums-field--fit">' + ui.btn('add', { text: 'Thêm', mod: 'out-success', attr: { 'data-a': 'themBH' } }) + '</div>' +
                 '</div></div>' +
-                '<div class="khct-pad khct-pad--cach" data-z="pb"></div>',
-            foot: ui.btn('del', { text: 'Xóa học phần', attr: { 'data-a': 'xoaHP' } }) + '<div class="ums-u-flex1"></div>' +
-                ui.btn('close', { attr: { 'data-a': 'dong' } }) + ui.btn('save', { attr: { 'data-a': 'luu' } }) }));
+                '<div class="khct-pad khct-pad--cach" data-z="pb"></div>' }));
     function z(k) { return S.querySelector('[data-z="' + k + '"]'); }
     function o(k) { return S.querySelector('[data-k="' + k + '"]'); }
     function v(k) { return pat.val(o(k)); }

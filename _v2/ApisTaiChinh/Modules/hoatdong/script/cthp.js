@@ -475,6 +475,10 @@
             if (k && root.contains(k)) { xemKKT(k.getAttribute('data-kkt')); return; }
             var b = ev.target.closest('[data-a]');
             if (!b || !root.contains(b)) return;
+            /* Bẫy màn con trong trang (BO-CUC luật 1): các vùng KHCT (sua, kq, hp, kbb, ktcd, dh — K.vung) là con của root và cũng
+               dùng data-a="dong"; không chặn thì Đóng ở tầng trong nổi bọt tới đây → hien('list') nhảy thẳng ra danh sách (người dùng 20/10). */
+            var kz = b.closest('[data-khu]');
+            if (kz && kz.getAttribute('data-khu') !== 'list' && kz.getAttribute('data-khu') !== 'view') return;
             var a = b.getAttribute('data-a');
             if (a === 'search') search();
             else if (a === 'dong') { token = null; ct = null; hien('list'); }

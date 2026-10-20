@@ -138,12 +138,12 @@
                     body: '<div class="khct-ghep__tim"><input class="ums-input" data-g="qTrai" placeholder="Nhập từ khóa tìm kiếm" autocomplete="off">' +
                         (cfg.traiTools ? '<div class="khct-ghep__nut">' + cfg.traiTools + '</div>' : '') + '</div>' +
                         (cfg.traiTren || '') + '<div data-g="trai"></div>',
-                    foot: '<div class="ums-u-flex1"></div>' + ui.btn('add', { text: 'Thêm tất cả', mod: 'out-success', attr: { 'data-g': 'tatCa' } }) }) +
+                    tools: ui.btn('add', { text: 'Thêm tất cả', mod: 'out-success', cls: 'ums-btn--sm', attr: { 'data-g': 'tatCa' } }) }) +   // đầu khung (luật 21)
                 '<div class="khct-ghep__mui" aria-hidden="true"><i class="fa-light fa-forward"></i></div>' +
                 pat.panel({ title: cfg.phaiTieuDe, icon: cfg.phaiIcon || 'fa-list-timeline', flush: true, cls: 'khct-ghep__phai',
                     body: '<div class="khct-ghep__tim"><input class="ums-input" data-g="qPhai" placeholder="Nhập từ khóa tìm kiếm" autocomplete="off"></div>' +
                         '<div data-g="phai"></div>',
-                    foot: cfg.napLai ? '<div class="ums-u-flex1"></div>' + ui.btn('reload', { attr: { disabled: 'disabled', title: 'Bản gốc chưa có xử lý cho nút này' } }) : '' }) +
+                    tools: cfg.napLai ? ui.btn('reload', { attr: { disabled: 'disabled', title: 'Bản gốc chưa có xử lý cho nút này' } }) : '' }) +
             '</div>';
         ui.enhance(host);
         function g(k) { return host.querySelector('[data-g="' + k + '"]'); }

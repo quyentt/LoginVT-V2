@@ -73,6 +73,9 @@ sang bộ mới thành chỗ hộp thoại chỗ biểu mẫu, chỗ có select2
    **Bẫy khi đưa MÀN CON vào trang** (đã gặp 30/9): trình xử lý uỷ quyền gắn ở gốc màn bắt luôn nút / ô đánh dấu CÙNG THUỘC TÍNH của màn con
    (`[data-xem]`, `data-ck="all"`, "chọn tất cả") → một lần bấm chạy hai lần, hoặc đánh dấu cả bảng đang ẩn. Chặn bằng
    `if (b.closest('.ums-formtrang')) return` ở trình xử lý của màn, hoặc đặt tên thuộc tính riêng cho màn con.
+   Cùng bẫy ở màn DÙNG CHUNG qua nạp chéo (20/10, KHCT `cthp` dùng `ums.cthp.man` của Tài chính): các vùng con (`K.vung`) là con của gốc màn
+   và cũng đặt `data-a="dong"` → trình xử lý gốc bắt nhầm, bấm Đóng / Esc ở tầng trong nhảy thẳng ra danh sách. Gốc màn chỉ nhận nút thuộc
+   vùng của chính nó (`b.closest('[data-khu]')`). Cùng lượt: nút Đóng → Xoá → Lưu của vùng con đưa lên ĐẦU KHUNG (luật 18, 21), bỏ chân khung.
    Đã rà và chuyển TOÀN BỘ 17 phân hệ ngày 30/9 (384 hộp, 93 hộp vào trang): danh sách từng hộp + lý do giữ ở **`RA-HOP-THOAI.md`**.
    **Phím Esc** (2026-09-30): đóng đúng TẦNG đang hiện — tầng chung bấm hộ nút "Đóng" đang hiện (`ui.btn('close')`), mỗi lần một tầng. Màn tự dùng
    Esc cho việc khác (huỷ sửa tại ô, đóng bộ lọc nổi) phải gọi `ev.preventDefault()`.

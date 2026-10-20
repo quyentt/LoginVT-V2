@@ -50,7 +50,8 @@
 
     var D = K.vung('dh',
         pat.panel({ title: 'Định hướng cho chương trình', icon: 'fa-signs-post', count: 'ten', cls: 'khct-vung', flush: true,
-            tools: ui.btn('close', { attr: { 'data-a': 'dong' } }),
+            // Đóng (trái) → Xóa → Lưu ở đầu khung (BO-CUC luật 18, 21; người dùng 20/10)
+            tools: ui.btn('close', { attr: { 'data-a': 'dong' } }) + ui.btn('del', { text: 'Xóa', attr: { 'data-a': 'xoa' } }) + ui.btn('save', { attr: { 'data-a': 'luu' } }),
             body:
                 '<div class="khct-pad">' +
                     '<div class="ums-legend">Thông tin</div>' +
@@ -66,9 +67,7 @@
                 '<div class="khct-pad">' + nhom('Gắn theo học phần', ui.btn('add', { mod: 'out-success', attr: { 'data-a': 'themHP' } })) + '</div>' +
                 '<div data-z="hp"></div>' +
                 '<div class="khct-pad">' + nhom('Danh sách người học đăng ký định hướng', ui.btn('add', { mod: 'out-info', attr: { 'data-a': 'themSV' } })) + '</div>' +
-                '<div data-z="sv"></div>',
-            foot: ui.btn('del', { text: 'Xóa', attr: { 'data-a': 'xoa' } }) + '<div class="ums-u-flex1"></div>' +
-                ui.btn('close', { attr: { 'data-a': 'dong' } }) + ui.btn('save', { attr: { 'data-a': 'luu' } }) }));
+                '<div data-z="sv"></div>' }));
     function z(k) { return D.querySelector('[data-z="' + k + '"]'); }
     function o(k) { return D.querySelector('[data-k="' + k + '"]'); }
     function v(k) { return pat.val(o(k)); }

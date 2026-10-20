@@ -72,9 +72,9 @@
        ===================================================================== */
     var H = K.vung('hp',
         pat.panel({ title: 'Chọn học phần cho chương trình', icon: 'fa-book-open-reader', count: 'ten', cls: 'khct-vung',
-            tools: ui.btn('close', { attr: { 'data-a': 'dong' } }),
-            body: '<div data-z="ghep"></div>',
-            foot: '<div class="ums-u-flex1"></div>' + ui.btn('close', { attr: { 'data-a': 'dong' } }) + ui.btn('save', { attr: { 'data-a': 'luu' } }) }));
+            // Nút của vùng ở ĐẦU KHUNG: Đóng (trái) → Lưu — một nút Đóng (BO-CUC luật 18, 21; người dùng 20/10)
+            tools: ui.btn('close', { attr: { 'data-a': 'dong' } }) + ui.btn('save', { attr: { 'data-a': 'luu' } }),
+            body: '<div data-z="ghep"></div>' }));
     function hz(k) { return H.querySelector('[data-z="' + k + '"]'); }
     var nangCao =
         '<div class="khct-nangcao" data-z="nc" hidden>' +
@@ -193,15 +193,14 @@
         var cur = null;          // khối đang sửa (null = thêm mới)
         var W = K.vung(c.khu,
             pat.panel({ title: c.tieuDe, icon: 'fa-screen-users', cls: 'khct-vung',
-                tools: ui.btn('close', { attr: { 'data-a': 'dong' } }),
+                // Đóng (trái) → Xóa khối → Lưu ở đầu khung (BO-CUC luật 18, 21; người dùng 20/10)
+                tools: ui.btn('close', { attr: { 'data-a': 'dong' } }) + ui.btn('del', { text: 'Xóa khối', attr: { 'data-a': 'xoa' } }) + ui.btn('save', { attr: { 'data-a': 'luu' } }),
                 body:
                     '<div class="ums-legend">' + esc(c.nhomTT) + '</div>' +
                     '<div class="ums-grid ums-grid--2">' + c.form + '</div>' +
                     (c.chuY ? '<p class="ums-u-faint ums-u-fz13 ums-u-mt-3"><i>' + esc(c.chuY) + '</i></p>' : '') +
                     '<div class="ums-legend ums-legend--cach">Học phần của khối</div>' +
-                    '<div data-z="ghep"></div>',
-                foot: ui.btn('del', { text: 'Xóa khối', attr: { 'data-a': 'xoa' } }) + '<div class="ums-u-flex1"></div>' +
-                    ui.btn('close', { attr: { 'data-a': 'dong' } }) + ui.btn('save', { attr: { 'data-a': 'luu' } }) }));
+                    '<div data-z="ghep"></div>' }));
         var titleEl = W.querySelector('.ums-panel__title');
         var g = K.ghep(W.querySelector('[data-z="ghep"]'), {
             traiTieuDe: c.traiTieuDe, phaiTieuDe: c.phaiTieuDe, them: 'cuoi', batBuoc: c.batBuoc, hocKy: c.hocKy,
