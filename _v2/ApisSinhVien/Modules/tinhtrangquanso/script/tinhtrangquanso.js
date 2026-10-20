@@ -10,6 +10,9 @@
    ô lọc _IHD chọn nhiều của gốc: Hệ → Khoá → CT → Lớp gọi edu.system.getList_* KHÔNG lọc quyền, Năm nhập
    học KHCT_NamNhapHoc/LayDanhSach GET, Khoa quản lý, trạng thái QLSV.TRANGTHAI đánh dấu sẵn hết).
    Hàng hai thêm Từ ngày / Đến ngày, hai nút tìm và vùng Xuất báo cáo như html gốc.
+   Kéo gốc 20/10 (lần 11): thêm ô "Ngành học" chọn nhiều (danh mục KHCT.NCN, hiện "TEN (MA)", tối đa 100 ngành — BE nhận
+   chuỗi Id nối phẩy VARCHAR2; quá thì bỏ các mục thừa + toast, chọn tất cả cũng chịu giới hạn) → strNganhDT_Id gửi ở
+   LayDanhSach, LayDSKyTheoCauTruc và mẫu báo cáo.
 
    Lời gọi (kiểu cũ, chép nguyên, đều GET):
      SV_CauTrucQuanSo/LayDanhSach        strTuKhoa '' (gốc đọc txtSearch_DT — ô không có) · strKhoaQuanLy_Id ·
@@ -72,6 +75,7 @@
     }
     var hang2 = z('loc').querySelectorAll('.ums-filter')[1];
     hang2.insertAdjacentHTML('beforeend',
+        '<div class="ums-field"><select class="ums-select" multiple data-f="nganh" data-s2 data-ph="Tất cả ngành học"></select></div>' +
         ngay('tu', 'Từ ngày dd/mm/yyyy') + ngay('den', 'Đến ngày dd/mm/yyyy') +
         fit(ui.btn('search', { attr: { 'data-a': 'tim' } })) +
         fit(ui.btn('search', { text: 'Tìm kiếm theo đăng ký-chuyên cần', mod: 'out-primary', attr: { 'data-a': 'timcc' } })) +
@@ -85,6 +89,19 @@
     ui.enhance(hang2);
     function gt(k) { var el = L.f(k); return el ? (el.value || '').trim() : ''; }
 
+    /* Ngành học (gốc 20/10): danh mục KHCT.NCN, "TEN (MA)", không quá MAX_NGANH mục */
+    var MAX_NGANH = 100, elNganh = hang2.querySelector('[data-f="nganh"]');
+    ums.ref.dm('KHCT.NCN').then(function (rows) {
+        pat.fill(elNganh, arr(rows), { name: function (r) { return r.MA ? e(r.TEN) + ' (' + e(r.MA) + ')' : e(r.TEN); } });
+    }).catch(function (err) { ums.api.handle(err, 'danh mục ngành học'); });
+    function nganhIds() { return Array.prototype.map.call(elNganh.selectedOptions, function (o) { return o.value; }).filter(Boolean); }
+    if (window.jQuery) jQuery(elNganh).on('change', function () {
+        var ids = nganhIds();
+        if (ids.length <= MAX_NGANH) return;
+        jQuery(elNganh).val(ids.slice(0, MAX_NGANH)).trigger('change.select2').trigger('ums:refresh');
+        ui.toast('Chỉ được chọn tối đa ' + MAX_NGANH + ' ngành học. Muốn thống kê toàn trường, hãy để trống ô ngành học.', 'warn');
+    });
+
     /** Tham số lọc chung của SV_CauTrucQuanSo/LayDanhSach (tên chép nguyên) */
     function thamSoLoc() {
         return {
@@ -95,6 +112,7 @@
             strChuongTrinh_Id: L.v('ct'),
             strLopQuanLy_Id: L.v('lop'),
             strNamNhapHoc: L.v('nam'),
+            strNganhDT_Id: nganhIds().join(','),
             strTrangThaiNguoiHoc_Id: L.tt.ids().join(','),
             strNguoiThucHien_Id: uid()
         };
@@ -110,6 +128,7 @@
         add('strChuongTrinh_Id', L.v('ct'));
         add('strLopQuanLy_Id', L.v('lop'));
         add('strNamNhapHoc', L.v('nam'));
+        add('strNganhDT_Id', nganhIds().join(','));
         add('strTrangThaiNguoiHoc_Id', tts.map(function (r) { return r.ID; }).join(','));
         add('strTrangThaiNguoiHoc_Ten', tts.map(function (r) { return e(r.TEN); }).join(','));
         add('strTinhDenNgay', gt('den'));
@@ -289,7 +308,7 @@
             action: 'SV_QuanSo/LayDSKyTheoCauTruc', method: 'GET',
             strTuKhoa: '', strChucNang_Id: cn(), strNamNhapHoc: p.strNamNhapHoc, strKhoaQuanLy_Id: p.strKhoaQuanLy_Id,
             strHeDaoTao_Id: p.strHeDaoTao_Id, strKhoaDaoTao_Id: p.strKhoaDaoTao_Id, strChuongTrinh_Id: p.strChuongTrinh_Id,
-            strLopQuanLy_Id: p.strLopQuanLy_Id, strTrangThaiNguoiHoc_Id: p.strTrangThaiNguoiHoc_Id, strNguoiThucHien_Id: uid()
+            strLopQuanLy_Id: p.strLopQuanLy_Id, strNganhDT_Id: p.strNganhDT_Id, strTrangThaiNguoiHoc_Id: p.strTrangThaiNguoiHoc_Id, strNguoiThucHien_Id: uid()
         }).then(function (rk) {
             if (l !== luot) return;
             var ky = arr(rk.data);

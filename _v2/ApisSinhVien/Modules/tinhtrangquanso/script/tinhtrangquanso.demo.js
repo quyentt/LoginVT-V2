@@ -1,6 +1,8 @@
 /* Dữ liệu mẫu cho Tình trạng quân số — chỉ dùng ở chế độ dựng thử. */
 (function () {
     var D = 'CMS_DanhMucThuocTinh/LayDanhSachDuLieuTheoBangDM#';
+    ums.demo.fixtures[D + 'KHCT.NCN'] = [{ ID: 'N1', MA: 'CNTT', TEN: 'Công nghệ thông tin' }, { ID: 'N2', MA: 'KTPM', TEN: 'Kỹ thuật phần mềm' },
+        { ID: 'N3', MA: 'QTKD', TEN: 'Quản trị kinh doanh' }];
     var CAU = [
         { THANHPHAN_ID: 'KCN', THANHPHAN_CHA_ID: null, THANHPHAN_TEN: 'Khoa Công nghệ thông tin' },
         { THANHPHAN_ID: 'KCN-K67', THANHPHAN_CHA_ID: 'KCN', THANHPHAN_TEN: 'Khóa 67' },

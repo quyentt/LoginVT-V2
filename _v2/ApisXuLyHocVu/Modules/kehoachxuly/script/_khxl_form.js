@@ -18,7 +18,8 @@
      XLHV_ThongTin_MH/… Them_XLHV_KeHoach_NhanSu   strXLHV_KeHoach_Id · strNguoiDung_Id (mỗi người một lời gọi)
      XLHV_ThongTin_MH/… Xoa_XLHV_KeHoach_NhanSu    strIds = ID dòng phân công
      XLHV_DanhSachKhongXuLy/LayDanhSach   GET   strTuKhoa '' · strXLHV_KeHoachXuLy_Id · strNguoiTao_Id ''
-                                                · pageIndex 1 · pageSize 1000000
+                                                · pageIndex · pageSize (gốc 20/10: phân trang máy chủ, trước đó 1 / 1000000;
+                                                  ô lọc tại chỗ và "Xét" chỉ áp cho trang đang hiện; gốc bỏ cột ảnh — bản này giữ)
      XLHV_ThongTin/Them_XLHV_DSKhongXuLy_PhamVi  POST (kèm tham số type=POST như gốc)
          strXLHV_KeHoachXuLy_Id · strPhamViApDung_Id = QLSV_NGUOIHOC_ID (hoặc ID hệ / khoá / CT / lớp)
          · strDaoTao_ChuongTrinh_Id = DAOTAO_TOCHUCCHUONGTRINH_ID · strQLSV_TrangThaiNguoiHoc_Id · strMoTa ''
@@ -62,7 +63,7 @@
     K.taoForm = function (zone, o) {
         o = o || {};
         var TT = K.TT, P = K.P;
-        var khId = '', svRows = [], pcPage = 1, pcSize = 10, pcTotal = 0;
+        var khId = '', svRows = [], pcPage = 1, pcSize = 10, pcTotal = 0, svPage = 1, svSize = 10, svTotal = 0;
 
         function inp(k, date) {
             return '<input class="ums-input" data-k="' + k + '" data-scope="form" autocomplete="off"' +
@@ -179,18 +180,23 @@
         }
 
         /* ---------- Danh sách sinh viên áp dụng ------------------------------ */
-        function taiSV() {
+        function taiSV(p) {
+            if (p) svPage = p;
             var host = z('sv');
             K.dang(host);
             ums.api.call({
                 action: 'XLHV_DanhSachKhongXuLy/LayDanhSach', method: 'GET',
                 strTuKhoa: '', strChucNang_Id: '', strXLHV_KeHoachXuLy_Id: khId, strNguoiTao_Id: '',
-                pageIndex: 1, pageSize: 1000000
+                pageIndex: svPage, pageSize: svSize   // gốc 20/10: phân trang máy chủ
             }).then(function (r) {
                 svRows = K.ds(r);
-                z('svn').textContent = '(' + svRows.length + ')';
+                svTotal = Number(r.pager) || svRows.length;
+                z('svn').textContent = '(' + svTotal + ')';
                 ui.table({
                     el: host, rows: svRows, empty: 'Chưa có sinh viên áp dụng',
+                    page: { index: svPage, size: svSize, total: svTotal,
+                        onChange: function (n) { if (n >= 1 && n <= Math.ceil(svTotal / svSize)) taiSV(n); },
+                        onSize: function (v) { svSize = v === 'all' ? ui.PAGE_ALL : Number(v); taiSV(1); } },
                     columns: [
                         { title: 'Hình ảnh', cls: 'is-center', width: '72px', render: function (x) {
                             return ums.pat.anhNguoi(x.ANH);

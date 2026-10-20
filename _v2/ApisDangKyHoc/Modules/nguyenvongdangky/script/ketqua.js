@@ -26,9 +26,12 @@
    Cặp cha → con (ums.pat.chain): Kế hoạch → Học phần, Kế hoạch → Kiểu học; Hệ → Khoá → Chương trình
      (ums.ref.cascade tự khoá). Chưa chọn cha thì khoá con; xoá cha thì xoá trắng con.
    Khác bản gốc (cách làm):
-     · Gốc không gửi pageIndex/pageSize (máy chủ trả hết) rồi bắn lời gọi LayDSHocPhanDaDangKy cho
+     · Gốc (tới 12/10) không gửi pageIndex/pageSize (máy chủ trả hết) rồi bắn lời gọi LayDSHocPhanDaDangKy cho
        MỌI người học × MỌI học phần cùng lúc. Bản mới phân trang ở máy khách và chỉ gọi cho các dòng
        ĐANG HIỆN (6 luồng) — cùng lời gọi, cùng tham số, bớt hàng nghìn lời gọi thừa.
+     · Gốc 20/10 chuyển LayDSKetQuaDangKy_NguyenVong sang phân trang máy chủ (pageIndex về 1 khi Tìm, pageSize mặc định).
+       Bản này GIỮ phân trang máy khách (đã chốt ở trên) nhưng gửi tường minh pageIndex 1, pageSize 100000 để thủ tục
+       đã nhận tham số trang vẫn trả đủ; Tìm luôn về trang 1 (st.trang = 1 có sẵn).
      · Hệ → Khoá → CT dùng ums.ref.cascade: CT gửi thêm Hệ (gốc chỉ gửi Khoá).
    ========================================================================= */
 (function () {
@@ -112,6 +115,7 @@
         p.action = 'DKH_NguyenVong/LayDSKetQuaDangKy_NguyenVong';
         p.method = 'GET';
         p.strNguoiThucHien_Id = uid();
+        p.pageIndex = 1; p.pageSize = 100000;   // gốc 20/10 phân trang máy chủ — bản này lấy hết rồi phân trang tại máy
         ums.api.call(p).then(function (r) {
             if (t !== st.token) return;
             st.rows = rs(r);

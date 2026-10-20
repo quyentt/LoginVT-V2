@@ -1,7 +1,8 @@
 /* =========================================================================
    Quản lý thông tin văn bằng (Tốt nghiệp)
    Bản gốc: ApisTotNghiep/Modules/vanbang/html/quanlythongtin.html + script/quanlythongtin.js — theo gốc 1/10 (commit 6c2e988f:
-   thêm nút "Gán số vào sổ" + hộp chọn số vào sổ chưa sử dụng)
+   thêm nút "Gán số vào sổ" + hộp chọn số vào sổ chưa sử dụng); kéo gốc 20/10 (lần 11): ô Họ đệm TA / Tên TA bỏ readonly
+   (cho sửa — Sua đã gửi strQLSV_NguoiHoc_HoDem_TA / _Ten_TA sẵn)
    (bản Học bổng ApisHocBong/…/vanbang/quanlythongtin là bản chép CŨ hơn của màn này — bản này đầy đủ hơn:
    thêm Kế hoạch / Quyết định / Tiêu chí sắp xếp, Import, Tạo QĐ, Thêm mới theo người học, Bản sao, Xóa)
    ---------------------------------------------------------------------------
@@ -457,7 +458,7 @@
                 (laSua ? '<div hidden>' + chon('_pl', 'Phân loại', 'Chọn phân loại') + '</div>' : '') +
                 '<div class="ums-grid ums-grid--2">' +
                     o('MaSo', 'Mã số', ' readonly') + '<div></div>' +
-                    cap('Họ và tên', 'HoDem', 'Ten', true, ['Họ đệm', 'Tên']) + cap('Họ và tên TA', 'HoDem_TA', 'Ten_TA', true, ['First Name', 'Last Name']) +
+                    cap('Họ và tên', 'HoDem', 'Ten', true, ['Họ đệm', 'Tên']) + cap('Họ và tên TA', 'HoDem_TA', 'Ten_TA', false, ['First Name', 'Last Name']) +
                     chon('XepLoai', 'Xếp loại', 'Chọn xếp loại') + o('XepLoai_TA', 'Xếp loại TA', ' readonly') +
                     chon('MauPhoi', 'Mẫu phôi', 'Chọn mẫu phôi') + chon('MauPhoi_BanSao', 'Mẫu phôi bản sao', 'Chọn mẫu phôi') +
                     o('NgaySinhDD', 'Ngày sinh đầy đủ', ' readonly') + o('NgaySinhDD_TA', 'Ngày sinh đầy đủ TA', ' readonly') +

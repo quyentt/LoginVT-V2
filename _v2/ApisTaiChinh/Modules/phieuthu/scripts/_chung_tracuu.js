@@ -164,6 +164,7 @@
        (edu.system.uploadImport → ums.upload), rồi gọi
        SYS_Import/getDataFormFileImport(strPath) để máy chủ đọc; kết quả là
        Id = tên các sheet nối bằng "$", Data = { Table1: [...], Table2: … }.
+       Gốc 20/10: đọc lỗi → thử lại 2 lần cách 1 giây rồi mới báo (docFile).
 
        cfg = {
            title, bang: { dm } | null, kieuHoc: bool, ngayLabel,
@@ -466,7 +467,10 @@
             });
         });
 
-        function docFile() {
+        /* Gốc 20/10 (cả 4 màn import): máy chủ đọc tệp lỗi thì tự gọi lại sau 1 giây, tối đa 2 lần; vẫn lỗi → nhắc
+           "Hãy tối ưu lại file up load, copy dữ liệu cần import sang file mới" (gốc quên tắt chỉ báo tải — bản này không) */
+        function docFile(lanLoi) {
+            lanLoi = lanLoi || 0;
             if (!st.path) { ui.toast('Vui lòng chọn file trước khi thực hiện import dữ liệu!', 'warn'); return; }
             ums.api.call({ action: 'SYS_Import/getDataFormFileImport', method: 'GET', versionAPI: 'v1.0', strPath: st.path })
                 .then(function (r) {
@@ -478,7 +482,11 @@
                     st.data = r.data || {};
                     T.fill(k('sheet'), sheets.map(function (s, i) { return { ID: 'Table' + (i + 1), TEN: s }; }), { head: false, keep: false });
                     ui.toast('Đọc được ' + sheets.length + ' sheet. Chọn sheet rồi bấm Hiển thị dữ liệu.', 'ok');
-                }).catch(function (e) { ums.api.handle(e, 'đọc tệp'); });
+                }).catch(function (e) {
+                    if (lanLoi < 2) { setTimeout(function () { docFile(lanLoi + 1); }, 1000); return; }
+                    ui.toast('Hãy tối ưu lại file up load, copy dữ liệu cần import sang file mới', 'warn');
+                    ums.api.handle(e, 'đọc tệp');
+                });
         }
 
         function xemSheet() {

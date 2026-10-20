@@ -216,20 +216,24 @@
             st.ct = arr(r.data);
             st.ctId = st.ct.length ? e(st.ct[0].DAOTAO_TOCHUCCHUONGTRINH_ID) : '';
             veCT();
-            var d = st.ct[0];
-            if (d) {
-                dat('ten', e(d.QLSV_NGUOIHOC_HODEM) + ' ' + e(d.QLSV_NGUOIHOC_TEN));
-                dat('ma', d.QLSV_NGUOIHOC_MASO);
-                if (d.QLSV_NGUOIHOC_ANH && ums.state.mode !== 'demo' && ums.files) {
-                    var img = new Image();
-                    img.alt = '';
-                    img.onload = function () { z('anh').innerHTML = ''; z('anh').appendChild(img); };
-                    img.src = ums.files.url(d.QLSV_NGUOIHOC_ANH);
-                }
-            }
+            hienSV(st.ct[0]);
             napKH();
         }).catch(function (err) { z('ctdt').innerHTML = ui.fail(err.message); ums.api.handle(err, 'chương trình đào tạo'); });
     }
+    /* Gốc 20/10 (showThongTinSinhVien): mỗi chương trình có hồ sơ riêng (mã số, họ tên, ảnh) → đổi chương trình thì
+       nạp lại thông tin bên trái theo dòng chương trình vừa chọn */
+    function hienSV(d) {
+        if (!d) return;
+        dat('ten', e(d.QLSV_NGUOIHOC_HODEM) + ' ' + e(d.QLSV_NGUOIHOC_TEN));
+        dat('ma', d.QLSV_NGUOIHOC_MASO);
+        if (d.QLSV_NGUOIHOC_ANH && ums.state.mode !== 'demo' && ums.files) {
+            var img = new Image();
+            img.alt = '';
+            img.onload = function () { z('anh').innerHTML = ''; z('anh').appendChild(img); };
+            img.src = ums.files.url(d.QLSV_NGUOIHOC_ANH);
+        }
+    }
+    function ctHienTai() { return st.ct.filter(function (c) { return e(c.DAOTAO_TOCHUCCHUONGTRINH_ID) === st.ctId; })[0]; }
     function veCT() {
         z('ctdt').innerHTML = st.ct.length ? ui.chips(st.ct.map(function (c) { return { key: e(c.DAOTAO_TOCHUCCHUONGTRINH_ID), label: e(c.DAOTAO_TOCHUCCHUONGTRINH_TEN) }; }), st.ctId)
             : ui.empty('Không có chương trình đào tạo');
@@ -243,8 +247,13 @@
             st.khId = st.kh.length ? e(st.kh[0].ID) : '';
             veKH();
             z('tg').innerHTML = '';
-            if (st.kh.length) thoiGian(st.kh[0]);
-            napHP();
+            if (st.kh.length) { thoiGian(st.kh[0]); napHP(); }
+            else {
+                // Gốc 20/10: chương trình không có kế hoạch → xoá trắng vùng học phần / lớp HP / thu / GV / phương án,
+                // không gọi LayDSHocPhanDangToChuc với kế hoạch rỗng; danh sách HP đã đăng ký cũng xoá
+                st.daDK = []; z('hp').innerHTML = ''; z('lhp').innerHTML = ''; z('gv').innerHTML = ''; z('thu').innerHTML = ''; z('pa').innerHTML = '';
+                dat('tcMax', ''); dat('tcMin', '');
+            }
             napKQ().catch(function () { return null; });
             napTC();
         }).catch(function (err) { z('kh').innerHTML = ui.fail(err.message); ums.api.handle(err, 'kế hoạch đăng ký'); });
@@ -660,7 +669,7 @@
             return;
         }
         if ((b = t.closest('[data-xemsv]'))) { var s = L.ds[Number(b.getAttribute('data-xemsv'))]; if (s) moDangKy(s.ID, []); return; }
-        if ((b = t.closest('[data-z="ctdt"] [data-chip]'))) { st.ctId = b.getAttribute('data-chip'); veCT(); napKH(); return; }
+        if ((b = t.closest('[data-z="ctdt"] [data-chip]'))) { st.ctId = b.getAttribute('data-chip'); veCT(); hienSV(ctHienTai()); napKH(); return; }
         if ((b = t.closest('[data-z="kh"] [data-chip]'))) {
             st.khId = b.getAttribute('data-chip'); veKH();
             var k = st.kh.filter(function (y) { return e(y.ID) === st.khId; })[0];
