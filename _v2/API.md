@@ -7,7 +7,7 @@ Lớp CSS có sẵn: `_v2/CLASS.md`. Tóm tắt màn gốc: `python _harness\tom
 ## Mục lục
 
 - **api.js** (10 hàm): `ums.api.call`, `ums.api.json`, `ums.api.call`, `ums.api.all`, `ums.api.dm`, `ums.api.handle`, `ums.util.xorB64`, `ums.util.unXor`, `ums.util.ngaySinh`, `ums.util.uuid`
-- **ui.js** (44 hàm): `ums.ui.escBr`, `ums.ui.money`, `ums.ui.so`, `ums.ui.docSo`, `ums.ui.truot`, `ums.ui.moDetails`, `ums.ui.ngayGio`, `ums.ui.empty`, `ums.ui.btn`, `ums.ui.iconBtn`, `ums.ui.actions`, `ums.ui.badge`, `ums.ui.chips`, `ums.ui.tabs`, `ums.ui.tabsActive`, `ums.ui.tile`, `ums.ui.cell`, `ums.ui.meter`, `ums.ui.table`, `ums.ui.oTheoGoc`, `ums.ui.pagerBind`, `ums.ui.pager`, `ums.ui.options`, `ums.ui.filterInput`, `ums.ui.filterSelect`, `ums.ui.field`, `ums.ui.toast`, `ums.ui.confirm`, `ums.ui.xoaChon`, `ums.ui.dialog`, `ums.ui.batch`, `ums.ui.print`, `ums.ui.fail`, `ums.ui.datepicker`, `ums.ui.select2`, `ums.ui.hoverCard`, `ums.ui.file`, `ums.ui.enhance`, `ums.ui.khoangNgay`, `ums.ui.chart`, `ums.ui.reveal`, `ums.ui.swap`, `ums.ui.taiTep`, `ums.ui.xuatXls`
+- **ui.js** (46 hàm): `ums.ui.escBr`, `ums.ui.money`, `ums.ui.so`, `ums.ui.docSo`, `ums.ui.truot`, `ums.ui.moDetails`, `ums.ui.ngayGio`, `ums.ui.empty`, `ums.ui.btn`, `ums.ui.iconBtn`, `ums.ui.actions`, `ums.ui.badge`, `ums.ui.chips`, `ums.ui.tabs`, `ums.ui.tabsActive`, `ums.ui.tile`, `ums.ui.cell`, `ums.ui.meter`, `ums.ui.table`, `ums.ui.sortRows`, `ums.ui.oTheoGoc`, `ums.ui.pagerBind`, `ums.ui.pager`, `ums.ui.options`, `ums.ui.filterInput`, `ums.ui.filterSelect`, `ums.ui.field`, `ums.ui.toast`, `ums.ui.confirm`, `ums.ui.xoaChon`, `ums.ui.dialog`, `ums.ui.batch`, `ums.ui.print`, `ums.ui.fail`, `ums.ui.datepicker`, `ums.ui.select2`, `ums.ui.hoverCard`, `ums.ui.file`, `ums.ui.enhance`, `ums.ui.khoangNgay`, `ums.ui.chart`, `ums.ui.reveal`, `ums.ui.swap`, `ums.ui.taiTep`, `ums.ui.xuatXls`, `ums.ui.napXLSX`
 - **crud.js** (1 hàm): `ums.crud`
 - **patterns.js** (46 hàm): `ums.pat.num`, `ums.pat.money`, `ums.pat.page`, `ums.pat.panel`, `ums.pat.filterBar`, `ums.pat.fill`, `ums.pat.chain`, `ums.pat.haiLuoi`, `ums.pat.loc`, `ums.pat.dmTitle`, `ums.pat.val`, `ums.pat.checks`, `ums.pat.matrix`, `ums.pat.formTrang`, `ums.pat.pivot`, `ums.pat.master`, `ums.pat.masterItem`, `ums.pat.cards`, `ums.pat.groupTable`, `ums.pat.footSum`, `ums.pat.cardRow`, `ums.pat.pickSinhVien`, `ums.pat.pickSinhVienNganh`, `ums.pat.pickNhanSu`, `ums.pat.xacNhanChiTiet`, `ums.pat.sections`, `ums.pat.rows`, `ums.pat.phamVi`, `ums.pat.diaChi`, `ums.pat.chonPhamVi`, `ums.pat.emailHopLe`, `ums.pat.guiEmail`, `ums.pat.soDo`, `ums.pat.anhNguoi`, `ums.pat.dsNhanSuLoc`, `ums.pat.dsNhanSu`, `ums.pat.cotTrai`, `ums.pat.noCo`, `ums.pat.dauDoiTuong`, `ums.pat.datNoCo`, `ums.pat.datDau`, `ums.pat.thanhThu`, `ums.pat.datDaChon`, `ums.pat.datTongTab`, `ums.pat.masterNhanSu`, `ums.pat.boLocNguoiHoc`
 - **ref.js** (18 hàm): `ums.ref.heDaoTao`, `ums.ref.khoaDaoTao`, `ums.ref.chuongTrinh`, `ums.ref.lopQuanLy`, `ums.ref.hocPhan`, `ums.ref.thoiGianDaoTao`, `ums.ref.khoaQuanLy`, `ums.ref.coCauToChuc`, `ums.ref.nhanSu`, `ums.ref.nhanSuPage`, `ums.ref.tenNhanSu`, `ums.ref.xoaQuyetDinhKem`, `ums.ref.quaTrinhCuoiCung`, `ums.ref.sinhVien`, `ums.ref.sinhVienPage`, `ums.ref.dm`, `ums.ref.cascade`, `ums.ref.cascadeQuyen`
@@ -287,14 +287,22 @@ cfg = { el, columns:[{title, prop|render(row,i), cls, width, group?:[…]}], row
 stt, page:{index,size,total,onChange}, empty, tableCls }
 ```
 
-### `ums.ui.oTheoGoc(row)`  <sub>ui.js:438</sub>
+### `ums.ui.sortRows(rows, c, dir)`  <sub>ui.js:459</sub>
+
+```text
+ Sắp xếp mảng dòng theo một cột của ums.ui.table (đi cùng cfg.sort). Giá trị so: c.sortVal(row) nếu có, không thì
+row[c.prop], không nữa thì chữ thuần của c.render(row). Ô trống luôn cuối; cột toàn số so theo số; còn lại so chữ
+tiếng Việt, số tự nhiên (CE1.2 < CE1.10). Ổn định: bằng nhau giữ thứ tự gốc. col < 0 → trả bản sao nguyên thứ tự. 
+```
+
+### `ums.ui.oTheoGoc(row)`  <sub>ui.js:481</sub>
 
 ```text
  Các ô của một dòng theo thứ tự cột GỐC: các ô đã dời xuống cuối bảng (ô chọn dòng, Thao tác —
 data-cot-goc) được đặt lại về vị trí màn khai. Dùng ở nơi đọc ô theo chỉ số. 
 ```
 
-### `ums.ui.pagerBind(host, page)`  <sub>ui.js:451</sub>
+### `ums.ui.pagerBind(host, page)`  <sub>ui.js:494</sub>
 
 ```text
  Gắn sự kiện cho thanh phân trang vừa vẽ — số trang (data-go) và số dòng
@@ -302,33 +310,33 @@ mỗi trang (data-size). Mọi nơi vẽ ums.ui.pager đều gọi hàm này đ�
 chỗ nào quên gắn một trong hai. 
 ```
 
-### `ums.ui.pager(page, shown)`  <sub>ui.js:477</sub>
+### `ums.ui.pager(page, shown)`  <sub>ui.js:520</sub>
 
 _(chưa có chú thích trong mã)_
 
-### `ums.ui.options(data, cfg)`  <sub>ui.js:550</sub>
+### `ums.ui.options(data, cfg)`  <sub>ui.js:593</sub>
 
 ```text
  ---------- Biểu mẫu --------------------------------------------------- 
 ```
 
-### `ums.ui.filterInput(label, opts)`  <sub>ui.js:581</sub>
+### `ums.ui.filterInput(label, opts)`  <sub>ui.js:624</sub>
 
 _(chưa có chú thích trong mã)_
 
-### `ums.ui.filterSelect(label, data, opts)`  <sub>ui.js:591</sub>
+### `ums.ui.filterSelect(label, data, opts)`  <sub>ui.js:634</sub>
 
 _(chưa có chú thích trong mã)_
 
-### `ums.ui.field(label, control, opts)`  <sub>ui.js:602</sub>
+### `ums.ui.field(label, control, opts)`  <sub>ui.js:645</sub>
 
 _(chưa có chú thích trong mã)_
 
-### `ums.ui.toast(msg, tone, opts)`  <sub>ui.js:639</sub>
+### `ums.ui.toast(msg, tone, opts)`  <sub>ui.js:682</sub>
 
 _(chưa có chú thích trong mã)_
 
-### `ums.ui.confirm(msg, opts)`  <sub>ui.js:699</sub>
+### `ums.ui.confirm(msg, opts)`  <sub>ui.js:742</sub>
 
 ```text
  ---------- Hộp xác nhận ------------------------------------------------
@@ -340,7 +348,7 @@ ums.ui.confirm('Xoá 3 dòng đã chọn?', { tone: 'bad', ok: 'Xoá' })
 .then(function (yes) { if (yes) … });                        
 ```
 
-### `ums.ui.xoaChon(chon, o)`  <sub>ui.js:767</sub>
+### `ums.ui.xoaChon(chon, o)`  <sub>ui.js:810</sub>
 
 ```text
  ---------- Nút "Xoá đã chọn" cho mọi chỗ xoá NHIỀU dòng ------------------
@@ -359,11 +367,11 @@ Gốc đếm = hộp thoại chứa nút, không thì phần tử gần nhất c
 Xoá MỘT dòng (thùng rác trên dòng, Xoá trong biểu mẫu) giữ nút đỏ thường. 
 ```
 
-### `ums.ui.dialog(o)`  <sub>ui.js:842</sub>
+### `ums.ui.dialog(o)`  <sub>ui.js:885</sub>
 
 _(chưa có chú thích trong mã)_
 
-### `ums.ui.batch(calls, opts)`  <sub>ui.js:903</sub>
+### `ums.ui.batch(calls, opts)`  <sub>ui.js:946</sub>
 
 ```text
  ---------- Chạy hàng loạt kèm tiến độ -----------------------------------
@@ -379,7 +387,7 @@ Không bao giờ reject — lỗi từng lời gọi nằm trong r.errors. Hết
 (401) thì dừng và đăng xuất như ums.api.handle.                        
 ```
 
-### `ums.ui.print(what, opts)`  <sub>ui.js:966</sub>
+### `ums.ui.print(what, opts)`  <sub>ui.js:1009</sub>
 
 ```text
  ---------- In ----------------------------------------------------------
@@ -388,19 +396,19 @@ chứa nội dung cần in. Nhận id, phần tử, hoặc chuỗi HTML.
 `css` thêm kiểu riêng cho bản in (mẫu phiếu thu, hoá đơn…).          
 ```
 
-### `ums.ui.fail(msg, retryAttr)`  <sub>ui.js:990</sub>
+### `ums.ui.fail(msg, retryAttr)`  <sub>ui.js:1033</sub>
 
 ```text
  Khối báo lỗi đặt trong vùng nội dung, kèm nút thử lại 
 ```
 
-### `ums.ui.datepicker(sel, opts)`  <sub>ui.js:1001</sub>
+### `ums.ui.datepicker(sel, opts)`  <sub>ui.js:1044</sub>
 
 ```text
  ---------- Gắn thư viện ngoài ----------------------------------------- 
 ```
 
-### `ums.ui.select2(sel, opts)`  <sub>ui.js:1085</sub>
+### `ums.ui.select2(sel, opts)`  <sub>ui.js:1128</sub>
 
 ```text
  ---------- Ô CHỌN — MỘT KIỂU DUY NHẤT CHO CẢ HỆ -------------------------
@@ -417,11 +425,11 @@ dấu `data-no-s2` trên chính thẻ <select>.
 thẻ làm ô cao lên và vỡ hàng lọc.                                     
 ```
 
-### `ums.ui.hoverCard(khung, chon, dung)`  <sub>ui.js:1221</sub>
+### `ums.ui.hoverCard(khung, chon, dung)`  <sub>ui.js:1264</sub>
 
 _(chưa có chú thích trong mã)_
 
-### `ums.ui.file(opts)`  <sub>ui.js:1276</sub>
+### `ums.ui.file(opts)`  <sub>ui.js:1319</sub>
 
 ```text
  ---------- Ô CHỌN TỆP ----------------------------------------------
@@ -437,31 +445,31 @@ Tên tệp do ums.ui.enhance tự cập nhật — màn hình không phải gắ
 và `[data-k]` vẫn nằm trên chính <input> nên mã cũ tìm ô không đổi. 
 ```
 
-### `ums.ui.enhance(root)`  <sub>ui.js:1290</sub>
+### `ums.ui.enhance(root)`  <sub>ui.js:1333</sub>
 
 _(chưa có chú thích trong mã)_
 
-### `ums.ui.khoangNgay(root)`  <sub>ui.js:1403</sub>
+### `ums.ui.khoangNgay(root)`  <sub>ui.js:1446</sub>
 
 _(chưa có chú thích trong mã)_
 
-### `ums.ui.chart(canvas, cfg)`  <sub>ui.js:1446</sub>
+### `ums.ui.chart(canvas, cfg)`  <sub>ui.js:1489</sub>
 
 _(chưa có chú thích trong mã)_
 
-### `ums.ui.reveal(el, opts)`  <sub>ui.js:1467</sub>
+### `ums.ui.reveal(el, opts)`  <sub>ui.js:1510</sub>
 
 ```text
  Hiện một vùng đang ẩn, kèm hiệu ứng trượt lên 
 ```
 
-### `ums.ui.swap(out, into, opts)`  <sub>ui.js:1494</sub>
+### `ums.ui.swap(out, into, opts)`  <sub>ui.js:1537</sub>
 
 ```text
  Ẩn vùng này, hiện vùng kia kèm hiệu ứng. Trả về vùng vừa hiện. 
 ```
 
-### `ums.ui.taiTep(ten, kieu, noiDung)`  <sub>ui.js:1572</sub>
+### `ums.ui.taiTep(ten, kieu, noiDung)`  <sub>ui.js:1615</sub>
 
 ```text
  ---------- Tải tệp dựng ở máy khách -----------------------------------
@@ -471,7 +479,11 @@ Excel ở đây là BẢNG HTML lưu đuôi .xls (Excel mở được, không c�
 SheetJS tải từ CDN như vài màn gốc — _v2 không phụ thuộc CDN).        
 ```
 
-### `ums.ui.xuatXls(ten, o)`  <sub>ui.js:1577</sub>
+### `ums.ui.xuatXls(ten, o)`  <sub>ui.js:1620</sub>
+
+_(chưa có chú thích trong mã)_
+
+### `ums.ui.napXLSX()`  <sub>ui.js:1637</sub>
 
 _(chưa có chú thích trong mã)_
 

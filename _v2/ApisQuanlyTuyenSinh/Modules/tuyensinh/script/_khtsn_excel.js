@@ -12,24 +12,7 @@
 
     var ums = window.ums, T = ums.khtsn;
 
-    var CDN = ['assets/vendor/xlsx/xlsx.bundle.js'];   // bản cục bộ (đường dẫn tính từ vỏ _v2/index.aspx)
-    var pXLSX = null;
-    T.napXLSX = function () {
-        if (window.XLSX && window.XLSX.version) return Promise.resolve(window.XLSX);
-        if (pXLSX) return pXLSX;
-        pXLSX = new Promise(function (ok, loi) {
-            var i = 0;
-            (function thu() {
-                if (i >= CDN.length) { pXLSX = null; loi(new Error('Không tải được thư viện đọc Excel (assets/vendor/xlsx)')); return; }
-                var s = document.createElement('script');
-                s.src = CDN[i];
-                s.onload = function () { ok(window.XLSX); };
-                s.onerror = function () { i++; s.remove(); thu(); };
-                document.head.appendChild(s);
-            })();
-        });
-        return pXLSX;
-    };
+    T.napXLSX = function () { return ums.ui.napXLSX(); };   // tầng chung ums.ui.napXLSX (gộp 20/10)
 
     /** Đọc sheet đầu tiên → mảng dòng { tên cột: giá trị } (hàng 1 = tiêu đề), như XLSX.utils.sheet_to_json của gốc */
     T.docTep = function (file) {

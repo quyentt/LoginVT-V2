@@ -87,10 +87,18 @@
                     { key: 'khoa', type: 'select', label: 'Chọn khoá đào tạo' },
                     { key: 'tuKhoa', label: 'Nhập từ khoá tìm kiếm' }
                 ]) +
+                /* KHCT (gốc 20/10): dải tab "Dạng thẻ | Dạng cây" trên khung danh sách; cây Khoa quản lý → Ngành → Chuyên ngành → Chương trình */
+                (KHCT ? '<div class="cthp-kieu" data-z="kieu">' + ui.tabs([{ key: 'the', text: 'Dạng thẻ', icon: 'fa-table-cells-large' },
+                    { key: 'cay', text: 'Dạng cây (Khoa – Ngành – Chuyên ngành)', icon: 'fa-sitemap' }], 'the', 'data-kieu') + '</div>' : '') +
                 pat.panel({
                     title: 'Danh sách chương trình', icon: KHCT ? 'fa-books' : 'fa-laptop-file', count: 'ctCount',
                     flush: !KHCT, zone: 'tbl', body: ''
                 }) +
+                (KHCT ? pat.panel({
+                    title: 'Cây chương trình', icon: 'fa-sitemap', count: 'cayTong', cls: 'cthp-cay', zone: 'cay', body: '',
+                    tools: ui.btn('view', { text: 'Mở rộng tất cả', icon: 'fa-angles-down', mod: 'ghost', cls: 'ums-btn--sm', attr: { 'data-cay': 'mo' } }) +
+                        ui.btn('view', { text: 'Thu gọn tất cả', icon: 'fa-angles-up', mod: 'ghost', cls: 'ums-btn--sm', attr: { 'data-cay': 'thu' } })
+                }) : '') +
             '</div>' +
             '<div data-z="view" data-khu="view" hidden>' +
                 '<div class="ums-page__head">' +
@@ -155,7 +163,97 @@
                 dsCT = rowsOf(r);
                 z('ctCount').textContent = '(' + dsCT.length + ')';
                 draw(1);
+                if (KHCT) { cay.loc = { he: f('he').value, khoa: f('khoa').value, q: (f('tuKhoa').value || '').trim() }; cay.cu = true; if (cay.kieu === 'cay') taiCay(); }
             }).catch(function (err) { z('tbl').innerHTML = ui.fail(err.message); ums.api.handle(err, 'danh sách chương trình'); });
+        }
+
+        /* ---------- KHCT: Dạng cây (gốc 20/10 toggle_viewChuongTrinh / getList_ChuongTrinhCay / genTree_ChuongTrinh) ----------
+           Nguồn: pkg_kehoach_thongtin.LayDSKS_DaoTao_ToChucCT (ums.ref.chuongTrinh) với cùng bộ lọc của lần tìm gần nhất.
+           Ngành cha của DAOTAO_N_CN do máy chủ trả thêm (QUANHECHA_ID / _MA / _TEN): có cha → cha là Ngành, N_CN là Chuyên ngành;
+           không cha → N_CN là Ngành. Mở / xem vẫn dùng dsCT (API cũ) để giữ các cờ mô hình; chương trình không có trong dsCT → báo. */
+        var cay = { kieu: 'the', cu: true, loc: null, tk: 0, maKhoa: null };
+        var CHA = { ID: ['QUANHECHA_ID', 'DAOTAO_N_CN_QUANHECHA_ID', 'DAOTAO_N_CN_CHA_ID'], MA: ['QUANHECHA_MA', 'DAOTAO_N_CN_QUANHECHA_MA', 'DAOTAO_N_CN_CHA_MA'],
+            TEN: ['QUANHECHA_TEN', 'DAOTAO_N_CN_QUANHECHA_TEN', 'DAOTAO_N_CN_CHA_TEN'] };
+        function cayPanel() { return z('cay') ? z('cay').closest('.ums-panel') : null; }
+        if (KHCT) { cayPanel().hidden = true; z('cay').innerHTML = ui.empty('Chọn hệ đào tạo, khóa đào tạo rồi bấm Tìm kiếm để xem cây Khoa – Ngành – Chuyên ngành', 'fa-sitemap'); }
+        function doiKieu(k) {
+            cay.kieu = k;
+            ui.tabsActive(z('kieu'), k, 'data-kieu');
+            z('tbl').closest('.ums-panel').hidden = k === 'cay';
+            cayPanel().hidden = k !== 'cay';
+            if (k === 'cay' && cay.cu) taiCay();
+        }
+        function taiCay() {
+            if (!cay.loc) return;
+            var tk = ++cay.tk;
+            z('cay').innerHTML = ui.empty('Đang tải…', 'fa-spinner fa-spin');
+            ums.ref.chuongTrinh({ strDaoTao_HeDaoTao_Id: cay.loc.he, strKhoaDaoTao_Id: cay.loc.khoa, strN_CN_LOP_Id: '', strKhoaQuanLy_Id: '', strToChucCT_Cha_Id: '',
+                strNguoiThucHien_Id: '', strTuKhoa: cay.loc.q, pageIndex: 1, pageSize: 240000 })
+                .then(function (data) { if (tk !== cay.tk) return; cay.cu = false; veCay(Array.isArray(data) ? data : rowsOf({ data: data })); })
+                .catch(function (err) { if (tk !== cay.tk) return; z('cay').innerHTML = ui.fail(err.message); ums.api.handle(err, 'cây chương trình'); });
+        }
+        function layCot(m, names) { for (var i = 0; i < names.length; i++) { var v = m[names[i]]; if (v !== undefined && v !== null && v !== '') return String(v); } return ''; }
+        function veCay(data) {
+            var host = z('cay');
+            z('cayTong').textContent = '';
+            if (!data.length) { host.innerHTML = ui.empty('Không có chương trình nào theo bộ lọc hiện tại', 'fa-sitemap'); return; }
+            var dem = [0, 0, 0, 0], goc = { con: {} }, coCotCha = false;
+            function nut(cha, lv, key, ten, ma, id) {
+                var k = lv + ':' + key, n = cha.con[k];
+                if (!n) { n = cha.con[k] = { ten: ten, ma: ma, id: id, con: {}, ct: [], so: 0 }; dem[lv - 1]++; }
+                else if (!n.ma && ma) n.ma = ma;
+                n.so++;
+                return n;
+            }
+            data.forEach(function (r) {
+                var m = {}; Object.keys(r).forEach(function (k) { m[k.toUpperCase()] = r[k]; });
+                var khoaId = layCot(m, ['DAOTAO_KHOAQUANLY_ID']), khoaTen = layCot(m, ['DAOTAO_KHOAQUANLY_TEN']), khoaMa = layCot(m, ['DAOTAO_KHOAQUANLY_MA']);
+                var cnId = layCot(m, ['DAOTAO_N_CN_ID']), cnTen = layCot(m, ['DAOTAO_N_CN_TEN']), cnMa = layCot(m, ['DAOTAO_N_CN_MA']);
+                var chaId = layCot(m, CHA.ID), chaTen = layCot(m, CHA.TEN), chaMa = layCot(m, CHA.MA);
+                if (CHA.ID.some(function (k) { return k in m; })) coCotCha = true;
+                var coCha = !!chaId && chaId !== cnId;
+                var nKhoa = nut(goc, 1, khoaId || khoaTen, khoaTen || '(Chưa gán khoa)', khoaMa, khoaId);
+                var nNganh = nut(nKhoa, 2, (coCha ? chaId : cnId) || (coCha ? chaTen : cnTen), (coCha ? chaTen : cnTen) || '(Chưa gán ngành)', coCha ? chaMa : cnMa, coCha ? chaId : cnId);
+                var chua = coCha ? nut(nNganh, 3, cnId || cnTen, cnTen || '(Chưa gán chuyên ngành)', cnMa, cnId) : nNganh;
+                chua.ct.push(r); dem[3]++;
+            });
+            if (!coCotCha) console.warn('LayDSKS_DaoTao_ToChucCT chưa trả QUANHECHA_ID/MA/TEN: cây chỉ có Khoa → Ngành (N_CN) → Chương trình.');
+            function sapNut(con) { return Object.keys(con).map(function (k) { return con[k]; }).sort(function (a, b) { return a.ten.localeCompare(b.ten, 'vi', { numeric: true }); }); }
+            var ICO = ['', 'fa-building-columns', 'fa-diagram-project', 'fa-code-branch'];
+            function la(c) {
+                return '<li class="cthp-cay__nut cthp-cay__la"><div class="cthp-cay__dong"><i class="fa-light fa-graduation-cap cthp-cay__ico"></i>' +
+                    '<span class="cthp-cay__ten">' + ui.esc(e(c.TENCHUONGTRINH)) + (e(c.DAOTAO_KHOADAOTAO_TEN) ? ' <span class="cthp-cay__phu">· Khóa: ' + ui.esc(c.DAOTAO_KHOADAOTAO_TEN) + '</span>' : '') + '</span>' +
+                    '<span class="cthp-cay__nutct">' + ui.btn('edit', { text: 'Cập nhật CTDT', cls: 'ums-btn--sm', attr: { 'data-sua': e(c.ID) } }) +
+                    ui.btn('view', { text: 'Xem CTDT', cls: 'ums-btn--sm', attr: { 'data-view': e(c.ID) } }) + '</span></div></li>';
+            }
+            function nhanh(n, lv) {
+                return '<li class="cthp-cay__nut cthp-cay__lv' + lv + (lv <= 2 ? ' is-open' : '') + '"><div class="cthp-cay__dong cthp-cay__dong--mo">' +
+                    '<i class="fa-light fa-chevron-right cthp-cay__caret"></i><i class="fa-light ' + ICO[lv] + ' cthp-cay__ico"></i>' +
+                    '<span class="cthp-cay__ten">' + ui.esc(n.ten) + (n.ma ? ' <span class="cthp-cay__ma">(' + ui.esc(n.ma) + ')</span>' :
+                        (lv === 1 && n.id ? ' <span class="cthp-cay__ma" data-khoa-id="' + ui.esc(n.id) + '"></span>' : '')) + '</span>' +
+                    ui.badge(n.so + ' CT', 'info') + '</div><ul>' +
+                    sapNut(n.con).map(function (c) { return nhanh(c, lv + 1); }).join('') +
+                    n.ct.slice().sort(function (a, b) { return e(a.TENCHUONGTRINH).localeCompare(e(b.TENCHUONGTRINH), 'vi', { numeric: true }); }).map(la).join('') + '</ul></li>';
+            }
+            var dsKhoa = sapNut(goc.con);
+            host.innerHTML = '<ul class="cthp-cay__goc">' + dsKhoa.map(function (k) { return nhanh(k, 1); }).join('') + '</ul>';
+            z('cayTong').textContent = '— ' + dem[0] + ' khoa · ' + dem[1] + ' ngành · ' + (dem[2] ? dem[2] + ' chuyên ngành · ' : '') + dem[3] + ' chương trình';
+            // Khoa quản lý chưa có mã trong dữ liệu → tra từ danh mục cơ cấu tổ chức
+            if (dsKhoa.some(function (k) { return k.id && !k.ma; })) dienMaKhoa();
+        }
+        function dienMaKhoa() {
+            function dien() {
+                Array.prototype.forEach.call(z('cay').querySelectorAll('.cthp-cay__ma[data-khoa-id]'), function (s) {
+                    var ma = cay.maKhoa[String(s.getAttribute('data-khoa-id')).toUpperCase()];
+                    if (ma) s.textContent = '(' + ma + ')';
+                });
+            }
+            if (cay.maKhoa) { dien(); return; }
+            ums.ref.coCauToChuc({ strCCTC_Loai_Id: '', strCCTC_Cha_Id: '', iTrangThai: 1 }).then(function (ds) {
+                cay.maKhoa = {};
+                (ds || []).forEach(function (x) { cay.maKhoa[String(x.ID).toUpperCase()] = x.MA; });
+                dien();
+            }).catch(function () {});
         }
 
         /* Bảng danh sách — đúng các cột bản gốc khai trong genBox_ChuongTrinh:
@@ -231,16 +329,18 @@
 
         function timCT(id) { return dsCT.filter(function (x) { return x.ID === id; })[0]; }
 
+        function khongThay() { ui.toast('Không tìm thấy chương trình trong danh sách đã tải. Vui lòng bấm Tìm kiếm để tải lại.', 'warn'); }
         function sua(id) {
             var c = timCT(id);
-            if (!c || !o.onSua) return;
+            if (!c) { khongThay(); return; }
+            if (!o.onSua) return;
             token = null;
             o.onSua(c, api);
         }
 
         function openCT(id) {
             ct = timCT(id);
-            if (!ct) return;
+            if (!ct) { khongThay(); return; }
             var tk = token = {};
             z('info').innerHTML = '<h3>' + ui.esc(ct.TENCHUONGTRINH) + '</h3>' +
                 '<div>Mã: <b>' + ui.esc(ct.MACHUONGTRINH) + '</b></div>' +
@@ -356,6 +456,17 @@
         }
 
         root.addEventListener('click', function (ev) {
+            if (KHCT) {
+                var kt = ev.target.closest('[data-kieu]');
+                if (kt && root.contains(kt)) { doiKieu(kt.getAttribute('data-kieu')); return; }
+                var ca = ev.target.closest('[data-cay]');
+                if (ca && root.contains(ca)) {
+                    Array.prototype.forEach.call(z('cay').querySelectorAll('.cthp-cay__nut:not(.cthp-cay__la)'), function (li) { li.classList.toggle('is-open', ca.getAttribute('data-cay') === 'mo'); });
+                    return;
+                }
+                var dong = ev.target.closest('.cthp-cay__dong--mo');
+                if (dong && root.contains(dong) && !ev.target.closest('button')) { dong.parentNode.classList.toggle('is-open'); return; }
+            }
             var t = ev.target.closest('[data-sua]');
             if (t && root.contains(t)) { sua(t.getAttribute('data-sua')); return; }
             var v = ev.target.closest('[data-view]');

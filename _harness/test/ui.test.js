@@ -106,3 +106,25 @@ test('ui.iconBtn: nút chỉ biểu tượng có title + aria-label cùng chữ,
     assert.equal(b[0].querySelector('i').getAttribute('aria-hidden'), 'true');
     assert.equal(b[1].getAttribute('aria-label'), 'Xem chi tiết', 'kind lạ rơi về view');
 });
+
+test('cfg.sort: th có data-sort / is-sortable (trừ cột thao tác, cột head); bấm tăng → giảm → gốc; ui.sortRows (ô trống cuối, số, chữ số tự nhiên)', function () {
+    var w = tao(), goi = [];
+    var cols = [{ title: 'Tên', prop: 'TEN' }, { title: 'Số', prop: 'SO', cls: 'is-center' },
+        { head: '<input type="checkbox">', cls: 'is-actions', render: function () { return ''; } }, { title: 'Thao tác', cls: 'is-actions', render: function () { return ''; } }];
+    var el = bang(w, { columns: cols, rows: [{ TEN: 'b', SO: '10' }], sort: { col: 1, dir: 'asc', onChange: function (c, d) { goi.push([c, d]); } } });
+    var ths = el.querySelectorAll('thead th[data-sort]');
+    assert.equal(ths.length, 2, 'chỉ hai cột dữ liệu sắp xếp được');
+    assert.ok(ths[1].classList.contains('is-sortable') && ths[1].classList.contains('is-sort-asc'));
+    assert.ok(!ths[0].classList.contains('is-sort-asc'));
+    ths[1].click(); ths[0].click();
+    assert.deepEqual(goi, [[1, 'desc'], [0, 'asc']]);
+    var el2 = bang(w, { columns: cols, rows: [{ TEN: 'b', SO: '10' }], sort: { col: 1, dir: 'desc', onChange: function (c, d) { goi.push([c, d]); } } });
+    el2.querySelectorAll('thead th[data-sort]')[1].click();
+    assert.deepEqual(goi[2], [-1, ''], 'đang giảm bấm nữa → về thứ tự gốc');
+    var rows = [{ TEN: 'b', SO: '10' }, { TEN: 'a', SO: '2' }, { TEN: '', SO: '' }, { TEN: 'CE1.10', SO: '3' }, { TEN: 'CE1.2', SO: '3' }];
+    assert.deepEqual(w.ums.ui.sortRows(rows, cols[1], 'asc').map(function (r) { return r.SO; }), ['2', '3', '3', '10', ''], 'cột toàn số so theo số, trống cuối, bằng nhau giữ thứ tự');
+    assert.deepEqual(w.ums.ui.sortRows(rows, cols[0], 'asc').map(function (r) { return r.TEN; }), ['a', 'b', 'CE1.2', 'CE1.10', ''], 'chữ: số tự nhiên CE1.2 < CE1.10');
+    assert.deepEqual(w.ums.ui.sortRows(rows, cols[0], 'desc').map(function (r) { return r.TEN; }), ['CE1.10', 'CE1.2', 'b', 'a', ''], 'giảm: trống vẫn cuối');
+    assert.deepEqual(w.ums.ui.sortRows(rows, cols[0], '').map(function (r) { return r.TEN; }), ['b', 'a', '', 'CE1.10', 'CE1.2'], 'không dir → nguyên thứ tự');
+    assert.deepEqual(w.ums.ui.sortRows(rows, { title: 'X', sortVal: function (r) { return r.SO ? -Number(r.SO) : ''; } }, 'asc').map(function (r) { return r.TEN; }), ['b', 'CE1.10', 'CE1.2', 'a', ''], 'sortVal ưu tiên');
+});

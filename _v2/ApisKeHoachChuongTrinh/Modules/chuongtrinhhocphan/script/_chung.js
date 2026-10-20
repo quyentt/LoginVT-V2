@@ -153,12 +153,14 @@
             return q ? ds.filter(function (m) { return boDau(m.chu).indexOf(q) >= 0; }) : ds;
         }
         function coPhai(hp) { return phai.some(function (m) { return m.hp === hp; }); }
+        // cfg.hocKy (Khối bắt buộc, gốc 20/10): nhãn "Học kỳ dự kiến" đi theo học phần ở cả hai danh sách (m.ky do màn gán)
+        function ky(m) { return cfg.hocKy && m.ky ? ' ' + ui.badge(m.ky, 'info') : ''; }
         function veTrai(nhac) {
             if (nhac) { g('trai').innerHTML = ui.empty(nhac, 'fa-magnifying-glass'); return; }
             var ds = locQ(trai.filter(function (m) { return !coPhai(m.hp); }), g('qTrai').value);   // expectSameData
             ui.table({ el: g('trai'), rows: ds.map(function (m) { return { ID: m.hp, m: m }; }), empty: 'Không có học phần để chọn',
                 columns: [
-                    { title: 'Học phần', render: function (x) { return esc(x.m.chu); } },
+                    { title: 'Học phần', render: function (x) { return esc(x.m.chu) + ky(x.m); } },
                     { title: '', cls: 'is-center is-actions', width: '96px', render: function (x) {
                         return ui.btn('add', { text: 'Chọn', mod: 'out-primary', icon: 'fa-angle-right', cls: 'ums-btn--sm', attr: { 'data-chon': x.m.hp } });
                     } }
@@ -171,7 +173,7 @@
             ui.table({ el: g('phai'), rows: ds.map(function (m) { return { ID: m.hp, m: m }; }), empty: 'Chưa có học phần',
                 columns: [
                     { title: 'Học phần', render: function (x) {
-                        return esc(x.m.chu) + (x.m.luu ? '' : ' ' + ui.badge('Chưa lưu', 'warn'));
+                        return esc(x.m.chu) + ky(x.m) + (x.m.luu ? '' : ' ' + ui.badge('Chưa lưu', 'warn'));
                     } },
                     cfg.batBuoc ? { title: 'Bắt buộc', cls: 'is-center', width: '80px', render: function (x) {
                         return x.m.luu ? '<input type="checkbox" data-bb="' + esc(x.m.hp) + '"' + (x.m.bb ? ' checked' : '') + ' title="Là học phần bắt buộc">' : '';

@@ -45,8 +45,13 @@
     var e = K.e, esc = K.esc, rows = K.rows;
     var TT = 'KHCT_ThongTin_MH/', PK = 'pkg_kehoach_thongtin.';
 
+    /* "Học kỳ dự kiến" của học phần — cùng nguồn với cột ở bảng chính (K.dsHP, DAOTAO_THOIGIAN_KEHOACH); gốc 20/10 getMap_HocKyDuKien */
+    function hocKyCua(hpId) {
+        var r = (K.dsHP || []).filter(function (x) { return e(x.DAOTAO_HOCPHAN_ID) === hpId; })[0];
+        return r ? e(r.DAOTAO_THOIGIAN_KEHOACH) : '';
+    }
     function muc(r, hpCot, luu) {
-        return { hp: e(r[hpCot]), luu: luu ? e(r.ID) : '', row: r, chu: K.tenHP(r), bb: r.LAHOCPHANBATBUOC ? 1 : 0 };
+        return { hp: e(r[hpCot]), luu: luu ? e(r.ID) : '', row: r, chu: K.tenHP(r), bb: r.LAHOCPHANBATBUOC ? 1 : 0, ky: hocKyCua(e(r[hpCot])) };
     }
     function fld(nhan, html, rong) {
         return '<div class="ums-field"' + (rong ? ' style="grid-column:1 / -1"' : '') + '><label class="ums-field__label">' + esc(nhan) + '</label>' +
@@ -199,7 +204,7 @@
                     ui.btn('close', { attr: { 'data-a': 'dong' } }) + ui.btn('save', { attr: { 'data-a': 'luu' } }) }));
         var titleEl = W.querySelector('.ums-panel__title');
         var g = K.ghep(W.querySelector('[data-z="ghep"]'), {
-            traiTieuDe: c.traiTieuDe, phaiTieuDe: c.phaiTieuDe, them: 'cuoi', batBuoc: c.batBuoc,
+            traiTieuDe: c.traiTieuDe, phaiTieuDe: c.phaiTieuDe, them: 'cuoi', batBuoc: c.batBuoc, hocKy: c.hocKy,
             traiTools:
                 ui.btn('search', { text: 'Tìm trong chương trình', mod: 'out-primary', cls: 'ums-btn--sm', attr: { 'data-a': 'timCT' } }) +
                 ui.btn('search', { text: 'Tìm trong Danh mục', mod: 'out-success', cls: 'ums-btn--sm', attr: { 'data-a': 'timDM' } }),
@@ -302,7 +307,7 @@
     }
 
     K.moKBB = taoKhoi({
-        khu: 'kbb', tieuDe: 'Khối bắt buộc', nhomTT: 'Thông tin khối bắt buộc',
+        khu: 'kbb', tieuDe: 'Khối bắt buộc', nhomTT: 'Thông tin khối bắt buộc', hocKy: true,   // gốc 20/10: nhãn học kỳ dự kiến ở hai danh sách
         traiTieuDe: 'Xác định học phần cho khối bắt buộc', phaiTieuDe: 'Danh sách kết quả học phần khối bắt buộc',
         ctlKhoi: 'KHCT_KhoiBatBuoc/', ctlHP: 'KHCT_HocPhan_KhoiBatBuoc/', khoiThamSo: 'strDaoTao_KhoiBatBuoc_Id',
         chaCot: 'DAOTAO_KHOIBATBUOC_CHA_ID', chaThamSo: 'strDaoTao_KhoiBatBuoc_Cha_Id', chaHead: 'Chọn khối cha',

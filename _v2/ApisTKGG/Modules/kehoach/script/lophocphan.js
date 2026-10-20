@@ -309,18 +309,7 @@
     ['qm1', 'qm2'].forEach(function (k) { f(k).addEventListener('keydown', function (ev) { if (ev.key === 'Enter') { ev.preventDefault(); tai(1); } }); });
 
     /* ---------- Xuất Excel (gốc exportExcel_LopHocPhan, Ctrl+G) ---------- */
-    var pXLSX = null;
-    function napXLSX() {
-        if (window.XLSX && window.XLSX.utils) return Promise.resolve(window.XLSX);
-        if (!pXLSX) pXLSX = new Promise(function (ok, loi) {
-            var s = document.createElement('script');
-            s.src = 'assets/vendor/xlsx/xlsx.bundle.js';
-            s.onload = function () { ok(window.XLSX); };
-            s.onerror = function () { pXLSX = null; loi(new Error('Không tải được thư viện Excel (assets/vendor/xlsx)')); };
-            document.head.appendChild(s);
-        });
-        return pXLSX;
-    }
+    function napXLSX() { return ui.napXLSX(); }   // tầng chung (gộp 20/10)
     function xuatExcel(nut) {
         if (!ds.length) { ui.toast('Không có dữ liệu để xuất. Vui lòng tìm kiếm trước.', 'warn'); return; }
         if (nut && nut.disabled) return;

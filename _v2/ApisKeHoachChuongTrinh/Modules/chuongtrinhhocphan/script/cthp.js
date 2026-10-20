@@ -208,10 +208,14 @@
     });
 
     /* ---------- Mở một chương trình ---------------------------------------- */
+    /* Sắp xếp theo cột (gốc 20/10): bấm tiêu đề tăng → giảm → về thứ tự máy chủ trả; giữ khi bảng vẽ lại (Tải lại / lưu / cột
+       phân bổ điền sau); mở chương trình khác thì về gốc. Dữ liệu sắp bằng ums.ui.sortRows, bảng vẽ trạng thái (cfg.sort). */
+    var sx = { col: -1, dir: '' };
     function moCT(ct) {
         K.ct = ct;
         z('tenCT').textContent = ': ' + e(ct.TENCHUONGTRINH) + ' - ' + e(ct.DAOTAO_KHOADAOTAO_TEN);
         K.dsHP = [];
+        sx.col = -1; sx.dir = '';
         locQ = ''; f('locNhanh').value = ''; trang = 1;
         f('kyDK').value = ''; if (window.jQuery) jQuery(f('kyDK')).trigger('change.select2');
         xemMoHinh(ct);
@@ -282,7 +286,7 @@
             { title: 'Khối KT', prop: 'KHOIKIENTHUC', cls: 'is-center' },
             { title: 'Số tín HP', prop: 'HOCTRINHAPDUNGHOCTAP', cls: 'is-center', width: '100px' },
             { title: 'Số tín tính phí', prop: 'HOCTRINHAPDUNGTINHHOCPHI', cls: 'is-center', width: '110px' },
-            { title: 'Học kỳ dự kiến', cls: 'is-center', width: '160px', render: function (r) {
+            { title: 'Học kỳ dự kiến', cls: 'is-center', width: '160px', sortVal: function (r) { return e(r.DAOTAO_THOIGIAN_KEHOACH); }, render: function (r) {
                 return '<button type="button" class="ums-btn ums-btn--out-primary ums-btn--sm" data-ky="' + esc(r.ID) + '" title="Sửa thời gian">' +
                     '<i class="fa-light fa-pen-to-square"></i><span>' + esc(e(r.DAOTAO_THOIGIAN_KEHOACH) || 'Sửa') + '</span></button>';
             } },
@@ -302,9 +306,11 @@
                 return '<input type="checkbox" data-ck="' + esc(r.ID) + '">';
             } }
         );
+        if (sx.col >= 0 && cols[sx.col]) ds = ui.sortRows(ds, cols[sx.col], sx.dir);
         ui.table({
             el: z('bangHP'), rows: ds.slice((trang - 1) * SIZE, trang * SIZE), columns: cols,
             empty: locQ ? 'Không có học phần khớp bộ lọc' : 'Chương trình chưa có học phần',
+            sort: { col: sx.col, dir: sx.dir, onChange: function (c, d) { sx.col = c; sx.dir = d; veHP(); } },
             page: { index: trang, size: SIZE, total: n, sizes: [20, 50, 100, 'all'],
                 onChange: function (p) { if (p >= 1 && p <= pages) { trang = p; veHP(); } },
                 onSize: function (v) { SIZE = v; trang = 1; veHP(); } }

@@ -171,7 +171,9 @@
                 var a = Q.tim(st.sv, id);
                 return a ? { action: 'SV_QuyetDinh_MH/FSkkLB4QDRIXHhA0OCQ1BSgvKR4VKTQiFSko', func: 'PKG_HOSOHOCVIEN_QUYETDINH.Them_QLSV_QuyetDinh_ThucThi',
                     strQLSV_NguoiHoc_Id: a.QLSV_NGUOIHOC_ID, strQLSV_QuyetDinh_Id: st.qd.ID, strDaoTao_LopQuanLy_Id: a.DAOTAO_LOPQUANLY_ID,
-                    strDaoTao_ToChucCT_Id: a.DAOTAO_TOCHUCCHUONGTRINH_ID, strTrangThaiNguoiHoc_Id: a.QLSV_TRANGTHAINGUOIHOC_ID,
+                    strDaoTao_ToChucCT_Id: a.DAOTAO_TOCHUCCHUONGTRINH_ID,
+                    // gốc 20/10: dòng lấy từ SV_QuyetDinh_NguoiHoc/LayDanhSach có cột TRANGTHAINGUOIHOC_ID (không tiền tố QLSV_)
+                    strTrangThaiNguoiHoc_Id: e(a.TRANGTHAINGUOIHOC_ID || a.QLSV_TRANGTHAINGUOIHOC_ID),
                     strTrack_Id: e(a.TRACK_ID), strNguoiThucHien_Id: '' } : null;
             }).filter(Boolean);
             ui.batch(calls, { title: 'Đang thực thi', okText: 'Thực thi thành công', show: true }).then(taiSV);

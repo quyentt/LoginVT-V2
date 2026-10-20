@@ -76,8 +76,18 @@
     root.innerHTML = '<div data-vung="qd"></div><div data-vung="hp" hidden></div><div data-vung="cs" hidden></div>';
     var zQD = root.querySelector('[data-vung="qd"]'), zHP = root.querySelector('[data-vung="hp"]'), zCS = root.querySelector('[data-vung="cs"]');
 
-    var L = null;
+    var L = null, CT = null;      // CT: tab "Danh sách chi tiết" + Xuất báo cáo (_qd_chitiet.js, gốc 20/10)
     var st = { id: '', sv: [], moi: [], hp: [], hpMoi: [], extra: null, tep: null };
+    /* Tham số danh sách quyết định (không phân trang) — dùng cho bảng và cho tab chi tiết / Xuất báo cáo (lấy TOÀN BỘ) */
+    function thamSoDS() {
+        var p = Q.thamSo(L);
+        p.action = MH + 'DSA4BRIQDRIXHhA0OCQ1BSgvKQPP';
+        p.func = 'pkg_hosohocvien_quyetdinh.LayDSQLSV_QuyetDinh';
+        p.strTuNgayQD = L.gt('tu');
+        p.strDenNgayQD = L.gt('den');
+        p.strNguoiThucHien_Id = '';
+        return p;
+    }
 
     /* =====================================================================
        Danh sách + biểu mẫu quyết định
@@ -89,18 +99,9 @@
         listTitle: 'Danh sách quyết định sinh viên',
         icon: 'fa-screen-users',
         autoload: false,
-        list: {
-            paged: true,
-            call: function () {
-                var p = Q.thamSo(L);
-                p.action = MH + 'DSA4BRIQDRIXHhA0OCQ1BSgvKQPP';
-                p.func = 'pkg_hosohocvien_quyetdinh.LayDSQLSV_QuyetDinh';
-                p.strTuNgayQD = L.gt('tu');
-                p.strDenNgayQD = L.gt('den');
-                p.strNguoiThucHien_Id = '';
-                return p;
-            }
-        },
+        // gốc 20/10: "Xuất báo cáo" cạnh Thêm mới — Excel toàn bộ kết quả tìm kiếm (quyết định + sinh viên từng quyết định)
+        toolbar: [{ text: 'Xuất báo cáo', icon: 'fa-file-excel', mod: 'out-info', onClick: function () { CT.xuat(); } }],
+        list: { paged: true, call: thamSoDS },
         columns: Q.cotQD({ tongSV: true, capGiua: true, soSV: function (r) {
             return ui.btn('view', { text: String(e(r.SOLUONG)), mod: 'out-primary', cls: 'ums-btn--sm', attr: { 'data-a': 'hp', 'data-id': r.ID } });
         } }).concat([
@@ -108,7 +109,7 @@
             { title: 'Ngày tạo', prop: 'NGAYTAO_DD_MM_YYYY_HHMMSS', cls: 'is-center is-nowrap' },
             { title: 'Người tạo', prop: 'NGUOITAO_TAIKHOAN', cls: 'is-center' }
         ]),
-        onLoad: function (rows) { Q.tepDong(crud.z('table'), rows); },
+        onLoad: function (rows) { Q.tepDong(crud.z('table'), rows); if (CT) CT.cu(); },
         formCols: 3,
         fields: [
             { type: 'legend', label: 'Thông tin quyết định' },
@@ -161,6 +162,7 @@
         '<button type="button" class="ums-drop__item" role="menuitem" data-imp="IMPORTWITHPROC_QDHC" data-ten="QD Hồi cố"><span class="ums-drop__no">2.</span><span class="ums-drop__text">Import quyết định hồi cố</span></button>' +
         '</div></div></div><div class="ums-field ums-field--fit" data-z="bc"></div>';
     L = Q.boLoc(hostLoc, { ngay: true, sau: DROP });
+    CT = Q.chiTiet({ list: crud.z('list'), panel: crud.z('table').closest('.ums-panel'), thamSo: thamSoDS });
     ums.report.mount(hostLoc.querySelector('[data-z="bc"]'), {
         onImported: function () { crud.load(); },
         onLoad: function (rows) {

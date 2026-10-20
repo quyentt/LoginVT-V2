@@ -10,17 +10,18 @@ Xem lại đúng thay đổi của một tệp: `git diff -w <từ>..<đến> --
 
 ---
 
-## Lần kéo 11 (20/10) — mốc gốc nay là `ab5b4f19` (gốc lại force-push; mốc cũ `2254204a`) — CHƯA XEM
+## Lần kéo 11 (20/10) — mốc gốc nay là `ab5b4f19` (gốc lại force-push; mốc cũ `2254204a`) — 3 màn lớn ĐÃ CHUYỂN 20/10, còn lại chưa xem
 
 Lần sau so: `git diff --name-status ab5b4f19 origin/main`. 32 tệp gốc đổi (bỏ `.claude/settings.local.json` của gốc — không lấy), đã ghi đè bằng
 `git checkout origin/main -- <tệp>`; `skin.py kiem` 11/11 OK. **Cả 29 tệp màn đều thuộc màn ĐÃ chuyển** — không có màn mới, không có phân hệ chưa chuyển.
 3 tệp vỏ cũ (`Corei/systemroot.js` +13 dòng, `index.aspx` +12, `indexi.aspx` +12) — chưa xem, mở khi làm tầng chung `_v2`.
+**20/10 (người dùng: "chuyển 3 màn trước"):** 3 màn đổi lớn nhất đã chuyển — CCB `khaosat/kehoach`, SV `quyetdinh`, KHCT `cthp` (7 tệp). Tầng chung thêm `ums.ui.napXLSX` (gộp 4 bản chép tay), `ui.table` cfg.sort + `ums.ui.sortRows`. CHƯA kiểm host. Còn 22 tệp chưa xem.
 Số theo phân hệ: Cổng cán bộ 7 · Tài chính 6 · Sinh viên 5 · KHCT 4 · ĐKH 3 · Tuyển sinh 2 · Tốt nghiệp 1 · Xử lý học vụ 1 · Vỏ cũ 3.
 
 | Phân hệ | Màn | Tệp gốc | Trạng thái |
 |---|---|---|---|
-| Cổng cán bộ (đã chuyển) | `khaosat/kehoach` | `ApisCongCanBo/Modules/khaosat/html/kehoach.html` | chưa xem |
-| Cổng cán bộ (đã chuyển) | `khaosat/kehoach` | `ApisCongCanBo/Modules/khaosat/script/kehoach.js` | chưa xem |
+| Cổng cán bộ (đã chuyển) | `khaosat/kehoach` | `ApisCongCanBo/Modules/khaosat/html/kehoach.html` | **đã chuyển 20/10** — nút "Xuất Excel" ở tab Kết quả chi tiết (gốc nạp SheetJS từ CDN → `_v2` dùng `ums.ui.napXLSX` bản cục bộ) |
+| Cổng cán bộ (đã chuyển) | `khaosat/kehoach` | `ApisCongCanBo/Modules/khaosat/script/kehoach.js` | **đã chuyển 20/10** → `_v2/…/khaosat/script/_kehoach_xuat.js` (+559 dòng gốc): xuất TOÀN BỘ kết quả chi tiết — hộp ba pha tải danh sách → tuỳ chọn (lọc phiếu / trạng thái, phạm vi dòng, chọn câu hỏi, số luồng 4–48) → tiến độ (đổi luồng khi chạy, "Dừng & xuất phần đã tải", Đóng = huỷ) → tệp 2 sheet; mỗi ô một lời gọi `KS_TaoPhieu/LayDSKetQuaTraLoiTheo` (máy chủ chưa có API gộp). Dò Edge: chạy hết, tệp tạo được, đóng giữa chừng sạch |
 | Cổng cán bộ (đã chuyển) | `lichgiang/lichgiang` | `ApisCongCanBo/Modules/lichgiang/html/lichgiang.html` | chưa xem |
 | Cổng cán bộ (đã chuyển) | `lichgiang/lichgiang` | `ApisCongCanBo/Modules/lichgiang/script/lichgiang.js` | chưa xem |
 | Cổng cán bộ (đã chuyển) | `lichgiang/nguoihoctheokhoa` | `ApisCongCanBo/Modules/lichgiang/script/nguoihoctheokhoa.js` | chưa xem |
@@ -29,15 +30,15 @@ Số theo phân hệ: Cổng cán bộ 7 · Tài chính 6 · Sinh viên 5 · KHC
 | Đăng ký học (đã chuyển) | `canbodangky/dangky` | `ApisDangKyHoc/Modules/canbodangky/script/dangky.js` | chưa xem |
 | Đăng ký học (đã chuyển) | `nguyenvongdangky/ketqua` | `ApisDangKyHoc/Modules/nguyenvongdangky/html/ketqua.html` | chưa xem |
 | Đăng ký học (đã chuyển) | `nguyenvongdangky/ketqua` | `ApisDangKyHoc/Modules/nguyenvongdangky/script/ketqua.js` | chưa xem |
-| KHCT (đã chuyển) | `chuongtrinhhocphan/cthp` | `ApisKeHoachChuongTrinh/Modules/chuongtrinhhocphan/html/cthp.html` | chưa xem |
-| KHCT (đã chuyển) | `chuongtrinhhocphan/cthp` | `ApisKeHoachChuongTrinh/Modules/chuongtrinhhocphan/script/cthp.js` | chưa xem |
+| KHCT (đã chuyển) | `chuongtrinhhocphan/cthp` | `ApisKeHoachChuongTrinh/Modules/chuongtrinhhocphan/html/cthp.html` | **đã chuyển 20/10** — (1) tab "Dạng thẻ \| Dạng cây" trên danh sách chương trình; (2) CSS sắp xếp cột → tầng chung `table.css` (`is-sortable`, `is-sort-asc/desc`); (3) CSS nhãn học kỳ dự kiến ở hộp Khối bắt buộc → `ui.badge`; cột "Thứ tự" gốc vẫn ẩn → không có gì |
+| KHCT (đã chuyển) | `chuongtrinhhocphan/cthp` | `ApisKeHoachChuongTrinh/Modules/chuongtrinhhocphan/script/cthp.js` | **đã chuyển 20/10** — (1) Dạng cây Khoa quản lý → Ngành → Chuyên ngành (QUANHECHA_*) → Chương trình, nguồn `ums.ref.chuongTrinh` cùng bộ lọc; Mở rộng / Thu gọn tất cả; mã khoa thiếu tra `ums.ref.coCauToChuc`; CT không có trong danh sách thẻ → toast — dựng ở tệp dùng chung Tài chính `hoatdong/script/cthp.js` chế độ KHCT (Tài chính không đổi, do-man đạt); (2) sắp xếp theo cột bảng học phần: tăng → giảm → gốc, giữ khi Tải lại, về gốc khi mở CT khác — TẦNG CHUNG `ui.table` cfg.sort + `ums.ui.sortRows` (kiểm 30/30); (3) nhãn "Học kỳ dự kiến" đi theo học phần ở hai danh sách hộp Khối bắt buộc (`K.ghep` cfg.hocKy, `_khoi.js` m.ky từ K.dsHP) |
 | KHCT (đã chuyển) | `phanlichgiang/phanquyen` | `ApisKeHoachChuongTrinh/Modules/phanlichgiang/html/phanquyen.html` | chưa xem |
 | KHCT (đã chuyển) | `phanlichgiang/phanquyen` | `ApisKeHoachChuongTrinh/Modules/phanlichgiang/script/phanquyen.js` | chưa xem |
 | Tuyển sinh (đã chuyển) | `tuyensinh/kehoachtuyensinhnew` | `ApisQuanlyTuyenSinh/Modules/tuyensinh/html/kehoachtuyensinhnew.html` | chưa xem |
 | Tuyển sinh (đã chuyển) | `tuyensinh/kehoachtuyensinhnew` | `ApisQuanlyTuyenSinh/Modules/tuyensinh/script/kehoachtuyensinhnew.js` | chưa xem |
-| Sinh viên (đã chuyển, kiểm host 12/10) | `quyetdinh/quyetdinh` | `ApisSinhVien/Modules/quyetdinh/html/quyetdinh.html` | chưa xem |
-| Sinh viên (đã chuyển, kiểm host 12/10) | `quyetdinh/quyetdinh` | `ApisSinhVien/Modules/quyetdinh/script/quyetdinh.js` | chưa xem |
-| Sinh viên (đã chuyển, kiểm host 12/10) | `quyetdinh/thucthiquyetdinh` | `ApisSinhVien/Modules/quyetdinh/script/thucthiquyetdinh.js` | chưa xem |
+| Sinh viên (đã chuyển, kiểm host 12/10) | `quyetdinh/quyetdinh` | `ApisSinhVien/Modules/quyetdinh/html/quyetdinh.html` | **đã chuyển 20/10** — dải tab "Danh sách \| Danh sách chi tiết" + nút "Xuất báo cáo" cạnh Thêm mới (CSS gốc 127 dòng → `_quyetdinh.css` 12 dòng theo token) |
+| Sinh viên (đã chuyển, kiểm host 12/10) | `quyetdinh/quyetdinh` | `ApisSinhVien/Modules/quyetdinh/script/quyetdinh.js` | **đã chuyển 20/10** → `_v2/…/quyetdinh/script/_qd_chitiet.js` (+345 dòng gốc): tab chi tiết lấy TOÀN BỘ quyết định theo bộ lọc lần tìm gần nhất rồi mỗi quyết định một lời gọi `SV_QuyetDinh_NguoiHoc/LayDanhSach` (6 luồng, tiến độ + Hủy, hỏi khi > 500 QĐ); dòng nhóm bấm thu / mở; cache tới khi danh sách đổi (crud.onLoad → CT.cu()); Xuất báo cáo = 1 sheet mỗi dòng một sinh viên kèm thông tin QĐ (SheetJS cục bộ). Dò Edge đạt |
+| Sinh viên (đã chuyển, kiểm host 12/10) | `quyetdinh/thucthiquyetdinh` | `ApisSinhVien/Modules/quyetdinh/script/thucthiquyetdinh.js` | **đã chuyển 20/10** — Thực thi DS: `strTrangThaiNguoiHoc_Id` lấy `TRANGTHAINGUOIHOC_ID` (cột thật của `SV_QuyetDinh_NguoiHoc/LayDanhSach`), rơi về `QLSV_…` nếu có |
 | Sinh viên (đã chuyển, kiểm host 12/10) | `tinhtrangquanso/tinhtrangquanso` | `ApisSinhVien/Modules/tinhtrangquanso/html/tinhtrangquanso.html` | chưa xem (lần 10 vừa chuyển 12/10) |
 | Sinh viên (đã chuyển, kiểm host 12/10) | `tinhtrangquanso/tinhtrangquanso` | `ApisSinhVien/Modules/tinhtrangquanso/script/tinhtrangquanso.js` | chưa xem (lần 10 vừa chuyển 12/10) |
 | Tài chính (đã chuyển) | `dulieuhocphi/tinhhocphi` | `ApisTaiChinh/Modules/dulieuhocphi/scripts/tinhhocphi.js` | chưa xem |

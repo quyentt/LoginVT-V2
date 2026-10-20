@@ -352,9 +352,18 @@
            liền nhau cùng tiền tố nhóm gộp thành một ô (colspan), cột không nhóm
            kéo dài hết các tầng (rowspan). Không cột nào có group → một tầng. */
         var depth = 1 + cols.reduce(function (m, c) { return Math.max(m, (c.group || []).length); }, 0);
+        /* Sắp xếp theo cột (gốc KHCT cthp 20/10): cfg.sort = { col, dir, onChange(col, dir) } — col là chỉ số cột trong
+           cfg.columns (-1 = thứ tự gốc), dir 'asc' | 'desc'. Bấm tiêu đề: tăng → giảm → về thứ tự gốc. Cột KHÔNG sắp xếp:
+           cột thao tác (is-actions), cột `head` dựng sẵn (ô chọn tất cả), cột khai `sort: false`. Chỉ cột đang sắp xếp hiện
+           mũi tên. Dữ liệu do màn sắp (ums.ui.sortRows) — bảng chỉ vẽ trạng thái và báo onChange. */
+        var sortCfg = cfg.sort;
+        function sapDuoc(c) { return !!sortCfg && c.sort !== false && c.head === undefined && !/(^|\s)is-actions(\s|$)/.test(String(c.cls || '')); }
         function leaf(c, rs) {
             // `head` là HTML dựng sẵn (vd ô chọn tất cả), `title` là chữ thường
-            return '<th scope="col" class="' + esc(c.cls || '') + '"' + goc(c) + (rs > 1 ? ' rowspan="' + rs + '"' : '') +   // scope: trình đọc màn hình đọc tiêu đề cột (việc J 15/10)
+            var ci = (cfg.columns || []).indexOf(c), sx = sapDuoc(c);      // chỉ số theo cfg.columns (cols có thể đã dời cột thao tác)
+            var cls = esc(c.cls || '') + (sx ? ' is-sortable' + (sortCfg.col === ci ? (sortCfg.dir === 'desc' ? ' is-sort-desc' : ' is-sort-asc') : '') : '');
+            return '<th scope="col" class="' + cls + '"' + goc(c) + (rs > 1 ? ' rowspan="' + rs + '"' : '') +   // scope: trình đọc màn hình đọc tiêu đề cột (việc J 15/10)
+                (sx ? ' data-sort="' + ci + '" title="Bấm để sắp xếp"' + (sortCfg.col === ci ? ' aria-sort="' + (sortCfg.dir === 'desc' ? 'descending' : 'ascending') + '"' : '') : '') +
                 (c.width ? ' style="width:' + esc(c.width) + '"' : '') + '>' +
                 (c.head !== undefined ? c.head : esc(c.title || '')) + '</th>';
         }
@@ -431,6 +440,40 @@
         host.innerHTML = h;
 
         ui.pagerBind(host, cfg.page);
+        if (sortCfg && sortCfg.onChange) {
+            Array.prototype.forEach.call(host.querySelectorAll('thead th[data-sort]'), function (th) {
+                th.addEventListener('click', function (ev) {
+                    if (ev.target.closest('input, button, select, a')) return;
+                    var ci = Number(th.getAttribute('data-sort'));
+                    if (sortCfg.col !== ci) sortCfg.onChange(ci, 'asc');
+                    else if (sortCfg.dir !== 'desc') sortCfg.onChange(ci, 'desc');
+                    else sortCfg.onChange(-1, '');
+                });
+            });
+        }
+    };
+
+    /* Sắp xếp mảng dòng theo một cột của ums.ui.table (đi cùng cfg.sort). Giá trị so: c.sortVal(row) nếu có, không thì
+       row[c.prop], không nữa thì chữ thuần của c.render(row). Ô trống luôn cuối; cột toàn số so theo số; còn lại so chữ
+       tiếng Việt, số tự nhiên (CE1.2 < CE1.10). Ổn định: bằng nhau giữ thứ tự gốc. col < 0 → trả bản sao nguyên thứ tự. */
+    ui.sortRows = function (rows, c, dir) {
+        var ds = (rows || []).map(function (r, i) { return { r: r, i: i }; });
+        if (!c || dir !== 'asc' && dir !== 'desc') return ds.map(function (x) { return x.r; });
+        function gt(r) {
+            var v = c.sortVal ? c.sortVal(r) : (c.prop ? r[c.prop] : (c.render ? String(c.render(r, 0) || '').replace(/<[^>]*>/g, '') : ''));
+            return v === null || v === undefined ? '' : String(v).trim();
+        }
+        ds.forEach(function (x) { x.v = gt(x.r); });
+        var soHet = ds.every(function (x) { return x.v === '' || /^-?\d+([.,]\d+)?$/.test(x.v); });
+        var dau = dir === 'desc' ? -1 : 1;
+        ds.sort(function (a, b) {
+            if (a.v === '' && b.v === '') return a.i - b.i;
+            if (a.v === '') return 1;
+            if (b.v === '') return -1;
+            var k = soHet ? parseFloat(a.v.replace(',', '.')) - parseFloat(b.v.replace(',', '.')) : a.v.localeCompare(b.v, 'vi', { numeric: true, sensitivity: 'accent' });
+            return k === 0 ? a.i - b.i : dau * k;
+        });
+        return ds.map(function (x) { return x.r; });
     };
 
     /* Các ô của một dòng theo thứ tự cột GỐC: các ô đã dời xuống cuối bảng (ô chọn dòng, Thao tác —
@@ -1583,6 +1626,24 @@
                 return '<tr>' + cot.map(function (c) { var v = c.get ? c.get(r, i) : r[c.prop]; return '<td style="mso-number-format:\'\\@\'">' + esc(v === null || v === undefined ? '' : v) + '</td>'; }).join('') + '</tr>';
             }).join('') + '</table></body></html>';
         ui.taiTep(/\.xls$/i.test(ten) ? ten : ten + '.xls', 'application/vnd.ms-excel;charset=utf-8', h);
+    };
+
+    /* ---------- Thư viện SheetJS (xuất .xlsx nhiều sheet / đọc tệp Excel) ----------
+       ums.ui.napXLSX().then(function (XLSX) { … XLSX.utils.aoa_to_sheet … XLSX.writeFile … })
+       Bản cục bộ assets/vendor/xlsx/xlsx.bundle.js (gốc nạp từ CDN), chỉ nạp khi màn thật sự cần,
+       nạp một lần cho mọi màn. Gộp 20/10 từ bốn bản chép tay (nhập điểm DST, TKGG lớp học phần,
+       tin tức, tuyển sinh) khi màn thứ năm (khảo sát) cần — tự gộp khung trùng. */
+    var pXLSX = null;
+    ui.napXLSX = function () {
+        if (global.XLSX && global.XLSX.utils) return Promise.resolve(global.XLSX);
+        if (!pXLSX) pXLSX = new Promise(function (ok, loi) {
+            var s = document.createElement('script');
+            s.src = 'assets/vendor/xlsx/xlsx.bundle.js';
+            s.onload = function () { ok(global.XLSX); };
+            s.onerror = function () { pXLSX = null; s.remove(); loi(new Error('Không tải được thư viện Excel (assets/vendor/xlsx)')); };
+            document.head.appendChild(s);
+        });
+        return pXLSX;
     };
 
     /* =====================================================================

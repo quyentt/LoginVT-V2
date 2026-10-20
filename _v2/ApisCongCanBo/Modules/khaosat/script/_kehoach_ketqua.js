@@ -10,6 +10,7 @@
        Kết quả chi tiết               KS_ThongTin/LayDSKS_KetQuaKhaoSat → { rs, rsCauHoi }
            mỗi câu hỏi một cột; mỗi Ô một lời gọi KS_TaoPhieu/LayDSKetQuaTraLoiTheo
            (như bản gốc — chỉ cho các dòng của trang đang xem), strLoaiDapAn ''.
+           Nút "Xuất Excel" trên bảng (gốc 20/10): xuất TOÀN BỘ kết quả — ums.ks.xuatKetQua ở _kehoach_xuat.js.
    Bỏ nút "Lưu" ở chân khung (bản gốc trùng id btnSave_KeHoach nên không có xử lý).
    ========================================================================= */
 (function () {
@@ -70,8 +71,12 @@
             var rs = arr(d.rs), cau = arr(d.rsCauHoi);
             if (!page.total) page.total = rs.length;
             var G1 = ['Thông tin đối tượng tham gia khảo sát'], G2 = ['Thông tin đối tượng được khảo sát'];
+            // Xuất Excel (gốc 20/10): lấy TOÀN BỘ kết quả của kế hoạch, không phụ thuộc trang đang xem — _kehoach_xuat.js
+            el.innerHTML = '<div class="ums-row ums-row--end ks-kq__nut">' +
+                ui.btn('excel', { attr: { 'data-kq': 'xuat', title: 'Xuất toàn bộ kết quả chi tiết ra Excel (không cần xem hết các trang)' } }) +
+                '</div><div data-kqtbl></div>';
             ui.table({
-                el: el, rows: rs, empty: 'Chưa có kết quả', page: page,
+                el: el.querySelector('[data-kqtbl]'), rows: rs, empty: 'Chưa có kết quả', page: page,
                 columns: [
                     { title: 'Mã số', prop: 'KS_DOITUONGTHAMGIAKHAOSAT_MA', group: G1, cls: 'is-nowrap' },
                     { title: 'Họ tên', group: G1, render: function (r) { return esc(e(r.KS_DOITUONGTHAMGIAKHAOSAT_HO) + ' ' + e(r.KS_DOITUONGTHAMGIAKHAOSAT_TEN)); } },
@@ -109,6 +114,7 @@
                 TAB.forEach(function (t) { pane(t.key).hidden = t.key !== tab; });
                 return;
             }
+            if (ev.target.closest('[data-kq="xuat"]')) { ks.xuatKetQua(kh); return; }
             if (ev.target.closest('[data-kq="dong"]')) ctx.show('ds');
         });
 

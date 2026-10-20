@@ -39,6 +39,16 @@
         QLSV_NGUOIHOC_HOTEN: ['Nguyễn Văn An', 'Trần Thị Bình', 'Lê Minh Châu', 'Phạm Quốc Dũng'][i - 1], LOP: 'DCOT.16.2' }; });
     var PV_DA = { SVPV1: 'PVDSVPV1' };
     ums.demo.add({
+        /* Cây chương trình (gốc 20/10): Khoa → Ngành → Chuyên ngành (QUANHECHA_*) → Chương trình */
+        'pkg_kehoach_thongtin.LayDSKS_DaoTao_ToChucCT': [
+            { ID: 'CT1', TENCHUONGTRINH: 'Công nghệ thông tin', DAOTAO_KHOADAOTAO_TEN: 'K66', DAOTAO_KHOAQUANLY_ID: 'KQL1', DAOTAO_KHOAQUANLY_TEN: 'Khoa CNTT',
+              DAOTAO_N_CN_ID: 'NG1', DAOTAO_N_CN_TEN: 'Công nghệ thông tin', DAOTAO_N_CN_MA: '7480201' },
+            { ID: 'CT3', TENCHUONGTRINH: 'Kỹ thuật phần mềm', DAOTAO_KHOADAOTAO_TEN: 'K67', DAOTAO_KHOAQUANLY_ID: 'KQL1', DAOTAO_KHOAQUANLY_TEN: 'Khoa CNTT',
+              DAOTAO_N_CN_ID: 'CN1', DAOTAO_N_CN_TEN: 'Kỹ thuật phần mềm', DAOTAO_N_CN_MA: '7480103', QUANHECHA_ID: 'NG1', QUANHECHA_TEN: 'Công nghệ thông tin', QUANHECHA_MA: '7480201' },
+            { ID: 'CT2', TENCHUONGTRINH: 'Kế toán', DAOTAO_KHOADAOTAO_TEN: 'K66', DAOTAO_KHOAQUANLY_ID: 'KQL2', DAOTAO_KHOAQUANLY_TEN: 'Khoa Kinh tế',
+              DAOTAO_N_CN_ID: 'NG2', DAOTAO_N_CN_TEN: 'Kế toán', DAOTAO_N_CN_MA: '7340301' }
+        ],
+        'pkg_nhansu_hoso_v2.LayDanhSachToanBo': [{ ID: 'KQL1', MA: 'CNTT', TEN: 'Khoa CNTT' }, { ID: 'KQL2', MA: 'KT', TEN: 'Khoa Kinh tế' }],
         'KHCT_HocPhan_ChuongTrinh/LayDanhSach': hpCT,
         'KHCT_HocPhan_TietHoc/LayDanhSach': function (o) {
             var ds = [];
