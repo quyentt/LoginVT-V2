@@ -1890,6 +1890,18 @@
     <script src="<%= Apis.CommonV1.Base.AppSetting.GetString("RootPathUpload")%>/Core/uploadfile.js?v=1.0.0.12"></script><!--CORE JS-->
     <script src="<%= Apis.CommonV1.Base.AppSetting.GetString("RootPathUpload")%>/Core/uploadavatar.js?v=1.0.0.12"></script><!--CORE JS-->
 
+    <%-- Chatbot hỗ trợ — chỉ bật cho CMC: AppSetting DONVI == CMC hoặc tên miền *.cmcu.edu.vn --%>
+    <% if (Apis.CommonV1.Base.AppSetting.GetString("DONVI") == "CMC" || Request.Url.Host.EndsWith("cmcu.edu.vn", StringComparison.OrdinalIgnoreCase)) { %>
+    <script src="https://cmcu.edu.vn/wp-content/uploads/js-host/chatbot-iu.js"></script>
+    <script>
+        window.Chatbot.init({
+            chatflowid: "widget-1768376656952-rrbpia",
+            apiHost: "https://api-wa.cmcu.edu.vn",
+            provider: "openai-stream"
+        });
+    </script>
+    <% } %>
+
     <script type="text/javascript" src="Corei/constant.js?v=<%= Guid.NewGuid().ToString() %>"></script> <!--CORE JS-->
     <script type="text/javascript" src="Corei/systemroot.js?v=<%= Guid.NewGuid().ToString() %>"></script> <!--CORE JS-->
     <script type="text/javascript" src="Corei/util.js?v=1.3.1.17"></script> <!--CORE JS-->

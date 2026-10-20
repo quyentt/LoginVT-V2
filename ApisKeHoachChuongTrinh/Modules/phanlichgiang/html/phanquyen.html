@@ -1,4 +1,63 @@
-﻿<section class="content aps-KeHoachChuongTrinh">
+﻿<style>
+    /* Bảng phân quyền: số cột giảng viên không cố định (có thể vài chục) -> bảng rộng tự nở,
+       cuộn ngang trong khung thay vì bị nén/cắt. Mỗi cột giảng viên có min-width để tên không bị bẻ từng chữ. */
+    /* Không dùng class scroll-table-x: all.css ép `.scroll-table-x { overflow-y: hidden !important }`
+       -> khung có max-height sẽ cắt mất dòng phía dưới mà không cuộn được. */
+    .aps-phanlichgiang-phanquyen .phanquyen-table-wrap {
+        overflow: auto;
+        /* giới hạn chiều cao để thead sticky có tác dụng khi danh sách lớp học phần dài */
+        max-height: max(320px, calc(100vh - 330px));
+    }
+    .aps-phanlichgiang-phanquyen table.tblViewCauTrucPhanQuyen {
+        width: auto;
+        min-width: 100%;
+        margin-bottom: 0;
+    }
+    /* index.aspx đặt `#main-content-wrapper .table.table-noborder { overflow: hidden !important }` -> bảng thành khung cuộn riêng,
+       thead sticky chỉ dính vào bảng chứ không vào khung bao ngoài (nên không dính khi cuộn dọc). Phải dùng selector có ID để thắng.
+       `clip` vẫn cắt nội dung/bo góc như hidden nhưng không tạo khung cuộn. */
+    #main-content-wrapper .aps-phanlichgiang-phanquyen table.tblViewCauTrucPhanQuyen.table-noborder {
+        overflow: clip !important;
+    }
+    /* Thanh cuộn ngang giả phía TRÊN bảng — đồng bộ với thanh thật, luôn nằm trong tầm nhìn */
+    .aps-phanlichgiang-phanquyen .scroll-x-top {
+        overflow-x: auto;
+        overflow-y: hidden;
+        height: 14px;
+        margin-bottom: 4px;
+    }
+    .aps-phanlichgiang-phanquyen .scroll-x-top > div {
+        height: 1px;
+    }
+    /* Header dính top khi cuộn dọc */
+    .aps-phanlichgiang-phanquyen table.tblViewCauTrucPhanQuyen thead th {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        background: #f0f3fd;
+        vertical-align: middle;
+        box-shadow: inset 0 -1px 0 #e1e5f0;
+    }
+    /* Cột giảng viên + cột "Tất cả" (không áp cho ô tiêu đề thông tin lớp học phần) */
+    .aps-phanlichgiang-phanquyen table.tblViewCauTrucPhanQuyen thead th:not(#lblThongTinBang) {
+        min-width: 110px;
+    }
+    .aps-phanlichgiang-phanquyen table.tblViewCauTrucPhanQuyen thead th:last-child {
+        min-width: 70px;
+    }
+    /* Các cột nhãn cây (Toàn trường / Hệ / Học phần / Lớp học phần).
+       Ô cha (có rowspan) hẹp hơn; ô lá (tên lớp học phần, dài) rộng hơn để ít bị xuống dòng. */
+    .aps-phanlichgiang-phanquyen table.tblViewCauTrucPhanQuyen tbody td.td-thanhphan[rowspan] {
+        min-width: 110px;
+    }
+    .aps-phanlichgiang-phanquyen table.tblViewCauTrucPhanQuyen tbody td.td-thanhphan:not([rowspan]) {
+        min-width: 220px;
+    }
+    .aps-phanlichgiang-phanquyen table.tblViewCauTrucPhanQuyen tbody td {
+        vertical-align: middle;
+    }
+</style>
+<section class="content aps-KeHoachChuongTrinh">
     <div class="row aps-phanlichgiang-phanquyen">
         <div class="zone-bus  col-lg-12 pd0" id="zonebatdau">
             <!-- /.Tìm kiếm -->
@@ -69,7 +128,10 @@
                     <div id="divprogessPhanQuyen"></div>
                     <div class="clear"></div>
                     <div class="row">
-                        <div class="aps-table-select">
+                        <div class="scroll-x-top" id="scrollTop_PhanQuyen" style="display: none;">
+                            <div></div>
+                        </div>
+                        <div class="aps-table-select phanquyen-table-wrap" id="scrollWrap_PhanQuyen">
                             <table id="tblViewCauTrucPhanQuyen" class="table table-hover table-bordered table-noborder tblViewCauTrucPhanQuyen">
                                 <thead></thead>
                                 <tbody></tbody>
@@ -82,7 +144,7 @@
         </div>
     </div>
 </section>
-<script src="modules/phanlichgiang/script/phanquyen.js?v=1.0.0.0"></script>
+<script src="modules/phanlichgiang/script/phanquyen.js?v=1.0.0.1"></script>
 <script type="text/javascript">
     var main_doc = {};
     main_doc['PhanQuyen'] = new PhanQuyen();

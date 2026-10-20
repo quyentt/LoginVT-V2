@@ -568,7 +568,18 @@ systemroot.prototype = {
         let dtShow = dataPost;
         if (dataPost.iM) {
             op.type = "POST";
-            dataPost = { 'A': AE(JSON.stringify(dataPost), op.action.substring(op.action.indexOf("/") + 1)) };
+            let keycheck = op.action.substring(op.action.indexOf("/") + 1);
+            dataPost = { 'A': AE(JSON.stringify(dataPost), keycheck) };
+            try{
+                if(dtShow.func){
+                    iViTri = dtShow.func.indexOf(".");
+                    if(iViTri>0){
+                        let check = dtShow.func.substring(iViTri+1);
+                        check = AE(check, "A").replace(/=/g, 'P');
+                        if(check != keycheck) dtShow["fund"] = "Sai hàm";
+                    }
+                }
+            }catch{}
         }
         $.ajax({
             type: op.type,

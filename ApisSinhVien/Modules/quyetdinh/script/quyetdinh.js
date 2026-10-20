@@ -583,6 +583,32 @@ QuyetDinh.prototype = {
                 me.delete_SVHocKy(arrChecked_Id[i]);
             }
         });
+
+        /*------------------------------------------
+        --Discription: Tab "Danh sách chi tiết" (quyết định + sinh viên của từng quyết định) + Xuất báo cáo Excel
+        -------------------------------------------*/
+        $("#tabQuyetDinh").delegate("a[data-tab]", "click", function (e) {
+            e.preventDefault();
+            me.switch_TabQuyetDinh($(this).attr("data-tab"));
+        });
+        $("#btnExportQuyetDinh").click(function (e) {
+            e.preventDefault();
+            me.exportExcel_ChiTiet();
+        });
+        $("#btnQD_ChiTietReload").click(function (e) {
+            e.preventDefault();
+            me.loadChiTiet(true);
+        });
+        $("#btnQD_ChiTietHuy").click(function (e) {
+            e.preventDefault();
+            me.cancel_ChiTiet();
+        });
+        // Bấm dòng thông tin quyết định để thu gọn / mở rộng danh sách sinh viên của quyết định đó
+        $("#tblQuyetDinhChiTiet").delegate(".qd-group-row", "click", function () {
+            var $group = $(this);
+            $group.toggleClass("qd-collapsed");
+            $group.nextUntil(".qd-group-row").toggle(!$group.hasClass("qd-collapsed"));
+        });
     },
 
     popup: function () {
@@ -967,12 +993,17 @@ QuyetDinh.prototype = {
             'pageIndex': edu.system.pageIndex_default,
             'pageSize': edu.system.pageSize_default,
         };
+        // Lưu lại bộ lọc của lần tìm kiếm này (tab "Danh sách chi tiết" + Xuất báo cáo dùng lại để lấy TOÀN BỘ kết quả)
+        me.objParam_QuyetDinh_Last = $.extend({}, obj_save);
         edu.system.makeRequest({
             success: function (data) {
                 if (data.Success) {
                     var dtReRult = data.Data;
                     me.dtQuyetDinh = dtReRult;
                     me.genTable_QuyetDinh(dtReRult, data.Pager);
+                    // Dữ liệu danh sách đã đổi (tìm kiếm / đổi trang / lưu / xóa) → chi tiết cũ hết hạn; đang mở tab chi tiết thì tải lại luôn
+                    me.bChiTietStale = true;
+                    if (me.strTabQuyetDinh === 'detail' && $("#paneQDDetail").is(":visible")) me.loadChiTiet(true);
                 }
                 else {
                     edu.system.alert(data.Message, "s");
@@ -3067,5 +3098,319 @@ QuyetDinh.prototype = {
         $("#tblQDNhanSu tbody tr").each(function (i) {
             $(this).find("td:first").text(i + 1);
         });
+    },
+
+    /*------------------------------------------
+    --Discription: Tab "Danh sách chi tiết" + Xuất báo cáo Excel
+    --Note: lấy TOÀN BỘ kết quả của lần tìm kiếm gần nhất (không phân trang). Mỗi quyết định gọi 1 lần
+    --      SV_QuyetDinh_NguoiHoc/LayDanhSach (cùng API với getList_SinhVien của form sửa), chạy song song CONCURRENCY request.
+    --      Dữ liệu được cache (dtChiTiet) tới khi danh sách quyết định đổi (bChiTietStale).
+    -------------------------------------------*/
+    strTabQuyetDinh: 'list',
+    objParam_QuyetDinh_Last: null,
+    dtChiTiet: [],
+    bChiTietStale: true,
+    bChiTietLoading: false,
+    iChiTietToken: 0,
+    arrChiTietCallback: [],
+    switch_TabQuyetDinh: function (strTab) {
+        var me = this;
+        me.strTabQuyetDinh = strTab;
+        $("#tabQuyetDinh li").removeClass("active");
+        $("#tabQuyetDinh a[data-tab='" + strTab + "']").parent().addClass("active");
+        if (strTab === 'detail') {
+            $("#paneQDList").hide();
+            $("#paneQDDetail").show();
+            me.loadChiTiet(false);
+        }
+        else {
+            $("#paneQDDetail").hide();
+            $("#paneQDList").show();
+        }
+    },
+    esc_ChiTiet: function (value) {
+        return String(edu.util.returnEmpty(value)).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    },
+    showStatus_ChiTiet: function (strLog, iPercent) {
+        $("#zoneQD_ChiTietStatus").show();
+        $("#lblQD_ChiTietLog").text(strLog);
+        $("#barQD_ChiTiet").css("width", iPercent + "%").text(iPercent + "%");
+    },
+    hideStatus_ChiTiet: function () {
+        $("#zoneQD_ChiTietStatus").hide();
+    },
+    cancel_ChiTiet: function () {
+        var me = this;
+        me.iChiTietToken++;
+        me.bChiTietLoading = false;
+        me.bChiTietStale = true;
+        me.arrChiTietCallback = [];
+        me.dtChiTiet = [];
+        me.hideStatus_ChiTiet();
+        me.genTable_ChiTiet('Đã hủy tải. Bấm "Tải lại" để tải lại.');
+    },
+    /* Lấy toàn bộ quyết định theo bộ lọc của lần tìm kiếm gần nhất (bỏ phân trang) */
+    fetchAll_QuyetDinh: function () {
+        var me = this;
+        return new Promise(function (resolve) {
+            var obj = $.extend({}, me.objParam_QuyetDinh_Last, { 'pageIndex': 1, 'pageSize': 100000 });
+            edu.system.makeRequest({
+                success: function (data) {
+                    if (data && data.Success) resolve({ data: data.Data || [] });
+                    else resolve({ error: (data && data.Message) || 'Không lấy được danh sách quyết định' });
+                },
+                error: function (er) {
+                    resolve({ error: JSON.stringify(er) });
+                },
+                type: 'POST',
+                action: obj.action,
+                contentType: true,
+                data: obj,
+                fakedb: [
+                ]
+            }, false, false, false, null);
+        });
+    },
+    /* Danh sách sinh viên của 1 quyết định - cùng API với getList_SinhVien (form sửa quyết định) */
+    fetch_SinhVien_QuyetDinh: function (strQuyetDinh_Id) {
+        return new Promise(function (resolve) {
+            var timer = setTimeout(function () { resolve({ error: 'timeout' }); }, 30000);
+            var obj_list = {
+                'action': 'SV_QuyetDinh_NguoiHoc/LayDanhSach',
+
+                'strChucNang_Id': edu.system.strChucNang_Id,
+                'strQLSV_QuyetDinh_Id': strQuyetDinh_Id,
+                'strQLSV_NguoiHoc_Id': "",
+            };
+            edu.system.makeRequest({
+                success: function (data) {
+                    clearTimeout(timer);
+                    if (data && data.Success) resolve({ data: edu.util.checkValue(data.Data) ? data.Data : [] });
+                    else resolve({ error: (data && data.Message) || 'Lỗi' });
+                },
+                error: function (er) {
+                    clearTimeout(timer);
+                    resolve({ error: 'network' });
+                },
+                type: "GET",
+                action: obj_list.action,
+                contentType: true,
+                data: obj_list,
+                fakedb: [
+                ]
+            }, false, false, false, null);
+        });
+    },
+    /* Tải toàn bộ quyết định + sinh viên từng quyết định. bForce=true: bỏ cache, tải lại. fnDone: gọi khi tải xong */
+    loadChiTiet: function (bForce, fnDone) {
+        var me = this;
+        if (!bForce && !me.bChiTietStale) {
+            me.genTable_ChiTiet();
+            if (fnDone) fnDone();
+            return;
+        }
+        if (fnDone) me.arrChiTietCallback.push(fnDone);
+        if (me.bChiTietLoading && !bForce) return; // đang tải rồi: chỉ xếp hàng chờ callback
+        var iToken = ++me.iChiTietToken;
+        me.bChiTietLoading = true;
+        me.dtChiTiet = [];
+        me.genTable_ChiTiet('Đang tải dữ liệu…');
+        me.showStatus_ChiTiet('Đang lấy danh sách quyết định…', 0);
+
+        function finish(arrResult, iFail) {
+            me.dtChiTiet = arrResult;
+            me.bChiTietLoading = false;
+            me.bChiTietStale = false;
+            me.hideStatus_ChiTiet();
+            me.genTable_ChiTiet(null, iFail);
+            var arrCallback = me.arrChiTietCallback;
+            me.arrChiTietCallback = [];
+            arrCallback.forEach(function (fn) { fn(); });
+        }
+        function fail(strMsg) {
+            me.bChiTietLoading = false;
+            me.arrChiTietCallback = [];
+            me.hideStatus_ChiTiet();
+            me.genTable_ChiTiet('Lỗi: ' + strMsg);
+        }
+
+        me.fetchAll_QuyetDinh().then(function (res) {
+            if (iToken !== me.iChiTietToken) return;
+            if (res.error) { fail(res.error); return; }
+            var arrQD = res.data;
+            var iTotal = arrQD.length;
+            if (iTotal === 0) { finish([], 0); return; }
+            if (iTotal > 500 && !confirm('Kết quả có ' + iTotal.toLocaleString('vi-VN') + ' quyết định, hệ thống sẽ gọi ' + iTotal.toLocaleString('vi-VN') + ' lần để lấy danh sách sinh viên nên có thể mất vài phút. Tiếp tục?')) {
+                me.cancel_ChiTiet();
+                return;
+            }
+            var CONCURRENCY = 6;
+            var arrResult = new Array(iTotal);
+            var iDone = 0, iFail = 0, iNext = 0, iRunning = 0;
+            function updateProgress() {
+                var iPercent = Math.round((iDone / iTotal) * 100);
+                me.showStatus_ChiTiet('Đã tải sinh viên của ' + iDone + '/' + iTotal + ' quyết định' + (iFail ? ' (lỗi: ' + iFail + ')' : ''), iPercent);
+            }
+            function tick() {
+                if (iToken !== me.iChiTietToken) return;
+                while (iRunning < CONCURRENCY && iNext < iTotal) {
+                    (function (i) {
+                        iRunning++;
+                        me.fetch_SinhVien_QuyetDinh(arrQD[i].ID).then(function (r) {
+                            if (iToken !== me.iChiTietToken) return;
+                            iRunning--;
+                            iDone++;
+                            if (r.error) iFail++;
+                            arrResult[i] = { qd: arrQD[i], sv: r.data || [], err: !!r.error };
+                            updateProgress();
+                            if (iDone === iTotal) finish(arrResult, iFail);
+                            else tick();
+                        });
+                    })(iNext++);
+                }
+            }
+            updateProgress();
+            tick();
+        });
+    },
+    /* Vẽ bảng chi tiết: mỗi quyết định = 1 dòng nhóm (thông tin QĐ), bên dưới là các sinh viên. strMsg: thông báo khi chưa có dữ liệu */
+    genTable_ChiTiet: function (strMsg, iFail) {
+        var me = this;
+        var v = function (x) { return me.esc_ChiTiet(x); };
+        var iCols = 12;
+        var html = '';
+        var iTongSV = 0;
+        var arrData = me.dtChiTiet || [];
+        for (var i = 0; i < arrData.length; i++) {
+            var qd = arrData[i].qd;
+            var arrSV = arrData[i].sv;
+            iTongSV += arrSV.length;
+            html += '<tr class="qd-group-row"><td colspan="' + iCols + '">';
+            html += '<div class="qd-group-head">';
+            html += '<span><i class="fa fa-caret-down qd-group-caret"></i><span class="qd-group-title">' + v(qd.LOAIQUYETDINH_TEN) + '</span></span>';
+            html += '<span class="qd-group-meta">Số QĐ: <b>' + v(qd.SOQUYETDINH) + '</b></span>';
+            html += '<span class="qd-group-meta">Ngày QĐ: <b>' + v(qd.NGAYQUYETDINH) + '</b></span>';
+            html += '<span class="qd-group-meta">Hiệu lực: <b>' + v(qd.NGAYHIEULUC) + '</b></span>';
+            if (edu.util.checkValue(qd.NGAYHETHIEULUC)) html += '<span class="qd-group-meta">Hết hiệu lực: <b>' + v(qd.NGAYHETHIEULUC) + '</b></span>';
+            html += '<span class="qd-group-meta">Cấp: <b>' + v(qd.CAPQUYETDINH_TEN) + '</b></span>';
+            html += '<span class="qd-group-meta">Học kỳ: <b>' + v(qd.THOIGIAN) + '</b></span>';
+            html += '<span class="qd-group-meta">Số sinh viên: <b>' + arrSV.length + '</b></span>';
+            html += '</div>';
+            if (edu.util.checkValue(qd.NGUYENNHAN_LYDO)) html += '<div class="qd-group-content">' + v(qd.NGUYENNHAN_LYDO) + '</div>';
+            html += '</td></tr>';
+            if (arrData[i].err) {
+                html += '<tr class="qd-sv-row qd-sv-empty"><td colspan="' + iCols + '" class="td-center color-red">Không tải được danh sách sinh viên của quyết định này. Bấm "Tải lại" để thử lại.</td></tr>';
+            }
+            else if (arrSV.length === 0) {
+                html += '<tr class="qd-sv-row qd-sv-empty"><td colspan="' + iCols + '" class="td-center">Quyết định chưa có sinh viên</td></tr>';
+            }
+            for (var j = 0; j < arrSV.length; j++) {
+                var s = arrSV[j];
+                html += '<tr class="qd-sv-row">';
+                html += '<td class="td-center">' + (j + 1) + '</td>';
+                html += '<td class="td-left">' + v(s.QLSV_NGUOIHOC_MASO) + '</td>';
+                html += '<td class="td-left">' + v(s.QLSV_NGUOIHOC_HODEM) + ' ' + v(s.QLSV_NGUOIHOC_TEN) + '</td>';
+                html += '<td class="td-left">' + v(s.DAOTAO_LOPQUANLY_TEN) + '</td>';
+                html += '<td class="td-left">' + v(s.NHOMLOP_TEN) + '</td>';
+                html += '<td class="td-left">' + v(s.DAOTAO_TOCHUCCHUONGTRINH_TEN) + '</td>';
+                html += '<td class="td-left">' + v(s.DAOTAO_KHOADAOTAO_TEN) + '</td>';
+                html += '<td class="td-left">' + v(s.TRANGTHAINGUOIHOC_MOI_TEN) + '</td>';
+                html += '<td class="td-left">' + v(s.DAOTAO_LOPQUANLY_MOI_TEN) + '</td>';
+                html += '<td class="td-center">' + v(s.PHAMTRAMTINHPHI) + '</td>';
+                html += '<td class="td-left">' + v(s.DAOTAO_LOPQUANLY_N2_TEN) + '</td>';
+                html += '<td class="td-left">' + v(s.DSKETQUANHIEUKY) + '</td>';
+                html += '</tr>';
+            }
+        }
+        if (arrData.length === 0) {
+            html = '<tr><td colspan="' + iCols + '" class="td-center">' + v(strMsg || 'Không tìm thấy dữ liệu!') + '</td></tr>';
+        }
+        $("#tblQuyetDinhChiTiet tbody").html(html);
+        var strTong = '';
+        if (arrData.length > 0) {
+            strTong = '<b>' + arrData.length + '</b> quyết định · <b>' + iTongSV + '</b> sinh viên';
+            if (iFail) strTong += ' · <span class="color-red">' + iFail + ' quyết định tải lỗi</span>';
+        }
+        $("#lblQD_ChiTietTong").html(strTong);
+    },
+    /* Xuất báo cáo: 1 sheet Excel, mỗi dòng = 1 sinh viên kèm thông tin quyết định (quyết định chưa có sinh viên vẫn có 1 dòng) */
+    exportExcel_ChiTiet: function () {
+        var me = this;
+        if (typeof XLSX === 'undefined') {
+            edu.system.alert('Thư viện Excel chưa load xong. Vui lòng thử lại sau vài giây.', 'w');
+            return;
+        }
+        if (!me.objParam_QuyetDinh_Last) {
+            edu.system.alert('Vui lòng tìm kiếm trước khi xuất báo cáo.', 'w');
+            return;
+        }
+        me.loadChiTiet(false, function () { me.exportExcel_ChiTiet_Generate(); });
+    },
+    exportExcel_ChiTiet_Generate: function () {
+        var me = this;
+        var v = edu.util.returnEmpty;
+        var arrData = me.dtChiTiet || [];
+        var iFail = arrData.filter(function (e) { return e.err; }).length;
+        var iRows = 0;
+        arrData.forEach(function (e) { iRows += Math.max(e.sv.length, 1); });
+        if (arrData.length === 0) {
+            edu.system.alert('Không có dữ liệu để xuất.', 'w');
+            return;
+        }
+        if (iFail > 0 && !confirm(iFail + ' quyết định không tải được danh sách sinh viên (sẽ để trống trong file). Vẫn xuất?')) return;
+        if (iRows > 5000 && !confirm('Bạn sắp xuất ' + iRows.toLocaleString('vi-VN') + ' dòng dữ liệu. Quá trình có thể mất vài giây và sử dụng nhiều RAM. Tiếp tục?')) return;
+
+        var rows = [];
+        arrData.forEach(function (e) {
+            var qd = e.qd;
+            var arrSV = e.sv.length ? e.sv : [null];
+            arrSV.forEach(function (s) {
+                s = s || {};
+                rows.push({
+                    'STT': rows.length + 1,
+                    'Loại quyết định': v(qd.LOAIQUYETDINH_TEN),
+                    'Số quyết định': v(qd.SOQUYETDINH),
+                    'Ngày quyết định': v(qd.NGAYQUYETDINH),
+                    'Ngày hiệu lực': v(qd.NGAYHIEULUC),
+                    'Ngày hết hiệu lực': v(qd.NGAYHETHIEULUC),
+                    'Cấp quyết định': v(qd.CAPQUYETDINH_TEN),
+                    'Học kỳ': v(qd.THOIGIAN),
+                    'Nội dung quyết định': v(qd.NGUYENNHAN_LYDO),
+                    'Mã số': v(s.QLSV_NGUOIHOC_MASO),
+                    'Họ tên': s.QLSV_NGUOIHOC_MASO ? (v(s.QLSV_NGUOIHOC_HODEM) + ' ' + v(s.QLSV_NGUOIHOC_TEN)).replace(/^\s+|\s+$/g, '') : '',
+                    'Lớp': v(s.DAOTAO_LOPQUANLY_TEN),
+                    'Nhóm lớp': v(s.NHOMLOP_TEN),
+                    'Chương trình': v(s.DAOTAO_TOCHUCCHUONGTRINH_TEN),
+                    'Khóa': v(s.DAOTAO_KHOADAOTAO_TEN),
+                    'Trạng thái mới': v(s.TRANGTHAINGUOIHOC_MOI_TEN),
+                    'Lớp mới': v(s.DAOTAO_LOPQUANLY_MOI_TEN),
+                    '% tính phí': v(s.PHAMTRAMTINHPHI),
+                    'Lớp ngành 2': v(s.DAOTAO_LOPQUANLY_N2_TEN),
+                    'Kỳ hiệu lực': v(s.DSKETQUANHIEUKY),
+                    'Ngày tạo quyết định': v(qd.NGAYTAO_DD_MM_YYYY_HHMMSS),
+                    'Người tạo quyết định': v(qd.NGUOITAO_TAIKHOAN)
+                });
+            });
+        });
+
+        var ws = XLSX.utils.json_to_sheet(rows);
+        // Độ rộng cột theo nội dung dài nhất (tối đa 40 ký tự, riêng "Nội dung quyết định" 60)
+        var headers = Object.keys(rows[0]);
+        ws['!cols'] = headers.map(function (h) {
+            var maxLen = h.length;
+            rows.forEach(function (r) {
+                var l = String(r[h] || '').length;
+                if (l > maxLen) maxLen = l;
+            });
+            return { wch: Math.min(maxLen + 2, h === 'Nội dung quyết định' ? 60 : 40) };
+        });
+        var wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Chi tiết quyết định');
+
+        var now = new Date();
+        var pad = function (n) { return n < 10 ? '0' + n : n; };
+        var stamp = now.getFullYear() + pad(now.getMonth() + 1) + pad(now.getDate())
+            + '_' + pad(now.getHours()) + pad(now.getMinutes());
+        XLSX.writeFile(wb, 'DSChiTietQuyetDinh_' + stamp + '.xlsx');
     },
 }

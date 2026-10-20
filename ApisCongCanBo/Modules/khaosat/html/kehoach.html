@@ -1030,6 +1030,12 @@
                         <div class="tab-pane fade" id="ketquachitiet" role="tabpanel" aria-labelledby="contact-tab">
                             <div class="title-is-paging">
                                 <p class="color-dask-blue fw-bold mt-3 mb-10">Kết quả chi tiết</p>
+                                <!-- Xuất Excel: lấy TOÀN BỘ kết quả của kế hoạch, không phụ thuộc trang đang xem -->
+                                <button type="button" class="btn btn-sm btn-success min-w-auto ms-auto"
+                                    id="btnExport_KetQuaChiTiet"
+                                    title="Xuất toàn bộ kết quả chi tiết ra Excel (không cần xem hết các trang)">
+                                    <i class="fal fa-file-excel"></i> Xuất Excel
+                                </button>
                             </div>
                             <div class="register-wish p-0 m-0 table-responsive mb-0 pb-0">
                                 <table
@@ -1477,8 +1483,29 @@
         </div>
     </div>
 </div>
+<!-- XLSX (SheetJS) - phục vụ Xuất Excel kết quả khảo sát. Load 1 lần, idempotent. -->
+<script>
+    (function loadXLSX_KeHoach() {
+        if (typeof XLSX !== 'undefined') return;
+        var cdnList = [
+            'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',
+            'https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js',
+            'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js'
+        ];
+        var i = 0;
+        function tryNext() {
+            if (i >= cdnList.length) { console.error('[XLSX] không load được từ tất cả CDN'); return; }
+            var s = document.createElement('script');
+            s.src = cdnList[i]; s.crossOrigin = 'anonymous';
+            s.onload = function () { console.log('[XLSX] loaded từ', cdnList[i]); };
+            s.onerror = function () { console.warn('[XLSX] fail', cdnList[i]); i++; tryNext(); };
+            document.head.appendChild(s);
+        }
+        tryNext();
+    })();
+</script>
 <script src="modules/khaosat/script/dsdangkyhoc_picker.js?v=1.0.0.0"></script>
-<script src="modules/khaosat/script/kehoach.js?v=1.0.0.0"></script>
+<script src="modules/khaosat/script/kehoach.js?v=1.0.0.3"></script>
 <script type="text/javascript">
     var main_doc = {};
     main_doc['KeHoach'] = new KeHoach();

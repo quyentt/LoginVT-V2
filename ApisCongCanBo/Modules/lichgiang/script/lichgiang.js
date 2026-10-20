@@ -1031,7 +1031,8 @@ LichGiang.prototype = {
             var html = '';
             var iTop = e.GIOKETTHUC * 60 + e.PHUTKETTHUC - e.GIOBATDAU*60 - e.PHUTBATDAU;
 
-            html += '<div class="task task-1 btnLichHoc" id="' + e.ID + '" style="top:' + e.PHUTBATDAU + 'px; height: ' + iTop + 'px; background-color: ' + strMauNen + '; cursor: pointer" title="' + JSON.stringify(arrLopHocPhanMau.find(ele => ele.ID == e.IDLOPHOCPHAN)) +'">';
+            // iTop = chiều cao thẻ (px, 1 phút = 1px). Thẻ < 70px (1 tiết) không đủ chỗ cho hàng giờ riêng => .task-compact (xem CSS)
+            html += '<div class="task task-1 btnLichHoc' + (iTop < 70 ? ' task-compact' : '') + '" id="' + e.ID + '" style="top:' + e.PHUTBATDAU + 'px; height: ' + iTop + 'px; background-color: ' + strMauNen + '; cursor: pointer" title="' + JSON.stringify(arrLopHocPhanMau.find(ele => ele.ID == e.IDLOPHOCPHAN)) +'">';
             html += '<div class="task-header">';
             html += '<div class="text">';
             html += '<div class="title" title="' + String(e.TENHOCPHAN).replace(/"/g, '&quot;') + '">' + e.TENHOCPHAN + '</div>';

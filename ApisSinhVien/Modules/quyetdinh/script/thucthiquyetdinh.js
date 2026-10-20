@@ -948,7 +948,8 @@ ThucThiQuyetDinh.prototype = {
             'strQLSV_QuyetDinh_Id': me.strQuyetDinh_Id,
             'strDaoTao_LopQuanLy_Id': aData.DAOTAO_LOPQUANLY_ID,
             'strDaoTao_ToChucCT_Id': aData.DAOTAO_TOCHUCCHUONGTRINH_ID,
-            'strTrangThaiNguoiHoc_Id': aData.QLSV_TRANGTHAINGUOIHOC_ID,
+            // dtSinhVien lấy từ SV_QuyetDinh_NguoiHoc/LayDanhSach: field là TRANGTHAINGUOIHOC_ID (không có tiền tố QLSV_)
+            'strTrangThaiNguoiHoc_Id': edu.util.returnEmpty(aData.TRANGTHAINGUOIHOC_ID || aData.QLSV_TRANGTHAINGUOIHOC_ID),
             'strTrack_Id': edu.util.returnEmpty(aData.TRACK_ID),
             'strNguoiThucHien_Id': edu.system.userId,
         };

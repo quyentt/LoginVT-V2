@@ -24,11 +24,13 @@ KetQua.prototype = {
         //me.getList_KetQua();
 
         $("#btnSearch").click(function () {
+            edu.system.pageIndex_default = 1;
             me.getList_TongHop();
         });
         $("#txtSearch_TuKhoa").keypress(function (e) {
             if (e.which === 13) {
                 e.preventDefault();
+                edu.system.pageIndex_default = 1;
                 me.getList_TongHop();
             }
         });
@@ -135,6 +137,8 @@ KetQua.prototype = {
             'strDaoTao_HocPhan_Id': edu.util.getValById('dropSearch_HocPhan'),
             'strKieuHoc_Id': edu.util.getValById('dropSearch_KieuHoc'),
             'strNguoiThucHien_Id': edu.system.userId,
+            'pageIndex': edu.system.pageIndex_default,
+            'pageSize': edu.system.pageSize_default,
         };
         edu.system.beginLoading();
         edu.system.makeRequest({

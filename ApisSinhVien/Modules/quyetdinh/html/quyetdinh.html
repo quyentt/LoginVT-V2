@@ -3,6 +3,133 @@
     .radio-inline+.radio-inline {
         margin-left: 0px;
     }
+
+    /* ═══ Tab "Danh sách chi tiết" (quyết định + sinh viên của từng quyết định) + Xuất báo cáo ═══ */
+    /* Nút Xuất báo cáo: xanh đặc + chữ trắng đậm (nút viền mảnh bị chê khó nhìn); icon Excel là Font Awesome 6 như các trang cùng module */
+    .aps-quyetdinh #btnExportQuyetDinh {
+        background: #198754 !important;
+        border: 1px solid #198754 !important;
+        color: #fff !important;
+        font-weight: 600;
+    }
+    .aps-quyetdinh #btnExportQuyetDinh i {
+        color: #fff !important;
+        margin-right: 6px;
+    }
+    .aps-quyetdinh #btnExportQuyetDinh:hover,
+    .aps-quyetdinh #btnExportQuyetDinh:focus {
+        background: #157347 !important;
+        border-color: #157347 !important;
+        color: #fff !important;
+    }
+    .aps-quyetdinh .qd-tabs {
+        border-bottom: 1px solid #cbd5e1;
+        margin-bottom: 0;
+    }
+    .aps-quyetdinh .qd-tabs > li > a {
+        padding: 8px 18px;
+        font-weight: 600;
+        color: #475569;
+        border-radius: 6px 6px 0 0;
+    }
+    .aps-quyetdinh .qd-tabs > li > a:hover {
+        background: #f1f5f9;
+        border-color: #e2e8f0 #e2e8f0 #cbd5e1;
+    }
+    .aps-quyetdinh .qd-tabs > li.active > a,
+    .aps-quyetdinh .qd-tabs > li.active > a:hover,
+    .aps-quyetdinh .qd-tabs > li.active > a:focus {
+        color: #223771;
+        background: #fff;
+        border: 1px solid #cbd5e1;
+        border-bottom-color: #fff;
+    }
+    .aps-quyetdinh .qd-tabs > li > a i {
+        margin-right: 6px;
+    }
+    /* Banner tiến trình (tải chi tiết / xuất báo cáo) */
+    .aps-quyetdinh .qd-status {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 10px;
+        padding: 8px 12px;
+        background: #f1f5f9;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+    }
+    .aps-quyetdinh .qd-status-text {
+        white-space: nowrap;
+        font-size: 13px;
+        font-weight: 500;
+        color: #0f172a;
+    }
+    .aps-quyetdinh .qd-status-bar {
+        flex: 1;
+        height: 18px;
+        margin: 0;
+    }
+    .aps-quyetdinh .qd-status-bar .progress-bar {
+        font-size: 12px;
+        line-height: 18px;
+    }
+    .aps-quyetdinh .qd-detail-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 8px;
+    }
+    .aps-quyetdinh .qd-detail-summary {
+        font-size: 13px;
+        font-weight: 600;
+        color: #223771;
+    }
+    /* Dòng nhóm = thông tin 1 quyết định; bấm để thu gọn / mở rộng danh sách sinh viên bên dưới */
+    .aps-quyetdinh #tblQuyetDinhChiTiet .qd-group-row > td {
+        padding: 10px 14px !important;
+        background: #eef2ff;
+        border-left: 4px solid #223771 !important;
+        cursor: pointer;
+    }
+    .aps-quyetdinh #tblQuyetDinhChiTiet .qd-group-head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 4px 18px;
+    }
+    .aps-quyetdinh #tblQuyetDinhChiTiet .qd-group-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: #223771;
+    }
+    .aps-quyetdinh #tblQuyetDinhChiTiet .qd-group-caret {
+        display: inline-block;
+        width: 12px;
+        margin-right: 6px;
+        color: #223771;
+        transition: transform .15s ease;
+    }
+    .aps-quyetdinh #tblQuyetDinhChiTiet .qd-group-row.qd-collapsed .qd-group-caret {
+        transform: rotate(-90deg);
+    }
+    .aps-quyetdinh #tblQuyetDinhChiTiet .qd-group-meta {
+        font-size: 13px;
+        color: #475569;
+    }
+    .aps-quyetdinh #tblQuyetDinhChiTiet .qd-group-meta b {
+        color: #0f172a;
+        font-weight: 600;
+    }
+    .aps-quyetdinh #tblQuyetDinhChiTiet .qd-group-content {
+        margin: 4px 0 0 18px;
+        font-size: 13px;
+        color: #0f172a;
+    }
+    .aps-quyetdinh #tblQuyetDinhChiTiet .qd-sv-empty > td {
+        color: #94a3b8;
+        font-style: italic;
+    }
 </style>
 <section class="content aps-sinhvien">
     <div class="row aps-quyetdinh">
@@ -117,12 +244,28 @@
                     </h3>
                     <div class="box-tools pull-right d-flex">
                         <a id="btnXoaQuyetDinh" class="btn btn-danger"><i class="fa fa-trash"></i>Xóa</a>
+                        <a id="btnExportQuyetDinh" class="btn btn-success" href="#"
+                            title="Xuất Excel toàn bộ kết quả tìm kiếm (thông tin quyết định + danh sách sinh viên của từng quyết định)">
+                            <i class="fa-solid fa-file-excel"></i>Xuất báo cáo</a>
                         <a class="btn btnAdd btn-primary" id="btnAddQuyetDinh" href="#">
                             <i class="fa fa-plus"></i>Thêm mới</a>
                     </div>
                 </div>
                 <div class="box-body pd0">
-                    <div class="aps-table-select mt-15">
+                    <!-- Tab: Danh sách (bảng quyết định có phân trang) | Danh sách chi tiết (quyết định + sinh viên của từng quyết định) -->
+                    <ul class="nav nav-tabs qd-tabs mt-10" id="tabQuyetDinh">
+                        <li class="active"><a href="#" data-tab="list"><i class="fa fa-list"></i> Danh sách</a></li>
+                        <li><a href="#" data-tab="detail"><i class="fa fa-th-list"></i> Danh sách chi tiết</a></li>
+                    </ul>
+                    <!-- Tiến trình tải chi tiết / xuất báo cáo (banner inline, không dùng alert) -->
+                    <div id="zoneQD_ChiTietStatus" class="qd-status" style="display: none">
+                        <div class="qd-status-text"><i class="fa fa-spinner fa-spin"></i> <span id="lblQD_ChiTietLog"></span></div>
+                        <div class="progress qd-status-bar">
+                            <div class="progress-bar progress-bar-success" id="barQD_ChiTiet" style="width: 0%">0%</div>
+                        </div>
+                        <a class="btn btn-default btn-sm" id="btnQD_ChiTietHuy" href="#"><i class="fa fa-times"></i> Hủy</a>
+                    </div>
+                    <div class="aps-table-select mt-15" id="paneQDList">
                         <table id="tblQuyetDinh" class="table table-hover table-bordered tblQuyetDinh table-noborder">
                             <thead>
                                 <tr>
@@ -149,12 +292,41 @@
                             <tfoot></tfoot>
                         </table>
                     </div>
+                    <!-- Danh sách chi tiết: mỗi quyết định là 1 nhóm (thông tin QĐ), bên dưới là các sinh viên của QĐ đó -->
+                    <div class="mt-15" id="paneQDDetail" style="display: none">
+                        <div class="qd-detail-toolbar">
+                            <span class="qd-detail-summary" id="lblQD_ChiTietTong"></span>
+                            <a class="btn btn-default btn-sm" id="btnQD_ChiTietReload" href="#" title="Tải lại toàn bộ kết quả">
+                                <i class="fa fa-refresh"></i> Tải lại</a>
+                        </div>
+                        <div class="aps-table-select">
+                            <table id="tblQuyetDinhChiTiet" class="table table-bordered table-noborder tblQuyetDinhChiTiet">
+                                <thead>
+                                    <tr>
+                                        <th class="td-fixed td-center">Stt</th>
+                                        <th class="td-left">Mã số</th>
+                                        <th class="td-left">Họ tên</th>
+                                        <th class="td-left">Lớp</th>
+                                        <th class="td-left">Nhóm lớp</th>
+                                        <th class="td-left">Chương trình</th>
+                                        <th class="td-left">Khóa</th>
+                                        <th class="td-left">Trạng thái mới</th>
+                                        <th class="td-left">Lớp mới</th>
+                                        <th class="td-center">% tính phí</th>
+                                        <th class="td-left">Lớp ngành 2</th>
+                                        <th class="td-left">Kỳ hiệu lực</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Thêm mới Quyết định</h3> -->
-        <div class="box box-solid zone-bus form-container add-quyetdinh" id="zoneEdit" style="display: block">
+        <div class="box box-solid zone-bus form-container add-quyetdinh" id="zoneEdit" style="display: none">
             <div class="box-header with-border">
                 <h3 class="box-title"><span class="myModalLabel mr-5">
                         <i class="fa fa-plus"></i> Thêm mới -  </span> Quyết định</h3>
@@ -760,7 +932,27 @@
     <select id="dropHocKyFull" class="select-opt" style="width:100% !important"></select>
 </div>
 
-<script src="modules/quyetdinh/script/quyetdinh.js?v=1.0.0.1"></script>
+<!-- XLSX (SheetJS) — phục vụ "Xuất báo cáo" (Excel). Load 1 lần, idempotent (cùng cách với trang DaQHHT). -->
+<script>
+    (function loadXLSX() {
+        if (typeof XLSX !== 'undefined') return;
+        var cdnList = [
+            'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',
+            'https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js',
+            'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js'
+        ];
+        var i = 0;
+        function tryNext() {
+            if (i >= cdnList.length) { console.error('[XLSX] không load được từ tất cả CDN'); return; }
+            var s = document.createElement('script');
+            s.src = cdnList[i]; s.crossOrigin = 'anonymous';
+            s.onerror = function () { console.warn('[XLSX] fail', cdnList[i]); i++; tryNext(); };
+            document.head.appendChild(s);
+        }
+        tryNext();
+    })();
+</script>
+<script src="modules/quyetdinh/script/quyetdinh.js?v=1.0.0.2"></script>
 <script type="text/javascript">
     var main_doc = {};
     main_doc['QuyetDinh'] = new QuyetDinh();

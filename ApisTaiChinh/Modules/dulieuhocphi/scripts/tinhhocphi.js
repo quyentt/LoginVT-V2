@@ -68,7 +68,8 @@ TinhHocPhi.prototype = {
         --Author: nnthuong
         --Discription: main action  
         -------------------------------------------*/
-        $("#btnTinhHocPhi").click(function () {
+        $("#btnTinhHocPhi").click(function (e) {
+            e.stopImmediatePropagation();
             edu.system.confirm("Bạn có chắc chắn <span class='italic color-warning'>Tính học phí</span> không?");
             $("#btnYes").click(function (e) {
                 // Fix UI: systemroot btnYes handler chi clear #alert_content chu khong .modal('hide')

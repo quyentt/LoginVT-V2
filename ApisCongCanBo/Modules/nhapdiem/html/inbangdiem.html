@@ -565,10 +565,12 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="zoomfileLabel">
-                    <i class="fa-solid fa-file-lines fw-bold"></i> Kết quả đăng ký học <span
-                        id="lblSinhVienDiem3"></span>
+                    <i class="fa-solid fa-file-lines fw-bold"></i>
+                    <span class="ibd-kqdk-title-text">Kết quả đăng ký học</span>
+                    <span id="lblSinhVienDiem3" class="ibd-kqdk-sv"></span>
                 </h5>
-                <div class="form-item d-flex  form-add-info col-12 col-lg-2" style="margin-left: 10px">
+                <div class="form-item d-flex form-add-info ibd-kqdk-time">
+                    <label class="ibd-kqdk-time-label" for="dropSearch_ThoiGianDangKy">Học kỳ, đợt</label>
                     <div class="input-group no-icon">
                         <select class="form-select select-opt" id="dropSearch_ThoiGianDangKy"
                             aria-label="Default select example"></select>
@@ -577,7 +579,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p class="mb-1"><b>Kết quả đăng ký học</b></p>
+                <p class="mb-1 ibd-kqdk-sec"><b>Kết quả đăng ký học</b></p>
                 <div class="aps-table-select scroll-table-x">
                     <table class="table table-classroom tabs-scores tblKetQuaDangKy table-bordered table-noborder"
                         id="tblKetQuaDangKy">
@@ -610,7 +612,7 @@
                         <tfoot style="background: #f1f1f1; text-align: center"></tfoot>
                     </table>
                 </div>
-                <p class="mb-1 mt-20" style="color: #f26522;"><b>Lịch sử đăng ký học</b></p>
+                <p class="mb-1 mt-20 ibd-kqdk-sec ibd-kqdk-sec-lichsu" style="color: #f26522;"><b>Lịch sử đăng ký học</b></p>
                 <div class="aps-table-select scroll-table-x">
                     <table class="table table-classroom tabs-scores table-bordered table-noborder tblLichSu"
                         id="tblLichSu">
@@ -1546,5 +1548,173 @@
     .modal .select2-results__options {
         max-height: 220px !important;
         overflow-y: auto !important;
+    }
+</style>
+<style id="ibd-kqdk-style">
+    /* ===== Modal "Kết quả đăng ký học" — scoped #myModal_KetQuaDangKy, không đụng modal khác =====
+       1) styles-content.css:18039 đặt `.modal .modal-header .modal-title {position:absolute}` cho MỌI modal:
+          title trôi khỏi flex nên combo "Học kỳ, đợt" (nằm trong luồng) đè lên title -> trả title về luồng flex.
+       2) Sticky thead: wrapper .scroll-table-x (overflow-x:auto) nhốt sticky bên trong nó, không bám được modal-body
+          -> cho wrapper overflow:visible, giao việc cuộn (dọc + ngang) cho .modal-body. */
+
+    /* ---- Header: [icon + tiêu đề + badge SV] ........ [Học kỳ, đợt: combo] [X] ---- */
+    #myModal_KetQuaDangKy .modal-header {
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px 12px;
+    }
+    #myModal_KetQuaDangKy .modal-header .modal-title {
+        position: static !important;
+        flex: 1 1 320px !important;
+        min-width: 0;
+        margin: 0 !important;
+        text-align: left !important;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 4px 10px;
+    }
+    #myModal_KetQuaDangKy .ibd-kqdk-sv {
+        background: rgba(255, 255, 255, .16);
+        border: 1px solid rgba(255, 255, 255, .3);
+        border-radius: 14px;
+        padding: 2px 12px;
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 1.5;
+    }
+    #myModal_KetQuaDangKy .ibd-kqdk-sv:empty {
+        display: none;
+    }
+    #myModal_KetQuaDangKy .ibd-kqdk-time {
+        flex: 0 0 auto;
+        width: auto;
+        margin: 0 !important;
+        align-items: center;
+        gap: 8px;
+    }
+    #myModal_KetQuaDangKy .ibd-kqdk-time-label {
+        margin: 0;
+        color: #fff;
+        font-size: 13px;
+        font-weight: 500;
+        white-space: nowrap;
+        opacity: .9;
+    }
+    #myModal_KetQuaDangKy .ibd-kqdk-time .input-group {
+        width: 240px;
+    }
+    #myModal_KetQuaDangKy .modal-header .btn-close {
+        margin: 0 0 0 4px !important;
+    }
+
+    /* ---- Body: cuộn dọc + ngang tại modal-body để thead dính top ---- */
+    #myModal_KetQuaDangKy .modal-body {
+        overflow-x: auto !important;
+        padding: 14px 20px 18px;
+    }
+    #myModal_KetQuaDangKy .aps-table-select {
+        overflow: visible !important;
+    }
+    #myModal_KetQuaDangKy .ibd-kqdk-sec {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 2px 0 10px !important;
+        font-size: 15px;
+        color: #0f172a;
+    }
+    #myModal_KetQuaDangKy .ibd-kqdk-sec::before {
+        content: "";
+        width: 4px;
+        height: 16px;
+        border-radius: 2px;
+        background: #1a71e8;
+    }
+    #myModal_KetQuaDangKy .ibd-kqdk-sec-lichsu {
+        margin-top: 28px !important;
+    }
+    #myModal_KetQuaDangKy .ibd-kqdk-sec-lichsu::before {
+        background: #f26522;
+    }
+
+    /* ---- Bảng ---- */
+    #myModal_KetQuaDangKy table.tabs-scores {
+        width: 100%;
+        min-width: 1100px;
+        margin-bottom: 0;
+        border-collapse: separate !important;
+        border-spacing: 0;
+        overflow: visible !important; /* table gốc có overflow:hidden (bo góc) -> nhốt sticky thead */
+    }
+    #myModal_KetQuaDangKy table.tabs-scores > thead > tr > th {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        padding: 11px 12px;
+        border: 0;
+        white-space: nowrap;
+        vertical-align: middle;
+        font-weight: 600;
+        box-shadow: 0 1px 0 rgba(15, 23, 42, .12);
+    }
+    #myModal_KetQuaDangKy table.tabs-scores > tbody > tr > td {
+        padding: 9px 12px;
+        border: 0;
+        border-bottom: 1px solid #e6ebf3;
+        vertical-align: middle;
+        color: #0f172a;
+    }
+    #myModal_KetQuaDangKy table.tabs-scores > tbody > tr:nth-child(even) > td {
+        background: #f8fafd;
+    }
+    #myModal_KetQuaDangKy table.tabs-scores > tbody > tr:hover > td {
+        background: #e8f1ff;
+    }
+    /* Cột ngắn không xuống dòng; cột chữ dài được co giãn */
+    #myModal_KetQuaDangKy #tblKetQuaDangKy td:nth-child(1),
+    #myModal_KetQuaDangKy #tblKetQuaDangKy td:nth-child(2),
+    #myModal_KetQuaDangKy #tblKetQuaDangKy td:nth-child(4),
+    #myModal_KetQuaDangKy #tblKetQuaDangKy td:nth-child(6),
+    #myModal_KetQuaDangKy #tblKetQuaDangKy td:nth-child(7),
+    #myModal_KetQuaDangKy #tblKetQuaDangKy td:nth-child(8),
+    #myModal_KetQuaDangKy #tblKetQuaDangKy td:nth-child(9),
+    #myModal_KetQuaDangKy #tblLichSu td:nth-child(1),
+    #myModal_KetQuaDangKy #tblLichSu td:nth-child(2),
+    #myModal_KetQuaDangKy #tblLichSu td:nth-child(3),
+    #myModal_KetQuaDangKy #tblLichSu td:nth-child(4),
+    #myModal_KetQuaDangKy #tblLichSu td:nth-child(5),
+    #myModal_KetQuaDangKy #tblLichSu td:nth-child(6),
+    #myModal_KetQuaDangKy #tblLichSu td:nth-child(9) {
+        white-space: nowrap;
+    }
+    #myModal_KetQuaDangKy #tblKetQuaDangKy td:nth-child(3) { min-width: 260px; }
+    #myModal_KetQuaDangKy #tblKetQuaDangKy td:nth-child(5) { min-width: 210px; }
+    #myModal_KetQuaDangKy #tblKetQuaDangKy td:nth-child(10) { min-width: 170px; }
+    #myModal_KetQuaDangKy table.tabs-scores > thead > tr > th:first-child,
+    #myModal_KetQuaDangKy table.tabs-scores > tbody > tr > td:first-child {
+        width: 56px;
+        text-align: center;
+    }
+    /* Dòng tổng */
+    #myModal_KetQuaDangKy table.tabs-scores > tfoot > tr > td {
+        padding: 10px 12px;
+        border: 0 !important;
+        border-top: 2px solid #c9d6ea !important;
+        background: #eef3fb;
+        font-weight: 700;
+        text-align: center;
+    }
+    #myModal_KetQuaDangKy #tblKetQuaDangKy > tfoot > tr > td:nth-child(4) {
+        color: #1a71e8;
+        font-size: 15px;
+    }
+
+    @media (max-width: 767px) {
+        #myModal_KetQuaDangKy .modal-header .modal-title { flex: 1 1 0 !important; order: 1; }
+        #myModal_KetQuaDangKy .modal-header .btn-close { order: 2; }
+        #myModal_KetQuaDangKy .ibd-kqdk-time { flex: 1 1 100%; order: 3; }
+        #myModal_KetQuaDangKy .ibd-kqdk-time .input-group { flex: 1 1 auto; width: auto; }
+        #myModal_KetQuaDangKy .modal-body { padding: 12px 12px 16px; }
     }
 </style>

@@ -10,6 +10,48 @@ Xem lại đúng thay đổi của một tệp: `git diff -w <từ>..<đến> --
 
 ---
 
+## Lần kéo 11 (20/10) — mốc gốc nay là `ab5b4f19` (gốc lại force-push; mốc cũ `2254204a`) — CHƯA XEM
+
+Lần sau so: `git diff --name-status ab5b4f19 origin/main`. 32 tệp gốc đổi (bỏ `.claude/settings.local.json` của gốc — không lấy), đã ghi đè bằng
+`git checkout origin/main -- <tệp>`; `skin.py kiem` 11/11 OK. **Cả 29 tệp màn đều thuộc màn ĐÃ chuyển** — không có màn mới, không có phân hệ chưa chuyển.
+3 tệp vỏ cũ (`Corei/systemroot.js` +13 dòng, `index.aspx` +12, `indexi.aspx` +12) — chưa xem, mở khi làm tầng chung `_v2`.
+Số theo phân hệ: Cổng cán bộ 7 · Tài chính 6 · Sinh viên 5 · KHCT 4 · ĐKH 3 · Tuyển sinh 2 · Tốt nghiệp 1 · Xử lý học vụ 1 · Vỏ cũ 3.
+
+| Phân hệ | Màn | Tệp gốc | Trạng thái |
+|---|---|---|---|
+| Cổng cán bộ (đã chuyển) | `khaosat/kehoach` | `ApisCongCanBo/Modules/khaosat/html/kehoach.html` | chưa xem |
+| Cổng cán bộ (đã chuyển) | `khaosat/kehoach` | `ApisCongCanBo/Modules/khaosat/script/kehoach.js` | chưa xem |
+| Cổng cán bộ (đã chuyển) | `lichgiang/lichgiang` | `ApisCongCanBo/Modules/lichgiang/html/lichgiang.html` | chưa xem |
+| Cổng cán bộ (đã chuyển) | `lichgiang/lichgiang` | `ApisCongCanBo/Modules/lichgiang/script/lichgiang.js` | chưa xem |
+| Cổng cán bộ (đã chuyển) | `lichgiang/nguoihoctheokhoa` | `ApisCongCanBo/Modules/lichgiang/script/nguoihoctheokhoa.js` | chưa xem |
+| Cổng cán bộ (đã chuyển) | `nhapdiem/inbangdiem` | `ApisCongCanBo/Modules/nhapdiem/html/inbangdiem.html` | chưa xem |
+| Cổng cán bộ (đã chuyển) | `nhapdiem/inbangdiem` | `ApisCongCanBo/Modules/nhapdiem/script/inbangdiem.js` | chưa xem |
+| Đăng ký học (đã chuyển) | `canbodangky/dangky` | `ApisDangKyHoc/Modules/canbodangky/script/dangky.js` | chưa xem |
+| Đăng ký học (đã chuyển) | `nguyenvongdangky/ketqua` | `ApisDangKyHoc/Modules/nguyenvongdangky/html/ketqua.html` | chưa xem |
+| Đăng ký học (đã chuyển) | `nguyenvongdangky/ketqua` | `ApisDangKyHoc/Modules/nguyenvongdangky/script/ketqua.js` | chưa xem |
+| KHCT (đã chuyển) | `chuongtrinhhocphan/cthp` | `ApisKeHoachChuongTrinh/Modules/chuongtrinhhocphan/html/cthp.html` | chưa xem |
+| KHCT (đã chuyển) | `chuongtrinhhocphan/cthp` | `ApisKeHoachChuongTrinh/Modules/chuongtrinhhocphan/script/cthp.js` | chưa xem |
+| KHCT (đã chuyển) | `phanlichgiang/phanquyen` | `ApisKeHoachChuongTrinh/Modules/phanlichgiang/html/phanquyen.html` | chưa xem |
+| KHCT (đã chuyển) | `phanlichgiang/phanquyen` | `ApisKeHoachChuongTrinh/Modules/phanlichgiang/script/phanquyen.js` | chưa xem |
+| Tuyển sinh (đã chuyển) | `tuyensinh/kehoachtuyensinhnew` | `ApisQuanlyTuyenSinh/Modules/tuyensinh/html/kehoachtuyensinhnew.html` | chưa xem |
+| Tuyển sinh (đã chuyển) | `tuyensinh/kehoachtuyensinhnew` | `ApisQuanlyTuyenSinh/Modules/tuyensinh/script/kehoachtuyensinhnew.js` | chưa xem |
+| Sinh viên (đã chuyển, kiểm host 12/10) | `quyetdinh/quyetdinh` | `ApisSinhVien/Modules/quyetdinh/html/quyetdinh.html` | chưa xem |
+| Sinh viên (đã chuyển, kiểm host 12/10) | `quyetdinh/quyetdinh` | `ApisSinhVien/Modules/quyetdinh/script/quyetdinh.js` | chưa xem |
+| Sinh viên (đã chuyển, kiểm host 12/10) | `quyetdinh/thucthiquyetdinh` | `ApisSinhVien/Modules/quyetdinh/script/thucthiquyetdinh.js` | chưa xem |
+| Sinh viên (đã chuyển, kiểm host 12/10) | `tinhtrangquanso/tinhtrangquanso` | `ApisSinhVien/Modules/tinhtrangquanso/html/tinhtrangquanso.html` | chưa xem (lần 10 vừa chuyển 12/10) |
+| Sinh viên (đã chuyển, kiểm host 12/10) | `tinhtrangquanso/tinhtrangquanso` | `ApisSinhVien/Modules/tinhtrangquanso/script/tinhtrangquanso.js` | chưa xem (lần 10 vừa chuyển 12/10) |
+| Tài chính (đã chuyển) | `dulieuhocphi/tinhhocphi` | `ApisTaiChinh/Modules/dulieuhocphi/scripts/tinhhocphi.js` | chưa xem |
+| Tài chính (đã chuyển) | `phieuthu/thutienkhac` | `ApisTaiChinh/Modules/phieuthu/html/thutienkhac.html` | chưa xem |
+| Tài chính (đã chuyển) | `phieuthu/import_danop` | `ApisTaiChinh/Modules/phieuthu/scripts/import_danop.js` | chưa xem |
+| Tài chính (đã chuyển) | `phieuthu/import_phainop` | `ApisTaiChinh/Modules/phieuthu/scripts/import_phainop.js` | chưa xem |
+| Tài chính (đã chuyển) | `phieuthu/import_phantrammiengiam` | `ApisTaiChinh/Modules/phieuthu/scripts/import_phantrammiengiam.js` | chưa xem |
+| Tài chính (đã chuyển) | `phieuthu/import_sotienmiengiam` | `ApisTaiChinh/Modules/phieuthu/scripts/import_sotienmiengiam.js` | chưa xem |
+| Tốt nghiệp (đã chuyển) | `vanbang/quanlythongtin` | `ApisTotNghiep/Modules/vanbang/html/quanlythongtin.html` | chưa xem |
+| Xử lý học vụ (đã chuyển) | `kehoachxuly/kehoachxuly` | `ApisXuLyHocVu/Modules/kehoachxuly/script/kehoachxuly.js` | chưa xem |
+| Vỏ cũ | — | `Corei/systemroot.js` (+13 dòng) | chưa xem |
+| Vỏ cũ | — | `index.aspx` (+12 dòng) | chưa xem |
+| Vỏ cũ | — | `indexi.aspx` (+12 dòng) | chưa xem |
+
 ## Lần kéo 10 (12/10 tối) — mốc gốc nay là `2254204a` (gốc lại force-push; mốc cũ `c42e11e1`)
 
 Lần sau so: `git diff --name-status 2254204a origin/main`. 11 tệp gốc đổi, đã ghi đè bằng `git checkout origin/main -- <tệp>`. **ĐÃ CHUYỂN HẾT 12/10 tối** (người dùng bảo "chuyển"), do-man 4 màn sạch. **Kiểm host 12/10 (host mới):** CCB `lichgiangnhieuphonghoc` ĐẠT; TC `hopdong` host không khai chức năng → không mở được; 7 tệp Sinh viên kiểm host 12/10 chiều: `_hsA.js` chặn thiếu giới tính ĐẠT, `tinhtrangquanso` tổng đúng (danh mục mở rộng host trống).

@@ -148,6 +148,57 @@
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12) !important;
     }
 
+    /* Badge "Học kỳ dự kiến" trong 2 danh sách của modal Khối bắt buộc.
+       Nằm trong <a> của <li> nên đi theo dòng khi chuyển qua lại giữa 2 danh sách.
+       Bố cục: [icon] [tên học phần ....] [badge kỳ] [nút Chọn / Bỏ Chọn]
+       - Nút Chọn / Bỏ Chọn vốn là position:absolute (styles-content.css) → badge cũng absolute, canh thẳng hàng với nút.
+       - Hai nút được đặt min-width cố định để cột badge thẳng hàng, rồi badge lùi vào đúng bằng bề rộng nút.
+       - Rule toàn cục ".sidebar-menu.aps-list-hocphan>li a span {width:70% !important}" ép mọi span trong dòng → phải ghi đè width.
+       - Tên học phần (span trực tiếp của <a>) bị thu lại để không đè lên cột badge + nút.
+       Muốn ẩn ở danh sách bên trái: #zoneTongHocPhan_KBB .kbb-hocky { display: none !important; } */
+    #zone_inputhocphan_khoibatbuoc #zoneTongHocPhan_KBB .item-li .submit.btn {
+        min-width: 92px;
+        text-align: center;
+    }
+    #zone_inputhocphan_khoibatbuoc #zoneHocPhan_Selected_KBB .item-li .submit.btn {
+        min-width: 118px;
+        text-align: center;
+    }
+    html body.skin-blue #main-content-wrapper #zone_inputhocphan_khoibatbuoc .sidebar-menu li > a > span:not(.btn):not(.kbb-hocky) {
+        display: inline-block; /* span tên vốn là inline nên width không ăn → tên dài đè lên badge */
+        vertical-align: top;
+        width: max(140px, calc(100% - 275px)) !important;
+    }
+    html body.skin-blue #main-content-wrapper #zone_inputhocphan_khoibatbuoc #zoneHocPhan_Selected_KBB li > a > span:not(.btn):not(.kbb-hocky) {
+        width: max(140px, calc(100% - 300px)) !important;
+    }
+    html body.skin-blue #main-content-wrapper #zone_inputhocphan_khoibatbuoc .sidebar-menu li a span.kbb-hocky {
+        position: absolute !important;
+        top: 11px;
+        right: 110px; /* 10 (lề nút) + 92 (nút Chọn) + 8 (khoảng cách) */
+        float: none !important;
+        box-sizing: border-box;
+        width: 126px !important;
+        height: 22px;
+        margin: 0 !important;
+        padding: 0 8px;
+        line-height: 20px;
+        font-size: 12px;
+        font-weight: 600 !important; /* thắng rule "span { font-weight: 500 !important }" ở đầu file */
+        text-align: center;
+        color: #223771;
+        background: #eef2ff;
+        border: 1px solid #c7d2fe;
+        border-radius: 11px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    html body.skin-blue #main-content-wrapper #zone_inputhocphan_khoibatbuoc #zoneHocPhan_Selected_KBB li a span.kbb-hocky {
+        top: 12px;
+        right: 136px; /* 10 + 118 (nút Bỏ Chọn) + 8 */
+    }
+
     /* FIX 2026-08-26: Form Them moi Dinh Huong — 3 nut Xoa | Dong | Luu FLOATING
        o day viewport, LUON NHIN THAY du danh sach SV co hang tram/nghin dong.
        Ap dung khi zone_input_dinhhuong dang mo (co :not([style*="display: none"])). */
@@ -313,6 +364,27 @@
         background: #f1f5f9 !important;
         z-index: 3;
         box-shadow: inset 0 -1px 0 #cbd5e1;
+    }
+    /* Sắp xếp theo cột (#tblHocPhan): bấm tiêu đề = tăng -> giảm -> về thứ tự gốc.
+       Chỉ cột đang sắp xếp mới hiện mũi tên, để không làm rộng các cột hẹp (LT, TH, BTL...). */
+    .aps-chuongtrinhhocphan #tblHocPhan thead th.tbl-sortable {
+        cursor: pointer;
+        user-select: none;
+    }
+    .aps-chuongtrinhhocphan #tblHocPhan thead th.tbl-sortable:hover {
+        background: #e2e8f0 !important;
+    }
+    .aps-chuongtrinhhocphan #tblHocPhan thead th.sort-asc::after,
+    .aps-chuongtrinhhocphan #tblHocPhan thead th.sort-desc::after {
+        margin-left: 4px;
+        font-size: 10px;
+        color: #223771;
+    }
+    .aps-chuongtrinhhocphan #tblHocPhan thead th.sort-asc::after {
+        content: "\25B2";
+    }
+    .aps-chuongtrinhhocphan #tblHocPhan thead th.sort-desc::after {
+        content: "\25BC";
     }
     /* Filter bar bảng học phần — ô search inline, user tìm nhanh không phải cuộn */
     .aps-chuongtrinhhocphan .tblHocPhan-filter-bar {
@@ -599,6 +671,183 @@
         margin-top: 10px;
         padding: 6px 10px;
     }
+
+    /* ═══ Danh sách chương trình: tab "Dạng thẻ" | "Dạng cây" ═══
+       Cây: Khoa quản lý → Ngành → Chuyên ngành → Chương trình (dựng trong cthp.js: genTree_ChuongTrinh).
+       .cthp-hide dùng !important để chắc chắn ẩn được .zoneBox_ChuongTrinh (đang display:flex trong styles-content.css). */
+    .aps-chuongtrinhhocphan .cthp-hide {
+        display: none !important;
+    }
+    .aps-chuongtrinhhocphan .cthp-list-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px 16px;
+    }
+    .aps-chuongtrinhhocphan .cthp-view-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+    .aps-chuongtrinhhocphan .cthp-view-tabs li {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+    .aps-chuongtrinhhocphan .cthp-view-tabs a {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        font-size: 13px;
+        font-weight: 500;
+        color: #0f172a;
+        background: #f8fafc;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        cursor: pointer;
+        text-decoration: none !important;
+    }
+    .aps-chuongtrinhhocphan .cthp-view-tabs a:hover {
+        border-color: #223771;
+    }
+    .aps-chuongtrinhhocphan .cthp-view-tabs li.active a {
+        color: #ffffff !important;
+        font-weight: 600;
+        background: #223771;
+        border-color: #223771;
+    }
+    .aps-chuongtrinhhocphan .cthp-tree {
+        padding: 10px 14px 14px;
+        background: #ffffff;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+    }
+    .aps-chuongtrinhhocphan .cthp-tree-toolbar {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding-bottom: 10px;
+        margin-bottom: 8px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    .aps-chuongtrinhhocphan .cthp-tree-summary {
+        margin-left: auto;
+        font-size: 13px;
+        font-weight: 600;
+        color: #223771;
+    }
+    .aps-chuongtrinhhocphan .cthp-tree-empty {
+        padding: 24px 8px;
+        font-size: 14px;
+        text-align: center;
+        color: #64748b;
+    }
+    .aps-chuongtrinhhocphan .cthp-tree ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+    .aps-chuongtrinhhocphan .cthp-tree ul ul {
+        margin-left: 12px;
+        padding-left: 14px;
+        border-left: 1px dashed #cbd5e1;
+    }
+    .aps-chuongtrinhhocphan .cthp-tree .cthp-node > ul {
+        display: none;
+    }
+    .aps-chuongtrinhhocphan .cthp-tree .cthp-node.open > ul {
+        display: block;
+    }
+    .aps-chuongtrinhhocphan .cthp-node-row {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px 10px;
+        padding: 6px 8px;
+        font-size: 14px;
+        color: #0f172a;
+        border-radius: 6px;
+    }
+    .aps-chuongtrinhhocphan .cthp-node-toggle {
+        cursor: pointer;
+        user-select: none;
+    }
+    .aps-chuongtrinhhocphan .cthp-node-row:hover {
+        background: #f1f5f9;
+    }
+    .aps-chuongtrinhhocphan .cthp-caret {
+        width: 12px;
+        font-size: 11px;
+        color: #64748b;
+        transition: transform .15s ease;
+    }
+    .aps-chuongtrinhhocphan .cthp-node.open > .cthp-node-row .cthp-caret {
+        transform: rotate(90deg);
+    }
+    .aps-chuongtrinhhocphan .cthp-ico {
+        width: 18px;
+        text-align: center;
+    }
+    .aps-chuongtrinhhocphan .cthp-lv1 > .cthp-node-row {
+        font-weight: 700;
+    }
+    .aps-chuongtrinhhocphan .cthp-lv2 > .cthp-node-row,
+    .aps-chuongtrinhhocphan .cthp-lv3 > .cthp-node-row {
+        font-weight: 600;
+    }
+    .aps-chuongtrinhhocphan .cthp-lv1 > .cthp-node-row .cthp-ico {
+        color: #223771;
+    }
+    .aps-chuongtrinhhocphan .cthp-lv2 > .cthp-node-row .cthp-ico {
+        color: #198754;
+    }
+    .aps-chuongtrinhhocphan .cthp-lv3 > .cthp-node-row .cthp-ico {
+        color: #b45309;
+    }
+    .aps-chuongtrinhhocphan .cthp-leaf .cthp-ico {
+        color: #0d6efd;
+    }
+    .aps-chuongtrinhhocphan .cthp-node-name {
+        flex: 1 1 220px;
+        min-width: 0;
+    }
+    .aps-chuongtrinhhocphan .cthp-code,
+    .aps-chuongtrinhhocphan .cthp-sub {
+        font-weight: 400;
+        color: #64748b;
+    }
+    .aps-chuongtrinhhocphan .cthp-sub {
+        font-size: 13px;
+    }
+    .aps-chuongtrinhhocphan .cthp-count {
+        padding: 1px 10px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #223771;
+        white-space: nowrap;
+        background: #eef2ff;
+        border: 1px solid #c7d2fe;
+        border-radius: 11px;
+    }
+    .aps-chuongtrinhhocphan .cthp-actions {
+        display: inline-flex;
+        gap: 6px;
+    }
+    .aps-chuongtrinhhocphan .cthp-actions .btn {
+        display: inline-flex !important;
+        align-items: center;
+        height: 28px;
+        margin: 0 !important;
+        padding: 0 10px !important;
+        font-size: 12px;
+        white-space: nowrap;
+    }
 </style>
 <section class="content aps-KeHoachChuongTrinh">
     <div class="row aps-chuongtrinhhocphan">
@@ -638,10 +887,20 @@
             <!-- /.Danh sách  -->
             <div class="box box-solid aps-list-chuongtrinh pd20 pr10">
                 <div class="box-header pd0 pb10">
-                    <h3 class="box-title mt-0 line-20"><i class="fa-solid fa-books"></i> Danh sách chương trình</h3>
+                    <div class="cthp-list-head">
+                        <h3 class="box-title mt-0 line-20"><i class="fa-solid fa-books"></i> Danh sách chương trình</h3>
+                        <!-- Tab chuyển kiểu hiển thị: thẻ (mặc định) | cây Khoa - Ngành - Chuyên ngành -->
+                        <ul class="cthp-view-tabs" id="cthpViewTabs">
+                            <li class="active"><a href="#" data-view="card"><i class="fa-solid fa-table-cells-large"></i> Dạng thẻ</a></li>
+                            <li><a href="#" data-view="tree"><i class="fa-solid fa-sitemap"></i> Dạng cây (Khoa – Ngành – Chuyên ngành)</a></li>
+                        </ul>
+                    </div>
                 </div>
                 <div class="box-body pd0 mt-10">
                     <div id="zoneBox_ChuongTrinh" class="zoneBox_ChuongTrinh"></div>
+                    <div id="zoneTree_ChuongTrinh" class="cthp-tree cthp-hide">
+                        <div class="cthp-tree-empty">Chọn hệ đào tạo, khóa đào tạo rồi bấm <b>Tìm kiếm</b> để xem cây Khoa – Ngành – Chuyên ngành.</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -760,9 +1019,12 @@
                                         <thead>
                                             <tr>
                                                 <th class="td-fixed w-50px">Stt</th>
+                                                <!-- ẨN: cột "Thứ tự" (THUTU) - hiểu nhầm yêu cầu "order" là sắp xếp theo cột (giữ code để mở lại khi cần: bỏ comment dòng này + mDataProp THUTU trong cthp.js và tăng colPos thêm 1)
+                                                <th style="width: 80px" class="td-center"><span class="lang" key="">Thứ tự</span></th>
+                                                -->
                                                 <th style="width: 120px"><span class="lang" key="">Mã học phần</span>
                                                 </th>
-                                                <th><span class="lang" key="">Tên học phần</span></th>
+                                                <th style="min-width: 220px"><span class="lang" key="">Tên học phần</span></th>
                                                 <th><span class="lang" key="">Khối KT</span></th>
                                                 <th style="width: 120px">
                                                     <span class="lang" key="">Số tín HP</span>
@@ -2977,7 +3239,79 @@
         });
     })();
 
-    // MutationObserver: sau khi loadToTable_data render lại tbody → tự apply pager + sync scroll
+    // ═══ Bảng #tblHocPhan: sắp xếp theo cột ═══
+    // - Bấm tiêu đề: tăng → giảm → về thứ tự gốc (thứ tự server trả về). Stt / Chi tiết / Học tập / checkbox không sort.
+    // - Sort trên TOÀN BỘ dòng trong DOM (pager client-side chỉ ẩn/hiện) → sort xong pager tự cắt trang lại qua MutationObserver.
+    // - Ô trống luôn nằm cuối. Cột toàn số sort theo số; còn lại sort theo chữ có dấu tiếng Việt, số tự nhiên (CE1.2 < CE1.10).
+    // - Stt đánh lại 1..n theo thứ tự đang hiển thị. Trạng thái sort được giữ khi bảng render lại (Tải lại / lưu).
+    var tblHocPhanSort = { col: -1, dir: '' }; // col = vị trí cột (0-based); dir = 'asc' | 'desc'
+
+    function resetTblHocPhanSort() {
+        tblHocPhanSort = { col: -1, dir: '' };
+    }
+
+    function getCellTextTblHocPhan(tr, col) {
+        var $td = $(tr).children('td').eq(col);
+        var txt = $.trim($td.text());
+        // Cột "Học kỳ dự kiến" chưa có giá trị thì hiện nút "Sửa" → coi là ô trống
+        if ($td.find('.btnEditHocKy').length && txt === 'Sửa') return '';
+        return txt;
+    }
+
+    function applyTblHocPhanSort() {
+        var $rows = $('#tblHocPhan tbody').children('tr');
+        if ($rows.length === 0) return;
+        // Đánh dấu thứ tự gốc cho các dòng mới render (lúc này DOM đang đúng thứ tự server trả về)
+        $rows.each(function (i) {
+            if (this.getAttribute('data-orig') === null) this.setAttribute('data-orig', i);
+        });
+        var st = tblHocPhanSort;
+        var arr = $rows.toArray().map(function (tr) {
+            return {
+                tr: tr,
+                o: parseInt(tr.getAttribute('data-orig'), 10),
+                v: st.col < 0 ? '' : getCellTextTblHocPhan(tr, st.col)
+            };
+        });
+        if (st.col < 0) {
+            arr.sort(function (a, b) { return a.o - b.o; });
+        } else {
+            var isNum = arr.every(function (x) { return x.v === '' || /^-?\d+([.,]\d+)?$/.test(x.v); });
+            var sign = st.dir === 'desc' ? -1 : 1;
+            arr.sort(function (a, b) {
+                if (a.v === '' && b.v === '') return a.o - b.o;
+                if (a.v === '') return 1;
+                if (b.v === '') return -1;
+                var c = isNum
+                    ? parseFloat(a.v.replace(',', '.')) - parseFloat(b.v.replace(',', '.'))
+                    : a.v.localeCompare(b.v, 'vi', { numeric: true, sensitivity: 'accent' });
+                return c === 0 ? a.o - b.o : sign * c;
+            });
+        }
+        // Chỉ ghi lại DOM khi thứ tự thật sự đổi (tránh kích MutationObserver vô ích)
+        var changed = arr.some(function (x, i) { return x.tr !== $rows[i]; });
+        if (changed) {
+            var frag = document.createDocumentFragment();
+            arr.forEach(function (x) { frag.appendChild(x.tr); });
+            document.querySelector('#tblHocPhan tbody').appendChild(frag);
+        }
+        arr.forEach(function (x, i) { $(x.tr).children('td').first().text(i + 1); });
+        // Mũi tên chỉ hiện ở cột đang sắp xếp
+        var $ths = $('#tblHocPhan thead th').removeClass('sort-asc sort-desc');
+        if (st.col >= 0) $ths.eq(st.col).addClass(st.dir === 'desc' ? 'sort-desc' : 'sort-asc');
+    }
+
+    // .off('click.tblHocPhanSort') trước khi .on: script inline này chạy lại mỗi lần mở lại trang, handler cấp document
+    // không tự mất → nếu không gỡ thì mỗi cú click chạy 2-3 lần, vòng tăng → giảm → gốc bị nhảy cóc.
+    $(document).off('click.tblHocPhanSort').on('click.tblHocPhanSort', '#tblHocPhan thead th.tbl-sortable', function () {
+        var col = $(this).index();
+        if (tblHocPhanSort.col !== col) tblHocPhanSort = { col: col, dir: 'asc' };
+        else if (tblHocPhanSort.dir === 'asc') tblHocPhanSort.dir = 'desc';
+        else resetTblHocPhanSort();
+        applyTblHocPhanSort();
+    });
+
+    // MutationObserver: sau khi loadToTable_data render lại tbody → tự apply sort + pager + sync scroll
     (function () {
         var tbody = document.querySelector('#tblHocPhan tbody');
         if (!tbody) {
@@ -2990,7 +3324,7 @@
         attachObserver(tbody);
         function attachObserver(node) {
             var mo = new MutationObserver(function () {
-                setTimeout(function () { applyTblHocPhanPager(); }, 50);
+                setTimeout(function () { applyTblHocPhanSort(); applyTblHocPhanPager(); }, 50);
             });
             mo.observe(node, { childList: true });
         }

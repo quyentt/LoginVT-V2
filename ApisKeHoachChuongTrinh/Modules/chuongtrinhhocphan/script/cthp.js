@@ -101,10 +101,8 @@ ChuongTrinhHocPhan.prototype = {
             event.target.style.background = "";
         }, false);
 
-        $("#zoneBox_ChuongTrinh").delegate(".btnView", "click", function (event) {
-            event.stopImmediatePropagation();
-            var strId = this.id;
-            strId = edu.util.cutPrefixId(/view_/g, strId);
+        // Mở chương trình để cập nhật: dùng chung cho thẻ (.btnView) và cây (.btnTreeOpen)
+        var fnOpenCT = function (strId) {
             if (edu.util.checkValue(strId)) {
                 me.strChuongTrinh_Id = strId;
                 me.toggle_chuongtrinhhocphan();
@@ -116,13 +114,15 @@ ChuongTrinhHocPhan.prototype = {
             else {
                 edu.system.alert(edu.constant.getting("NOTIFY", "SELECT_F"));
             }
+        };
+        $("#zoneBox_ChuongTrinh").delegate(".btnView", "click", function (event) {
+            event.stopImmediatePropagation();
+            fnOpenCT(edu.util.cutPrefixId(/view_/g, this.id));
         });
 
-        $("#zoneBox_ChuongTrinh").delegate(".btnViewCT", "click", function (event) {
-            event.stopImmediatePropagation();
+        // Xem CTDT (chỉ đọc): dùng chung cho thẻ (.btnViewCT) và cây (.btnTreeViewCT)
+        var fnViewCT = function (strId) {
             edu.util.toggle_overide("zone-content", "zoneViewHocPhan");
-            var strId = this.id;
-            strId = edu.util.cutPrefixId(/viewCT_/g, strId);
             if (edu.util.checkValue(strId)) {
                 me.strChuongTrinh_Id = strId;
                 me.getList_VDinhHuong()
@@ -172,6 +172,36 @@ ChuongTrinhHocPhan.prototype = {
             else {
                 edu.system.alert(edu.constant.getting("NOTIFY", "SELECT_F"));
             }
+        };
+        $("#zoneBox_ChuongTrinh").delegate(".btnViewCT", "click", function (event) {
+            event.stopImmediatePropagation();
+            fnViewCT(edu.util.cutPrefixId(/viewCT_/g, this.id));
+        });
+        /*------------------------------------------
+        --Discription: Tab "Dạng cây" (Khoa - Ngành - Chuyên ngành - Chương trình)
+        -------------------------------------------*/
+        $("#cthpViewTabs").delegate("a", "click", function (e) {
+            e.preventDefault();
+            me.toggle_viewChuongTrinh($(this).attr("data-view"));
+        });
+        $("#zoneTree_ChuongTrinh").delegate(".cthp-node-toggle", "click", function () {
+            $(this).parent().toggleClass("open");
+        });
+        $("#zoneTree_ChuongTrinh").delegate("#btnTreeExpandAll", "click", function () {
+            $("#zoneTree_ChuongTrinh .cthp-node:not(.cthp-leaf)").addClass("open");
+        });
+        $("#zoneTree_ChuongTrinh").delegate("#btnTreeCollapseAll", "click", function () {
+            $("#zoneTree_ChuongTrinh .cthp-node:not(.cthp-leaf)").removeClass("open");
+        });
+        $("#zoneTree_ChuongTrinh").delegate(".btnTreeOpen", "click", function (e) {
+            e.preventDefault();
+            var strId = $(this).attr("data-id");
+            if (me.checkData_ChuongTrinh(strId)) fnOpenCT(strId);
+        });
+        $("#zoneTree_ChuongTrinh").delegate(".btnTreeViewCT", "click", function (e) {
+            e.preventDefault();
+            var strId = $(this).attr("data-id");
+            if (me.checkData_ChuongTrinh(strId)) fnViewCT(strId);
         });
         $("#btnAdd_HocPhan").click(function () {
             me.toggle_selecthocphan();
@@ -1113,8 +1143,13 @@ ChuongTrinhHocPhan.prototype = {
             'pageIndex': 1,
             'pageSize': 240000
         };
+        // Lưu bộ lọc của lần tìm này để tab "Dạng cây" dựng đúng cùng tập chương trình với dạng thẻ
+        me.objFilterCT = {
+            strHeDaoTao_Id: obj_list.strDaoTao_HeDaoTao_Id,
+            strKhoaDaoTao_Id: obj_list.strDaoTao_KhoaDaoTao_Id,
+            strTuKhoa: obj_list.strTuKhoa
+        };
 
-        
         edu.system.makeRequest({
             success: function (data) {
                 if (data.Success) {
@@ -1126,6 +1161,7 @@ ChuongTrinhHocPhan.prototype = {
                         me.dtChuongTrinh = dtResult;
                     }
                     me.genBox_ChuongTrinh(dtResult, iPager);
+                    me.refresh_ChuongTrinhCay();
                 }
                 else {
                     edu.system.alert(obj_list.action + " : " + data.Message, "w");
@@ -1182,6 +1218,8 @@ ChuongTrinhHocPhan.prototype = {
     },
     viewEdit_ChuongTrinh: function (data) {
         var me = main_doc.ChuongTrinhHocPhan;
+        // Mở chương trình khác -> bỏ trạng thái sắp xếp cột của bảng học phần
+        if (typeof resetTblHocPhanSort === "function") resetTblHocPhanSort();
         edu.util.viewHTMLById("lblNoiDungChuongTrinh", data[0].TENCHUONGTRINH + " - " + data[0].DAOTAO_KHOADAOTAO_TEN);
         edu.util.viewHTMLById("lblInputHocPhan", data[0].TENCHUONGTRINH);
         edu.util.viewHTMLById("lblInputHocPhan", data[0].TENCHUONGTRINH);
@@ -1196,6 +1234,195 @@ ChuongTrinhHocPhan.prototype = {
 
         //var ilength = window.innerHeight - $("#tblHocPhan").offset().top - 267;
         //$("#tblHocPhan").parent().attr("style", "height: " + ilength + "px; overflow-y: scroll;");
+    },
+    /*------------------------------------------
+    --Discription: Tab "Dạng cây" của danh sách chương trình: Khoa quản lý -> Ngành -> Chuyên ngành -> Chương trình
+    --Nguồn: pkg_kehoach_thongtin.LayDSKS_DaoTao_ToChucCT (edu.system.getList_ChuongTrinhDaoTao).
+    --Ngành cha của DAOTAO_N_CN_ID do BE trả thêm (QUANHECHA_ID / QUANHECHA_MA / QUANHECHA_TEN):
+    --  có cha  -> cha là Ngành, DAOTAO_N_CN là Chuyên ngành
+    --  không cha -> chính DAOTAO_N_CN là Ngành (không có tầng Chuyên ngành)
+    --Mở / xem chương trình vẫn dùng dữ liệu me.dtChuongTrinh (API cũ) để giữ nguyên các cờ mô hình tương đương/thay thế.
+    -------------------------------------------*/
+    arrField_QuanHeCha: {
+        ID: ["QUANHECHA_ID", "DAOTAO_N_CN_QUANHECHA_ID", "DAOTAO_N_CN_CHA_ID"],
+        MA: ["QUANHECHA_MA", "DAOTAO_N_CN_QUANHECHA_MA", "DAOTAO_N_CN_CHA_MA"],
+        TEN: ["QUANHECHA_TEN", "DAOTAO_N_CN_QUANHECHA_TEN", "DAOTAO_N_CN_CHA_TEN"]
+    },
+    toggle_viewChuongTrinh: function (strView) {
+        var me = this;
+        var bTree = strView === "tree";
+        $("#cthpViewTabs li").removeClass("active");
+        $("#cthpViewTabs a[data-view='" + (bTree ? "tree" : "card") + "']").parent().addClass("active");
+        $("#zoneBox_ChuongTrinh").toggleClass("cthp-hide", bTree);
+        $("#zoneTree_ChuongTrinh").toggleClass("cthp-hide", !bTree);
+        if (bTree && me.bTreeStale) me.getList_ChuongTrinhCay();
+    },
+    // Gọi sau mỗi lần tìm ở dạng thẻ: đánh dấu cây cũ, đang đứng ở tab cây thì tải luôn
+    refresh_ChuongTrinhCay: function () {
+        var me = this;
+        me.bTreeStale = true;
+        if ($("#cthpViewTabs li.active a").attr("data-view") === "tree") me.getList_ChuongTrinhCay();
+    },
+    checkData_ChuongTrinh: function (strId) {
+        var me = this;
+        if (edu.util.objGetDataInData(strId, me.dtChuongTrinh, "ID").length > 0) return true;
+        edu.system.alert("Không tìm thấy chương trình trong danh sách đã tải. Vui lòng bấm Tìm kiếm để tải lại.", "w");
+        return false;
+    },
+    getList_ChuongTrinhCay: function () {
+        var me = this;
+        var objFilter = me.objFilterCT;
+        if (!objFilter) return;
+        var iToken = me.iTokenCay = (me.iTokenCay || 0) + 1;
+        var obj = {
+            strDaoTao_HeDaoTao_Id: objFilter.strHeDaoTao_Id,
+            strKhoaDaoTao_Id: objFilter.strKhoaDaoTao_Id,
+            strN_CN_LOP_Id: "",
+            strKhoaQuanLy_Id: "",
+            strToChucCT_Cha_Id: "",
+            strNguoiThucHien_Id: "",
+            strTuKhoa: objFilter.strTuKhoa,
+            pageIndex: 1,
+            pageSize: 240000
+        };
+        edu.system.getList_ChuongTrinhDaoTao(obj, "", "", function (data) {
+            if (iToken !== me.iTokenCay) return; // đã có lần tải mới hơn
+            me.bTreeStale = false;
+            me.dtChuongTrinhCay = data;
+            me.genTree_ChuongTrinh(data);
+        });
+    },
+    getField_Cay: function (objRow, arrNames) {
+        for (var i = 0; i < arrNames.length; i++) {
+            var v = objRow[arrNames[i]];
+            if (v !== undefined && v !== null && v !== "") return String(v);
+        }
+        return "";
+    },
+    genTree_ChuongTrinh: function (data) {
+        var me = this;
+        var $zone = $("#zoneTree_ChuongTrinh");
+        if (!data || data.length === 0) {
+            $zone.html('<div class="cthp-tree-empty">Không có chương trình nào theo bộ lọc hiện tại.</div>');
+            return;
+        }
+        var fnEsc = function (s) {
+            return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+        };
+        var arrCount = [0, 0, 0, 0]; // số khoa, ngành, chuyên ngành, chương trình
+        var objRoot = { children: {} };
+        var fnAddNode = function (objParent, iLevel, strKey, strTen, strMa, strId) {
+            var strK = iLevel + ":" + strKey;
+            var objNode = objParent.children[strK];
+            if (!objNode) {
+                objNode = objParent.children[strK] = { ten: strTen, ma: strMa, id: strId, children: {}, arrCT: [], soCT: 0 };
+                arrCount[iLevel - 1]++;
+            }
+            else if (!objNode.ma && strMa) {
+                objNode.ma = strMa;
+            }
+            objNode.soCT++;
+            return objNode;
+        };
+        var bCoCotCha = false;
+        data.forEach(function (aData) {
+            var m = {};
+            Object.keys(aData).forEach(function (k) { m[k.toUpperCase()] = aData[k]; });
+            var strKhoaId = me.getField_Cay(m, ["DAOTAO_KHOAQUANLY_ID"]);
+            var strKhoaTen = me.getField_Cay(m, ["DAOTAO_KHOAQUANLY_TEN"]);
+            var strKhoaMa = me.getField_Cay(m, ["DAOTAO_KHOAQUANLY_MA"]);
+            var strCnId = me.getField_Cay(m, ["DAOTAO_N_CN_ID"]);
+            var strCnTen = me.getField_Cay(m, ["DAOTAO_N_CN_TEN"]);
+            var strCnMa = me.getField_Cay(m, ["DAOTAO_N_CN_MA"]);
+            var strChaId = me.getField_Cay(m, me.arrField_QuanHeCha.ID);
+            var strChaTen = me.getField_Cay(m, me.arrField_QuanHeCha.TEN);
+            var strChaMa = me.getField_Cay(m, me.arrField_QuanHeCha.MA);
+            if (me.arrField_QuanHeCha.ID.some(function (k) { return k in m; })) bCoCotCha = true;
+
+            var bCoCha = !!strChaId && strChaId !== strCnId;
+            var strNganhId = bCoCha ? strChaId : strCnId;
+            var strNganhTen = bCoCha ? strChaTen : strCnTen;
+            var strNganhMa = bCoCha ? strChaMa : strCnMa;
+
+            var objKhoa = fnAddNode(objRoot, 1, strKhoaId || strKhoaTen, strKhoaTen || "(Chưa gán khoa)", strKhoaMa, strKhoaId);
+            var objNganh = fnAddNode(objKhoa, 2, strNganhId || strNganhTen, strNganhTen || "(Chưa gán ngành)", strNganhMa, strNganhId);
+            var objChua = objNganh;
+            if (bCoCha) objChua = fnAddNode(objNganh, 3, strCnId || strCnTen, strCnTen || "(Chưa gán chuyên ngành)", strCnMa, strCnId);
+            objChua.arrCT.push(aData);
+            arrCount[3]++;
+        });
+        if (!bCoCotCha) console.warn("LayDSKS_DaoTao_ToChucCT chưa trả QUANHECHA_ID/MA/TEN: cây chỉ có Khoa -> Ngành (N_CN) -> Chương trình.");
+
+        var fnSortNodes = function (objChildren) {
+            return Object.keys(objChildren).map(function (k) { return objChildren[k]; }).sort(function (a, b) {
+                return a.ten.localeCompare(b.ten, "vi", { numeric: true });
+            });
+        };
+        var arrIcon = ["", "fa-building-columns", "fa-diagram-project", "fa-code-branch"];
+        var fnRenderLeaf = function (aCT) {
+            var strKhoaDT = edu.util.returnEmpty(aCT.DAOTAO_KHOADAOTAO_TEN);
+            var strId = fnEsc(edu.util.returnEmpty(aCT.ID));
+            var strHtml = '<li class="cthp-node cthp-leaf"><div class="cthp-node-row">';
+            strHtml += '<i class="fa-solid fa-graduation-cap cthp-ico"></i>';
+            strHtml += '<span class="cthp-node-name">' + fnEsc(edu.util.returnEmpty(aCT.TENCHUONGTRINH));
+            if (strKhoaDT) strHtml += ' <span class="cthp-sub">· Khóa: ' + fnEsc(strKhoaDT) + '</span>';
+            strHtml += '</span>';
+            strHtml += '<span class="cthp-actions">';
+            strHtml += '<a class="btn btn-default btn-soft-success btnTreeOpen poiter" data-id="' + strId + '"><i class="fa-solid fa-pen-field"></i>Cập nhật CTDT</a>';
+            strHtml += '<a class="btn btn-default btn-soft-primary btnTreeViewCT poiter" data-id="' + strId + '"><i class="fa-solid fa-eye"></i>Xem CTDT</a>';
+            strHtml += '</span></div></li>';
+            return strHtml;
+        };
+        var fnRenderNode = function (objNode, iLevel) {
+            var strHtml = '<li class="cthp-node cthp-lv' + iLevel + (iLevel <= 2 ? ' open' : '') + '">';
+            strHtml += '<div class="cthp-node-row cthp-node-toggle">';
+            strHtml += '<i class="fa-solid fa-chevron-right cthp-caret"></i>';
+            strHtml += '<i class="fa-solid ' + arrIcon[iLevel] + ' cthp-ico"></i>';
+            strHtml += '<span class="cthp-node-name">' + fnEsc(objNode.ten);
+            if (objNode.ma) strHtml += ' <span class="cthp-code">(' + fnEsc(objNode.ma) + ')</span>';
+            else if (iLevel === 1 && objNode.id) strHtml += ' <span class="cthp-code" data-khoa-id="' + fnEsc(objNode.id) + '"></span>';
+            strHtml += '</span>';
+            strHtml += '<span class="cthp-count">' + objNode.soCT + ' CT</span>';
+            strHtml += '</div><ul>';
+            fnSortNodes(objNode.children).forEach(function (objCon) { strHtml += fnRenderNode(objCon, iLevel + 1); });
+            objNode.arrCT.slice().sort(function (a, b) {
+                return edu.util.returnEmpty(a.TENCHUONGTRINH).localeCompare(edu.util.returnEmpty(b.TENCHUONGTRINH), "vi", { numeric: true });
+            }).forEach(function (aCT) { strHtml += fnRenderLeaf(aCT); });
+            strHtml += '</ul></li>';
+            return strHtml;
+        };
+
+        var arrKhoa = fnSortNodes(objRoot.children);
+        var strSummary = arrCount[0] + ' khoa · ' + arrCount[1] + ' ngành · ' + (arrCount[2] ? arrCount[2] + ' chuyên ngành · ' : '') + arrCount[3] + ' chương trình';
+        var strHtml = '<div class="cthp-tree-toolbar">';
+        strHtml += '<a class="btn btn-default btn-sm" id="btnTreeExpandAll"><i class="fa-solid fa-angles-down"></i> Mở rộng tất cả</a>';
+        strHtml += '<a class="btn btn-default btn-sm" id="btnTreeCollapseAll"><i class="fa-solid fa-angles-up"></i> Thu gọn tất cả</a>';
+        strHtml += '<span class="cthp-tree-summary">' + strSummary + '</span>';
+        strHtml += '</div><ul class="cthp-tree-root">';
+        arrKhoa.forEach(function (objKhoa) { strHtml += fnRenderNode(objKhoa, 1); });
+        strHtml += '</ul>';
+        $zone.html(strHtml);
+
+        // Khoa quản lý chưa có mã trong response -> tự tra từ danh mục cơ cấu tổ chức
+        if (arrKhoa.some(function (objKhoa) { return objKhoa.id && !objKhoa.ma; })) me.fillMaKhoa_Cay();
+    },
+    fillMaKhoa_Cay: function () {
+        var me = this;
+        var fnFill = function () {
+            $("#zoneTree_ChuongTrinh .cthp-code[data-khoa-id]").each(function () {
+                var strMa = me.mapKhoaMa[String($(this).attr("data-khoa-id")).toUpperCase()];
+                if (strMa) $(this).text("(" + strMa + ")");
+            });
+        };
+        if (me.mapKhoaMa) {
+            fnFill();
+            return;
+        }
+        edu.system.getList_CoCauToChuc({ strCCTC_Loai_Id: "", strCCTC_Cha_Id: "", iTrangThai: 1 }, "", "", function (dtCoCau) {
+            me.mapKhoaMa = {};
+            (dtCoCau || []).forEach(function (e) { me.mapKhoaMa[String(e.ID).toUpperCase()] = e.MA; });
+            fnFill();
+        });
     },
     /*------------------------------------------
     --Discription: [4]  ACESS DB ==> Hoc phan
@@ -2679,6 +2906,8 @@ ChuongTrinhHocPhan.prototype = {
                     dtReRult.forEach(e => {
                         $("#div_" + e.DAOTAO_HOCPHAN_ID + "_" + e.LOAIPHANBO_ID).html(edu.util.returnEmpty(e.SOTIET));
                     });
+                    // Các cột phân bổ được điền bất đồng bộ -> sort lại nếu đang sắp xếp theo cột nào đó
+                    if (typeof applyTblHocPhanSort === "function") applyTblHocPhanSort();
                 }
                 else {
                     edu.system.alert(obj_list + " : " + data.Message, "s");
@@ -2746,14 +2975,21 @@ ChuongTrinhHocPhan.prototype = {
         $("#tblHocPhan thead tr:eq(0)").append('<th style="width: 100px" class="td-fixed"><span class="lang" key="">Chi tiết</span></th>');
         $("#tblHocPhan thead tr:eq(0)").append('<th style="width: 100px" class="td-fixed"><span class="lang" key="">Học tập</span></th>');
         $("#tblHocPhan thead tr:eq(0)").append('<th class="td-center td-fixed"><input type="checkbox" class="chkSystemSelectAll"></th>');
+        // Sắp xếp theo cột (logic ở script cuối cthp.html): cột đầu (Stt) và 3 cột cuối (Chi tiết, Học tập, checkbox) không sort
+        $("#tblHocPhan thead th").slice(1, -3).addClass("tbl-sortable").attr("title", "Bấm để sắp xếp");
 
         var jsonForm = {
             strTable_Id: "tblHocPhan",
             aaData: data,
             colPos: {
+                // ẨN cột "Thứ tự": muốn mở lại thì bỏ comment mDataProp THUTU bên dưới + th trong cthp.html và tăng MỌI chỉ số colPos (cả các push bên dưới) thêm 1
                 center: [0, 1, 3, 4],
             },
-            aoColumns: [{
+            aoColumns: [
+            /*{
+                "mDataProp": "THUTU"
+            },*/
+            {
                 "mDataProp": "DAOTAO_HOCPHAN_MA"
             },
             {
@@ -2875,14 +3111,34 @@ ChuongTrinhHocPhan.prototype = {
         edu.system.move_ThroughInTable(jsonForm.strTable_Id)
         /*III. Callback*/
     },
+    /* Map DAOTAO_HOCPHAN_ID -> "Học kỳ dự kiến" lấy từ danh sách học phần của chương trình (cùng nguồn với cột "Học kỳ dự kiến" ở bảng chính) */
+    getMap_HocKyDuKien: function () {
+        var me = this;
+        var objMap = {};
+        var dt = me.dtHocPhan_ChuongTrinh || [];
+        for (var i = 0; i < dt.length; i++) {
+            if (objMap[dt[i].DAOTAO_HOCPHAN_ID] === undefined) {
+                objMap[dt[i].DAOTAO_HOCPHAN_ID] = edu.util.returnEmpty(dt[i].DAOTAO_THOIGIAN_KEHOACH);
+            }
+        }
+        return objMap;
+    },
+    /* Badge học kỳ dự kiến, nằm trong <a> của <li> nên đi theo dòng khi chuyển qua lại giữa 2 danh sách. Không có học kỳ -> không hiện */
+    genHTML_HocKyDuKien: function (objMap, strDaoTao_HocPhan_Id) {
+        var strHocKy = objMap[strDaoTao_HocPhan_Id];
+        if (!strHocKy) return '';
+        return '<span class="kbb-hocky" title="Học kỳ dự kiến: ' + strHocKy + '">' + strHocKy + '</span>';
+    },
     genTable_HocPhan_ChuongTrinh_OnSelect: function (data, iPager) {
         var me = this;
         var row = '';
+        var objHocKy = me.getMap_HocKyDuKien();
         for (var i = 0; i < data.length; i++) {
             row += '<li class="treeview item-li" id="drag_KBB_' + data[i].DAOTAO_HOCPHAN_ID + '" name="" draggable="true" ondragstart="main_doc.ChuongTrinhHocPhan.khoibatbuoc_dragstart_handler(event);">';
             row += '<a>';
             row += '<i class="fa-solid fa-circle-check"></i> <span>' + edu.util.returnEmpty(data[i].DAOTAO_HOCPHAN_MA) + " - " + edu.util.returnEmpty(data[i].HOCTRINHAPDUNGHOCTAP) + "(" + edu.util.returnEmpty(data[i].TONGSOTIETPHANBO) + ") - " + edu.util.returnEmpty(data[i].DAOTAO_HOCPHAN_TEN) +'</span>';
             row += '<span class="submit btn btn-primary pull-right btnSelectHocPhan" id="btnSelect_KBB_' + data[i].DAOTAO_HOCPHAN_ID + '"><span class="lang" key="lb_luu">Chọn</span><i class="fa-solid fa-angle-right"></i></span>';
+            row += me.genHTML_HocKyDuKien(objHocKy, data[i].DAOTAO_HOCPHAN_ID);
             row += '</a>';
             row += '</li>';
         }
@@ -3283,6 +3539,7 @@ ChuongTrinhHocPhan.prototype = {
     genTable_HocPhan_ChuongTrinh_KBB_Select: function (data, iPager) {
         var me = this;
         var row = '';
+        var objHocKy = me.getMap_HocKyDuKien();
         for (var i = 0; i < data.length; i++) {
             //var strCheck = data[i].LAHOCPHANBATBUOC ? 'checked="checked"' : '';
             row += '<li class="treeview item-li" id="drag_KBB_' + data[i].DAOTAO_HOCPHAN_ID + '" name="' + edu.util.returnEmpty(data[i].ID) + '" draggable="true" ondragstart="main_doc.ChuongTrinhHocPhan.khoibatbuoc_dragstart_handler(event);">';
@@ -3290,6 +3547,7 @@ ChuongTrinhHocPhan.prototype = {
             row += '<i class="fa-solid fa-circle-check"></i> <span>' + edu.util.returnEmpty(data[i].DAOTAO_HOCPHAN_MA) + " - " + edu.util.returnEmpty(data[i].HOCTRINHAPDUNGHOCTAP) + "(" + edu.util.returnEmpty(data[i].TONGSOTIETPHANBO) + ") - " + edu.util.returnEmpty(data[i].DAOTAO_HOCPHAN_TEN) + '</span>';
             //row += '<div class="checkbox-inline user-check-print"><input type="checkbox" ' + strCheck +' style="float: left;" id="' + data[i].ID + '" class="btnCheckBatBuoc" ><span><p>Bắt buộc</p></span></div>';
             row += '<span class="submit btn btn-danger pull-right btnSelectHocPhan" name="' + edu.util.returnEmpty(data[i].ID) + '" id="btnSelect_KBB_' + data[i].DAOTAO_HOCPHAN_ID + '"><span class="lang" key="lb_luu"> Bỏ Chọn</span> <i class="fa-solid fa-xmark"></i></span>';
+            row += me.genHTML_HocKyDuKien(objHocKy, data[i].DAOTAO_HOCPHAN_ID);
             row += '</a>';
             row += '</li>';
         }

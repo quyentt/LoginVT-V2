@@ -12,6 +12,7 @@ PhanQuyen.prototype = {
     init: function () {
         var me = this;
         me.page_load();
+        me.initScrollTop();
         //me.getList_HocPhan();
         //me.getList_ChuongTrinh();
         /*------------------------------------------
@@ -98,6 +99,37 @@ PhanQuyen.prototype = {
         me.getList_ThoiGianDaoTao();
         me.getList_ChucNangCanPhanQuyen();
         me.getList_CoCauToChuc();
+    },
+    /*------------------------------------------
+    --Discription: Thanh cuộn ngang giả phía trên bảng, đồng bộ với thanh cuộn thật của bảng
+    --(bảng có bao nhiêu giảng viên thì bấy nhiêu cột nên rộng hơn khung hiển thị)
+    -------------------------------------------*/
+    initScrollTop: function () {
+        var me = this;
+        var $top = $("#scrollTop_PhanQuyen");
+        var $wrap = $("#scrollWrap_PhanQuyen");
+        // So sánh trước khi gán để 2 bên không gọi nhau vòng lặp
+        $top.on("scroll", function () {
+            if (Math.abs($wrap.scrollLeft() - $top.scrollLeft()) > 1) $wrap.scrollLeft($top.scrollLeft());
+        });
+        $wrap.on("scroll", function () {
+            if (Math.abs($top.scrollLeft() - $wrap.scrollLeft()) > 1) $top.scrollLeft($wrap.scrollLeft());
+        });
+        $(window).on("resize", function () {
+            me.updateScrollTop();
+        });
+    },
+    updateScrollTop: function () {
+        var wrap = document.getElementById("scrollWrap_PhanQuyen");
+        var $top = $("#scrollTop_PhanQuyen");
+        if (!wrap) return;
+        // Tầm cuộn của khung bảng; thanh giả phải có cùng tầm cuộn.
+        // Phải show trước khi đo (display:none thì clientWidth = 0) và trừ padding của thanh giả (.row > * có padding ngang)
+        var iRange = wrap.scrollWidth - wrap.clientWidth;
+        $top.show();
+        var iPad = (parseFloat($top.css("padding-left")) || 0) + (parseFloat($top.css("padding-right")) || 0);
+        $top.children("div").width($top[0].clientWidth - iPad + Math.max(iRange, 0));
+        if (iRange <= 1) $top.hide();
     },
 
     /*------------------------------------------
@@ -549,11 +581,11 @@ PhanQuyen.prototype = {
             //Kiểm tra số dòng nếu nhỏ hơn số thứ tự dòng iThuTu thì thêm 1 dòng
             if (colspan == 0) {
                 arrHeaderId.push(objHead.THANHPHAN_ID);
-                $("#" + strTable_Id + " tbody").append('<tr><td colspan="' + (iThuTu + 1) + '">' + objHead.THANHPHAN_TEN + '</td></tr>');
+                $("#" + strTable_Id + " tbody").append('<tr><td class="td-thanhphan" colspan="' + (iThuTu + 1) + '">' + objHead.THANHPHAN_TEN + '</td></tr>');
                 if (iThuTu > imaxlength) imaxlength = iThuTu;
             }
             else {
-                $($("#" + strTable_Id + " tbody tr")[arrHeaderId.length - colspan]).prepend('<td rowspan="' + colspan + '" >' + objHead.THANHPHAN_TEN + '</td>');
+                $($("#" + strTable_Id + " tbody tr")[arrHeaderId.length - colspan]).prepend('<td class="td-thanhphan" rowspan="' + colspan + '" >' + objHead.THANHPHAN_TEN + '</td>');
             }
         }
         //Lấy số con của thằng cha trong datatable công thức
@@ -578,6 +610,8 @@ PhanQuyen.prototype = {
             }
             $(x[i]).append('<td style="text-align: center"><input type="checkbox" class="chkSelectAll" id="chkSelectAll_' + me.arrHead_Id[i] + '"></td>');
         }
+        // Bảng vừa dựng xong số cột giảng viên -> cập nhật độ rộng thanh cuộn ngang phía trên
+        me.updateScrollTop();
         edu.system.genHTML_Progress("divprogessPhanQuyen", me.arrHead_Id.length);
         for (var i = 0; i < me.arrHead_Id.length; i++) {
             me.getData_CauTrucPhanQuyen(me.arrHead_Id[i]);

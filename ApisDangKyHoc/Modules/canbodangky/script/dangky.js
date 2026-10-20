@@ -11,6 +11,7 @@ DangKy.prototype = {
     strSinhVien_Id: '',
     dtLopHocPhan: [],
     dtKeHoach: [],
+    dtChuongTrinh: [],
     dtKetQuaDK: [],
     objDoiLichHoc: '',
     arrHPDaDangKy: [],
@@ -153,6 +154,8 @@ DangKy.prototype = {
                 x[i].classList.remove("btn-primary");
             }
             point.classList.add("btn-primary");
+            //Mỗi chương trình có hồ sơ riêng (mã số, họ tên, ảnh) -> load lại thông tin SV bên trái theo chương trình vừa chọn
+            me.showThongTinSinhVien(me.dtChuongTrinh.find(e => e.DAOTAO_TOCHUCCHUONGTRINH_ID === point.id));
             setTimeout(function () {
                 me.getList_KeHoach();
             }, 500);
@@ -463,11 +466,16 @@ DangKy.prototype = {
             check = "";
         }
         $("#zoneChuongTrinh").html(row);
-        $("#lblTenSinhVien").html(edu.util.returnEmpty(data[0].QLSV_NGUOIHOC_HODEM) + " " + edu.util.returnEmpty(data[0].QLSV_NGUOIHOC_TEN));
-        $("#lblMaSo").html(edu.util.returnEmpty(data[0].QLSV_NGUOIHOC_MASO));
+        me.dtChuongTrinh = data;
+        me.showThongTinSinhVien(data[0]);
         $("#lblSoTaiKhoan").html(edu.util.returnEmpty(data[0].TAIKHOAN));
-        $("#txtAnhCaNhan").attr("src", edu.system.getRootPathImg(data[0].QLSV_NGUOIHOC_ANH));
         me.getList_KeHoach();
+    },
+    showThongTinSinhVien: function (aData) {
+        if (!aData) return;
+        $("#lblTenSinhVien").html(edu.util.returnEmpty(aData.QLSV_NGUOIHOC_HODEM) + " " + edu.util.returnEmpty(aData.QLSV_NGUOIHOC_TEN));
+        $("#lblMaSo").html(edu.util.returnEmpty(aData.QLSV_NGUOIHOC_MASO));
+        $("#txtAnhCaNhan").attr("src", edu.system.getRootPathImg(aData.QLSV_NGUOIHOC_ANH));
     },
 
     getList_KeHoach: function () {
@@ -526,7 +534,13 @@ DangKy.prototype = {
             }
         }
         $("#zoneKeHoach").html(row);
-        me.getList_HocPhan();
+        if (data.length > 0) {
+            me.getList_HocPhan();
+        } else {
+            me.arrHPDaDangKy = [];
+            $("#zoneThoiGian, #zoneDSHocPhan, #zoneLopHocPhan, #DSThuHoc, #DSGiangVien, #DSPhuongAn").html("");
+            $("#lblSoTinToiDa, #lblSoTinToiThieu").html("");
+        }
         me.getList_KetQuaDangKy();
         me.getList_TinhTrangTaiChinh();
     },

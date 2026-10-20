@@ -20,6 +20,7 @@ KeHoach.prototype = {
     tblChon: '',
     strHead: '',
     dtDoiTuong_View: [],
+    bExporting_KetQua: false,
     init: function () {
         var me = this;
         /*------------------------------------------
@@ -368,6 +369,9 @@ KeHoach.prototype = {
             me.getList_KetQua_DuocKhaoSat();
             me.getList_KetQua_ChuaThucHien();
             me.getList_KetQua_ChiTiet();
+        });
+        $("#btnExport_KetQuaChiTiet").click(function () {
+            me.export_KetQuaChiTiet();
         });
 
 
@@ -3263,6 +3267,561 @@ KeHoach.prototype = {
         }, false, false, false, null);
     },
     
+    /*------------------------------------------
+    --Discription: Xuất Excel "Kết quả chi tiết" - lấy TOÀN BỘ kết quả của kế hoạch (không phụ thuộc trang đang xem)
+    --Nguồn: dùng lại đúng 2 API của màn hình hiển thị
+    --  [1] KS_ThongTin/LayDSKS_KetQuaKhaoSat  -> danh sách dòng + danh sách câu hỏi (pageSize lớn)
+    --  [2] KS_TaoPhieu/LayDSKetQuaTraLoiTheo  -> đáp án từng ô (dòng x câu hỏi), chạy pool dưới giới hạn luồng của makeRequest
+    --Các bước: [tải danh sách] -> [tùy chọn nâng cao: lọc phiếu/trạng thái, phạm vi dòng, chọn câu hỏi, số luồng] -> [tiến độ] -> file
+    --Lib: XLSX (SheetJS) - load lazy từ CDN trong kehoach.html
+    --Lưu ý: BE chưa có API trả gộp đáp án => số lượt gọi = số dòng x số câu hỏi ĐÃ CHỌN; lọc bớt là cách nhanh nhất
+    -------------------------------------------*/
+    export_KetQuaChiTiet: function () {
+        var me = this;
+        if (me.bExporting_KetQua) return;
+        if (typeof XLSX === 'undefined') {
+            edu.system.alert('Thư viện Excel chưa load xong. Vui lòng thử lại sau vài giây.', 'w');
+            return;
+        }
+        me.bExporting_KetQua = true;
+        var bCancel = false, bEnded = false, bStarted = false, bPartial = false, bListReady = false;
+        var iRow = 0, iCol = 0, iTotal = 0, iNext = 0, iDone = 0, iErr = 0, iRunning = 0, iTongBE = 0, iListRow = 0, iRunAt = 0;
+        var arrRow = [], arrCauHoi = [], arrAns = [], arrRowDone = [], arrDesc = [];
+        var iWorker = 8;
+        //--makeRequest có trần chung edu.system.iGioiHanLuong (vượt thì xếp hàng) => nâng trần = số luồng + 2 trong lúc chạy, trả lại khi kết thúc
+        var iLimitCu = edu.system.iGioiHanLuong;
+        var p = me.showExportDialog("Đang xuất kết quả khảo sát...", {
+            onCancel: function () {
+                bCancel = true;
+                if (bListReady && !bStarted) _cancelled();
+            },
+            onPartial: function () {
+                bPartial = true;
+                p.note("Đang chờ các lượt đang chạy xong để xuất phần đã tải...");
+                _pump();
+            },
+            onWorker: function (iNew) {
+                iWorker = iNew;
+                edu.system.iGioiHanLuong = iWorker + 2;
+                if (bStarted && !bEnded) _pump();
+            }
+        });
+        p.note("Đang tải danh sách kết quả...");
+        //--Ẩn #overlay (makeRequest tự bật) + cập nhật tiến độ; rời khỏi trang kết quả thì tự hủy để khỏi chạy ngầm
+        var hRender = setInterval(function () {
+            $("#overlay").hide();
+            if (!document.getElementById("tblKetQuaChiTiet")) {
+                bCancel = true;
+                if (!bStarted && bListReady) _cancelled();
+            }
+            if (bStarted && iTotal) p.progress(iDone, iTotal, iErr);
+        }, 200);
+        function _end(strHeader, strMsg, strColor, iAutoClose) {
+            if (bEnded) return;
+            bEnded = true;
+            clearInterval(hRender);
+            edu.system.iGioiHanLuong = iLimitCu;
+            $("#overlay").hide();
+            me.bExporting_KetQua = false;
+            p.end(strHeader, strMsg, strColor, iAutoClose);
+        }
+        function _cancelled() {
+            _end("Đã hủy", "Đã dừng xuất Excel, không có file nào được tạo.", "#57606a", 800);
+        }
+        function _txt(s) {
+            s = String(edu.util.returnEmpty(s));
+            //--Đáp án có thể chứa HTML (màn hình hiển thị bằng .html()) => lấy text bằng DOMParser (không chạy script/ảnh)
+            if (/<[a-z!\/][^>]*>/i.test(s)) {
+                try { return new DOMParser().parseFromString(s, "text/html").body.textContent; } catch (e) { }
+            }
+            return s;
+        }
+        function _build() {
+            if (bEnded) return;
+            if (bCancel) { _cancelled(); return; }
+            p.note("Đang tạo file Excel...");
+            try {
+                var v = edu.util.returnEmpty;
+                //--Xuất 1 phần: chỉ lấy các dòng đã tải đủ mọi câu hỏi
+                var arrIdx = [];
+                arrRow.forEach(function (r, i) { if (!bPartial || arrRowDone[i] >= iCol) arrIdx.push(i); });
+                if (!arrIdx.length) {
+                    _end("Chưa có dữ liệu", "Chưa có dòng nào tải xong để xuất.", "#9a6700");
+                    return;
+                }
+                var arrHead = ["STT", "Người tham gia - Mã số", "Người tham gia - Họ tên", "Người tham gia - Ghi chú",
+                    "Phiếu khảo sát", "Trạng thái khảo sát", "Đối tượng được khảo sát - Mã số", "Đối tượng được khảo sát - Họ tên"];
+                arrCauHoi.forEach(function (c) { arrHead.push(_txt(c.KS_CAUHOI_TEN)); });
+                var arrAoa = [arrHead];
+                arrIdx.forEach(function (i, n) {
+                    var r = arrRow[i];
+                    var arr = [
+                        n + 1,
+                        v(r.KS_DOITUONGTHAMGIAKHAOSAT_MA),
+                        (v(r.KS_DOITUONGTHAMGIAKHAOSAT_HO) + " " + v(r.KS_DOITUONGTHAMGIAKHAOSAT_TEN)).trim(),
+                        v(r.GHICHU),
+                        v(r.KS_PHIEUKHAOSAT_TEN),
+                        v(r.KETQUA),
+                        v(r.KS_DOITUONGDUOCKHAOSAT_MA),
+                        v(r.KS_DOITUONGDUOCKHAOSAT_TEN)
+                    ];
+                    for (var j = 0; j < iCol; j++) arr.push(_txt(arrAns[i][j]));
+                    arrAoa.push(arr);
+                });
+                var ws = XLSX.utils.aoa_to_sheet(arrAoa);
+                ws["!cols"] = arrHead.map(function (h, idx) {
+                    return { wch: [6, 14, 24, 20, 40, 16, 16, 28][idx] || 22 };
+                });
+                var wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Kết quả chi tiết");
+                var aKeHoach = me.dtKeHoach.find(function (e) { return e.ID == me.strKeHoach_Id; }) || {};
+                var now = new Date();
+                var bDungSom = arrIdx.length < iRow;
+                var bThieuDong = iTongBE > iListRow;
+                //--Sheet thông tin: ghi lại bộ lọc đã dùng để người đọc file biết dữ liệu này là toàn bộ hay một phần
+                var arrInfo = [
+                    ["Kế hoạch", String(v(aKeHoach.TENKEHOACH))],
+                    ["Thời điểm xuất", now.toLocaleString("vi-VN")],
+                    ["Số dòng đã xuất", arrIdx.length + (bDungSom ? " / " + iRow + " (dừng sớm, chỉ gồm các dòng đã tải xong)" : "")],
+                    ["Số câu hỏi", iCol],
+                    ["Số ô không tải được", iErr]
+                ];
+                arrDesc.forEach(function (s) { arrInfo.push(["Bộ lọc", s]); });
+                if (bThieuDong) arrInfo.push(["Lưu ý", "BE chỉ trả " + iListRow + "/" + iTongBE + " dòng"]);
+                var wsInfo = XLSX.utils.aoa_to_sheet(arrInfo);
+                wsInfo["!cols"] = [{ wch: 20 }, { wch: 90 }];
+                XLSX.utils.book_append_sheet(wb, wsInfo, "Thông tin xuất");
+                var strTen = String(aKeHoach.TENKEHOACH || "KeHoach").replace(/[\\\/:*?"<>|]+/g, " ").replace(/\s+/g, " ").trim().substring(0, 60);
+                var pad = function (n) { return n < 10 ? "0" + n : n; };
+                var strStamp = now.getFullYear() + pad(now.getMonth() + 1) + pad(now.getDate()) + "_" + pad(now.getHours()) + pad(now.getMinutes());
+                XLSX.writeFile(wb, "KetQuaKhaoSat_" + strTen + (bDungSom ? "_MotPhan" : "") + "_" + strStamp + ".xlsx");
+                //--Nhớ tốc độ + số luồng lần này để popup lần sau ước tính thời gian
+                try {
+                    var fSec = (Date.now() - iRunAt) / 1000;
+                    if (iDone >= 200 && fSec > 0) localStorage.setItem("aps_ks_export", JSON.stringify({ w: iWorker, rate: Math.round(iDone / fSec) }));
+                } catch (e) { }
+                var strMsg = "Đã xuất " + arrIdx.length.toLocaleString("vi-VN") + (bDungSom ? "/" + iRow.toLocaleString("vi-VN") : "") + " dòng x " + iCol + " câu hỏi.";
+                if (bThieuDong) strMsg += " LƯU Ý: BE chỉ trả " + iListRow + "/" + iTongBE + " dòng.";
+                if (iErr) _end("Đã xuất file (có ô lỗi)", strMsg + " Có " + iErr + " ô không tải được, trong file ghi \"(lỗi tải)\".", "#9a6700");
+                else if (bDungSom || bThieuDong) _end("Đã xuất file (một phần)", strMsg, "#9a6700");
+                else _end("Hoàn tất!", strMsg, "#1a7f37", 2500);
+            } catch (ex) {
+                console.warn("[export_KetQuaChiTiet]", ex);
+                _end("Lỗi tạo file Excel", String(ex && ex.message || ex), "#cf222e");
+            }
+        }
+        function _pump() {
+            if (bEnded) return;
+            if (bCancel || bPartial) {
+                //--Dừng cấp việc mới; đợi các lượt đang bay xong rồi hủy / xuất phần đã tải
+                if (iRunning === 0) { if (bCancel) _cancelled(); else _build(); }
+                return;
+            }
+            if (iDone >= iTotal) { _build(); return; }
+            while (iRunning < iWorker && iNext < iTotal) {
+                (function (k) {
+                    var iR = Math.floor(k / iCol), iC = k % iCol;
+                    iRunning++;
+                    me.getCell_KetQuaChiTiet(arrRow[iR], arrCauHoi[iC].KS_CAUHOI_ID, function (bOk, strVal) {
+                        arrAns[iR][iC] = bOk ? strVal : "(lỗi tải)";
+                        if (!bOk) iErr++;
+                        arrRowDone[iR]++;
+                        iDone++;
+                        iRunning--;
+                        _pump();
+                    });
+                })(iNext++);
+            }
+        }
+        function _start(opt) {
+            if (bCancel) { _cancelled(); return; }
+            arrRow = opt.arrRow; arrCauHoi = opt.arrCauHoi; arrDesc = opt.arrDesc || []; iWorker = opt.iWorker;
+            iRow = arrRow.length; iCol = arrCauHoi.length; iTotal = iRow * iCol;
+            arrAns = arrRow.map(function () { return new Array(iCol); });
+            arrRowDone = arrRow.map(function () { return 0; });
+            edu.system.iGioiHanLuong = iWorker + 2;
+            iRunAt = Date.now();
+            bStarted = true;
+            p.note("Đang tải đáp án từng ô...");
+            _pump();
+        }
+        function _afterList(dtRow, dtCauHoi, iTong) {
+            if (bCancel) { _cancelled(); return; }
+            iListRow = dtRow.length; iTongBE = iTong;
+            if (!iListRow) {
+                _end("Không có dữ liệu", "Kế hoạch này chưa có kết quả để xuất.", "#9a6700");
+                return;
+            }
+            bListReady = true;
+            p.askOptions({
+                arrRow: dtRow,
+                arrCauHoi: dtCauHoi,
+                arrCauHoiLabel: dtCauHoi.map(function (c) { return _txt(c.KS_CAUHOI_TEN); }),
+                iTongBE: iTong,
+                iWorker: iWorker
+            }, _start);
+        }
+        //--Edit: giữ nguyên tham số như getList_KetQua_ChiTiet, chỉ khác pageSize để lấy hết
+        var obj_list = {
+            'action': 'KS_ThongTin/LayDSKS_KetQuaKhaoSat',
+            'type': 'GET',
+            'strTuKhoa': edu.util.getValById('txtAAAA'),
+            'strKS_LoaiDoiTuong_Id': edu.util.getValById('dropAAAA'),
+            'strKS_PhieuKhaoSat_Mau_Id': edu.util.getValById('dropAAAA'),
+            'strKS_KeHoachKhaoSat_Id': me.strKeHoach_Id,
+            'strNguoiThucHien_Id': edu.system.userId,
+            'pageIndex': 1,
+            'pageSize': 100000,
+        };
+        edu.system.makeRequest({
+            success: function (data) {
+                if (data.Success) {
+                    var dt = data.Data || {};
+                    _afterList(dt.rs || [], dt.rsCauHoi || [], parseInt(data.Pager, 10) || 0);
+                }
+                else {
+                    _end("Không tải được dữ liệu", String(data.Message || ""), "#cf222e");
+                }
+            },
+            error: function (er) {
+                _end("Không tải được dữ liệu", "Lỗi kết nối khi tải danh sách kết quả.", "#cf222e");
+            },
+            type: 'GET',
+            action: obj_list.action,
+            contentType: true,
+            data: obj_list,
+            fakedb: [
+            ]
+        }, false, false, false, null);
+    },
+    //--Đáp án 1 ô (dòng x câu hỏi) - cùng API/tham số với getList_KetQua_ChiTietCauHoi, thử lại 1 lần nếu lỗi, không alert
+    getCell_KetQuaChiTiet: function (objHang, strCauHoi_Id, fnDone) {
+        var iTry = 0;
+        (function go() {
+            var bOk = false, strVal = "";
+            var obj_list = {
+                'action': 'KS_TaoPhieu/LayDSKetQuaTraLoiTheo',
+                'type': 'GET',
+                'strKS_DoiTuongThamGiaKS_Id': objHang.KS_DOITUONGTHAMGIAKHAOSAT_ID,
+                'strKS_DoiTuongDuocKhaoSat_Id': objHang.KS_DOITUONGDUOCKHAOSAT_ID,
+                'strKS_PhieuKhaoSat_Id': objHang.KS_PHIEUKHAOSAT_ID,
+                'strKS_KeHoachKhaoSat_Id': objHang.KS_KEHOACHKHAOSAT_ID,
+                'strKS_CauHoi_Id': strCauHoi_Id,
+                'strLoaiDapAn': edu.util.getValById('txtAAAA'),
+            };
+            edu.system.makeRequest({
+                success: function (data) {
+                    if (data && data.Success) {
+                        bOk = true;
+                        if (data.Data && data.Data.length) strVal = data.Data[0].KETQUA;
+                    }
+                },
+                error: function (er) { },
+                type: 'GET',
+                action: obj_list.action,
+                complete: function () {
+                    if (!bOk && ++iTry < 2) { go(); return; }
+                    fnDone(bOk, strVal);
+                },
+                contentType: true,
+                data: obj_list,
+                fakedb: [
+                ]
+            }, false, false, false, null);
+        })();
+    },
+    /*
+     * Popup Xuất Excel gồm 3 bước trong 1 khung:
+     *   [tải danh sách] -> askOptions (tùy chọn nâng cao) -> [tiến độ] -> end
+     * objFn: { onCancel(), onPartial(), onWorker(n) }. Nút bấm theo chuẩn action-bar: CTA filled, phụ outline, Hủy/Đóng grey outline.
+     * Kết thúc không dùng edu.system.alert (tránh BS3 alert chồng làm đóng modal ngầm) mà đổi header + nút Đóng ngay trên popup.
+     */
+    showExportDialog: function (strTitle, objFn) {
+        $("#aps-export-wrap").remove();
+        var $wrap = $(
+            '<div id="aps-export-wrap" ' +
+            'style="position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99998;' +
+            'display:flex;align-items:center;justify-content:center;">' +
+                '<div class="aps-ex-box" style="width:min(520px,94vw);max-height:92vh;display:flex;flex-direction:column;' +
+                'background:#fff;border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,0.25);overflow:hidden;font-size:14px;color:#0f172a">' +
+                    '<div class="aps-ex-header" style="background:#0969da;color:#fff;padding:14px 20px;flex:0 0 auto;' +
+                    'font-size:16px;font-weight:600;display:flex;align-items:center;gap:10px"></div>' +
+                    '<div class="aps-ex-body" style="padding:20px;overflow:auto;flex:1 1 auto">' +
+                        '<div class="aps-ex-note" style="color:#57606a;margin-bottom:12px"></div>' +
+                        '<div class="aps-ex-opt" style="display:none"></div>' +
+                        '<div class="aps-ex-run" style="display:none">' +
+                            '<div style="height:10px;background:#eaeef2;border-radius:5px;overflow:hidden">' +
+                                '<div class="aps-ex-bar" style="height:100%;width:0;background:#0969da;transition:width .2s"></div>' +
+                            '</div>' +
+                            '<div class="aps-ex-count" style="margin-top:8px;color:#0f172a;font-variant-numeric:tabular-nums"></div>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="aps-ex-sum" style="display:none;margin:0 20px 4px;padding:10px 12px;flex:0 0 auto;' +
+                    'background:#f6f8fa;border:1px solid #d0d7de;border-radius:8px;line-height:1.5"></div>' +
+                    '<div class="aps-ex-foot" style="padding:12px 20px 20px;display:flex;align-items:center;gap:10px;flex:0 0 auto">' +
+                        '<label class="aps-ex-lblthread" style="margin:0;color:#57606a;display:none;align-items:center;gap:8px">Số luồng ' +
+                            '<select class="aps-ex-thread" style="height:34px;padding:0 8px;border:1px solid #d0d7de;border-radius:6px;background:#fff"></select>' +
+                        '</label>' +
+                        '<div class="aps-ex-btns" style="display:flex;gap:10px;margin-left:auto"></div>' +
+                    '</div>' +
+                '</div>' +
+            '</div>'
+        ).appendTo("body");
+        var $box = $wrap.find(".aps-ex-box"), $note = $wrap.find(".aps-ex-note"), $opt = $wrap.find(".aps-ex-opt"),
+            $run = $wrap.find(".aps-ex-run"), $sum = $wrap.find(".aps-ex-sum"), $thread = $wrap.find(".aps-ex-thread"),
+            $lblThread = $wrap.find(".aps-ex-lblthread");
+        var iStart = Date.now();
+        var bEnded = false, bRunning = false;
+        var iRateAt = 0, iRateDone = 0, fRate = 0;
+        [4, 8, 12, 16, 24, 32, 48].forEach(function (n) { $thread.append('<option value="' + n + '">' + n + '</option>'); });
+        $thread.val(8);
+        //--Số luồng đổi được ngay khi đang chạy
+        $thread.on("change", function () { if (bRunning && !bEnded) objFn.onWorker(parseInt($(this).val(), 10)); });
+        function esc(s) {
+            return String(s).replace(/[&<>"']/g, function (c) {
+                return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+            });
+        }
+        function fmt(fSec) {
+            var s = Math.round(fSec);
+            if (s >= 3600) return Math.floor(s / 3600) + "g " + Math.floor((s % 3600) / 60) + "p";
+            return s >= 60 ? Math.floor(s / 60) + "p " + (s % 60) + "s" : s + "s";
+        }
+        function setHead(strIcon, strText, strColor) {
+            $wrap.find(".aps-ex-header").html('<i class="' + strIcon + '"></i><span></span>').css("background", strColor || "#0969da")
+                .find("span").text(strText);
+        }
+        function setBtns(arrBtn) {
+            var $b = $wrap.find(".aps-ex-btns").empty();
+            arrBtn.forEach(function (b) {
+                $('<button type="button" class="btn ' + b.cls + '"></button>').html(b.html).attr("data-k", b.k || "")
+                    .attr("style", b.style || "").on("click", b.fn).appendTo($b);
+            });
+        }
+        function btnHuy(strText) {
+            return {
+                k: "huy", cls: "btn-outline-secondary", html: '<i class="fal fa-times"></i> ' + strText, fn: function () {
+                    $wrap.find(".aps-ex-btns button").prop("disabled", true);
+                    $note.text("Đang hủy...");
+                    objFn.onCancel();
+                }
+            };
+        }
+        setHead("fal fa-spinner fa-spin", strTitle);
+        setBtns([btnHuy("Hủy")]);
+
+        //--Danh sách chọn nhiều có ô tìm + chọn hết / bỏ hết (áp dụng cho các mục đang hiện)
+        function checklist(strLabel, arrItem, bSearch, fnChange) {
+            var arrOn = arrItem.map(function () { return true; });
+            var $el = $('<div style="margin-bottom:16px"></div>');
+            var $title = $('<b style="flex:1"></b>');
+            var $aAll = $('<a href="javascript:void(0)" style="color:#0969da">Chọn hết</a>');
+            var $aNone = $('<a href="javascript:void(0)" style="color:#0969da">Bỏ hết</a>');
+            $('<div style="display:flex;align-items:center;gap:12px;margin-bottom:6px"></div>').append($title, $aAll, $aNone).appendTo($el);
+            var $search = null;
+            if (bSearch) {
+                $search = $('<input type="text" placeholder="Tìm nhanh..." style="width:100%;height:32px;padding:0 10px;margin-bottom:6px;' +
+                    'border:1px solid #d0d7de;border-radius:6px;color:#0f172a">').appendTo($el);
+            }
+            var html = "";
+            arrItem.forEach(function (it, i) {
+                html += '<label class="aps-ex-it" data-i="' + i + '" style="display:flex;align-items:flex-start;gap:8px;margin:0;padding:4px 10px;cursor:pointer;font-weight:400">' +
+                    '<input type="checkbox" checked style="margin-top:3px;flex:0 0 auto"><span style="flex:1;word-break:break-word">' + esc(it.label) + '</span>' +
+                    (it.count != null ? '<span style="color:#57606a;white-space:nowrap">' + it.count.toLocaleString("vi-VN") + '</span>' : '') + '</label>';
+            });
+            var $list = $('<div style="max-height:150px;overflow:auto;border:1px solid #d0d7de;border-radius:6px">' + html + '</div>').appendTo($el);
+            function refresh() {
+                var n = arrOn.filter(Boolean).length;
+                $title.text(strLabel + " (" + n + "/" + arrItem.length + ")");
+            }
+            function setVisible(b) {
+                $list.find(".aps-ex-it").each(function () {
+                    if (this.style.display === "none") return;
+                    var i = $(this).data("i");
+                    arrOn[i] = b;
+                    $(this).find("input").prop("checked", b);
+                });
+                refresh();
+                fnChange();
+            }
+            $aAll.on("click", function () { setVisible(true); });
+            $aNone.on("click", function () { setVisible(false); });
+            $list.on("change", "input", function () {
+                arrOn[$(this).closest(".aps-ex-it").data("i")] = this.checked;
+                refresh();
+                fnChange();
+            });
+            if ($search) {
+                $search.on("input", function () {
+                    var q = this.value.toLowerCase();
+                    $list.find(".aps-ex-it").each(function () {
+                        var i = $(this).data("i");
+                        this.style.display = arrItem[i].label.toLowerCase().indexOf(q) >= 0 ? "flex" : "none";
+                    });
+                });
+            }
+            refresh();
+            return {
+                $el: $el,
+                selected: function () {
+                    var o = {};
+                    arrItem.forEach(function (it, i) { if (arrOn[i]) o[it.key] = true; });
+                    return o;
+                },
+                labels: function () {
+                    return arrItem.filter(function (it, i) { return arrOn[i]; }).map(function (it) { return it.label; });
+                },
+                countOn: function () { return arrOn.filter(Boolean).length; }
+            };
+        }
+
+        return {
+            note: function (strMsg) { $note.text(strMsg); },
+            //--Bước 2: tùy chọn nâng cao. fnStart({arrRow, arrCauHoi, iWorker, arrDesc}) được gọi khi bấm "Bắt đầu xuất"
+            askOptions: function (objInfo, fnStart) {
+                var arrRow = objInfo.arrRow;
+                var objSaved = {};
+                try { objSaved = JSON.parse(localStorage.getItem("aps_ks_export")) || {}; } catch (e) { }
+                if ([4, 8, 12, 16, 24, 32, 48].indexOf(objSaved.w) >= 0) $thread.val(objSaved.w);
+                var phieuKey = function (r) { return String(r.KS_PHIEUKHAOSAT_ID || r.KS_PHIEUKHAOSAT_TEN || ""); };
+                var statusKey = function (r) { return String(edu.util.returnEmpty(r.KETQUA)); };
+                function group(fnKey, fnLabel) {
+                    var objMap = {}, arrOut = [];
+                    arrRow.forEach(function (r) {
+                        var k = fnKey(r);
+                        if (!Object.prototype.hasOwnProperty.call(objMap, k)) {
+                            objMap[k] = { key: k, label: fnLabel(r), count: 0 };
+                            arrOut.push(objMap[k]);
+                        }
+                        objMap[k].count++;
+                    });
+                    return arrOut;
+                }
+                var arrPhieu = group(phieuKey, function (r) { return String(r.KS_PHIEUKHAOSAT_TEN || "(không tên)"); });
+                var arrStatus = group(statusKey, function (r) { return String(edu.util.returnEmpty(r.KETQUA)) || "(trống)"; });
+                var arrQ = objInfo.arrCauHoi.map(function (c, i) {
+                    return { key: String(i), label: objInfo.arrCauHoiLabel[i] || ("Câu hỏi " + (i + 1)), count: null };
+                });
+                var clPhieu = arrPhieu.length > 1 ? checklist("Phiếu khảo sát", arrPhieu, true, calc) : null;
+                var clStatus = arrStatus.length > 1 ? checklist("Trạng thái khảo sát", arrStatus, false, calc) : null;
+                var clCau = arrQ.length ? checklist("Câu hỏi (cột)", arrQ, true, calc) : null;
+                var $from = $('<input type="number" min="1" placeholder="1" style="width:90px;height:32px;padding:0 8px;border:1px solid #d0d7de;border-radius:6px;color:#0f172a">');
+                var $to = $('<input type="number" min="1" placeholder="hết" style="width:90px;height:32px;padding:0 8px;border:1px solid #d0d7de;border-radius:6px;color:#0f172a">');
+                var $range = $('<div style="display:flex;align-items:center;gap:8px;margin-bottom:16px"></div>')
+                    .append('<b style="flex:1">Phạm vi dòng <span style="font-weight:400;color:#57606a">(sau khi lọc)</span></b>', 'Từ dòng ', $from, ' đến ', $to);
+                $opt.empty();
+                if (clPhieu) $opt.append(clPhieu.$el);
+                if (clStatus) $opt.append(clStatus.$el);
+                $opt.append($range);
+                if (clCau) $opt.append(clCau.$el);
+                $from.add($to).on("input", calc);
+
+                function pick() {
+                    var objP = clPhieu ? clPhieu.selected() : null, objS = clStatus ? clStatus.selected() : null;
+                    var arr = arrRow.filter(function (r) {
+                        return (!objP || objP[phieuKey(r)]) && (!objS || objS[statusKey(r)]);
+                    });
+                    var iFrom = Math.max(1, parseInt($from.val(), 10) || 1), iTo = parseInt($to.val(), 10) || 0;
+                    if (iFrom > 1 || iTo > 0) arr = arr.slice(iFrom - 1, iTo > 0 ? iTo : undefined);
+                    var objQ = clCau ? clCau.selected() : {};
+                    var arrCau = objInfo.arrCauHoi.filter(function (c, i) { return objQ[String(i)]; });
+                    return { arrRow: arr, arrCauHoi: arrCau };
+                }
+                function calc() {
+                    var o = pick(), iCalls = o.arrRow.length * o.arrCauHoi.length;
+                    var strHtml = 'Sẽ xuất <b>' + o.arrRow.length.toLocaleString("vi-VN") + '</b> dòng × <b>' + o.arrCauHoi.length +
+                        '</b> câu hỏi = <b>' + iCalls.toLocaleString("vi-VN") + '</b> lượt gọi API.';
+                    if (iCalls > 0 && objSaved.rate > 0) {
+                        strHtml += '<br><span style="color:#57606a">Ước tính khoảng <b>' + fmt(iCalls / objSaved.rate) + '</b> (theo lần chạy trước: ' +
+                            objSaved.w + ' luồng, ~' + objSaved.rate.toLocaleString("vi-VN") + ' ô/giây)</span>';
+                    }
+                    if (iCalls > 200000) {
+                        strHtml += '<br><span style="color:#9a6700">Số lượt gọi rất lớn: nên lọc bớt phiếu / câu hỏi hoặc giới hạn số dòng.</span>';
+                    }
+                    if (o.arrRow.length && !o.arrCauHoi.length) {
+                        strHtml += '<br><span style="color:#57606a">Không chọn câu hỏi nào: chỉ xuất các cột thông tin.</span>';
+                    }
+                    if (objInfo.iTongBE > arrRow.length) {
+                        strHtml += '<br><span style="color:#9a6700">Lưu ý: BE chỉ trả ' + arrRow.length.toLocaleString("vi-VN") + '/' +
+                            objInfo.iTongBE.toLocaleString("vi-VN") + ' dòng.</span>';
+                    }
+                    $sum.html(strHtml);
+                    $wrap.find('[data-k="start"]').prop("disabled", o.arrRow.length === 0);
+                }
+                function start() {
+                    var o = pick();
+                    var arrDesc = [];
+                    if (clPhieu && clPhieu.countOn() < arrPhieu.length) arrDesc.push("Phiếu khảo sát: " + clPhieu.countOn() + "/" + arrPhieu.length + " phiếu");
+                    if (clStatus && clStatus.countOn() < arrStatus.length) arrDesc.push("Trạng thái khảo sát: " + clStatus.labels().join(", "));
+                    if ($from.val() || $to.val()) arrDesc.push("Phạm vi dòng: từ " + (parseInt($from.val(), 10) || 1) + " đến " + (parseInt($to.val(), 10) || "hết"));
+                    if (clCau && clCau.countOn() < arrQ.length) arrDesc.push("Câu hỏi: " + clCau.countOn() + "/" + arrQ.length);
+                    bRunning = true;
+                    $opt.hide(); $sum.hide();
+                    $run.show();
+                    $box.css("width", "min(520px,94vw)");
+                    setHead("fal fa-spinner fa-spin", strTitle);
+                    setBtns([
+                        {
+                            k: "partial", cls: "btn-outline-warning", style: "color:#9a6700;border-color:#bf8700",
+                            html: '<i class="fal fa-file-excel"></i> Dừng &amp; xuất phần đã tải', fn: function () {
+                                $wrap.find(".aps-ex-btns button").prop("disabled", true);
+                                objFn.onPartial();
+                            }
+                        },
+                        btnHuy("Hủy")
+                    ]);
+                    iStart = Date.now();
+                    fnStart({ arrRow: o.arrRow, arrCauHoi: o.arrCauHoi, iWorker: parseInt($thread.val(), 10), arrDesc: arrDesc });
+                }
+
+                $box.css("width", "min(760px,94vw)");
+                setHead("fal fa-sliders-h", "Tùy chọn xuất Excel");
+                $note.text("Mặc định xuất tất cả. Lọc bớt phiếu / câu hỏi / số dòng để chạy nhanh hơn (số lượt gọi = số dòng × số câu hỏi).");
+                $opt.show();
+                $sum.show();
+                $lblThread.css("display", "flex");
+                setBtns([
+                    btnHuy("Đóng"),
+                    { k: "start", cls: "btn-primary", html: '<i class="fal fa-file-excel"></i> Bắt đầu xuất', fn: start }
+                ]);
+                calc();
+            },
+            progress: function (iDone, iTotal, iErr) {
+                if (bEnded) return;
+                $run.show();
+                var iNow = Date.now();
+                if (!iRateAt) { iRateAt = iNow; iRateDone = iDone; }
+                else if (iNow - iRateAt >= 3000) {
+                    fRate = (iDone - iRateDone) / ((iNow - iRateAt) / 1000);
+                    iRateAt = iNow; iRateDone = iDone;
+                }
+                var iPct = iTotal ? Math.floor(iDone * 100 / iTotal) : 0;
+                var fElapsed = (iNow - iStart) / 1000;
+                var fPerSec = fRate > 0 ? fRate : (iDone > 0 ? iDone / fElapsed : 0);
+                var strEta = (fPerSec > 0 && iDone < iTotal) ? " · còn khoảng " + fmt((iTotal - iDone) / fPerSec) : "";
+                $wrap.find(".aps-ex-bar").css("width", iPct + "%");
+                $wrap.find(".aps-ex-count").text(iDone.toLocaleString("vi-VN") + " / " + iTotal.toLocaleString("vi-VN")
+                    + " (" + iPct + "%) · đã chạy " + fmt(fElapsed) + strEta
+                    + (fPerSec > 0 ? " · ~" + Math.round(fPerSec).toLocaleString("vi-VN") + " ô/giây" : "")
+                    + (iErr ? " · lỗi " + iErr.toLocaleString("vi-VN") : ""));
+            },
+            end: function (strHeader, strMsg, strColor, iAutoClose) {
+                bEnded = true;
+                $thread.prop("disabled", true);
+                $opt.hide(); $sum.hide();
+                $box.css("width", "min(520px,94vw)");
+                setHead("fal fa-info-circle", strHeader, strColor);
+                $note.text(strMsg);
+                setBtns([{
+                    k: "close", cls: "btn-outline-secondary", html: '<i class="fal fa-times"></i> Đóng', fn: function () { $wrap.remove(); }
+                }]);
+                if (iAutoClose) {
+                    setTimeout(function () { $wrap.fadeOut(300, function () { $(this).remove(); }); }, iAutoClose);
+                }
+            }
+        };
+    },
+
     save_CustomAPI: function () {
         var me = this;
         var Nonce = edu.util.uuid();

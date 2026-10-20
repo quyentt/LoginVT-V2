@@ -117,6 +117,7 @@ Import_PhaiNop.prototype = {
                 edu.system.alert("Vui lòng chọn file trước khi thực hiện import dữ liệu!");
                 return false;
             }
+            me["iDemLanLoi"] = 0;
             main_doc.Import_PhaiNop.getList_DataImport();
         });
         $("#btnHienThiDuLieu").click(function () {
@@ -342,8 +343,14 @@ Import_PhaiNop.prototype = {
                 edu.system.endLoading();
             },
             error: function (er) {
-                edu.system.alert(obj_list.action + " (er): " + JSON.stringify(er), "w");
-                edu.system.endLoading();
+                me["iDemLanLoi"]++;
+                if(me["iDemLanLoi"] > 2){
+                    edu.system.alert("Hãy tối ưu lại file up load, copy dữ liệu cần import sang file mới");
+                    return;
+                }
+                setTimeout(function () {
+                    me.getList_DataImport();
+                }, 1000);
             },
             type: "GET",
             action: obj_list.action,

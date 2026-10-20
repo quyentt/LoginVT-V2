@@ -267,14 +267,13 @@
         box-shadow: 0 6px 16px rgba(0, 0, 0, 0.28) !important;
         z-index: 3;
     }
+    /* [2026-10-13] Header dạng khối: tiêu đề chiếm TRỌN bề ngang (cột lịch có thể chỉ ~100-140px khi
+       màn hình hẹp / phóng to), nút "⋮" nằm góc phải-dưới của header, cùng hàng với giờ học. */
     .task-1 .task-header {
-        display: flex !important;
-        align-items: flex-start;
-        gap: 8px;
-        padding: 8px 6px 8px 10px;
-    }
-    /* Header không bị co khi thẻ thấp; thân thẻ lấy phần còn lại (trước đây height:calc(100% - 40px) làm thân đè lên dòng giờ) */
-    .task-1 .task-header {
+        display: block !important;
+        position: relative;
+        padding: 8px 10px 6px 10px;
+        /* Header không bị co khi thẻ thấp; thân thẻ lấy phần còn lại (trước đây height:calc(100% - 40px) làm thân đè lên dòng giờ) */
         flex-shrink: 0;
     }
     .day-of-week .task.task-1 .task-description {
@@ -288,7 +287,6 @@
         align-items: safe center;
     }
     .task-1 .task-header .text {
-        flex: 1 1 auto;
         min-width: 0;
     }
     .task-1 .task-header .title {
@@ -299,20 +297,50 @@
         word-break: break-word;
     }
     .task-1 .task-header .task-date {
+        display: flex;
+        align-items: center;
+        min-height: 24px;          /* chừa chỗ cho nút ⋮ nằm cùng hàng */
+        margin-top: 2px;
+        padding-right: 30px;
         opacity: 0.9;
     }
     .task-1 .task-actions {
-        flex: 0 0 auto;
+        position: absolute;
+        right: 6px;
+        bottom: 5px;
         display: flex;
+    }
+    /* Thẻ rất thấp (1 tiết, JS gắn .task-compact): không đủ chỗ cho hàng giờ riêng => nút ⋮ lên góc phải-trên,
+       tiêu đề 1 dòng chừa chỗ cho nút */
+    .task-1.task-compact .task-header {
+        padding-top: 6px;
+        padding-bottom: 4px;
+    }
+    .task-1.task-compact .task-header .title {
+        -webkit-line-clamp: 1;
+        padding-right: 30px;
+    }
+    .task-1.task-compact .task-header .task-date {
+        display: block;
+        min-height: 0;
+        margin-top: 1px;
+        padding-right: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .task-1.task-compact .task-actions {
+        top: 4px;
+        bottom: auto;
     }
     .task-1 .card-menu-btn {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 28px;
-        height: 28px;
+        width: 24px;
+        height: 24px;
         padding: 0;
-        border-radius: 8px;
+        border-radius: 7px;
         border: 1px solid rgba(255, 255, 255, 0.6);
         background: rgba(255, 255, 255, 0.18);
         color: #fff;
@@ -321,7 +349,7 @@
         transition: background 0.15s ease, color 0.15s ease;
     }
     .task-1 .card-menu-btn i {
-        font-size: 15px;
+        font-size: 13px;
     }
     .task-1 .card-menu-btn:hover,
     .task-1 .card-menu-btn:focus-visible,
@@ -717,6 +745,57 @@
         cursor: pointer;
     }
 
+    /* ---------- 5. Lưới lịch tuần luôn đủ 7 cột (2026-10-13, sếp phản hồi: "phóng to lên thì mất cột") ----------
+       Nguyên nhân: assets/css/calendar.css có @media (max-width:1920px) { .calendar-week-table{min-width:1680px}
+       .lich-canhan{overflow-x:scroll} } => màn hình ≤1920px (kể cả 100% trên màn Full HD, và mọi mức phóng to)
+       bảng bị ép dài 1680px; cột Thứ Sáu/Thứ Bảy/Chủ nhật nằm ngoài khung, thanh cuộn ngang thì ở tận đáy
+       khung cao ~960px nên người dùng không thấy => tưởng là "mất cột".
+       Nay: 7 cột chia đều vừa bề ngang khung (cột giờ cố định 64px); chỉ khi khung < 736px mới cuộn ngang. */
+    #zoneLichCaNhan {
+        overflow-x: auto !important;
+    }
+    #zoneLichCaNhan .calendar-week-table {
+        width: 100%;
+        min-width: 736px;
+    }
+    #zoneLichCaNhan .calendar-week-table .date {
+        flex: 0 0 64px;
+        width: 64px !important;
+    }
+    #zoneLichCaNhan .date-header .day-of-week,
+    #zoneLichCaNhan .date-body .day-of-week {
+        flex: 1 1 0;
+        width: auto !important;
+        min-width: 96px;
+    }
+    /* Ngày trong tiêu đề cột co theo bề ngang màn hình để không tràn khi cột hẹp (16px -> 12px) */
+    #zoneLichCaNhan .date-header .day-of-week .day {
+        font-size: clamp(12px, 1.05vw, 16px);
+    }
+    /* Thẻ co theo bề ngang cột: cột hẹp (<150px) thì thu nhỏ chữ để vẫn đọc được tiêu đề + giờ + phòng */
+    .day-of-week .task.task-1 {
+        container-type: inline-size;
+    }
+    @container (max-width: 150px) {
+        .task-1 .task-header {
+            padding: 6px 8px 5px 8px;
+        }
+        .task-1 .task-header .title {
+            font-size: 13px;
+            line-height: 16px;
+        }
+        .task-1 .task-header .task-date {
+            font-size: 11px;
+            line-height: 13px;
+            padding-right: 28px;
+        }
+        .day-of-week .task.task-1 .task-description {
+            padding: 4px 6px;
+            font-size: 12px;
+            line-height: 15px;
+        }
+    }
+
     /* ---------- 4. Nút trên 2 thanh "Điểm danh tự động" (nền xanh) / "Điểm danh thủ công" (nền cam) ----------
        Trước: nút xanh lá nhạt trên nền xanh dương, nút trắng chữ cam mảnh trên nền cam => khó nhìn, 3 nút 3 kiểu.
        Nay (theo quy ước nút đặc, cùng nhóm cùng tông): 2 nút "Lưu điểm danh..." là CTA xanh lá đặc viền trắng,
@@ -891,7 +970,7 @@
                     </div>
                     <p class="color-dask-blue fw-bold fs-18" id="lblCanBoTimKiem"></p>
                 </div>
-                <div class="lich-canhan">
+                <div class="lich-canhan" id="zoneLichCaNhan">
                     <div class="calendar-week-table">
                         <div class="date-header" id="date-header">
                             <div class="date">
@@ -1523,7 +1602,7 @@
     </div>
 </div>
 
-<script src="modules/lichgiang/script/lichgiang.js?v=1.0.0.4"></script>
+<script src="modules/lichgiang/script/lichgiang.js?v=1.0.0.5"></script>
 <script src="modules/lichgiang/script/jquery-searchbox.js"></script>
 <script type="text/javascript">
     var main_doc = {};

@@ -2079,7 +2079,7 @@ InBangDiem.prototype = {
                 {
                     //"mDataProp": "QLSV_NguoiHoc_Ten - QLSV_NguoiHoc_Ma",
                     mRender: function (nRow, aData) {
-                        return edu.util.returnEmpty(aData.QLSV_NGUOIHOC_HODEM) +  edu.util.returnEmpty(aData.QLSV_NGUOIHOC_TEN) + " - " + edu.util.returnEmpty(aData.QLSV_NGUOIHOC_MASO)
+                        return edu.util.returnEmpty(aData.QLSV_NGUOIHOC_HODEM) + " " + edu.util.returnEmpty(aData.QLSV_NGUOIHOC_TEN) + " - " + edu.util.returnEmpty(aData.QLSV_NGUOIHOC_MASO)
                     }
                 },
                 {
@@ -2100,7 +2100,20 @@ InBangDiem.prototype = {
             ]
         };
         edu.system.loadToTable_data(jsonForm);
-        edu.system.insertSumAfterTable("tblKetQuaDangKy", [3])
+        edu.system.insertSumAfterTable("tblKetQuaDangKy", [3]);
+        // Tổng tín chỉ tính theo học phần: 1 học phần có nhiều lớp học phần (lý thuyết, thực hành...) chỉ tính 1 lần,
+        // KHÔNG cộng theo bản ghi như insertSumAfterTable. Ghi đè ô tổng của cột "Số tín" (index 3).
+        if (data && data.length > 0) {
+            var objHocPhanDaTinh = {};
+            var dTongTinChi = 0;
+            data.forEach(function (e, i) {
+                var strKey = e.DAOTAO_HOCPHAN_ID || e.DAOTAO_HOCPHAN_MA || ('row_' + i);
+                if (objHocPhanDaTinh[strKey]) return;
+                objHocPhanDaTinh[strKey] = true;
+                dTongTinChi += parseFloat(e.DAOTAO_HOCPHAN_HOCTRINH) || 0;
+            });
+            $("#tblKetQuaDangKy tfoot td:eq(3)").html(Math.round(dTongTinChi * 100) / 100);
+        }
     },
     genTable_LichSuDangKy: function (data) {
         var me = this;

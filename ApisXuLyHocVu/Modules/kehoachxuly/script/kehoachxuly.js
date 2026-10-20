@@ -698,8 +698,8 @@ KeHoachXuLy.prototype = {
             'strChucNang_Id': edu.system.strChucNang_Id,
             'strXLHV_KeHoachXuLy_Id': me.strKeHoachXuLy_Id,
             'strNguoiTao_Id': edu.util.getValById('dropAAAA'),
-            'pageIndex': 1,
-            'pageSize':1000000,
+            'pageIndex': edu.system.pageIndex_default,
+            'pageSize': edu.system.pageSize_default,
         };
 
         //
@@ -713,7 +713,7 @@ KeHoachXuLy.prototype = {
                         iPager = data.Pager;
                     }
                     me.dtKetQuaXuLy = dtResult;
-                    me.genTable_SinhVien(dtResult);
+                    me.genTable_SinhVien(dtResult, iPager);
                 }
                 else {
                     edu.system.alert(obj_list.action + ": " + data.Message, "w");
@@ -842,29 +842,74 @@ KeHoachXuLy.prototype = {
     --Discription: [2] GenHTML NhanSu
     --ULR:  Modules
     -------------------------------------------*/
-    genTable_SinhVien: function (data) {
+    genTable_SinhVien: function (data, iPager) {
         var me = this;
         //3. create html
         me.arrSinhVien_Id = [];
         $("#tblInput_DTSV_SinhVien tbody").html("");
-        for (var i = 0; i < data.length; i++) {
-            var html = "";
-            html += "<tr id='rm_row" + data[i].QLSV_NGUOIHOC_ID + "'>";
-            html += "<td class='td-center'>" + (i + 1) + "</td>";
-            html += "<td class='td-center'><img class='table-img' src='" + edu.system.getRootPathImg(data[i].ANH) + "'></td>";
-            html += "<td class='td-left'><div class='btn btn-default min-w-auto btnView_HocTap' id='" + data[i].QLSV_NGUOIHOC_ID + "'><u>" + edu.util.returnEmpty(data[i].QLSV_NGUOIHOC_MASO) + "</u></div></td>";
-            html += "<td class='td-left'><span>" + data[i].QLSV_NGUOIHOC_HODEM + " " + data[i].QLSV_NGUOIHOC_TEN + "</span></td>";
-            html += "<td class='td-left'><span>" + data[i].DAOTAO_LOPQUANLY_TEN + "</span></td>";
-            html += "<td class='td-left'><span>" + edu.util.returnEmpty(data[i].DAOTAO_CHUONGTRINH_TEN) + "</span></td>";
-            html += "<td class='td-left'><span>" + edu.util.returnEmpty(data[i].DAOTAO_KHOADAOTAO_TEN) + "</span></td>";
-            html += '<td class="td-center"><input type="checkbox" id="checkX' + data[i].ID + '"/></td>';
-            html += "</tr>";
-            //4. fill into tblNhanSu
-            $("#tblInput_DTSV_SinhVien tbody").append(html);
-            //5. create data danhmucvaitro
-            me.arrSinhVien_Id.push(data[i].QLSV_NGUOIHOC_ID);
-            me.arrSinhVien.push(data[i]);
-        }
+        // for (var i = 0; i < data.length; i++) {
+        //     var html = "";
+        //     html += "<tr id='rm_row" + data[i].QLSV_NGUOIHOC_ID + "'>";
+        //     html += "<td class='td-center'>" + (i + 1) + "</td>";
+        //     html += "<td class='td-center'><img class='table-img' src='" + edu.system.getRootPathImg(data[i].ANH) + "'></td>";
+        //     html += "<td class='td-left'><div class='btn btn-default min-w-auto btnView_HocTap' id='" + data[i].QLSV_NGUOIHOC_ID + "'><u>" + edu.util.returnEmpty(data[i].QLSV_NGUOIHOC_MASO) + "</u></div></td>";
+        //     html += "<td class='td-left'><span>" + data[i].QLSV_NGUOIHOC_HODEM + " " + data[i].QLSV_NGUOIHOC_TEN + "</span></td>";
+        //     html += "<td class='td-left'><span>" + data[i].DAOTAO_LOPQUANLY_TEN + "</span></td>";
+        //     html += "<td class='td-left'><span>" + edu.util.returnEmpty(data[i].DAOTAO_CHUONGTRINH_TEN) + "</span></td>";
+        //     html += "<td class='td-left'><span>" + edu.util.returnEmpty(data[i].DAOTAO_KHOADAOTAO_TEN) + "</span></td>";
+        //     html += '<td class="td-center"><input type="checkbox" id="checkX' + data[i].ID + '"/></td>';
+        //     html += "</tr>";
+        //     //4. fill into tblNhanSu
+        //     $("#tblInput_DTSV_SinhVien tbody").append(html);
+        //     //5. create data danhmucvaitro
+        //     me.arrSinhVien_Id.push(data[i].QLSV_NGUOIHOC_ID);
+        //     me.arrSinhVien.push(data[i]);
+        // }
+        var jsonForm = {
+            strTable_Id: "tblInput_DTSV_SinhVien",
+            aaData: data,
+            bPaginate: {
+                strFuntionName: "main_doc.KeHoachXuLy.getList_SinhVien('SEARCH')",
+                iDataRow: iPager,
+            },
+            colPos: {
+                center: [0,1, 7]
+            },
+            aoColumns: [
+                {
+                    "mRender": function (nRow, aData) {
+                        return '';
+                    }
+                }
+                , {
+                    "mRender": function (nRow, aData) {
+                        
+                        return "<div class='btn btn-default min-w-auto btnView_HocTap' id='" + aData.QLSV_NGUOIHOC_ID + "'><u>" + edu.util.returnEmpty(aData.QLSV_NGUOIHOC_MASO) + "</u></div>";
+                    }
+                }
+                , {
+                    "mRender": function (nRow, aData) {
+                        
+                        return '<span>' + aData.QLSV_NGUOIHOC_HODEM + ' ' + aData.QLSV_NGUOIHOC_TEN + '</span>';
+                    }
+                }
+                , {
+                    "mDataProp": "DAOTAO_LOPQUANLY_TEN",
+                }
+                , {
+                    "mDataProp": "DAOTAO_CHUONGTRINH_TEN",
+                }
+                , {
+                    "mDataProp": "DAOTAO_KHOADAOTAO_TEN",
+                }
+                , {
+                    "mRender": function (nRow, aData) {
+                        return '<input type="checkbox" id="checkX' + aData.ID + '"/>';
+                    }
+                }
+            ]
+        };
+        edu.system.loadToTable_data(jsonForm);
     },
     addHTMLinto_SinhVien: function (strNhanSu_Id) {
         var me = main_doc.KeHoachXuLy;
