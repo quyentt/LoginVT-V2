@@ -41,6 +41,10 @@
          help-sso.key.xml  khoá RSA 2048 — tự sinh lần chạy đầu. Mất tệp này là
                            đổi khoá: Help đọc lại JWKS trong 10 phút, không phải hẹn.
 
+       26/10 (host UTC qldt.utc.edu.vn/qtdh): API CHỈ nhận token từ đúng IP đã đăng nhập (cùng URL / token / thân /
+       cookie, máy chủ gọi vẫn 401, trình duyệt 200) → vỏ v1 tự lấy vai trò rồi POST `roles` sang đây
+       (index.aspx menu người dùng → edu.system.soanBaiHuongDan, Core/systemroot.js). Không có `roles` thì gọi API như cũ.
+
        ?xem=1  → CHỈ hiện payload sẽ gửi + kết quả từng lời gọi, KHÔNG gửi.
                  Dùng để kiểm trên host trước khi bật thật.
 
@@ -130,7 +134,7 @@
     }
 
     /* ---------- Gọi API microservice như api.js ---------- */
-    class KetQuaApi { public bool ok; public string loi = ""; public string url = ""; public JArray data = new JArray(); public string message = ""; }
+    class KetQuaApi { public bool ok; public string loi = ""; public string url = ""; public string than = ""; public JArray data = new JArray(); public string message = ""; }
 
     string GocHost(CauHinh ch)
     {
@@ -163,6 +167,25 @@
         return dau + m.Groups[2].Value;
     }
 
+    string NguonBaseUrl(CauHinh ch, string prefix)
+    {
+        var l = new List<string>();
+        string v = ""; try { v = Apis.CommonV1.Base.AppSetting.GetString(prefix); } catch (Exception ex) { v = "(lỗi " + ex.Message + ")"; }
+        l.Add("web.config appSettings[" + prefix + "] = " + (string.IsNullOrEmpty(v) ? "(trống)" : v));
+        string p = Server.MapPath(ch.configJs);
+        if (!File.Exists(p)) l.Add("Config.js: KHÔNG có " + p);
+        else
+        {
+            var dong = new List<string>();
+            foreach (string d in File.ReadAllLines(p, Encoding.UTF8))
+                if (!d.TrimStart().StartsWith("//") && (d.IndexOf(prefix + ":") >= 0 || d.IndexOf(prefix + " :") >= 0 || System.Text.RegularExpressions.Regex.IsMatch(d, @"\bvar\s+\w+\s*=")))
+                    dong.Add(d.Trim());
+            l.Add("Config.js (" + p + ") các dòng liên quan: " + (dong.Count > 0 ? string.Join(" ⏎ ", dong.ToArray()) : "(không thấy dòng nào)"));
+        }
+        l.Add("→ BaseUrl dùng: " + BaseUrl(ch, prefix));
+        return string.Join(" · ", l.ToArray());
+    }
+
     KetQuaApi GoiApi(CauHinh ch, string action, string func, Dictionary<string, object> them)
     {
         var kq = new KetQuaApi();
@@ -181,24 +204,51 @@
         data["strVaiTroDangNhap_Id"] = app_id ?? "";
         if (!data.ContainsKey("strChucNangHeThong_Id")) data["strChucNangHeThong_Id"] = "";
         data["strNguoiThucVai_Id"] = "";
+        var thuong = new List<string>();
+        foreach (var kv in data) thuong.Add(HttpUtility.UrlEncode(kv.Key) + "=" + HttpUtility.UrlEncode(Convert.ToString(kv.Value)));
+        string bodyThuong = string.Join("&", thuong.ToArray());
         data["iM"] = ch.iM;
         string key = action.Substring(action.IndexOf('/') + 1);
-        string body = "A=" + HttpUtility.UrlEncode(AE(JsonConvert.SerializeObject(data), key));
+        string bodyMaHoa = "A=" + HttpUtility.UrlEncode(AE(JsonConvert.SerializeObject(data), key));
 
         // Sau proxy Request.Url có thể là http:// dù thật là https:// → thử scheme hiện có, hỏng thì đổi scheme
-        string[] thu = baseUrl.StartsWith("http") ? new[] { url } : new[] { url, url.StartsWith("https://") ? "http://" + url.Substring(8) : "https://" + url.Substring(7) };
+        var thu = new List<string>();
+        thu.Add(url);
+        string hostGoc = new Uri(url).Host;
+        if (!baseUrl.StartsWith("http"))
+        {
+            thu.Add(url.StartsWith("https://") ? "http://" + url.Substring(8) : "https://" + url.Substring(7));
+            // Gọi vòng trong máy chủ: tránh proxy / WAF / NAT khi máy chủ tự gọi tên miền công khai của mình
+            thu.Add("http://127.0.0.1" + new Uri(url).PathAndQuery);
+        }
+        var cacLoi = new List<string>();
+        // Hai dạng thân × các đường: dạng bọc iM (như _v2 / api.js) trước, dạng form thường (như v1 không iM) sau
+        var cacThan = new List<KeyValuePair<string, string>>();
+        cacThan.Add(new KeyValuePair<string, string>("bọc iM", bodyMaHoa));
+        cacThan.Add(new KeyValuePair<string, string>("form thường", bodyThuong));
+        foreach (var than in cacThan)
         foreach (string u in thu)
         {
+            string body = than.Value;
             kq.url = u;
+            kq.than = than.Key;
             try
             {
                 ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
                 var req = (HttpWebRequest)WebRequest.Create(u);
+                if (u.StartsWith("http://127.0.0.1")) req.Host = hostGoc;
                 req.Method = "POST";
                 req.ContentType = "application/x-www-form-urlencoded; charset=UTF-8";
-                req.Headers["Authorization"] = "Bearer " + tokenjwt;
+                req.Headers["Authorization"] = "Bearer " + (tokenApi.Length > 0 ? tokenApi : tokenjwt);
                 req.Timeout = 30000;
                 req.AllowAutoRedirect = false;
+                // Thử 26/10 (host UTC 401 dù token trùng trình duyệt): gửi y như trình duyệt — cookie phiên, UA, IP thật, Referer
+                string ck = Request.Headers["Cookie"]; if (!string.IsNullOrEmpty(ck)) req.Headers["Cookie"] = ck;
+                string ua = Request.UserAgent; if (!string.IsNullOrEmpty(ua)) req.UserAgent = ua;
+                string ip = Request.UserHostAddress; if (!string.IsNullOrEmpty(ip)) { req.Headers["X-Forwarded-For"] = ip; req.Headers["X-Real-IP"] = ip; }
+                req.Referer = Request.Url.GetLeftPart(UriPartial.Authority) + (Request.ApplicationPath ?? "/").TrimEnd('/') + "/index.aspx";
+                req.Headers["Origin"] = Request.Url.GetLeftPart(UriPartial.Authority);
+                kqKemTheo = "Cookie " + (ck ?? "").Length + " ký tự · X-Forwarded-For " + ip + " · UA " + (ua ?? "").Length + " ký tự · Origin " + req.Headers["Origin"] + " · Referer " + req.Referer;
                 byte[] bb = Encoding.UTF8.GetBytes(body);
                 req.ContentLength = bb.Length;
                 using (var s = req.GetRequestStream()) s.Write(bb, 0, bb.Length);
@@ -228,7 +278,9 @@
                 if (kq.loi.Length > 600) kq.loi = kq.loi.Substring(0, 600) + "…";
             }
             catch (Exception ex) { kq.loi = ex.GetType().Name + ": " + ex.Message; }
+            cacLoi.Add("[" + than.Key + "] " + u + " → " + kq.loi);
         }
+        kq.loi = string.Join(" ‖ ", cacLoi.ToArray());
         return kq;
     }
 
@@ -279,6 +331,72 @@
         return (fullname ?? "").Trim();
     }
 
+    /* Token JWT giải từ blob phiên lblXYZCLRVN — CHÍNH blob index.aspx bơm cho trình duyệt (AXYZCLRVN()), v1 giải bằng
+       AFG() → edu.system.tokenJWT, v2 bằng session.js → S.tokenJWT. Trình duyệt gọi API được bằng token này, nên khi
+       thuộc tính tokenjwt của lớp cha rỗng / khác thì dùng token của blob. Thêm 26/10 sau khi host UTC trả 401. */
+    string kqKemTheo = ""; // chẩn đoán: header đã gửi kèm lời gọi API gần nhất
+    string tokenApi = "";   // token thật sự gửi Bearer — chọn ở Page_PreRender (blob phiên hoặc tokenjwt lớp cha)
+
+    string TokenTuBlob(out string loi)
+    {
+        loi = "";
+        try
+        {
+            string blob = Convert.ToString(lblXYZCLRVN);
+            if (string.IsNullOrEmpty(blob)) { loi = "lblXYZCLRVN rỗng"; return ""; }
+            var o = JObject.Parse(AD(blob, "AzzS"));
+            string t = Convert.ToString((object)o["tokenJWT"]) ?? "";
+            if (t.Length == 0) loi = "blob không có tokenJWT (khoá: " + TenCot(new JArray(o)) + ")";
+            return t;
+        }
+        catch (Exception ex) { loi = ex.GetType().Name + ": " + ex.Message; return ""; }
+    }
+    static string ClaimJwt(string t)
+    {
+        try
+        {
+            var ph = t.Split('.'); if (ph.Length < 2) return "(không phải JWT: " + ph.Length + " phần)";
+            string b = ph[1].Replace('-', '+').Replace('_', '/'); while (b.Length % 4 != 0) b += "=";
+            var o = JObject.Parse(Encoding.UTF8.GetString(Convert.FromBase64String(b)));
+            long now = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds;
+            string them = "";
+            if (o["exp"] != null) { long e = (long)o["exp"]; them = " · exp " + (e > now ? "còn " + (e - now) + " giây" : "ĐÃ HẾT HẠN " + (now - e) + " giây trước"); }
+            return o.ToString(Formatting.None) + them;
+        }
+        catch (Exception ex) { return "(không giải được: " + ex.Message + ")"; }
+    }
+    static string DauToken(string t) { return t.Length == 0 ? "(rỗng)" : t.Length + " ký tự, đầu " + t.Substring(0, Math.Min(12, t.Length)) + "…"; }
+
+    /* Danh sách mã vai trò do VỎ v1 gửi sang (edu.system.soanBaiHuongDan → form POST `roles` = JSON mảng chuỗi).
+       Lý do (26/10, host UTC): API chỉ nhận token từ đúng IP đã đăng nhập — cùng URL / token / thân / cookie, gọi từ máy
+       chủ vẫn 401 trong khi trình duyệt 200 — nên trang này không tự lấy vai trò được. Chỉ nhận khi POST cùng nguồn
+       (Origin hoặc Referer trùng host). LƯU Ý: danh sách do trình duyệt gửi, người dùng có thể sửa; Help cấp quyền theo
+       mã vai trò, nên quyền thật phải được Help kiểm thêm phía họ. Trả null = không có → gọi API như cũ. */
+    string LyDoTuChoiRoles()
+    {
+        if (!string.Equals(Request.HttpMethod, "POST", StringComparison.OrdinalIgnoreCase)) return "yêu cầu là " + Request.HttpMethod + ", không phải POST (mở trang bằng link / F5 thì không có vai trò kèm theo)";
+        if (Request.Form["roles"] == null) return "POST không có trường roles";
+        return "không chứng minh được cùng nguồn: Origin = " + (Request.Headers["Origin"] ?? "(không có)") + ", Referer = " + (Request.Headers["Referer"] ?? "(không có)") +
+               ", uid form = " + (Request.Form["uid"] ?? "(không có)") + ", uid phiên = " + (user_id ?? "");
+    }
+
+    string NhanRolesTuForm()
+    {
+        if (!string.Equals(Request.HttpMethod, "POST", StringComparison.OrdinalIgnoreCase)) return null;
+        string v = Request.Form["roles"];
+        if (v == null) return null;
+        // Cùng nguồn: Origin / Referer trùng host, HOẶC form kèm `uid` đúng ID người đang đăng nhập (trang có chính sách
+        // no-referrer — như chính trang ?xem=1 — gửi Origin: null, nên không dựa được vào header; uid là GUID 32 ký tự
+        // chỉ phiên của người đó biết).
+        string uidForm = (Request.Form["uid"] ?? "").Trim();
+        if (uidForm.Length > 0 && string.Equals(uidForm, (user_id ?? "").Trim(), StringComparison.OrdinalIgnoreCase)) return v;
+        string nguon = Request.Headers["Origin"];
+        if (string.IsNullOrEmpty(nguon) && Request.UrlReferrer != null) nguon = Request.UrlReferrer.GetLeftPart(UriPartial.Authority);
+        Uri u;
+        if (string.IsNullOrEmpty(nguon) || !Uri.TryCreate(nguon, UriKind.Absolute, out u) || !string.Equals(u.Host, Request.Url.Host, StringComparison.OrdinalIgnoreCase)) return null;
+        return v;
+    }
+
     string Loi(string tieuDe, string chiTiet)
     {
         return "<div class=\"box loi\"><h1>" + Server.HtmlEncode(tieuDe) + "</h1><p>" + Server.HtmlEncode(chiTiet) + "</p>" +
@@ -287,6 +405,10 @@
 
     protected string noiDung = "";
     protected bool tuGui = false;
+    /* Mở bằng GET (nút "?" từ Help quay về, gõ địa chỉ, F5): trình duyệt tự gọi API vai trò (API chỉ nhận token từ IP
+       đã đăng nhập) rồi POST lại chính trang này kèm roles + uid — xem khối script cuối tệp. */
+    protected bool khoiDong = false;
+    protected string khoiDongCauHinh = "{}";
 
     /* Host để customErrors=RemoteOnly nên mọi lỗi chưa bắt chỉ hiện "Runtime Error" — trang tự in lỗi thật
        (kiểu + thông điệp; kèm stack khi ?xem=1) để không phải lên máy chủ đọc nhật ký (đã vấp 27/9). */
@@ -317,6 +439,17 @@
         if (uid.Length == 0) { noiDung = Loi("Chưa đăng nhập", "Không thấy phiên đăng nhập. Hãy đăng nhập lại rồi bấm \"Soạn bài hướng dẫn\" một lần nữa."); return; }
 
         bool xem = Request.QueryString["xem"] == "1";
+
+        // Token gọi API: tokenjwt của lớp cha so với token giải từ blob phiên. Khác nhau / rỗng → dùng blob
+        // (trình duyệt đang gọi API được bằng đúng token đó). Chẩn đoán in ở ?xem=1.
+        string tokenCha = (tokenjwt ?? "").Trim();
+        string loiBlob;
+        string tokenBlob = (TokenTuBlob(out loiBlob) ?? "").Trim();
+        string nguonToken;
+        if (tokenBlob.Length > 0 && tokenBlob != tokenCha) { tokenApi = tokenBlob; nguonToken = tokenCha.Length == 0 ? "blob phiên (tokenjwt lớp cha RỖNG)" : "blob phiên (KHÁC tokenjwt lớp cha)"; }
+        else if (tokenBlob.Length > 0) nguonToken = "tokenjwt lớp cha (GIỐNG blob phiên)";
+        else nguonToken = "tokenjwt lớp cha (không giải được blob: " + loiBlob + ")";
+
         CauHinh ch;
         try { ch = DocCauHinh(); }
         catch (Exception ex)
@@ -325,20 +458,56 @@
             return;
         }
 
-        // 1. Vai trò — như giao diện gọi (site.config.js api.endpoints.roles)
-        var kqVaiTro = GoiApi(ch, ch.rolesAction, ch.rolesFunc, new Dictionary<string, object> { { "strChucNang_Id", "" } });
+        // 1. Vai trò — vỏ v1 POST `roles` sang (xem NhanRolesTuForm) thì dùng luôn và KHÔNG gọi API nữa;
+        //    không có thì gọi API như giao diện (host nào cho máy chủ gọi API thì vẫn chạy như trước 26/10).
         var roles = new List<string>();
-        foreach (var r in kqVaiTro.data) { string m = Cot(r, ch.roleColumn); if (m.Length > 0 && !roles.Contains(m)) roles.Add(m); }
+        string formRoles = NhanRolesTuForm();
+        bool rolesTuForm = formRoles != null;
+        var kqVaiTro = new KetQuaApi();
+        if (!rolesTuForm && string.Equals(Request.HttpMethod, "GET", StringComparison.OrdinalIgnoreCase))
+        {
+            string baseCms = BaseUrl(ch, ch.rolesAction.Substring(0, ch.rolesAction.IndexOf('_')));
+            var cfgJs = new Dictionary<string, object>();
+            cfgJs["url"] = (baseCms.StartsWith("http") ? baseCms : GocHost(ch) + baseCms) + "/" + ch.rolesAction;
+            cfgJs["key"] = ch.rolesAction.Substring(ch.rolesAction.IndexOf('/') + 1);
+            cfgJs["iM"] = ch.iM;
+            cfgJs["action"] = ch.rolesAction;
+            cfgJs["func"] = ch.rolesFunc;
+            cfgJs["col"] = ch.roleColumn;
+            cfgJs["baseLoi"] = baseCms.Length == 0 ? "Không tìm thấy base URL API cho tiền tố CMS" : "";
+            khoiDongCauHinh = JsonConvert.SerializeObject(cfgJs, new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeHtml });
+            khoiDong = true;
+            noiDung = "<div class=\"box\"><h1>Đang lấy danh sách vai trò…</h1>" +
+                      "<p>Trình duyệt đang hỏi hệ thống danh sách vai trò của bạn rồi chuyển tiếp sang Cổng Help. Nếu trang đứng yên quá 15 giây, " +
+                      "hãy <a href=\"index.aspx\">về trang chính</a> và bấm \"Soạn bài hướng dẫn\" trong menu người dùng.</p>" +
+                      "<p id=\"kdLoi\" class=\"do\"></p><noscript><p class=\"do\">Cần bật JavaScript.</p></noscript></div>";
+            return;
+        }
+        if (rolesTuForm)
+        {
+            try
+            {
+                var l = JsonConvert.DeserializeObject<List<string>>(formRoles);
+                if (l != null) foreach (string m in l) { string x = (m ?? "").Trim(); if (x.Length > 0 && !roles.Contains(x)) roles.Add(x); }
+            }
+            catch (Exception ex) { kqVaiTro.loi = "roles từ vỏ v1 không phải JSON mảng chuỗi: " + ex.Message; }
+        }
+        else
+        {
+            kqVaiTro = GoiApi(ch, ch.rolesAction, ch.rolesFunc, new Dictionary<string, object> { { "strChucNang_Id", "" } });
+            foreach (var r in kqVaiTro.data) { string m = Cot(r, ch.roleColumn); if (m.Length > 0 && !roles.Contains(m)) roles.Add(m); }
+        }
 
         // 2. Email — danh sách người dùng theo từ khoá tài khoản, khớp đúng ID
         //    API chỉ tìm theo CHUỖI CON, không có lời gọi lấy theo ID. Từ khoá có thể rất ngắn (tài khoản thử tên "01"
         //    nằm ở dòng 1501–2000 của kết quả) → lật tối đa 10 trang × 500; không thấy thì thử họ tên.
         string tuKhoa = TuKhoaNguoiDung();
-        KetQuaApi kqNguoiDung = null;
+        KetQuaApi kqNguoiDung = new KetQuaApi();
         JToken dongNguoiDung = null;
         var cacTuKhoa = new List<string>(); cacTuKhoa.Add(tuKhoa);
         string hoTen = (fullname ?? "").Trim();
         if (hoTen.Length > 0 && hoTen != tuKhoa) cacTuKhoa.Add(hoTen);
+        if (!rolesTuForm)
         foreach (string tk in cacTuKhoa)
         {
             for (int trang = 1; trang <= 10 && dongNguoiDung == null; trang++)
@@ -413,9 +582,29 @@
             sb.Append("<p>JWKS (đăng ký với Help): <code id=\"jwks\">" + Server.HtmlEncode(duongJwks) + "</code>" +
                       "<script>document.getElementById('jwks').textContent=location.origin+" + JsonConvert.SerializeObject(duongJwks) + ";</scr" + "ipt></p>");
             sb.Append("<p>Cấu hình: <code>" + Server.HtmlEncode(Path.Combine(ThuMuc(), TEP_CAU_HINH)) + "</code></p>");
+            sb.Append("<p>Token gọi API: <b>" + Server.HtmlEncode(nguonToken) + "</b><br>" +
+                      "tokenjwt lớp cha: <code>" + Server.HtmlEncode(DauToken(tokenCha)) + "</code> · " +
+                      "token blob phiên: <code>" + Server.HtmlEncode(DauToken(tokenBlob)) + "</code>" +
+                      (loiBlob.Length > 0 ? " · <span class=\"do\">" + Server.HtmlEncode(loiBlob) + "</span>" : "") +
+                      "<br>So với console v1: <code>edu.system.tokenJWT.length</code> và 12 ký tự đầu phải trùng cột blob.</p>");
+            string tokenDung = tokenApi.Length > 0 ? tokenApi : tokenCha;
+            sb.Append("<p>Nguồn base URL tiền tố CMS: <code>" + Server.HtmlEncode(NguonBaseUrl(ch, "CMS")) + "</code><br>" +
+                      "Đối chiếu console v1: <code>edu.system.apiUrlTemp + edu.system.objApi.CMS</code> phải trùng phần trước tên action ở dòng Vai trò.</p>");
+            sb.Append("<p>Claim của token đang dùng: <code>" + Server.HtmlEncode(ClaimJwt(tokenDung)) + "</code><br>" +
+                      "Giờ máy chủ (UTC): <code>" + DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss") + "</code> · IP người dùng theo máy chủ: <code>" + Server.HtmlEncode(Request.UserHostAddress ?? "") + "</code><br>" +
+                      "Header gửi kèm lời gọi API: <code>" + Server.HtmlEncode(kqKemTheo) + "</code></p>");
+            if (!rolesTuForm)
+                sb.Append("<p class=\"do\">Không nhận vai trò từ vỏ v1: " + Server.HtmlEncode(LyDoTuChoiRoles()) + " → đã gọi API phía máy chủ.</p>");
+            if (rolesTuForm)
+                sb.Append("<p>Vai trò: <b style=\"color:#067647\">ĐÃ NHẬN " + roles.Count + " mã từ vỏ v1</b> (không gọi API phía máy chủ)" +
+                          (kqVaiTro.loi.Length > 0 ? " <span class=\"do\">" + Server.HtmlEncode(kqVaiTro.loi) + "</span>" : "") +
+                          "<br><code>" + Server.HtmlEncode(string.Join(", ", roles.ToArray())) + "</code></p>");
+            else
             sb.Append("<p>Vai trò (" + Server.HtmlEncode(ch.rolesFunc) + ") · <code>" + Server.HtmlEncode(kqVaiTro.url) + "</code>: " +
                       (kqVaiTro.loi.Length > 0 ? "<span class=\"do\">LỖI " + Server.HtmlEncode(kqVaiTro.loi) + "</span>" :
-                       kqVaiTro.data.Count + " dòng, cột <code>" + Server.HtmlEncode(TenCot(kqVaiTro.data)) + "</code>, " + roles.Count + " mã " + Server.HtmlEncode(ch.roleColumn)) + "</p>");
+                       kqVaiTro.data.Count + " dòng, cột <code>" + Server.HtmlEncode(TenCot(kqVaiTro.data)) + "</code>, " + roles.Count + " mã " + Server.HtmlEncode(ch.roleColumn) + " · thân <b>" + Server.HtmlEncode(kqVaiTro.than) + "</b>") + "</p>");
+            if (rolesTuForm) sb.Append("<p>Người dùng: bỏ qua API phía máy chủ (vai trò đã nhận từ vỏ v1) — email lấy ở CSDL đăng nhập.</p>");
+            else
             sb.Append("<p>Người dùng (" + Server.HtmlEncode(ch.userFunc) + ", từ khoá <b>" + Server.HtmlEncode(tuKhoa) + "</b>): " +
                       (kqNguoiDung.loi.Length > 0 ? "<span class=\"do\">LỖI " + Server.HtmlEncode(kqNguoiDung.loi) + "</span>" :
                        kqNguoiDung.data.Count + " dòng, " + (dongNguoiDung != null ? "ĐÃ khớp ID" : "<span class=\"do\">KHÔNG có dòng nào khớp ID người đang đăng nhập</span>")) + "</p>");
@@ -427,12 +616,30 @@
             if (loiDangNhapDb.Length > 0) sb.Append("<p class=\"do\">Lỗi đọc CSDL đăng nhập: " + Server.HtmlEncode(loiDangNhapDb) + "</p>");
             if (email.Length == 0) sb.Append("<p class=\"do\">Tài khoản chưa có email → Help sẽ trả 401. Bổ sung ở Quản trị → Người dùng.</p>");
             sb.Append("<h2>Payload</h2><pre>" + Server.HtmlEncode(JsonConvert.SerializeObject(payload, Formatting.Indented)) + "</pre>");
+            if (rolesTuForm)
+                sb.Append("<form method=\"post\" action=\"help-sso.aspx\" style=\"display:inline\"><input type=\"hidden\" name=\"roles\" value=\"" + Server.HtmlEncode(JsonConvert.SerializeObject(roles)) + "\">" +
+                          "<input type=\"hidden\" name=\"uid\" value=\"" + Server.HtmlEncode(uid) + "\">" +
+                          "<button type=\"submit\">Gửi thật (giữ nguyên vai trò vừa nhận)</button></form> · <a href=\"index.aspx\">Về trang chính</a></div>");
+            else
             sb.Append("<p><a href=\"help-sso.aspx\">Gửi thật</a> · <a href=\"index.aspx\">Về trang chính</a></p></div>");
             noiDung = sb.ToString();
             return;
         }
 
-        if (kqVaiTro.loi.Length > 0) { noiDung = Loi("Không đọc được vai trò của bạn", kqVaiTro.loi); return; }
+        if (kqVaiTro.loi.Length > 0)
+        {
+            noiDung = Loi("Không đọc được vai trò của bạn",
+                          "Không nhận được vai trò từ vỏ v1 (" + LyDoTuChoiRoles() + "). Hãy về trang chính rồi bấm \"Soạn bài hướng dẫn\" trong menu người dùng. " +
+                          "Lỗi khi máy chủ tự gọi API: " + kqVaiTro.loi);
+            return;
+        }
+        if (rolesTuForm && roles.Count == 0)
+        {
+            string loiTd = (Request.Form["loi"] ?? "").Trim();
+            noiDung = Loi("Không có vai trò nào để gửi", "Trình duyệt không lấy được mã vai trò nào" + (loiTd.Length > 0 ? " (" + loiTd + ")" : "") +
+                          ". Về trang chính, chờ trang nạp xong rồi bấm lại \"Soạn bài hướng dẫn\" trong menu người dùng.");
+            return;
+        }
         if (kqNguoiDung.loi.Length > 0) { noiDung = Loi("Không đọc được thông tin người dùng", kqNguoiDung.loi); return; }
         if (email.Length == 0)
         {
@@ -492,5 +699,45 @@
 <body>
     <%= noiDung %>
     <% if (tuGui) { %><script>document.getElementById('f').submit();</script><% } %>
+    <% if (khoiDong) { %>
+    <script src="assets/js/crypto-js.js?v=32"></script>
+    <script>
+    /* Lấy vai trò phía trình duyệt (như vỏ v1 gọi: thân bọc iM, Bearer token của phiên) rồi POST lại trang này. */
+    (function () {
+        var cfg = <%= khoiDongCauHinh %>;
+        var blob = "<%= lblXYZCLRVN %>";
+        function post(roles, uid, loi) {
+            var f = document.createElement('form');
+            f.method = 'POST';
+            f.action = location.pathname + location.search;   // giữ ?xem=1 và mọi tham số Help gửi kèm
+            function add(n, v) { var i = document.createElement('input'); i.type = 'hidden'; i.name = n; i.value = v; f.appendChild(i); }
+            add('roles', JSON.stringify(roles)); add('uid', uid || ''); add('loi', loi || '');
+            document.body.appendChild(f); f.submit();
+        }
+        function baoLoi(m) { var e = document.getElementById('kdLoi'); if (e) e.textContent = m; }
+        var a;
+        try { a = JSON.parse(AD(blob, 'AzzS')); } catch (ex) { baoLoi('Không giải được phiên đăng nhập: ' + ex.message); return; }
+        if (cfg.baseLoi) { baoLoi(cfg.baseLoi); return; }
+        var d = { action: cfg.action, func: cfg.func, strChucNang_Id: '', strNguoiThucHien_Id: a.userId || '',
+                  strVaiTroDangNhap_Id: '', strChucNangHeThong_Id: '', strNguoiThucVai_Id: '', iM: cfg.iM };
+        var ctl = new AbortController(); setTimeout(function () { ctl.abort(); }, 20000);
+        // Trang này đặt no-referrer → mặc định fetch KHÔNG gửi Referer và Origin = null; API có vẻ kiểm Referer
+        // (từ index.aspx cùng token thì 200) nên ghi đè cho riêng lời gọi này: Referer = trang ứng dụng.
+        var refApp = location.origin + location.pathname.replace(/help-sso\.aspx$/i, 'index.aspx');
+        fetch(cfg.url, { method: 'POST', signal: ctl.signal, cache: 'no-store', referrer: refApp, referrerPolicy: 'unsafe-url',
+                         headers: { 'Authorization': 'Bearer ' + (a.tokenJWT || ''), 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+                         body: new URLSearchParams({ A: AE(JSON.stringify(d), cfg.key) }) })
+        .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+        .then(function (j) {
+            var data = j && j.Data;
+            if (data && data.B) data = JSON.parse(AD(data.B, cfg.iM));
+            var ma = [];
+            (data || []).forEach(function (r) { var m = r[cfg.col] || r.MAVAITRO || r.MAUNGDUNG; if (m && ma.indexOf(m) < 0) ma.push(m); });
+            post(ma, a.userId, j && j.Success === false ? ('Success=false ' + (j.Message || '')) : '');
+        })
+        .catch(function (ex) { baoLoi('Không lấy được vai trò: ' + ex.message); post([], a.userId, ex.message); });
+    })();
+    </script>
+    <% } %>
 </body>
 </html>

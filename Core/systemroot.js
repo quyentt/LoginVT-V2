@@ -591,8 +591,20 @@ systemroot.prototype = {
         });
         me.pickerdate();
 
-        
-        
+        /* Mục "Soạn bài hướng dẫn" (SSO sang Cổng Help) chèn vào menu người dùng ngay trên "Đăng xuất" —
+           chèn bằng JS để KHÔNG phải sửa index.aspx trên host (26/10). Xử lý: soanBaiHuongDan() bên dưới. */
+        try {
+            var ulUser = document.querySelector('.dropdown-menu.user-action');
+            if (ulUser && !document.getElementById('liSoanBaiHelp')) {
+                var li = document.createElement('li');
+                li.id = 'liSoanBaiHelp';
+                li.innerHTML = '<a class="dropdown-item" href="help-sso.aspx"><i class="fa-light fa-pen-to-square"></i><span>Soạn bài hướng dẫn</span></a>';
+                li.firstChild.addEventListener('click', function (ev) { ev.preventDefault(); me.soanBaiHuongDan(); });
+                var aOut = ulUser.querySelector('a[href="Logout.aspx"]');
+                if (aOut && aOut.parentNode && aOut.parentNode.parentNode === ulUser) ulUser.insertBefore(li, aOut.parentNode);
+                else ulUser.appendChild(li);
+            }
+        } catch (ex) { console.warn('[soan-bai-help] không chèn được mục menu', ex); }
     },
     /*
      *************************************************************************
@@ -601,6 +613,55 @@ systemroot.prototype = {
      ********* disc: *********************************************************
      *************************************************************************
     */
+    /* Soạn bài hướng dẫn trên Cổng Help — SSO qua help-sso.aspx (26/10). API chỉ nhận token từ đúng IP đã đăng
+       nhập nên trang ASPX không tự gọi API được: vỏ v1 lấy danh sách vai trò (dtUngDung đã nạp ở checkChucNang,
+       chưa có thì gọi LayDSVaiTroNguoiDung) rồi POST `roles` (JSON mảng mã vai trò) sang help-sso.aspx ở tab mới;
+       trang đó ký JWT RS256 và tự POST tiếp sang Help. xem=true → help-sso.aspx?xem=1: chỉ xem payload, không gửi. */
+    soanBaiHuongDan: function (xem) {
+        var me = this;
+        function gui(rows) {
+            var ma = [];
+            (rows || []).forEach(function (r) {
+                var m = r.MAVAITRO || r.MAUNGDUNG;
+                if (m && ma.indexOf(m) < 0) ma.push(m);
+            });
+            var f = document.createElement('form');
+            f.method = 'POST';
+            f.action = 'help-sso.aspx' + (xem ? '?xem=1' : '');
+            f.target = '_blank';
+            f.style.display = 'none';
+            var i = document.createElement('input');
+            i.type = 'hidden'; i.name = 'roles'; i.value = JSON.stringify(ma);
+            f.appendChild(i);
+            // uid = chứng minh cùng nguồn cho help-sso.aspx (trang no-referrer gửi Origin: null nên không dựa vào header)
+            var i2 = document.createElement('input');
+            i2.type = 'hidden'; i2.name = 'uid'; i2.value = me.userId || '';
+            f.appendChild(i2);
+            document.body.appendChild(f);
+            f.submit();
+            setTimeout(function () { if (f.parentNode) f.parentNode.removeChild(f); }, 2000);
+        }
+        if (me.dtUngDung && me.dtUngDung.length) { gui(me.dtUngDung); return; }
+        var obj_save = {
+            'action': 'CMS_QuanTri01_MH/DSA4BRIXICgVMy4PJjQuKAU0LyYP',
+            'func': 'PKG_CORE_QUANTRI_01.LayDSVaiTroNguoiDung',
+            'iM': me.iM,
+            'strChucNang_Id': '',
+            'strNguoiThucHien_Id': me.userId,
+        };
+        me.makeRequest({
+            success: function (data) {
+                if (data && data.Success) { me.dtUngDung = data.Data; gui(data.Data); }
+                else gui([]);
+            },
+            error: function () { gui([]); },
+            type: "POST",
+            action: obj_save.action,
+            contentType: true,
+            data: obj_save,
+            fakedb: []
+        }, false, false, false, null);
+    },
     makeRequest: function (params, inc_user, inc_code, inc_lang, container, urlService, block) {
         var op = params;
         var me = this;
