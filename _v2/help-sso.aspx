@@ -397,8 +397,24 @@
         return v;
     }
 
+    /* json=1 (POST, cùng roles + uid như vỏ gửi): trả JSON { token, dich, exp } để plugin "Yêu cầu hỗ trợ"
+       (assets/plugin/btn-yeucau-hotro) đặt token vào form gửi sang Help — tài liệu nut-yeu-cau-ho-tro-tren-app.docx
+       mục 4: "token: endpoint phát token của SSO, cùng claim, phát MỚI mỗi lần bấm gửi". Lỗi → JSON { error }. */
+    bool JsonMode() { return string.Equals(Request.HttpMethod, "POST", StringComparison.OrdinalIgnoreCase) && Request.Form["json"] == "1"; }
+    void TraJson(object o, int status)
+    {
+        Response.Clear();
+        Response.StatusCode = status;
+        Response.TrySkipIisCustomErrors = true;
+        Response.ContentType = "application/json";
+        Response.Charset = "utf-8";
+        Response.Write(JsonConvert.SerializeObject(o));
+        Response.End();
+    }
+
     string Loi(string tieuDe, string chiTiet)
     {
+        if (JsonMode()) { var o = new Dictionary<string, object>(); o["error"] = tieuDe; o["detail"] = chiTiet; TraJson(o, 400); }
         return "<div class=\"box loi\"><h1>" + Server.HtmlEncode(tieuDe) + "</h1><p>" + Server.HtmlEncode(chiTiet) + "</p>" +
                "<p><a href=\"index.aspx\">Về trang chính</a></p></div>";
     }
@@ -667,6 +683,11 @@
             return;
         }
 
+        if (JsonMode())
+        {
+            var oj = new Dictionary<string, object>(); oj["token"] = token; oj["dich"] = dich; oj["exp"] = payload["exp"]; oj["roles"] = roles.Count;
+            TraJson(oj, 200);
+        }
         tuGui = true;
         noiDung = "<div class=\"box\"><h1>Đang chuyển sang Cổng Help…</h1>" +
                   "<p>Nếu không tự chuyển trong vài giây, bấm nút bên dưới.</p>" +

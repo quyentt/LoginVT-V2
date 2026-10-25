@@ -106,6 +106,7 @@ def main():
     chep('assets/css/login-page.bundle.css')
     chep_thu_muc('assets/fonts')
     chep_thu_muc('assets/img')
+    chep_thu_muc('assets/plugin', bo=lambda p: p.endswith('.md'))   # plugin tự chứa (Yêu cầu hỗ trợ…) — mỗi plugin một thư mục
     for t in GIU_VENDOR:
         chep('assets/vendor/' + t)
     chep('screens/cai-dat.html')          # màn "Cài đặt giao diện" (nút bánh răng) chạy cả khi có API
