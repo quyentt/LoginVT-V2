@@ -147,6 +147,12 @@
                 req.Headers["Authorization"] = "Bearer " + tokenjwt;
                 req.Timeout = 120000;
                 req.AllowAutoRedirect = false;
+                // 26/10 host UTC: API trả 401 cho lời gọi thiếu Referer của ứng dụng → gửi y như trình duyệt
+                string ck = Request.Headers["Cookie"]; if (!string.IsNullOrEmpty(ck)) req.Headers["Cookie"] = ck;
+                string ua = Request.UserAgent; if (!string.IsNullOrEmpty(ua)) req.UserAgent = ua;
+                string ip = Request.UserHostAddress; if (!string.IsNullOrEmpty(ip)) { req.Headers["X-Forwarded-For"] = ip; req.Headers["X-Real-IP"] = ip; }
+                req.Referer = DuongDanIndex();
+                req.Headers["Origin"] = Request.Url.GetLeftPart(UriPartial.Authority);
                 byte[] bb = Encoding.UTF8.GetBytes(body);
                 req.ContentLength = bb.Length;
                 using (var s = req.GetRequestStream()) s.Write(bb, 0, bb.Length);
@@ -179,6 +185,73 @@
             catch (Exception ex) { kq.loi = ex.GetType().Name + ": " + ex.Message; }
         }
         return kq;
+    }
+
+    string DuongDanIndex() { return Request.Url.GetLeftPart(UriPartial.Authority) + (Request.ApplicationPath ?? "/").TrimEnd('/') + "/index.aspx"; }
+
+    /* Dữ liệu thô do TRÌNH DUYỆT gửi về (chế độ dự phòng khi máy chủ không gọi được API): POST du_lieu = JSON
+       { apps: [dòng LayDanhSachUngDung], fns: { <ID ứng dụng>: [dòng LayDanhSachChucNang] }, errors: { <ID>: lỗi } }
+       kèm uid = ID người đang đăng nhập (chứng minh cùng nguồn — trang có no-referrer gửi Origin: null). */
+    string NhanDuLieuTuForm()
+    {
+        if (!string.Equals(Request.HttpMethod, "POST", StringComparison.OrdinalIgnoreCase)) return null;
+        string v = Request.Form["du_lieu"];
+        if (v == null) return null;
+        string uidForm = (Request.Form["uid"] ?? "").Trim();
+        if (uidForm.Length > 0 && string.Equals(uidForm, (user_id ?? "").Trim(), StringComparison.OrdinalIgnoreCase)) return v;
+        string nguon = Request.Headers["Origin"];
+        Uri u;
+        if (!string.IsNullOrEmpty(nguon) && Uri.TryCreate(nguon, UriKind.Absolute, out u) && string.Equals(u.Host, Request.Url.Host, StringComparison.OrdinalIgnoreCase)) return v;
+        return null;
+    }
+
+    /* Trang HTML nhỏ: trình duyệt (đúng IP + Referer người dùng, chỗ duy nhất API chấp nhận) gọi LayDanhSachUngDung rồi
+       LayDanhSachChucNang từng ứng dụng, lọc còn các cột cần, POST du_lieu + uid về lại trang này (giữ nguyên ?xem / ?gon). */
+    string TrangKhoiDong(CauHinh ch, string lyDo)
+    {
+        string prefix = QL.Substring(0, QL.IndexOf('_'));
+        string baseUrl = BaseUrl(ch, prefix);
+        var cfg = new Dictionary<string, object>();
+        cfg["base"] = baseUrl.StartsWith("http") ? baseUrl : GocHost(ch) + baseUrl;
+        cfg["ref"] = DuongDanIndex();
+        cfg["iM"] = ch.iM;
+        cfg["udAction"] = QL + "DSA4BSAvKRIgIikULyYFNC8m"; cfg["udFunc"] = PQ + "LayDanhSachUngDung";
+        cfg["cnAction"] = QL + "DSA4BSAvKRIgIikCKTQiDyAvJgPP"; cfg["cnFunc"] = PQ + "LayDanhSachChucNang";
+        var cai = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeHtml };
+        var sb = new StringBuilder();
+        sb.Append("<!DOCTYPE html><html lang='vi'><head><meta charset='utf-8'><title>Mapping chức năng</title></head>");
+        sb.Append("<body style='font:15px/1.5 system-ui,Arial,sans-serif;margin:40px;color:#1f2933'>");
+        sb.Append("<h1 style='font-size:20px'>Đang tạo mapping chức năng cho Cổng Help…</h1><p id='tt'>Đang chuẩn bị…</p>");
+        sb.Append("<p style='color:#64748b'>Máy chủ không tự gọi được API (" + Server.HtmlEncode(lyDo) + "), nên trình duyệt lấy dữ liệu rồi gửi về máy chủ để tạo tệp. Xong sẽ tự tải về / hiện JSON.</p>");
+        sb.Append("<script src='assets/js/crypto-js.js?v=32'></scr" + "ipt>");
+        sb.Append("<script>(function(){");
+        sb.Append("var cfg=" + JsonConvert.SerializeObject(cfg, cai) + ";var blob=" + JsonConvert.SerializeObject(Convert.ToString(lblXYZCLRVN), cai) + ";");
+        sb.Append(@"var t=document.getElementById('tt');function noi(m){if(t)t.textContent=m;}
+var a;try{a=JSON.parse(AD(blob,'AzzS'));}catch(ex){noi('Không giải được phiên đăng nhập: '+ex.message);return;}
+var h={'Authorization':'Bearer '+(a.tokenJWT||''),'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'};
+function goi(action,func,them){var d={action:action,func:func,strChucNang_Id:'',strNguoiThucHien_Id:a.userId||'',strVaiTroDangNhap_Id:'',strChucNangHeThong_Id:'',strNguoiThucVai_Id:'',iM:cfg.iM};
+  for(var k in them)d[k]=them[k];var key=action.substring(action.indexOf('/')+1);
+  return fetch(cfg.base+'/'+action,{method:'POST',headers:h,cache:'no-store',referrer:cfg.ref,referrerPolicy:'unsafe-url',body:new URLSearchParams({A:AE(JSON.stringify(d),key)})})
+    .then(function(r){if(!r.ok)throw new Error('HTTP '+r.status+' ('+func+')');return r.json();})
+    .then(function(j){if(j&&j.Success===false)throw new Error(j.Message||'Success=false ('+func+')');var dd=j&&j.Data;if(dd&&dd.B)dd=JSON.parse(AD(dd.B,cfg.iM));if(dd&&dd.rs)dd=dd.rs;return dd||[];});}
+function loc(r,cols){var o={};cols.forEach(function(c){if(r[c]!==undefined&&r[c]!==null)o[c]=r[c];});return o;}
+var CA=['ID','MAUNGDUNG','MA','TENUNGDUNG','TEN'];
+var CC=['ID','TENCHUCNANG','MACHUCNANG','CHUCNANGCHA_ID','DUONGDANFILE','DUONGDANHIENTHI','DUONGDANHUONGDANSUDUNG','TENANH','THUTU','THUTUHIENTHI','MOTA','TENDAYDU','MAUNGDUNG'];
+function post(duLieu){var f=document.createElement('form');f.method='POST';f.action=location.pathname+location.search;
+  function add(n,v){var i=document.createElement('input');i.type='hidden';i.name=n;i.value=v;f.appendChild(i);}
+  add('du_lieu',JSON.stringify(duLieu));add('uid',a.userId||'');document.body.appendChild(f);f.submit();}
+noi('Đang lấy danh sách ứng dụng…');
+goi(cfg.udAction,cfg.udFunc,{strTuKhoa:'',pageIndex:1,pageSize:1000,dTrangThai:1}).then(function(apps){
+  var ket={apps:apps.map(function(r){return loc(r,CA);}),fns:{},errors:{}};var i=0;
+  function tiep(){if(i>=apps.length){noi('Đang tạo tệp mapping…');post(ket);return;}
+    var ap=apps[i];noi('Đang lấy chức năng '+(i+1)+'/'+apps.length+': '+(ap.TENUNGDUNG||ap.TEN||ap.ID));
+    goi(cfg.cnAction,cfg.cnFunc,{versionAPI:'v1.0',strTuKhoa:'',strChung_UngDung_Id:ap.ID,strCHUCNANGCHA_Id:'',pageIndex:1,pageSize:100000,strNGUONTRUYCAP_Id:'',dTrangThai:1})
+      .then(function(rows){ket.fns[ap.ID]=rows.map(function(r){return loc(r,CC);});},function(ex){ket.errors[ap.ID]=ex.message;})
+      .then(function(){i++;tiep();});}
+  tiep();
+}).catch(function(ex){noi('Lỗi: '+ex.message+' — mở index.aspx đăng nhập lại rồi thử lại.');});
+})();</scr" + "ipt></body></html>");
+        return sb.ToString();
     }
 
     static string Cot(JToken r, params string[] ten)
@@ -277,6 +350,7 @@
         Response.Cache.SetNoStore();
         Response.ContentType = "application/json";
         Response.Charset = "utf-8";
+        Response.TrySkipIisCustomErrors = true;   // lỗi 4xx/5xx trả đúng JSON của trang, không bị IIS thay bằng trang "502 - Web server…"
         bool xem = Request.QueryString["xem"] == "1";
         bool gon = Request.QueryString["gon"] == "1";
 
@@ -293,24 +367,69 @@
         DocBangIcon();
         var errors = new JArray();
 
-        /* [1] Ứng dụng → chức năng từng ứng dụng */
-        var kqUD = GoiApi(ch, QL + "DSA4BSAvKRIgIikULyYFNC8m", PQ + "LayDanhSachUngDung",
-            new Dictionary<string, object> { { "strTuKhoa", "" }, { "pageIndex", 1 }, { "pageSize", 1000 }, { "dTrangThai", 1 } });
-        if (kqUD.loi.Length > 0)
+        /* [1] Ứng dụng → chức năng từng ứng dụng.
+           Nguồn: (a) trình duyệt POST du_lieu về (chế độ dự phòng, xem TrangKhoiDong) — (b) máy chủ tự gọi API như trước;
+           (b) hỏng mà yêu cầu là GET thì trả trang khởi động để trình duyệt làm (a). 26/10 host UTC: API từ chối lời gọi từ máy chủ. */
+        JArray dsUD = null;
+        var cnTheoUD = new Dictionary<string, JArray>();
+        var loiTheoUD = new Dictionary<string, string>();
+        bool tuTrinhDuyet = false;
+        string duLieu = NhanDuLieuTuForm();
+        if (duLieu != null)
         {
-            Response.StatusCode = 502;
-            var lo = new JObject(); lo["error"] = "Không đọc được danh sách ứng dụng (LayDanhSachUngDung)"; lo["detail"] = kqUD.loi; lo["url"] = kqUD.url;
-            Response.Write(lo.ToString(Formatting.Indented));
-            Response.Flush(); HttpContext.Current.ApplicationInstance.CompleteRequest();
-            return;
+            try
+            {
+                var o = JObject.Parse(duLieu);
+                dsUD = o["apps"] as JArray ?? new JArray();
+                var fo = o["fns"] as JObject; if (fo != null) foreach (var pr in fo.Properties()) cnTheoUD[pr.Name] = pr.Value as JArray ?? new JArray();
+                var eo = o["errors"] as JObject; if (eo != null) foreach (var pr in eo.Properties()) loiTheoUD[pr.Name] = Convert.ToString(pr.Value);
+                tuTrinhDuyet = true;
+            }
+            catch (Exception ex)
+            {
+                Response.StatusCode = 400;
+                var lo0 = new JObject(); lo0["error"] = "du_lieu trình duyệt gửi về không phải JSON hợp lệ"; lo0["detail"] = ex.Message;
+                Response.Write(lo0.ToString(Formatting.Indented));
+                Response.Flush(); HttpContext.Current.ApplicationInstance.CompleteRequest();
+                return;
+            }
+        }
+        if (dsUD == null)
+        {
+            var kqUD = GoiApi(ch, QL + "DSA4BSAvKRIgIikULyYFNC8m", PQ + "LayDanhSachUngDung",
+                new Dictionary<string, object> { { "strTuKhoa", "" }, { "pageIndex", 1 }, { "pageSize", 1000 }, { "dTrangThai", 1 } });
+            if (kqUD.loi.Length > 0)
+            {
+                if (string.Equals(Request.HttpMethod, "GET", StringComparison.OrdinalIgnoreCase) && Request.QueryString["maychu"] != "1")
+                {
+                    Response.ContentType = "text/html";
+                    Response.Write(TrangKhoiDong(ch, kqUD.loi.Length > 160 ? kqUD.loi.Substring(0, 160) + "…" : kqUD.loi));
+                    Response.Flush(); HttpContext.Current.ApplicationInstance.CompleteRequest();
+                    return;
+                }
+                Response.StatusCode = 502;
+                var lo = new JObject(); lo["error"] = "Không đọc được danh sách ứng dụng (LayDanhSachUngDung)"; lo["detail"] = kqUD.loi; lo["url"] = kqUD.url;
+                Response.Write(lo.ToString(Formatting.Indented));
+                Response.Flush(); HttpContext.Current.ApplicationInstance.CompleteRequest();
+                return;
+            }
+            dsUD = kqUD.data;
         }
         var apps = new JArray();
         var ds = new List<ChucNang>();
-        foreach (var a in kqUD.data)
+        foreach (var a in dsUD)
         {
             string aid = Cot(a, "ID"), acode = Cot(a, "MAUNGDUNG", "MA"), aname = Cot(a, "TENUNGDUNG", "TEN");
             var ao = new JObject(); ao["id"] = aid; ao["code"] = acode; ao["name"] = aname; apps.Add(ao);
-            var kqCN = GoiApi(ch, QL + "DSA4BSAvKRIgIikCKTQiDyAvJgPP", PQ + "LayDanhSachChucNang", new Dictionary<string, object> {
+            KetQuaApi kqCN;
+            if (tuTrinhDuyet)
+            {
+                kqCN = new KetQuaApi();
+                if (cnTheoUD.ContainsKey(aid)) kqCN.data = cnTheoUD[aid];
+                else kqCN.loi = loiTheoUD.ContainsKey(aid) ? loiTheoUD[aid] : "trình duyệt không gửi dữ liệu cho ứng dụng này";
+            }
+            else
+            kqCN = GoiApi(ch, QL + "DSA4BSAvKRIgIikCKTQiDyAvJgPP", PQ + "LayDanhSachChucNang", new Dictionary<string, object> {
                 { "versionAPI", "v1.0" }, { "strTuKhoa", "" }, { "strChung_UngDung_Id", aid }, { "strCHUCNANGCHA_Id", "" },
                 { "pageIndex", 1 }, { "pageSize", 100000 }, { "strNGUONTRUYCAP_Id", "" }, { "dTrangThai", 1 } });
             if (kqCN.loi.Length > 0)
@@ -423,7 +542,7 @@
         var ung = new JObject(); ung["id"] = "UMS"; ung["name"] = "Hệ thống quản trị đại học"; ung["version"] = Request.Url.GetLeftPart(UriPartial.Authority) + Request.ApplicationPath.TrimEnd('/'); ra["application"] = ung;
         ra["generatedAt"] = DateTime.UtcNow.ToString("yyyy-MM-dd'T'HH:mm:ss.fff'Z'");
         ra["generatedBy"] = uid;
-        ra["source"] = "database";
+        ra["source"] = tuTrinhDuyet ? "database (API gọi từ trình duyệt)" : "database";
         ra["note"] = "Toàn bộ chức năng trong CSDL (mọi ứng dụng, dTrangThai = 1), không phụ thuộc quyền của tài khoản xuất. converted = tệp màn đã có trong _v2 trên máy chủ. Xuất bởi mapping.aspx (v1).";
         var counts = new JObject();
         counts["applications"] = apps.Count; counts["functions"] = fns.Count; counts["converted"] = daChuyen; counts["notConverted"] = fns.Count - daChuyen;
