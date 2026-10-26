@@ -214,7 +214,7 @@
     /* ---------- Trình sửa ảnh dạng Paint: khung, mũi tên, cắt, hoàn tác ---------- */
     function TrinhVe(canvas) {
         var me = this;
-        me.c = canvas; me.ctx = canvas.getContext('2d');
+        me.c = canvas; me.ctx = canvas.getContext('2d', { willReadFrequently: true });   // getImageData nhiều lần (hoàn tác / kéo vẽ) — tắt cảnh báo Canvas2D
         me.tool = 'khung'; me.stack = []; me.dang = null;
         me.onThayDoi = null;
         function toa(ev) {
