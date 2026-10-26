@@ -64,7 +64,7 @@ Thử khi Help chưa có cửa nhận: `btnYeuCauHoTro.config.url = 'assets/plug
    không truyền đi đâu. Ảnh đúng pixel như mắt thấy, thu về ≤ 1600px bề ngang → mở popup đè lên bảng.
    Người dùng bỏ qua hộp, trình duyệt không hỗ trợ, không https, hoặc hộp treo quá `choChiaSeMs` (30 s) → rơi về html2canvas vẽ lại
    như cũ kèm dòng nhắc "ảnh có thể lệch, bấm Chụp lại rồi chọn Chia sẻ". "Chụp lại" dùng cùng cơ chế.
-3. Popup: dòng ngữ cảnh (tên màn, ứng dụng, phiên bản), thanh công cụ **Khung / Mũi tên / Cắt ảnh / Hoàn tác / Chụp lại / Ảnh khác**,
+3. Popup: dòng ngữ cảnh (tên màn, ứng dụng, phiên bản), thanh công cụ **Khung / Mũi tên / Cắt ảnh / Hoàn tác / Chụp lại / Ảnh khác / Bỏ ảnh** (bỏ = gửi không có trường `anh`, Hoàn tác lấy lại),
    dán ảnh bằng Ctrl+V, ô mô tả ≤ 2.000 ký tự, dòng nhắc "người cùng ứng dụng ở trường bạn sẽ thấy".
    Nét vẽ đỏ `#e11d48`, độ dày 3px (tỷ lệ theo bề ngang ảnh). Cắt: kéo chọn vùng, thả là cắt; sai thì Hoàn tác (30 bước).
 4. **"Gửi nhanh"** (bước 3a): phát token MỚI → form `multipart/form-data` submit vào iframe ẩn trong popup → chờ `postMessage`

@@ -322,6 +322,7 @@
             '     <button type="button" class="yh-tool" data-yh="hoantac" title="Hoàn tác"><i class="fa-light fa-rotate-left"></i>Hoàn tác</button>' +
             '     <button type="button" class="yh-tool" data-yh="chuplai" title="Chụp lại màn hình' + (coChupThat() ? ' (trình duyệt hỏi chia sẻ tab, chọn Chia sẻ)' : '') + '"><i class="fa-light fa-camera-rotate"></i>Chụp lại</button>' +
             '     <label class="yh-tool" title="Chọn tệp ảnh khác"><i class="fa-light fa-image"></i>Ảnh khác<input type="file" accept="image/*" hidden></label>' +
+            '     <button type="button" class="yh-tool" data-yh="boanh" title="Gửi không kèm ảnh"><i class="fa-light fa-image-slash"></i>Bỏ ảnh</button>' +
             '     <span class="yh-cc__kt" data-yh="kt"></span></div>' +
             '  <div class="yh-anh"><canvas></canvas>' +
             '     <div class="yh-anh__trong" hidden><i class="fa-light fa-image-slash"></i><div>Chưa có ảnh. Bấm "Chụp lại", chọn "Ảnh khác" hoặc dán ảnh bằng Ctrl+V (chụp bằng Win+Shift+S).</div></div></div>' +
@@ -358,6 +359,7 @@
             if (k === 'dong') dongPopup();
             else if (k === 'hoantac') { if (!ve.hoanTac()) thongBao('Không còn gì để hoàn tác.', 'nhe'); }
             else if (k === 'chuplai') chupLai();
+            else if (k === 'boanh') { if (!popup.coAnh) return; ve.luu(); canvas.width = 1; canvas.height = 1; capNhat(); thongBao('Đã bỏ ảnh — form gửi đi sẽ không có trường anh. "Hoàn tác" lấy lại ảnh.', 'nhe'); }
             else if (k === 'gui') gui(b.getAttribute('data-chedo'), b);
             else if (k === 'moHelp') { if (popup.chat && popup.chat.url) global.open(popup.chat.url, CFG.target); }
         });
