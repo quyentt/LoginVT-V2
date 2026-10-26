@@ -117,7 +117,15 @@
     }
 
     /* ---------- Chụp màn hình đang mở (vùng đang hiện) ---------- */
+    /* html2canvas 1.4.1 ném "Error parsing CSS component value, unexpected EOF" khi thẻ <input> có giả phần tử
+       ::before / ::after mang content (ô chọn của _v2: field.css `input[type=checkbox]::before { content: "" }`) → mọi màn
+       có ô chọn đều không chụp được (26/10). Giả phần tử được dựng NGAY LÚC nhân bản (trước onclone) nên phải tắt tạm
+       trên tài liệu thật trong khoảnh khắc chụp rồi gỡ; ô đã chọn vẫn thấy nhờ nền `:checked`. */
+    var CSS_CHUP = 'input::before,input::after,textarea::before,textarea::after,select::before,select::after{content:none!important}';
     function chup() {
+        var st = document.createElement('style'); st.setAttribute('data-yh-chup', '1'); st.textContent = CSS_CHUP;
+        document.head.appendChild(st);
+        function go() { if (st.parentNode) st.parentNode.removeChild(st); }
         return napHtml2canvas().then(function (h2c) {
             var w = global.innerWidth, h = global.innerHeight;
             return h2c(document.body, {
@@ -125,7 +133,7 @@
                 scale: 1, useCORS: true, logging: false, backgroundColor: '#ffffff',
                 ignoreElements: function (e) { return !!(e.classList && (e.classList.contains('yh-fab') || e.classList.contains('yh-veil'))); }
             });
-        }).then(thuNho);
+        }).then(function (c) { go(); return thuNho(c); }, function (e) { go(); throw e; });
     }
     function thuNho(c) {
         if (c.width <= CFG.maxRong) return c;
