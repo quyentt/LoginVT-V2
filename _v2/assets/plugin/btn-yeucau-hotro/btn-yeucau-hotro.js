@@ -450,7 +450,10 @@
         }
         choMsg = { fn: fn, hen: setTimeout(function () {
             huyCho(); if (!popup || popup !== p) return;
-            khoaNut(false); thongBao('Help chưa xác nhận sau ' + Math.round(CFG.choMs / 1000) + ' giây. Ảnh và nội dung vẫn còn, bấm gửi lại.', 'canh');
+            khoaNut(false);
+            /* Hiện iframe để thấy Help thực sự trả gì (401 token, lỗi máy chủ, trang không postMessage…) — đang ẩn thì không dò được */
+            var fr = khungHelp(); if (fr) fr.hidden = false;
+            thongBao('Help chưa xác nhận sau ' + Math.round(CFG.choMs / 1000) + ' giây. Bên dưới là trang Help trả về trong khung; ảnh và nội dung vẫn còn, bấm gửi lại.', 'canh');
         }, CFG.choMs) };
         global.addEventListener('message', fn);
     }
@@ -760,6 +763,15 @@
         return tt;
     }
 
+    /* Dò trên console: btnYeuCauHoTro.thuToken() — phát token như lúc gửi, in kết quả / lỗi của help-sso.aspx */
+    function thuToken() {
+        var ad = adapter();
+        return ad.roles().then(function (roles) {
+            console.log('[hotro] vai trò gửi đi:', roles, '| uid:', ad.uid() || '(trống)', '| tokenUrl:', CFG.tokenUrl);
+            return layToken(ad);
+        }).then(function (j) { console.log('[hotro] token OK — dich:', j.dich, '| exp:', j.exp, '\n' + j.token); return j; },
+                function (e) { console.error('[hotro] KHÔNG phát được token:', e.message); throw e; });
+    }
     function dongPopup() {
         if (!popup) return;
         var p = popup; popup = null; tatNghe(); huyCho();
@@ -771,6 +783,6 @@
         setTimeout(function () { p.dong(); }, 200);
     }
     global.btnYeuCauHoTro = { config: CFG, mo: moBang, tao: moTuNut, dong: function () { dongPopup(); dongBang(); }, taiLai: function () { tai(true); },
-                              moChat: moChat, adapter: null, adapters: adapters, dung: dungNut, taiAnh: taiAnh };
+                              moChat: moChat, thuToken: thuToken, adapter: null, adapters: adapters, dung: dungNut, taiAnh: taiAnh };
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', dungNut); else dungNut();
 })(window);
