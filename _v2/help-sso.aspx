@@ -721,7 +721,7 @@
     <%= noiDung %>
     <% if (tuGui) { %><script>document.getElementById('f').submit();</script><% } %>
     <% if (khoiDong) { %>
-    <script src="assets/js/crypto-js.js?v=32"></script>
+    <script src="<%= ResolveUrl("~/assets/js/crypto-js.js") %>?v=32"></script><%-- crypto-js của ứng dụng cha (AE / AD) — đường dẫn theo gốc ứng dụng để chạy được cả ở gốc lẫn trong _v2 --%>
     <script>
     /* Lấy vai trò phía trình duyệt (như vỏ v1 gọi: thân bọc iM, Bearer token của phiên) rồi POST lại trang này. */
     (function () {
