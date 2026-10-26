@@ -41,6 +41,7 @@ Trước thẻ script, hoặc bằng `data-*` trên thẻ script, hoặc sửa `
   target: "help-portal",                                              // tên tab cố định, trùng tab nút "?"
   kichCo: 20,                                                         // dòng mỗi lần tải (Help tối đa 50)
   choMs: 10000,                                                       // chờ Help trả lời (danh sách / postMessage / help-san-sang) tối đa
+  choChiaSeMs: 30000,                                                 // chờ người dùng trả lời hộp "Chia sẻ tab" khi chụp thật; quá thì vẽ lại bằng html2canvas
   nhung: false,                                                       // mục 11: trao đổi ngay trong popup — BẬT khi Help báo trang nhúng đã lên máy chủ
   nhungUrl: "https://con98.api-apis.com/help-master/ho-tro/nhung"      // mở yêu cầu cũ trong iframe: POST token + id + v (Help 11.7)
 };</script>
@@ -57,8 +58,12 @@ Thử khi Help chưa có cửa nhận: `btnYeuCauHoTro.config.url = 'assets/plug
    lại cửa danh sách; không lọc tại chỗ. Mỗi dòng: nhãn trạng thái (màu Help), `maHienThi`, tiêu đề, tên màn, ngày cập nhật, số
    phản hồi chưa đọc; bấm dòng → mở `url` ở tab `help-portal`. Cuối danh sách có "Tải thêm (n / tổng)".
    Plugin chỉ gọi cửa danh sách khi mở bảng hoặc đổi bộ lọc — không gọi nền, không định kỳ, không số đếm trên nút nổi.
-2. **"Tạo yêu cầu mới"** (chân bảng) → giấu bảng trong khoảnh khắc chụp → html2canvas chụp **vùng đang hiện** của `document.body`
-   (bỏ nút nổi / bảng), thu về ≤ 1600px bề ngang → mở popup đè lên bảng.
+2. **"Tạo yêu cầu mới"** (chân bảng) → giấu bảng + nút nổi trong khoảnh khắc chụp → **chụp thật** bằng Screen Capture API
+   (`getDisplayMedia`, `preferCurrentTab`; người dùng chốt 26/10 vì html2canvas tự vẽ lại DOM nên ảnh xô lệch, biểu tượng đè chữ):
+   trình duyệt hiện hộp "Chia sẻ tab này" (tab hiện tại chọn sẵn), bấm Chia sẻ → plugin lấy ĐÚNG MỘT khung hình rồi dừng luồng ngay,
+   không truyền đi đâu. Ảnh đúng pixel như mắt thấy, thu về ≤ 1600px bề ngang → mở popup đè lên bảng.
+   Người dùng bỏ qua hộp, trình duyệt không hỗ trợ, không https, hoặc hộp treo quá `choChiaSeMs` (30 s) → rơi về html2canvas vẽ lại
+   như cũ kèm dòng nhắc "ảnh có thể lệch, bấm Chụp lại rồi chọn Chia sẻ". "Chụp lại" dùng cùng cơ chế.
 3. Popup: dòng ngữ cảnh (tên màn, ứng dụng, phiên bản), thanh công cụ **Khung / Mũi tên / Cắt ảnh / Hoàn tác / Chụp lại / Ảnh khác**,
    dán ảnh bằng Ctrl+V, ô mô tả ≤ 2.000 ký tự, dòng nhắc "người cùng ứng dụng ở trường bạn sẽ thấy".
    Nét vẽ đỏ `#e11d48`, độ dày 3px (tỷ lệ theo bề ngang ảnh). Cắt: kéo chọn vùng, thả là cắt; sai thì Hoàn tác (30 bước).
@@ -94,7 +99,9 @@ Không giữ token, không cookie Help, không SDK.
 
 - Chế độ dựng thử trên máy (`index.html`, không có vỏ ASPX): bảng chạy bằng **dữ liệu mẫu** (26 dòng, lọc / phân trang tại chỗ, cùng hình
   dạng JSON mục 10.2); chụp / vẽ / cắt chạy đủ; "Gửi nhanh" chỉ thêm một dòng mẫu vào bảng, "Chi tiết hơn" báo không có phiên để phát token.
-- Màn hình nạp nội dung cross-origin (ảnh từ host khác không có CORS) có thể ra ô trắng trong ảnh chụp — người dùng dùng "Ảnh khác" hoặc Ctrl+V.
+- Chụp thật CHƯA thử trên host (26/10, chỉ thử được đường lui html2canvas bằng headless vì headless không có hộp chia sẻ). Firefox / Safari cũ
+  không có `preferCurrentTab`: người dùng phải tự chọn tab trong danh sách. Trong hộp chọn, popup và nút nổi đã ẩn nên không vào ảnh.
+- Đường lui html2canvas: màn nạp nội dung cross-origin (ảnh từ host khác không có CORS) có thể ra ô trắng — người dùng dùng "Ảnh khác" hoặc Ctrl+V.
 - `help-sso.aspx` phát token theo vai trò do trình duyệt gửi (xem ghi chú trong tệp đó): Help vẫn kiểm quyền phía họ.
 - Chế độ nhúng CHƯA thử với Help thật (26/10: Help ước 2–3 ngày, làm sau khi cửa danh sách lên máy chủ). Khi Help báo xong: đặt `nhung: true`
   trong cấu hình (một chỗ), thử trên Edge Strict + Safari: bấm dòng → khung trao đổi hiện trong 10 giây, gửi tin, dán ảnh, đổi trạng thái →

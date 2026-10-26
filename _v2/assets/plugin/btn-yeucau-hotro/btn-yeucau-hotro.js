@@ -54,6 +54,7 @@
         nhungUrl: cau.nhungUrl || ds.nhungUrl || 'https://con98.api-apis.com/help-master/ho-tro/nhung',   // mở yêu cầu cũ: POST token + id + v vào iframe (11.7)
         kichCo: Number(cau.kichCo || ds.kichCo || 20),                                      // số dòng mỗi lần tải (Help tối đa 50)
         choMs: Number(cau.choMs || ds.choMs || 10000),                                      // chờ Help trả lời (danh sách / postMessage) tối đa
+        choChiaSeMs: Number(cau.choChiaSeMs || ds.choChiaSeMs || 30000),                    // chờ người dùng trả lời hộp "Chia sẻ tab" khi chụp thật
         v: cau.v || ds.v || '',                                                             // rỗng = lấy theo vỏ (_v2: help.version), mặc định "2"
         text: cau.text || ds.text || 'Yêu cầu hỗ trợ',
         target: cau.target || ds.target || 'help-portal',                                   // tên tab cố định (trùng tab của nút "?")
@@ -143,7 +144,48 @@
        có ô chọn đều không chụp được (26/10). Giả phần tử được dựng NGAY LÚC nhân bản (trước onclone) nên phải tắt tạm
        trên tài liệu thật trong khoảnh khắc chụp rồi gỡ; ô đã chọn vẫn thấy nhờ nền `:checked`. */
     var CSS_CHUP = 'input::before,input::after,textarea::before,textarea::after,select::before,select::after{content:none!important}';
+    /* CHỤP THẬT (người dùng chốt 26/10 — html2canvas tự vẽ lại DOM nên ảnh xô lệch: không hiểu gap của inline-flex, đo phông
+       biểu tượng ::before khác trình duyệt, đè chữ…): Screen Capture API getDisplayMedia lấy ĐÚNG MỘT khung hình của tab rồi
+       dừng luồng ngay — ảnh đúng pixel như mắt thấy. Trình duyệt hiện hộp "Chia sẻ tab này" mỗi lần (preferCurrentTab: tab hiện
+       tại chọn sẵn). Không hỗ trợ / người dùng bỏ qua hộp → rơi về html2canvas (chupVe) như cũ. Cần https (isSecureContext). */
+    var cachChup = '';   // 'that' | 've' — cách đã dùng ở lần chụp gần nhất, để nhắc khi phải vẽ lại
+    function coChupThat() { return !!(global.isSecureContext && navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia); }
+    function chupThat() {
+        /* Hộp chia sẻ không bao giờ trả lời (headless, trình duyệt lạ) → sau CFG.choChiaSeMs rơi về vẽ lại; luồng tới muộn thì tắt ngay */
+        var qua = false, hen;
+        var choHop = new Promise(function (_, loi) { hen = setTimeout(function () { qua = true; loi(new Error('hộp chia sẻ không trả lời')); }, CFG.choChiaSeMs); });
+        var xin = navigator.mediaDevices.getDisplayMedia({ video: { displaySurface: 'browser' }, audio: false, preferCurrentTab: true,
+                                                           selfBrowserSurface: 'include', surfaceSwitching: 'exclude', monitorTypeSurfaces: 'exclude' })
+            .then(function (stream) { clearTimeout(hen); if (qua) { stream.getTracks().forEach(function (t) { t.stop(); }); throw new Error('quá hạn'); } return stream; },
+                  function (e) { clearTimeout(hen); throw e; });
+        return Promise.race([xin, choHop])
+            .then(function (stream) {
+                function tat() { stream.getTracks().forEach(function (t) { t.stop(); }); }
+                return new Promise(function (ok, loi) {
+                    var v = document.createElement('video'); v.srcObject = stream; v.muted = true; v.playsInline = true;
+                    v.onloadedmetadata = function () {
+                        v.play().then(function () {
+                            setTimeout(function () {   // đợi khung hình đầu dựng xong rồi mới vẽ
+                                try { var c = document.createElement('canvas'); c.width = v.videoWidth; c.height = v.videoHeight; c.getContext('2d').drawImage(v, 0, 0); ok(c); }
+                                catch (e) { loi(e); }
+                            }, 200);
+                        }, loi);
+                    };
+                    v.onerror = function () { loi(new Error('không đọc được luồng chia sẻ')); };
+                }).then(function (c) { tat(); return c; }, function (e) { tat(); throw e; });
+            });
+    }
     function chup() {
+        var fab = document.querySelector('.yh-fab'); if (fab) fab.hidden = true;   // nút nổi không vào ảnh (CSS .yh-fab[hidden])
+        function xong(c) { if (fab) fab.hidden = false; return c; }
+        if (!coChupThat()) { cachChup = 've'; return chupVe().then(xong, function (e) { xong(); throw e; }); }
+        return chupThat().then(function (c) { cachChup = 'that'; return xong(thuNho(c)); },
+                               function () { cachChup = 've'; return chupVe().then(xong, function (e) { xong(); throw e; }); });
+    }
+    function nhacVeLai() {   // đã phải vẽ lại bằng html2canvas dù trình duyệt chụp thật được (người dùng bỏ qua hộp chia sẻ)
+        if (cachChup === 've' && coChupThat()) thongBao('Bạn bỏ qua hộp "Chia sẻ tab" nên ảnh được vẽ lại bằng html2canvas, có thể lệch so với màn hình. Bấm "Chụp lại" rồi chọn Chia sẻ để lấy ảnh thật.', 'nhe');
+    }
+    function chupVe() {
         var st = document.createElement('style'); st.setAttribute('data-yh-chup', '1'); st.textContent = CSS_CHUP;
         document.head.appendChild(st);
         function go() { if (st.parentNode) st.parentNode.removeChild(st); }
@@ -278,7 +320,7 @@
             '     <button type="button" class="yh-tool" data-tool="cat" title="Kéo chọn vùng rồi thả để cắt đúng khu vực muốn gửi"><i class="fa-light fa-crop-simple"></i>Cắt ảnh</button>' +
             '     <span class="yh-cc__cach"></span>' +
             '     <button type="button" class="yh-tool" data-yh="hoantac" title="Hoàn tác"><i class="fa-light fa-rotate-left"></i>Hoàn tác</button>' +
-            '     <button type="button" class="yh-tool" data-yh="chuplai" title="Chụp lại màn hình"><i class="fa-light fa-camera-rotate"></i>Chụp lại</button>' +
+            '     <button type="button" class="yh-tool" data-yh="chuplai" title="Chụp lại màn hình' + (coChupThat() ? ' (trình duyệt hỏi chia sẻ tab, chọn Chia sẻ)' : '') + '"><i class="fa-light fa-camera-rotate"></i>Chụp lại</button>' +
             '     <label class="yh-tool" title="Chọn tệp ảnh khác"><i class="fa-light fa-image"></i>Ảnh khác<input type="file" accept="image/*" hidden></label>' +
             '     <span class="yh-cc__kt" data-yh="kt"></span></div>' +
             '  <div class="yh-anh"><canvas></canvas>' +
@@ -305,7 +347,7 @@
         }
         ve.onThayDoi = capNhat;
         function datAnh(src) { canvas.width = src.width; canvas.height = src.height; canvas.getContext('2d').drawImage(src, 0, 0); ve.stack = []; capNhat(); }
-        if (anhDau) datAnh(anhDau); else { canvas.width = 1; canvas.height = 1; capNhat(); }
+        if (anhDau) { datAnh(anhDau); nhacVeLai(); } else { canvas.width = 1; canvas.height = 1; capNhat(); }
         if (loiChup) thongBao('Không tự chụp được màn hình (' + loiChup + '). Bạn vẫn gửi được: dán ảnh bằng Ctrl+V hoặc chọn "Ảnh khác".', 'canh');
 
         veil.addEventListener('click', function (ev) {
@@ -339,7 +381,7 @@
         function chupLai() {
             veil.hidden = true;
             setTimeout(function () {
-                chup().then(function (c) { veil.hidden = false; ve.thay(c); thongBao('Đã chụp lại.', 'nhe'); },
+                chup().then(function (c) { veil.hidden = false; ve.thay(c); thongBao('Đã chụp lại.', 'nhe'); nhacVeLai(); },
                             function (e) { veil.hidden = false; thongBao('Không chụp được: ' + e.message, 'canh'); });
             }, 120);
         }
