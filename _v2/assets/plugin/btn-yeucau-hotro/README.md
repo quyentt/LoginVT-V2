@@ -88,7 +88,7 @@ Thử khi Help chưa có cửa nhận: `btnYeuCauHoTro.config.url = 'assets/plug
 
 | Cửa | Cách gọi | Trường |
 |---|---|---|
-| `/ho-tro/gui` (form) | `POST multipart/form-data`, target iframe ẩn (nhanh) hoặc tab `help-portal` (chi tiết) | `token` · `ma` (CHUCNANG.ID) · `ten` (≤ 200) · `duong` (≤ 300) · `v` · `cheDo` (`nhanh` \| `chi-tiet`) · `noiDung` (≤ 2.000) · `anh` (PNG, quá 5 MB tự chuyển JPEG 0.85) · `route` · `appVersion` (`ums.ban`) · `browser` |
+| `/ho-tro/gui` (form) | `POST multipart/form-data`, target iframe ẩn (nhanh) hoặc tab `help-portal` (chi tiết) | `token` · `ma` (CHUCNANG.ID) · `ten` (≤ 200) · `duong` (≤ 300) · `v` · `cheDo` (`nhanh` \| `chi-tiet`) · `noiDung` (≤ 2.000) · `anh` (PNG; quá `maxBytes` tự chuyển JPEG hạ dần chất lượng 0.85 → 0.4. `maxBytes` TẠM 900 KB từ 27/10 vì nginx trước Help trên con98 chặn thân > 1 MB; Help nới thì trả về 5 MB) · `route` · `appVersion` (`ums.ban`) · `browser` |
 | `/ho-tro/nhung` (form, chỉ khi `nhung`) | `POST`, target iframe hiện trong popup | `token` · `id` · `v` → Help trả trang vấn đề nhúng (token nhúng 60 phút không cookie, CSP `frame-ancestors` theo sổ trường) |
 | `/ho-tro/danh-sach` (JSON) | `fetch POST x-www-form-urlencoded`, `mode: cors`, `credentials: omit`, huỷ sau `choMs` | `token` · `v` · `phamVi` · `ma` · `trangThai` · `tuKhoa` · `tuNgay` / `denNgay` (dd/MM/yyyy) · `trang` · `kichCo` → `{ ok, tong, trang, kichCo, trangThai: [{ma, ten, mau}], ds: [{ id, maHienThi, url, tieuDe, moTa, ma, ten, v, trangThai, ngayTao, ngayCapNhat, soPhanHoiMoi, nguoiPhuTrach, cuaToi }] }`; lỗi `{ ok: false, loi, thongBao }` |
 

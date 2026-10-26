@@ -59,7 +59,7 @@
         text: cau.text || ds.text || 'Yêu cầu hỗ trợ',
         target: cau.target || ds.target || 'help-portal',                                   // tên tab cố định (trùng tab của nút "?")
         maxRong: Number(cau.maxRong || ds.maxRong || 1600),                                 // thu ảnh về ≤ 1600px bề ngang
-        maxBytes: Number(cau.maxBytes || ds.maxBytes || 5 * 1024 * 1024),                   // Help chặn > 5 MB
+        maxBytes: Number(cau.maxBytes || ds.maxBytes || 900 * 1024),                        // TẠM 900 KB (27/10): nginx trước Help trên con98 chặn thân > 1 MB → 500; Help nới lên 5 MB thì trả về 5 * 1024 * 1024
         maxChu: 2000,
         mauVe: '#e11d48',
         netVe: 3
@@ -400,7 +400,8 @@
             var c = popup.canvas;
             c.toBlob(function (b) {
                 if (b && b.size <= CFG.maxBytes) return ok(b);
-                c.toBlob(function (j) { ok(j); }, 'image/jpeg', 0.85);  // PNG quá 5 MB → JPEG
+                var q = [0.85, 0.7, 0.55, 0.4], i = 0;        // PNG quá ngưỡng → JPEG, hạ dần chất lượng tới khi lọt ngưỡng
+                (function thu() { c.toBlob(function (j) { if ((j && j.size <= CFG.maxBytes) || ++i >= q.length) ok(j); else thu(); }, 'image/jpeg', q[i]); })();
             }, 'image/png');
         });
     }
@@ -436,7 +437,7 @@
         thongBao('Đang phát token và gửi…', 'nhe');
         Promise.all([layToken(ad), anhBlob()]).then(function (kq) {
             var tk = kq[0], anh = kq[1];
-            if (anh && anh.size > CFG.maxBytes) throw new Error('Ảnh ' + (anh.size / 1048576).toFixed(1) + ' MB vượt 5 MB — cắt bớt rồi gửi lại.');
+            if (anh && anh.size > CFG.maxBytes) throw new Error('Ảnh ' + (anh.size / 1024).toFixed(0) + ' KB vượt ngưỡng ' + Math.round(CFG.maxBytes / 1024) + ' KB — cắt bớt rồi gửi lại.');
             var f = document.createElement('form');
             f.method = 'POST'; f.enctype = 'multipart/form-data'; f.action = CFG.url; f.style.display = 'none';
             function them(n, v) { var i = document.createElement('input'); i.type = 'hidden'; i.name = n; i.value = v == null ? '' : String(v); f.appendChild(i); }
