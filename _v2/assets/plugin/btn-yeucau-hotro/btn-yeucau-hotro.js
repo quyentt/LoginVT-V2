@@ -369,7 +369,8 @@
                 .then(function (r) { return r.text().then(function (t) { var j; try { j = JSON.parse(t); } catch (e) { throw new Error('HTTP ' + r.status + ' — ' + t.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 160)); } if (!j.token) throw new Error(j.error || 'không có token'); return j; }); });
         });
     }
-    var HELP_GOC = (function () { try { return new URL(CFG.url, location.href).origin; } catch (e) { return ''; } })();
+    /* Origin Help đọc ĐỘNG từ CFG.url mỗi lần dùng — đổi config.url trên console (ví dụ sang máy dev Help localhost:3001) là lọc postMessage theo origin mới ngay */
+    function helpGoc() { try { return new URL(CFG.url, location.href).origin; } catch (e) { return ''; } }
     function khoaNut(khoa) { if (popup) popup.veil.querySelectorAll('[data-yh="gui"]').forEach(function (b) { b.disabled = !!khoa; }); }
     function gui(cheDo, nut) {
         if (!popup) return;
@@ -434,7 +435,7 @@
         huyCho();
         var p = popup;
         function fn(ev) {
-            if (ev.origin !== HELP_GOC) return;
+            if (ev.origin !== helpGoc()) return;
             var d = ev.data || {}; if (d.loai !== 'help-ho-tro-xong') return;
             huyCho();
             if (!popup || popup !== p) return;
@@ -455,7 +456,7 @@
     }
 
     /* ---------- Chế độ nhúng (mục 11, Help chốt 11.7): trao đổi với hỗ trợ ngay trong popup ---------- */
-    function gocHelp() { return adapter().demo() ? location.origin : HELP_GOC; }   // dựng thử: trang giả lập cùng origin
+    function gocHelp() { return adapter().demo() ? location.origin : helpGoc(); }   // dựng thử: trang giả lập cùng origin
     function khungHelp() { return popup && popup.veil.querySelector('iframe[name="yh-help"]'); }
     /* Chuyển popup sang chế độ trao đổi: thu ảnh + mô tả + thanh vẽ, hiện iframe, mã + nhãn trạng thái lên dòng ngữ cảnh,
        bật lối lui: không có help-san-sang sau CFG.choMs → báo kèm nút "Mở trong Help" */
@@ -688,7 +689,7 @@
             mauCache = [];
             for (var i = 0; i < 26; i++) {
                 var m = mans[i % mans.length], ng = new Date(Date.now() - i * 31 * 3600 * 1000), d = de[i % de.length] + (i >= de.length ? ' (lặp lại)' : '');
-                mauCache.push({ id: 'mau-' + i, maHienThi: 'HT-' + (240 - i), url: HELP_GOC + '/help-master/van-de/mau-' + i, tieuDe: d, moTa: 'Mô tả mẫu của yêu cầu "' + d + '".',
+                mauCache.push({ id: 'mau-' + i, maHienThi: 'HT-' + (240 - i), url: helpGoc() + '/help-master/van-de/mau-' + i, tieuDe: d, moTa: 'Mô tả mẫu của yêu cầu "' + d + '".',
                                 ma: m[0], ten: m[1], v: nc.v || '2', trangThai: tt[(i * 3) % tt.length], ngayTao: gioVN(new Date(ng.getTime() - 5 * 3600 * 1000)), ngayCapNhat: gioVN(ng), _ng: ng.getTime(),
                                 soPhanHoiMoi: i % 4 === 1 ? 1 + (i % 3) : 0, cuaToi: i % 5 !== 3, nguoiTao: i % 5 === 3 ? 'Người khác cùng trường' : '' });
             }
