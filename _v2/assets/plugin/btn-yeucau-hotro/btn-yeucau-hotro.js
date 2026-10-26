@@ -22,6 +22,16 @@
    từ đúng origin Help (bước 3a) → chèn dòng mới lên đầu bảng. "Chi tiết hơn" mở tab help-portal (bước 3b).
    Chế độ dựng thử (index.html, không vỏ ASPX): bảng chạy bằng dữ liệu mẫu cùng hình dạng JSON mục 10.2.
 
+   CHẾ ĐỘ NHÚNG (mục 11, Help trả lời 11.7, chủ dự án chốt 26/10) — công tắc `nhung` (mặc định TẮT = giữ mục 10; BẬT khi Help
+   báo chế độ nhúng đã lên máy chủ, không làm hai nửa): popup chỉ còn một nút "Gửi" (cheDo = "nhung"), form target vào iframe
+   trong popup; Help tạo yêu cầu rồi trả THẲNG trang vấn đề nhúng + postMessage help-ho-tro-xong → vùng ảnh / ô mô tả thu lại,
+   iframe trao đổi chiếm chỗ. Bấm dòng trong bảng → popup trao đổi: POST token + id + v vào iframe tới /ho-tro/nhung (11.7).
+   Nhận postMessage từ đúng origin Help: help-san-sang (tắt lối lui 10 giây), help-trang-thai / help-tin-moi (cập nhật dòng
+   trong bảng, không gọi lại cửa danh sách), help-phien-het (phát token mới, gửi { loai: "app-token", token } vào iframe —
+   KHÔNG POST lại để Help giữ nháp), help-loi. Chiều app → iframe: app-token, app-dong (trước khi đóng popup). Lối lui: không có
+   help-san-sang sau choMs → báo + nút "Mở trong Help" (luôn hiện khi đã có url — Help đề nghị để trao đổi dài mở bản đầy đủ).
+   Dựng thử: iframe nạp thu-nhung.html (giả lập trang nhúng Help, cùng thư mục).
+
    Bộ chuyển tiếp (adapter) tự chọn theo vỏ đang chạy:
      · _v2  : window.ums  (ums.state.menu / chucNangId, ums.session.userId, ums.api.call để lấy vai trò)
      · v1   : window.edu  (edu.system.dtChucNang / strChucNang_Id / userId / dtUngDung)
@@ -40,6 +50,8 @@
         url: cau.url || ds.url || 'https://con98.api-apis.com/help-master/ho-tro/gui',   // cửa nhận của Help (tài liệu mục 4)
         listUrl: cau.listUrl || ds.listUrl || 'https://con98.api-apis.com/help-master/ho-tro/danh-sach',   // cửa danh sách (mục 10.2)
         tokenUrl: cau.tokenUrl || ds.tokenUrl || 'help-sso.aspx',                          // phát token: cùng trang SSO, thêm json=1
+        nhung: /^(1|true)$/i.test(String(cau.nhung != null ? cau.nhung : (ds.nhung || ''))), // mục 11: trao đổi ngay trong popup — BẬT khi Help báo trang nhúng đã lên máy chủ
+        nhungUrl: cau.nhungUrl || ds.nhungUrl || 'https://con98.api-apis.com/help-master/ho-tro/nhung',   // mở yêu cầu cũ: POST token + id + v vào iframe (11.7)
         kichCo: Number(cau.kichCo || ds.kichCo || 20),                                      // số dòng mỗi lần tải (Help tối đa 50)
         choMs: Number(cau.choMs || ds.choMs || 10000),                                      // chờ Help trả lời (danh sách / postMessage) tối đa
         v: cau.v || ds.v || '',                                                             // rỗng = lấy theo vỏ (_v2: help.version), mặc định "2"
@@ -241,10 +253,16 @@
 
     /* ---------- Popup ---------- */
     var popup = null;
-    function moPopup(anhDau, loiChup) {
+    /* chatNgay = true: mở để trao đổi về yêu cầu đã có (từ bảng) — không ảnh, không ô mô tả, không nút Gửi */
+    function moPopup(anhDau, loiChup, chatNgay) {
         if (popup) dongPopup();
         var ad = adapter(), nc = ad.nguCanh(), vLan = CFG.v || nc.v || '2';
         var veil = el('div', 'yh-veil');
+        var chanGui = CFG.nhung
+            ? '     <button type="button" class="yh-btn yh-btn--phu" data-yh="moHelp" hidden title="Mở bản đầy đủ của yêu cầu này ở tab Help"><i class="fa-light fa-arrow-up-right-from-square"></i>Mở trong Help</button>' +
+              '     <button type="button" class="yh-btn yh-btn--chinh" data-yh="gui" data-chedo="nhung"><i class="fa-light fa-paper-plane"></i>Gửi</button>'
+            : '     <button type="button" class="yh-btn yh-btn--phu" data-yh="gui" data-chedo="chi-tiet"><i class="fa-light fa-list-check"></i>Chi tiết hơn</button>' +
+              '     <button type="button" class="yh-btn yh-btn--chinh" data-yh="gui" data-chedo="nhanh"><i class="fa-light fa-paper-plane"></i>Gửi nhanh</button>';
         veil.innerHTML =
             '<div class="yh-popup" role="dialog" aria-label="' + esc(CFG.text) + '">' +
             '  <div class="yh-head"><i class="fa-light fa-life-ring"></i><span>' + esc(CFG.text) + '</span>' +
@@ -252,7 +270,8 @@
             '  <div class="yh-ngucanh">' +
             '     <span><i class="fa-light fa-window"></i>' + esc(nc.ten || '(chưa mở chức năng nào)') + '</span>' +
             (nc.ungDung ? '<span><i class="fa-light fa-cube"></i>' + esc(nc.ungDung) + '</span>' : '') +
-            '     <span><i class="fa-light fa-code-branch"></i>Phiên bản ' + esc(vLan) + '</span></div>' +
+            '     <span><i class="fa-light fa-code-branch"></i>Phiên bản ' + esc(vLan) + '</span>' +
+            '     <span class="yh-item__ma" data-yh="ma" hidden></span><span class="yh-tag" data-yh="trangthai" hidden></span></div>' +
             '  <div class="yh-cc">' +
             '     <button type="button" class="yh-tool is-on" data-tool="khung" title="Đóng khung chỗ có vấn đề"><i class="fa-light fa-vector-square"></i>Khung</button>' +
             '     <button type="button" class="yh-tool" data-tool="muiten" title="Vẽ mũi tên chỉ vào chỗ có vấn đề"><i class="fa-light fa-arrow-up-right"></i>Mũi tên</button>' +
@@ -264,20 +283,20 @@
             '     <span class="yh-cc__kt" data-yh="kt"></span></div>' +
             '  <div class="yh-anh"><canvas></canvas>' +
             '     <div class="yh-anh__trong" hidden><i class="fa-light fa-image-slash"></i><div>Chưa có ảnh. Bấm "Chụp lại", chọn "Ảnh khác" hoặc dán ảnh bằng Ctrl+V (chụp bằng Win+Shift+S).</div></div></div>' +
-            '  <textarea class="yh-mota" maxlength="' + CFG.maxChu + '" placeholder="Mô tả ngắn: bạn đang làm gì, thấy gì (không bắt buộc với Gửi nhanh)"></textarea>' +
+            /* iframe nhận trả lời của Help: ẩn khi gửi nhanh (bước 3a); chế độ nhúng thì hiện làm khung trao đổi (mục 11) */
+            '  <iframe name="yh-help" class="yh-chat" hidden title="Trao đổi với hỗ trợ"></iframe>' +
+            '  <textarea class="yh-mota" maxlength="' + CFG.maxChu + '" placeholder="Mô tả ngắn: bạn đang làm gì, thấy gì (không bắt buộc' + (CFG.nhung ? '' : ' với Gửi nhanh') + ')"></textarea>' +
             '  <div class="yh-nhac"><i class="fa-light fa-circle-info"></i>Người cùng ứng dụng ở trường bạn sẽ nhìn thấy ảnh và nội dung này. Cắt bớt hoặc che phần không muốn gửi.</div>' +
             '  <div class="yh-tt" data-yh="tt" hidden></div>' +
             '  <div class="yh-foot">' +
             '     <button type="button" class="yh-btn" data-yh="dong"><i class="fa-light fa-xmark"></i>Đóng</button>' +
-            '     <span class="yh-foot__cach"></span>' +
-            '     <button type="button" class="yh-btn yh-btn--phu" data-yh="gui" data-chedo="chi-tiet"><i class="fa-light fa-list-check"></i>Chi tiết hơn</button>' +
-            '     <button type="button" class="yh-btn yh-btn--chinh" data-yh="gui" data-chedo="nhanh"><i class="fa-light fa-paper-plane"></i>Gửi nhanh</button></div>' +
+            '     <span class="yh-foot__cach"></span>' + chanGui + '</div>' +
             '</div>';
         document.body.appendChild(veil);
 
         var canvas = veil.querySelector('canvas'), trong = veil.querySelector('.yh-anh__trong'), kt = veil.querySelector('[data-yh="kt"]');
         var ve = new TrinhVe(canvas);
-        popup = { veil: veil, ve: ve, canvas: canvas, coAnh: false, nc: nc, v: vLan };
+        popup = { veil: veil, ve: ve, canvas: canvas, coAnh: false, nc: nc, v: vLan, chat: null, sanSangSom: false };
 
         function capNhat() {
             popup.coAnh = canvas.width > 1 && canvas.height > 1;
@@ -298,13 +317,14 @@
             else if (k === 'hoantac') { if (!ve.hoanTac()) thongBao('Không còn gì để hoàn tác.', 'nhe'); }
             else if (k === 'chuplai') chupLai();
             else if (k === 'gui') gui(b.getAttribute('data-chedo'), b);
+            else if (k === 'moHelp') { if (popup.chat && popup.chat.url) global.open(popup.chat.url, CFG.target); }
         });
         veil.querySelector('input[type=file]').addEventListener('change', function () {
             var f = this.files && this.files[0]; this.value = ''; if (f) napTep(f);
         });
         veil.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') { ev.stopPropagation(); dongPopup(); } });
         document.addEventListener('paste', onPaste);
-        setTimeout(function () { var ta = veil.querySelector('.yh-mota'); if (ta) ta.focus(); }, 50);
+        if (!chatNgay) setTimeout(function () { var ta = veil.querySelector('.yh-mota'); if (ta) ta.focus(); }, 50);
 
         function onPaste(ev) {
             var items = (ev.clipboardData || {}).items || [];
@@ -356,7 +376,13 @@
         var ad = adapter(), nc = popup.nc;
         var noiDung = popup.veil.querySelector('.yh-mota').value.trim().slice(0, CFG.maxChu);
         if (ad.demo()) {
-            if (cheDo === 'nhanh') {
+            if (cheDo === 'nhung') {
+                /* dựng thử chế độ nhúng: thêm dòng mẫu rồi vào thẳng khung trao đổi với trang giả lập Help */
+                var dMau = { id: 'mau-' + Date.now(), maHienThi: 'HT-mẫu', url: '' };
+                themDongMoi(dMau, noiDung, nc);
+                vaoChat(dMau);
+                popup.veil.querySelector('iframe[name="yh-help"]').src = GOC + 'thu-nhung.html?id=' + encodeURIComponent(dMau.id) + '&ma=' + encodeURIComponent(dMau.maHienThi) + '&moi=1';
+            } else if (cheDo === 'nhanh') {
                 themDongMoi({ id: 'mau-' + Date.now(), maHienThi: 'HT-mẫu', url: '#' }, noiDung, nc);
                 thongBao('Chế độ dựng thử trên máy: không có phiên đăng nhập để phát token nên không gửi sang Help; đã thêm một dòng mẫu vào bảng để xem luồng.', 'canh');
             } else thongBao('Chế độ dựng thử trên máy: không có phiên đăng nhập để phát token, nên không gửi sang Help. Mọi bước chụp / sửa / cắt ảnh vẫn thử được.', 'canh');
@@ -379,11 +405,11 @@
                 var dt = new DataTransfer(); dt.items.add(new File([anh], 'man-hinh.' + (anh.type === 'image/jpeg' ? 'jpg' : 'png'), { type: anh.type }));
                 fi.files = dt.files; f.appendChild(fi);
             }
-            if (cheDo === 'nhanh') {
-                /* Bước 3a: submit vào iframe ẩn trong popup, người dùng ở lại phần mềm; Help trả trang nhỏ gửi postMessage */
-                var fr = popup.veil.querySelector('iframe[name="yh-nhanh"]');
-                if (!fr) { fr = document.createElement('iframe'); fr.name = 'yh-nhanh'; fr.hidden = true; fr.setAttribute('title', 'Help nhận gửi nhanh'); popup.veil.appendChild(fr); }
-                f.target = 'yh-nhanh';
+            if (cheDo === 'nhanh' || cheDo === 'nhung') {
+                /* Bước 3a: submit vào iframe trong popup, người dùng ở lại phần mềm; Help trả trang nhỏ gửi postMessage.
+                   Chế độ nhúng (mục 11): Help trả THẲNG trang vấn đề nhúng vào iframe này; help-ho-tro-xong → vaoChat() hiện nó. */
+                f.target = 'yh-help';
+                if (cheDo === 'nhung') batNghe();   // help-san-sang có thể tới trước help-ho-tro-xong
                 document.body.appendChild(f); f.submit();
                 choHelpXacNhan(nc, noiDung);
             } else {
@@ -415,6 +441,7 @@
             khoaNut(false);
             if (!d.ok) { thongBao('Help chưa nhận: ' + (d.thongBao || d.loi || 'không rõ lý do') + '. Ảnh và nội dung vẫn còn, bấm gửi lại.', 'canh'); return; }
             themDongMoi(d, noiDung, nc);
+            if (CFG.nhung) { vaoChat(d); return; }   // mục 11: iframe đã là trang vấn đề nhúng → thu ảnh / mô tả, hiện khung trao đổi
             var tt = popup.veil.querySelector('[data-yh="tt"]'); tt.hidden = false; tt.className = 'yh-tt yh-tt--tot';
             tt.innerHTML = '<i class="fa-light fa-circle-check"></i> Đã gửi yêu cầu <b>' + esc(d.maHienThi || d.id || '') + '</b>.' +
                 (d.soTuongTu > 0 ? ' Đã có ' + esc(d.soTuongTu) + ' người báo ở màn này.' : '') +
@@ -425,6 +452,93 @@
             khoaNut(false); thongBao('Help chưa xác nhận sau ' + Math.round(CFG.choMs / 1000) + ' giây. Ảnh và nội dung vẫn còn, bấm gửi lại.', 'canh');
         }, CFG.choMs) };
         global.addEventListener('message', fn);
+    }
+
+    /* ---------- Chế độ nhúng (mục 11, Help chốt 11.7): trao đổi với hỗ trợ ngay trong popup ---------- */
+    function gocHelp() { return adapter().demo() ? location.origin : HELP_GOC; }   // dựng thử: trang giả lập cùng origin
+    function khungHelp() { return popup && popup.veil.querySelector('iframe[name="yh-help"]'); }
+    /* Chuyển popup sang chế độ trao đổi: thu ảnh + mô tả + thanh vẽ, hiện iframe, mã + nhãn trạng thái lên dòng ngữ cảnh,
+       bật lối lui: không có help-san-sang sau CFG.choMs → báo kèm nút "Mở trong Help" */
+    function vaoChat(info) {
+        if (!popup) return;
+        var p = popup, v = p.veil, url = info.url && info.url !== '#' ? info.url : '';
+        p.chat = { id: info.id, url: url, sanSang: !!p.sanSangSom, hen: null };
+        ['.yh-cc', '.yh-anh', '.yh-mota', '.yh-nhac'].forEach(function (s) { var e = v.querySelector(s); if (e) e.hidden = true; });
+        v.querySelectorAll('[data-yh="gui"]').forEach(function (b) { b.hidden = true; });
+        khungHelp().hidden = false;
+        var ma = v.querySelector('[data-yh="ma"]'); ma.hidden = false; ma.textContent = info.maHienThi || info.id || '';
+        datTrangThai(info);
+        var mo = v.querySelector('[data-yh="moHelp"]'); if (mo) mo.hidden = !url;
+        batNghe();
+        if (p.chat.sanSang) { v.querySelector('[data-yh="tt"]').hidden = true; return; }
+        thongBao('Đang mở khung trao đổi với hỗ trợ…', 'nhe');
+        p.chat.hen = setTimeout(function () {
+            if (popup !== p || p.chat.sanSang) return;
+            loiNhung('Không mở được khung trao đổi trong popup sau ' + Math.round(CFG.choMs / 1000) + ' giây (trình duyệt chặn khung hoặc Help chưa trả lời).');
+        }, CFG.choMs);
+    }
+    function loiNhung(msg) {
+        if (!popup || !popup.chat) return;
+        var mo = popup.veil.querySelector('[data-yh="moHelp"]'), coUrl = !!popup.chat.url;
+        thongBao(msg + (coUrl ? ' Bấm "Mở trong Help" để tiếp tục ở tab Help.' : ''), 'canh');
+        if (mo && coUrl) { mo.hidden = false; mo.classList.add('yh-btn--chinh'); }
+    }
+    function datTrangThai(d) {   // d: { trangThai, ten?, mau? } — ten / mau Help gửi kèm (help-trang-thai) hoặc tra danh mục của bảng
+        var t = popup && popup.veil.querySelector('[data-yh="trangthai"]'); if (!t) return;
+        var dm = ((bang && bang.dm) || DM_MAC_DINH).filter(function (x) { return x.ma === d.trangThai; })[0] || {};
+        var ten = d.ten || dm.ten || d.trangThai || '';
+        t.hidden = !ten; t.textContent = ten; t.style.setProperty('--yh-mau', d.mau || dm.mau || '#6b7280');
+    }
+    /* Một trình nghe postMessage cho cả phiên trao đổi (11.3); chỉ nhận từ đúng origin Help. help-ho-tro-xong do choHelpXacNhan nhận. */
+    var ngheChat = null;
+    function batNghe() {
+        if (ngheChat) return;
+        ngheChat = function (ev) {
+            if (ev.origin !== gocHelp() || !popup) return;
+            var d = ev.data; if (!d || typeof d.loai !== 'string') return;
+            var c = popup.chat;
+            if (!c) { if (d.loai === 'help-san-sang') popup.sanSangSom = true; return; }
+            if (d.loai === 'help-san-sang') { c.sanSang = true; clearTimeout(c.hen); var tt = popup.veil.querySelector('[data-yh="tt"]'); if (tt) tt.hidden = true; }
+            else if (d.loai === 'help-trang-thai') { datTrangThai(d); capNhatDong(d.id || c.id, { trangThai: d.trangThai }, d); }
+            else if (d.loai === 'help-tin-moi') capNhatDong(d.id || c.id, { soPhanHoiMoi: Number(d.soChuaDoc) || 0 });
+            else if (d.loai === 'help-phien-het') giaHan();
+            else if (d.loai === 'help-loi') loiNhung('Help báo lỗi: ' + (d.thongBao || d.loi || 'không rõ') + '.');
+        };
+        global.addEventListener('message', ngheChat);
+    }
+    function tatNghe() { if (ngheChat) { global.removeEventListener('message', ngheChat); ngheChat = null; } }
+    function guiVaoKhung(msg) { var fr = khungHelp(); if (fr && fr.contentWindow) fr.contentWindow.postMessage(msg, gocHelp()); }
+    /* Phiên nhúng hết (help-phien-het): phát token SSO mới rồi gửi { loai: "app-token", token } vào iframe — KHÔNG POST lại,
+       Help đổi access token tại chỗ, giữ nháp và vị trí cuộn (11.7) */
+    function giaHan() {
+        var ad = adapter(), p = popup;
+        (ad.demo() ? Promise.resolve({ token: 'mau-' + Date.now() }) : layToken(ad)).then(
+            function (tk) { if (popup === p) guiVaoKhung({ loai: 'app-token', token: tk.token }); },
+            function (e) { if (popup === p) loiNhung('Không phát được token mới (' + e.message + ').'); });
+    }
+    /* Cập nhật một dòng trong bảng theo postMessage (không gọi lại cửa danh sách); mã trạng thái lạ thì thêm vào danh mục */
+    function capNhatDong(id, patch, tt) {
+        if (!bang || !id) return;
+        var r = bang.ds.filter(function (x) { return x.id === id; })[0]; if (!r) return;
+        Object.keys(patch).forEach(function (k) { r[k] = patch[k]; });
+        if (tt && tt.trangThai && !bang.dm.some(function (x) { return x.ma === tt.trangThai; })) { bang.dm.push({ ma: tt.trangThai, ten: tt.ten || tt.trangThai, mau: tt.mau || '' }); veChips(); }
+        veDs();
+    }
+    /* Bấm dòng trong bảng: popup trao đổi về yêu cầu đã có — POST token + id + v vào iframe tới cửa /ho-tro/nhung (11.7) */
+    function moChat(r) {
+        if (!r || !r.id) return;
+        var ad = adapter();
+        moPopup(null, '', true);
+        var p = popup;
+        vaoChat({ id: r.id, maHienThi: r.maHienThi, url: r.url, trangThai: r.trangThai });
+        if (ad.demo()) { khungHelp().src = GOC + 'thu-nhung.html?id=' + encodeURIComponent(r.id) + '&ma=' + encodeURIComponent(r.maHienThi || ''); return; }
+        layToken(ad).then(function (tk) {
+            if (popup !== p) return;
+            var f = document.createElement('form'); f.method = 'POST'; f.action = CFG.nhungUrl; f.target = 'yh-help'; f.style.display = 'none';
+            [['token', tk.token], ['id', r.id], ['v', p.v]].forEach(function (kv) { var i = document.createElement('input'); i.type = 'hidden'; i.name = kv[0]; i.value = kv[1] == null ? '' : String(kv[1]); f.appendChild(i); });
+            document.body.appendChild(f); f.submit();
+            setTimeout(function () { if (f.parentNode) f.parentNode.removeChild(f); }, 3000);
+        }, function (e) { if (popup === p) loiNhung('Không phát được token (' + e.message + ').'); });
     }
 
     /* ---------- Bảng "Yêu cầu của tôi" — trượt từ mép phải (tài liệu mục 10) ---------- */
@@ -471,7 +585,11 @@
             var c = ev.target.closest('[data-chip]');
             if (c) { bang.loc.trangThai = c.getAttribute('data-chip'); veChips(); tai(true); return; }
             var it = ev.target.closest('[data-yh="item"]');
-            if (it) { ev.preventDefault(); var u = it.getAttribute('href'); if (u && u !== '#') global.open(u, CFG.target); return; }
+            if (it) {
+                ev.preventDefault();
+                if (CFG.nhung) { var r = bang.ds.filter(function (x) { return x.id === it.getAttribute('data-id'); })[0]; if (r) moChat(r); return; }   // mục 11: trao đổi trong popup
+                var u = it.getAttribute('href'); if (u && u !== '#') global.open(u, CFG.target); return;
+            }
             var b = ev.target.closest('[data-yh]'); if (!b) return;
             var k = b.getAttribute('data-yh');
             if (k === 'dong') dongBang();
@@ -512,7 +630,7 @@
     }
     function veDong(r, tt) {
         var ten = tt ? tt.ten : (r.trangThai || ''), mau = (tt && tt.mau) || '#6b7280';
-        return '<a class="yh-item' + (r.moi ? ' yh-item--moi' : '') + '" href="' + esc(r.url || '#') + '" data-yh="item" title="Mở yêu cầu trên Cổng Help">' +
+        return '<a class="yh-item' + (r.moi ? ' yh-item--moi' : '') + '" href="' + esc(r.url || '#') + '" data-yh="item" data-id="' + esc(r.id || '') + '" title="' + (CFG.nhung ? 'Trao đổi với hỗ trợ về yêu cầu này' : 'Mở yêu cầu trên Cổng Help') + '">' +
             '<div class="yh-item__d1"><span class="yh-tag" style="--yh-mau:' + esc(mau) + '">' + esc(ten) + '</span><span class="yh-item__ma">' + esc(r.maHienThi || r.id || '') + '</span>' +
             (r.soPhanHoiMoi > 0 ? '<span class="yh-item__moi" title="Phản hồi chưa đọc">' + esc(r.soPhanHoiMoi) + '</span>' : '') + '</div>' +
             '<div class="yh-item__ten">' + esc(r.tieuDe || r.moTa || '(không có mô tả)') + '</div>' +
@@ -641,8 +759,17 @@
         return tt;
     }
 
-    function dongPopup() { if (popup) { huyCho(); popup.dong(); popup = null; } }
+    function dongPopup() {
+        if (!popup) return;
+        var p = popup; popup = null; tatNghe(); huyCho();
+        if (!p.chat) { p.dong(); return; }
+        /* Help lưu nháp (11.7): postMessage giao không đồng bộ — gỡ iframe ngay thì Help không nhận được. Ẩn tức thì, gỡ sau 200 ms. */
+        clearTimeout(p.chat.hen);
+        var fr = p.veil.querySelector('iframe[name="yh-help"]'); if (fr && fr.contentWindow) fr.contentWindow.postMessage({ loai: 'app-dong' }, gocHelp());
+        p.veil.style.display = 'none';
+        setTimeout(function () { p.dong(); }, 200);
+    }
     global.btnYeuCauHoTro = { config: CFG, mo: moBang, tao: moTuNut, dong: function () { dongPopup(); dongBang(); }, taiLai: function () { tai(true); },
-                              adapter: null, adapters: adapters, dung: dungNut, taiAnh: taiAnh };
+                              moChat: moChat, adapter: null, adapters: adapters, dung: dungNut, taiAnh: taiAnh };
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', dungNut); else dungNut();
 })(window);

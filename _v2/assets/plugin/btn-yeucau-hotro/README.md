@@ -2,7 +2,9 @@
 
 Theo tài liệu `nut-yeu-cau-ho-tro-tren-app.docx` (Help gửi đội app 26/10/2026): mục 2 (luồng), 4 (form), 5 (chú ý khi làm trên v2),
 dòng "Sửa ảnh" đội app thêm ở bước 2, và **mục 10** (chủ dự án chốt 26/10: nút nổi mở bảng "Yêu cầu của tôi" trượt từ mép phải,
-có bộ lọc; "Tạo yêu cầu mới" mới mở popup chụp ảnh) + **10.7** Help trả lời (cửa danh sách đã dựng trên máy dev, lên máy chủ đợt kế tiếp).
+có bộ lọc; "Tạo yêu cầu mới" mới mở popup chụp ảnh) + **10.7** Help trả lời (cửa danh sách đã dựng trên máy dev, lên máy chủ đợt kế tiếp)
++ **mục 11** (chủ dự án chốt 26/10 sau khi Help trả lời **11.7**: trao đổi với hỗ trợ NGAY TRONG POPUP bằng iframe trang vấn đề nhúng của
+Help, bỏ chuyển tab) — đã làm xong phía app sau công tắc `nhung`, **mặc định TẮT** (giữ mục 10) cho tới khi Help báo trang nhúng đã lên máy chủ.
 
 ## Tệp
 
@@ -12,6 +14,7 @@ có bộ lọc; "Tạo yêu cầu mới" mới mở popup chụp ảnh) + **10.7
 | `btn-yeucau-hotro.css` | Kiểu dáng tiền tố `yh-`, JS tự nạp. Dùng biến `--ums-*` nếu vỏ có, không có thì màu dự phòng |
 | `html2canvas.min.js` | html2canvas 1.4.1 (bản gốc từ cdnjs, tự chứa). Nạp lười lần bấm "Tạo yêu cầu mới" đầu |
 | `thu-nhan.aspx` | Trang thử nhận form thay cửa `/ho-tro/gui` khi Help chưa dựng: in lại mọi trường + ảnh |
+| `thu-nhung.html` | Giả lập trang vấn đề nhúng của Help (mục 11): bắn đủ bộ sự kiện 11.3, nhận `app-token` / `app-dong`. Plugin tự nạp vào iframe ở chế độ dựng thử |
 
 ## Gắn vào vỏ
 
@@ -37,7 +40,9 @@ Trước thẻ script, hoặc bằng `data-*` trên thẻ script, hoặc sửa `
   text: "Yêu cầu hỗ trợ",
   target: "help-portal",                                              // tên tab cố định, trùng tab nút "?"
   kichCo: 20,                                                         // dòng mỗi lần tải (Help tối đa 50)
-  choMs: 10000                                                        // chờ Help trả lời (danh sách / postMessage) tối đa
+  choMs: 10000,                                                       // chờ Help trả lời (danh sách / postMessage / help-san-sang) tối đa
+  nhung: false,                                                       // mục 11: trao đổi ngay trong popup — BẬT khi Help báo trang nhúng đã lên máy chủ
+  nhungUrl: "https://con98.api-apis.com/help-master/ho-tro/nhung"      // mở yêu cầu cũ trong iframe: POST token + id + v (Help 11.7)
 };</script>
 ```
 
@@ -61,12 +66,25 @@ Thử khi Help chưa có cửa nhận: `btnYeuCauHoTro.config.url = 'assets/plug
    `{ loai: "help-ho-tro-xong", ok, id, url, soTuongTu }` từ đúng origin Help (tối đa `choMs`) → báo "Đã gửi" kèm link Xem, chèn
    dòng mới lên đầu bảng (không gọi lại cửa danh sách). Quá hạn hoặc `ok = false` → báo lỗi, popup giữ nguyên để gửi lại.
    **"Chi tiết hơn"** (bước 3b): cùng form, target tab `help-portal` — nút duy nhất mở Help.
+5. **Chế độ nhúng** (`nhung: true`, mục 11 theo Help 11.7) thay bước 3a / 3b / 4 và "bấm dòng → mở tab":
+   - Popup chỉ còn một nút **"Gửi"** (`cheDo = "nhung"`), form target vào iframe `yh-help` đang nằm trong popup. Help tạo yêu cầu rồi trả
+     THẲNG trang vấn đề nhúng vào iframe đó + `help-ho-tro-xong` → plugin thu vùng ảnh / thanh vẽ / ô mô tả, hiện iframe (cao ≥ 60vh),
+     đưa `maHienThi` + nhãn trạng thái lên dòng ngữ cảnh, chèn dòng mới lên đầu bảng.
+   - **Bấm dòng trong bảng** → popup trao đổi: phát token mới, `POST token + id + v` vào iframe tới `nhungUrl` (`/ho-tro/nhung`). Không mở tab.
+   - Nhận postMessage từ đúng origin Help (11.3): `help-san-sang` (tắt lối lui), `help-trang-thai` / `help-tin-moi` (đổi nhãn trên popup và
+     trên dòng trong bảng, mã lạ thì thêm vào danh mục — không gọi lại cửa danh sách), `help-phien-het` (phát token mới rồi gửi
+     `{ loai: "app-token", token }` vào iframe, **không POST lại** để Help giữ nháp), `help-loi` (thông báo đỏ + nổi bật "Mở trong Help").
+   - Chiều app → iframe (targetOrigin = origin Help): `app-token`, `app-dong` (trước khi đóng popup; popup ẩn tức thì, gỡ sau 200 ms để Help kịp nhận).
+   - **Lối lui**: không có `help-san-sang` sau `choMs` → thông báo kèm nút **"Mở trong Help"** (mở `url` ở tab `help-portal`). Nút này luôn hiện
+     khi đã có `url` (Help đề nghị, để trao đổi dài mở bản đầy đủ).
+   - Dựng thử: iframe nạp `thu-nhung.html` (cùng thư mục); `btnYeuCauHoTro.moChat(dong)` mở trao đổi cho một dòng.
 
 ## Gọi Help
 
 | Cửa | Cách gọi | Trường |
 |---|---|---|
 | `/ho-tro/gui` (form) | `POST multipart/form-data`, target iframe ẩn (nhanh) hoặc tab `help-portal` (chi tiết) | `token` · `ma` (CHUCNANG.ID) · `ten` (≤ 200) · `duong` (≤ 300) · `v` · `cheDo` (`nhanh` \| `chi-tiet`) · `noiDung` (≤ 2.000) · `anh` (PNG, quá 5 MB tự chuyển JPEG 0.85) · `route` · `appVersion` (`ums.ban`) · `browser` |
+| `/ho-tro/nhung` (form, chỉ khi `nhung`) | `POST`, target iframe hiện trong popup | `token` · `id` · `v` → Help trả trang vấn đề nhúng (token nhúng 60 phút không cookie, CSP `frame-ancestors` theo sổ trường) |
 | `/ho-tro/danh-sach` (JSON) | `fetch POST x-www-form-urlencoded`, `mode: cors`, `credentials: omit`, huỷ sau `choMs` | `token` · `v` · `phamVi` · `ma` · `trangThai` · `tuKhoa` · `tuNgay` / `denNgay` (dd/MM/yyyy) · `trang` · `kichCo` → `{ ok, tong, trang, kichCo, trangThai: [{ma, ten, mau}], ds: [{ id, maHienThi, url, tieuDe, moTa, ma, ten, v, trangThai, ngayTao, ngayCapNhat, soPhanHoiMoi, nguoiPhuTrach, cuaToi }] }`; lỗi `{ ok: false, loi, thongBao }` |
 
 Token: mỗi lần gọi (gửi hoặc danh sách) phát mới qua `POST help-sso.aspx` với `roles`, `uid`, `json=1` → `{token, dich, exp}`.
@@ -78,6 +96,9 @@ Không giữ token, không cookie Help, không SDK.
   dạng JSON mục 10.2); chụp / vẽ / cắt chạy đủ; "Gửi nhanh" chỉ thêm một dòng mẫu vào bảng, "Chi tiết hơn" báo không có phiên để phát token.
 - Màn hình nạp nội dung cross-origin (ảnh từ host khác không có CORS) có thể ra ô trắng trong ảnh chụp — người dùng dùng "Ảnh khác" hoặc Ctrl+V.
 - `help-sso.aspx` phát token theo vai trò do trình duyệt gửi (xem ghi chú trong tệp đó): Help vẫn kiểm quyền phía họ.
+- Chế độ nhúng CHƯA thử với Help thật (26/10: Help ước 2–3 ngày, làm sau khi cửa danh sách lên máy chủ). Khi Help báo xong: đặt `nhung: true`
+  trong cấu hình (một chỗ), thử trên Edge Strict + Safari: bấm dòng → khung trao đổi hiện trong 10 giây, gửi tin, dán ảnh, đổi trạng thái →
+  dòng trong bảng đổi theo, để quá 60 phút → `help-phien-het` → gia hạn không mất nháp, Đóng rồi mở lại còn nháp.
 - Cửa danh sách CHƯA thử với Help thật (26/10: Help mới có trên máy dev). Lên máy chủ thì chạy bước 5 mục 10.4: tài khoản trường có ≥ 25 yêu cầu,
   thử từng bộ lọc, Tải thêm, Gửi nhanh → dòng mới lên đầu, bấm dòng → mở đúng trang vấn đề.
 
