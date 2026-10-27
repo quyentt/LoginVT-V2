@@ -173,8 +173,8 @@
     <script src="assets/js/lamtruoc.js?v=<%= V("assets/js/lamtruoc.js") %>"></script>
     <script src="assets/js/thuvai.js?v=<%= V("assets/js/thuvai.js") %>"></script>
     <%-- Plugin "Yêu cầu hỗ trợ" (tự chứa: assets/plugin/btn-yeucau-hotro/README.md) — nút nổi chụp màn hình, sửa ảnh, gửi sang Cổng Help --%>
-    <script>window.UMS_HOTRO_CONFIG = { nhung: false };</script>
-    <%-- 27/10: chế độ nhúng (docx mục 11) — ĐỂ false tới khi Help báo cửa gui nhận cheDo=nhung trên con98 (27/10 chưa có); bật = đổi true --%>
+    <script>window.UMS_HOTRO_CONFIG = { nhung: true };</script>
+    <%-- 27/10: chế độ nhúng (docx mục 11) — BẬT 27/10 sau khi Help lên trang nhúng + cheDo=nhung trên con98; tắt = đổi false --%>
     <script src="assets/plugin/btn-yeucau-hotro/btn-yeucau-hotro.js?v=<%= V("assets/plugin/btn-yeucau-hotro/btn-yeucau-hotro.js") %>"></script>
     <%-- Dấu gói do _harness/dong-goi.py sinh (việc F 15/10): ums.ban → cache tệp màn theo phiên bản. Nguồn _v2 không có tệp này, chỉ có trong gói. --%>
     <script src="assets/phien-ban.js?v=<%= V("assets/phien-ban.js") %>"></script>
