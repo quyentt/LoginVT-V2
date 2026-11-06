@@ -1586,6 +1586,56 @@
     font-weight: var(--ums-fw-semibold);
 }
 
+/* dòng "tên : giá trị": giá trị nhiều dòng thì nhãn bám dòng đầu, giá trị dài tự xuống dòng không tràn ô */
+.ums-skin .ums-grid > .ums-field--inline:has(.skin-gt) {
+    min-width: 0;
+}
+.ums-skin .ums-field--inline:has(.skin-gt) .ums-field__label {
+    align-items: flex-start;
+    line-height: 1.4;
+    padding-top: calc((var(--ums-control-h) - 1.4em) / 2);
+}
+.ums-skin .ums-field--inline:has(.skin-gt) .ums-field__control {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+.ums-skin .ums-field--inline .skin-gt {
+    align-items: flex-start;
+    line-height: 1.4;
+    padding-top: calc((var(--ums-control-h) - 1.4em) / 2);
+    min-height: 0;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+}
+
+/* ô kiểu làm bài do JS dựng bằng col-lg-4 + float: chứa float lại, hàng nút phía dưới luôn đủ 100% chiều ngang */
+.ums-skin #DSKieuLamBai,
+.ums-skin #zoneKieuLamBai {
+    display: flow-root;
+    width: 100%;
+    clear: both;
+}
+.ums-skin #zoneKieuLamBai > .col-lg-4 {
+    box-sizing: border-box;
+    width: 33.3333%;
+    min-width: 0;
+}
+@media (max-width: 991px) {
+    .ums-skin #zoneKieuLamBai > .col-lg-4 { width: 50%; }
+}
+@media (max-width: 575px) {
+    .ums-skin #zoneKieuLamBai > .col-lg-4 { width: 100%; }
+}
+
+/* màn khung trong (zone-bus) đã có nút Đóng ở đầu khung: ẩn nút Đóng lặp trong nội dung / chân khung */
+.ums-skin .zone-bus .ums-panel:has(> .ums-panel__head [class*="btnClose"]) .ums-panel__body [class*="btnClose"],
+.ums-skin .zone-bus .ums-panel:has(> .ums-panel__head [class*="btnClose"]) .ums-panel__foot [class*="btnClose"] {
+    display: none !important;
+}
+.ums-skin .zone-bus .ums-panel:has(> .ums-panel__head [class*="btnClose"]) .ums-panel__foot:not(:has(> :not([class*="btnClose"]))) {
+    display: none !important;
+}
+
 .ums-skin .skin-canh {
     color: var(--ums-act-del);
     font-weight: var(--ums-fw-semibold);
