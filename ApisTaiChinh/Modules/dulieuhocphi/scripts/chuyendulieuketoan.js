@@ -86,7 +86,8 @@ ChuyenDuLieu.prototype = {
         //    //me.enableButton_Start(strHangDoi_Id);
         //});
 
-        $("#tblTaskBar_ChuyenDuLieu").delegate("#btnXemDanhSach", "click", function () {
+        // Nút nằm ngoài bảng #tblTaskBar_ChuyenDuLieu nên không delegate trên bảng được
+        $("#btnXemDanhSach").click(function () {
             me.getList_NienChe();
             me.getList_TinChi();
         });

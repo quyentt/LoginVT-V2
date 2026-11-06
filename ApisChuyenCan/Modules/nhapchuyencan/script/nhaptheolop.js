@@ -80,12 +80,17 @@ NhapTheoLop.prototype = {
             me.strDanhSachHoc_Id = this.id;
             me.getList_NhapChuyenCan(this.id);
             var aDataDS = me.dtLopHoc.find(e => me.strDanhSachHoc_Id == e.ID);
+            me["strDangKy_LopHocPhan_Id"] = aDataDS.ID;
+            me["strDaoTao_ThoiGianDaoTao_Id"] = aDataDS.DAOTAO_THOIGIANDAOTAO_ID;
             $("#lblForm_KhoiTao_NO").html('<i class="fa fa-plus-square"></i> Danh sách: ' + aDataDS.TEN);
         });
         //Xuất báo cáo
         edu.system.getList_MauImport("zonebtnBaoCao_NTL", function (addKeyValue) {
             addKeyValue("strTinhDenNgay", edu.util.getValById("txtSearch_TuNgay_IHD"));
             addKeyValue("strDanhSachHoc_Id", main_doc.NhapTheoLop.strDanhSachHoc_Id);
+            addKeyValue("strDangKy_LopHocPhan_Id", main_doc.NhapTheoLop.strDangKy_LopHocPhan_Id);
+            addKeyValue("strDaoTao_LopHocPhan_Id", main_doc.NhapTheoLop.strDangKy_LopHocPhan_Id);
+            addKeyValue("strDaoTao_ThoiGianDaoTao_Id", main_doc.NhapTheoLop.strDaoTao_ThoiGianDaoTao_Id);
         });
         $("#btnSaveChuyenCan").click(function () {
             var arrThem = [];

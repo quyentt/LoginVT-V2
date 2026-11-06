@@ -20,6 +20,12 @@ LopHocPhan.prototype = {
         -------------------------------------------*/
         edu.system.pageSize_default = 10;
 
+        // Chức năng tra cứu ("Xem kết quả đăng ký...") chỉ xem → bỏ 2 cột Dồn lớp / Dồn nhóm lớp.
+        // Chức năng Tổng hợp (và mọi trường hợp không nhận diện được) giữ nguyên đủ cột.
+        me.bTraCuu = me._isTraCuu();
+        console.log("[LopHocPhan] chức năng:", me.strTenChucNang, "→ chế độ", me.bTraCuu ? "TRA CỨU (ẩn Dồn lớp/Dồn nhóm)" : "TỔNG HỢP (đủ cột)");
+        if (me.bTraCuu) $("#thDonLop, #thDonNhomLop").remove();
+
         $(".scroll-top-mirror").each(function () {
             var $mirror = $(this);
             var $bottom = $mirror.next(".scroll-table-x");
@@ -244,96 +250,49 @@ LopHocPhan.prototype = {
             edu.util.checkedAll_BgRow(this, { table_id: "tblSinhVien" });
         });
 
+        // Dồn lớp: chuyển các sinh viên đã tick sang "lớp cuối" — chạy từng sinh viên qua form tiến trình chung
         $("#btnSave_LopHocPhan").click(function (e) {
-            var arrChecked_Id = edu.util.getArrCheckedIds("tblSinhVien", "checkX");
-            if (arrChecked_Id.length == 0) {
+            e.preventDefault();
+            var arrSelected = me._selectedRows("tblSinhVien", me.dtSinhVien);
+            if (arrSelected.length == 0) {
                 edu.system.alert("Vui lòng chọn đối tượng?");
                 return;
             }
-            edu.system.confirm("Bạn có chắc chắn lưu dữ liệu không?");
-            $("#btnYes").click(function (e) {
-                edu.system.alert('<div id="zoneprocessXXXX"></div>');
-                edu.system.genHTML_Progress("zoneprocessXXXX", arrChecked_Id.length);
-                me.arrSinhVien_Id = arrChecked_Id;
-                for (var i = 0; i < arrChecked_Id.length; i++) {
-                    me.save_SinhVien(arrChecked_Id[i]);
-                }
+            var strLopMoi_Id = edu.util.getValById("dropLopCuoi");
+            if (!strLopMoi_Id) {
+                edu.system.alert("Vui lòng chọn lớp cuối?");
+                return;
+            }
+            me.arrSinhVien_Id = arrSelected.map(function (r) { return r.ID; });//tô hồng ở bảng kết quả (getList_DangKyHocKQ)
+            me.runProcess({
+                title: "Dồn lớp học phần",
+                unit: "sinh viên",
+                fileName: "KetQuaDonLop",
+                subTitles: ["Lớp cuối: " + $("#dropLopCuoi option:selected").text().replace(/\s+/g, " ").trim()],
+                items: arrSelected,
+                columns: me._colsSinhVien(),
+                request: function (it) { return me.req_DonLop(it, strLopMoi_Id); },
+                refresh: function () { me.getList_DangKyHoc(); me.getList_DangKyHocKQ(); }
             });
         });
-        $("#btnThietLapLopRieng").click(function (e) {
-            var arrChecked_Id = edu.util.getArrCheckedIds("tblLopHocPhan", "checkX");
-            if (arrChecked_Id.length == 0) {
-                edu.system.alert("Vui lòng chọn đối tượng?");
-                return;
-            }
-            var html = '';
-            html += '<div class="radio" id="divMoHinh" style="padding-left: 20px;padding-bottom: 40px">';
-            html += '<div class="col-sm-12">';
-            html += '<input id="ThietLapLopRieng_1" type="radio" name="ThietLapLopRieng" value="1">';
-            html += '<label for="ThietLapLopRieng_1"> Là lớp riêng</label>';
-            html += '</div>';
-            html += '<div class="col-sm-12">';
-            html += '<input id="ThietLapLopRieng_0" type="radio" name="ThietLapLopRieng" value="0">';
-            html += '<label for="ThietLapLopRieng_0"> Không phải lớp riêng</label>';
-            html += '</div>';
-            html += '</div>';
-            edu.system.confirm("Chọn thiết lập lớp riêng? <br/>" + html);
-            $("#btnYes").click(function (e) {
-                var dLopRieng = $('input[name="ThietLapLopRieng"]:checked').val()
-                for (var i = 0; i < arrChecked_Id.length; i++) {
-                    me.save_ThietLapLopRieng(arrChecked_Id[i], dLopRieng);
-                }
-            });
+        // Thiết lập thuộc tính cho các lớp học phần đã tick: chọn giá trị trong hộp xác nhận → chạy từng lớp qua form tiến trình chung
+        me.bindThietLap({
+            btn: "#btnThietLapLopRieng", hoi: "Chọn thiết lập lớp riêng?", radioName: "ThietLapLopRieng",
+            options: [{ value: "1", label: "Là lớp riêng" }, { value: "0", label: "Không phải lớp riêng" }],
+            title: "Thiết lập lớp riêng", fileName: "KetQuaThietLapLopRieng",
+            req: function (id, value) { return me.req_ThietLapLopRieng(id, value); }
         });
-        $("#btnThietLapKhongTinhPhi").click(function (e) {
-            var arrChecked_Id = edu.util.getArrCheckedIds("tblLopHocPhan", "checkX");
-            if (arrChecked_Id.length == 0) {
-                edu.system.alert("Vui lòng chọn đối tượng?");
-                return;
-            }
-            var html = '';
-            html += '<div class="radio" id="divMoHinh" style="padding-left: 20px;padding-bottom: 40px">';
-            html += '<div class="col-sm-12">';
-            html += '<input id="ThietLapKhongTinhPhi_0" type="radio" name="ThietLapKhongTinhPhi" value="1">';
-            html += '<label for="ThietLapKhongTinhPhi_0"> Lớp không tính phí</label>';
-            html += '</div>';
-            html += '<div class="col-sm-12">';
-            html += '<input id="ThietLapLopRieng_1" type="radio" name="ThietLapLopRieng" value="0">';
-            html += '<label for="ThietLapLopRieng_1"> Lớp tính phí</label>';
-            html += '</div>';
-            html += '</div>';
-            edu.system.confirm("Chọn Thiết đặt lớp không tín phí? <br/>" + html);
-            $("#btnYes").click(function (e) {
-                var dLopRieng = $('input[name="ThietLapLopRieng"]:checked').val()
-                for (var i = 0; i < arrChecked_Id.length; i++) {
-                    me.save_ThietLapKhongTinhPhi(arrChecked_Id[i], dLopRieng);
-                }
-            });
+        me.bindThietLap({
+            btn: "#btnThietLapKhongTinhPhi", hoi: "Chọn thiết đặt lớp không tính phí?", radioName: "ThietLapKhongTinhPhi",
+            options: [{ value: "1", label: "Lớp không tính phí" }, { value: "0", label: "Lớp tính phí" }],
+            title: "Thiết đặt lớp không tính phí", fileName: "KetQuaThietLapKhongTinhPhi",
+            req: function (id, value) { return me.req_ThietLapKhongTinhPhi(id, value); }
         });
-        $("#btnThietLapKhongToChucThi").click(function (e) {
-            var arrChecked_Id = edu.util.getArrCheckedIds("tblLopHocPhan", "checkX");
-            if (arrChecked_Id.length == 0) {
-                edu.system.alert("Vui lòng chọn đối tượng?");
-                return;
-            }
-            var html = '';
-            html += '<div class="radio" id="divMoHinh" style="padding-left: 20px;padding-bottom: 40px">';
-            html += '<div class="col-sm-12">';
-            html += '<input id="ThietLapKhongToChucThi_1" type="radio" name="ThietLapLopRieng" value="1">';
-            html += '<label for="ThietLapKhongToChucThi_1"> Lớp không tổ chức thi</label>';
-            html += '</div>';
-            html += '<div class="col-sm-12">';
-            html += '<input id="ThietLapKhongToChucThi_0" type="radio" name="ThietLapLopRieng" value="0">';
-            html += '<label for="ThietLapKhongToChucThi_0"> Lớp tổ chức thi</label>';
-            html += '</div>';
-            html += '</div>';
-            edu.system.confirm("Thiết đặt lớp không tổ chức thi? <br/>" + html);
-            $("#btnYes").click(function (e) {
-                var dLopRieng = $('input[name="ThietLapLopRieng"]:checked').val()
-                for (var i = 0; i < arrChecked_Id.length; i++) {
-                    me.save_ThietLapKhongToChucThi(arrChecked_Id[i], dLopRieng);
-                }
-            });
+        me.bindThietLap({
+            btn: "#btnThietLapKhongToChucThi", hoi: "Chọn thiết đặt lớp không tổ chức thi?", radioName: "ThietLapKhongToChucThi",
+            options: [{ value: "1", label: "Lớp không tổ chức thi" }, { value: "0", label: "Lớp tổ chức thi" }],
+            title: "Thiết đặt lớp không tổ chức thi", fileName: "KetQuaThietLapKhongToChucThi",
+            req: function (id, value) { return me.req_ThietLapKhongToChucThi(id, value); }
         });
         $("#btnThuocTinhKLGD").click(function (e) {
             var arrChecked_Id = edu.util.getArrCheckedIds("tblLopHocPhan", "checkX");
@@ -360,8 +319,9 @@ LopHocPhan.prototype = {
         });
 
         $("#btnSave_ThuocTinhKLGD").click(function (e) {
-            var arrChecked_Id = edu.util.getArrCheckedIds("tblThuocTinhKLGD", "checkX");
-            if (arrChecked_Id.length == 0) {
+            e.preventDefault();
+            var arrSelected = me._selectedRows("tblThuocTinhKLGD", me.dtThuocTinhKLGD);
+            if (arrSelected.length == 0) {
                 edu.system.alert("Vui lòng chọn ít nhất một dòng?");
                 return;
             }
@@ -370,19 +330,23 @@ LopHocPhan.prototype = {
                 edu.system.alert("Vui lòng chọn thuộc tính?");
                 return;
             }
-            edu.system.confirm("Bạn có chắc chắn lưu thuộc tính cho " + arrChecked_Id.length + " lớp đã chọn?");
-            $("#btnYes").click(function () {
-                edu.system.alert('<div id="zoneprocessXXXX"></div>');
-                edu.system.genHTML_Progress("zoneprocessXXXX", arrChecked_Id.length);
-                arrChecked_Id.forEach(function (strId) {
-                    me.save_ThuocTinhKLGD(strId, strPhanLoai);
-                });
+            me.runProcess({
+                hideModal: "#myModalThuocTinhKLGD",
+                title: "Thêm thuộc tính phục vụ tính khối lượng",
+                unit: "lớp học phần",
+                fileName: "KetQuaThemThuocTinhKLGD",
+                subTitles: ["Thuộc tính: " + $("#dropPhanLoaiCachTinh option:selected").text().replace(/\s+/g, " ").trim()],
+                items: arrSelected,
+                columns: me._colsLop(),
+                request: function (it) { return me.req_ThuocTinhKLGD_Them(it.ID, strPhanLoai); },
+                refresh: function () { me.getList_LopHocPhan(); }
             });
         });
 
         $("#btnDelete_ThuocTinhKLGD").click(function (e) {
-            var arrChecked_Id = edu.util.getArrCheckedIds("tblThuocTinhKLGD", "checkX");
-            if (arrChecked_Id.length == 0) {
+            e.preventDefault();
+            var arrSelected = me._selectedRows("tblThuocTinhKLGD", me.dtThuocTinhKLGD);
+            if (arrSelected.length == 0) {
                 edu.system.alert("Vui lòng chọn ít nhất một dòng?");
                 return;
             }
@@ -391,13 +355,17 @@ LopHocPhan.prototype = {
                 edu.system.alert("Vui lòng chọn thuộc tính cần xóa?");
                 return;
             }
-            edu.system.confirm("Bạn có chắc chắn xóa thuộc tính khỏi " + arrChecked_Id.length + " lớp đã chọn?");
-            $("#btnYes").click(function () {
-                edu.system.alert('<div id="zoneprocessXXXX"></div>');
-                edu.system.genHTML_Progress("zoneprocessXXXX", arrChecked_Id.length);
-                arrChecked_Id.forEach(function (strId) {
-                    me.delete_ThuocTinhKLGD(strId, strPhanLoai);
-                });
+            me.runProcess({
+                hideModal: "#myModalThuocTinhKLGD",
+                title: "Xóa thuộc tính phục vụ tính khối lượng",
+                unit: "lớp học phần",
+                fileName: "KetQuaXoaThuocTinhKLGD",
+                subTitles: ["Thuộc tính: " + $("#dropPhanLoaiCachTinh option:selected").text().replace(/\s+/g, " ").trim()],
+                notes: ["Thao tác xóa thuộc tính khỏi các lớp trong danh sách."],
+                items: arrSelected,
+                columns: me._colsLop(),
+                request: function (it) { return me.req_ThuocTinhKLGD_Xoa(it.ID, strPhanLoai); },
+                refresh: function () { me.getList_LopHocPhan(); }
             });
         });
 
@@ -427,8 +395,9 @@ LopHocPhan.prototype = {
         });
 
         $("#btnSave_CheDoTinhPhi_LopHP").click(function (e) {
-            var arrChecked_Id = edu.util.getArrCheckedIds("tblCheDoTinhPhi_LopHP", "checkX");
-            if (arrChecked_Id.length == 0) {
+            e.preventDefault();
+            var arrSelected = me._selectedRows("tblCheDoTinhPhi_LopHP", me.dtCheDoTinhPhi_LopHP);
+            if (arrSelected.length == 0) {
                 edu.system.alert("Vui lòng chọn ít nhất một dòng?");
                 return;
             }
@@ -442,35 +411,41 @@ LopHocPhan.prototype = {
                 edu.system.alert("Vui lòng chọn kiểu học?");
                 return;
             }
-            edu.system.confirm("Bạn có chắc chắn lưu chế độ tính phí cho " + arrChecked_Id.length + " lớp đã chọn?");
-            $("#btnYes").click(function () {
-                edu.system.alert('<div id="zoneprocessXXXX"></div>');
-                edu.system.genHTML_Progress("zoneprocessXXXX", arrChecked_Id.length);
-                arrChecked_Id.forEach(function (strId) {
-                    me.save_CheDoTinhPhi_LopHP(strId, strCheDo, strKieuHoc);
-                });
+            me.runProcess({
+                hideModal: "#myModalCheDoTinhPhi_LopHP",
+                title: "Thiết lập chế độ tính phí cho lớp học phần",
+                unit: "lớp học phần",
+                fileName: "KetQuaThietLapCheDoTinhPhi",
+                subTitles: ["Chế độ tính phí: " + $("#dropCheDoTinhPhi_LopHP option:selected").text().replace(/\s+/g, " ").trim(),
+                            "Kiểu học: " + $("#dropKieuHoc_LopHP option:selected").text().replace(/\s+/g, " ").trim()],
+                items: arrSelected,
+                columns: me._colsLop(),
+                request: function (it) { return me.req_CheDoTinhPhi_LopHP_Them(it.ID, strCheDo, strKieuHoc); },
+                refresh: function () { me.getList_LopHocPhan(); }
             });
         });
 
         $("#btnDelete_CheDoTinhPhi_LopHP").click(function (e) {
-            var arrChecked_Id = edu.util.getArrCheckedIds("tblCheDoTinhPhi_LopHP", "checkX");
-            if (arrChecked_Id.length == 0) {
+            e.preventDefault();
+            var arrSelected = me._selectedRows("tblCheDoTinhPhi_LopHP", me.dtCheDoTinhPhi_LopHP);
+            if (arrSelected.length == 0) {
                 edu.system.alert("Vui lòng chọn ít nhất một dòng?");
                 return;
             }
-            edu.system.confirm("Bạn có chắc chắn xóa chế độ tính phí khỏi " + arrChecked_Id.length + " lớp đã chọn?");
-            $("#btnYes").click(function () {
-                edu.system.alert('<div id="zoneprocessXXXX"></div>');
-                edu.system.genHTML_Progress("zoneprocessXXXX", arrChecked_Id.length);
-                arrChecked_Id.forEach(function (strId) {
-                    var rec = (me.dtCheDoTinhPhi_LopHP || []).find(function (r) { return r.ID == strId; });
-                    var strRecordId = rec ? (rec.CHEDOTINHPHI_ID || '') : '';
-                    if (!strRecordId) {
-                        edu.system.start_Progress("zoneprocessXXXX");
-                        return;
-                    }
-                    me.delete_CheDoTinhPhi_LopHP(strRecordId);
-                });
+            me.runProcess({
+                hideModal: "#myModalCheDoTinhPhi_LopHP",
+                title: "Xóa chế độ tính phí của lớp học phần",
+                unit: "lớp học phần",
+                fileName: "KetQuaXoaCheDoTinhPhi",
+                notes: ["Thao tác xóa chế độ tính phí khỏi các lớp trong danh sách."],
+                items: arrSelected,
+                columns: me._colsLop(),
+                run: function (it) {
+                    // lớp chưa thiết lập chế độ tính phí thì không có gì để xóa: ghi nhận "bỏ qua" chứ không báo lỗi
+                    if (!it.CHEDOTINHPHI_ID) return { ok: true, message: "Bỏ qua: lớp chưa có chế độ tính phí để xóa." };
+                    return edu.process.callApi(me.req_CheDoTinhPhi_LopHP_Xoa(it.CHEDOTINHPHI_ID));
+                },
+                refresh: function () { me.getList_LopHocPhan(); }
             });
         });
 
@@ -493,34 +468,45 @@ LopHocPhan.prototype = {
         });
 
         $("#btnThucHien_HuyPhiTinChi").click(function (e) {
+            e.preventDefault();
             var arrLop = me.dtHuyPhiTinChi || [];
             if (arrLop.length == 0) {
                 edu.system.alert("Không có lớp nào để hủy phí?");
                 return;
             }
-            edu.system.confirm("Bạn có chắc chắn hủy phí tín chỉ cho " + arrLop.length + " lớp đã chọn?");
-            $("#btnYes").click(function () {
-                edu.system.alert('<div id="zoneprocessXXXX"></div>');
-                edu.system.genHTML_Progress("zoneprocessXXXX", arrLop.length);
-                arrLop.forEach(function (rec) {
-                    me.huyPhiTinChiTheoLop(rec.ID);
-                });
+            me.runProcess({
+                hideModal: "#myModalHuyPhiTinChi",
+                title: "Hủy phí tín chỉ theo lớp học phần",
+                unit: "lớp học phần",
+                fileName: "KetQuaHuyPhiTinChi",
+                notes: ["Thao tác hủy phí tín chỉ của các lớp trong danh sách."],
+                items: arrLop,
+                columns: me._colsLop(),
+                request: function (it) { return me.req_HuyPhiTinChi(it.ID); },
+                refresh: function () { me.getList_LopHocPhan(); }
             });
         });
 
+        // Thiết lập chế độ tính phí cho các sinh viên đã tick trong hộp "Danh sách sinh viên" của lớp
         $("#btnSave_CheDoTinhPhi").click(function (e) {
-            var arrChecked_Id = edu.util.getArrCheckedIds("tblQuanSoLop", "checkX");
-            if (arrChecked_Id.length == 0) {
+            e.preventDefault();
+            var arrSelected = me._selectedRows("tblQuanSoLop", me.dtQuanSoLop);
+            if (arrSelected.length == 0) {
                 edu.system.alert("Vui lòng chọn đối tượng?");
                 return;
             }
-            edu.system.confirm("Bạn có chắc chắn lưu dữ liệu không?");
-            $("#btnYes").click(function (e) {
-                edu.system.alert('<div id="zoneprocessXXXX"></div>');
-                edu.system.genHTML_Progress("zoneprocessXXXX", arrChecked_Id.length);
-                for (var i = 0; i < arrChecked_Id.length; i++) {
-                    me.save_CheDoTinhPhi(arrChecked_Id[i]);
-                }
+            var strCheDo_Id = edu.system.getValById('dropCheDoTinhPhi');
+            me.runProcess({
+                hideModal: "#myModal",
+                reopenModal: "#myModal",
+                title: "Thiết lập chế độ tính phí cho sinh viên",
+                unit: "sinh viên",
+                fileName: "KetQuaCheDoTinhPhiSinhVien",
+                subTitles: ["Chế độ tính phí: " + $("#dropCheDoTinhPhi option:selected").text().replace(/\s+/g, " ").trim()],
+                items: arrSelected,
+                columns: me._colsSinhVien(),
+                request: function (it) { return me.req_CheDoTinhPhiSinhVien(it.ID, strCheDo_Id); },
+                refresh: function () { me.getList_QuanSoTheoLop(); }
             });
         });
 
@@ -570,55 +556,63 @@ LopHocPhan.prototype = {
 
 
         $("#btnDeleteLopHocPhan").click(function (e) {
-            var arrChecked_Id = edu.util.getArrCheckedIds("tblSinhVien", "checkX");
-            if (arrChecked_Id.length == 0) {
+            e.preventDefault();
+            var arrSelected = me._selectedRows("tblSinhVien", me.dtSinhVien);
+            if (arrSelected.length == 0) {
                 edu.system.alert("Vui lòng chọn đối tượng?");
                 return;
             }
-            edu.system.confirm("Bạn có chắc chắn xóa dữ liệu không?");
-            $("#btnYes").click(function (e) {
-                edu.system.alert('<div id="zoneprocessXXXX"></div>');
-                edu.system.genHTML_Progress("zoneprocessXXXX", arrChecked_Id.length);
-                me.arrSinhVien_Id = arrChecked_Id;
-                for (var i = 0; i < arrChecked_Id.length; i++) {
-                    me.delete_LopHocPhan(arrChecked_Id[i]);
-                }
+            me.arrSinhVien_Id = arrSelected.map(function (r) { return r.ID; });
+            me.runProcess({
+                title: "Hủy đăng ký học phần của sinh viên",
+                unit: "sinh viên",
+                fileName: "KetQuaHuyDangKyHocPhan",
+                notes: ["Thao tác xóa dữ liệu đăng ký học phần của các sinh viên trong danh sách."],
+                items: arrSelected,
+                columns: me._colsSinhVien(),
+                request: function (it) { return me.req_HuyDangKyHocPhan(it); },
+                refresh: function () { me.getList_DangKyHoc(); me.getList_DangKyHocKQ(); }
             });
-
         });
         $("#btnDeleteLopHocPhanDangChon").click(function (e) {
-            var arrChecked_Id = edu.util.getArrCheckedIds("tblSinhVien", "checkX");
-            if (arrChecked_Id.length == 0) {
+            e.preventDefault();
+            var arrSelected = me._selectedRows("tblSinhVien", me.dtSinhVien);
+            if (arrSelected.length == 0) {
                 edu.system.alert("Vui lòng chọn đối tượng?");
                 return;
             }
-            edu.system.confirm("Bạn có chắc chắn xóa dữ liệu không?");
-            $("#btnYes").click(function (e) {
-                edu.system.alert('<div id="zoneprocessXXXX"></div>');
-                edu.system.genHTML_Progress("zoneprocessXXXX", arrChecked_Id.length);
-                me.arrSinhVien_Id = arrChecked_Id;
-                for (var i = 0; i < arrChecked_Id.length; i++) {
-                    me.delete_LopHocPhanDangChon(arrChecked_Id[i]);
-                }
+            var strLopChon_Id = me.strLopHocPhan_Id;
+            me.arrSinhVien_Id = arrSelected.map(function (r) { return r.ID; });
+            me.runProcess({
+                title: "Hủy đăng ký lớp đang chọn của sinh viên",
+                unit: "sinh viên",
+                fileName: "KetQuaHuyDangKyLopChon",
+                notes: ["Thao tác xóa dữ liệu đăng ký lớp đang chọn của các sinh viên trong danh sách."],
+                items: arrSelected,
+                columns: me._colsSinhVien(),
+                request: function (it) { return me.req_HuyDangKyLopChon(it, strLopChon_Id); },
+                refresh: function () { me.getList_DangKyHoc(); me.getList_DangKyHocKQ(); }
             });
-
         });
 
         $("#btnThucHienDonNhom").click(function (e) {
             e.preventDefault();
-            console.log(11111);
-            var arrChecked_Id = edu.util.getArrCheckedIds("tblSinhVienNhom", "checkX");
-            if (arrChecked_Id.length == 0) {
+            var arrSelected = me._selectedRows("tblSinhVienNhom", me.dtSinhVien);
+            if (arrSelected.length == 0) {
                 edu.system.alert("Vui lòng chọn đối tượng?");
                 return;
             }
-
-            console.log(arrChecked_Id);
-            edu.system.alert('<div id="zoneprocessXXXX"></div>');
-            edu.system.genHTML_Progress("zoneprocessXXXX", arrChecked_Id.length);
             var strNguonDuLieu_Id = edu.util.uuid();
             me["strNguonDuLieu_Id"] = strNguonDuLieu_Id;
-            arrChecked_Id.forEach(e => me.save_DonLopNhom(e, strNguonDuLieu_Id));
+            me.runProcess({
+                title: "Dồn nhóm lớp - chuẩn bị dữ liệu",
+                unit: "sinh viên",
+                fileName: "KetQuaDonNhomLop",
+                items: arrSelected,
+                columns: me._colsSinhVien(),
+                request: function (it) { return me.req_DonLopNhom(it, strNguonDuLieu_Id); },
+                refresh: function () { me.getList_DonLopNhom(strNguonDuLieu_Id); }
+            });
         });
         $("#btnChonLopNhom").click(function (e) {
             me.dtDonNhomLop.rsLopBanDau.forEach(e => me.getList_DonLopNhom_LopMoi(e));
@@ -654,14 +648,21 @@ LopHocPhan.prototype = {
             }
             
         });
-        $("#btnTaoDSNhapDiem").click(function () {
-            var arrChecked_Id = edu.util.getArrCheckedIds("tblLopHocPhan", "checkX");
-            if (arrChecked_Id.length == 0) {
-                edu.system.alert("Vui lòng chọn đối tượng?");
+        $("#btnTaoDSNhapDiem").click(function (e) {
+            e.preventDefault();
+            var arrSelected = me._selectedRows("tblLopHocPhan", me.dtLopHocPhan);
+            if (arrSelected.length == 0) {
+                edu.system.alert("Vui lòng chọn lớp học phần?");
                 return;
             }
-            arrChecked_Id.forEach(e => me.saveTaoDanhSachNhapDiem(e));
-
+            me.runProcess({
+                title: "Tạo danh sách nhập điểm",
+                unit: "lớp học phần",
+                fileName: "KetQuaTaoDSNhapDiem",
+                items: arrSelected,
+                columns: me._colsLop(),
+                request: function (it) { return me.req_TaoDanhSachNhapDiem(it.ID); }
+            });
         });
 
         $("#btnThucHienRutHocPhan").click(function (e) {
@@ -699,79 +700,60 @@ LopHocPhan.prototype = {
             edu.util.toggle_overide("zone-bus", "zonebatdau");
         });
 
+        // Tổng hợp công nợ / cân bằng nợ / hủy cân bằng nợ cho các bản ghi đã tick ở danh sách đăng ký chi tiết
         $("#btnTongHopCongNo").click(function (e) {
             e.preventDefault();
-            var arrChecked_Id = edu.util.getArrCheckedIds("tblLopHocPhanChiTiet", "checkX");
-            if (arrChecked_Id.length == 0) {
+            var arrSelected = me._selectedRows("tblLopHocPhanChiTiet", me.dtLopHocPhanChiTiet)
+                .filter(function (r) { return !!r.QLSV_NGUOIHOC_ID; });
+            if (arrSelected.length == 0) {
                 edu.system.alert("Vui lòng chọn ít nhất một bản ghi ở danh sách chi tiết?");
                 return;
             }
-            var arrSelected = arrChecked_Id
-                .map(function (id) { return (me.dtLopHocPhanChiTiet || []).find(function (r) { return r.ID == id; }); })
-                .filter(function (r) { return !!r && r.QLSV_NGUOIHOC_ID; });
-            if (arrSelected.length == 0) {
-                edu.system.alert("Không tìm thấy dữ liệu các dòng đã chọn?");
-                return;
-            }
-            edu.system.confirm("Bạn có chắc chắn tổng hợp công nợ cho " + arrSelected.length + " bản ghi đã chọn?");
-            $("#btnYes").click(function () {
-                edu.system.alert('<div id="zoneprocessXXXX"></div>');
-                edu.system.genHTML_Progress("zoneprocessXXXX", arrSelected.length);
-                var i = 0;
-                var runNext = function () {
-                    if (i >= arrSelected.length) return;
-                    var rec = arrSelected[i++];
-                    me.tongHopCongNoSinhVien(rec.QLSV_NGUOIHOC_ID, runNext);
-                };
-                runNext();
+            me.runProcess({
+                title: "Tổng hợp công nợ sinh viên",
+                unit: "bản ghi",
+                fileName: "KetQuaTongHopCongNo",
+                items: arrSelected,
+                columns: me._colsDangKy(),
+                request: function (it) { return me.req_TongHopCongNo(it.QLSV_NGUOIHOC_ID); },
+                refresh: function () { me._refreshChiTiet(); }
             });
         });
 
         $("#btnCanBangNo").click(function (e) {
             e.preventDefault();
-            var arrChecked_Id = edu.util.getArrCheckedIds("tblLopHocPhanChiTiet", "checkX");
-            if (arrChecked_Id.length == 0) {
+            var arrSelected = me._selectedRows("tblLopHocPhanChiTiet", me.dtLopHocPhanChiTiet);
+            if (arrSelected.length == 0) {
                 edu.system.alert("Vui lòng chọn ít nhất một bản ghi ở danh sách chi tiết?");
                 return;
             }
-            var arrSelected = arrChecked_Id
-                .map(function (id) { return (me.dtLopHocPhanChiTiet || []).find(function (r) { return r.ID == id; }); })
-                .filter(function (r) { return !!r; });
-            if (arrSelected.length == 0) {
-                edu.system.alert("Không tìm thấy dữ liệu các dòng đã chọn?");
-                return;
-            }
-            edu.system.confirm("Bạn có chắc chắn cân bằng nợ cho " + arrSelected.length + " bản ghi đã chọn?");
-            $("#btnYes").click(function () {
-                edu.system.alert('<div id="zoneprocessXXXX"></div>');
-                edu.system.genHTML_Progress("zoneprocessXXXX", arrSelected.length);
-                arrSelected.forEach(function (rec) {
-                    me.canBangNo(rec);
-                });
+            me.runProcess({
+                title: "Cân bằng nợ",
+                unit: "bản ghi",
+                fileName: "KetQuaCanBangNo",
+                items: arrSelected,
+                columns: me._colsDangKy(),
+                request: function (it) { return me.req_CanBangNo(it); },
+                refresh: function () { me._refreshChiTiet(); }
             });
         });
 
         $("#btnHuyCanBangNo").click(function (e) {
             e.preventDefault();
-            var arrChecked_Id = edu.util.getArrCheckedIds("tblLopHocPhanChiTiet", "checkX");
-            if (arrChecked_Id.length == 0) {
+            var arrSelected = me._selectedRows("tblLopHocPhanChiTiet", me.dtLopHocPhanChiTiet);
+            if (arrSelected.length == 0) {
                 edu.system.alert("Vui lòng chọn ít nhất một bản ghi ở danh sách chi tiết?");
                 return;
             }
-            var arrSelected = arrChecked_Id
-                .map(function (id) { return (me.dtLopHocPhanChiTiet || []).find(function (r) { return r.ID == id; }); })
-                .filter(function (r) { return !!r; });
-            if (arrSelected.length == 0) {
-                edu.system.alert("Không tìm thấy dữ liệu các dòng đã chọn?");
-                return;
-            }
-            edu.system.confirm("Bạn có chắc chắn hủy cân bằng nợ cho " + arrSelected.length + " bản ghi đã chọn?");
-            $("#btnYes").click(function () {
-                edu.system.alert('<div id="zoneprocessXXXX"></div>');
-                edu.system.genHTML_Progress("zoneprocessXXXX", arrSelected.length);
-                arrSelected.forEach(function (rec) {
-                    me.huyCanBangNo(rec);
-                });
+            me.runProcess({
+                title: "Hủy cân bằng nợ",
+                unit: "bản ghi",
+                fileName: "KetQuaHuyCanBangNo",
+                notes: ["Thao tác hủy cân bằng nợ của các bản ghi trong danh sách."],
+                items: arrSelected,
+                columns: me._colsDangKy(),
+                request: function (it) { return me.req_HuyCanBangNo(it); },
+                refresh: function () { me._refreshChiTiet(); }
             });
         });
 
@@ -824,18 +806,42 @@ LopHocPhan.prototype = {
                 return;
             }
             var strMoTa = $('#txtRutHocPhan_MoTaChung').val() || '';
-            edu.system.confirm("Thực hiện rút học phần cho " + arrChecked_Id.length + " dòng đã chọn?");
-            $("#btnYes").click(function () {
-                edu.system.alert('<div id="zoneprocessXXXX"></div>');
-                edu.system.genHTML_Progress("zoneprocessXXXX", arrChecked_Id.length);
-                arrChecked_Id.forEach(function (strId) {
-                    var raw = $('#txtPhanTram' + strId).val();
-                    var dPhanTram = parseFloat(raw == null || raw === '' ? '0' : raw);
-                    if (isNaN(dPhanTram)) dPhanTram = 0;
-                    me.thucHienRutHocPhan(me.srcTbl_RutHocPhan, strId, dPhanTram, strMoTa);
-                });
-                edu.util.toggle_overide("zone-bus", "zonebatdau");
+            var srcTbl = me.srcTbl_RutHocPhan;
+            var arrData = srcTbl === "tblLopHocPhanChiTiet2" ? (me.dtLopHocPhanChiTiet2 || []) : (me.dtLopHocPhanChiTiet || []);
+            // chụp sẵn % tính phí nhập ở từng dòng để mỗi sinh viên chạy với đúng giá trị đã nhập
+            var arrItems = arrChecked_Id.map(function (strId) {
+                var raw = $('#txtPhanTram' + strId).val();
+                var dPhanTram = parseFloat(raw == null || raw === '' ? '0' : raw);
+                if (isNaN(dPhanTram)) dPhanTram = 0;
+                var rec = arrData.find(function (r) { return r.ID == strId; });
+                return { ID: strId, rec: rec, dPhanTram: dPhanTram };
             });
+            edu.util.toggle_overide("zone-bus", "zonebatdau");
+            var v = edu.util.returnEmpty;
+            me.runProcess({
+                title: "Thực hiện rút học phần",
+                unit: "sinh viên",
+                fileName: "KetQuaRutHocPhan",
+                subTitles: strMoTa ? ["Mô tả chung: " + strMoTa] : [],
+                items: arrItems,
+                columns: [
+                    { header: "Mã số", render: function (it) { return it.rec ? it.rec.QLSV_NGUOIHOC_MASO : it.ID; } },
+                    { header: "Họ tên", render: function (it) { return it.rec ? v(it.rec.QLSV_NGUOIHOC_HODEM) + " " + v(it.rec.QLSV_NGUOIHOC_TEN) : ""; } },
+                    { header: "Học phần", render: function (it) { return it.rec ? v(it.rec.DAOTAO_HOCPHAN_TEN) + (it.rec.DAOTAO_HOCPHAN_MA ? " (" + it.rec.DAOTAO_HOCPHAN_MA + ")" : "") : ""; } },
+                    { header: "% phí tính", render: function (it) { return it.dPhanTram; } }
+                ],
+                request: function (it) { return me.req_RutHocPhan(it.rec, it.dPhanTram, strMoTa); },
+                refresh: function () {
+                    if (srcTbl === "tblLopHocPhanChiTiet2") me.getList_LopHocPhanRut();
+                    else me.getList_LopHocPhanChiTiet();
+                }
+            });
+        });
+
+        // Xuất Excel theo chuẩn chung (Corei/exportexcel.js) cho bảng đang hiển thị
+        $("#btnExport_LopHocPhan").click(function (e) {
+            e.preventDefault();
+            me.exportCurrentTable();
         });
 
         // Find-in-table widget bindings
@@ -855,6 +861,24 @@ LopHocPhan.prototype = {
         $("#btnFindInTableNext").click(function (e) { e.preventDefault(); me.nextFindMatch(); });
         $("#btnFindInTableClear").click(function (e) { e.preventDefault(); me.clearFindInTable(); });
         me.updateFindCounter();
+    },
+    /*------------------------------------------
+    --Discription: Nhận diện chức năng tra cứu theo tên chức năng đang mở
+    --(cùng 1 trang lophocphan.html dùng cho 2 menu: "Tổng hợp kết quả đăng ký..." và "Xem kết quả đăng ký...").
+    --Chỉ trả true khi khớp "Xem kết quả"; lỗi/không tìm thấy → false (hiện đủ, như Tổng hợp).
+    -------------------------------------------*/
+    bTraCuu: false,
+    strTenChucNang: '',
+    _isTraCuu: function () {
+        var me = this;
+        try {
+            var strId = edu.system.strChucNang_Id || sessionStorage.getItem("strChucNang_Id");
+            var objChucNang = (edu.system.dtChucNang || []).find(function (e) { return e.ID === strId; });
+            me.strTenChucNang = objChucNang && objChucNang.TENCHUCNANG ? String(objChucNang.TENCHUCNANG) : '';
+            return /xem\s+kết\s+quả/i.test(me.strTenChucNang.normalize("NFC"));
+        } catch (ex) {
+            return false;
+        }
     },
     toggle_form: function () {
         edu.util.toggle_overide("zone-bus", "zonebatdau");
@@ -1403,6 +1427,16 @@ LopHocPhan.prototype = {
         me._rebuildLoaiLopOptions(data || [], 'tblLopHocPhan');
         var displayData = me._filterDataByLoaiLop(data || [], 'tblLopHocPhan');
         var hasLoaiLop = me._getSelectedLoaiLop().length > 0;
+        var colDonLop = {
+            "mRender": function (nRow, aData) {
+                return '<span><a class="btn btn-default btnDonLop" id="' + aData.ID + '" name="' + aData.TENLOP  +'" title="Dồn lớp">Dồn lớp</a></span>';
+            }
+        };
+        var colDonNhomLop = {
+            "mRender": function (nRow, aData) {
+                return '<span><a class="btn btn-default btnDonNhomLop" id="' + aData.ID + '" name="' + aData.TENLOP + '" title="Dồn">Dồn nhóm</a></span>';
+            }
+        };
         var jsonForm = {
             strTable_Id: "tblLopHocPhan",
             bPaginate: {
@@ -1507,18 +1541,8 @@ LopHocPhan.prototype = {
                         return edu.util.returnEmpty(aData.CHEDOTINHPHI_TEN);
                     }
                 },
-                /* Ẩn theo yêu cầu (dùng cho tra cứu):*/
-                {
-                    "mRender": function (nRow, aData) {
-                        return '<span><a class="btn btn-default btnDonLop" id="' + aData.ID + '" name="' + aData.TENLOP  +'" title="Dồn lớp">Dồn lớp</a></span>';
-                    }
-                },
-                {
-                    "mRender": function (nRow, aData) {
-                        return '<span><a class="btn btn-default btnDonNhomLop" id="' + aData.ID + '" name="' + aData.TENLOP + '" title="Dồn">Dồn nhóm</a></span>';
-                    }
-                },
-                /* */
+                colDonLop,
+                colDonNhomLop,
                 {
                     "mRender": function (nRow, aData) {
                         return '<input type="checkbox" id="checkX' + aData.ID + '"/>';
@@ -1526,6 +1550,10 @@ LopHocPhan.prototype = {
                 }
             ]
         };
+        // Tra cứu: gỡ 2 cột Dồn (th đã gỡ ở init) → thead vẫn = aoColumns + 1, không lệch cột
+        if (me.bTraCuu) {
+            jsonForm.aoColumns = jsonForm.aoColumns.filter(function (c) { return c !== colDonLop && c !== colDonNhomLop; });
+        }
         edu.system.loadToTable_data(jsonForm);
         me.refreshFindInTable();
     },
@@ -1538,6 +1566,7 @@ LopHocPhan.prototype = {
         $(".tblHidden").hide();
         $("#tblLopHocPhanChiTiet").parent().show().prev(".scroll-top-mirror").show();
         findOverride = findOverride || {};
+        if (!findOverride.onlyFetch) me._chiTietMode = "dangky";
         var bChuaNop = $('#dChuaNop').is(':checked');
         var bDaChuyenKeToan = $('#dDaChuyenKeToan').is(':checked');
         var bLoaiLop = !!me._getSelectedLoaiLop();
@@ -1618,8 +1647,10 @@ LopHocPhan.prototype = {
         }, false, false, false, null);
     },
 
-    getList_CanBoChiTiet: function () {
+    getList_CanBoChiTiet: function (findOverride) {
         var me = this;
+        findOverride = findOverride || {};
+        if (!findOverride.onlyFetch) me._chiTietMode = "canbo";
         $(".tblHidden").hide();
         $("#tblLopHocPhanChiTiet").parent().show().prev(".scroll-top-mirror").show();
         var bLoaiLop = !!me._getSelectedLoaiLop();
@@ -1632,8 +1663,8 @@ LopHocPhan.prototype = {
             'strDaoTao_ThoiGianDaoTao_Id': edu.util.getValById('dropSearch_ThoiGianDaoTao'),
             'strDaoTao_HocPhan_Id': edu.util.getValById('dropSearch_HocPhan'),
             'strNguoiThucHien_Id': edu.system.userId,
-            'pageIndex': bLoaiLop ? 1 : edu.system.pageIndex_default,
-            'pageSize': bLoaiLop ? 100000 : edu.system.pageSize_default,
+            'pageIndex': (findOverride.pageIndex != null ? findOverride.pageIndex : (bLoaiLop ? 1 : edu.system.pageIndex_default)),
+            'pageSize': (findOverride.pageSize != null ? findOverride.pageSize : (bLoaiLop ? 100000 : edu.system.pageSize_default)),
             'strTKB_HinhThucHoc_Id': edu.system.getValById('dropSearch_HinhThucHoc'),
 
 
@@ -1659,16 +1690,21 @@ LopHocPhan.prototype = {
                         dtResult = data.Data;
                         iPager = data.Pager;
                     }
-                    me.genTable_LopHocPhanChiTiet(dtResult, iPager);
+                    if (findOverride.onlyFetch && typeof findOverride.onSuccess === 'function') {
+                        findOverride.onSuccess(dtResult, iPager);
+                    } else {
+                        me.genTable_LopHocPhanChiTiet(dtResult, iPager);
+                    }
                 }
                 else {
-                    edu.system.alert(obj_save.action + " : " + data.Message, "w");
+                    if (findOverride.onError) findOverride.onError(data);
+                    else edu.system.alert(obj_save.action + " : " + data.Message, "w");
                 }
 
             },
             error: function (er) {
-
-                edu.system.alert(obj_save.action + " (er): " + JSON.stringify(er), "w");
+                if (findOverride.onError) findOverride.onError(er);
+                else edu.system.alert(obj_save.action + " (er): " + JSON.stringify(er), "w");
             },
             type: "POST",
             action: obj_save.action,
@@ -2382,97 +2418,49 @@ LopHocPhan.prototype = {
         edu.system.loadToTable_data(jsonForm);
     },
 
+    // Xuất Excel danh sách không đăng ký — dùng chuẩn chung edu.exporter (không còn tự viết riêng bằng thư viện ngoài)
     exportExcel_KhongDangKy: function () {
         var me = this;
-        if (typeof XLSX === 'undefined') {
-            edu.system.alert('Thư viện Excel chưa load xong. Vui lòng thử lại sau vài giây.', 'w');
+        if (!edu.exporter) {
+            edu.system.alert("Chưa cập nhật chức năng xuất Excel (thiếu Corei/exportexcel.js hoặc indexi.aspx).", "w");
             return;
         }
         var data = me.dtKhongDangKy || [];
         if (!data.length) {
-            edu.system.alert('Không có dữ liệu để xuất.', 'w');
+            edu.system.alert("Không có dữ liệu để xuất.", "w");
             return;
         }
-        var v = edu.util.returnEmpty;
-        var headers = [
-            'STT', 'Mã số sinh viên', 'Họ đệm', 'Tên', 'Trạng thái',
-            'Nợ phí', 'Chương trình', 'Lớp quản lý', 'Khóa học'
-        ];
-        var dataRows = data.map(function (e, i) {
-            return [
-                i + 1,
-                v(e.QLSV_NGUOIHOC_MASO),
-                v(e.QLSV_NGUOIHOC_HODEM),
-                v(e.QLSV_NGUOIHOC_TEN),
-                v(e.QLSV_TRANGTHAI_TEN),
-                Number(e.TONGNOPHI) || 0,
-                v(e.DAOTAO_TOCHUCCHUONGTRINH_TEN),
-                v(e.DAOTAO_LOPQUANLY_TEN),
-                v(e.DAOTAO_KHOADAOTAO_TEN)
-            ];
+        edu.exporter.exportWithConfirm({
+            fileName: "DSKhongDangKy",
+            name: "Không đăng ký",
+            title: "DANH SÁCH SINH VIÊN KHÔNG ĐĂNG KÝ",
+            subTitles: ["Kế hoạch đăng ký: " + $("#dropSearch_KeHoach option:selected").text().replace(/\s+/g, " ").trim()],
+            columns: [
+                { header: "Mã số sinh viên", field: "QLSV_NGUOIHOC_MASO" },
+                { header: "Họ đệm", field: "QLSV_NGUOIHOC_HODEM" },
+                { header: "Tên", field: "QLSV_NGUOIHOC_TEN" },
+                { header: "Trạng thái", field: "QLSV_TRANGTHAI_TEN" },
+                { header: "Nợ phí", field: "TONGNOPHI", type: "number", format: "int", sum: true },
+                { header: "Chương trình", field: "DAOTAO_TOCHUCCHUONGTRINH_TEN" },
+                { header: "Lớp quản lý", field: "DAOTAO_LOPQUANLY_TEN" },
+                { header: "Khóa học", field: "DAOTAO_KHOADAOTAO_TEN" }
+            ],
+            // mặc định theo các ô lọc đang chọn trong hộp "Danh sách không đăng ký"
+            filters: [
+                { label: "Trạng thái", field: "QLSV_TRANGTHAI_TEN", from: "dropFilter_KDK_TrangThai" },
+                { label: "Chương trình", field: "DAOTAO_TOCHUCCHUONGTRINH_TEN", from: "dropFilter_KDK_ChuongTrinh" },
+                { label: "Lớp quản lý", field: "DAOTAO_LOPQUANLY_TEN", from: "dropFilter_KDK_LopQuanLy" },
+                { label: "Khóa học", field: "DAOTAO_KHOADAOTAO_TEN", from: "dropFilter_KDK_KhoaHoc" }
+            ],
+            data: data
         });
-        var aoa = [headers].concat(dataRows);
-        var ws = XLSX.utils.aoa_to_sheet(aoa);
-
-        ws['!cols'] = headers.map(function (h, idx) {
-            var maxLen = (h || '').length;
-            dataRows.forEach(function (r) {
-                var l = String(r[idx] == null ? '' : r[idx]).length;
-                if (l > maxLen) maxLen = l;
-            });
-            return { wch: Math.min(maxLen + 2, 40) };
-        });
-
-        var headerStyle = {
-            font: { bold: true, color: { rgb: "FFFFFF" }, sz: 11 },
-            fill: { patternType: "solid", fgColor: { rgb: "1F4E78" } },
-            alignment: { horizontal: "center", vertical: "center", wrapText: true },
-            border: {
-                top: { style: "thin", color: { rgb: "999999" } },
-                bottom: { style: "thin", color: { rgb: "999999" } },
-                left: { style: "thin", color: { rgb: "999999" } },
-                right: { style: "thin", color: { rgb: "999999" } }
-            }
-        };
-        var thinBorder = {
-            top: { style: "thin", color: { rgb: "CCCCCC" } },
-            bottom: { style: "thin", color: { rgb: "CCCCCC" } },
-            left: { style: "thin", color: { rgb: "CCCCCC" } },
-            right: { style: "thin", color: { rgb: "CCCCCC" } }
-        };
-        var nCols = headers.length;
-        for (var hc = 0; hc < nCols; hc++) {
-            var addrH = XLSX.utils.encode_cell({ r: 0, c: hc });
-            if (!ws[addrH]) ws[addrH] = { v: '', t: 's' };
-            ws[addrH].s = headerStyle;
-        }
-        ws['!views'] = [{ state: 'frozen', ySplit: 1 }];
-        ws['!rows'] = [{ hpt: 26 }];
-        for (var i = 0; i < dataRows.length; i++) {
-            for (var cc = 0; cc < nCols; cc++) {
-                var addr = XLSX.utils.encode_cell({ r: i + 1, c: cc });
-                if (!ws[addr]) ws[addr] = { v: '', t: 's' };
-                ws[addr].s = { border: thinBorder, alignment: { vertical: 'center', wrapText: true } };
-            }
-        }
-
-        var wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Không đăng ký');
-
-        var now = new Date();
-        var pad = function (n) { return n < 10 ? '0' + n : n; };
-        var stamp = now.getFullYear() + pad(now.getMonth() + 1) + pad(now.getDate())
-                    + '_' + pad(now.getHours()) + pad(now.getMinutes());
-        XLSX.writeFile(wb, 'DSKhongDangKy_' + stamp + '.xlsx');
     },
 
     /*------------------------------------------
     --Discription: [0] GEN HTML ==> Systemroot
     --ULR: Modules
     -------------------------------------------*/
-    save_SinhVien: function (strId) {
-        var me = this;
-        var obj = me.dtSinhVien.find(e => e.ID === strId);
+    req_DonLop: function (obj, strLopMoi_Id) {
         var obj_save = {
             'action': 'DKH_DangKy/ThucHienDonLopDangKyHoc',
             'type': 'POST',
@@ -2480,36 +2468,10 @@ LopHocPhan.prototype = {
             'strQLSV_NguoiHoc_Id': obj.QLSV_NGUOIHOC_ID,
             'strDaoTao_HocPhan_Id': obj.DAOTAO_HOCPHAN_ID,
             'strDangKy_LopHocPhan_Cu_Ids': obj.DANGKY_LOPHOCPHAN_ID,
-            'strDangKy_LopHocPhan_Moi_Ids': edu.util.getValById("dropLopCuoi"),
+            'strDangKy_LopHocPhan_Moi_Ids': strLopMoi_Id,
             'strNguoiThucHien_Id': edu.system.userId,
         };
-        edu.system.makeRequest({
-            success: function (data) {
-                if (data.Success) {
-                    edu.system.alert("Thành công");
-                    $("#lblKetQua" + obj.ID).html("Thành công");
-                }
-                else {
-                    edu.system.alert(data.Message);
-                    $("#lblKetQua" + obj.ID).html(data.Message);
-                }
-            },
-            error: function (er) {
-                edu.system.alert(obj_save.action + " (er): " + JSON.stringify(er), "w");
-            },
-            complete: function () {
-                edu.system.start_Progress("zoneprocessXXXX", function () {
-                    me.getList_DangKyHoc();
-                    me.getList_DangKyHocKQ();
-                });
-            },
-            type: 'POST',
-            contentType: true,
-            action: obj_save.action,
-            data: obj_save,
-            fakedb: [
-            ]
-        }, false, false, false, null);
+        return { action: obj_save.action, data: obj_save };
     },
     getList_DangKyHoc: function (strDaoTao_LopHocPhan_Id) {
         var me = this;
@@ -2760,9 +2722,7 @@ LopHocPhan.prototype = {
         $("#DSTrangThaiSV").html(row);
     },
 
-    delete_LopHocPhan: function (strId) {
-        var me = this;
-        var obj = me.dtSinhVien.find(e => e.ID === strId);
+    req_HuyDangKyHocPhan: function (obj) {
         var obj_save = {
             'action': 'DKH_DangKy/ThucHienHuyDangKyHocHocPhan',
             'type': 'POST',
@@ -2772,37 +2732,9 @@ LopHocPhan.prototype = {
             'strNguoiThucHien_Id': edu.system.userId,
             'strDangKy_KeHoachDangKy_Id': obj.DANGKY_KEHOACHDANGKY_ID,
         };
-        edu.system.makeRequest({
-            success: function (data) {
-                if (data.Success) {
-                    edu.system.alert("Thành công");
-                    //$("#lblKetQua" + obj.ID).html("Thành công");
-                }
-                else {
-                    edu.system.alert(data.Message);
-                    //$("#lblKetQua" + obj.ID).html(data.Message);
-                }
-            },
-            error: function (er) {
-                edu.system.alert(obj_save.action + " (er): " + JSON.stringify(er), "w");
-            },
-            complete: function () {
-                edu.system.start_Progress("zoneprocessXXXX", function () {
-                    me.getList_DangKyHoc();
-                    me.getList_DangKyHocKQ();
-                });
-            },
-            type: 'POST',
-            contentType: true,
-            action: obj_save.action,
-            data: obj_save,
-            fakedb: [
-            ]
-        }, false, false, false, null);
+        return { action: obj_save.action, data: obj_save };
     },
-    delete_LopHocPhanDangChon: function (strId) {
-        var me = this;
-        var obj = me.dtSinhVien.find(e => e.ID === strId);
+    req_HuyDangKyLopChon: function (obj, strLopHocPhanChon_Id) {
         var obj_save = {
             'action': 'DKH_TrucTiep_MH/FSk0IgkoJC8JNDgFIC8mCjgJLiINLjECKS4v',
             'func': 'pkg_dangkyhoc_tructiep.ThucHienHuyDangKyHocLopChon',
@@ -2812,42 +2744,12 @@ LopHocPhan.prototype = {
             'strDaoTao_HocPhan_Id': obj.DAOTAO_HOCPHAN_ID,
             'strNguoiThucHien_Id': edu.system.userId,
             'strDangKy_KeHoachDangKy_Id': obj.DANGKY_KEHOACHDANGKY_ID,
-            'strDangKy_LopHocPhan_Chon_Id': me.strLopHocPhan_Id,
-            'strNguoiThucHien_Id': edu.system.userId,
+            'strDangKy_LopHocPhan_Chon_Id': strLopHocPhanChon_Id,
         };
-        edu.system.makeRequest({
-            success: function (data) {
-                if (data.Success) {
-                    edu.system.alert("Thành công");
-                    //$("#lblKetQua" + obj.ID).html("Thành công");
-                }
-                else {
-                    edu.system.alert(data.Message);
-                    //$("#lblKetQua" + obj.ID).html(data.Message);
-                }
-                //me.getList_DangKyHoc();
-                //me.getList_DangKyHocKQ();
-            },
-            error: function (er) {
-                edu.system.alert(JSON.stringify(er), "w");
-            },
-            complete: function () {
-                edu.system.start_Progress("zoneprocessXXXX", function () {
-                    me.getList_DangKyHoc();
-                    me.getList_DangKyHocKQ();
-                });
-            },
-            type: 'POST',
-            contentType: true,
-            action: obj_save.action,
-            data: obj_save,
-            fakedb: [
-            ]
-        }, false, false, false, null);
+        return { action: obj_save.action, data: obj_save };
     },
     
-    save_ThietLapLopRieng: function (strDaoTao_LopHocPhan_Id, dLopRieng) {
-        var me = this;
+    req_ThietLapLopRieng: function (strDaoTao_LopHocPhan_Id, dLopRieng) {
         var obj_save = {
             'action': 'DKH_PhanCong_LopHP/ThietDatThuocTinhLopRieng',
             'type': 'POST',
@@ -2855,35 +2757,10 @@ LopHocPhan.prototype = {
             'strNguoiThucHien_Id': edu.system.userId,
             'dLopRieng': dLopRieng,
         };
-        edu.system.makeRequest({
-            success: function (data) {
-                if (data.Success) {
-                    edu.system.alert("Thành công");
-                }
-                else {
-                    edu.system.alert(data.Message);
-                }
-            },
-            error: function (er) {
-                edu.system.alert(obj_save.action + " (er): " + JSON.stringify(er), "w");
-            },
-            complete: function () {
-                me.getList_LopHocPhan();
-                //edu.system.start_Progress("zoneprocessXXXX", function () {
-                //    me.getList_DangKyHoc();
-                //});
-            },
-            type: 'POST',
-            contentType: true,
-            action: obj_save.action,
-            data: obj_save,
-            fakedb: [
-            ]
-        }, false, false, false, null);
+        return { action: obj_save.action, data: obj_save };
     },
 
-    save_ThietLapKhongTinhPhi: function (strDaoTao_LopHocPhan_Id, dKhongTinhPhi) {
-        var me = this;
+    req_ThietLapKhongTinhPhi: function (strDaoTao_LopHocPhan_Id, dKhongTinhPhi) {
         var obj_save = {
             'action': 'DKH_ThongTin2_MH/FSkoJDUFIDUKKS4vJhUoLykRKSgP',
             'func': 'PKG_DANGKYHOC_THONGTIN2.ThietDatKhongTinhPhi',
@@ -2892,35 +2769,10 @@ LopHocPhan.prototype = {
             'strNguoiThucHien_Id': edu.system.userId,
             'dKhongTinhPhi': dKhongTinhPhi,
         };
-        edu.system.makeRequest({
-            success: function (data) {
-                if (data.Success) {
-                    edu.system.alert("Thành công");
-                }
-                else {
-                    edu.system.alert(data.Message);
-                }
-            },
-            error: function (er) {
-                edu.system.alert(obj_save.action + " (er): " + JSON.stringify(er), "w");
-            },
-            complete: function () {
-                me.getList_LopHocPhan();
-                //edu.system.start_Progress("zoneprocessXXXX", function () {
-                //    me.getList_DangKyHoc();
-                //});
-            },
-            type: 'POST',
-            contentType: true,
-            action: obj_save.action,
-            data: obj_save,
-            fakedb: [
-            ]
-        }, false, false, false, null);
+        return { action: obj_save.action, data: obj_save };
     },
 
-    save_ThietLapKhongToChucThi: function (strDaoTao_LopHocPhan_Id, dKhongToChucThi) {
-        var me = this;
+    req_ThietLapKhongToChucThi: function (strDaoTao_LopHocPhan_Id, dKhongToChucThi) {
         var obj_save = {
             'action': 'DKH_ThongTin2_MH/FSkoJDUFIDUKKS4vJhUuAik0IhUpKAPP',
             'func': 'PKG_DANGKYHOC_THONGTIN2.ThietDatKhongToChucThi',
@@ -2929,31 +2781,7 @@ LopHocPhan.prototype = {
             'strNguoiThucHien_Id': edu.system.userId,
             'dKhongToChucThi': dKhongToChucThi,
         };
-        edu.system.makeRequest({
-            success: function (data) {
-                if (data.Success) {
-                    edu.system.alert("Thành công");
-                }
-                else {
-                    edu.system.alert(data.Message);
-                }
-            },
-            error: function (er) {
-                edu.system.alert(obj_save.action + " (er): " + JSON.stringify(er), "w");
-            },
-            complete: function () {
-                me.getList_LopHocPhan();
-                //edu.system.start_Progress("zoneprocessXXXX", function () {
-                //    me.getList_DangKyHoc();
-                //});
-            },
-            type: 'POST',
-            contentType: true,
-            action: obj_save.action,
-            data: obj_save,
-            fakedb: [
-            ]
-        }, false, false, false, null);
+        return { action: obj_save.action, data: obj_save };
     },
 
     genTable_ThuocTinhKLGD: function (data) {
@@ -2977,8 +2805,7 @@ LopHocPhan.prototype = {
         edu.system.loadToTable_data(jsonForm);
     },
 
-    save_ThuocTinhKLGD: function (strDaoTao_LopHocPhan_Id, strPhanLoaiCachTinh_Id) {
-        var me = this;
+    req_ThuocTinhKLGD_Them: function (strDaoTao_LopHocPhan_Id, strPhanLoaiCachTinh_Id) {
         var obj_save = {
             'action': 'NS_KLGD_ThongTin_MH/FSkkLB4KDQYFHhEpIC8NLiAoHg0uMQkx',
             'func': 'PKG_KLGV_V2_THONGTIN.Them_KLGD_PhanLoai_LopHp',
@@ -2990,34 +2817,10 @@ LopHocPhan.prototype = {
             'strChucNangHeThong_Id': '',
             'strHanhDong_Code': '',
         };
-        edu.system.makeRequest({
-            success: function (data) {
-                if (data.Success) {
-                    edu.system.alert("Thực hiện thành công", "s");
-                } else {
-                    edu.system.alert(obj_save.action + " : " + data.Message, "w");
-                }
-            },
-            error: function (er) {
-                edu.system.alert(obj_save.action + " (er): " + JSON.stringify(er), "w");
-            },
-            type: "POST",
-            action: obj_save.action,
-            complete: function () {
-                edu.system.start_Progress("zoneprocessXXXX", function () {
-                    $('#myModalThuocTinhKLGD').modal('hide');
-                    me.getList_LopHocPhan();
-                });
-            },
-            contentType: true,
-            data: obj_save,
-            fakedb: [
-            ]
-        }, false, false, false, null);
+        return { action: obj_save.action, data: obj_save };
     },
 
-    delete_ThuocTinhKLGD: function (strDaoTao_LopHocPhan_Id, strPhanLoaiCachTinh_Id) {
-        var me = this;
+    req_ThuocTinhKLGD_Xoa: function (strDaoTao_LopHocPhan_Id, strPhanLoaiCachTinh_Id) {
         var obj_save = {
             'action': 'NS_KLGD_ThongTin_MH/GS4gHgoNBgUeESkgLw0uICgeDS4xCTFw',
             'func': 'PKG_KLGV_V2_THONGTIN.Xoa_KLGD_PhanLoai_LopHp1',
@@ -3029,30 +2832,7 @@ LopHocPhan.prototype = {
             'strChucNangHeThong_Id': '',
             'strHanhDong_Code': '',
         };
-        edu.system.makeRequest({
-            success: function (data) {
-                if (data.Success) {
-                    edu.system.alert("Thực hiện thành công", "s");
-                } else {
-                    edu.system.alert(obj_save.action + " : " + data.Message, "w");
-                }
-            },
-            error: function (er) {
-                edu.system.alert(obj_save.action + " (er): " + JSON.stringify(er), "w");
-            },
-            type: "POST",
-            action: obj_save.action,
-            complete: function () {
-                edu.system.start_Progress("zoneprocessXXXX", function () {
-                    $('#myModalThuocTinhKLGD').modal('hide');
-                    me.getList_LopHocPhan();
-                });
-            },
-            contentType: true,
-            data: obj_save,
-            fakedb: [
-            ]
-        }, false, false, false, null);
+        return { action: obj_save.action, data: obj_save };
     },
 
     genTable_CheDoTinhPhi_LopHP: function (data) {
@@ -3081,8 +2861,7 @@ LopHocPhan.prototype = {
         edu.system.loadToTable_data(jsonForm);
     },
 
-    save_CheDoTinhPhi_LopHP: function (strDangKy_LopHocPhan_Id, strCheDoTinhPhi_Id, strKieuHoc_Id) {
-        var me = this;
+    req_CheDoTinhPhi_LopHP_Them: function (strDangKy_LopHocPhan_Id, strCheDoTinhPhi_Id, strKieuHoc_Id) {
         var obj_save = {
             'action': 'DKH_ThongTin2_MH/ETMeBSAvJgo4Hg0uMQkxHgIpJAUuESkoHggvMgPP',
             'func': 'PKG_DANGKYHOC_THONGTIN2.Pr_DangKy_LopHp_CheDoPhi_Ins',
@@ -3096,34 +2875,10 @@ LopHocPhan.prototype = {
             'strChucNangHeThong_Id': '',
             'strHanhDong_Code': '',
         };
-        edu.system.makeRequest({
-            success: function (data) {
-                if (data.Success) {
-                    edu.system.alert("Thực hiện thành công", "s");
-                } else {
-                    edu.system.alert(obj_save.action + " : " + data.Message, "w");
-                }
-            },
-            error: function (er) {
-                edu.system.alert(obj_save.action + " (er): " + JSON.stringify(er), "w");
-            },
-            type: "POST",
-            action: obj_save.action,
-            complete: function () {
-                edu.system.start_Progress("zoneprocessXXXX", function () {
-                    $('#myModalCheDoTinhPhi_LopHP').modal('hide');
-                    me.getList_LopHocPhan();
-                });
-            },
-            contentType: true,
-            data: obj_save,
-            fakedb: [
-            ]
-        }, false, false, false, null);
+        return { action: obj_save.action, data: obj_save };
     },
 
-    delete_CheDoTinhPhi_LopHP: function (strId) {
-        var me = this;
+    req_CheDoTinhPhi_LopHP_Xoa: function (strId) {
         var obj_save = {
             'action': 'DKH_ThongTin2_MH/ETMeBSAvJgo4Hg0uMQkxHgIpJAUuESkoHgUkLQPP',
             'func': 'PKG_DANGKYHOC_THONGTIN2.Pr_DangKy_LopHp_CheDoPhi_Del',
@@ -3134,30 +2889,7 @@ LopHocPhan.prototype = {
             'strChucNangHeThong_Id': '',
             'strHanhDong_Code': '',
         };
-        edu.system.makeRequest({
-            success: function (data) {
-                if (data.Success) {
-                    edu.system.alert("Thực hiện thành công", "s");
-                } else {
-                    edu.system.alert(obj_save.action + " : " + data.Message, "w");
-                }
-            },
-            error: function (er) {
-                edu.system.alert(obj_save.action + " (er): " + JSON.stringify(er), "w");
-            },
-            type: "POST",
-            action: obj_save.action,
-            complete: function () {
-                edu.system.start_Progress("zoneprocessXXXX", function () {
-                    $('#myModalCheDoTinhPhi_LopHP').modal('hide');
-                    me.getList_LopHocPhan();
-                });
-            },
-            contentType: true,
-            data: obj_save,
-            fakedb: [
-            ]
-        }, false, false, false, null);
+        return { action: obj_save.action, data: obj_save };
     },
 
     genTable_HuyPhiTinChi: function (data) {
@@ -3176,8 +2908,7 @@ LopHocPhan.prototype = {
         edu.system.loadToTable_data(jsonForm);
     },
 
-    huyPhiTinChiTheoLop: function (strDaoTao_LopHocPhan_Id) {
-        var me = this;
+    req_HuyPhiTinChi: function (strDaoTao_LopHocPhan_Id) {
         var obj_save = {
             'action': 'DKH_ThongTin2_MH/FSk0IgkoJC8JNDgRKSgVKC8CKSgVKSQuDS4x',
             'func': 'PKG_DANGKYHOC_THONGTIN2.ThucHienHuyPhiTinChiTheoLop',
@@ -3188,36 +2919,10 @@ LopHocPhan.prototype = {
             'strChucNangHeThong_Id': '',
             'strHanhDong_Code': '',
         };
-        edu.system.makeRequest({
-            success: function (data) {
-                if (data.Success) {
-                    edu.system.alert("Thực hiện thành công", "s");
-                } else {
-                    edu.system.alert(obj_save.action + " : " + data.Message, "w");
-                }
-            },
-            error: function (er) {
-                edu.system.alert(obj_save.action + " (er): " + JSON.stringify(er), "w");
-            },
-            type: "POST",
-            action: obj_save.action,
-            complete: function () {
-                edu.system.start_Progress("zoneprocessXXXX", function () {
-                    $('#myModalHuyPhiTinChi').modal('hide');
-                    me.getList_LopHocPhan();
-                });
-            },
-            contentType: true,
-            data: obj_save,
-            fakedb: [
-            ]
-        }, false, false, false, null);
+        return { action: obj_save.action, data: obj_save };
     },
 
-    save_DonLopNhom: function (strId, strNguonDuLieu_Id) {
-        var me = this;
-        var aData = me.dtSinhVien.find(e => e.ID == strId)
-        //--Edit
+    req_DonLopNhom: function (aData, strNguonDuLieu_Id) {
         var obj_save = {
             'action': 'DKH_ThongTin2/Them_DangKy_DonLop_LichSu',
             'type': 'POST',
@@ -3228,35 +2933,7 @@ LopHocPhan.prototype = {
             'strNguoiThucHien_Id': edu.system.userId,
             'iM': edu.system.iM,
         };
-        //
-
-        edu.system.makeRequest({
-            success: function (data) {
-                if (data.Success) {
-                    edu.system.alert("Thực hiện thành công");
-                }
-                else {
-                    edu.system.alert(obj_save.action + " : " + data.Message, "s");
-                }
-
-            },
-            error: function (er) {
-
-                edu.system.alert(obj_save.action + " (er): " + JSON.stringify(er), "w");
-            },
-            type: obj_save.type,
-            action: obj_save.action,
-            complete: function () {
-                edu.system.start_Progress("zoneprocessXXXX", function () {
-                    me.getList_DonLopNhom(strNguonDuLieu_Id);
-                });
-            },
-            contentType: true,
-            data: obj_save,
-            fakedb: [
-
-            ]
-        }, false, false, false, null);
+        return { action: obj_save.action, data: obj_save };
     },
     getList_DonLopNhom: function (strNguonDuLieu_Id) {
         var me = this;
@@ -3537,14 +3214,8 @@ LopHocPhan.prototype = {
         edu.system.loadToTable_data(jsonForm);
     },
 
-    thucHienRutHocPhan: function (srcTbl, strId, dPhanTramTinhPhi, strMoTa) {
-        var me = this;
-        var arrData = srcTbl === "tblLopHocPhanChiTiet2" ? (me.dtLopHocPhanChiTiet2 || []) : (me.dtLopHocPhanChiTiet || []);
-        var rec = arrData.find(function (r) { return r.ID == strId; });
-        if (!rec) {
-            edu.system.alert("Không tìm thấy bản ghi: " + strId, "w");
-            return;
-        }
+    req_RutHocPhan: function (rec, dPhanTramTinhPhi, strMoTa) {
+        if (!rec) throw new Error("Không tìm thấy dữ liệu của bản ghi.");
         var obj_save = {
             'action': 'DKH_RutHocPhan_MH/FSk0IgkoJC8TNDUP',
             'func': 'PKG_DANGKYHOC_RUTHOCPHAN.ThucHienRut',
@@ -3557,67 +3228,19 @@ LopHocPhan.prototype = {
             'strMoTa': strMoTa,
             'strNguoiThucHien_Id': edu.system.userId,
         };
-        edu.system.makeRequest({
-            success: function (data) {
-                if (data.Success) {
-                    edu.system.alert("Thực hiện thành công", "s");
-                } else {
-                    edu.system.alert(obj_save.action + " : " + data.Message, "w");
-                }
-            },
-            error: function (er) {
-                edu.system.alert(obj_save.action + " (er): " + JSON.stringify(er), "w");
-            },
-            type: "POST",
-            action: obj_save.action,
-            complete: function () {
-                edu.system.start_Progress("zoneprocessXXXX", function () {
-                    if (srcTbl === "tblLopHocPhanChiTiet2") me.getList_LopHocPhanRut();
-                    else me.getList_LopHocPhanChiTiet();
-                });
-            },
-            contentType: true,
-            data: obj_save,
-            fakedb: [
-            ]
-        }, false, false, false, null);
+        return { action: obj_save.action, data: obj_save };
     },
 
-    tongHopCongNoSinhVien: function (strQLSV_NguoiHoc_Id, onDone) {
-        var me = this;
+    req_TongHopCongNo: function (strQLSV_NguoiHoc_Id) {
         var obj_save = {
             'action': 'TC_NguoiHoc/TongHopDuNoSinhVien',
             'strNguoiThucHien_Id': edu.system.userId,
             'strQLSV_NguoiHoc_Id': strQLSV_NguoiHoc_Id,
         };
-        edu.system.makeRequest({
-            success: function (data) {
-                if (data.Success) {
-                    edu.system.alert("Tổng hợp công nợ thành công", "s");
-                } else {
-                    edu.system.alert(obj_save.action + " : " + data.Message, "w");
-                }
-            },
-            error: function (er) {
-                edu.system.alert(obj_save.action + " (er): " + JSON.stringify(er), "w");
-            },
-            type: "POST",
-            action: obj_save.action,
-            complete: function () {
-                edu.system.start_Progress("zoneprocessXXXX", function () {
-                    me.getList_LopHocPhanChiTiet();
-                });
-                if (typeof onDone === 'function') onDone();
-            },
-            contentType: true,
-            data: obj_save,
-            fakedb: [
-            ]
-        }, false, false, false, null);
+        return { action: obj_save.action, data: obj_save };
     },
 
-    canBangNo: function (rec) {
-        var me = this;
+    req_CanBangNo: function (rec) {
         var obj_save = {
             'action': 'DKH_ThongTin2_MH/FSkkLB4VFR4ZICIPKSAvHhUVHgIVHhUC',
             'func': 'PKG_DANGKYHOC_THONGTIN2.Them_TT_XacNhan_TT_CT_TC',
@@ -3632,33 +3255,10 @@ LopHocPhan.prototype = {
             'strChucNangHeThong_Id': '',
             'strHanhDong_Code': '',
         };
-        edu.system.makeRequest({
-            success: function (data) {
-                if (data.Success) {
-                    edu.system.alert("Cân bằng nợ thành công", "s");
-                } else {
-                    edu.system.alert(obj_save.action + " : " + data.Message, "w");
-                }
-            },
-            error: function (er) {
-                edu.system.alert(obj_save.action + " (er): " + JSON.stringify(er), "w");
-            },
-            type: "POST",
-            action: obj_save.action,
-            complete: function () {
-                edu.system.start_Progress("zoneprocessXXXX", function () {
-                    me.getList_LopHocPhanChiTiet();
-                });
-            },
-            contentType: true,
-            data: obj_save,
-            fakedb: [
-            ]
-        }, false, false, false, null);
+        return { action: obj_save.action, data: obj_save };
     },
 
-    huyCanBangNo: function (rec) {
-        var me = this;
+    req_HuyCanBangNo: function (rec) {
         var obj_save = {
             'action': 'DKH_ThongTin2_MH/GS4gHhUVHhkgIg8pIC8eFRUeAhUeFQIP',
             'func': 'PKG_DANGKYHOC_THONGTIN2.Xoa_TT_XacNhan_TT_CT_TC',
@@ -3673,33 +3273,10 @@ LopHocPhan.prototype = {
             'strChucNangHeThong_Id': '',
             'strHanhDong_Code': '',
         };
-        edu.system.makeRequest({
-            success: function (data) {
-                if (data.Success) {
-                    edu.system.alert("Hủy cân bằng nợ thành công", "s");
-                } else {
-                    edu.system.alert(obj_save.action + " : " + data.Message, "w");
-                }
-            },
-            error: function (er) {
-                edu.system.alert(obj_save.action + " (er): " + JSON.stringify(er), "w");
-            },
-            type: "POST",
-            action: obj_save.action,
-            complete: function () {
-                edu.system.start_Progress("zoneprocessXXXX", function () {
-                    me.getList_LopHocPhanChiTiet();
-                });
-            },
-            contentType: true,
-            data: obj_save,
-            fakedb: [
-            ]
-        }, false, false, false, null);
+        return { action: obj_save.action, data: obj_save };
     },
 
-    saveTaoDanhSachNhapDiem: function (strDaoTao_LopHocPhan_Id) {
-        var me = this;
+    req_TaoDanhSachNhapDiem: function (strDaoTao_LopHocPhan_Id) {
         var obj_save = {
             'action': 'D_PhanQuyen_MH/FSAuBTQNKCQ0DykgMQUoJCwP',
             'func': 'pkg_diem_phanquyen.TaoDuLieuNhapDiem',
@@ -3707,29 +3284,316 @@ LopHocPhan.prototype = {
             'strDaoTao_LopHocPhan_Id': strDaoTao_LopHocPhan_Id,
             'strNguoiThucHien_Id': edu.system.userId,
         };
+        return { action: obj_save.action, data: obj_save };
+    },
 
-        edu.system.makeRequest({
-            success: function (data) {
+    /*------------------------------------------
+    --Discription: Chạy hàng loạt — "gửi vào" form tiến trình chung (Corei/processrun.js, edu.process).
+    -- Mỗi thao tác chỉ khai báo: danh sách bản ghi + hàm dựng yêu cầu cho 1 bản ghi (req_*). Form lo phần còn lại:
+    -- từng bản ghi có giờ bắt đầu/kết thúc, kết quả, ghi chú lỗi; tổng hợp thành công/lỗi; xuất Excel lỗi/thành công.
+    -------------------------------------------*/
+    // Các dòng đang tick ở bảng strTableId, lấy đủ dữ liệu từ arrData (tìm theo ID)
+    _selectedRows: function (strTableId, arrData) {
+        var map = {}, arr = [];
+        (arrData || []).forEach(function (r) { map[r.ID] = r; });
+        // querySelectorAll gốc nhanh gấp nhiều lần bộ chọn ":checkbox[id^=..]:checked" của jQuery khi bảng có hàng nghìn dòng
+        var arrChecked = document.querySelectorAll('#' + strTableId + ' tbody input[type="checkbox"][id^="checkX"]:checked');
+        for (var i = 0; i < arrChecked.length; i++) {
+            var r = map[arrChecked[i].id.substring(6)];//"checkX".length = 6
+            if (r) arr.push(r);
+        }
+        return arr;
+    },
 
-                if (data.Success) {
-                    edu.system.alert("Thực hiện thành công", "s");
-                } else {
-                    edu.system.alert("Thất bại:" + data.Message, "w");
+    // Cột "Thông tin xử lý" theo từng loại bản ghi
+    _colsLop: function () {
+        return [
+            { header: "Mã lớp", render: function (r) { return r.MALOP || r.ID; } },
+            { header: "Tên lớp", render: function (r) { return r.TENLOP; } }
+        ];
+    },
+    _colsSinhVien: function () {
+        var v = edu.util.returnEmpty;
+        return [
+            { header: "Mã số", render: function (r) { return r.QLSV_NGUOIHOC_MASO; } },
+            { header: "Họ tên", render: function (r) { return v(r.QLSV_NGUOIHOC_HODEM) + " " + v(r.QLSV_NGUOIHOC_TEN); } },
+            { header: "Lớp quản lý", render: function (r) { return r.DAOTAO_LOPQUANLY_TEN; } }
+        ];
+    },
+    _colsDangKy: function () {
+        var v = edu.util.returnEmpty;
+        return [
+            { header: "Mã số", render: function (r) { return r.QLSV_NGUOIHOC_MASO; } },
+            { header: "Họ tên", render: function (r) { return v(r.QLSV_NGUOIHOC_HODEM) + " " + v(r.QLSV_NGUOIHOC_TEN); } },
+            { header: "Lớp học phần", render: function (r) { return v(r.DANGKY_LOPHOCPHAN_MA) + " - " + v(r.DANGKY_LOPHOCPHAN_TEN); } }
+        ];
+    },
+
+    // Điều kiện tìm kiếm đang chọn ở phía trên, thành các dòng phụ đề (ô nào chưa chọn thì bỏ qua)
+    getFilterLines: function () {
+        if (!edu.exporter) return [];
+        return [
+            edu.exporter.filterText([
+                { label: "Thời gian đào tạo", id: "dropSearch_ThoiGianDaoTao" },
+                { label: "Kế hoạch đăng ký", id: "dropSearch_KeHoach" }
+            ]),
+            edu.exporter.filterText([
+                { label: "Hệ đào tạo", id: "dropSearch_HeDaoTao" },
+                { label: "Khóa đào tạo", id: "dropSearch_KhoaDaoTao" },
+                { label: "Chương trình", id: "dropSearch_ChuongTrinh" },
+                { label: "Khoa quản lý", id: "dropSearch_KhoaQuanLy" }
+            ]),
+            edu.exporter.filterText([
+                { label: "Học phần", id: "dropSearch_HocPhan" },
+                { label: "Hình thức học", id: "dropSearch_HinhThucHoc" },
+                { label: "Kiểu học", id: "dropSearch_KieuHoc" }
+            ])
+        ];
+    },
+
+    // Mở form tiến trình chung. cfg như edu.process.open, thêm:
+    //   hideModal: modal đang mở cần đóng trước (form không mở chồng lên modal khác); reopenModal: mở lại modal đó khi đóng form
+    //   refresh: hàm nạp lại danh sách, chạy khi đóng form nếu có bản ghi thành công
+    runProcess: function (cfg) {
+        var me = this;
+        if (!edu.process) {
+            edu.system.alert("Chưa cập nhật form tiến trình (thiếu Corei/processrun.js hoặc indexi.aspx).", "w");
+            return;
+        }
+        var hide = cfg.hideModal, reopen = cfg.reopenModal, refresh = cfg.refresh;
+        delete cfg.hideModal;
+        delete cfg.reopenModal;
+        delete cfg.refresh;
+        // điều kiện tìm kiếm đang chọn luôn kèm theo (hiện trên form và ghi vào file xuất)
+        cfg.subTitles = [].concat(cfg.subTitles || [], me.getFilterLines());
+        cfg.onClose = function (sum) {
+            if (sum.ok > 0 && typeof refresh === "function") refresh();
+            if (reopen) $(reopen).modal("show");
+        };
+        var $m = hide ? $(hide) : $();
+        // isShown của Bootstrap đúng ngay cả khi modal còn đang chạy hiệu ứng mở (lúc đó :visible chưa đúng)
+        var inst = $m.data("bs.modal");
+        if ($m.length > 0 && (inst ? inst.isShown : $m.is(":visible"))) {
+            $m.one("hidden.bs.modal", function () { edu.process.open(cfg); });
+            $m.modal("hide");
+        }
+        else edu.process.open(cfg);
+    },
+
+    // Thiết lập thuộc tính cho các lớp học phần đã tick (lớp riêng / không tính phí / không tổ chức thi):
+    // chọn giá trị trong hộp xác nhận rồi chạy từng lớp. o: { btn, hoi, radioName, options:[{value,label}], title, fileName, req(id, value) }
+    bindThietLap: function (o) {
+        var me = this;
+        $(o.btn).click(function (e) {
+            e.preventDefault();
+            var arrSelected = me._selectedRows("tblLopHocPhan", me.dtLopHocPhan);
+            if (arrSelected.length == 0) {
+                edu.system.alert("Vui lòng chọn lớp học phần?");
+                return;
+            }
+            var html = '<div class="radio" style="padding-left: 20px;padding-bottom: 40px">';
+            for (var i = 0; i < o.options.length; i++) {
+                html += '<div class="col-sm-12"><input id="' + o.radioName + '_' + i + '" type="radio" name="' + o.radioName + '" value="' + o.options[i].value + '">'
+                    + '<label for="' + o.radioName + '_' + i + '"> ' + o.options[i].label + '</label></div>';
+            }
+            html += '</div>';
+            edu.system.confirm(o.hoi + " <br/>" + html);
+            $("#btnYes").click(function () {
+                var $chk = $('input[name="' + o.radioName + '"]:checked');
+                if ($chk.length === 0) {
+                    edu.system.alert("Vui lòng chọn một lựa chọn?");
+                    $("#btnYes").show();//hộp xác nhận chung đã ẩn nút Yes khi bấm
+                    return;
                 }
+                var strValue = $chk.val();
+                me.runProcess({
+                    hideModal: "#myModalAlert",
+                    title: o.title,
+                    unit: "lớp học phần",
+                    fileName: o.fileName,
+                    subTitles: ["Thiết lập: " + $('label[for="' + $chk.attr("id") + '"]').text().trim()],
+                    items: arrSelected,
+                    columns: me._colsLop(),
+                    request: function (it) { return o.req(it.ID, strValue); },
+                    refresh: function () { me.getList_LopHocPhan(); }
+                });
+            });
+        });
+    },
+
+    // Nạp lại danh sách đăng ký chi tiết theo đúng chế độ đang xem (đăng ký / cán bộ đăng ký)
+    _refreshChiTiet: function () {
+        var me = this;
+        if (me._chiTietMode === "canbo") me.getList_CanBoChiTiet();
+        else me.getList_LopHocPhanChiTiet();
+    },
+
+    /*------------------------------------------
+    --Discription: Xuất Excel theo chuẩn chung (Corei/exportexcel.js) cho bảng đang hiển thị.
+    -- Cột khai báo tường minh (không lấy cột nút bấm/ô tick); dữ liệu tải TOÀN BỘ kết quả của điều kiện đang chọn
+    -- (bảng chỉ hiện từng trang); ô lọc thêm mặc định theo các ô tìm kiếm ngoài màn hình.
+    -------------------------------------------*/
+    getExportSpec: function (strTableId) {
+        var me = this, v = edu.util.returnEmpty;
+        var tenMa = function (ten, ma) { return ma ? v(ten) + " (" + ma + ")" : v(ten); };
+        var SV = "Thông tin sinh viên", DK = "Thông tin đăng ký";
+        var colsSV = [
+            { header: "Mã số", field: "QLSV_NGUOIHOC_MASO", group: SV },
+            { header: "Họ đệm", field: "QLSV_NGUOIHOC_HODEM", group: SV },
+            { header: "Tên", field: "QLSV_NGUOIHOC_TEN", group: SV },
+            { header: "Chương trình", render: function (r) { return tenMa(r.DAOTAO_TOCHUCCHUONGTRINH_TEN, r.DAOTAO_TOCHUCCHUONGTRINH_MA); }, group: SV },
+            { header: "Khóa học", field: "DAOTAO_KHOADAOTAO_TEN", group: SV },
+            { header: "Khoa quản lý", field: "DAOTAO_KHOAQUANLY_TEN", group: SV }
+        ];
+        var fltSV = [
+            { label: "Khóa học", field: "DAOTAO_KHOADAOTAO_TEN", from: "dropSearch_KhoaDaoTao" },
+            { label: "Khoa quản lý", field: "DAOTAO_KHOAQUANLY_TEN", from: "dropSearch_KhoaQuanLy" },
+            { label: "Chương trình", field: "DAOTAO_TOCHUCCHUONGTRINH_TEN", from: "dropSearch_ChuongTrinh" },
+            { label: "Loại lớp", field: "LOPRIENG" },
+            { label: "Kiểu học", field: "KIEUHOC_TEN", from: "dropSearch_KieuHoc" }
+        ];
+        var hocPhan = function (g) { return { header: "Học phần", render: function (r) { return tenMa(r.DAOTAO_HOCPHAN_TEN, r.DAOTAO_HOCPHAN_MA); }, group: g }; };
+        var ctDangKy = function (g) { return { header: "Chương trình đăng ký", render: function (r) { return tenMa(r.DAOTAO_CHUONGTRINHDK_TEN, r.DAOTAO_CHUONGTRINHDK_MA); }, group: g }; };
+
+        if (strTableId === "tblLopHocPhan") {
+            return {
+                name: "Lớp học phần", title: "DANH SÁCH LỚP HỌC PHẦN", fileName: "DanhSachLopHocPhan",
+                columns: [
+                    { header: "Mã lớp", field: "MALOP" },
+                    { header: "Tên lớp", field: "TENLOP" },
+                    { header: "Loại lớp", field: "LOAILOP" },
+                    { header: "Số tín chỉ", field: "SOTINCHI", type: "number", align: "center" },
+                    { header: "Phân bổ", field: "THONGTINPHANBO", align: "center" },
+                    { header: "Mã GV", field: "MAGV" },
+                    { header: "Chức danh", field: "CHUCDANH" },
+                    { header: "Tên GV", field: "TENGV" },
+                    { header: "Chương trình mở lớp", field: "CHUONGTRINHMOLOP" },
+                    { header: "Phí phải nộp", field: "PHIPHAINOP", type: "number", format: "int", sum: true },
+                    { header: "Phí đã nộp", field: "PHIDANOP", type: "number", format: "int", sum: true },
+                    { header: "Thông tin lịch", field: "THOIGIANCHITIET", html: true },
+                    { header: "Hình thức học", render: function (r) { return me._hinhThucHocText(r); } },
+                    { header: "Số SV đã đăng ký", field: "SOSVDADANGKY", type: "number", format: "int" },
+                    { header: "Số SV dự kiến", field: "SOLUONGDUKIENHOC", type: "number", format: "int" },
+                    { header: "Lớp riêng", render: function (r) { return r.HOCPHITINHRIENG ? "Lớp riêng" : ""; } },
+                    { header: "Tính phí", render: function (r) { return r.KHONGTINHPHI ? "Không tính phí" : ""; } },
+                    { header: "Tổ chức thi", render: function (r) { return r.KHONGTOCHUCTHI ? "Không tổ chức thi" : ""; } },
+                    { header: "Thuộc tính KLGD", field: "PHANLOAICACHTINH_TEN" },
+                    { header: "Chế độ tính phí", field: "CHEDOTINHPHI_TEN" }
+                ],
+                filters: [
+                    { label: "Loại lớp", field: "LOAILOP" },
+                    { label: "Hình thức học", get: function (r) { return me._hinhThucHocText(r); }, from: "dropSearch_HinhThucHoc" },
+                    { label: "Giảng viên", field: "TENGV" },
+                    { label: "Chế độ tính phí", field: "CHEDOTINHPHI_TEN" }
+                ]
+            };
+        }
+        if (strTableId === "tblLopHocPhanChiTiet") {
+            var bCanBo = me._chiTietMode === "canbo";
+            return {
+                name: bCanBo ? "Đăng ký (cán bộ)" : "Đăng ký chi tiết",
+                title: bCanBo ? "KẾT QUẢ ĐĂNG KÝ CHI TIẾT (CÁN BỘ ĐĂNG KÝ)" : "DANH SÁCH ĐĂNG KÝ HỌC CHI TIẾT",
+                fileName: bCanBo ? "DangKyChiTiet_CanBo" : "DangKyChiTiet",
+                columns: colsSV.concat([
+                    { header: "Loại lớp", field: "LOPRIENG", group: DK },
+                    { header: "Mã lớp học phần", field: "DANGKY_LOPHOCPHAN_MA", group: DK },
+                    { header: "Tên lớp học phần", field: "DANGKY_LOPHOCPHAN_TEN", group: DK },
+                    hocPhan(DK),
+                    { header: "Hình thức học", field: "TENHINHTHUCHOC", group: DK },
+                    { header: "Số tín", field: "SOTINCHI", type: "number", align: "center", sum: true, group: DK },
+                    { header: "Kiểu học", field: "KIEUHOC_TEN", group: DK },
+                    { header: "Ngày đăng ký", field: "NGAYTAO_DD_MM_YYYY_HHMMSS", align: "center", group: DK },
+                    { header: "TK đăng ký", field: "NGUOITAO_TAIKHOAN", align: "center", group: DK },
+                    ctDangKy(DK),
+                    { header: "Số tiền", field: "SOTIEN", type: "number", format: "int", sum: true, group: DK },
+                    { header: "Số tiền 1", field: "SOTIEN1", type: "number", format: "int", sum: true, group: DK },
+                    { header: "Số tiền 2", field: "SOTIEN2", type: "number", format: "int", sum: true, group: DK },
+                    { header: "Đã nộp", render: function (r) { return r.SOTIENDANOP != null ? r.SOTIENDANOP : r.TONGSOTIENDANOP; }, type: "number", format: "int", sum: true, group: DK },
+                    { header: "Tổng nợ", field: "TONGNO", type: "number", format: "int", group: DK },
+                    { header: "Tổng dư", field: "TONGDU", type: "number", format: "int", group: DK },
+                    { header: "Khoản phí", field: "TAICHINH_CACKHOANTHU_TEN", group: DK },
+                    { header: "Đã chuyển kế toán", render: function (r) { return r.DACHUYENKETOAN ? "Đã chuyển" : "Chưa chuyển"; }, align: "center", group: DK },
+                    { header: "SV xác nhận", field: "HANHDONG_XACNHAN_TEN", align: "center", group: DK }
+                ]),
+                filters: fltSV.concat([
+                    { label: "Hình thức học", field: "TENHINHTHUCHOC" },
+                    { label: "SV xác nhận", field: "HANHDONG_XACNHAN_TEN", from: "dropSearch_HanhDong" }
+                ])
+            };
+        }
+        if (strTableId === "tblLopHocPhanChiTiet2") {
+            var TR = "Thông tin rút";
+            return {
+                name: "Rút đăng ký", title: "DANH SÁCH SINH VIÊN RÚT ĐĂNG KÝ", fileName: "RutDangKy",
+                columns: [
+                    { header: "Người rút", field: "NGUOIRUT_TAIKHOAN", align: "center", group: TR },
+                    { header: "Thời gian rút", field: "NGAYRUT_DD_MM_YYYY_HHMMSS", align: "center", group: TR },
+                    { header: "Phần trăm phí", field: "PHANTRAMPHITINH", type: "number", align: "center", group: TR }
+                ].concat(colsSV, [
+                    { header: "Loại lớp", field: "LOPRIENG", group: DK },
+                    { header: "Mã lớp học phần", field: "DANGKY_LOPHOCPHAN_MA", group: DK },
+                    { header: "Tên lớp học phần", field: "DANGKY_LOPHOCPHAN_TEN", group: DK },
+                    hocPhan(DK),
+                    { header: "Số tín", field: "SOTINCHI", type: "number", align: "center", sum: true, group: DK },
+                    { header: "Kiểu học", field: "KIEUHOC_TEN", group: DK },
+                    { header: "Ngày đăng ký", field: "NGAYTAO_DD_MM_YYYY_HHMMSS", align: "center", group: DK },
+                    { header: "TK đăng ký", field: "NGUOITAO_TAIKHOAN", align: "center", group: DK },
+                    ctDangKy(DK)
+                ]),
+                filters: fltSV
+            };
+        }
+        return null;
+    },
+    _hinhThucHocText: function (r) {
+        var ten = edu.util.returnEmpty(r.HINHTHUCHOC_TEN), ma = edu.util.returnEmpty(r.HINHTHUCHOC_MA);
+        return ma ? ten + " - " + ma : ten;
+    },
+
+    exportCurrentTable: function () {
+        var me = this;
+        var strTableId = me.getActiveFindTableId();
+        if (!strTableId) {
+            edu.system.alert("Chưa có dữ liệu để xuất. Vui lòng bấm một nút \"Xem danh sách ...\" ở phía trên trước.", "w");
+            return;
+        }
+        if (!edu.exporter) {
+            edu.system.alert("Chưa cập nhật chức năng xuất Excel (thiếu Corei/exportexcel.js hoặc indexi.aspx).", "w");
+            return;
+        }
+        var spec = me.getExportSpec(strTableId);
+        if (!spec) return;
+        // tải TOÀN BỘ kết quả theo điều kiện đang chọn (không chỉ trang đang xem), cùng cách với ô "Tìm cụm từ trong bảng"
+        var override = {
+            pageIndex: 1,
+            pageSize: me.FIND_FETCH_PAGE_SIZE,
+            onlyFetch: true,
+            onSuccess: function (data) {
+                data = me._filterDataByLoaiLop(data || [], strTableId);
+                var strFind = (me.findState && me.findState.active) ? me.findState.keyword : "";
+                if (strFind) {
+                    var kw = strFind.toLowerCase();
+                    data = data.filter(function (r) { return me._recordMatchesKeyword(r, kw); });
+                }
+                if (data.length === 0) {
+                    edu.system.alert("Không có dữ liệu để xuất.", "w");
+                    return;
+                }
+                // các điều kiện lọc khác đã áp dụng cho dữ liệu: ghi vào phụ đề để người đọc biết
+                var arrExtra = [];
+                if (edu.util.getValById("txtSearch")) arrExtra.push("Từ khóa: " + edu.util.getValById("txtSearch"));
+                if (me._getSelectedLoaiLop()) arrExtra.push("Loại lớp: " + $("#dropSearch_LoaiLop option:selected").text().replace(/\s+/g, " ").trim());
+                if (strFind) arrExtra.push("Tìm cụm từ trong bảng: " + strFind);
+                spec.subTitles = me.getFilterLines().concat(arrExtra.length ? [arrExtra.join("; ")] : []);
+                spec.data = data;
+                edu.exporter.exportWithConfirm(spec);
             },
-            error: function (er) {
-
-                edu.system.alert(obj_save.action + " (er): " + JSON.stringify(er), "w");
-            },
-            type: "POST",
-            action: obj_save.action,
-
-            contentType: true,
-
-            data: obj_save,
-            fakedb: [
-            ]
-        }, false, false, false, null);
+            onError: function (er) {
+                edu.system.alert("Không tải được dữ liệu để xuất" + (er && er.Message ? ": " + er.Message : "."), "w");
+            }
+        };
+        if (strTableId === "tblLopHocPhanChiTiet" && me._chiTietMode === "canbo") me.getList_CanBoChiTiet(override);
+        else me._callFindFetch(strTableId, override);
     },
 
     getList_HinhThucHoc: function (strDanhSach_Id) {
@@ -3786,43 +3650,16 @@ LopHocPhan.prototype = {
         };
         edu.system.loadToCombo_data(obj);
     },
-    save_CheDoTinhPhi: function (strDangKy_SinhVien_Lop_Id) {
-        var me = this;
+    req_CheDoTinhPhiSinhVien: function (strDangKy_SinhVien_Lop_Id, strCheDoTinhPhi_Id) {
         var obj_save = {
             'action': 'DKH_ThongTin2_MH/AikkBS4VKC8pFSgkLwIpLhIXFSkkLg0uMQkR',
             'func': 'PKG_DANGKYHOC_THONGTIN2.CheDoTinhTienChoSVTheoLopHP',
             'iM': edu.system.iM,
             'strDangKy_SinhVien_Lop_Id': strDangKy_SinhVien_Lop_Id,
-            'strCheDoTinhPhi_Id': edu.system.getValById('dropCheDoTinhPhi'),
+            'strCheDoTinhPhi_Id': strCheDoTinhPhi_Id,
             'strNguoiThucHien_Id': edu.system.userId,
         };
-
-        edu.system.makeRequest({
-            success: function (data) {
-
-                if (data.Success) {
-                    edu.system.alert("Thực hiện thành công", "s");
-                } else {
-                    edu.system.alert("Thất bại:" + data.Message, "w");
-                }
-            },
-            error: function (er) {
-
-                edu.system.alert(obj_save.action + " (er): " + JSON.stringify(er), "w");
-            },
-            type: "POST",
-            action: obj_save.action,
-            complete: function () {
-                edu.system.start_Progress("zoneprocessXXXX", function () {
-                    me.getList_QuanSoTheoLop();
-                });
-            },
-            contentType: true,
-
-            data: obj_save,
-            fakedb: [
-            ]
-        }, false, false, false, null);
+        return { action: obj_save.action, data: obj_save };
     },
 
     /*------------------------------------------

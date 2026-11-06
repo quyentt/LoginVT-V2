@@ -243,6 +243,7 @@ Nằm ở [_v2/CLAUDE-CHI-TIET.md](_v2/CLAUDE-CHI-TIET.md) mục 6 và 7. Điề
 Tệp GỐC (ngoài `_v2`, `_harness`) luôn theo kho gốc. `.gitignore` chặn `**/tk.md`, `_v2_deploy/`, `_v1_deploy/`.
 **Commit + đẩy CHỦ ĐỘNG khi lượt việc đã ổn** (kiểm lại đạt, sổ lỗi mã trống, gói bổ sung trống / đã up, không còn bản ghi thử); việc dở thì chưa commit.
 Chỉ đẩy lên `LoginVT-V2`, không bao giờ tới kho gốc. Người dùng tự up gói lên host.
+**⚠ `Core/systemroot.js` / `Corei/systemroot.js` trên host có thể MỚI HƠN kho gốc** (2/11: người khác up thẳng lên host `runHangDoi`, chưa đẩy git). Trước khi đưa systemroot vào gói v1: tải bản host (`https://qldt.eaut.edu.vn/qtdh/Corei/systemroot.js`, dùng PowerShell `Invoke-WebRequest`, chữ Việt vỡ chỉ do giải mã — so `diff -w` hoặc số byte) → lệch thì gộp trên nền host, chỉ chèn lại đoạn nạp plugin.
 
 **Máy.** Có Node v22 + Python 3.10; không IIS / dotnet. Máy chủ tĩnh chuẩn: `powershell -ExecutionPolicy Bypass -File _harness\serve.ps1`
 (cổng 8787; chạy nền bị dừng sau 2 giờ — bật lại). Headless: Edge `C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe`
@@ -336,7 +337,7 @@ ba lối: tiếp quản, chuyển màn cũ, viết màn mới; TRAINING.md mục
 `_v2/CHO-CHUYEN-SAU-PULL.md` (mốc mới, mỗi tệp một dòng: phân hệ, màn, trạng thái **"chưa xem"**) → THÔNG BÁO số tệp theo phân hệ đã / chưa chuyển → **HỎI "chuyển sang `_v2` ngay không?"** (người dùng 12/10) rồi dừng chờ trả lời. Tệp gốc KHÔNG up host (người dùng chỉ làm `_v2`).
 **Diff của một tệp chỉ mở khi tới lượt làm đúng màn đó**: người dùng gọi kiểm host / chuyển phân hệ ấy, hoặc đang sửa chính màn ấy — lúc đó đọc `git diff -w <mốc cũ> <mốc mới> -- <tệp>`,
 chuyển sang `_v2` (thuần CSS vỏ cũ thì bỏ; mã mới lỗi rõ → làm theo ý định + ghi `can-quyet.js`), đổi dòng sổ thành "đã chuyển". Màn thuộc phân hệ chưa chuyển: không bao giờ mở diff.
-Mỗi phiên fetch tối đa một lần, ở đầu. Lịch sử 11 lần kéo (mốc hiện tại `ab5b4f19`, 20/10, 32 tệp chưa xem; gốc hay force-push): `_v2/NHAT-KY-CHUYEN.md`. Đã tắt cảnh báo CRLF (`core.safecrlf false`).
+Mỗi phiên fetch tối đa một lần, ở đầu. Lịch sử 12 lần kéo (mốc hiện tại `b2cd522d1`, 2/11, 65 tệp màn chưa xem; gốc hay force-push; kéo về không ghi đè `help-sso.aspx` / `mapping.aspx` — gốc giữ bản cũ của ta — và chèn lại đoạn nạp plugin ở `Corei/systemroot.js`): `_v2/NHAT-KY-CHUYEN.md`. Đã tắt cảnh báo CRLF (`core.safecrlf false`).
 
 ### Chép tối thiểu
 

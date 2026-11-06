@@ -1,4 +1,19 @@
 ﻿<!-- Main content -->
+<style>
+    /* Danh sách thanh tiến trình (hàng đợi) do edu.system.createHangDoi vẽ vào #tblTaskBar_*>tbody.
+       Mỗi hàng chưa chạy xong cao ~71px; khi tồn nhiều hàng nó đẩy hàng nút (Xuất báo cáo / Xem danh sách / ...)
+       xuống dưới đáy màn hình → nút trông như bị che. Bọc riêng + giới hạn chiều cao để danh sách tự cuộn,
+       hàng nút luôn nằm sát form. */
+    .aps-quytrinh .aps-taskbar-scroll {
+        max-height: 300px;
+        overflow-x: hidden;
+        overflow-y: auto;
+        scrollbar-width: thin;
+    }
+    .aps-quytrinh .aps-taskbar-scroll + .aps-btn-list-right {
+        margin-top: 10px;
+    }
+</style>
 <section class="content aps-danhmuccheso">
     <div class="row row-align  mb-20 aps-tinhhocphi aps-chuyenDLketoan">
         <div class="col-lg-6 pr10 aps-quytrinh">
@@ -8,7 +23,7 @@
                 </div>
                 <div class="box-body pd20 pb5" style="padding-top: 17px !important;">
                     <table class="table table-noborder aps-table-tinhhocphi aps-table-chottinhphi"
-                        id="tblTaskBar_ChuyenDuLieu">
+                        id="tblForm_ChuyenDuLieu">
                         <thead>
                             <tr>
                                 <td class="aps-form-lable" style="border-left: 0 !important; width: 200px;">Hệ đào tạo
@@ -101,10 +116,15 @@
                             </tr>
 
                         </thead>
-                        <tbody>
-                            <!-- load taskbar -->
-                        </tbody>
                     </table>
+                    <!-- Thanh tiến trình: bảng riêng, giữ id tblTaskBar_ChuyenDuLieu vì createHangDoi vẽ vào #tblTaskBar_ChuyenDuLieu>tbody -->
+                    <div class="aps-taskbar-scroll">
+                        <table class="table table-noborder aps-table-tinhhocphi aps-table-chottinhphi" id="tblTaskBar_ChuyenDuLieu">
+                            <tbody>
+                                <!-- load taskbar -->
+                            </tbody>
+                        </table>
+                    </div>
                     <div class="pull-right mb-20 aps-btn-list-right">
                         <div class="dropdown" id="zonebtnBaoCao_CKT" style="float: left">
                             <button class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown">
@@ -315,7 +335,7 @@
     </div>
 </section>
 <!-- page script -->
-<script src="modules/dulieuhocphi/scripts/chuyendulieuketoan.js?v=1.0.0.4"></script>
+<script src="modules/dulieuhocphi/scripts/chuyendulieuketoan.js?v=1.0.0.5"></script>
 <script type="text/javascript">
     var main_doc = {};
     main_doc['ChuyenDuLieu'] = new ChuyenDuLieu();

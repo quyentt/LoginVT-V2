@@ -26,6 +26,8 @@ Lần 7 (2026-10-05 tối, gốc force-push `0551deba` → `1680e53d`, 3 tệp) 
 
 Lần 8 (6/10, `3c3b2d70`) · 9 (12/10, `c42e11e1`) · 10 (12/10 tối, `2254204a`) — gốc force-push liên tiếp; đã chuyển hết (12/10). Bảng tệp ở `CHO-CHUYEN-SAU-PULL.md`.
 
+Lần 12 (2026-11-02, gốc force-push `ab5b4f19` → `b2cd522d1`, 73 tệp: 65 tệp màn / 16 phân hệ + Corei exportexcel.js / processrun.js mới, systemroot.js hộp import panel chung, indexi.aspx +4, default.htm) — **chỉ ghi sổ, CHƯA chuyển màn nào** (người dùng: kéo về ghi chú). help-sso.aspx / mapping.aspx gốc là bản cũ của ta → giữ bản máy; Corei/systemroot.js ghi đè rồi chèn lại đoạn nạp plugin Yêu cầu hỗ trợ. skin.py kiem 11/11 OK. Bảng tệp: `CHO-CHUYEN-SAU-PULL.md` "Lần kéo 12". **Bẫy mới (13:15): host `Corei/systemroot.js` MỚI HƠN kho gốc** (người khác up thẳng lên host, chưa đẩy git: `runHangDoi`) → trước khi up systemroot phải tải bản host về so (`diff -w`), gộp trên nền host rồi mới dựng gói.
+
 Lần 11 (2026-10-20, gốc force-push `2254204a` → `ab5b4f19`, 32 tệp, +2.716/−143 dòng) — **chuyển 3 màn đổi lớn nhất 20/10 theo lệnh "chuyển 3 màn trước"**: CCB `khaosat/kehoach`
 (Xuất Excel toàn bộ kết quả chi tiết, hộp ba pha, `_kehoach_xuat.js`); SV `quyetdinh` (tab "Danh sách chi tiết" + "Xuất báo cáo", `_qd_chitiet.js`; Thực thi sửa trường trạng thái);
 KHCT `cthp` (tab Dạng thẻ | Dạng cây dựng ở tệp dùng chung Tài chính chế độ KHCT; sắp xếp theo cột; nhãn Học kỳ dự kiến ở hộp Khối bắt buộc). Tầng chung: `ums.ui.napXLSX` (gộp 4 bản

@@ -83,6 +83,16 @@ def main():
         if not os.path.exists(dich) or open(nguon, 'rb').read() != open(dich, 'rb').read():
             shutil.copyfile(nguon, dich)
             print('Đã chép lại bản gốc ứng dụng: ' + t + ' (nhớ chép tệp này lên THƯ MỤC GỐC trên host)')
+    # Plugin "Yêu cầu hỗ trợ" cũng có BẢN SAO cho vỏ v1 ở <gốc ứng dụng>/assets/plugin/btn-yeucau-hotro/ — trường không có _v2 vẫn gắn được
+    # (index.aspx / indexi.aspx thêm một thẻ script). Bản sao y hệt, plugin tự nhận vỏ; nguồn sửa vẫn là _v2/assets/plugin.
+    pl_nguon = os.path.join(V2, 'assets', 'plugin', 'btn-yeucau-hotro')
+    pl_dich = os.path.join(GOC, 'assets', 'plugin', 'btn-yeucau-hotro')
+    os.makedirs(pl_dich, exist_ok=True)
+    for t in ['btn-yeucau-hotro.js', 'btn-yeucau-hotro.css', 'html2canvas.min.js']:
+        a, b = os.path.join(pl_nguon, t), os.path.join(pl_dich, t)
+        if not os.path.exists(b) or open(a, 'rb').read() != open(b, 'rb').read():
+            shutil.copyfile(a, b)
+            print('Đã chép bản v1 của plugin: assets/plugin/btn-yeucau-hotro/' + t + ' (chép lên host vào assets/plugin/btn-yeucau-hotro/ ở GỐC ứng dụng)')
     with open(os.path.join(V2, 'index.aspx'), encoding='utf-8-sig') as f:
         vo = f.read()
     vo2 = re.sub(r'[ \t]*<script src="assets/js/demo-data\.js[^\n]*\n', '', vo)

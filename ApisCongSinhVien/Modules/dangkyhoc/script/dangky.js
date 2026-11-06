@@ -57,6 +57,11 @@ DangKy.prototype = {
             setTimeout(function () {
                 me.getList_KeHoach();
             }, 500);
+            try{
+                var strChuongTrinh_Id = $(this).attr("name");
+                var objChuongTrinh = me.dtChuongTrinhDK.find(e => e.ID === strChuongTrinh_Id);
+                me.updateThongTinSinhVien(objChuongTrinh);
+            }catch(Ex) {}
         });
         $("#zoneDSHocPhan").delegate('.btnSelectInList', 'click', function (e) {
             var point = this; e.preventDefault();
@@ -315,6 +320,7 @@ DangKy.prototype = {
                         dtResult = data.Data;
                         iPager = data.Pager;
                     }
+                    me["dtChuongTrinhDK"] = dtResult;
                     me.genList_ChuongTrinh(dtResult, iPager);
                 }
                 else {
@@ -342,16 +348,19 @@ DangKy.prototype = {
         var row = '';
         var check = "btn-dachon-primary";
         for (var i = 0; i < data.length; i++) {
-            row += '<a id="' + data[i].DAOTAO_TOCHUCCHUONGTRINH_ID + '" class="' + check + ' btnSelectInList" style="cursor: pointer">' + edu.util.returnEmpty(data[i].DAOTAO_TOCHUCCHUONGTRINH_TEN) + '</a>';
+            row += '<a id="' + data[i].DAOTAO_TOCHUCCHUONGTRINH_ID + '" name="'+ data[i].ID +'" class="' + check + ' btnSelectInList" style="cursor: pointer">' + edu.util.returnEmpty(data[i].DAOTAO_TOCHUCCHUONGTRINH_TEN) + '</a>';
             check = "";
         }
 
         $("#zoneChuongTrinh").html(row);
-        $("#lblTenSinhVien").html(edu.util.returnEmpty(data[0].QLSV_NGUOIHOC_HODEM) + " " + edu.util.returnEmpty(data[0].QLSV_NGUOIHOC_TEN));
-        $("#lblMaSo").html(edu.util.returnEmpty(data[0].QLSV_NGUOIHOC_MASO));
-        $("#lblSoTaiKhoan").html(edu.util.returnEmpty(data[0].TAIKHOAN));
-        $("#txtAnhCaNhan").attr("src", edu.system.getRootPathImg(data[0].QLSV_NGUOIHOC_ANH));
+        me.updateThongTinSinhVien(data[0]);
         me.getList_KeHoach();
+    },
+    updateThongTinSinhVien: function (aData) {
+        $("#lblTenSinhVien").html(edu.util.returnEmpty(aData.QLSV_NGUOIHOC_HODEM) + " " + edu.util.returnEmpty(aData.QLSV_NGUOIHOC_TEN));
+        $("#lblMaSo").html(edu.util.returnEmpty(aData.QLSV_NGUOIHOC_MASO));
+        $("#lblSoTaiKhoan").html(edu.util.returnEmpty(aData.TAIKHOAN));
+        $("#txtAnhCaNhan").attr("src", edu.system.getRootPathImg(aData.QLSV_NGUOIHOC_ANH));
     },
     
     getList_KeHoach: function () {

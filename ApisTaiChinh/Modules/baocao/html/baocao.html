@@ -365,11 +365,16 @@
                             </a>
                         </li>
                         <li class=""><a href="#tab_phainop" data-toggle="tab">2. Kết quả phải nộp</a></li>
-                        <li class=""><a href="#tab_ketnoiketoan" data-toggle="tab">3. Kết nối kế toán</a></li>
+                        <li class=""><a href="#tab_rut" data-toggle="tab">3. Kết quả rút</a></li>
+                        <li class=""><a href="#tab_mien" data-toggle="tab">4. Kết quả miễn</a></li>
+                        <li class=""><a href="#tab_ketnoiketoan" data-toggle="tab">5. Kết nối kế toán</a></li>
                     </ul>
                     <div class="tab-content mt-20">
                         <!-- Kết quả đã nộp< -->
                         <div class="tab-pane active" id="tab_tongthu">
+                            <div class="row">
+                                <div class="pull-right" id="zoneExport_DaNop"></div>
+                            </div>
                             <div class="row row-tab row-align">
                                 <div class="zone-content-baocao scroll-table-x">
                                     <table id="tblKetQua" class="table table-hover mb-0  table-bordered table-noborder">
@@ -424,6 +429,7 @@
                         <div class="tab-pane" id="tab_phainop">
                             <div class="row">
                                 <div class="pull-right">
+                                    <span id="zoneExport_PhaiNop" style="margin-right: 12px"></span>
                                     <a id="btnDelete_KetQuaPhaiNop" class="btn btn-default"><i class="fa fa-trash"></i>
                                         Xóa</a>
                                 </div>
@@ -435,6 +441,7 @@
                                         <thead>
                                             <tr>
                                                 <th class="td-fixed">Stt</th>
+                                                <th class="td-center td-fixed"><input class="chkSystemSelectAll" type="checkbox"></th>
                                                 <th class="td-center">
                                                     <span class="lang" key="">Số tiền phải nộp</span>
                                                 </th>
@@ -459,7 +466,7 @@
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <td colspan="17" style="text-align: center">
+                                                <td colspan="18" style="text-align: center">
                                                     Vui lòng chọn khoản và ấn
                                                     "Tìm kiếm" để tải danh sách
                                                 </td>
@@ -481,7 +488,117 @@
 
                             </div>
                         </div>
-                        <!-- 3. Kết nối kế toán -->
+                        <!-- 3. Kết quả rút (PKG_TAICHINH_BAOCAO2.LayDSRutTien; cột giống tab "Kết quả đã nộp") -->
+                        <div class="tab-pane" id="tab_rut">
+                            <div class="row">
+                                <div class="pull-right" id="zoneExport_Rut"></div>
+                            </div>
+                            <div class="row row-tab row-align">
+                                <div class="zone-content-baocao scroll-table-x">
+                                    <table id="tblKetQuaRut"
+                                        class="table table-hover tblKetQuaRut mb-0 table-bordered table-noborder">
+                                        <thead>
+                                            <tr>
+                                                <th class="td-fixed">Stt</th>
+                                                <th class="td-center"><span class="lang" key="">Số tiền rút</span></th>
+                                                <th class="td-center"><span class="lang" key="">Ngày phát sinh</span></th>
+                                                <th class="td-center"><span class="lang" key="">Mã đơn hàng</span></th>
+                                                <th class="td-center"><span class="lang" key="">Chứng từ</span></th>
+                                                <th class="td-center"><span class="lang" key="">Hình thức</span></th>
+                                                <th class="td-center"><span class="lang" key="">Thời gian</span></th>
+                                                <th class="td-center"><span class="lang" key="">Người thu</span></th>
+                                                <th class="td-center"><span class="lang" key="">Khoản thu</span></th>
+                                                <th class="td-center"><span class="lang" key="">Mã số</span></th>
+                                                <th class="td-center"><span class="lang" key="">Họ tên</span></th>
+                                                <th class="td-center"><span class="lang" key="">Ngày sinh</span></th>
+                                                <th class="td-center"><span class="lang" key="">Trạng thái</span></th>
+                                                <th class="td-center"><span class="lang" key="">Lớp học</span></th>
+                                                <th class="td-center"><span class="lang" key="">Chương trình</span></th>
+                                                <th class="td-center"><span class="lang" key="">Khóa học</span></th>
+                                                <th class="td-center"><span class="lang" key="">Khoa quản lý</span></th>
+                                                <th class="td-center"><span class="lang" key="">Hệ đào tạo</span></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="18" style="text-align: center">
+                                                    Vui lòng chọn khoản và ấn
+                                                    "Tìm kiếm" để tải danh sách
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="table-tongtien mt-10">
+                                    <table class="table table-hover border-0 table-noborder">
+                                        <tfoot>
+                                            <tr>
+                                                <td style="font-weight: bold; border: 0 !important;">Tổng tiền: </td>
+                                                <td style="font-weight: bold; text-align: left" id="lblTongTien_Rut"></td>
+                                                <td>Bằng chữ: <i id="lblTongTienBangChu_Rut"></i></td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                                <p id="lblGhiChu_Rut" class="text-muted" style="display: none; margin: 0 0 10px"></p>
+                            </div>
+                        </div>
+                        <!-- 4. Kết quả miễn (PKG_TAICHINH_BAOCAO2.LayDSMienTien; cột giống tab "Kết quả đã nộp") -->
+                        <div class="tab-pane" id="tab_mien">
+                            <div class="row">
+                                <div class="pull-right" id="zoneExport_Mien"></div>
+                            </div>
+                            <div class="row row-tab row-align">
+                                <div class="zone-content-baocao scroll-table-x">
+                                    <table id="tblKetQuaMien"
+                                        class="table table-hover tblKetQuaMien mb-0 table-bordered table-noborder">
+                                        <thead>
+                                            <tr>
+                                                <th class="td-fixed">Stt</th>
+                                                <th class="td-center"><span class="lang" key="">Số tiền miễn</span></th>
+                                                <th class="td-center"><span class="lang" key="">Ngày phát sinh</span></th>
+                                                <th class="td-center"><span class="lang" key="">Mã đơn hàng</span></th>
+                                                <th class="td-center"><span class="lang" key="">Chứng từ</span></th>
+                                                <th class="td-center"><span class="lang" key="">Hình thức</span></th>
+                                                <th class="td-center"><span class="lang" key="">Thời gian</span></th>
+                                                <th class="td-center"><span class="lang" key="">Người thu</span></th>
+                                                <th class="td-center"><span class="lang" key="">Khoản thu</span></th>
+                                                <th class="td-center"><span class="lang" key="">Mã số</span></th>
+                                                <th class="td-center"><span class="lang" key="">Họ tên</span></th>
+                                                <th class="td-center"><span class="lang" key="">Ngày sinh</span></th>
+                                                <th class="td-center"><span class="lang" key="">Trạng thái</span></th>
+                                                <th class="td-center"><span class="lang" key="">Lớp học</span></th>
+                                                <th class="td-center"><span class="lang" key="">Chương trình</span></th>
+                                                <th class="td-center"><span class="lang" key="">Khóa học</span></th>
+                                                <th class="td-center"><span class="lang" key="">Khoa quản lý</span></th>
+                                                <th class="td-center"><span class="lang" key="">Hệ đào tạo</span></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="18" style="text-align: center">
+                                                    Vui lòng chọn khoản và ấn
+                                                    "Tìm kiếm" để tải danh sách
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="table-tongtien mt-10">
+                                    <table class="table table-hover border-0 table-noborder">
+                                        <tfoot>
+                                            <tr>
+                                                <td style="font-weight: bold; border: 0 !important;">Tổng tiền: </td>
+                                                <td style="font-weight: bold; text-align: left" id="lblTongTien_Mien"></td>
+                                                <td>Bằng chữ: <i id="lblTongTienBangChu_Mien"></i></td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                                <p id="lblGhiChu_Mien" class="text-muted" style="display: none; margin: 0 0 10px"></p>
+                            </div>
+                        </div>
+                        <!-- 5. Kết nối kế toán -->
                         <div class="tab-pane" id="tab_ketnoiketoan">
                             <div class="row row-tab row-align">
                                 <div class="area-search">
@@ -1087,7 +1204,7 @@
     </div>
 </div>
 
-<script src="modules/baocao/scripts/baocao.js?v=1.0.0.27"></script>
+<script src="modules/baocao/scripts/baocao.js?v=1.0.0.29"></script>
 <script src="modules/hoadon/scripts/n2vi.min.js"></script>
 <script type="text/javascript">
     var main_doc = {};

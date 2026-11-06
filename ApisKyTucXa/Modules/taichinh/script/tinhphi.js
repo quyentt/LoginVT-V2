@@ -40,10 +40,21 @@ TinhPhi.prototype = {
         --Author: nnthuong
         --Discription: main action  
         -------------------------------------------*/
+        // Tính phí: đưa 1 yêu cầu vào hàng đợi qua form tiến trình chung (Bước 1 hiện kỳ tính thay cho hộp xác nhận)
         $("#btnTinhPhi").click(function () {
-            edu.system.confirm("Bạn có chắc chắn <span class='italic color-warning'>Tính phí</span> không?");
-            $("#btnYes").click(function (e) {
-                me.TaoHangDoi_TinhPhi_TuDong();
+            if (!edu.process) {
+                edu.system.alert("Chưa cập nhật form tiến trình (thiếu Corei/processrun.js hoặc indexi.aspx).", "w");
+                return;
+            }
+            var strNam = edu.util.getValById("txtNam"), strThang = edu.util.getValById("txtThang"), notes = [];
+            if (!edu.util.checkValue(strNam) || !edu.util.checkValue(strThang)) notes.push("Chưa nhập đủ năm / tháng tính phí.");
+            edu.process.runJob({
+                title: "Tính phí ký túc xá", what: "Tính phí tháng " + strThang + "/" + strNam, fileName: "KetQuaTinhPhiKyTucXa", notes: notes,
+                subTitles: ["Kỳ tính: tháng " + strThang + " năm " + strNam],
+                filters: [[{ label: "Nghiệp vụ áp dụng", id: "dropNghiepVu_TP" }]],
+                okMessage: "Khởi tạo dữ liệu thành công, vui lòng chạy tiến trình để thực hiện!",
+                request: function () { return me.req_TinhPhi(); },
+                onSuccess: function () { edu.system.createHangDoi(me.objHangDoi); }
             });
         });
         
@@ -75,10 +86,9 @@ TinhPhi.prototype = {
     --Date of created: 23/08/2018
     --Discription: generating HangDoi db
     ----------------------------------------------*/
-    TaoHangDoi_TinhPhi_TuDong: function () {
+    // Yêu cầu tính phí ký túc xá đưa vào hàng đợi (1 yêu cầu cho cả tháng/năm đang chọn)
+    req_TinhPhi: function () {
         var me = this;
-        var obj_notify = {};
-        //--Edit
         var obj_save = {
             'action': 'KTX_HangDoi/TaoHangDoi_TinhPhi_TuDong',
 			'strNam': edu.util.getValById('txtNam'),
@@ -86,43 +96,7 @@ TinhPhi.prototype = {
             'strNghiepVuApDung_Id': edu.util.getValById('dropNghiepVu_TP'),
             'strNguoiThucHien_Id': edu.system.userId,
         };
-        //default
-        
-        edu.system.makeRequest({
-            success: function (data) {
-                if (data.Success) {
-                    var obj = {
-                        content: "Khởi tạo dữ liệu thành công, vui lòng chạy tiến trình để thực hiện!",
-                        code: "",
-                    }
-                    edu.system.afterComfirm(obj);
-                    edu.system.createHangDoi(me.objHangDoi);
-                }
-                else {
-                    var obj = {
-                        content: "TC_HangDoi.TaoHangDoi_TinhPhi_TuDong: " + data.Message,
-                        code: "w",
-                    }
-                    edu.system.afterComfirm(obj);
-                }
-                
-            },
-            error: function (er) {
-                
-                var obj = {
-                    content: "TC_HangDoi.TaoHangDoi_TinhPhi_TuDong (er): " + JSON.stringify(er),
-                    code: "w",
-                }
-                edu.system.afterComfirm(obj);
-            },
-            type: "GET",
-            action: obj_save.action,
-            
-            contentType: true,
-            data: obj_save,
-            fakedb: [
-            ]
-        }, false, false, false, null);
+        return { action: obj_save.action, type: "GET", data: obj_save };
     },
     endHangDoi: function () {
         var me = main_doc.TinhPhi;

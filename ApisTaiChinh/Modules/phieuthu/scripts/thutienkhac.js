@@ -628,6 +628,8 @@ PhieuThuKhac.prototype = {
             if (edu.util.checkValue(strId)) {
                 me.strKhoanThu_Id = strId;
                 $("#zonePhanBo").slideUp();
+                $("#divKetQua_PhanBo").hide().html("");
+                $("#btnPhanBo").show();
                 me.viewForm_KhoanDaNop(edu.util.objGetDataInData(strId, me.dtKhoanDaNop, "ID")[0]);
             }
             else {
@@ -686,18 +688,31 @@ PhieuThuKhac.prototype = {
 
 
         $("#btnPhanBo").click(function () {
-            $("#zonePhanBo").slideDown();
+            var $zone = $("#zonePhanBo");
+            // Vùng phân bổ đã mở: bấm lại = nạp lại dữ liệu (hợp đồng + bảng của hợp đồng đang chọn) và báo kết quả bằng banner.
+            // Trước đây bấm lại nạp lại danh sách hợp đồng làm combo về rỗng trong khi bảng bên dưới vẫn của hợp đồng cũ.
+            if ($zone.is(":visible")) {
+                me.refresh_PhanBo();
+                return;
+            }
+            $zone.slideDown();
             me.getList_HopDong();
+            // Nút này chỉ có việc mở vùng phân bổ: mở xong thì ẩn đi (khỏi bấm nhầm tưởng lỗi). Mở modal khoản khác sẽ hiện lại.
+            $(this).hide();
         });
 
         $('#dropHopDong').on('select2:select', function () {
             me.getList_LoaiPhanBo();
         });
+        // select2 4.0.3 gắn khóa cuộn (scroll.select2) lên mọi khung cha khi mở dropdown, lúc đóng chỉ gỡ ở khung cha CÒN thanh cuộn
+        // tại thời điểm đó. Chọn hợp đồng xong, bảng phân bổ mới nạp (async) làm modal dài ra => khóa còn sót, modal bị kéo về
+        // vị trí cũ, "không lướt xuống được" (hay gặp ở màn hình cao). Gỡ khóa mỗi lần đóng dropdown trong 2 modal.
+        $("#myModalKhoanDaNop, #myModalKhoanPhaiNop").on("select2:close", "select", function () {
+            $(this).parents().off("scroll.select2");
+        });
 
         $("#btnSave_PhanBo").click(function () {
-            me.dtLoaiPhanBo.forEach(e => {
-                me.save_LoaiPhanBo(e.QLSV_NGUOIHOC_ID);
-            });
+            me.save_PhanBo();
         });
         
         edu.system.loadToCombo_DanhMucDuLieu("TAICHINH.HOPDONG.PHANLOAI", "dropSearch_PhamVi");
@@ -710,7 +725,7 @@ PhieuThuKhac.prototype = {
         $("#btnApSoTien").click(function () {
             var strSoTien = $("#txtSoTien_PV").val();
             $("#tblPhanBo .apsotien").each(function () {
-                if ($(this).is(":visible")) {
+                if ($(this).is(":visible") && !this.disabled) {
                     $(this).val(strSoTien);
                 }
             });
@@ -4481,6 +4496,8 @@ PhieuThuKhac.prototype = {
         }, false, false, false, null);
     },
     cbGenCombo_HopDong: function (data) {
+        // getList_HopDong còn được gọi lại sau mỗi lần lưu phân bổ: nhớ hợp đồng đang chọn để không bị xóa về rỗng
+        var strHopDong_Cu = $("#dropHopDong").val();
         var obj = {
             data: data,
             renderInfor: {
@@ -4495,11 +4512,109 @@ PhieuThuKhac.prototype = {
             title: "Chọn hợp đồng"
         }
         edu.system.loadToCombo_data(obj);
-
+        // Chỉ "change" để select2 cập nhật chữ hiển thị; KHÔNG bắn select2:select để khỏi nạp lại bảng phân bổ
+        if (strHopDong_Cu && $("#dropHopDong option[value='" + strHopDong_Cu + "']").length > 0) {
+            $("#dropHopDong").val(strHopDong_Cu).trigger("change");
+        }
     },
 
 
-    save_LoaiPhanBo: function (strQLSV_NguoiHoc_Id) {
+    // Lưu phân bổ cho tất cả dòng có nhập số tiền; báo kết quả 1 lần bằng banner trong vùng phân bổ.
+    // KHÔNG dùng edu.system.alert: mỗi dòng 1 alert chồng lên modal đang mở, khi đóng alert Bootstrap gỡ body.modal-open
+    // => modal "Khoản đã nộp" bị khóa cuộn / như tự ẩn (xem Corei/systemroot.js alert + BS3 hideModal).
+    save_PhanBo: function () {
+        var me = this;
+        if (me.bDangLuuPhanBo) return;
+        var arrLuu = [];
+        (me.dtLoaiPhanBo || []).forEach(function (e) {
+            //Dòng đã lưu rồi (ô bị khóa, tô xanh) thì bỏ qua, tránh lưu trùng
+            if ($("#txtSoTien" + e.QLSV_NGUOIHOC_ID).prop("disabled")) return;
+            var strSoTien = edu.util.getValById('txtSoTien' + e.QLSV_NGUOIHOC_ID);
+            var dSoTien = parseFloat(String(strSoTien == undefined ? '' : strSoTien).replace(/[,\s]/g, ''));
+            if (!isNaN(dSoTien) && dSoTien > 0) {
+                arrLuu.push({ id: e.QLSV_NGUOIHOC_ID, ten: e.QLSV_NGUOIHOC_HOTEN, soTien: strSoTien });
+            }
+        });
+        if (arrLuu.length == 0) {
+            me.showKetQua_PhanBo('w', 'Chưa nhập số tiền phân bổ cho học viên nào.');
+            return;
+        }
+        me.bDangLuuPhanBo = true;
+        me.showKetQua_PhanBo('i', 'Đang lưu phân bổ cho ' + arrLuu.length + ' học viên...');
+        var iXong = 0, iOk = 0, arrLoi = [], arrDongLoi = [], arrDongOk = [];
+        arrLuu.forEach(function (r) {
+            me.save_LoaiPhanBo(r.id, r.soTien, function (bOk, strMessage) {
+                iXong++;
+                if (bOk) {
+                    iOk++;
+                    arrDongOk.push(r);
+                }
+                else {
+                    arrLoi.push((r.ten || r.id) + ': ' + (strMessage || 'Không rõ lỗi'));
+                    arrDongLoi.push(r);
+                }
+                if (iXong < arrLuu.length) return;
+                //Xong cả lô
+                me.bDangLuuPhanBo = false;
+                if (arrLoi.length == 0) {
+                    me.showKetQua_PhanBo('s', 'Đã lưu phân bổ cho ' + iOk + ' học viên (các dòng đã lưu được tô xanh).');
+                } else {
+                    var strLoi = arrLoi.slice(0, 3).join('; ') + (arrLoi.length > 3 ? ' ... (+' + (arrLoi.length - 3) + ' lỗi nữa)' : '');
+                    me.showKetQua_PhanBo(iOk > 0 ? 'w' : 'e', (iOk > 0 ? 'Lưu thành công ' + iOk + '/' + arrLuu.length + ' học viên. ' : 'Không lưu được phân bổ. ') + 'Lỗi: ' + strLoi);
+                }
+                if (iOk > 0) {
+                    //Nạp lại bảng (cập nhật "Tổng tiền đã phân bổ") và danh sách hợp đồng, mỗi thứ 1 lần.
+                    //Số đã nhập KHÔNG được mất: dòng đã lưu điền lại + khóa + tô xanh (tránh lưu trùng), dòng lỗi điền lại để sửa/lưu lại.
+                    me.getList_LoaiPhanBo(undefined, function () {
+                        arrDongOk.forEach(function (r) {
+                            $("#txtSoTien" + r.id).val(r.soTien).prop("disabled", true).attr("title", "Đã lưu phân bổ")
+                                .css({ "background": "#f0fdf4", "border-color": "#16a34a", "color": "#166534", "font-weight": "600" });
+                        });
+                        arrDongLoi.forEach(function (r) { $("#txtSoTien" + r.id).val(r.soTien); });
+                    });
+                    me.getList_HopDong();
+                }
+            });
+        });
+    },
+    // Bấm "Phân bổ" khi vùng phân bổ đang mở: nạp lại danh sách hợp đồng (giữ hợp đồng đã chọn) và bảng phân bổ của hợp đồng đó
+    // ("Tổng tiền đã phân bổ" lấy lại từ máy chủ). Số đã nhập nhưng CHƯA lưu được giữ nguyên; dòng đã lưu (khóa, tô xanh) về trạng thái mới.
+    refresh_PhanBo: function () {
+        var me = this;
+        var objChuaLuu = {};
+        $("#tblPhanBo .apsotien").each(function () {
+            if (this.value && !this.disabled) objChuaLuu[this.id] = this.value;
+        });
+        me.getList_HopDong();
+        if (!edu.util.getValById("dropHopDong")) {
+            me.showKetQua_PhanBo("w", "Đã nạp lại danh sách hợp đồng. Hãy chọn hợp đồng để xem danh sách phân bổ.");
+            return;
+        }
+        me.showKetQua_PhanBo("i", "Đang nạp lại danh sách phân bổ...");
+        me.getList_LoaiPhanBo(undefined, function () {
+            for (var strId in objChuaLuu) $("#" + strId).val(objChuaLuu[strId]);
+            me.showKetQua_PhanBo("i", "Đã nạp lại danh sách phân bổ (cột \"Tổng tiền đã phân bổ\" được cập nhật).");
+        });
+    },
+    showKetQua_PhanBo: function (strLoai, strNoiDung) {
+        var objMau = {
+            s: { c: '#16a34a', bg: '#f0fdf4', icon: 'fa-check-circle' },
+            w: { c: '#d97706', bg: '#fffbeb', icon: 'fa-exclamation-triangle' },
+            e: { c: '#dc2626', bg: '#fef2f2', icon: 'fa-times-circle' },
+            i: { c: '#2563eb', bg: '#eff6ff', icon: 'fa-info-circle' }
+        }[strLoai] || { c: '#2563eb', bg: '#eff6ff', icon: 'fa-info-circle' };
+        var $banner = $('<div></div>').css({
+            'border-left': '4px solid ' + objMau.c,
+            'background': objMau.bg,
+            'padding': '8px 12px',
+            'margin-bottom': '10px',
+            'text-align': 'left',
+            'border-radius': '4px'
+        });
+        $banner.append($('<i class="fa ' + objMau.icon + '"></i>').css('color', objMau.c)).append(document.createTextNode(' ' + strNoiDung));
+        $("#divKetQua_PhanBo").html($banner).show();
+    },
+    save_LoaiPhanBo: function (strQLSV_NguoiHoc_Id, strSoTien, fnDone) {
         var me = this;
         //--Edit
         var obj_save = {
@@ -4508,34 +4623,17 @@ PhieuThuKhac.prototype = {
             'strQLSV_NguoiHoc_DoiTac_Id': me.strHSSV_Id,
             'strQLSV_NguoiHoc_Id': strQLSV_NguoiHoc_Id,
             'strTaiChinh_DaNop_Id': me.strKhoanThu_Id,
-            'dSoTien': edu.util.getValById('txtSoTien' + strQLSV_NguoiHoc_Id),
+            'dSoTien': strSoTien,
             'strNguoiThucHien_Id': edu.system.userId,
         };
         //default
 
         edu.system.makeRequest({
             success: function (data) {
-                if (data.Success) {
-                    var strHopDong_Id = "";
-
-                    if (obj_save.strId == "") {
-                        edu.system.alert("Thêm mới thành công!");
-                        strHopDong_Id = data.Id;
-                    }
-                    else {
-                        edu.system.alert("Cập nhật thành công!");
-                        strHopDong_Id = obj_save.strId;
-                    }
-                }
-                else {
-                    edu.system.alert(data.Message);
-                }
-
-                me.getList_HopDong();
+                if (fnDone) fnDone(!!data.Success, data.Message);
             },
             error: function (er) {
-                edu.system.alert("XLHV_HopDong/ThemMoi (er): " + JSON.stringify(er), "w");
-
+                if (fnDone) fnDone(false, 'Lỗi kết nối' + ((er && er.status) ? ' (' + er.status + ')' : ''));
             },
             type: 'POST',
 
@@ -4547,7 +4645,7 @@ PhieuThuKhac.prototype = {
             ]
         }, false, false, false, null);
     },
-    getList_LoaiPhanBo: function (strDanhSach_Id) {
+    getList_LoaiPhanBo: function (strDanhSach_Id, fnAfter) {
         var me = this;
         //--Edit
         var obj_list = {
@@ -4568,6 +4666,7 @@ PhieuThuKhac.prototype = {
                     var dtReRult = data.Data;
                     me.dtLoaiPhanBo = data.Data;
                     me.genTable_LoaiPhanBo(dtReRult, data.Pager);
+                    if (fnAfter) fnAfter();
                 }
                 else {
                     edu.system.alert(obj_list + " : " + data.Message, "s");

@@ -14,6 +14,7 @@ TongHopKetQua.prototype = {
 
     init: function () {
         var me = this;
+        me._attachExport();
         /*------------------------------------------
         --Discription: Initial system
         -------------------------------------------*/
@@ -37,16 +38,17 @@ TongHopKetQua.prototype = {
         --Author: 
         --Discription: main action  
         -------------------------------------------*/
+        // Tổng hợp kết quả / xếp loại: đưa 1 yêu cầu vào hàng đợi qua form tiến trình chung (Bước 1 hiện phạm vi áp dụng thay cho hộp xác nhận)
         $("#btnTongHopKetQua").click(function () {
-            edu.system.confirm("Bạn có chắc chắn <span class='italic color-warning'>Tổng hợp kết quả</span> không?");
-            $("#btnYes").click(function (e) {
-                me.TaoHangDoi_TongHopKetQua_TuDong();
+            me._runHangDoi({
+                title: "Tổng hợp kết quả học tập", what: "Tổng hợp kết quả học tập theo phạm vi đang chọn", fileName: "KetQuaTongHopKetQua",
+                request: function () { return me.req_TongHopKetQua(); }, hangDoi: me.objHangDoi
             });
         });
         $("#btnXepLoaiHocTap").click(function () {
-            edu.system.confirm("Bạn có chắc chắn <span class='italic color-warning'>Xếp loại học tập</span> không?");
-            $("#btnYes").click(function (e) {
-                me.TaoHangDoi_XepLoai_TuDong();
+            me._runHangDoi({
+                title: "Xếp loại học tập", what: "Xếp loại học tập theo phạm vi đang chọn", fileName: "KetQuaXepLoaiHocTap",
+                request: function () { return me.req_XepLoai(); }, hangDoi: me.objHangDoi_XepLoai
             });
         });
         $("#dropKhoaQuanLy").on("select2:select", function () {
@@ -102,83 +104,38 @@ TongHopKetQua.prototype = {
             edu.system.iGioiHanLuong = iSoLuong;
         });
 
-        $(".btnSearchDTSV_SinhVien").click(function () {
-            
-            edu.extend.genModal_SinhVien(arrChecked_Id => {
-                edu.system.genHTML_Progress("zoneprocessProGes", arrChecked_Id.length);
-                arrChecked_Id.forEach(e => {
-                    var aData = edu.extend.dtSinhVien.find(eSV => eSV.ID == e);
-                    me.save_PhamVi(aData.QLSV_NGUOIHOC_ID + aData.DAOTAO_TOCHUCCHUONGTRINH_ID);
-                })
+        // Thêm phạm vi tổng hợp: sinh viên cụ thể hoặc theo hệ / khóa / khoa x khóa / chương trình / lớp — mỗi mục 1 bản ghi của form tiến trình
+        if (edu.process) {
+            edu.process.bindPhamVi({
+                pickerButton: ".btnSearchDTSV_SinhVien", what: "vào phạm vi tổng hợp", fileName: "KetQuaThemPhamViTongHop",
+                request: function (strId, bPhamVi, row) {
+                    if (bPhamVi) return me.req_PhamVi(strId);
+                    if (!row || !row.QLSV_NGUOIHOC_ID) throw new Error("Không tìm thấy dữ liệu của sinh viên.");
+                    return me.req_PhamVi(row.QLSV_NGUOIHOC_ID + row.DAOTAO_TOCHUCCHUONGTRINH_ID);
+                },
+                refresh: function () { me.getList_PhamVi(); }
             });
-            //edu.extend.getList_SinhVien();
-        });
-
-        $("#modal_sinhvien").delegate('#btnAdd_KhoaKhoa', 'click', function () {
-            var arrChecked_Id = $("#dropSearchModal_KhoaQL_SV").val();
-            var arrChecked_Id2 = $("#dropSearchModal_Khoa_SV").val();
-            if (arrChecked_Id.length > 0 && arrChecked_Id2.length) {
-                edu.system.genHTML_Progress("zoneprocessProGes", arrChecked_Id.length * arrChecked_Id2.length);
-                arrChecked_Id.forEach(e => {
-                    arrChecked_Id2.forEach(ele => me.save_PhamVi(ele + e))
-                })
-                $("#modal_sinhvien").modal("hide");
-            }
-        });
-        $("#modal_sinhvien").delegate('#btnAdd_He', 'click', function () {
-            var arrChecked_Id = $("#dropSearchModal_He_SV").val();
-            if (arrChecked_Id.length > 0) {
-                edu.system.genHTML_Progress("zoneprocessProGes", arrChecked_Id.length);
-                arrChecked_Id.forEach(e => {
-                    me.save_PhamVi(e);
-                })
-                $("#modal_sinhvien").modal("hide");
-            }
-        });
-        $("#modal_sinhvien").delegate('#btnAdd_Khoa', 'click', function () {
-            var arrChecked_Id = $("#dropSearchModal_Khoa_SV").val();
-            if (arrChecked_Id.length > 0) {
-                edu.system.genHTML_Progress("zoneprocessProGes", arrChecked_Id.length);
-                arrChecked_Id.forEach(e => {
-                    me.save_PhamVi(e);
-                })
-                $("#modal_sinhvien").modal("hide");
-            }
-        });
-        $("#modal_sinhvien").delegate('#btnAdd_ChuongTrinh', 'click', function () {
-            var arrChecked_Id = $("#dropSearchModal_ChuongTrinh_SV").val();
-            if (arrChecked_Id.length > 0) {
-                edu.system.genHTML_Progress("zoneprocessProGes", arrChecked_Id.length);
-                arrChecked_Id.forEach(e => {
-                    me.save_PhamVi(e);
-                })
-                $("#modal_sinhvien").modal("hide");
-            }
-        });
-        $("#modal_sinhvien").delegate('#btnAdd_Lop', 'click', function () {
-            var arrChecked_Id = $("#dropSearchModal_Lop_SV").val();
-            if (arrChecked_Id.length > 0) {
-                edu.system.genHTML_Progress("zoneprocessProGes", arrChecked_Id.length);
-                arrChecked_Id.forEach(e => {
-                    me.save_PhamVi(e);
-                })
-                $("#modal_sinhvien").modal("hide");
-            }
-        });
+        }
+        else $(".btnSearchDTSV_SinhVien").click(function () { me._run({}); });//báo thiếu Corei/processrun.js
 
         $("#btnDelete_ThamSoPhamVi").click(function () {
-            var arrChecked_Id = edu.util.getArrCheckedIds("tblThamSoPhamVi", "checkX");
-            if (arrChecked_Id.length == 0) {
+            var arrSelected = edu.process ? edu.process.selectedRows("tblThamSoPhamVi", me.dtPhamVi) : [];
+            if (edu.process && arrSelected.length == 0) {
                 edu.system.alert("Vui lòng chọn đối tượng cần xóa?");
                 return;
             }
-            edu.system.confirm("Bạn có chắc chắn xóa dữ liệu không?");
-            $("#btnYes").click(function (e) {
-                edu.system.alert('<div id="zoneprocessXXXX"></div>');
-                edu.system.genHTML_Progress("zoneprocessXXXX", arrChecked_Id.length);
-                for (var i = 0; i < arrChecked_Id.length; i++) {
-                    me.delete_PhamVi(arrChecked_Id[i]);
-                }
+            me._run({
+                title: "Xóa phạm vi tổng hợp", unit: "phạm vi", fileName: "KetQuaXoaPhamViTongHop",
+                notes: ["Thao tác xóa dữ liệu các phạm vi tổng hợp trong danh sách."],
+                items: arrSelected,
+                columns: [
+                    { header: "Phạm vi tổng hợp điểm", render: function (r) { return r.PHAMVITONGHOPDIEM_TEN; } },
+                    { header: "Thời gian tính", render: function (r) { return r.DAOTAO_THOIGIANDAOTAO_TINH; } },
+                    { header: "Học kỳ sử dụng", render: function (r) { return r.DAOTAO_THOIGIANDAOTAO; } },
+                    { header: "Phạm vi áp dụng", render: function (r) { return r.PHAMVIAPDUNG_TEN; } }
+                ],
+                request: function (it) { return me.req_PhamVi_Xoa(it.ID); },
+                refresh: function () { me.getList_PhamVi(); }
             });
         });
     },
@@ -209,10 +166,9 @@ TongHopKetQua.prototype = {
     --Date of created: 23/08/2018
     --Discription: generating HangDoi db
     ----------------------------------------------*/
-    TaoHangDoi_TongHopKetQua_TuDong: function () {
+    // Yêu cầu tổng hợp kết quả đưa vào hàng đợi (1 yêu cầu cho cả phạm vi đang chọn)
+    req_TongHopKetQua: function () {
         var me = this;
-        var obj_notify = {};
-        //--Edit
         var obj_save = {
             'action': 'D_HangDoi/TaoHangDoi_TinhDiem_TuDong',
             
@@ -228,45 +184,10 @@ TongHopKetQua.prototype = {
             'dTongHopLaiDiemThanhPhan': edu.util.getValById('dropCachTinh'),
             'strNguoiThucHien_Id': edu.system.userId,
         };
-        //default
-        
-        edu.system.makeRequest({
-            success: function (data) {
-                if (data.Success) {
-                    var obj = {
-                        content: "Khởi tạo dữ liệu thành công!",
-                        code: "",
-                    }
-                    edu.system.afterComfirm(obj);
-                    edu.system.createHangDoi(me.objHangDoi);
-                }
-                else {
-                    var obj = {
-                        content: "TC_HangDoi.TaoHangDoi_TongHopKetQua_TuDong: " + data.Message,
-                        code: "w",
-                    }
-                    edu.system.afterComfirm(obj);
-                }
-                
-            },
-            error: function (er) {
-                
-                var obj = {
-                    content: "TC_HangDoi.TaoHangDoi_TongHopKetQua_TuDong (er): " + JSON.stringify(er),
-                    code: "w",
-                }
-                edu.system.afterComfirm(obj);
-            },
-            type: "GET",
-            action: obj_save.action,
-            
-            contentType: true,
-            data: obj_save,
-            fakedb: [
-            ]
-        }, false, false, false, null);
+        return { action: obj_save.action, type: "GET", data: obj_save };
     },
-    TaoHangDoi_XepLoai_TuDong: function () {
+    // Yêu cầu xếp loại học tập đưa vào hàng đợi
+    req_XepLoai: function () {
         var me = this;
         var obj_save = {
             'action': 'D_HangDoi_MH/FSAuCSAvJgUuKB4ZJDENLiAoHhU0BS4vJgPP',
@@ -284,38 +205,57 @@ TongHopKetQua.prototype = {
             'dTongHopLaiDiemThanhPhan': edu.util.getValById('dropCachTinh'),
             'strNguoiThucHien_Id': edu.system.userId,
         };
-        edu.system.makeRequest({
-            success: function (data) {
-                if (data.Success) {
-                    var obj = {
-                        content: "Khởi tạo dữ liệu thành công!",
-                        code: "",
-                    }
-                    edu.system.afterComfirm(obj);
-                    edu.system.createHangDoi(me.objHangDoi_XepLoai);
-                }
-                else {
-                    var obj = {
-                        content: "TC_HangDoi.TaoHangDoi_XepLoai_TuDong: " + data.Message,
-                        code: "w",
-                    }
-                    edu.system.afterComfirm(obj);
-                }
-            },
-            error: function (er) {
-                var obj = {
-                    content: "TC_HangDoi.TaoHangDoi_XepLoai_TuDong (er): " + JSON.stringify(er),
-                    code: "w",
-                }
-                edu.system.afterComfirm(obj);
-            },
-            type: "POST",
-            action: obj_save.action,
-            contentType: true,
-            data: obj_save,
-            fakedb: [
-            ]
-        }, false, false, false, null);
+        return { action: obj_save.action, type: "POST", data: obj_save };
+    },
+    /*------------------------------------------
+    --Discription: Chạy qua form tiến trình chung (Corei/processrun.js, edu.process): trang chỉ khai báo danh sách bản ghi
+    -- + hàm dựng yêu cầu (req_*); form lo giờ bắt đầu/kết thúc, kết quả, lỗi, tổng hợp, xuất Excel.
+    -------------------------------------------*/
+    _run: function (cfg) {
+        if (!edu.process) {
+            edu.system.alert("Chưa cập nhật form tiến trình (thiếu Corei/processrun.js hoặc indexi.aspx).", "w");
+            return;
+        }
+        if (cfg.filters === undefined) cfg.filters = this._filters();
+        edu.process.run(cfg);
+    },
+    // Điều kiện đang chọn trên màn hình -> dòng "Điều kiện áp dụng" của form và file Excel xuất ra
+    _filters: function () {
+        return [[
+            { label: "Hệ đào tạo", id: "dropHeDaoTao" }, { label: "Khóa đào tạo", id: "dropKhoaDaoTao" }, { label: "Khoa quản lý", id: "dropKhoaQuanLy" },
+            { label: "Chương trình đào tạo", id: "dropChuongTrinhDaoTao" }, { label: "Lớp quản lý", id: "dropLopQuanLy" },
+            { label: "Tình trạng sinh viên", id: "dropTinhTrangSinhVien" }, { label: "Thang điểm", id: "dropThangDiem" },
+            { label: "Phạm vi tổng hợp", id: "dropPhanViTongHop" }, { label: "Thời gian tính", id: "dropPhanViTongHop_" + this.strPhamViMa },
+            { label: "Cách tính", id: "dropCachTinh" }
+        ]];
+    },
+    // Lệnh đưa 1 yêu cầu vào hàng đợi máy chủ (edu.process.runJob); thành công thì bật thanh theo dõi hàng đợi (createHangDoi) như trước đây
+    _runHangDoi: function (cfg) {
+        var me = this;
+        if (!edu.process) {
+            edu.system.alert("Chưa cập nhật form tiến trình (thiếu Corei/processrun.js hoặc indexi.aspx).", "w");
+            return;
+        }
+        var notes = ["Hệ thống đưa yêu cầu vào hàng đợi và xử lý ở máy chủ; theo dõi tiến độ ở thanh tiến trình sau khi đóng form."];
+        if (!edu.util.checkValue(edu.util.getValById("dropPhanViTongHop"))) notes.push("Chưa chọn phạm vi tổng hợp.");
+        edu.process.runJob({
+            title: cfg.title, what: cfg.what, fileName: cfg.fileName, notes: notes, filters: me._filters(),
+            okMessage: "Đã đưa vào hàng đợi xử lý",
+            request: cfg.request,
+            onSuccess: function () { edu.system.createHangDoi(cfg.hangDoi); }
+        });
+    },
+    /*------------------------------------------
+    --Discription: Nút "Xuất Excel" chuẩn chung (Corei/exportexcel.js, edu.exporter.attachTable) gắn cạnh các danh sách kết quả:
+    -- xuất đúng danh sách đang xem, có tiêu đề, điều kiện lọc, dòng tổng và ngày xuất như mọi chức năng.
+    -------------------------------------------*/
+    _attachExport: function () {
+        var me = this;
+        if (!window.edu || !edu.exporter || typeof edu.exporter.attachTable !== "function") return;
+        edu.exporter.attachTable({
+            table: "tblKetQua", after: "#btnRefresh", fileName: "KetQuaTongHopDiem", title: "KẾT QUẢ TỔNG HỢP ĐIỂM",
+            filters: me._filters().concat([[{ label: "Lần học", id: "dropSearch_LanHoc" }, { label: "Loại điểm trung bình", id: "dropSearch_LoaiDiemTrungBinh" }]])
+        });
     },
     endHangDoi: function () {
         var me = main_doc.TongHopKetQua;
@@ -658,10 +598,8 @@ TongHopKetQua.prototype = {
         /*III. Callback*/
     },
     
-    save_PhamVi: function (strPhamViApDung_Id) {
+    req_PhamVi: function (strPhamViApDung_Id) {
         var me = this;
-        var obj_notify = {};
-        //--Edit
         var obj_save = {
             'action': 'D_ThongTin2_MH/FSkkLB4VLi8mCS4xCiQ1EDQgHhUpLigGKCAv',
             'func': 'PKG_DIEM_THONGTIN2.Them_TongHopKetQua_ThoiGian',
@@ -672,36 +610,7 @@ TongHopKetQua.prototype = {
             'strDaoTao_ThoiGian_Tinh_Id': edu.util.getValCombo('dropPhanViTongHop_' + main_doc.TongHopKetQua.strPhamViMa),
             'strNguoiThucHien_Id': edu.system.userId,
         };
-        //if (obj_save.strId) {
-        //    obj_save.action = 'TC_KeToan_MH/EjQgHgARCB4KJBUuIC8eCikuIC8eCRUP';
-        //    obj_save.func = 'pkg_taichinh_ketoan.Sua_API_KeToan_Khoan_HT'
-        //}
-        //default
-        edu.system.makeRequest({
-            success: function (data) {
-                if (data.Success) {
-
-                    edu.system.alert("Thực hiện thành công");
-                }
-                else {
-                    edu.system.alert(data.Message);
-                }
-            },
-            error: function (er) {
-                edu.system.alertOnModal(obj_notify);
-            },
-            type: "POST",
-            action: obj_save.action,
-            complete: function () {
-                edu.system.start_Progress("zoneprocessProGes", function () {
-                    me.getList_PhamVi();
-                });
-            },
-            contentType: true,
-            data: obj_save,
-            fakedb: [
-            ]
-        }, false, false, false, null);
+        return { action: obj_save.action, type: "POST", data: obj_save };
     },
     getList_PhamVi: function (strDanhSach_Id) {
         var me = this;
@@ -741,9 +650,8 @@ TongHopKetQua.prototype = {
             ]
         }, false, false, false, null);
     },
-    delete_PhamVi: function (Ids) {
+    req_PhamVi_Xoa: function (Ids) {
         var me = this;
-        //--Edit
         var obj_save = {
             'action': 'D_ThongTin2_MH/GS4gHhUuLyYJLjEKJDUQNCAeFSkuKAYoIC8P',
             'func': 'PKG_DIEM_THONGTIN2.Xoa_TongHopKetQua_ThoiGian',
@@ -751,50 +659,7 @@ TongHopKetQua.prototype = {
             'strId': Ids,
             'strNguoiThucHien_Id': edu.system.userId,
         };
-        //default
-        edu.system.makeRequest({
-            success: function (data) {
-                if (data.Success) {
-                    obj = {
-                        title: "",
-                        content: "Xóa dữ liệu thành công!",
-                        code: ""
-                    };
-                    edu.system.afterComfirm(obj);
-                }
-                else {
-                    obj = {
-                        title: "",
-                        content: data.Message,
-                        code: "w"
-                    };
-                    edu.system.afterComfirm(obj);
-                }
-
-            },
-            error: function (er) {
-
-                obj = {
-                    title: "",
-                    content: JSON.stringify(er),
-                    code: "w"
-                };
-                edu.system.afterComfirm(obj);
-            },
-            type: "POST",
-            action: obj_save.action,
-
-            complete: function () {
-                edu.system.start_Progress("zoneprocessXXXX", function () {
-                    me.getList_PhamVi();
-                });
-            },
-            contentType: true,
-
-            data: obj_save,
-            fakedb: [
-            ]
-        }, false, false, false, null);
+        return { action: obj_save.action, type: "POST", data: obj_save };
     },
     /*------------------------------------------
     --Discription: [4] GenHTML Tiến độ đề tài

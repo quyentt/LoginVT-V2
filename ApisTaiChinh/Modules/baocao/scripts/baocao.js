@@ -445,6 +445,8 @@ BaoCao.prototype = {
                 }
             });
         });
+        //Nút "Xuất Excel" của 4 tab kết quả (đã nộp / phải nộp / rút / miễn)
+        me._attachExport();
     },
     /*------------------------------------------
     --Discription: [0] Common
@@ -1066,33 +1068,62 @@ BaoCao.prototype = {
             ]
         }, false, false, false, null);
     },
-    getList_TongHop: function (strTuKhoa) {
-        strTuKhoa = edu.util.getValById('txtSearch_DT').trim();
+    /*------------------------------------------
+    --Discription: [1] ACCESS DB ==> 4 tab kết quả: đã nộp / phải nộp / rút / miễn
+    --Note: 4 tab dùng CHUNG bộ điều kiện lọc trên màn hình (_getParams_KetQua) và CHUNG bộ cột (cùng tên cột trả về);
+            mỗi tab chỉ khác API (_cfgKetQua). Bấm "Tìm kiếm" chỉ nạp tab đang mở.
+            Đã nộp / phải nộp: API có phân trang (lưới chỉ hiện pageSize_default dòng).
+            Rút / miễn: API mã hoá PKG_TAICHINH_BAOCAO2 KHÔNG có pageIndex/pageSize -> trả đủ dòng, lưới chỉ vẽ tối đa
+            iMaxRows_HienThi dòng đầu cho nhẹ trình duyệt (tổng tiền vẫn tính trên toàn bộ), muốn đủ thì bấm "Xuất Excel".
+            Nút "Xuất Excel" (edu.exporter.attachTable, Corei/exportexcel.js >= 1.8.0) gọi lại cùng API để lấy TOÀN BỘ dòng,
+            hộp thoại xuất có các danh sách "lọc thêm" (khoản thu, học kỳ, hệ, khóa, chương trình, lớp, khoa, trạng thái, người thu, hình thức).
+    -------------------------------------------*/
+    iMaxRows_Export: 100000,
+    iMaxRows_HienThi: 500,
+    _xuatBiCat: {},
+    _soDong: {},   // số dòng của lần "Tìm kiếm" gần nhất ở từng tab; chưa tìm (hoặc tìm lỗi) thì không có khóa -> chưa cho xuất
+    _cfgKetQua: {
+        danop: {
+            tab: "tab_tongthu", table: "tblKetQua", lblTien: "lblTongTien", lblChu: "lblTongTienBangChu", lblGhiChu: "",
+            action: "TC_BaoCao/LayDSThuTien", paged: true, keHoach: false, maDonHang: true,
+            tien: "Số tiền đã nộp", ngay: "Ngày nộp", fileName: "KetQuaDaNop", title: "KẾT QUẢ ĐÃ NỘP",
+            at: { append: "#zoneExport_DaNop" }
+        },
+        phainop: {
+            tab: "tab_phainop", table: "tblKetQuaPhaiNop", lblTien: "lblTongTien2", lblChu: "lblTongTienBangChu2", lblGhiChu: "",
+            action: "TC_BaoCao/LayDSNopTien", paged: true, keHoach: true, maDonHang: false,
+            tien: "Số tiền phải nộp", ngay: "Ngày phát sinh", fileName: "KetQuaPhaiNop", title: "KẾT QUẢ PHẢI NỘP",
+            at: { append: "#zoneExport_PhaiNop" }
+        },
+        rut: {
+            tab: "tab_rut", table: "tblKetQuaRut", lblTien: "lblTongTien_Rut", lblChu: "lblTongTienBangChu_Rut", lblGhiChu: "lblGhiChu_Rut",
+            action: "TC_BaoCao2_MH/DSA4BRITNDUVKCQv", func: "PKG_TAICHINH_BAOCAO2.LayDSRutTien", paged: false, keHoach: true, maDonHang: true,
+            tien: "Số tiền rút", ngay: "Ngày phát sinh", fileName: "KetQuaRut", title: "KẾT QUẢ RÚT",
+            at: { append: "#zoneExport_Rut" }
+        },
+        mien: {
+            tab: "tab_mien", table: "tblKetQuaMien", lblTien: "lblTongTien_Mien", lblChu: "lblTongTienBangChu_Mien", lblGhiChu: "lblGhiChu_Mien",
+            action: "TC_BaoCao2_MH/DSA4BRIMKCQvFSgkLwPP", func: "PKG_TAICHINH_BAOCAO2.LayDSMienTien", paged: false, keHoach: true, maDonHang: true,
+            tien: "Số tiền miễn", ngay: "Ngày phát sinh", fileName: "KetQuaMien", title: "KẾT QUẢ MIỄN",
+            at: { append: "#zoneExport_Mien" }
+        }
+    },
+    // Điều kiện đang chọn trên màn hình (dùng chung cho 4 tab và xuất Excel). Trả null nếu chưa chọn khoản thu.
+    _getParams_KetQua: function () {
         var strLoaiKhoanThu = edu.extend.getCheckedCheckBoxByClassName('ckbLKT_IHD');
         var strTaiChinh_KhoanKhac_Ids = "";
         if (strLoaiKhoanThu.length > 120) {
             strTaiChinh_KhoanKhac_Ids = strLoaiKhoanThu.slice(121, strLoaiKhoanThu.length);
             strLoaiKhoanThu = strLoaiKhoanThu.slice(0, 121);
         }
+        if (strLoaiKhoanThu == '') return null;
         var strTrangThaiNguoiHoc_Id = edu.extend.getCheckedCheckBoxByClassName('ckbDSTrangThaiSV_LHD').toString();
-        if (strLoaiKhoanThu == '') {
-            edu.extend.notifyBeginLoading('Vui lòng chọn khoản thu. Để có thể lấy danh sách khoản thu!', 'w');
-            return;
-        }
-        var me = this;
         var strPhamViApDung = "";
-
         var strValue = $('#dropSearch_HocKy_IHD').val();
         if (strValue.length > 1 || strValue[0] != "") {
             strPhamViApDung = edu.util.getValById("dropSearch_KyThucHien_IHD");
         }
-        me.getList_TongHopPhaiNop();
-        if($("#tab_tongthu").is(":hidden")) return;
-        var obj_list = {
-            'action': 'TC_BaoCao/LayDSThuTien',
-            'versionAPI': 'v1.0',
-            'pageIndex': edu.system.pageIndex_default,
-            'pageSize': edu.system.pageSize_default,
+        return {
             'strTAICHINH_CacKhoanThu_Ids': strLoaiKhoanThu.toString(),
             'strTaiChinh_KhoanKhac_Ids': strTaiChinh_KhoanKhac_Ids.toString(),
             'strHeDaoTao_Id': edu.util.getValCombo('dropSearch_HeDaoTao_IHD'),
@@ -1100,7 +1131,7 @@ BaoCao.prototype = {
             'strChuongTrinh_Id': edu.util.getValCombo('dropSearch_ChuongTrinh_IHD'),
             'strThoiGianDaoTao_Id': edu.util.getValCombo('dropSearch_HocKy_IHD'),
             'strLopQuanLy_Id': edu.util.getValCombo('dropSearch_Lop_IHD'),
-            'strTuKhoa': strTuKhoa,
+            'strTuKhoa': edu.util.getValById('txtSearch_DT').trim(),
             'strNguoiDung_Id': edu.util.getValCombo('dropSearch_NguoiThu_IHD'),
             'strTuNgay': edu.util.getValById('txtSearch_TuNgay_IHD'),
             'strDenNgay': edu.util.getValById('txtSearch_DenNgay_IHD'),
@@ -1114,15 +1145,43 @@ BaoCao.prototype = {
             'strPhanLoaiChungTu_Id': edu.util.getValCombo("dropSearch_PhanLoai"),
             'strPhanLoaiCSDT': edu.util.getValCombo("dropSearch_PhanLoaiCSDT"),
             'strNganhHoc_Id': edu.util.getValCombo("dropSearch_NganhHoc"),
-            'strDaoTao_CoSoDaoTao_Id': edu.util.getValCombo("dropSearch_CoSoDaoTao_IHD"),
+            'strDaoTao_CoSoDaoTao_Id': edu.util.getValCombo("dropSearch_CoSoDaoTao_IHD")
+        };
+    },
+    // Dựng yêu cầu gọi API của 1 tab. bAll: lấy toàn bộ (xuất Excel) thay vì 1 trang. Trả null nếu chưa chọn khoản thu.
+    _reqKetQua: function (strKey, bAll) {
+        var me = this, cfg = me._cfgKetQua[strKey], p = me._getParams_KetQua();
+        if (!p) return null;
+        p.action = cfg.action;
+        if (cfg.keHoach) p.strDangKy_KeHoach_Id = edu.util.getValById('dropKeHoachDangKy_TP');
+        if (cfg.paged) {
+            p.versionAPI = 'v1.0';
+            p.pageIndex = bAll ? 1 : edu.system.pageIndex_default;
+            p.pageSize = bAll ? me.iMaxRows_Export : edu.system.pageSize_default;
+            return { type: "POST", action: cfg.action, versionAPI: p.versionAPI, data: p };
         }
-
+        //API mã hoá (func + iM -> makeRequest tự mã hoá/giải mã): tên tham số đúng như BaoCao2_MHEntity, không có phân trang
+        p.func = cfg.func;
+        p.iM = edu.system.iM;
+        p.strTaiChinh_CacKhoanThu_Ids = p.strTAICHINH_CacKhoanThu_Ids;
+        delete p.strTAICHINH_CacKhoanThu_Ids;
+        p.strOrderBy = '';
+        p.strNguoiThucHien_Id = edu.system.userId;
+        return { type: "POST", action: cfg.action, versionAPI: undefined, data: p };
+    },
+    _loadKetQua: function (strKey) {
+        var me = this, objReq = me._reqKetQua(strKey);
+        if (!objReq) {
+            edu.extend.notifyBeginLoading('Vui lòng chọn khoản thu. Để có thể lấy danh sách khoản thu!', 'w');
+            return;
+        }
+        delete me._soDong[strKey];
         edu.system.beginLoading();
         edu.system.makeRequest({
             success: function (data) {
                 if (data.Success) {
-                    var json = data.Data;
-                    me.genTable_TongHop(json, data.Pager);
+                    me._soDong[strKey] = (data.Data || []).length;
+                    me._genTable_KetQua(strKey, data.Data, data.Pager);
                 }
                 else {
                     console.log(data.Message);
@@ -1135,93 +1194,230 @@ BaoCao.prototype = {
                 edu.system.endLoading();
                 edu.extend.notifyBeginLoading("Lỗi (er): " + JSON.stringify(er), "w");
             },
-            type: "POST",
-            action: obj_list.action,
-            versionAPI: obj_list.versionAPI,
+            type: objReq.type,
+            action: objReq.action,
+            versionAPI: objReq.versionAPI,
             contentType: true,
-            data: obj_list,
+            data: objReq.data,
             fakedb: [
 
             ]
         }, false, false, false, null);
     },
-    getList_TongHopPhaiNop: function (strTuKhoa) {
-        if ($("#tab_phainop").is(":hidden")) return;
-        strTuKhoa = edu.util.getValById('txtSearch_DT').trim();
-        var strPhamViApDung = "";
-        var strLoaiKhoanThu = edu.extend.getCheckedCheckBoxByClassName('ckbLKT_IHD');
-        var strTaiChinh_KhoanKhac_Ids = "";
-        if (strLoaiKhoanThu.length > 120) {
-            strTaiChinh_KhoanKhac_Ids = strLoaiKhoanThu.slice(121, strLoaiKhoanThu.length);
-            strLoaiKhoanThu = strLoaiKhoanThu.slice(0, 121);
+    _genTable_KetQua: function (strKey, data, iPager) {
+        var me = this, cfg = me._cfgKetQua[strKey];
+        if (strKey == "danop") { me.genTable_TongHop(data, iPager); return; }
+        if (strKey == "phainop") { me.genTable_TongHopPhaiNop(data, iPager); return; }
+        //rút / miễn
+        var arrAll = data || [];
+        var arrShow = arrAll.length > me.iMaxRows_HienThi ? arrAll.slice(0, me.iMaxRows_HienThi) : arrAll;
+        edu.system.loadToTable_data({
+            strTable_Id: cfg.table,
+            aaData: arrShow,
+            aoColumns: me._aoColumns_KetQua()
+        });
+        me._setTongTien(cfg.lblTien, cfg.lblChu, arrAll);
+        if (arrAll.length > arrShow.length) {
+            $("#" + cfg.lblGhiChu).text("Đang hiển thị " + arrShow.length + "/" + arrAll.length + " dòng đầu. Bấm \"Xuất Excel\" để lấy đầy đủ.").show();
         }
-        var strTrangThaiNguoiHoc_Id = edu.extend.getCheckedCheckBoxByClassName('ckbDSTrangThaiSV_LHD').toString();
-        if (strLoaiKhoanThu == '') {
+        else {
+            $("#" + cfg.lblGhiChu).hide();
+        }
+    },
+    // Cột lưới của tab rút / miễn (giống tab đã nộp)
+    _aoColumns_KetQua: function () {
+        var arrField = ["SOTIEN", "NGAYTAO_DD_MM_YYYY", "MADONHANG", "CHUNGTU", "LOAICHUNGTU", "DAOTAO_THOIGIANDAOTAO", "NGUOITAO_TENDAYDU",
+            "TAICHINH_CACKHOANTHU_TEN", "MASONGUOIHOC", "HOTENNGUOIHOC", "NGAYSINH", "TRANGTHAINGUOIHOC_N1_TEN", "LOP", "NGANH",
+            "KHOADAOTAO", "KHOAQUANLY", "HEDAOTAO"];
+        return arrField.map(function (strField) { return { "mDataProp": strField }; });
+    },
+    // Tổng tiền + bằng chữ. TONGTIEN do server trả ở mỗi dòng (tổng của toàn bộ kết quả); không có dòng nào thì để trống
+    _setTongTien: function (strLblTien, strLblChu, data) {
+        var dTong = (data && data.length > 0) ? data[0].TONGTIEN : null;
+        if (dTong === null || dTong === undefined || dTong === "" || !isFinite(dTong)) {
+            $("#" + strLblTien).html("");
+            $("#" + strLblChu).html("");
+            return;
+        }
+        $("#" + strLblTien).html(edu.util.formatCurrency(dTong));
+        if (Number(dTong) === 0) {
+            $("#" + strLblChu).html("Không đồng.");
+            return;
+        }
+        var strSoTien = to_vietnamese(dTong) + ".";
+        strSoTien = strSoTien[1].toUpperCase() + strSoTien.substring(2);
+        $("#" + strLblChu).html(strSoTien);
+    },
+    getList_TongHop: function (strTuKhoa) {
+        var me = this;
+        if (!me._getParams_KetQua()) {
             edu.extend.notifyBeginLoading('Vui lòng chọn khoản thu. Để có thể lấy danh sách khoản thu!', 'w');
             return;
         }
-        var strValue = $('#dropSearch_HocKy_IHD').val();
-        if (strValue.length > 1 || strValue[0] != "") {
-            strPhamViApDung = edu.util.getValById("dropSearch_KyThucHien_IHD");
-        }
+        me.getList_TongHopPhaiNop();
+        me.getList_TongHopRutMien("rut");
+        me.getList_TongHopRutMien("mien");
+        if ($("#tab_tongthu").is(":hidden")) return;
+        me._loadKetQua("danop");
+    },
+    getList_TongHopPhaiNop: function (strTuKhoa) {
+        if ($("#tab_phainop").is(":hidden")) return;
+        this._loadKetQua("phainop");
+    },
+    getList_TongHopRutMien: function (strKey) {
+        if ($("#" + this._cfgKetQua[strKey].tab).is(":hidden")) return;
+        this._loadKetQua(strKey);
+    },
+
+    /*------------------------------------------
+    --Discription: Nút "Xuất Excel" của 4 tab kết quả (edu.exporter.attachTable + fetchAll, Corei/exportexcel.js)
+    -- Xuất TOÀN BỘ dòng theo điều kiện đang chọn trên màn hình (không chỉ các dòng đang hiển thị), có tiêu đề, dòng điều kiện,
+    -- dòng tổng tiền, ngày xuất; hộp thoại hỏi trước khi xuất có các danh sách "lọc thêm khi xuất".
+    -------------------------------------------*/
+    _exporterOk: function () {
+        var arrV = String(edu.exporter.version || "0").split(".");
+        return parseInt(arrV[0], 10) > 1 || (parseInt(arrV[0], 10) == 1 && parseInt(arrV[1], 10) >= 8);
+    },
+    _attachExport: function () {
         var me = this;
-        var obj_list = {
-            'action': 'TC_BaoCao/LayDSNopTien',
-            'versionAPI': 'v1.0',
-            'pageIndex': edu.system.pageIndex_default,
-            'pageSize': edu.system.pageSize_default,
-            'strTAICHINH_CacKhoanThu_Ids': strLoaiKhoanThu.toString(),
-            'strTaiChinh_KhoanKhac_Ids': strTaiChinh_KhoanKhac_Ids.toString(),
-            'strHeDaoTao_Id': edu.util.getValCombo('dropSearch_HeDaoTao_IHD'),
-            'strKhoaDaoTao_Id': edu.util.getValCombo('dropSearch_KhoaDaoTao_IHD'),
-            'strChuongTrinh_Id': edu.util.getValCombo('dropSearch_ChuongTrinh_IHD'),
-            'strThoiGianDaoTao_Id': edu.util.getValCombo('dropSearch_HocKy_IHD'),
-            'strLopQuanLy_Id': edu.util.getValCombo('dropSearch_Lop_IHD'),
-            'strTuKhoa': strTuKhoa,
-            'strNguoiDung_Id': edu.util.getValCombo('dropSearch_NguoiThu_IHD'),
-            'strTuNgay': edu.util.getValById('txtSearch_TuNgay_IHD'),
-            'strDenNgay': edu.util.getValById('txtSearch_DenNgay_IHD'),
-            'strTrangThaiNguoiHoc_Id': strTrangThaiNguoiHoc_Id,
-            'strNguoiDangNhap_Id': edu.system.userId,
-            'strNamNhapHoc': edu.util.getValById('dropSearch_NamNhapHoc_IHD'),
-            'strKhoaQuanLy_Id': edu.util.getValById('dropSearch_KhoaQuanLy_IHD'),
-            'strHinhThucThu_Id': edu.util.getValById('dropSearch_HinhThucThu'),
-            'strPhamViThongKe': strPhamViApDung,
-            'strDoiTuong': edu.util.getValCombo("dropSearch_DoiTuongSV"),
-            'strPhanLoaiChungTu_Id': edu.util.getValCombo("dropSearch_PhanLoai"),
-            'strPhanLoaiCSDT': edu.util.getValCombo("dropSearch_PhanLoaiCSDT"),
-            'strNganhHoc_Id': edu.util.getValCombo("dropSearch_NganhHoc"),
-            'strDangKy_KeHoach_Id': edu.util.getValById('dropKeHoachDangKy_TP'),
-            'strDaoTao_CoSoDaoTao_Id': edu.util.getValCombo("dropSearch_CoSoDaoTao_IHD"),
+        if (!window.edu || !edu.exporter || typeof edu.exporter.attachTable !== "function" || !me._exporterOk()) {
+            console.log("[baocao] Chưa gắn nút Xuất Excel: cần Corei/exportexcel.js từ phiên bản 1.8.0 (và indexi.aspx trỏ đúng phiên bản).");
+            return;
         }
+        Object.keys(me._cfgKetQua).forEach(function (strKey) {
+            var cfg = me._cfgKetQua[strKey];
+            var objAttach = {
+                table: cfg.table,
+                fileName: cfg.fileName,
+                title: cfg.title,
+                filters: me._filters_KetQua(strKey),
+                subTitles: function () { return me._subTitles_KetQua(strKey); },
+                fetchAll: function () { return me._fetchRows(strKey); },
+                columns: me._exportColumns(strKey),
+                extraFilters: function () { return me._exportFilters(); }
+            };
+            for (var k in cfg.at) objAttach[k] = cfg.at[k];
+            edu.exporter.attachTable(objAttach);
+            //Chưa tìm kiếm / tìm không có dòng nào thì báo ngay, không đi nạp danh sách. Handler gắn trực tiếp trên nút nên chạy
+            //trước handler của exporter (gắn ở document) và chặn nó lại.
+            $("#btnEduExp_" + cfg.table).off("click.baocaoGate").on("click.baocaoGate", function (e) {
+                var strMsg = me._thongBaoChuaCoDuLieu(strKey);
+                if (!strMsg) return;
+                e.preventDefault();
+                e.stopPropagation();
+                edu.system.alert(strMsg, "w");
+            });
+        });
+    },
+    _thongBaoChuaCoDuLieu: function (strKey) {
+        var iSoDong = this._soDong[strKey];
+        if (iSoDong === undefined) return 'Chưa có dữ liệu. Vui lòng chọn điều kiện và bấm "Tìm kiếm" ở tab này trước khi xuất Excel.';
+        if (iSoDong === 0) return 'Không có dữ liệu để xuất. Vui lòng đổi điều kiện và bấm "Tìm kiếm" lại.';
+        return "";
+    },
+    // Nạp lại toàn bộ dòng của 1 tab bằng đúng API + điều kiện đang chọn (Promise<mảng>)
+    _fetchRows: function (strKey) {
+        var me = this, cfg = me._cfgKetQua[strKey], objReq = me._reqKetQua(strKey, true);
+        return new Promise(function (resolve, reject) {
+            if (!objReq) { reject(new Error("Vui lòng chọn khoản thu.")); return; }
+            edu.system.makeRequest({
+                success: function (data) {
+                    if (!data.Success) { reject(new Error(data.Message)); return; }
+                    var arr = data.Data || [];
+                    me._xuatBiCat[strKey] = cfg.paged && arr.length >= me.iMaxRows_Export;
+                    resolve(arr);
+                },
+                error: function (er) { reject(new Error(JSON.stringify(er))); },
+                type: objReq.type,
+                action: objReq.action,
+                versionAPI: objReq.versionAPI,
+                contentType: true,
+                data: objReq.data,
+                fakedb: [
 
-        edu.system.beginLoading();
-        edu.system.makeRequest({
-            success: function (data) {
-                if (data.Success) {
-                    var json = data.Data;
-                    me.genTable_TongHopPhaiNop(json, data.Pager);
-                }
-                else {
-                    console.log(data.Message);
-                    edu.extend.notifyBeginLoading("Lỗi: " + data.Message, "w");
-                    edu.system.alert(data.Message);
-                }
-                edu.system.endLoading();
-            },
-            error: function (er) {
-                edu.system.endLoading();
-                edu.extend.notifyBeginLoading("Lỗi (er): " + JSON.stringify(er), "w");
-            },
-            type: "POST",
-            action: obj_list.action,
-            versionAPI: obj_list.versionAPI,
-            contentType: true,
-            data: obj_list,
-            fakedb: [
-
-            ]
-        }, false, false, false, null);
+                ]
+            }, false, false, false, null);
+        });
+    },
+    // Cột file Excel: cùng 1 bộ cột cho 4 tab, chỉ khác tiêu đề số tiền/ngày, mã đơn hàng, cột chứng từ
+    _exportColumns: function (strKey) {
+        var cfg = this._cfgKetQua[strKey];
+        var arrCot = [
+            { header: cfg.tien, field: "SOTIEN", type: "number", format: "int", sum: true },
+            { header: cfg.ngay, field: "NGAYTAO_DD_MM_YYYY", align: "center" }
+        ];
+        if (cfg.maDonHang) arrCot.push({ header: "Mã đơn hàng", field: "MADONHANG" });
+        arrCot.push(strKey == "phainop"
+            ? { header: "Chứng từ", render: function (r) { return r.KHONGHACHTOAN == 1 ? "Không hạch toán" : ""; } }
+            : { header: "Chứng từ", field: "CHUNGTU" });
+        return arrCot.concat([
+            { header: "Hình thức", field: "LOAICHUNGTU" },
+            { header: "Thời gian", field: "DAOTAO_THOIGIANDAOTAO" },
+            { header: "Người thu", field: "NGUOITAO_TENDAYDU" },
+            { header: "Khoản thu", field: "TAICHINH_CACKHOANTHU_TEN" },
+            { header: "Mã số", field: "MASONGUOIHOC" },
+            { header: "Họ tên", field: "HOTENNGUOIHOC" },
+            { header: "Ngày sinh", field: "NGAYSINH", align: "center" },
+            { header: "Trạng thái", field: "TRANGTHAINGUOIHOC_N1_TEN" },
+            { header: "Lớp học", field: "LOP" },
+            { header: "Chương trình", field: "NGANH" },
+            { header: "Khóa học", field: "KHOADAOTAO" },
+            { header: "Khoa quản lý", field: "KHOAQUANLY" },
+            { header: "Hệ đào tạo", field: "HEDAOTAO" }
+        ]);
+    },
+    // Các ô lọc trên màn hình -> dòng "điều kiện" ở đầu file (ô chưa chọn thì bỏ qua)
+    _filters_KetQua: function (strKey) {
+        var arrNhom = [[
+            { label: "Cơ sở đào tạo", id: "dropSearch_CoSoDaoTao_IHD" }, { label: "Hệ đào tạo", id: "dropSearch_HeDaoTao_IHD" },
+            { label: "Khóa đào tạo", id: "dropSearch_KhoaDaoTao_IHD" }, { label: "Chương trình", id: "dropSearch_ChuongTrinh_IHD" },
+            { label: "Lớp", id: "dropSearch_Lop_IHD" }, { label: "Học kỳ", id: "dropSearch_HocKy_IHD" }
+        ], [
+            { label: "Người thu", id: "dropSearch_NguoiThu_IHD" }, { label: "Năm nhập học", id: "dropSearch_NamNhapHoc_IHD" },
+            { label: "Khoa quản lý", id: "dropSearch_KhoaQuanLy_IHD" }, { label: "Ngành - chuyên ngành", id: "dropSearch_NganhHoc" },
+            { label: "Hình thức thu", id: "dropSearch_HinhThucThu" }, { label: "Phân loại chứng từ", id: "dropSearch_PhanLoai" },
+            { label: "Đối tượng", id: "dropSearch_DoiTuongSV" }, { label: "Cơ sở đào tạo tính theo", id: "dropSearch_PhanLoaiCSDT" }
+        ]];
+        if (this._cfgKetQua[strKey].keHoach) arrNhom.push([{ label: "Kế hoạch đăng ký", id: "dropKeHoachDangKy_TP" }]);
+        return arrNhom;
+    },
+    // Khoản thu / trạng thái người học là các ô tích: all = tích hết (coi như "Tất cả")
+    _checkedOf: function (strClass) {
+        var $all = $("." + strClass), arrTen = [];
+        $all.filter(":checked").each(function () { arrTen.push($(this).attr("title")); });
+        return { all: $all.length > 0 && arrTen.length == $all.length, titles: arrTen };
+    },
+    _subTitles_KetQua: function (strKey) {
+        var me = this, arrDong = [];
+        var fnLiet = function (o) {
+            if (o.all) return "tất cả";
+            if (o.titles.length == 0) return "không chọn";
+            return o.titles.length > 8 ? o.titles.slice(0, 8).join(", ") + " ... (+" + (o.titles.length - 8) + ")" : o.titles.join(", ");
+        };
+        arrDong.push("Khoản thu: " + fnLiet(me._checkedOf("ckbLKT_IHD")));
+        arrDong.push("Trạng thái người học: " + fnLiet(me._checkedOf("ckbDSTrangThaiSV_LHD")));
+        var strTu = edu.util.getValById('txtSearch_TuNgay_IHD'), strDen = edu.util.getValById('txtSearch_DenNgay_IHD');
+        if (strTu || strDen) arrDong.push("Thời gian: " + (strTu ? "từ ngày " + strTu : "") + (strTu && strDen ? " " : "") + (strDen ? "đến ngày " + strDen : ""));
+        var strTuKhoa = edu.util.getValById('txtSearch_DT').trim();
+        if (strTuKhoa) arrDong.push("Từ khóa: " + strTuKhoa);
+        if (me._xuatBiCat[strKey]) arrDong.push("Lưu ý: dữ liệu quá lớn, file chỉ gồm " + me.iMaxRows_Export + " dòng đầu. Hãy thu hẹp điều kiện lọc để xuất đủ.");
+        return arrDong;
+    },
+    // Các danh sách "lọc thêm khi xuất" trong hộp thoại; mặc định tích sẵn đúng những gì đang chọn ngoài màn hình (tích hết = không tích gì)
+    _exportFilters: function () {
+        var me = this, kt = me._checkedOf("ckbLKT_IHD"), tt = me._checkedOf("ckbDSTrangThaiSV_LHD");
+        return [
+            { label: "Khoản thu", field: "TAICHINH_CACKHOANTHU_TEN", selected: kt.all ? [] : kt.titles },
+            { label: "Học kỳ / đợt", field: "DAOTAO_THOIGIANDAOTAO", from: "dropSearch_HocKy_IHD" },
+            { label: "Hệ đào tạo", field: "HEDAOTAO", from: "dropSearch_HeDaoTao_IHD" },
+            { label: "Khóa đào tạo", field: "KHOADAOTAO", from: "dropSearch_KhoaDaoTao_IHD" },
+            { label: "Chương trình", field: "NGANH", from: "dropSearch_ChuongTrinh_IHD" },
+            { label: "Lớp học", field: "LOP", from: "dropSearch_Lop_IHD" },
+            { label: "Khoa quản lý", field: "KHOAQUANLY", from: "dropSearch_KhoaQuanLy_IHD" },
+            { label: "Trạng thái người học", field: "TRANGTHAINGUOIHOC_N1_TEN", selected: tt.all ? [] : tt.titles },
+            { label: "Người thu", field: "NGUOITAO_TENDAYDU" },
+            { label: "Hình thức", field: "LOAICHUNGTU" }
+        ];
     },
 
     delete_KetQuaPhaiNop: function (Ids) {
@@ -1358,10 +1554,7 @@ BaoCao.prototype = {
             ]
         };
         edu.system.loadToTable_data(jsonForm);
-        $("#lblTongTien").html(edu.util.formatCurrency(data[0].TONGTIEN));
-        var strSoTien = to_vietnamese(data[0].TONGTIEN) + ".";
-        strSoTien = strSoTien[1].toUpperCase() + strSoTien.substring(2);
-        $("#lblTongTienBangChu").html(strSoTien);
+        me._setTongTien("lblTongTien", "lblTongTienBangChu", data);
     },
     genTable_TongHopPhaiNop: function (data, iPager) {
         var me = this;
@@ -1431,10 +1624,7 @@ BaoCao.prototype = {
         //let dTongTien = 0;
         //data.forEach(e => {
         //})
-        $("#lblTongTien2").html(edu.util.formatCurrency(data[0].TONGTIEN));
-        var strSoTien = to_vietnamese(data[0].TONGTIEN) + ".";
-        strSoTien = strSoTien[1].toUpperCase() + strSoTien.substring(2);
-        $("#lblTongTienBangChu2").html(strSoTien);
+        me._setTongTien("lblTongTien2", "lblTongTienBangChu2", data);
     },
     
     getList_BangDuLieu: function (strTuKhoa) {

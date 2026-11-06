@@ -76,6 +76,8 @@
         public string userAction = "CMS_QuanLyNguoiDung_MH/DSA4BSAvKRIgIikPJjQuKAU0LyYP";
         public string userFunc = "pkg_chung_quanlynguoidung.LayDanhSachNguoiDung";
         public string emailColumn = "EMAIL";
+        public string phoneColumn = "SODIENTHOAI";                       // cùng dòng người dùng với EMAIL; luôn gửi claim phone_number, kể cả trống
+        public string departmentColumn = "TENDONVI";                     // claim department
         public bool emailFromLoginDb = true;                             // bản ghi phía API không có email → lấy email của tài khoản ở CSDL đăng nhập (UserBo.GetDetail)
     }
 
@@ -573,6 +575,9 @@
         }
         string ten = (fullname ?? "").Trim();
         if (ten.Length == 0 && dongNguoiDung != null) ten = Cot(dongNguoiDung, "TENDAYDU");
+        // Vai trò đến từ vỏ (rolesTuForm) thì không tra API phía máy chủ → vỏ gửi kèm sdt / donvi (dòng người dùng đã tra ở trình duyệt)
+        string sdt = dongNguoiDung != null ? Cot(dongNguoiDung, ch.phoneColumn).Trim() : (rolesTuForm ? (Request.Form["sdt"] ?? "").Trim() : "");
+        string donVi = dongNguoiDung != null ? Cot(dongNguoiDung, ch.departmentColumn).Trim() : (rolesTuForm ? (Request.Form["donvi"] ?? "").Trim() : "");
 
         long now = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds;
         var payload = new Dictionary<string, object>();
@@ -580,6 +585,8 @@
         payload["sub"] = uid;
         payload["email"] = email;
         if (ten.Length > 0) payload["name"] = ten;
+        payload["phone_number"] = sdt;       // luôn gửi, kể cả trống — để Help biết trường có mà chưa có dữ liệu
+        payload["department"] = donVi;
         payload["aud"] = ch.aud;
         payload["iat"] = now;
         payload["exp"] = now + Math.Max(60, Math.Min(120, ch.ttlSeconds));

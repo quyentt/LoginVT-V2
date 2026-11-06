@@ -10,6 +10,91 @@ Xem lại đúng thay đổi của một tệp: `git diff -w <từ>..<đến> --
 
 ---
 
+## Lần kéo 12 (2/11) — mốc gốc nay là `b2cd522d1` (gốc lại force-push; mốc cũ `ab5b4f19`) — 73 tệp, CHƯA XEM màn nào
+
+Lần sau so: `git diff --name-status b2cd522d1 origin/main`. 73 tệp gốc đổi: 65 tệp màn (16 phân hệ) + 8 tệp vỏ cũ / khác. Đã ghi đè 70 tệp bằng
+`git checkout origin/main -- <tệp>`; **3 tệp KHÔNG ghi đè nguyên**: `help-sso.aspx`, `mapping.aspx` (gốc chứa bản cũ của chính ta → giữ bản máy) và
+`Corei/systemroot.js` (lấy bản gốc rồi chèn lại đoạn nạp plugin Yêu cầu hỗ trợ ở `page_load`). `Core/systemroot.js` gốc không đổi (giữ mục Soạn bài + nạp plugin).
+`skin.py kiem` 11/11 OK không cần `ap` (gốc đã chứa bản lột da Thi trắc nghiệm). Gói v1 dựng lại (`skin.py dong-goi`); gói v2 giữ nguyên theo lệnh người dùng.
+Số theo phân hệ: Tài chính 12 · Quản lý điểm 11 · Cổng cán bộ 7 · Học bổng 6 · Đăng ký học 4 · Tốt nghiệp 4 · KHCT 3 · Chuyên cần 2 · Cổng sinh viên-1 2 · Cổng sinh viên 2 · Ký túc xá 2 · Thi trắc nghiệm 2 · Tuyển sinh 2 · Rèn luyện 2 · Sinh viên 2 · Xử lý học vụ 2.
+**Người dùng 2/11: kéo về chỉ ghi sổ, chưa chuyển.** Màn thuộc phân hệ đã chuyển mở diff khi tới lượt (`git diff -w ab5b4f19 b2cd522d1 -- <tệp>`).
+
+| Phân hệ | Màn | Tệp gốc | Trạng thái |
+|---|---|---|---|
+| Chuyên cần (đã chuyển) | `nhapchuyencan/nhaptheolop` | `ApisChuyenCan/Modules/nhapchuyencan/html/nhaptheolop.html` | chưa xem |
+| Chuyên cần (đã chuyển) | `nhapchuyencan/nhaptheolop` | `ApisChuyenCan/Modules/nhapchuyencan/script/nhaptheolop.js` | chưa xem |
+| Cổng cán bộ (đã chuyển) | `lichgiang/lichgiangnhieuphonghoc` | `ApisCongCanBo/Modules/lichgiang/html/lichgiangnhieuphonghoc.html` | chưa xem |
+| Cổng cán bộ (đã chuyển) | `lichgiang/lichgiangnhieuphonghocgiangvien` | `ApisCongCanBo/Modules/lichgiang/html/lichgiangnhieuphonghocgiangvien.html` | chưa xem |
+| Cổng cán bộ (đã chuyển) | `lichgiang/lichgiangphonghoc` | `ApisCongCanBo/Modules/lichgiang/html/lichgiangphonghoc.html` | chưa xem |
+| Cổng cán bộ (đã chuyển) | `lichgiang/lichgiangnhieuphonghoc` | `ApisCongCanBo/Modules/lichgiang/script/lichgiangnhieuphonghoc.js` | chưa xem |
+| Cổng cán bộ (đã chuyển) | `lichgiang/lichgiangnhieuphonghocgiangvien` | `ApisCongCanBo/Modules/lichgiang/script/lichgiangnhieuphonghocgiangvien.js` | chưa xem |
+| Cổng cán bộ (đã chuyển) | `lichgiang/lichgiangphonghoc` | `ApisCongCanBo/Modules/lichgiang/script/lichgiangphonghoc.js` | chưa xem |
+| Cổng cán bộ (đã chuyển) | `lichgiang/nguoihoc` | `ApisCongCanBo/Modules/lichgiang/script/nguoihoc.js` | chưa xem |
+| Cổng sinh viên (đã chuyển) | `dangkyhoc/dangky` | `ApisCongSinhVien/Modules/dangkyhoc/script/dangky.js` | chưa xem |
+| Cổng sinh viên (đã chuyển) | `profile/tunhaphoso` | `ApisCongSinhVien/Modules/profile/html/tunhaphoso.html` | chưa xem |
+| Đăng ký học (đã chuyển) | `kehoachdangky/lophocphan` | `ApisDangKyHoc/Modules/kehoachdangky/html/lophocphan.html` | chưa xem |
+| Đăng ký học (đã chuyển) | `kehoachdangky/lophocphan` | `ApisDangKyHoc/Modules/kehoachdangky/script/lophocphan.js` | chưa xem |
+| Đăng ký học (đã chuyển) | `nguyenvongdangky/kehoachdangky` | `ApisDangKyHoc/Modules/nguyenvongdangky/html/kehoachdangky.html` | chưa xem |
+| Đăng ký học (đã chuyển) | `nguyenvongdangky/kehoachdangky` | `ApisDangKyHoc/Modules/nguyenvongdangky/script/kehoachdangky.js` | chưa xem |
+| Học bổng (đã chuyển) | `kehoach/kehoach` | `ApisHocBong/Modules/kehoach/html/kehoach.html` | chưa xem |
+| Học bổng (đã chuyển) | `kehoach/sotinkehoach` | `ApisHocBong/Modules/kehoach/html/sotinkehoach.html` | chưa xem |
+| Học bổng (đã chuyển) | `kehoach/thuchienxet` | `ApisHocBong/Modules/kehoach/html/thuchienxet.html` | chưa xem |
+| Học bổng (đã chuyển) | `kehoach/kehoach` | `ApisHocBong/Modules/kehoach/script/kehoach.js` | chưa xem |
+| Học bổng (đã chuyển) | `kehoach/sotinkehoach` | `ApisHocBong/Modules/kehoach/script/sotinkehoach.js` | chưa xem |
+| Học bổng (đã chuyển) | `kehoach/thuchienxet` | `ApisHocBong/Modules/kehoach/script/thuchienxet.js` | chưa xem |
+| KHCT (đã chuyển) | `chuongtrinhhocphan/cthp` | `ApisKeHoachChuongTrinh/Modules/chuongtrinhhocphan/html/cthp.html` | chưa xem |
+| KHCT (đã chuyển) | `phanlichgiang/quantri_phanlichgiang` | `ApisKeHoachChuongTrinh/Modules/phanlichgiang/html/quantri_phanlichgiang.html` | chưa xem |
+| KHCT (đã chuyển) | `phanlichgiang/quantri_phanlichgiang` | `ApisKeHoachChuongTrinh/Modules/phanlichgiang/script/quantri_phanlichgiang.js` | chưa xem |
+| Ký túc xá (đã chuyển) | `taichinh/tinhphi` | `ApisKyTucXa/Modules/taichinh/html/tinhphi.html` | chưa xem |
+| Ký túc xá (đã chuyển) | `taichinh/tinhphi` | `ApisKyTucXa/Modules/taichinh/script/tinhphi.js` | chưa xem |
+| Quản lý điểm (đã chuyển) | `thongke/diemhocphan` | `ApisQuanLyDiem/Modules/thongke/html/diemhocphan.html` | chưa xem |
+| Quản lý điểm (đã chuyển) | `thongke/diemtrungbinh` | `ApisQuanLyDiem/Modules/thongke/html/diemtrungbinh.html` | chưa xem |
+| Quản lý điểm (đã chuyển) | `thongke/tonghopketqua` | `ApisQuanLyDiem/Modules/thongke/html/tonghopketqua.html` | chưa xem |
+| Quản lý điểm (đã chuyển) | `thongke/diemhocphan` | `ApisQuanLyDiem/Modules/thongke/script/diemhocphan.js` | chưa xem |
+| Quản lý điểm (đã chuyển) | `thongke/diemtrungbinh` | `ApisQuanLyDiem/Modules/thongke/script/diemtrungbinh.js` | chưa xem |
+| Quản lý điểm (đã chuyển) | `thongke/tonghopketqua` | `ApisQuanLyDiem/Modules/thongke/script/tonghopketqua.js` | chưa xem |
+| Quản lý điểm (đã chuyển) | `tinhdiem/inbangdiem` | `ApisQuanLyDiem/Modules/tinhdiem/html/inbangdiem.html` | chưa xem |
+| Quản lý điểm (đã chuyển) | `tinhdiem/tonghopketqua` | `ApisQuanLyDiem/Modules/tinhdiem/html/tonghopketqua.html` | chưa xem |
+| Quản lý điểm (đã chuyển) | `tinhdiem/inbangdiem` | `ApisQuanLyDiem/Modules/tinhdiem/script/inbangdiem.js` | chưa xem |
+| Quản lý điểm (đã chuyển) | `tinhdiem/tonghopketqua` | `ApisQuanLyDiem/Modules/tinhdiem/script/tonghopketqua.js` | chưa xem |
+| Quản lý điểm (đã chuyển) | `tracuudiem/tracuudiem` | `ApisQuanLyDiem/Modules/tracuudiem/html/tracuudiem.html` | chưa xem |
+| Tuyển sinh (đã chuyển) | `tuyensinh/kehoachtuyensinhnew` | `ApisQuanlyTuyenSinh/Modules/tuyensinh/html/kehoachtuyensinhnew.html` | chưa xem |
+| Tuyển sinh (đã chuyển) | `tuyensinh/kehoachtuyensinhnew` | `ApisQuanlyTuyenSinh/Modules/tuyensinh/script/kehoachtuyensinhnew.js` | chưa xem |
+| Rèn luyện (đã chuyển) | `tonghopdiem/tonghopdiem` | `ApisRenLuyen/Modules/tonghopdiem/html/tonghopdiem.html` | chưa xem |
+| Rèn luyện (đã chuyển) | `tonghopdiem/tonghopdiem` | `ApisRenLuyen/Modules/tonghopdiem/script/tonghopdiem.js` | chưa xem |
+| Sinh viên (đã chuyển) | `kehoach/xacnhanketqua` | `ApisSinhVien/Modules/kehoach/html/xacnhanketqua.html` | chưa xem |
+| Sinh viên (đã chuyển) | `kehoach/xacnhanketqua` | `ApisSinhVien/Modules/kehoach/script/xacnhanketqua.js` | chưa xem |
+| Tài chính (đã chuyển) | `baocao/baocao` | `ApisTaiChinh/Modules/baocao/html/baocao.html` | chưa xem |
+| Tài chính (đã chuyển) | `baocao/baocao` | `ApisTaiChinh/Modules/baocao/scripts/baocao.js` | chưa xem |
+| Tài chính (đã chuyển) | `dulieuhocphi/chottinhphi` | `ApisTaiChinh/Modules/dulieuhocphi/html/chottinhphi.html` | chưa xem |
+| Tài chính (đã chuyển) | `dulieuhocphi/chuyendulieuketoan` | `ApisTaiChinh/Modules/dulieuhocphi/html/chuyendulieuketoan.html` | chưa xem |
+| Tài chính (đã chuyển) | `dulieuhocphi/phanbodoanhthu` | `ApisTaiChinh/Modules/dulieuhocphi/html/phanbodoanhthu.html` | chưa xem |
+| Tài chính (đã chuyển) | `dulieuhocphi/tinhhocphi` | `ApisTaiChinh/Modules/dulieuhocphi/html/tinhhocphi.html` | chưa xem |
+| Tài chính (đã chuyển) | `dulieuhocphi/chottinhphi` | `ApisTaiChinh/Modules/dulieuhocphi/scripts/chottinhphi.js` | chưa xem |
+| Tài chính (đã chuyển) | `dulieuhocphi/chuyendulieuketoan` | `ApisTaiChinh/Modules/dulieuhocphi/scripts/chuyendulieuketoan.js` | chưa xem |
+| Tài chính (đã chuyển) | `dulieuhocphi/phanbodoanhthu` | `ApisTaiChinh/Modules/dulieuhocphi/scripts/phanbodoanhthu.js` | chưa xem |
+| Tài chính (đã chuyển) | `dulieuhocphi/tinhhocphi` | `ApisTaiChinh/Modules/dulieuhocphi/scripts/tinhhocphi.js` | chưa xem |
+| Tài chính (đã chuyển) | `phieuthu/thutienkhac` | `ApisTaiChinh/Modules/phieuthu/html/thutienkhac.html` | chưa xem |
+| Tài chính (đã chuyển) | `phieuthu/thutienkhac` | `ApisTaiChinh/Modules/phieuthu/scripts/thutienkhac.js` | chưa xem |
+| Tốt nghiệp (đã chuyển) | `kehoach/kehoach` | `ApisTotNghiep/Modules/kehoach/html/kehoach.html` | chưa xem |
+| Tốt nghiệp (đã chuyển) | `kehoach/thuchienxet` | `ApisTotNghiep/Modules/kehoach/html/thuchienxet.html` | chưa xem |
+| Tốt nghiệp (đã chuyển) | `kehoach/kehoach` | `ApisTotNghiep/Modules/kehoach/script/kehoach.js` | chưa xem |
+| Tốt nghiệp (đã chuyển) | `kehoach/thuchienxet` | `ApisTotNghiep/Modules/kehoach/script/thuchienxet.js` | chưa xem |
+| Xử lý học vụ (đã chuyển) | `kehoachxuly/kehoachxuly` | `ApisXuLyHocVu/Modules/kehoachxuly/html/kehoachxuly.html` | chưa xem |
+| Xử lý học vụ (đã chuyển) | `kehoachxuly/kehoachxuly` | `ApisXuLyHocVu/Modules/kehoachxuly/script/kehoachxuly.js` | chưa xem |
+| Cổng sinh viên-1 (chưa chuyển (thư mục biến thể, không có trong THU_TU)) | `profile/tunhaphoso` | `ApisCongSinhVien-1/Modules/profile/html/tunhaphoso.html` | không chuyển — phân hệ chưa chuyển |
+| Cổng sinh viên-1 (chưa chuyển (thư mục biến thể, không có trong THU_TU)) | `profile/tunhaphoso` | `ApisCongSinhVien-1/Modules/profile/script/tunhaphoso.js` | không chuyển — phân hệ chưa chuyển |
+| Thi trắc nghiệm (DỪNG — lột da spa-v1, gốc đã chứa bản lột da (skin.py kiem OK)) | `quanlynganhangcauhoi/quanlynganhangcauhoi` | `ApisQuanLyThiTracNghiem/modules/quanlynganhangcauhoi/html/quanlynganhangcauhoi.html` | không chuyển — phân hệ dừng |
+| Thi trắc nghiệm (DỪNG — lột da spa-v1, gốc đã chứa bản lột da (skin.py kiem OK)) | `quanlythi/quanlythi` | `ApisQuanLyThiTracNghiem/modules/quanlythi/html/quanlythi.html` | không chuyển — phân hệ dừng |
+| Vỏ cũ / khác | — | `Corei/exportexcel.js` (mới) | ĐÃ XEM 2/11: tệp mới `edu.exporter` — chuẩn xuất Excel dùng chung vỏ cũ; `_v2` có `ums.ui.napXLSX` → không chuyển |
+| Vỏ cũ / khác | — | `Corei/processrun.js` (mới) | ĐÃ XEM 2/11: tệp mới `edu.process` — panel tiến trình import vỏ cũ; `_v2` khung `_chung_tracuu.js` → không chuyển |
+| Vỏ cũ / khác | — | `Corei/systemroot.js` (đổi) | ĐÃ XEM 2/11: gốc +47 dòng — hộp import dùng panel tiến trình chung `edu.process.importPanel` (processrun.js), có lối lui khi thiếu tệp; không đụng `page_load` → ghi đè rồi chèn lại đoạn nạp plugin Yêu cầu hỗ trợ (an: true). `_v2` có khung import riêng → không chuyển. **13:15 cùng ngày: host có bản MỚI HƠN kho gốc** (người khác up 11:56: thêm 20 dòng `excuteHangDoi` → `edu.process.runHangDoi`, host `processrun.js` cũng mới hơn) → gộp lại: nền = bản host, chèn 11 dòng nạp plugin; gói v1 dựng lại 13:29 |
+| Vỏ cũ / khác | — | `HTML-SV-Ke-Hoach-Nhap-Hoc/00-Dashboard.html` (đổi) | mockup tĩnh, +1 dòng; không chuyển |
+| Vỏ cũ / khác | — | `default.htm` (mới) | ĐÃ XEM 2/11: tệp mới, chỉ chuyển hướng `login.aspx`; không liên quan `_v2` |
+| Vỏ cũ / khác | — | `help-sso.aspx` (đổi) | gốc chứa BẢN CŨ của ta (commit 80522e13, 26/10) → **giữ bản máy** (mới hơn 284 dòng: sdt/donvi, NguonBaseUrl…), không ghi đè |
+| Vỏ cũ / khác | — | `indexi.aspx` (đổi) | ĐÃ XEM 2/11: +4 dòng nạp exportexcel.js / processrun.js + `edu.exporter` / `edu.process`; vỏ cũ → không chuyển |
+| Vỏ cũ / khác | — | `mapping.aspx` (mới) | gốc chứa BẢN CŨ của ta (commit e68c1d1a, 26/10) → **giữ bản máy** (mới hơn 123 dòng), không ghi đè |
+
 ## Lần kéo 11 (20/10) — mốc gốc nay là `ab5b4f19` (gốc lại force-push; mốc cũ `2254204a`) — 3 màn lớn ĐÃ CHUYỂN 20/10, còn lại chưa xem
 
 Lần sau so: `git diff --name-status ab5b4f19 origin/main`. 32 tệp gốc đổi (bỏ `.claude/settings.local.json` của gốc — không lấy), đã ghi đè bằng

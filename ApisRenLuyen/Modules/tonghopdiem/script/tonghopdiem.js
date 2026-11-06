@@ -13,6 +13,58 @@ TongHopDiem.prototype = {
     strPhamViMa: '',
     dtThieuDRL: [],
     isLoading_ThieuDRL: false,
+    // Điều kiện lọc tại thời điểm tìm kiếm — ghi vào dòng phụ đề của file Excel cho khớp với dữ liệu đang xem
+    arrLoc_TongHopDiem: [],
+    arrLoc_ThieuDRL: [],
+    // Các mục đã chọn ở ô tìm kiếm ngoài màn hình tại thời điểm tìm — làm mặc định (tích sẵn) cho hộp thoại lọc thêm khi xuất
+    objLoc_TongHopDiem: {},
+    objLoc_ThieuDRL: {},
+
+    // Cột khai báo 1 lần: dùng cho cả vẽ bảng (loadToTable_data) lẫn xuất Excel (edu.exporter)
+    aoColumns_TongHopDiem: [
+        { "mDataProp": "DAOTAO_HEDAOTAO_TEN" },
+        { "mDataProp": "DAOTAO_KHOADAOTAO_TEN" },
+        { "mDataProp": "DAOTAO_KHOAQUANLY_TEN" },
+        { "mDataProp": "DAOTAO_TOCHUCCHUONGTRINH_TEN" },
+        { "mDataProp": "DAOTAO_LOPQUANLY_TEN" },
+        { "mDataProp": "MASO" },
+        {
+            "mData": "Daotao_Lopquanly_Ten",
+            "mRender": function (nrow, aData) {
+                return edu.util.returnEmpty(aData.HODEM) + " " + edu.util.returnEmpty(aData.TEN);
+            }
+        },
+        { "mDataProp": "QLSV_NGUOIHOC_NGAYSINH" },
+        { "mDataProp": "GIOITINH_TEN" },
+        { "mDataProp": "XEPLOAI_TEN" },
+        { "mDataProp": "DIEM" },
+        { "mDataProp": "DIEMQUYDOI" },
+        { "mDataProp": "GHICHU" }
+    ],
+    aoColumns_ThongKe: [
+        { "mDataProp": "TEN" },
+        { "mDataProp": "SOLUONG" }
+    ],
+    aoColumns_ThieuDRL: [
+        { "mDataProp": "MASO" },
+        {
+            "mData": "HoTen",
+            "mRender": function (nrow, aData) {
+                return edu.util.returnEmpty(aData.HODEM) + " " + edu.util.returnEmpty(aData.TEN);
+            }
+        },
+        { "mDataProp": "TRANGTHAI_TEN" },
+        { "mDataProp": "TENLOP" },
+        {
+            "mData": "ChuongTrinh",
+            "mRender": function (nrow, aData) {
+                return edu.util.returnEmpty(aData.TENCHUONGTRINH) + " - " + edu.util.returnEmpty(aData.MACHUONGTRINH);
+            }
+        },
+        { "mDataProp": "TENKHOA" },
+        { "mDataProp": "TENKHOAQUANLY" },
+        { "mDataProp": "TENHEDAOTAO" }
+    ],
 
     init: function () {
         var me = this;
@@ -31,12 +83,10 @@ TongHopDiem.prototype = {
 
         edu.system.loadToCombo_DanhMucDuLieu("DIEM.PHAMVITONGHOPDIEM", "", "", me.loadToCombo_PhamVi);
         edu.system.loadToCombo_DanhMucDuLieu("DRL.DOITUONGAPDUNG", "dropSearch_DoiTuong");
-        $("#btnSave_XepLoai").click(function () {
-            
-            edu.system.confirm("Bạn có chắc chắn muốn thực hiện không?");
-            $("#btnYes").click(function (e) {
-                me.save_TongHopDiem();
-            });
+        // Thực hiện xếp loại: mở form tiến trình chung, chạy từng lớp quản lý
+        $("#btnSave_XepLoai").click(function (e) {
+            e.preventDefault();
+            me.openProcess_XepLoai();
         });
 
         $("#btnSearch").click(function () {
@@ -48,6 +98,18 @@ TongHopDiem.prototype = {
             if (me.isLoading_ThieuDRL === true) return;
             me.getList_TongHopThieuDRL();
         });
+        // Xuất Excel theo chuẩn chung (Corei/exportexcel.js): trang chỉ khai báo tiêu đề + cột + dữ liệu
+        if (edu.exporter) {
+            edu.exporter.bindButton("#btnExport_KetQua", function () { return me.getOpts_ExportKetQua(); });
+            edu.exporter.bindButton("#btnExport_ThieuDRL", function () { return me.getOpts_ExportThieuDRL(); });
+        }
+        else {
+            // Triển khai thủ công có thể thiếu file: báo rõ thay vì để nút không phản ứng
+            $("#btnExport_KetQua, #btnExport_ThieuDRL").click(function (e) {
+                e.preventDefault();
+                edu.system.alert("Chưa cập nhật chức năng xuất Excel (thiếu Corei/exportexcel.js hoặc indexi.aspx).", "w");
+            });
+        }
         $("#txtSearch_TuKhoa").keypress(function (e) {
             if (e.which === 13) {
                 e.preventDefault();
@@ -103,49 +165,76 @@ TongHopDiem.prototype = {
         });
     },
     /*------------------------------------------
-    --Discription: [3] AccessDB HOC
-    --ULR:  Modules
+    --Discription: [3] Thực hiện xếp loại — "gửi vào" form tiến trình chung (Corei/processrun.js, edu.process).
+    -- Bước 1 nạp danh sách lớp quản lý trong phạm vi đang chọn; form chạy từng lớp, báo giờ bắt đầu/kết thúc,
+    -- kết quả, ghi chú lỗi, có tổng hợp thành công/lỗi và xuất Excel danh sách lỗi/thành công.
     -------------------------------------------*/
-    save_TongHopDiem: function (point) {
+    // Các lớp sẽ xếp loại: những lớp đang chọn ở ô "Lớp quản lý"; không chọn lớp nào thì lấy tất cả lớp
+    // trong phạm vi hệ/khóa/chương trình đang chọn (chính là danh sách của ô chọn lớp)
+    getItems_XepLoai: function () {
+        var items = [], seen = {};
+        function pick($opts) {
+            $opts.each(function () {
+                var id = $(this).val();
+                if (!id || id === "SELECTALL" || seen[id]) return;
+                seen[id] = true;
+                items.push({ ID: id, TEN: $(this).text().replace(/\s+/g, " ").trim() });
+            });
+        }
+        pick($("#dropSearch_LopQuanLy option:selected"));
+        if (items.length === 0) pick($("#dropSearch_LopQuanLy option"));
+        return items;
+    },
+    openProcess_XepLoai: function () {
         var me = this;
-        var strDaoTao_ThoiGianDaoTao_Id = edu.util.checkValue(edu.util.getValById("dropSearch_ThoiGianDaoTao")) ? edu.util.getValById('dropSearch_ThoiGianDaoTao') : edu.util.getValById('dropSearch_NamHoc');
-        //--Edit
-        var obj_save = {
-            'action': 'RL_XuLy/TongHopDRLTheoKyNamToanKhoa',
-
-            'strId': $(point).attr("name"),
-            'strChucNang_Id': edu.system.strChucNang_Id,
-            'strDaoTao_ThoiGianDaoTao_Id': strDaoTao_ThoiGianDaoTao_Id,
-            'strDoiTuongApDung_Id': edu.util.getValCombo('dropSearch_DoiTuong'),
-            'strDaoTao_LopQuanLy_Id': edu.util.getValCombo('dropSearch_LopQuanLy'),
-            'strDaoTao_KhoaDaoTao_Id': edu.util.getValCombo('dropSearch_KhoaDaoTao'),
-            'strDaoTao_ChuongTrinh_Id': edu.util.getValCombo('dropSearch_ChuongTrinhDaoTao'),
-            'strNguoiThucHien_Id': edu.system.userId,
-        };
-        //default
-        edu.system.makeRequest({
-            success: function (data) {
-                if (data.Success) {
-                    edu.system.alert("Thực hiện thành công");
-                }
-                else {
-                    edu.system.alert(data.Message);
-                }
+        if (!edu.process) {
+            edu.system.alert("Chưa cập nhật form tiến trình (thiếu Corei/processrun.js hoặc indexi.aspx).", "w");
+            return;
+        }
+        // chụp điều kiện tại thời điểm mở form: mọi lớp chạy với cùng điều kiện
+        var strThoiGian = edu.util.checkValue(edu.util.getValById("dropSearch_ThoiGianDaoTao")) ? edu.util.getValById('dropSearch_ThoiGianDaoTao') : edu.util.getValById('dropSearch_NamHoc');
+        var strDoiTuong = edu.util.getValCombo('dropSearch_DoiTuong');
+        var strKhoa = edu.util.getValCombo('dropSearch_KhoaDaoTao');
+        var strChuongTrinh = edu.util.getValCombo('dropSearch_ChuongTrinhDaoTao');
+        var items = me.getItems_XepLoai(), notes = [];
+        // chưa có danh sách lớp thì chạy 1 lần cho cả phạm vi, như trước đây
+        if (items.length === 0) items = [{ ID: "", TEN: "Toàn bộ phạm vi đã chọn (không chia theo lớp)" }];
+        if (!edu.util.checkValue(strThoiGian)) notes.push("Chưa chọn Năm học / Thời gian đào tạo.");
+        edu.process.open({
+            title: "Thực hiện xếp loại rèn luyện kỳ, năm, toàn khóa",
+            subTitles: me.getFilterLines(),
+            unit: "lớp quản lý",
+            infoHeader: "Lớp quản lý",
+            items: items,
+            info: function (it) { return it.TEN; },
+            notes: notes,
+            fileName: "KetQuaXepLoaiRenLuyen",
+            request: function (it) {
+                var action = 'RL_XuLy/TongHopDRLTheoKyNamToanKhoa';
+                return {
+                    action: action,
+                    data: {
+                        'action': action,
+                        'strChucNang_Id': edu.system.strChucNang_Id,
+                        'strDaoTao_ThoiGianDaoTao_Id': strThoiGian,
+                        'strDoiTuongApDung_Id': strDoiTuong,
+                        'strDaoTao_LopQuanLy_Id': it.ID,
+                        'strDaoTao_KhoaDaoTao_Id': strKhoa,
+                        'strDaoTao_ChuongTrinh_Id': strChuongTrinh,
+                        'strNguoiThucHien_Id': edu.system.userId
+                    }
+                };
             },
-            error: function (er) {
-                edu.system.alertOnModal(obj_save.action + " (er): " + er);
-            },
-            type: "POST",
-            action: obj_save.action,
-
-            contentType: true,
-            data: obj_save,
-            fakedb: [
-            ]
-        }, false, false, false, null);
+            // đóng form xong thì nạp lại danh sách để thấy kết quả xếp loại mới
+            onClose: function (sum) {
+                if (sum.ok > 0) me.getList_TongHopDiem();
+            }
+        });
     },
     getList_TongHopDiem: function (strDanhSach_Id) {
         var me = this;
+        var arrLoc = me.getFilterLines();
+        var objLoc = me.getSelectedLoc();
         var strDaoTao_ThoiGianDaoTao_Id = edu.util.checkValue(edu.util.getValById("dropSearch_ThoiGianDaoTao")) ? edu.util.getValById('dropSearch_ThoiGianDaoTao') : edu.util.getValById('dropSearch_NamHoc');
         //--Edit
         //var obj_list = {
@@ -178,6 +267,8 @@ TongHopDiem.prototype = {
                 if (data.Success) {
                     var dtReRult = data.Data;
                     me.dtTongHopDiem = dtReRult;
+                    me.arrLoc_TongHopDiem = arrLoc;
+                    me.objLoc_TongHopDiem = objLoc;
                     me.genTable_TongHopDiem(dtReRult.rsChiTiet, data.Pager);
                     me.genTable_ThongKe(dtReRult.rsThongKe, data.Pager);
                 }
@@ -241,6 +332,8 @@ TongHopDiem.prototype = {
             'strNguoiThucHien_Id': edu.system.userId,
         };
 
+        var arrLoc = me.getFilterLines();
+        var objLoc = me.getSelectedLoc();
         var t0 = new Date().getTime();
         try {
             console.log("[TongHopDiem][ThieuDRL] request", obj_save);
@@ -258,6 +351,8 @@ TongHopDiem.prototype = {
                     var dtReRult = data.Data;
                     var rows = (dtReRult && dtReRult.rsChiTiet) ? dtReRult.rsChiTiet : dtReRult;
                     me.dtThieuDRL = rows || [];
+                    me.arrLoc_ThieuDRL = arrLoc;
+                    me.objLoc_ThieuDRL = objLoc;
                     $("#zone_thongke_thieudrl").show();
                     edu.system.pageIndex_default = 1;
                     me.renderTable_ThieuDRL_Paged();
@@ -292,6 +387,112 @@ TongHopDiem.prototype = {
         }, false, false, false, null);
     },
 
+    /*------------------------------------------
+    --Discription: Xuất Excel — khai báo cho edu.exporter (Corei/exportexcel.js)
+    -------------------------------------------*/
+    // Điều kiện lọc đang chọn, thành 2 dòng phụ đề (ô nào chưa chọn thì bỏ qua)
+    getFilterLines: function () {
+        if (!edu.exporter) return [];
+        return [
+            edu.exporter.filterText([
+                { label: "Hệ đào tạo", id: "dropSearch_HeDaoTao" },
+                { label: "Khóa đào tạo", id: "dropSearch_KhoaDaoTao" },
+                { label: "Chương trình", id: "dropSearch_ChuongTrinhDaoTao" },
+                { label: "Lớp quản lý", id: "dropSearch_LopQuanLy" }
+            ]),
+            edu.exporter.filterText([
+                { label: "Năm học", id: "dropSearch_NamHoc" },
+                { label: "Thời gian đào tạo", id: "dropSearch_ThoiGianDaoTao" },
+                { label: "Đối tượng", id: "dropSearch_DoiTuong" },
+                { label: "Trạng thái", id: "dropSearch_TrangThai" }
+            ])
+        ];
+    },
+    // Tên các mục đang chọn ở ô tìm kiếm ngoài màn hình (chụp lúc tìm kiếm)
+    getSelectedLoc: function () {
+        if (!edu.exporter) return {};
+        return {
+            hedt: edu.exporter.selectedTexts("dropSearch_HeDaoTao"),
+            khoa: edu.exporter.selectedTexts("dropSearch_KhoaDaoTao"),
+            ct: edu.exporter.selectedTexts("dropSearch_ChuongTrinhDaoTao"),
+            lop: edu.exporter.selectedTexts("dropSearch_LopQuanLy"),
+            trangthai: edu.exporter.selectedTexts("dropSearch_TrangThai")
+        };
+    },
+    getOpts_ExportKetQua: function () {
+        var me = this;
+        var loc = me.objLoc_TongHopDiem || {};
+        var dt = me.dtTongHopDiem || {};
+        var arrChiTiet = dt.rsChiTiet || [];
+        if (arrChiTiet.length === 0) {
+            edu.system.alert("Chưa có dữ liệu để xuất. Vui lòng chọn điều kiện và bấm Tìm kiếm trước.", "w");
+            return null;
+        }
+        return {
+            fileName: "TongHopDiemRenLuyen",
+            sheets: [
+                {
+                    name: "Kết quả rèn luyện",
+                    title: "DANH SÁCH KẾT QUẢ RÈN LUYỆN",
+                    subTitles: me.arrLoc_TongHopDiem,
+                    table: "tblTieuChi",
+                    aoColumns: me.aoColumns_TongHopDiem,
+                    // Cột 7-9: ngày sinh, giới tính, xếp loại (căn giữa); 10-11: điểm (số). Mã số giữ dạng chữ.
+                    colOptions: { 7: { align: "center" }, 8: { align: "center" }, 9: { align: "center" }, 10: { type: "number" }, 11: { type: "number" } },
+                    // Danh sách "lọc thêm khi xuất". Quy tắc chung: ngoài màn hình chọn gì thì tích sẵn đúng cái đó (selected),
+                    // không chọn gì thì để trống = xuất tất cả. Khoa quản lý/Xếp loại/Giới tính không có ô tương ứng ngoài màn hình nên luôn để trống.
+                    filters: [
+                        { label: "Hệ đào tạo", field: "DAOTAO_HEDAOTAO_TEN", selected: loc.hedt },
+                        { label: "Khóa đào tạo", field: "DAOTAO_KHOADAOTAO_TEN", selected: loc.khoa },
+                        { label: "Khoa quản lý", field: "DAOTAO_KHOAQUANLY_TEN" },
+                        { label: "Chương trình", field: "DAOTAO_TOCHUCCHUONGTRINH_TEN", selected: loc.ct },
+                        { label: "Lớp quản lý", field: "DAOTAO_LOPQUANLY_TEN", selected: loc.lop },
+                        { label: "Xếp loại", field: "XEPLOAI_TEN" },
+                        { label: "Giới tính", field: "GIOITINH_TEN" }
+                    ],
+                    data: arrChiTiet
+                },
+                {
+                    name: "Thống kê số lượng",
+                    title: "THỐNG KÊ SỐ LƯỢNG THEO XẾP LOẠI",
+                    // thống kê tính sẵn từ server trên toàn bộ kết quả tìm kiếm nên không khớp khi người dùng lọc thêm
+                    skipWhenFiltered: true,
+                    subTitles: me.arrLoc_TongHopDiem,
+                    table: "tblThongKe",
+                    aoColumns: me.aoColumns_ThongKe,
+                    colOptions: { 1: { type: "number", format: "int", sum: true } },
+                    data: dt.rsThongKe || []
+                }
+            ]
+        };
+    },
+    getOpts_ExportThieuDRL: function () {
+        var me = this;
+        var loc = me.objLoc_ThieuDRL || {};
+        if (!me.dtThieuDRL || me.dtThieuDRL.length === 0) {
+            edu.system.alert("Chưa có dữ liệu để xuất.", "w");
+            return null;
+        }
+        return {
+            fileName: "DanhSachThieuDiemRenLuyen",
+            name: "Thiếu điểm rèn luyện",
+            title: "DANH SÁCH SINH VIÊN CÒN THIẾU ĐIỂM RÈN LUYỆN",
+            subTitles: me.arrLoc_ThieuDRL,
+            table: "tblThieuDRL",
+            aoColumns: me.aoColumns_ThieuDRL,
+            filters: [
+                { label: "Hệ đào tạo", field: "TENHEDAOTAO", selected: loc.hedt },
+                { label: "Khóa đào tạo", field: "TENKHOA", selected: loc.khoa },
+                { label: "Khoa quản lý", field: "TENKHOAQUANLY" },
+                { label: "Chương trình", field: "TENCHUONGTRINH", selected: loc.ct },
+                { label: "Lớp", field: "TENLOP", selected: loc.lop },
+                { label: "Trạng thái", field: "TRANGTHAI_TEN", selected: loc.trangthai }
+            ],
+            // toàn bộ danh sách, không chỉ trang đang xem
+            data: me.dtThieuDRL
+        };
+    },
+
     renderTable_ThieuDRL_Paged: function () {
         var me = this;
         var allRows = me.dtThieuDRL || [];
@@ -316,50 +517,7 @@ TongHopDiem.prototype = {
         var jsonForm = {
             strTable_Id: "tblTieuChi",
             aaData: data,
-            aoColumns: [
-                {
-                    "mDataProp": "DAOTAO_HEDAOTAO_TEN"
-                },
-                {
-                    "mDataProp": "DAOTAO_KHOADAOTAO_TEN"
-                },
-                {
-                    "mDataProp": "DAOTAO_KHOAQUANLY_TEN",
-                },
-                {
-                    "mDataProp": "DAOTAO_TOCHUCCHUONGTRINH_TEN"
-                },
-                {
-                    "mDataProp": "DAOTAO_LOPQUANLY_TEN"
-                },
-                {
-                    "mDataProp": "MASO"
-                },
-                {
-                    "mData": "Daotao_Lopquanly_Ten",
-                    "mRender": function (nrow, aData) {
-                        return edu.util.returnEmpty(aData.HODEM) + " " + edu.util.returnEmpty(aData.TEN);
-                    }
-                },
-                {
-                    "mDataProp": "QLSV_NGUOIHOC_NGAYSINH"
-                },
-                {
-                    "mDataProp": "GIOITINH_TEN"
-                },
-                {
-                    "mDataProp": "XEPLOAI_TEN"
-                },
-                {
-                    "mDataProp": "DIEM"
-                },
-                {
-                    "mDataProp": "DIEMQUYDOI"
-                },
-                {
-                    "mDataProp": "GHICHU"
-                }
-            ]
+            aoColumns: me.aoColumns_TongHopDiem
         };
         edu.system.loadToTable_data(jsonForm);
     },
@@ -369,14 +527,7 @@ TongHopDiem.prototype = {
         var jsonForm = {
             strTable_Id: "tblThongKe",
             aaData: data,
-            aoColumns: [
-                {
-                    "mDataProp": "TEN"
-                },
-                {
-                    "mDataProp": "SOLUONG"
-                }
-            ]
+            aoColumns: me.aoColumns_ThongKe
         };
         edu.system.loadToTable_data(jsonForm);
         edu.system.insertSumAfterTable(jsonForm.strTable_Id, [2]);
@@ -391,38 +542,7 @@ TongHopDiem.prototype = {
                 iDataRow: iPager,
             },
             aaData: data,
-            aoColumns: [
-                {
-                    "mDataProp": "MASO"
-                },
-                {
-                    "mData": "HoTen",
-                    "mRender": function (nrow, aData) {
-                        return edu.util.returnEmpty(aData.HODEM) + " " + edu.util.returnEmpty(aData.TEN);
-                    }
-                },
-                {
-                    "mDataProp": "TRANGTHAI_TEN"
-                },
-                {
-                    "mDataProp": "TENLOP"
-                },
-                {
-                    "mData": "ChuongTrinh",
-                    "mRender": function (nrow, aData) {
-                        return edu.util.returnEmpty(aData.TENCHUONGTRINH) + " - " + edu.util.returnEmpty(aData.MACHUONGTRINH);
-                    }
-                },
-                {
-                    "mDataProp": "TENKHOA"
-                },
-                {
-                    "mDataProp": "TENKHOAQUANLY"
-                },
-                {
-                    "mDataProp": "TENHEDAOTAO"
-                }
-            ]
+            aoColumns: me.aoColumns_ThieuDRL
         };
         edu.system.loadToTable_data(jsonForm);
     },
@@ -750,10 +870,10 @@ TongHopDiem.prototype = {
 
     /*------------------------------------------
     --Discription: Fork của edu.system.showImportChungV2 dành riêng cho trang
-    -- Tổng hợp điểm — thêm thanh tiến trình "giả lập" 0→90% trong lúc đợi
-    -- response, nhảy 100% khi có kết quả. API SImport chỉ trả về 1 response
-    -- cuối nên không có % thật; thanh chỉ để trấn an người dùng và hiển thị
-    -- thời gian đã trôi.
+    -- Tổng hợp điểm. Dùng panel import dùng chung (edu.process.importPanel):
+    -- đồng hồ + số dòng khi đang chạy, xong hiện tổng hợp thành công/lỗi + xuất Excel.
+    -- (Thanh giả lập 0→90% chỉ còn là dự phòng khi máy khách chưa có processrun.js mới.)
+    -- API SImport chỉ trả về 1 response cuối nên không có % thật.
     -------------------------------------------*/
     showImport_WithProgress: function (strTenHienThi, strMaDanhMuc) {
         var me = this;
@@ -775,6 +895,8 @@ TongHopDiem.prototype = {
         row += '<div class="clear"></div>';
         row += '</div>';
 
+        // Panel tiến trình + kết quả import dùng chung (edu.process.importPanel); thanh giả lập bên dưới chỉ là dự phòng khi máy khách chưa có processrun.js mới
+        row += '<div id="zoneImportPanel" style="display:none"></div>';
         // Vùng thanh tiến trình (ẩn cho tới khi bấm "Thực hiện import")
         row += '<div id="zoneImportProgress_THD" style="display:none; margin:12px 0;">';
         row += '  <div class="clearfix" style="margin-bottom:4px">';
@@ -810,7 +932,22 @@ TongHopDiem.prototype = {
         $("#modalBaoCao").modal("show");
         edu.system.uploadImport(["importToCheck"], edu.system.getList_DataImport);
 
+        // Import chung chỉ gửi 1 lần và trả kết quả ở cuối (không có % thật) nên panel chỉ hiện đồng hồ + số dòng,
+        // xong hiện tổng hợp thành công/lỗi, bảng từng dòng và nút xuất Excel (thay cho thanh 0→90% giả lập trước đây)
+        var ip = null;
+        if (edu.process && typeof edu.process.importPanel === "function") {
+            ip = edu.process.importPanel({
+                container: "#zoneImportPanel",
+                title: strTenHienThi ? "Import " + strTenHienThi : "Kết quả import",
+                fileName: "KetQuaImportTongHopDiem",
+                source: function () { return edu.system.dtImport ? edu.system.dtImport[$("#dropSearch_BangA").val()] : null; },
+                onBack: function () { ip.reset(); $("#tblChuaImport").show(); $("#tblImportLoi").hide(); }
+            });
+        }
+        me._ip = ip;
+
         $('#dropSearch_BangA').on('change', function () {
+            if (ip) ip.reset();
             $("#tblChuaImport").show();
             $("#tblImportLoi").hide();
             edu.system.genTable_Import_View(edu.system.dtImport[$("#dropSearch_BangA").val()], "tblBangA");
@@ -820,10 +957,24 @@ TongHopDiem.prototype = {
         $("#modalBaoCao").off("hidden.bs.modal.THDProgress")
             .on("hidden.bs.modal.THDProgress", function () {
                 me._stopImportProgress();
+                if (ip) ip.reset();
             });
 
         $("#btnThucHienImport").off("click.THD").on("click.THD", function () {
-            me._startImportProgress();
+            if ($(this).hasClass("disabled")) return;
+            var strFile = edu.util.getValById("importToCheck"), strSheet = $("#dropSearch_BangA").val();
+            if (!strFile || !strSheet) {
+                var strLoi = !strFile ? "Vui lòng chọn file import trước khi thực hiện." : "Vui lòng chọn sheet import.";
+                if (ip) ip.fail(strLoi); else edu.system.alert(strLoi, "w");
+                return;
+            }
+            if (ip) {
+                var dtSheet = edu.system.dtImport ? edu.system.dtImport[strSheet] : null;
+                $("#btnThucHienImport").addClass("disabled").css("pointer-events", "none");
+                ip.start(dtSheet && dtSheet.length ? dtSheet.length : 0);
+                $("#overlay").hide();
+            }
+            else me._startImportProgress();
             GetDuLieuDanhMuc();
         });
 
@@ -864,7 +1015,8 @@ TongHopDiem.prototype = {
                 },
                 error: function (er) {
                     me._stopImportProgress();
-                    edu.system.alert(JSON.stringify(er), "w");
+                    if (ip) ip.fail("Không lấy được cấu hình danh mục import. Vui lòng thử lại.");
+                    else edu.system.alert(JSON.stringify(er), "w");
                 },
                 type: 'GET',
                 action: 'CMS_DanhMucThuocTinh/LayDanhSachDuLieuTheoBangDM',
@@ -881,6 +1033,19 @@ TongHopDiem.prototype = {
         function ImportData(obj_list) {
             edu.system.makeRequest({
                 success: function (data) {
+                    if (ip) {
+                        me._stopImportProgress();
+                        if (data.Success) {
+                            ip.finish(data.Data);
+                            $("#tblChuaImport").hide();
+                            $("#tblImportLoi").hide();
+                            if (sCallback != undefined && sCallback != "undefined" && sCallback != "") {
+                                eval(sCallback);
+                            }
+                        }
+                        else ip.fail("Import không thực hiện được: " + edu.util.returnEmpty(data.Message));
+                        return;
+                    }
                     me._finishImportProgress();
                     if (data.Success) {
                         data = data.Data;
@@ -932,7 +1097,12 @@ TongHopDiem.prototype = {
                 },
                 error: function (er) {
                     me._stopImportProgress();
-                    edu.system.alert(JSON.stringify(er), "w");
+                    if (ip) {
+                        var strMsg = "Import thất bại: không gọi được máy chủ.";
+                        if (er && er.status) strMsg = "Import thất bại: lỗi " + er.status + (er.statusText ? " - " + er.statusText : "") + ".";
+                        ip.fail(strMsg);
+                    }
+                    else edu.system.alert(JSON.stringify(er), "w");
                 },
                 type: 'POST',
                 action: obj_list.action,

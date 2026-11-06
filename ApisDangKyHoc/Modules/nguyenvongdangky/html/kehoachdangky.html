@@ -100,6 +100,40 @@
     .radio-inline input[type="radio"] {
         margin-left: 0px;
     }
+
+    /* Form dài (bảng Phạm vi học phần hàng trăm dòng) bị CẮT CỤT, mất cả dòng dữ liệu cuối lẫn footer:
+       .add-absolue (styles-content.css:6715) là position:absolute nên form không làm .content-wrapper
+       cao thêm, mà .content-wrapper cao cố định 10000px (styles.css:3094) + overflow:clip (indexi.aspx)
+       => phần form vượt 10000px bị cắt, cuộn không tới. Đưa form vào luồng để wrapper giãn theo form.
+       Vùng danh sách (#zonebatdau) bị ẩn khi mở form nên không chồng lấn. */
+    #zoneEdit.add-absolue {
+        position: relative !important;
+        top: auto !important;
+    }
+
+    /* Footer (Xóa/Đóng/Lưu) luôn sát đáy màn hình khi form dài: class footer-dinh do
+       KeHoach.initFooter_Dinh (kehoachdangky.js) bật/tắt theo vị trí cuộn. Dùng position:fixed
+       thay vì sticky vì sticky chỉ chạy khi KHÔNG tổ tiên nào có overflow (.form-container có
+       overflow:hidden !important ở styles-content.css:397, shell lại hay thêm overflow) nên không ổn định.
+       z-index 1030 < backdrop modal (1040) => modal chọn học phần vẫn phủ lên footer. */
+    #zoneEdit .box-footer.footer-dinh {
+        position: fixed;
+        bottom: 0;
+        z-index: 1030;
+        box-shadow: 0 -4px 8px rgba(15, 23, 42, 0.08);
+    }
+
+    /* Chừa chỗ bên phải cho bong bóng chatbot (chatbot-iu.js, fixed góc phải) khỏi che nút Lưu.
+       Selector dài để thắng indexi.aspx: #main-content-wrapper .box-footer { padding: 10px 20px !important } */
+    html body.skin-blue #main-content-wrapper #zoneEdit .box-footer {
+        padding-right: 80px !important;
+    }
+
+    /* select2 base có z-index 99999 -> trồi lên trên footer khi cuộn ngang qua.
+       isolation nhốt toàn bộ box-body vào stacking context riêng, footer z-index 1030 luôn nằm trên. */
+    #zoneEdit .box-body {
+        isolation: isolate;
+    }
 </style>
 <!-- Main content -->
 <section class="content aps-dangkyhoc">
@@ -479,7 +513,7 @@
     <!-- load from js -->
 </div>
 <!-- page script -->
-<script src="modules/nguyenvongdangky/script/kehoachdangky.js?v=1.0.0.1"></script>
+<script src="modules/nguyenvongdangky/script/kehoachdangky.js?v=1.0.0.2"></script>
 <script type="text/javascript">
     var main_doc = {};
     main_doc['KeHoach'] = new KeHoach();

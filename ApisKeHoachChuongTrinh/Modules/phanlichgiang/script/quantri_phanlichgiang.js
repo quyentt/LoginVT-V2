@@ -1,4 +1,4 @@
-﻿/*----------------------------------------------
+/*----------------------------------------------
 --Author: 
 --Phone: 
 --Date of created: 
@@ -101,6 +101,10 @@ PhanLichGiang.prototype = {
                 me.getList_LichHoc();
                 var dataTemp = edu.util.objGetOneDataInData(strId, me.dtLopHocPhan, "ID");
                 var strHienThi = dataTemp.TENLOPHOCPHAN;
+                me.strHocPhan_Id = dataTemp.IDHOCPHAN;
+                if (edu.util.checkValue(dataTemp.IDHOCPHAN)) {
+                    $("#dropSearch_HocPhan").val(dataTemp.IDHOCPHAN).trigger("change");
+                }
                 me.getList_BaiHoc(dataTemp.IDHOCPHAN);
                 me.strHienThi = strHienThi;
                 $(".lblLichHoc_HP").html(strHienThi);
@@ -112,11 +116,16 @@ PhanLichGiang.prototype = {
             $(window).scrollTop(10); me.toggle_BatDau();
         });
         $("#btnAdd_BaiHoc").click(function () {
-            if (edu.util.checkValue(edu.util.getValById("dropSearch_HocPhan"))) {
+            var strHocPhan_Id = edu.util.getValById("dropSearch_HocPhan");
+            if (!edu.util.checkValue(strHocPhan_Id)) {
+                strHocPhan_Id = me.strHocPhan_Id;
+            }
+            if (edu.util.checkValue(strHocPhan_Id)) {
+                me.strHocPhan_Id = strHocPhan_Id;
                 me.toggle_Add_BaiHoc();
-                me.getList_BaiHoc();
+                me.getList_BaiHoc(strHocPhan_Id);
             } else {
-                edu.system.alert("Bạn phải chọn học phần")
+                edu.system.alert("Bạn phải chọn học phần");
             }
         });
         $(".btnAddnew_BaiHoc").click(function () {
@@ -1261,6 +1270,8 @@ PhanLichGiang.prototype = {
     getList_BaiHoc: function (strHocPhan_Id) {
         var me = this;
         if (!edu.util.checkValue(strHocPhan_Id)) strHocPhan_Id = edu.util.getValById("dropSearch_HocPhan");
+        if (!edu.util.checkValue(strHocPhan_Id)) strHocPhan_Id = me.strHocPhan_Id;
+        me.strHocPhan_Id = strHocPhan_Id;
         edu.system.makeRequest({
             success: function (data) {
                 if (data.Success) {
@@ -1303,12 +1314,17 @@ PhanLichGiang.prototype = {
         var me = this;
         var obj_notify = {};
 
+        var strHocPhan_Id = edu.util.getValById("dropSearch_HocPhan");
+        if (!edu.util.checkValue(strHocPhan_Id)) {
+            strHocPhan_Id = me.strHocPhan_Id;
+        }
+
         var obj_save = {
             'action': 'KHCT_BaiHoc/ThemMoi',
 
 
             'strId': me.strBaiHoc_HocPhan_Id,
-            'strDaoTao_HocPhan_Id': edu.util.getValById("dropSearch_HocPhan"),
+            'strDaoTao_HocPhan_Id': strHocPhan_Id,
             'strDaoTao_ToChucCT_Id': "",
             'strNoiDung': edu.util.getValById("txtCT_NoiDung"),
             'strTenBai': edu.util.getValById("txtTen"),
@@ -1330,7 +1346,7 @@ PhanLichGiang.prototype = {
                     else {
                         edu.system.alert("Cập nhật thành công!");
                     }
-                    me.getList_BaiHoc();
+                    me.getList_BaiHoc(strHocPhan_Id);
                 }
                 else {
                     edu.system.alert(obj_save.action + " (er): " + data.Message);

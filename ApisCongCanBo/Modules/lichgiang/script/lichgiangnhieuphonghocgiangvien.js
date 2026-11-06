@@ -340,9 +340,102 @@ LichGiangNhieuPhong.prototype = {
             }
         });
 
+        // ── Chọn nhiều giảng viên bằng ô tích: tích liên tục, gõ tìm người tiếp theo mà không đóng danh sách ──
+        $("#btnChonGV_Mo").on("click", function (e) {
+            if ($(e.target).closest(".chip i").length) return;
+            if ($("#zoneChonGV_Pa").is(":visible")) me.dongChonGV(); else me.moChonGV();
+        }).on("keydown", function (e) {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); me.moChonGV(); }
+        });
+        // Bấm dấu x trên 1 chip → bỏ chọn người đó
+        $("#lblChonGV_Chips").on("click", ".chip i", function (e) {
+            e.stopPropagation();
+            var strId = $(this).attr("data-id");
+            me.datChonGV(me.getDSChonGV().filter(function (id) { return id !== strId; }));
+            if ($("#zoneChonGV_Pa").is(":visible")) me.veDSChonGV();
+        });
+        $("#txtChonGV_Tim").on("input", function () { me.veDSChonGV(); })
+            .on("keydown", function (e) { if (e.key === 'Escape') me.dongChonGV(); });
+        $("#zoneChonGV_DS").on("change", "input[type=checkbox]", function () {
+            var strId = this.value;
+            var arr = me.getDSChonGV().filter(function (id) { return id !== strId; });
+            if (this.checked) arr.push(strId);
+            $(this).closest("label").toggleClass("chon", this.checked);
+            me.datChonGV(arr);
+        });
+        $("#btnChonGV_TatCa").on("click", function () {
+            var arr = me.getDSChonGV();
+            (me.arrLocChonGV || []).forEach(function (cb) { if (arr.indexOf(cb.ID) === -1) arr.push(cb.ID); });
+            me.datChonGV(arr);
+            me.veDSChonGV();
+        });
+        $("#btnChonGV_BoHet").on("click", function () {
+            me.datChonGV([]);
+            me.veDSChonGV();
+        });
+        $("#btnChonGV_Xong").on("click", function () { me.dongChonGV(); });
+        // Bấm ra ngoài → đóng danh sách
+        $(document).off("mousedown.lgvChonGV").on("mousedown.lgvChonGV", function (e) {
+            if ($("#zoneChonGV_Pa").is(":visible") && !$(e.target).closest("#zoneChonGV").length) me.dongChonGV();
+        });
+        // Chỗ khác đổi giá trị select ẩn (Xem tất cả lịch giảng xoá chọn...) → vẽ lại chip
+        $("#dropSearch_CanBoMulti").on("change.select2", function () { me.veChipChonGV(); });
+
+        // ── Tra bận / rỗi theo ngày / giai đoạn ──
+        // Bản cũ: chọn thứ → điền 1 ngày của tuần đang xem. Nay thứ là bộ lọc trong khoảng ngày (xem getDSNgayBanRoi)
+        //$("#dropBR_Thu").change(function () { ... $("#txtBR_Ngay").val(...) });
+        //$("#txtBR_Ngay").on("input change", function (e) { if (e.originalEvent) $("#dropBR_Thu").val(''); });
+        // Nút "Tuần đang xem" → Từ/Đến = tuần đang chọn trên lịch
+        $("#btnBR_TuanNay").click(function () {
+            if (!me.strNgayBatDau) return;
+            $("#txtBR_TuNgay").val(me.vnToIso(me.strNgayBatDau));
+            $("#txtBR_DenNgay").val(me.vnToIso(me.strNgayKetThuc));
+        });
+        // Đến < Từ → kéo Đến về bằng Từ
+        $("#txtBR_TuNgay, #txtBR_DenNgay").on("change", function () {
+            var strTu = $("#txtBR_TuNgay").val(), strDen = $("#txtBR_DenNgay").val();
+            if (strTu && strDen && strDen < strTu) $("#txtBR_DenNgay").val(strTu);
+        });
+        $("#btnBR_Tra").click(function () {
+            me.traBanRoi();
+        });
+        $("#zoneBanRoi").on("click", ".btn-loc", function () {
+            me.strLocBanRoi = $(this).attr("data-loc");
+            me.genHtml_BanRoi();
+        });
+        $("#zoneBanRoi").on("click", ".btn-xuat", function () {
+            me.xuatExcel_BanRoi();
+        });
+        // Bấm 1 thẻ lịch trong bảng bận/rỗi → mở modal chi tiết như trên lưới tuần
+        $("#zoneBanRoi").on("click", ".lgv-br-lich", function () {
+            var kq = me.objKQBanRoi;
+            var dong = kq && kq.arrDong[parseInt($(this).attr("data-dong"), 10)];
+            var e = dong && dong.arrLich[parseInt($(this).attr("data-lich"), 10)];
+            if (e) me.showScheduleDetail(e.ID, dong.cb.ID, e.NGAYHOC, e.IDLOPHOCPHAN, e);
+        });
+        $("#zoneBanRoi").on("click", ".btn-ve-tuan", function () {
+            me.dongBanRoi();
+        });
+
         // Initialize
         me.getList_DonVi();
-        me.genCombo_CanBo();
+        //me.genCombo_CanBo(); // → gọi sau khi nạp xong danh mục tình trạng (để danh sách đầu tiên đã bỏ người nghỉ việc)
+        me.genCombo_TinhTrang(function () { me.genCombo_CanBo(); });
+
+        // select2 4.0.3 khóa cuộn các khung cha khi mở dropdown và chỉ gỡ khóa ở khung ĐANG có thanh cuộn lúc đóng.
+        // Chọn xong → lưới đổi thành "Đang tải..." (trang ngắn lại, hết thanh cuộn) → khóa không được gỡ → trang đứng im.
+        // → Tự gỡ khóa ở mọi khung cha mỗi khi một ô select2 của trang đóng lại.
+        $(".aps-lichgiang").off("select2:close.lgvCuon").on("select2:close.lgvCuon", "select", function () {
+            $(this).parents().off("scroll.select2");
+        });
+
+        // Đổi tình trạng nhân sự → nạp lại danh sách giảng viên của khoa đang chọn (bỏ chọn nhiều như khi đổi khoa)
+        $("#dropSearch_TinhTrang").change(function () {
+            me.loadCanBoByDonVi($("#dropSearch_DonVi").val() || '');
+            if (me.strNgayBatDau && me.strNgayKetThuc) {
+                me.getList_TuanHienTai(me.strNgayBatDau, me.strNgayKetThuc, me.strNgayBatDau);
+            }
+        });
     },
 
     navigateWeek: function (days) {
@@ -385,6 +478,8 @@ LichGiangNhieuPhong.prototype = {
 
     getList_TuanHienTai: function (strNgayBatDau, strNgayKetThuc, strNgayDangChon) {
         var me = this;
+        // Xem lịch tuần (bấm Xem / chọn tuần) → đóng bảng bận/rỗi nếu đang mở
+        if ($("#zoneBanRoi").is(":visible")) me.dongBanRoi();
         me.iCurrentPage = 1;
         me.dtLichHoc = [];
         me.arrLopHocPhanMau = [];
@@ -596,7 +691,7 @@ LichGiangNhieuPhong.prototype = {
             pageIndex: 1,
             pageSize: 1000000,
             strCoCauToChuc_Id: strDonVi_Id,
-            strTinhTrangNhanSu_Id: '',
+            strTinhTrangNhanSu_Id: $("#dropSearch_TinhTrang").val() || '', // mặc định Đang làm việc
             strNguoiThucHien_Id: '',
             dLaCanBoNgoaiTruong: -1
         };
@@ -701,6 +796,32 @@ LichGiangNhieuPhong.prototype = {
         });
     },
 
+    // Danh mục tình trạng nhân sự (NS.TTNS, cùng ô "Tình trạng làm việc" bên Nhân sự). Mặc định chọn mục tên
+    // "Đang làm việc / Đang công tác" → danh sách giảng viên bỏ thầy cô đã nghỉ. Không tìm thấy thì để Tất cả.
+    genCombo_TinhTrang: function (fnXong) {
+        var me = this;
+        var bXong = false;
+        var fnMotLan = function () { if (bXong) return; bXong = true; if (typeof fnXong === 'function') fnXong(); };
+        edu.system.loadToCombo_DanhMucDuLieu(constant.setting.CATOR.NS.TTNS, "dropSearch_TinhTrang", "", function (data) {
+            var arr = data || [];
+            var objMacDinh = arr.find(function (x) { return /^\s*đang\s*(làm\s*việc|công\s*tác)/i.test(x.TEN || ''); })
+                || arr.find(function (x) { return /(làm\s*việc|công\s*tác)/i.test(x.TEN || '') && !/nghỉ|thôi|chuyển/i.test(x.TEN || ''); });
+            console.log("Tình trạng nhân sự:", arr.map(function (x) { return x.TEN; }), "→ mặc định:", objMacDinh ? objMacDinh.TEN : '(tất cả)');
+            var $drop = $("#dropSearch_TinhTrang");
+            if (objMacDinh) $drop.val(objMacDinh.ID);
+            if ($drop.hasClass("select2-hidden-accessible")) $drop.select2("destroy");
+            $drop.select2({ width: '100%', minimumResultsForSearch: Infinity });
+            // Lưới tuần đầu tiên có thể đã tải trước khi có danh mục (chưa lọc) → tải lại với tình trạng mặc định
+            if (objMacDinh && bXong && me.strNgayBatDau && me.strNgayKetThuc) {
+                me.loadCanBoByDonVi($("#dropSearch_DonVi").val() || '');
+                me.getList_TuanHienTai(me.strNgayBatDau, me.strNgayKetThuc, me.strNgayBatDau);
+            }
+            fnMotLan();
+        }, "Tất cả tình trạng nhân sự");
+        // Danh mục lỗi / chậm → vẫn nạp danh sách giảng viên (không lọc tình trạng)
+        setTimeout(fnMotLan, 5000);
+    },
+
     genCombo_CanBo: function () {
         var me = this;
 
@@ -711,7 +832,7 @@ LichGiangNhieuPhong.prototype = {
             pageIndex: 1,
             pageSize: 1000000,
             strCoCauToChuc_Id: '',
-            strTinhTrangNhanSu_Id: '',
+            strTinhTrangNhanSu_Id: $("#dropSearch_TinhTrang").val() || '',
             strNguoiThucHien_Id: '',
             dLaCanBoNgoaiTruong: -1
         };
@@ -826,19 +947,100 @@ LichGiangNhieuPhong.prototype = {
         }
         $multi.html('');
 
-        var ajaxCfg = me.buildCanBoSelect2Ajax();
-        $multi.select2($.extend({}, ajaxCfg, {
-            placeholder: "Chọn nhiều giảng viên...",
-            allowClear: true,
-            multiple: true,
-            closeOnSelect: false,
-            width: '100%'
-        }));
+        // Bản cũ dùng select2 multiple: mỗi lần chọn xong phải bấm ra ngoài mới tìm được người tiếp theo
+        // → thay bằng danh sách ô tích (veChonGV). Select vẫn giữ để các chỗ khác đọc .val() như cũ.
+        //var ajaxCfg = me.buildCanBoSelect2Ajax();
+        //$multi.select2($.extend({}, ajaxCfg, {
+        //    placeholder: "Chọn nhiều giảng viên...",
+        //    allowClear: true,
+        //    multiple: true,
+        //    closeOnSelect: false,
+        //    width: '100%'
+        //}));
 
-        if (prevMulti && prevMulti.length) {
-            me.ensureSelectedOption($multi, prevMulti);
-            $multi.val(prevMulti).trigger('change.select2');
+        me.datChonGV(prevMulti || [], true);
+    },
+
+    // ═══════════ Chọn nhiều giảng viên bằng ô tích ═══════════
+    // Nguồn = me.dtCanBoList (theo khoa/đơn vị đang chọn). Giá trị đã chọn lưu trong select ẩn #dropSearch_CanBoMulti.
+    iMaxDongChonGV: 300,
+
+    // Bỏ dấu + chữ thường để tìm "nguyen tuan anh" vẫn ra "Nguyễn Tuấn Anh"
+    boDau: function (str) {
+        return String(str || '').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase();
+    },
+
+    getDSChonGV: function () {
+        return $("#dropSearch_CanBoMulti").val() || [];
+    },
+
+    // Ghi danh sách ID đã chọn vào select ẩn. bKhongBaoDoi = true khi chỉ dựng lại (không bắn change)
+    datChonGV: function (arrIds, bKhongBaoDoi) {
+        var me = this;
+        var objCo = {};
+        (me.dtCanBoList || []).forEach(function (cb) { objCo[cb.ID] = cb; });
+        var html = '';
+        arrIds.forEach(function (id) {
+            var cb = objCo[id];
+            if (cb) html += '<option value="' + cb.ID + '" selected>' + me.formatCanBoLabel(cb) + '</option>';
+        });
+        var $multi = $("#dropSearch_CanBoMulti").html(html);
+        if (bKhongBaoDoi) me.veChipChonGV();
+        else $multi.trigger('change');
+    },
+
+    veChipChonGV: function () {
+        var me = this;
+        var arrIds = me.getDSChonGV();
+        var objCo = {};
+        (me.dtCanBoList || []).forEach(function (cb) { objCo[cb.ID] = cb; });
+        var html = '';
+        if (arrIds.length === 0) {
+            html = '<span class="ph">Chọn nhiều giảng viên...</span>';
+        } else {
+            arrIds.slice(0, 4).forEach(function (id) {
+                var cb = objCo[id];
+                if (cb) html += '<span class="chip">' + ((cb.HODEM || '') + ' ' + (cb.TEN || '')).trim() + '<i class="fa-solid fa-xmark" data-id="' + id + '" title="Bỏ chọn"></i></span>';
+            });
+            if (arrIds.length > 4) html += '<span class="chip them">+' + (arrIds.length - 4) + ' giảng viên</span>';
         }
+        $("#lblChonGV_Chips").html(html);
+        $("#lblChonGV_Dem").text(arrIds.length ? 'Đã chọn ' + arrIds.length : '');
+    },
+
+    veDSChonGV: function () {
+        var me = this;
+        var strTim = me.boDau($("#txtChonGV_Tim").val()).trim();
+        var objChon = {};
+        me.getDSChonGV().forEach(function (id) { objChon[id] = true; });
+        var arrLoc = (me.dtCanBoList || []).filter(function (cb) {
+            return !strTim || me.boDau(me.formatCanBoLabel(cb)).indexOf(strTim) !== -1;
+        });
+        me.arrLocChonGV = arrLoc;
+        var html = '';
+        arrLoc.slice(0, me.iMaxDongChonGV).forEach(function (cb) {
+            var bChon = !!objChon[cb.ID];
+            var strDonVi = cb.DAOTAO_COCAUTOCHUC_TEN || '';
+            html += '<label class="' + (bChon ? 'chon' : '') + '"><input type="checkbox" value="' + cb.ID + '"' + (bChon ? ' checked' : '') + '>';
+            html += '<span>' + ((cb.HODEM || '') + ' ' + (cb.TEN || '')).trim() + (cb.MASO ? ' - ' + cb.MASO : '') + (strDonVi ? ' <small>· ' + strDonVi + '</small>' : '') + '</span></label>';
+        });
+        if (arrLoc.length === 0) html = '<div class="rong">' + ((me.dtCanBoList || []).length ? 'Không tìm thấy giảng viên phù hợp' : 'Đang tải danh sách giảng viên...') + '</div>';
+        else if (arrLoc.length > me.iMaxDongChonGV) html += '<div class="rong">Còn ' + (arrLoc.length - me.iMaxDongChonGV) + ' giảng viên nữa — gõ thêm để lọc</div>';
+        $("#zoneChonGV_DS").html(html);
+        $("#btnChonGV_TatCa").html('<i class="fa-solid fa-check-double me-1"></i>Chọn tất cả' + (strTim ? ' kết quả lọc' : '') + ' (' + arrLoc.length + ')');
+    },
+
+    moChonGV: function () {
+        var me = this;
+        $("#zoneChonGV").addClass("mo");
+        $("#zoneChonGV_Pa").show();
+        me.veDSChonGV();
+        $("#txtChonGV_Tim").trigger("focus");
+    },
+
+    dongChonGV: function () {
+        $("#zoneChonGV").removeClass("mo");
+        $("#zoneChonGV_Pa").hide();
     },
 
     loadCanBoByDonVi: function (donViId) {
@@ -851,7 +1053,7 @@ LichGiangNhieuPhong.prototype = {
             pageIndex: 1,
             pageSize: 1000000,
             strCoCauToChuc_Id: donViId || '',
-            strTinhTrangNhanSu_Id: '',
+            strTinhTrangNhanSu_Id: $("#dropSearch_TinhTrang").val() || '',
             strNguoiThucHien_Id: '',
             dLaCanBoNgoaiTruong: -1
         };
@@ -862,7 +1064,8 @@ LichGiangNhieuPhong.prototype = {
             me.dtCanBoList = arr;
             me.renderCanBoDropdown(arr);
             $("#dropSearch_CanBo").val('').trigger('change');
-            $("#dropSearch_CanBoMulti").val(null);
+            //$("#dropSearch_CanBoMulti").val(null);
+            me.datChonGV([], true); // đổi khoa → bỏ chọn nhiều giảng viên (như cũ)
         });
     },
 
@@ -1027,14 +1230,15 @@ LichGiangNhieuPhong.prototype = {
         console.log("Grid đã tạo với format Sáng/Chiều/Tối × giảng viên");
     },
 
-    showScheduleDetail: function (strId, canBoId, date, lopHocPhan) {
+    // objLichTruyen: lịch đã có sẵn (bảng bận/rỗi — không nằm trong dtLichHoc của lưới tuần)
+    showScheduleDetail: function (strId, canBoId, date, lopHocPhan, objLichTruyen) {
         var me = this;
 
         console.log("=== Show Schedule Detail ===");
         console.log("ID:", strId, "CanBo:", canBoId, "Date:", date, "LopHocPhan:", lopHocPhan);
         console.log("Total schedules:", me.dtLichHoc.length);
 
-        var objLich = me.dtLichHoc.find(function(e) { return e.ID === strId; });
+        var objLich = objLichTruyen || me.dtLichHoc.find(function(e) { return e.ID === strId; });
 
         if (!objLich && canBoId && date && lopHocPhan) {
             console.log("Searching by canBo, date, and lophocphan...");
@@ -1109,6 +1313,557 @@ LichGiangNhieuPhong.prototype = {
             console.error("Error opening modal:", e);
             $("#modal_detail").modal("show");
         }
+    },
+
+    // ═══════════ Tra bận / rỗi theo ngày ═══════════
+    // Phạm vi giảng viên = đúng bộ lọc đang chọn (khoa/đơn vị, 1 giảng viên hoặc nhiều giảng viên) qua getList_CanBo.
+    // Mỗi giảng viên 1 lần gọi LayDSLichGiang cho cả khoảng ngày (tối đa iMaxSongSong cùng lúc, có cache).
+    // Bận = có lịch chạm vào khung tiết đã chọn; Rỗi = không có lịch nào trong khung đó.
+    iMaxSongSong: 6,
+    objCacheMotNgay: {},
+    strLocBanRoi: 'all',
+    arrBuoiBR: [
+        { key: 'sang', ten: 'Sáng', tu: 1, den: 6 },
+        { key: 'chieu', ten: 'Chiều', tu: 7, den: 10 },
+        { key: 'toi', ten: 'Tối', tu: 11, den: 15 }
+    ],
+    // Màu thẻ lịch theo lớp học phần — trùng .schedule-event.color-1..5 trên lưới
+    arrMauThe: ['#223771', '#ff6b35', '#ec4c00', '#5a7adb', '#3c5398'],
+
+    // dd/MM/yyyy → Date (null nếu sai định dạng)
+    toDate: function (str) {
+        var arr = (str || '').split('/');
+        if (arr.length !== 3) return null;
+        return new Date(arr[2], arr[1] - 1, arr[0]);
+    },
+
+    getThu: function (strNgay) {
+        var d = this.toDate(strNgay);
+        return d ? ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'][d.getDay()] : '';
+    },
+
+    getTenCanBo: function (cb) {
+        return ((cb.HODEM || '') + ' ' + (cb.TEN || '')).trim() || cb.TENGIANGVIEN || '';
+    },
+
+    getMauThe: function (event) {
+        var strClass = this.getColorClass(event.IDLOPHOCPHAN);
+        return this.arrMauThe[(parseInt(strClass.replace('color-', ''), 10) || 1) - 1];
+    },
+
+    // dd/MM/yyyy ↔ yyyy-MM-dd (ô input type="date")
+    vnToIso: function (strNgay) {
+        var arr = (strNgay || '').split('/');
+        return arr.length === 3 ? arr[2] + '-' + arr[1] + '-' + arr[0] : '';
+    },
+
+    isoToVn: function (strNgay) {
+        var arr = (strNgay || '').split('-');
+        return arr.length === 3 ? arr[2] + '/' + arr[1] + '/' + arr[0] : '';
+    },
+
+    // Lịch 1 giảng viên trong khoảng ngày (1 request cho cả khoảng). callback(arr, bLoi)
+    getLich_KhoangNgay: function (strCanBo_Id, strTu, strDen, callback) {
+        var me = this;
+        var strKey = strCanBo_Id + '|' + strTu + '|' + strDen;
+        var objCache = me.objCacheMotNgay[strKey];
+        if (objCache && (new Date().getTime() - objCache.t) < 5 * 60 * 1000) { callback(objCache.data, false); return; }
+        edu.system.makeRequest({
+            success: function (data) {
+                if (!data || !data.Success) { callback([], true); return; }
+                var arr = data.Data || [];
+                arr.forEach(function (e) { e.IDCANBO = strCanBo_Id; });
+                me.objCacheMotNgay[strKey] = { t: new Date().getTime(), data: arr };
+                callback(arr, false);
+            },
+            error: function () { callback([], true); },
+            type: 'GET',
+            action: 'NS_ThongTinCanBo/LayDSLichGiang',
+            contentType: true,
+            data: {
+                'action': 'NS_ThongTinCanBo/LayDSLichGiang',
+                'type': 'GET',
+                'strNhanSu_HoSoCanBo_Id': strCanBo_Id,
+                'strNgayBatDau': strTu,
+                'strNgayKetThuc': strDen,
+                'strNgayDangChon': strTu,
+            },
+            fakedb: []
+        }, false, false, false, null);
+    },
+
+    // Các ngày cần xét từ Từ ngày / Đến ngày / Thứ. Không nhập ngày mà chọn thứ → thứ đó của tuần đang xem.
+    // Trả { arrNgay, strThu } hoặc { strLoi }
+    iMaxNgayKhoang: 186,   // khoảng tối đa ~1 học kỳ (mỗi giảng viên vẫn chỉ 1 request)
+    iMaxCotNgay: 31,       // số cột ngày tối đa trên bảng
+    getDSNgayBanRoi: function () {
+        var me = this;
+        var strTu = me.isoToVn($("#txtBR_TuNgay").val());
+        var strDen = me.isoToVn($("#txtBR_DenNgay").val()) || strTu;
+        var strThu = $("#dropBR_Thu").val() || '';
+        var strTenThu = strThu !== '' ? $("#dropBR_Thu option:selected").text() : '';
+        if (!strTu && strThu !== '') { strTu = me.strNgayBatDau; strDen = me.strNgayKetThuc; }
+        var dTu = me.toDate(strTu), dDen = me.toDate(strDen);
+        if (!dTu || !dDen) return { strLoi: 'Vui lòng chọn Từ ngày (hoặc bấm "Tuần đang xem", hoặc chọn Thứ)' };
+        if ((dDen - dTu) / 86400000 + 1 > me.iMaxNgayKhoang) return { strLoi: 'Khoảng ngày tối đa ' + me.iMaxNgayKhoang + ' ngày' };
+        var arrNgay = me.getDaysInWeek(strTu, strDen).map(function (d) { return d.date; });
+        if (strThu !== '') arrNgay = arrNgay.filter(function (s) { return String(me.toDate(s).getDay()) === strThu; });
+        if (arrNgay.length === 0) return { strLoi: 'Khoảng ngày đã chọn không có ' + strTenThu + ' nào' };
+        var strCanhBao = '';
+        if (arrNgay.length > me.iMaxCotNgay) {
+            strCanhBao = 'Bảng hiện tối đa ' + me.iMaxCotNgay + ' ngày — đang tính tới ' + arrNgay[me.iMaxCotNgay - 1] + '. Hãy chọn Thứ hoặc rút ngắn khoảng ngày.';
+            arrNgay = arrNgay.slice(0, me.iMaxCotNgay);
+        }
+        return { arrNgay: arrNgay, strThu: strTenThu, strCanhBao: strCanhBao };
+    },
+
+    // Mô tả khoảng đang tra: "T2 26/10/2026" hoặc "T2 26/10/2026 → CN 01/11/2026 (7 ngày, chỉ Thứ 2)"
+    getMoTaKhoang: function (kq) {
+        var me = this;
+        var a = kq.arrNgay;
+        if (a.length === 1) return me.getThu(a[0]) + ' ' + a[0];
+        return me.getThu(a[0]) + ' ' + a[0] + ' → ' + me.getThu(a[a.length - 1]) + ' ' + a[a.length - 1] + ' (' + a.length + ' ngày' + (kq.strThu ? ', chỉ ' + kq.strThu : '') + ')';
+    },
+
+    traBanRoi: function () {
+        var me = this;
+        var objNgay = me.getDSNgayBanRoi();
+        if (objNgay.strLoi) {
+            edu.system.alert(objNgay.strLoi);
+            return;
+        }
+        var arrNgay = objNgay.arrNgay;
+        // Không lọc gì = cả trường (hàng nghìn giảng viên, mỗi người 1 request) → bắt chọn khoa/đơn vị hoặc giảng viên
+        var bCoLoc = $("#dropSearch_DonVi").val() || $("#dropSearch_CanBo").val() || ($("#dropSearch_CanBoMulti").val() || []).length > 0;
+        if (!bCoLoc) {
+            edu.system.alert("Vui lòng chọn khoa/đơn vị hoặc giảng viên trước khi tra bận / rỗi");
+            return;
+        }
+        var arrTiet = ($("#dropBR_Buoi").val() || '1-15').split('-');
+        var iTu = parseInt(arrTiet[0], 10), iDen = parseInt(arrTiet[1], 10);
+        var strTenBuoi = $("#dropBR_Buoi option:selected").text();
+        var iToken = me.iTokenBanRoi = (me.iTokenBanRoi || 0) + 1;
+        me.strLocBanRoi = 'all';
+        var objCoNgay = {};
+        arrNgay.forEach(function (s) { objCoNgay[s] = true; });
+        var strTu = arrNgay[0], strDen = arrNgay[arrNgay.length - 1];
+        var kqTam = { arrNgay: arrNgay, strThu: objNgay.strThu };
+
+        var $zone = $("#zoneBanRoi");
+        $zone.html('<div class="lgv-br-rong"><i class="fas fa-spinner fa-spin me-2"></i>Đang tải danh sách giảng viên...</div>').show();
+        $(".schedule-grid-container").hide();
+
+        me.getList_CanBo(function () {
+            if (iToken !== me.iTokenBanRoi) return;
+            var arrCanBo = (me.dtCanBoFull || []).slice();
+            if (arrCanBo.length === 0) {
+                $zone.html('<div class="lgv-br-rong">Không có giảng viên nào theo bộ lọc. Hãy chọn khoa/đơn vị hoặc giảng viên.</div>');
+                return;
+            }
+            var arrDong = arrCanBo.map(function (cb) { return { cb: cb, arrLich: [], objNgayBan: {}, iNgayBan: 0, bBan: false, bLoi: false }; });
+            var iTiep = 0, iXong = 0;
+            $zone.html('<div class="lgv-br-rong"><i class="fas fa-spinner fa-spin me-2"></i>Đang tải lịch ' + me.getMoTaKhoang(kqTam) + '... <span class="lgv-br-tiendo"></span></div>');
+            var fnChay = function () {
+                if (iToken !== me.iTokenBanRoi || iTiep >= arrDong.length) return;
+                var dong = arrDong[iTiep++];
+                me.getLich_KhoangNgay(dong.cb.ID, strTu, strDen, function (arr, bLoi) {
+                    if (iToken !== me.iTokenBanRoi) return;
+                    dong.bLoi = bLoi;
+                    // Chỉ giữ lịch rơi vào các ngày đang xét (đã lọc thứ), xếp theo ngày rồi giờ
+                    dong.arrLich = arr.filter(function (e) { return objCoNgay[e.NGAYHOC]; }).sort(function (a, b) {
+                        return (me.toDate(a.NGAYHOC) - me.toDate(b.NGAYHOC)) || ((a.GIOBATDAU * 60 + a.PHUTBATDAU) - (b.GIOBATDAU * 60 + b.PHUTBATDAU));
+                    });
+                    dong.arrLich.forEach(function (e) {
+                        var t1 = parseInt(e.TIETBATDAU, 10), t2 = parseInt(e.TIETKETTHUC, 10) || t1;
+                        if (t1 <= iDen && t2 >= iTu) (dong.objNgayBan[e.NGAYHOC] = dong.objNgayBan[e.NGAYHOC] || []).push(e);
+                    });
+                    dong.iNgayBan = Object.keys(dong.objNgayBan).length;
+                    dong.bBan = dong.iNgayBan > 0;
+                    iXong++;
+                    $zone.find(".lgv-br-tiendo").text(iXong + '/' + arrDong.length + ' giảng viên');
+                    if (iXong === arrDong.length) {
+                        me.objKQBanRoi = { arrNgay: arrNgay, strThu: objNgay.strThu, iTu: iTu, iDen: iDen, strTenBuoi: strTenBuoi, arrDong: arrDong,
+                            strDonVi: $("#dropSearch_DonVi option:selected").text(), strCanhBao: objNgay.strCanhBao };
+                        me.genHtml_BanRoi();
+                    } else {
+                        fnChay();
+                    }
+                });
+            };
+            for (var i = 0; i < Math.min(me.iMaxSongSong, arrDong.length); i++) fnChay();
+        });
+    },
+
+    getDongBanRoiHien: function () {
+        var me = this;
+        return me.objKQBanRoi.arrDong.filter(function (d) {
+            if (me.strLocBanRoi === 'ban') return d.bBan;
+            if (me.strLocBanRoi === 'roi') return !d.bBan && !d.bLoi;
+            return true;
+        });
+    },
+
+    genHtml_TheBanRoi: function (kq, d, e) {
+        var me = this;
+        return '<div class="lgv-br-lich" title="' + me.escAttr(me.getThu(e.NGAYHOC) + ' ' + e.NGAYHOC + ' · ' + (e.TENHOCPHAN || '') + (e.TENPHONGHOC ? ' · ' + e.TENPHONGHOC : '') + ' — bấm để xem chi tiết')
+            + '" data-dong="' + kq.arrDong.indexOf(d) + '" data-lich="' + d.arrLich.indexOf(e) + '" style="background:' + me.getMauThe(e) + ';"><b>'
+            + me.returnTwo(e.GIOBATDAU) + ':' + me.returnTwo(e.PHUTBATDAU) + ' (T' + e.TIETBATDAU + '-' + e.TIETKETTHUC + ')</b> ' + (e.TENHOCPHAN || '') + (e.TENPHONGHOC ? ' · ' + e.TENPHONGHOC : '') + '</div>';
+    },
+
+    escAttr: function (str) {
+        return String(str || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+    },
+
+    genHtml_BanRoi: function () {
+        var me = this;
+        var kq = me.objKQBanRoi;
+        if (!kq) return;
+        var bNhieuNgay = kq.arrNgay.length > 1;
+        var iBan = 0, iRoi = 0, iLoi = 0;
+        kq.arrDong.forEach(function (d) { if (d.bLoi) iLoi++; else if (d.bBan) iBan++; else iRoi++; });
+        var arrHien = me.getDongBanRoiHien();
+        var fnNut = function (strLoc, strTen) {
+            return '<button type="button" class="btn btn-loc' + (me.strLocBanRoi === strLoc ? ' active' : '') + '" data-loc="' + strLoc + '">' + strTen + '</button>';
+        };
+
+        var html = '<div class="lgv-br-tomtat">';
+        html += '<i class="fa-solid fa-user-clock" style="color:#1e8449;"></i>';
+        html += '<span><b>' + me.getMoTaKhoang(kq) + ' · ' + kq.strTenBuoi + ':</b> ';
+        html += '<b style="color:#1e7a45;">' + iRoi + ' rỗi' + (bNhieuNgay ? ' cả giai đoạn' : '') + '</b> · <b style="color:#c2410c;">' + iBan + ' bận' + (bNhieuNgay ? ' ít nhất 1 ngày' : '') + '</b> / ' + kq.arrDong.length + ' giảng viên';
+        if (iLoi) html += ' · <span style="color:#b91c1c;">' + iLoi + ' giảng viên lỗi tải lịch</span>';
+        if (kq.strCanhBao) html += '<br><span style="color:#b45309;">' + kq.strCanhBao + '</span>';
+        html += '</span>';
+        html += '<span class="lgv-br-nhom">' + fnNut('all', 'Tất cả (' + kq.arrDong.length + ')') + fnNut('roi', 'Chỉ rỗi (' + iRoi + ')') + fnNut('ban', 'Chỉ bận (' + iBan + ')') + '</span>';
+        html += '<span class="lgv-br-nhom phai">';
+        html += '<button type="button" class="btn btn-xuat"><i class="fa-solid fa-file-excel me-1"></i>Xuất Excel</button>';
+        html += '<button type="button" class="btn btn-ve-tuan"><i class="fa-solid fa-calendar-week me-1"></i>Về lịch tuần</button>';
+        html += '</span></div>';
+
+        if (arrHien.length === 0) {
+            html += '<div class="lgv-br-rong">Không có giảng viên nào ' + (me.strLocBanRoi === 'ban' ? 'bận' : 'rỗi') + ' trong khung này.</div>';
+            $("#zoneBanRoi").html(html).show();
+            return;
+        }
+
+        var strKhung = kq.strTenBuoi.replace(/^.*\(|\)$/g, '');
+        html += '<div class="lgv-br-bang-wrap"><table class="lgv-br-bang"><thead><tr>';
+        html += '<th>STT</th><th style="text-align:left;">Giảng viên</th><th>Trạng thái<small>' + strKhung + '</small></th>';
+        if (bNhieuNgay) {
+            // Nhiều ngày: mỗi ngày 1 cột, chỉ hiện lịch trong khung tiết đang tra
+            kq.arrNgay.forEach(function (s) {
+                var strThu = me.getThu(s);
+                html += '<th class="c-ngay' + (strThu === 'CN' ? ' cn' : '') + '">' + strThu + '<small>' + s.substring(0, 5) + '</small></th>';
+            });
+        } else {
+            me.arrBuoiBR.forEach(function (b) {
+                var bTrong = b.tu <= kq.iDen && b.den >= kq.iTu;
+                html += '<th class="' + (bTrong ? 'trong-khung' : '') + '">' + b.ten + '<small>Tiết ' + b.tu + '-' + b.den + '</small></th>';
+            });
+        }
+        html += '</tr></thead><tbody>';
+        arrHien.forEach(function (d, i) {
+            var cb = d.cb;
+            var arrMoTa = [];
+            if (cb.MASO) arrMoTa.push(cb.MASO);
+            var strDonVi = cb.DAOTAO_COCAUTOCHUC_TEN || cb.COCAUTOCHUC_TEN || '';
+            if (strDonVi) arrMoTa.push(strDonVi);
+            html += '<tr class="' + (d.bBan ? 'dong-ban' : '') + '">';
+            html += '<td class="c-stt">' + (i + 1) + '</td>';
+            html += '<td class="c-ten">' + me.getTenCanBo(cb) + (arrMoTa.length ? '<small>' + arrMoTa.join(' · ') + '</small>' : '') + '</td>';
+            html += '<td class="c-tt">' + (d.bLoi ? '<span class="lgv-br-badge">Lỗi tải</span>' : '<span class="lgv-br-badge ' + (d.bBan ? 'ban">Bận' : 'roi">Rỗi') + '</span>');
+            if (bNhieuNgay && !d.bLoi) html += '<span class="so-ngay"' + (d.bBan ? '' : ' style="color:#1e7a45;"') + '>' + (d.bBan ? d.iNgayBan + '/' + kq.arrNgay.length + ' ngày' : 'cả ' + kq.arrNgay.length + ' ngày') + '</span>';
+            html += '</td>';
+            if (bNhieuNgay) {
+                kq.arrNgay.forEach(function (s) {
+                    var arr = d.objNgayBan[s] || [];
+                    html += '<td class="c-ngay' + (arr.length ? ' co-ban' : '') + '">';
+                    if (arr.length === 0) html += '<span class="trong">Rỗi</span>';
+                    arr.forEach(function (e) { html += me.genHtml_TheBanRoi(kq, d, e); });
+                    html += '</td>';
+                });
+            } else {
+                me.arrBuoiBR.forEach(function (b) {
+                    var arr = d.arrLich.filter(function (e) { var t = parseInt(e.TIETBATDAU, 10); return t >= b.tu && t <= b.den; });
+                    html += '<td class="c-buoi">';
+                    if (arr.length === 0) html += '<span class="trong">Rỗi</span>';
+                    arr.forEach(function (e) { html += me.genHtml_TheBanRoi(kq, d, e); });
+                    html += '</td>';
+                });
+            }
+            html += '</tr>';
+        });
+        html += '</tbody></table></div>';
+        $("#zoneBanRoi").html(html).show();
+    },
+
+    dongBanRoi: function () {
+        this.iTokenBanRoi = (this.iTokenBanRoi || 0) + 1;
+        $("#zoneBanRoi").hide().html('');
+        $(".schedule-grid-container").show();
+    },
+
+    // Xuất Excel đúng bảng bận/rỗi đang xem (theo nút lọc Tất cả / Chỉ rỗi / Chỉ bận)
+    xuatExcel_BanRoi: function () {
+        var me = this;
+        var kq = me.objKQBanRoi;
+        if (!kq) return;
+        var bNhieuNgay = kq.arrNgay.length > 1;
+        var arrHien = me.getDongBanRoiHien();
+        var iBan = kq.arrDong.filter(function (d) { return d.bBan; }).length;
+        var iRoi = kq.arrDong.filter(function (d) { return !d.bBan && !d.bLoi; }).length;
+        // Mỗi ngày 3 cột Sáng/Chiều/Tối chia mô-đun 3 tiết (giống file lịch tuần) → nhìn ra mô-đun nào trống
+        var arrDays = kq.arrNgay.map(function (s) { return { date: s, dateStr: s.substring(0, 5), dayName: me.getThu(s) }; });
+        var arrCotTrai = [['STT', 40], ['Giảng viên', 170], ['Mã số', 70], ['Đơn vị', 140], ['Trạng thái (' + kq.strTenBuoi.replace(/^.*\(|\)$/g, '') + ')', 80]];
+        if (bNhieuNgay) arrCotTrai.push(['Số ngày bận', 60]);
+        var iCot = arrCotTrai.length + arrDays.length * 3;
+        var td = 'border:1px solid #999;padding:4px;vertical-align:middle;';
+        var html = me.genHtml_DauFileXls('Bận rỗi');
+        html += '<tr><td colspan="' + iCot + '" align="center" style="font-size:16px;font-weight:bold;height:30px;">DANH SÁCH BẬN / RỖI GIẢNG VIÊN</td></tr>';
+        html += '<tr><td colspan="' + iCot + '">Thời gian: ' + me.getMoTaKhoang(kq) + ' · ' + kq.strTenBuoi + (kq.strDonVi ? ' · Đơn vị: ' + kq.strDonVi : '') + '</td></tr>';
+        html += '<tr><td colspan="' + iCot + '">Tổng ' + kq.arrDong.length + ' giảng viên: ' + iRoi + ' rỗi' + (bNhieuNgay ? ' cả giai đoạn' : '') + ', ' + iBan + ' bận' + (bNhieuNgay ? ' ít nhất 1 ngày' : '')
+            + (me.strLocBanRoi !== 'all' ? ' (file chỉ gồm giảng viên ' + (me.strLocBanRoi === 'ban' ? 'bận' : 'rỗi') + ')' : '') + '</td></tr>';
+        html += '<tr><td colspan="' + iCot + '">Mỗi buổi chia mô-đun 3 tiết: Sáng T1-3 / T4-6 · Chiều T7-9 / T10-12 · Tối T13-15. Ô trắng ghi "Trống" là mô-đun còn rỗi.</td></tr>';
+        html += '<tr><td colspan="' + iCot + '"></td></tr>';
+        html += me.genHtml_DauBangModuleXls(arrDays, td, arrCotTrai);
+        arrHien.forEach(function (d, i) {
+            var cb = d.cb;
+            var strNenTT = d.bLoi ? '#ffffff' : (d.bBan ? '#fde8e0' : '#dcf5e6');
+            var o = me.genHtml_DongModuleXls(d.arrLich, arrDays, td);
+            html += '<tr style="height:55px;">';
+            html += '<td rowspan="2" align="center" style="' + td + '">' + (i + 1) + '</td>';
+            html += '<td rowspan="2" style="' + td + 'font-weight:bold;">' + me.getTenCanBo(cb) + '</td>';
+            html += '<td rowspan="2" align="center" style="' + td + 'mso-number-format:\'\\@\';">' + (cb.MASO || '') + '</td>';
+            html += '<td rowspan="2" style="' + td + '">' + (cb.DAOTAO_COCAUTOCHUC_TEN || cb.COCAUTOCHUC_TEN || '') + '</td>';
+            html += '<td rowspan="2" align="center" bgcolor="' + strNenTT + '" style="' + td + 'font-weight:bold;background:' + strNenTT + ';color:' + (d.bLoi ? '#0f172a' : (d.bBan ? '#c2410c' : '#1e7a45')) + ';">' + (d.bLoi ? 'Lỗi tải' : (d.bBan ? 'Bận' : 'Rỗi')) + '</td>';
+            if (bNhieuNgay) html += '<td rowspan="2" align="center" style="' + td + 'mso-number-format:\'\\@\';">' + (d.bLoi ? '' : d.iNgayBan + '/' + kq.arrNgay.length) + '</td>';
+            html += o.arrTren.join('') + '</tr>';
+            html += '<tr style="height:55px;">' + o.arrDuoi.join('') + '</tr>';
+        });
+        html += '</table></body></html>';
+        var a = kq.arrNgay;
+        var strTen = 'Ban roi giang vien ' + (a.length === 1 ? 'ngay ' + a[0] : 'tu ' + a[0] + ' den ' + a[a.length - 1]).replace(/\//g, '.') + '.xls';
+        me.taiFileXls(html, strTen);
+        me.showExportSuccess(strTen, arrHien.length, arrHien.reduce(function (s, d) { return s + d.arrLich.length; }, 0));
+    },
+
+    // ── Hàm dùng chung cho file Excel (HTML table mở bằng Excel) ──
+    genHtml_DauFileXls: function (strSheet) {
+        var html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">';
+        html += '<head><meta charset="utf-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>';
+        html += '<x:Name>' + strSheet + '</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet>';
+        html += '</x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body>';
+        html += '<table border="1" cellpadding="4" cellspacing="0" style="border-collapse:collapse;font-family:Arial;font-size:11px;">';
+        return html;
+    },
+
+    // 1 ô buổi trong file Excel: có lịch → nền màu thẻ (lớp đầu tiên) chữ trắng giống lưới; trống → nền nhạt của buổi
+    genHtml_OXls: function (arrLich, strTd, strNenTrong) {
+        var me = this;
+        if (!arrLich.length) return '<td style="' + strTd + 'background:' + strNenTrong + ';"></td>';
+        var strMau = me.getMauThe(arrLich[0]);
+        var html = '<td valign="top" bgcolor="' + strMau + '" style="' + strTd + 'vertical-align:top;background:' + strMau + ';color:#ffffff;">';
+        arrLich.forEach(function (e, i) {
+            if (i > 0) html += '<br>-----<br>';
+            html += '<b>' + me.returnTwo(e.GIOBATDAU) + ':' + me.returnTwo(e.PHUTBATDAU) + ' (T' + e.TIETBATDAU + '-' + e.TIETKETTHUC + ')</b>';
+            html += '<br>' + (e.TENHOCPHAN || '');
+            if (e.TENLOPHOCPHAN) html += '<br>Lớp: ' + e.TENLOPHOCPHAN;
+            if (e.TENPHONGHOC) html += '<br>Phòng: ' + e.TENPHONGHOC;
+        });
+        return html + '</td>';
+    },
+
+    taiFileXls: function (html, strTenFile) {
+        var blob = new Blob(['\ufeff', html], { type: 'application/vnd.ms-excel;charset=utf-8' });
+        if (navigator.msSaveBlob) { navigator.msSaveBlob(blob, strTenFile); return; }
+        var link = document.createElement('a');
+        var url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', strTenFile);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    },
+
+    // Xuất Excel ĐÚNG bố cục lưới đang xem: mỗi giảng viên 1 dòng; mỗi ngày 3 cột Sáng / Chiều / Tối;
+    // ô có lịch tô màu thẻ chữ trắng, ô trống tô nền nhạt của buổi; có cột Hiệu suất như trên lưới.
+    exportToExcel_NhuLuoi: function (startDate, endDate, canBos, scheduleData) {
+        var me = this;
+        me.showExportLoading();
+        setTimeout(function () {
+            var arrDays = me.getDaysInWeek(startDate, endDate);
+            var arrNenBuoi = ['#FFFEF5', '#F5F9FF', '#F9F5FF'];
+            var arrNenDauBuoi = ['#FFF9E6', '#E6F3FF', '#F0E6FF'];
+            var td = 'border:1px solid #999;padding:4px;vertical-align:middle;';
+            var iCot = 4 + arrDays.length * 3;
+            var html = me.genHtml_DauFileXls('Lịch giảng');
+            html += '<tr><td colspan="' + iCot + '" align="center" style="font-size:16px;font-weight:bold;height:30px;">LỊCH GIẢNG NHIỀU GIẢNG VIÊN</td></tr>';
+            html += '<tr><td colspan="' + iCot + '">Thời gian: ' + startDate + ' - ' + endDate + ' · Số giảng viên: ' + canBos.length + ' · Cách tính hiệu suất: ' + me.getEfficiencyModeLabel() + '</td></tr>';
+            html += '<tr><td colspan="' + iCot + '">Ngày xuất: ' + new Date().toLocaleString('vi-VN') + '</td></tr>';
+            html += '<tr><td colspan="' + iCot + '"></td></tr>';
+
+            // 2 dòng tiêu đề: ngày (gộp 3 cột) / Sáng - Chiều - Tối
+            html += '<tr style="font-weight:bold;background:#D9D9D9;">';
+            html += '<td rowspan="2" align="center" style="' + td + 'width:40px;">STT</td>';
+            html += '<td rowspan="2" align="center" style="' + td + 'width:180px;">Giảng viên</td>';
+            html += '<td rowspan="2" align="center" style="' + td + 'width:80px;">Mã số</td>';
+            html += '<td rowspan="2" align="center" style="' + td + 'width:80px;">Hiệu suất dạy học</td>';
+            arrDays.forEach(function (day) {
+                html += '<td colspan="3" align="center" style="' + td + '">' + day.dayName + ' (' + day.dateStr + ')</td>';
+            });
+            html += '</tr><tr style="font-weight:bold;">';
+            arrDays.forEach(function () {
+                me.arrBuoiBR.forEach(function (b, i) {
+                    html += '<td align="center" style="' + td + 'width:150px;background:' + arrNenDauBuoi[i] + ';">' + b.ten.toUpperCase() + '<br>Tiết ' + b.tu + '-' + b.den + '</td>';
+                });
+            });
+            html += '</tr>';
+
+            var dateSet = {};
+            arrDays.forEach(function (d) { dateSet[d.date] = true; });
+            canBos.forEach(function (canBo, iCB) {
+                var arrLichCB = scheduleData.filter(function (item) { return item.IDCANBO === canBo.ID && dateSet[item.NGAYHOC]; });
+                var iHieuSuat = me.calculateEfficiency(arrLichCB, arrDays.length);
+                var strNenHS = iHieuSuat > 60 ? '#d1fae5' : (iHieuSuat > 30 ? '#fef3c7' : '#fee2e2');
+                html += '<tr style="height:60px;">';
+                html += '<td align="center" style="' + td + '">' + (iCB + 1) + '</td>';
+                html += '<td style="' + td + 'font-weight:bold;">' + me.getTenCanBo(canBo)
+                    + ((canBo.DAOTAO_COCAUTOCHUC_TEN || canBo.COCAUTOCHUC_TEN) ? '<br><span style="font-weight:normal;font-style:italic;">' + (canBo.DAOTAO_COCAUTOCHUC_TEN || canBo.COCAUTOCHUC_TEN) + '</span>' : '') + '</td>';
+                html += '<td align="center" style="' + td + 'mso-number-format:\'\\@\';">' + (canBo.MASO || '') + '</td>';
+                html += '<td align="center" style="' + td + 'font-weight:bold;background:' + strNenHS + ';">' + iHieuSuat + '%</td>';
+                arrDays.forEach(function (day) {
+                    var arrNgay = arrLichCB.filter(function (e) { return e.NGAYHOC === day.date; });
+                    me.arrBuoiBR.forEach(function (b, i) {
+                        var arr = arrNgay.filter(function (e) { var t = parseInt(e.TIETBATDAU, 10); return t >= b.tu && t <= b.den; })
+                            .sort(function (a, c) { return (a.GIOBATDAU * 60 + a.PHUTBATDAU) - (c.GIOBATDAU * 60 + c.PHUTBATDAU); });
+                        html += me.genHtml_OXls(arr, td, arrNenBuoi[i]);
+                    });
+                });
+                html += '</tr>';
+            });
+            html += '</table></body></html>';
+
+            var fileName = me.generateSmartFileName(startDate, endDate);
+            me.taiFileXls(html, fileName);
+            me.hideExportLoading();
+            me.showExportSuccess(fileName, canBos.length, scheduleData.length);
+        }, 300);
+    },
+
+    // Mô-đun 3 tiết cho file Excel: mỗi buổi 1 cột; Sáng/Chiều chia 2 dòng (trên/dưới), Tối 1 ô gộp 2 dòng
+    arrBuoiModule: [
+        { ten: 'Sáng', arrMod: [{ tu: 1, den: 3 }, { tu: 4, den: 6 }], nen: '#FFF9E6' },
+        { ten: 'Chiều', arrMod: [{ tu: 7, den: 9 }, { tu: 10, den: 12 }], nen: '#E6F3FF' },
+        { ten: 'Tối', arrMod: [{ tu: 13, den: 15 }], nen: '#F0E6FF' }
+    ],
+
+    // Lịch chạm vào mô-đun (tu..den)
+    getLichTrongModule: function (arrLich, mod) {
+        return arrLich.filter(function (e) {
+            var t1 = parseInt(e.TIETBATDAU, 10), t2 = parseInt(e.TIETKETTHUC, 10) || t1;
+            return t1 <= mod.den && t2 >= mod.tu;
+        });
+    },
+
+    // 2 dòng tiêu đề bảng mô-đun: cột trái (gộp 2 dòng) + mỗi ngày gộp 3 cột / Sáng - Chiều - Tối kèm mô-đun
+    // arrCotTrai = [[tên cột, bề rộng px], ...]
+    genHtml_DauBangModuleXls: function (arrDays, td, arrCotTrai) {
+        var me = this;
+        var html = '<tr style="font-weight:bold;background:#D9D9D9;">';
+        arrCotTrai.forEach(function (c) {
+            html += '<td rowspan="2" align="center" style="' + td + 'width:' + c[1] + 'px;">' + c[0] + '</td>';
+        });
+        arrDays.forEach(function (day) {
+            html += '<td colspan="3" align="center" style="' + td + '">' + day.dayName + ' (' + day.dateStr + ')</td>';
+        });
+        html += '</tr><tr style="font-weight:bold;">';
+        arrDays.forEach(function () {
+            me.arrBuoiModule.forEach(function (b) {
+                var strMod = b.arrMod.map(function (m) { return 'T' + m.tu + '-' + m.den; }).join(' / ');
+                html += '<td align="center" bgcolor="' + b.nen + '" style="' + td + 'width:150px;background:' + b.nen + ';">' + b.ten.toUpperCase() + '<br>' + strMod + '</td>';
+            });
+        });
+        return html + '</tr>';
+    },
+
+    // Ô mô-đun của 1 giảng viên qua các ngày → { arrTren, arrDuoi } (ô dòng trên / dòng dưới của 2 dòng giảng viên)
+    genHtml_DongModuleXls: function (arrLichCB, arrDays, td) {
+        var me = this;
+        var fnO = function (arr, mod, iSoDong) {
+            var strRowspan = iSoDong > 1 ? ' rowspan="' + iSoDong + '"' : '';
+            if (arr.length === 0) {
+                return '<td' + strRowspan + ' align="center" bgcolor="#ffffff" style="' + td + 'background:#ffffff;color:#94a3b8;font-size:10px;">T' + mod.tu + '-' + mod.den + ' · Trống</td>';
+            }
+            return me.genHtml_OXls(arr, td, '#ffffff').replace('<td ', '<td' + strRowspan + ' ');
+        };
+        var arrTren = [], arrDuoi = [];
+        arrDays.forEach(function (day) {
+            var arrNgay = arrLichCB.filter(function (e) { return e.NGAYHOC === day.date; });
+            me.arrBuoiModule.forEach(function (b) {
+                if (b.arrMod.length === 1) {
+                    arrTren.push(fnO(me.getLichTrongModule(arrNgay, b.arrMod[0]), b.arrMod[0], 2));
+                    return;
+                }
+                var arrA = me.getLichTrongModule(arrNgay, b.arrMod[0]);
+                var arrB = me.getLichTrongModule(arrNgay, b.arrMod[1]);
+                var bGop = arrA.some(function (e) { return arrB.indexOf(e) !== -1; });
+                if (bGop) {
+                    var arrGop = arrA.concat(arrB.filter(function (e) { return arrA.indexOf(e) === -1; }));
+                    arrTren.push(fnO(arrGop, { tu: b.arrMod[0].tu, den: b.arrMod[1].den }, 2));
+                } else {
+                    arrTren.push(fnO(arrA, b.arrMod[0], 1));
+                    arrDuoi.push(fnO(arrB, b.arrMod[1], 1));
+                }
+            });
+        });
+        return { arrTren: arrTren, arrDuoi: arrDuoi };
+    },
+
+    // Xuất Excel theo mô-đun 3 tiết: mỗi giảng viên 2 dòng; mỗi ngày 3 cột Sáng / Chiều / Tối.
+    // Sáng: dòng trên T1-3, dòng dưới T4-6 · Chiều: T7-9 / T10-12 · Tối: T13-15 (gộp 2 dòng).
+    // Lịch kéo qua cả 2 mô-đun của 1 buổi (VD T4-6 + T7-9 thì không, T1-6 thì có) → gộp 2 ô thành 1.
+    // Ô trống để trắng, ghi "T4-6 · Trống" → nhìn là biết trống đoạn nào.
+    exportToExcel_Module: function (startDate, endDate, canBos, scheduleData) {
+        var me = this;
+        me.showExportLoading();
+        setTimeout(function () {
+            var arrDays = me.getDaysInWeek(startDate, endDate);
+            var td = 'border:1px solid #999;padding:4px;vertical-align:middle;';
+            var iCot = 4 + arrDays.length * 3;
+            var html = me.genHtml_DauFileXls('Lịch giảng');
+            html += '<tr><td colspan="' + iCot + '" align="center" style="font-size:16px;font-weight:bold;height:30px;">LỊCH GIẢNG NHIỀU GIẢNG VIÊN</td></tr>';
+            html += '<tr><td colspan="' + iCot + '">Thời gian: ' + startDate + ' - ' + endDate + ' · Số giảng viên: ' + canBos.length + ' · Cách tính hiệu suất: ' + me.getEfficiencyModeLabel() + '</td></tr>';
+            html += '<tr><td colspan="' + iCot + '">Mỗi buổi chia mô-đun 3 tiết: Sáng T1-3 / T4-6 · Chiều T7-9 / T10-12 · Tối T13-15. Ô trắng ghi "Trống" là mô-đun còn rỗi. Ngày xuất: ' + new Date().toLocaleString('vi-VN') + '</td></tr>';
+            html += '<tr><td colspan="' + iCot + '"></td></tr>';
+
+            html += me.genHtml_DauBangModuleXls(arrDays, td, [['STT', 40], ['Giảng viên', 180], ['Mã số', 80], ['Hiệu suất dạy học', 80]]);
+
+            var dateSet = {};
+            arrDays.forEach(function (d) { dateSet[d.date] = true; });
+            canBos.forEach(function (canBo, iCB) {
+                var arrLichCB = scheduleData.filter(function (item) { return item.IDCANBO === canBo.ID && dateSet[item.NGAYHOC]; })
+                    .sort(function (a, c) { return (a.GIOBATDAU * 60 + a.PHUTBATDAU) - (c.GIOBATDAU * 60 + c.PHUTBATDAU); });
+                var iHieuSuat = me.calculateEfficiency(arrLichCB, arrDays.length);
+                var strNenHS = iHieuSuat > 60 ? '#d1fae5' : (iHieuSuat > 30 ? '#fef3c7' : '#fee2e2');
+                var o = me.genHtml_DongModuleXls(arrLichCB, arrDays, td);
+                var arrTren = o.arrTren, arrDuoi = o.arrDuoi;
+                html += '<tr style="height:55px;">';
+                html += '<td rowspan="2" align="center" style="' + td + '">' + (iCB + 1) + '</td>';
+                html += '<td rowspan="2" style="' + td + 'font-weight:bold;">' + me.getTenCanBo(canBo)
+                    + ((canBo.DAOTAO_COCAUTOCHUC_TEN || canBo.COCAUTOCHUC_TEN) ? '<br><span style="font-weight:normal;font-style:italic;">' + (canBo.DAOTAO_COCAUTOCHUC_TEN || canBo.COCAUTOCHUC_TEN) + '</span>' : '') + '</td>';
+                html += '<td rowspan="2" align="center" style="' + td + 'mso-number-format:\'\\@\';">' + (canBo.MASO || '') + '</td>';
+                html += '<td rowspan="2" align="center" style="' + td + 'font-weight:bold;background:' + strNenHS + ';">' + iHieuSuat + '%</td>';
+                html += arrTren.join('') + '</tr>';
+                html += '<tr style="height:55px;">' + arrDuoi.join('') + '</tr>';
+            });
+            html += '</table></body></html>';
+
+            var fileName = me.generateSmartFileName(startDate, endDate);
+            me.taiFileXls(html, fileName);
+            me.hideExportLoading();
+            me.showExportSuccess(fileName, canBos.length, scheduleData.length);
+        }, 300);
     },
 
     getDaysInWeek: function (strStart, strEnd) {
@@ -1449,7 +2204,11 @@ LichGiangNhieuPhong.prototype = {
 
         console.log("=== EXPORT EXCEL - LỊCH GIẢNG THEO GIẢNG VIÊN ===");
 
-        me.exportToExcelWithXLSX(startDate, endDate, canBos, scheduleData);
+        // Xuất đúng bố cục lưới đang hiển thị (yêu cầu Phenikaa). Bản cũ (mỗi giảng viên 3 dòng Sáng/Chiều/Tối):
+        //me.exportToExcelWithXLSX(startDate, endDate, canBos, scheduleData);
+        // Bản "như lưới" (mỗi buổi 1 ô) → đổi sang mô-đun 3 tiết để nhìn ra khoảng trống (góp ý Phenikaa):
+        //me.exportToExcel_NhuLuoi(startDate, endDate, canBos, scheduleData);
+        me.exportToExcel_Module(startDate, endDate, canBos, scheduleData);
     },
 
     exportToExcelWithXLSX: function (startDate, endDate, canBos, scheduleData) {

@@ -15,6 +15,7 @@ PhanBoDoanhThu.prototype = {
 
     init: function () {
         var me = this;
+        me._attachExport();
         /*------------------------------------------
         --Discription: Initial system
         -------------------------------------------*/
@@ -38,9 +39,11 @@ PhanBoDoanhThu.prototype = {
         });
 
         $("#btnDeleteKetQua").click(function () {
-            edu.system.confirm('Bạn có chắc chắn muốn xóa dữ liệu không!');
-            $("#btnYes").click(function (e) {
-                me.delete_KetQuaDaTinhPhi();
+            me._runJob({
+                title: "Xóa kết quả đã tính phí", what: "Xóa kết quả đã tính phí theo phạm vi đang chọn", fileName: "KetQuaXoaKetQuaDaTinhPhi",
+                notes: ["Thao tác xóa dữ liệu kết quả đã tính phí trong phạm vi đang chọn."],
+                request: function () { return me.req_KetQuaDaTinhPhi_Xoa(); },
+                refresh: function () { me.getList_KetQua(); }
             });
         });
 
@@ -60,22 +63,37 @@ PhanBoDoanhThu.prototype = {
         $("#btnXemDanhSach").click(function () {
             me.getList_KetQua();
         });
+        // Phân bổ doanh thu: 1 lệnh cho cả phạm vi (khoản thu, hệ, khóa, chương trình, năm/học kỳ dữ liệu, năm/tháng phân bổ)
         $("#btnPhanBo").click(function () {
-            me.save_PhanBo();
+            var v = edu.util.getValById, sub = [];
+            if (v("txtSearch_NamHoc") || v("txtSearch_HocKy")) sub.push("Dữ liệu nguồn: năm học " + v("txtSearch_NamHoc") + ", học kỳ " + v("txtSearch_HocKy"));
+            if (v("txtSearch_NamHocPB") || v("txtSearch_ThangPB")) sub.push("Phân bổ vào: năm " + v("txtSearch_NamHocPB") + ", tháng " + v("txtSearch_ThangPB"));
+            me._runJob({
+                title: "Phân bổ doanh thu", what: "Phân bổ doanh thu theo phạm vi đang chọn", fileName: "KetQuaPhanBoDoanhThu", subTitles: sub,
+                request: function () { return me.req_PhanBo(); },
+                refresh: function () { me.getList_KetQua(); }
+            });
         });
         $("#btnDelete_PhanBo").click(function () {
-            var arrChecked_Id = edu.util.getArrCheckedIds("tblKetQua", "checkX");
-            if (arrChecked_Id.length == 0) {
+            var arrSelected = edu.process ? edu.process.selectedRows("tblKetQua", me.dtKetQua) : [];
+            if (edu.process && arrSelected.length == 0) {
                 edu.system.alert("Vui lòng chọn đối tượng cần xóa?");
                 return;
             }
-            edu.system.confirm("Bạn có chắc chắn xóa dữ liệu không?");
-            $("#btnYes").click(function (e) {
-                edu.system.alert('<div id="zoneprocessXXXX"></div>');
-                edu.system.genHTML_Progress("zoneprocessXXXX", arrChecked_Id.length);
-                for (var i = 0; i < arrChecked_Id.length; i++) {
-                    me.delete_PhanBo(arrChecked_Id[i]);
-                }
+            if (!edu.process) { me._noProcess(); return; }
+            edu.process.run({
+                title: "Xóa kết quả phân bổ doanh thu", unit: "bản ghi", fileName: "KetQuaXoaPhanBo",
+                notes: ["Thao tác xóa dữ liệu các bản ghi phân bổ trong danh sách."], items: arrSelected,
+                columns: [
+                    { header: "Phạm vi áp dụng", render: function (r) { return r.PHAMVIAPDUNG_TEN; } },
+                    { header: "Năm dữ liệu", render: function (r) { return r.NAM_DULIEU; } },
+                    { header: "Kỳ dữ liệu", render: function (r) { return r.KY_DULIEU; } },
+                    { header: "Năm phân bổ", render: function (r) { return r.NAM_PHANBO; } },
+                    { header: "Tháng phân bổ", render: function (r) { return r.THANG_PHANBO; } },
+                    { header: "Khoản thu", render: function (r) { return r.TAICHINH_CACKHOANTHU_TEN; } }
+                ],
+                request: function (it) { return me.req_PhanBo_Xoa(it.ID); },
+                refresh: function () { me.getList_KetQua(); }
             });
         });
     },
@@ -164,6 +182,38 @@ PhanBoDoanhThu.prototype = {
             fakedb: [
             ]
         }, false, false, false, null);
+    },
+    /*------------------------------------------
+    --Discription: Chạy qua form tiến trình chung (Corei/processrun.js, edu.process): trang chỉ khai báo danh sách bản ghi
+    -- + hàm dựng yêu cầu (req_*); form lo giờ bắt đầu/kết thúc, kết quả, lỗi, tổng hợp, xuất Excel.
+    -------------------------------------------*/
+    _noProcess: function () {
+        edu.system.alert("Chưa cập nhật form tiến trình (thiếu Corei/processrun.js hoặc indexi.aspx).", "w");
+    },
+    _runJob: function (cfg) {
+        if (!edu.process) { this._noProcess(); return; }
+        if (cfg.filters === undefined) cfg.filters = this._filters();
+        edu.process.runJob(cfg);
+    },
+    // Điều kiện đang chọn trên màn hình -> dòng "Điều kiện áp dụng" của form và file Excel xuất ra
+    _filters: function () {
+        return [[
+            { label: "Khoản thu", id: "dropKhoanThu_TP" }, { label: "Hệ đào tạo", id: "dropHeDaoTao_TP" },
+            { label: "Khóa đào tạo", id: "dropKhoaDaoTao_TP" }, { label: "Chương trình đào tạo", id: "dropChuongTrinh_TP" }
+        ]];
+    },
+    /*------------------------------------------
+    --Discription: Nút "Xuất Excel" chuẩn chung (Corei/exportexcel.js, edu.exporter.attachTable) gắn cạnh các danh sách kết quả:
+    -- xuất đúng danh sách đang xem, có tiêu đề, điều kiện lọc, dòng tổng và ngày xuất như mọi chức năng.
+    -------------------------------------------*/
+    _attachExport: function () {
+        var me = this;
+        if (!window.edu || !edu.exporter || typeof edu.exporter.attachTable !== "function") return;
+        var v = edu.util.getValById;
+        edu.exporter.attachTable({
+            table: "tblKetQua", before: "#btnDelete_PhanBo", fileName: "KetQuaPhanBoDoanhThu", title: "KẾT QUẢ PHÂN BỔ DOANH THU", filters: me._filters(),
+            subTitles: function () { return (v("txtSearch_NamHoc") || v("txtSearch_HocKy")) ? ["Dữ liệu nguồn: năm học " + v("txtSearch_NamHoc") + ", học kỳ " + v("txtSearch_HocKy")] : []; }
+        });
     },
     endHangDoi: function () {
         var me = main_doc.PhanBoDoanhThu;
@@ -978,9 +1028,8 @@ PhanBoDoanhThu.prototype = {
     --Discription: [0] GEN HTML ==> Systemroot
     --ULR: Modules
     -------------------------------------------*/
-    delete_KetQuaDaTinhPhi: function () {
+    req_KetQuaDaTinhPhi_Xoa: function () {
         var me = this;
-        //format arId ===> [HocKy, HocPhan, LoaiKhoan, KieuHoc]
         var arrChecked_Id = edu.util.getArrCheckedIds("tblSinhVien", "checkX");
         var obj_save = {
             'action': 'TC_KetQuaDaTinhPhi/Xoa',
@@ -994,35 +1043,7 @@ PhanBoDoanhThu.prototype = {
             'strNguoiThucHien_Id': edu.system.userId,
             'strQLSV_NguoiHoc_Id': arrChecked_Id.toString(),
         };
-        //default
-        edu.system.beginLoading();
-        edu.system.makeRequest({
-            success: function (data) {
-                if (data.Success) {
-                    //remark and update new value on HTML
-                    var obj = {
-                        content: "Xóa thành công!",
-                        code: "",
-                    }
-                    edu.system.alertOnModal(obj);
-                }
-                else {
-                    edu.system.alert("Lỗi: " + data.Message);
-                }
-                edu.system.endLoading();
-            },
-            error: function (er) {
-                edu.system.endLoading();
-                edu.system.alert("Lỗi (er): " + JSON.stringify(er));
-            },
-            type: "POST",
-            action: obj_save.action,
-            versionAPI: obj_save.versionAPI,
-            contentType: true,
-            data: obj_save,
-            fakedb: [
-            ]
-        }, false, false, false, null);
+        return { action: obj_save.action, versionAPI: obj_save.versionAPI, type: "POST", data: obj_save };
     },
     /*------------------------------------------
     --Discription: [0] GEN HTML ==> Systemroot
@@ -1048,6 +1069,7 @@ PhanBoDoanhThu.prototype = {
             success: function (data) {
                 if (data.Success) {
                     var dtReRult = data.Data;
+                    me["dtKetQua"] = dtReRult;
                     me.genTable_KetQua(dtReRult, data.Pager);
                 }
                 else {
@@ -1180,10 +1202,8 @@ PhanBoDoanhThu.prototype = {
     },
 
 
-    save_PhanBo: function () {
+    req_PhanBo: function () {
         var me = this;
-        var obj_notify = {};
-        //--Edit
         var obj_save = {
             'action': 'TC_PhanBo_DoanhThu/Them_TC_BC_PhanBo_DacThu',
             'type': 'POST',
@@ -1197,50 +1217,11 @@ PhanBoDoanhThu.prototype = {
             'strThangPhanBo': edu.util.getValById('txtSearch_ThangPB'),
             'strNguoiThucHien_Id': edu.system.userId,
         };
-        //default
-        edu.system.makeRequest({
-            success: function (data) {
-                if (data.Success) {
-                    if (!edu.util.checkValue(obj_save.strId)) {
-                        obj_notify = {
-                            type: "s",
-                            content: "Thêm mới thành công!",
-                        }
-                        edu.system.alertOnModal(obj_notify);
-                    }
-                    else {
-                        obj_notify = {
-                            type: "i",
-                            content: "Cập nhật thành công!",
-                        }
-                        edu.system.alertOnModal(obj_notify);
-                    }
-                    me.getList_KetQua();
-                }
-                else {
-                    obj_notify = {
-                        type: "w",
-                        content: obj_save.action + " (er): " + data.Message,
-                    }
-                    edu.system.alertOnModal(obj_notify);
-                }
-            },
-            error: function (er) {
-                edu.system.alertOnModal(obj_notify);
-            },
-            type: "POST",
-            action: obj_save.action,
-
-            contentType: true,
-            data: obj_save,
-            fakedb: [
-            ]
-        }, false, false, false, null);
+        return { action: obj_save.action, type: "POST", data: obj_save };
     },
 
-    delete_PhanBo: function (Ids) {
+    req_PhanBo_Xoa: function (Ids) {
         var me = this;
-        //--Edit
         var obj_delete = {
             'action': 'TC_PhanBo_DoanhThu/Xoa_TC_BC_PhanBo_DacThu',
 
@@ -1248,49 +1229,6 @@ PhanBoDoanhThu.prototype = {
             'strChucNang_Id': edu.system.strChucNang_Id,
             'strNguoiThucHien_Id': edu.system.userId
         };
-        //default
-        edu.system.makeRequest({
-            success: function (data) {
-                if (data.Success) {
-                    obj = {
-                        title: "",
-                        content: "Xóa dữ liệu thành công!",
-                        code: ""
-                    };
-                    edu.system.afterComfirm(obj);
-                }
-                else {
-                    obj = {
-                        title: "",
-                        content: obj_delete + ": " + data.Message,
-                        code: "w"
-                    };
-                    edu.system.afterComfirm(obj);
-                }
-
-            },
-            error: function (er) {
-
-                obj = {
-                    title: "",
-                    content: obj_delete + ": " + JSON.stringify(er),
-                    code: "w"
-                };
-                edu.system.afterComfirm(obj);
-            },
-            type: "POST",
-            action: obj_delete.action,
-
-            complete: function () {
-                edu.system.start_Progress("zoneprocessXXXX", function () {
-                    me.getList_KetQua();
-                });
-            },
-            contentType: true,
-
-            data: obj_delete,
-            fakedb: [
-            ]
-        }, false, false, false, null);
+        return { action: obj_delete.action, type: "POST", data: obj_delete };
     },
 }

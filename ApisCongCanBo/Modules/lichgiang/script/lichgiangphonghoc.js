@@ -41,8 +41,10 @@ LichGiang.prototype = {
         $("#thang").html("Tháng " + nMonth);
         me.genHtml_Month(0);
 
-        $(".days").delegate(".poiter", "click", function () {
-            $(".days .active").removeClass("active");
+        // Chỉ lịch tháng chính (.days) — lịch trong modal Duyệt (.duyet-days) cũng mang class "days"
+        // nhưng li của nó không có name/batdau/ketthuc nên làm header tuần thành "undefined".
+        $(".days:not(.duyet-days)").delegate(".poiter", "click", function () {
+            $(".days:not(.duyet-days) .active").removeClass("active");
             $("#datebody").html("");
             this.classList.add("active");
             var strNgayBatDau = $(this).attr('batdau');
@@ -324,7 +326,7 @@ LichGiang.prototype = {
 
         $("#btnSearch_PhongHoc").click(function () {
             //me.getList_TimCanBo();
-            $(".days .active").trigger("click");
+            $(".days:not(.duyet-days) .active").trigger("click");
         });
         $("#txtTuKhoa_CanBo").keypress(function (e) {
             if (e.which === 13) {
@@ -357,7 +359,7 @@ LichGiang.prototype = {
         me.getList_PhongHoc();
 
         $('#dropSearch_PhongHoc').on('select2:select', function () {
-            $(".days .active").trigger("click");
+            $(".days:not(.duyet-days) .active").trigger("click");
         });
 
         $("#btnShow_DangKySDPhong").click(function () {
@@ -850,7 +852,7 @@ LichGiang.prototype = {
             var arrNgay = data[0].DSNGAYCOLICH.split(',');
             console.log(arrNgay);
             arrNgay.forEach(e => {
-                var point = $(".days li[ngay='" + e + "']");
+                var point = $(".days:not(.duyet-days) li[ngay='" + e + "']");
                 if (point.length > 0) {
                     point = point[0];
                     point.classList.add("actionclde");
@@ -970,9 +972,9 @@ LichGiang.prototype = {
                 html += '<li class="poiter ' + strClass + ' ' + uuid + '" ngay="' + info.day + '"  title="' + getSMonth(info.day, info.m, info.y) + '" name="' + uuid + '" batdau="' + strNgayBatDau + '" ketthuc="' + strNgayKetThuc + '"><span>' + info.day + '</span></li>';
             }
         }
-        $(".days").html(html);
+        $(".days:not(.duyet-days)").html(html);
         setTimeout(function () {
-            $(".days .active").trigger("click");
+            $(".days:not(.duyet-days) .active").trigger("click");
         }, 1000);
 
         function getDay(nMonth, nYear) {
@@ -1764,7 +1766,7 @@ LichGiang.prototype = {
         $(".actionclde").removeClass("actionclde");
         me.strGiangVien_Id = aData.ID;
         $("#lblCanBoTimKiem").html(edu.util.returnEmpty(aData.MALOPHOCPHAN) + " - " + edu.util.returnEmpty(aData.TENLOPHOCPHAN));
-        $(".days .active").trigger("click");
+        $(".days:not(.duyet-days) .active").trigger("click");
         //me.getList_DoiLich();
     },
 

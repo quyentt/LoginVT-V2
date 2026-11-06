@@ -15,6 +15,7 @@ TinhHocPhi.prototype = {
 
     init: function () {
         var me = this;
+        me._attachExport();
         /*------------------------------------------
         --Discription: Initial system
         -------------------------------------------*/
@@ -68,22 +69,19 @@ TinhHocPhi.prototype = {
         --Author: nnthuong
         --Discription: main action  
         -------------------------------------------*/
+        // Tính học phí: đưa 1 yêu cầu vào hàng đợi qua form tiến trình chung (Bước 1 hiện phạm vi áp dụng thay cho hộp xác nhận)
         $("#btnTinhHocPhi").click(function (e) {
             e.stopImmediatePropagation();
-            edu.system.confirm("Bạn có chắc chắn <span class='italic color-warning'>Tính học phí</span> không?");
-            $("#btnYes").click(function (e) {
-                // Fix UI: systemroot btnYes handler chi clear #alert_content chu khong .modal('hide')
-                // → popup confirm van hien tren man voi body trong, user phai bam Dong thu cong
-                // moi thay overlay loading. Fix: dong modal ngay + show overlay ngay + auto-hide
-                // overlay khi result modal (afterComfirm) xuat hien.
-                $('#myModalAlert').modal('hide');
-                edu.system.beginLoadings();
-                $(document).one('shown.bs.modal', function () {
-                    edu.system.endLoadings();
-                });
-                me.TaoHangDoi_TinhHocPhi_TuDong();
+            var nChon = edu.util.getArrCheckedIds("tblSinhVien", "checkX").length, notes = [];
+            if (!edu.util.checkValue(edu.util.getValCombo("dropThoiGianDaoTao_TP"))) notes.push("Chưa chọn thời gian đào tạo.");
+            if (!edu.util.checkValue(edu.util.getValById("dropKhoanThu_TP"))) notes.push("Chưa chọn khoản thu.");
+            me._runJob({
+                title: "Tính học phí", what: "Tính học phí" + (nChon > 0 ? " cho " + nChon + " sinh viên đã chọn" : " theo phạm vi đang chọn"),
+                fileName: "KetQuaTinhHocPhi", notes: notes, subTitles: me._trangThaiLines(),
+                okMessage: "Khởi tạo dữ liệu thành công, vui lòng chạy tiến trình để thực hiện!",
+                request: function () { return me.req_TinhHocPhi(); },
+                onSuccess: function () { edu.system.createHangDoi(me.objHangDoi); }
             });
-
         });
         //$("#tblTaskBar_TinhHocPhi").delegate('.btnStart', 'click', function () {
         //    var strId = this.id;
@@ -114,9 +112,12 @@ TinhHocPhi.prototype = {
             me.getList_NienChe();
         });
         $("#btnDeleteKetQua").click(function () {
-            edu.system.confirm('Bạn có chắc chắn muốn xóa dữ liệu không!');
-            $("#btnYes").click(function (e) {
-                me.delete_KetQuaDaTinhPhi();
+            var nChon = edu.util.getArrCheckedIds("tblSinhVien", "checkX").length;
+            me._runJob({
+                title: "Xóa kết quả đã tính phí", what: "Xóa kết quả đã tính phí" + (nChon > 0 ? " của " + nChon + " sinh viên đã chọn" : " theo phạm vi đang chọn"),
+                fileName: "KetQuaXoaKetQuaDaTinhPhi", notes: ["Thao tác xóa dữ liệu kết quả đã tính phí trong phạm vi đang chọn."],
+                request: function () { return me.req_KetQuaDaTinhPhi_Xoa(); },
+                refresh: function () { me.getList_TinChi(); me.getList_NienChe(); }
             });
         });
         //$("#tblTaskBar_TinhHocPhi").delegate("#btnXemDanhSach", "click", function () {
@@ -172,56 +173,66 @@ TinhHocPhi.prototype = {
                 edu.system.alert("Bạn hãy chọn khoản thu");
                 return;
             }
-            edu.extend.genModal_SinhVien(arrChecked_Id => {
-                edu.system.genHTML_Progress("zoneprocessProGes", arrChecked_Id.length);
-                arrChecked_Id.forEach(e => {
-                    var aData = edu.extend.dtSinhVien.find(eSV => eSV.ID == e);
-                    me.save_KhongTinhPhi(aData.QLSV_NGUOIHOC_ID, aData.DAOTAO_TOCHUCCHUONGTRINH_ID, 100);
-                })
+            // mỗi sinh viên chọn 1 bản ghi của form tiến trình, miễn 100% học phí
+            if (!edu.process) { me._runJob({}); return; }
+            edu.process.pickSinhVien({
+                what: "vào danh sách không tính phí", fileName: "KetQuaThemKhongTinhPhi", filters: me._filtersKhongTinhPhi(),
+                request: function (strId, bPhamVi, row) {
+                    if (!row || !row.QLSV_NGUOIHOC_ID) throw new Error("Không tìm thấy dữ liệu của sinh viên.");
+                    return me.req_KhongTinhPhi(row.QLSV_NGUOIHOC_ID, row.DAOTAO_TOCHUCCHUONGTRINH_ID, 100);
+                },
+                refresh: function () { me.getList_KhongTinhPhi(); }
             });
-            //edu.extend.getList_SinhVien();
         });
         $("#btnRefresh_KhongTinhPhi").click(function () {
             me.getList_KhongTinhPhi();
         });
         $("#btnSave_KhongTinhPhi").click(function () {
-            var arrThem = [];
-            var arrXoa = [];
-            var x = $("#tblKhongTinhPhi .phantram");
-            for (var i = 0; i < x.length; i++) {
+            // các dòng đã đổi % so với giá trị đang lưu (thuộc tính name của ô nhập)
+            var arrThem = [], x = $("#tblKhongTinhPhi .phantram"), map = {}, i;
+            (me.dtKhongTinhPhi || []).forEach(function (r) { map[r.ID] = r; });
+            for (i = 0; i < x.length; i++) {
                 if ($(x[i]).attr("name") != $(x[i]).val()) {
-                    arrThem.push(x[i]);
-                } 
+                    var strId = x[i].id.replace(/txtPhanTram_/g, "");
+                    arrThem.push({ ID: strId, row: map[strId] || {}, cu: $(x[i]).attr("name"), moi: $(x[i]).val() });
+                }
             }
-            if ((arrThem.length + arrXoa.length) > 0) {
-                edu.system.confirm("Bạn có chắc chắn thêm " + arrThem.length + " và hủy " + arrXoa.length + "?");
-                $("#btnYes").click(function (e) {
-                    edu.system.genHTML_Progress("zoneprocessProGes", arrThem.length + arrXoa.length);
-                    for (var i = 0; i < arrThem.length; i++) {
-                        var strId = arrThem[i].id.replace(/txtPhanTram_/g, "");
-                        //var aData = me.dtKhongTinhPhi.find(eSV => eSV.ID == strId);
-                        me.update_KhongTinhPhi(strId, $(arrThem[i]).val());
-                    }
-                });
-            }
-            else {
+            if (arrThem.length == 0) {
                 edu.system.alert("Không có thay đổi lưu");
+                return;
             }
+            var v = edu.util.returnEmpty;
+            me._runJob2({
+                title: "Lưu phần trăm không tính phí", unit: "sinh viên", fileName: "KetQuaLuuKhongTinhPhi", items: arrThem,
+                columns: [
+                    { header: "Mã số", render: function (it) { return it.row.QLSV_NGUOIHOC_MASO; } },
+                    { header: "Họ tên", render: function (it) { return v(it.row.QLSV_NGUOIHOC_HODEM) + " " + v(it.row.QLSV_NGUOIHOC_TEN); } },
+                    { header: "Phần trăm cũ", render: function (it) { return it.cu; } },
+                    { header: "Phần trăm mới", render: function (it) { return it.moi; } }
+                ],
+                request: function (it) { return me.req_KhongTinhPhi_Sua(it.ID, it.moi); },
+                refresh: function () { me.getList_KhongTinhPhi(); }
+            }, me._filtersKhongTinhPhi());
         });
         $("#btnDelete_KhongTinhPhi").click(function () {
-            var arrChecked_Id = edu.util.getArrCheckedIds("tblKhongTinhPhi", "checkX");
-            if (arrChecked_Id.length == 0) {
+            var arrSelected = edu.process ? edu.process.selectedRows("tblKhongTinhPhi", me.dtKhongTinhPhi) : [];
+            if (edu.process && arrSelected.length == 0) {
                 edu.system.alert("Vui lòng chọn đối tượng cần xóa?");
                 return;
             }
-            edu.system.confirm("Bạn có chắc chắn xóa dữ liệu không?");
-            $("#btnYes").click(function (e) {
-                edu.system.alert('<div id="zoneprocessXXXX"></div>');
-                edu.system.genHTML_Progress("zoneprocessXXXX", arrChecked_Id.length);
-                for (var i = 0; i < arrChecked_Id.length; i++) {
-                    me.delete_KhongTinhPhi(arrChecked_Id[i]);
-                }
-            });
+            var v = edu.util.returnEmpty;
+            me._runJob2({
+                title: "Xóa sinh viên khỏi danh sách không tính phí", unit: "sinh viên", fileName: "KetQuaXoaKhongTinhPhi",
+                notes: ["Thao tác xóa dữ liệu các sinh viên trong danh sách."], items: arrSelected,
+                columns: [
+                    { header: "Mã số", render: function (r) { return r.QLSV_NGUOIHOC_MASO; } },
+                    { header: "Họ tên", render: function (r) { return v(r.QLSV_NGUOIHOC_HODEM) + " " + v(r.QLSV_NGUOIHOC_TEN); } },
+                    { header: "Chương trình", render: function (r) { return r.DAOTAO_CHUONGTRINH_TEN; } },
+                    { header: "Phần trăm", render: function (r) { return r.PHANTRAM; } }
+                ],
+                request: function (it) { return me.req_KhongTinhPhi_Xoa(it.ID); },
+                refresh: function () { me.getList_KhongTinhPhi(); }
+            }, me._filtersKhongTinhPhi());
         });
     },
     /*------------------------------------------
@@ -252,11 +263,10 @@ TinhHocPhi.prototype = {
     --Date of created: 23/08/2018
     --Discription: generating HangDoi db
     ----------------------------------------------*/
-    TaoHangDoi_TinhHocPhi_TuDong: function () {
+    // Yêu cầu tính học phí đưa vào hàng đợi (1 yêu cầu cho cả phạm vi đang chọn; sinh viên đã tick ở tblSinhVien nếu có)
+    req_TinhHocPhi: function () {
         var me = this;
-        var obj_notify = {};
         var arrChecked_Id = edu.util.getArrCheckedIds("tblSinhVien", "checkX");
-        //--Edit
         var obj_save = {
             'action': 'TC_HangDoi/PTaoHangDoi_TinhPhi_TuDong',
             'versionAPI': 'v1.0',
@@ -272,43 +282,57 @@ TinhHocPhi.prototype = {
             'strDangKy_KeHoachDangKy_Id': edu.util.getValById('dropKeHoachDangKy_TP'),
             'strNguoiThucHien_Id': edu.system.userId,
         };
-        //default
-        edu.system.beginLoading();
-        edu.system.makeRequest({
-            success: function (data) {
-                if (data.Success) {
-                    var obj = {
-                        content: "Khởi tạo dữ liệu thành công, vui lòng chạy tiến trình để thực hiện!",
-                        code: "",
-                    }
-                    edu.system.afterComfirm(obj);
-                    edu.system.createHangDoi(me.objHangDoi);
-                }
-                else {
-                    var obj = {
-                        content: "QLTC_HangDoi.TaoHangDoi_TinhHocPhi_TuDong: " + data.Message,
-                        code: "w",
-                    }
-                    edu.system.afterComfirm(obj);
-                }
-                edu.system.endLoading();
-            },
-            error: function (er) {
-                edu.system.endLoading();
-                var obj = {
-                    content: "QLTC_HangDoi.TaoHangDoi_TinhHocPhi_TuDong (er): " + JSON.stringify(er),
-                    code: "w",
-                }
-                edu.system.afterComfirm(obj);
-            },
-            type: "POST",
-            action: obj_save.action,
-            versionAPI: obj_save.versionAPI,
-            contentType: true,
-            data: obj_save,
-            fakedb: [
-            ]
-        }, false, false, false, null);
+        return { action: obj_save.action, versionAPI: obj_save.versionAPI, type: "POST", data: obj_save };
+    },
+    /*------------------------------------------
+    --Discription: Chạy qua form tiến trình chung (Corei/processrun.js, edu.process): trang chỉ khai báo danh sách bản ghi
+    -- + hàm dựng yêu cầu (req_*); form lo giờ bắt đầu/kết thúc, kết quả, lỗi, tổng hợp, xuất Excel.
+    -------------------------------------------*/
+    _noProcess: function () {
+        edu.system.alert("Chưa cập nhật form tiến trình (thiếu Corei/processrun.js hoặc indexi.aspx).", "w");
+    },
+    // lệnh 1 lần cho cả phạm vi đang chọn (edu.process.runJob)
+    _runJob: function (cfg) {
+        if (!edu.process) { this._noProcess(); return; }
+        if (cfg.filters === undefined) cfg.filters = this._filters();
+        edu.process.runJob(cfg);
+    },
+    // chạy từng bản ghi (edu.process.run); filters: danh sách ô lọc hiện ở "Điều kiện áp dụng"
+    _runJob2: function (cfg, filters) {
+        if (!edu.process) { this._noProcess(); return; }
+        cfg.filters = filters;
+        edu.process.run(cfg);
+    },
+    // Điều kiện đang chọn trên màn hình -> dòng "Điều kiện áp dụng" của form và file Excel xuất ra
+    _filters: function () {
+        return [[
+            { label: "Hệ đào tạo", id: "dropHeDaoTao_TP" }, { label: "Khóa đào tạo", id: "dropKhoaDaoTao_TP" }, { label: "Lớp quản lý", id: "dropLopQuanLy_TP" },
+            { label: "Thời gian đào tạo", id: "dropThoiGianDaoTao_TP" }, { label: "Nghiệp vụ áp dụng", id: "dropNghiepVu_TP" },
+            { label: "Khoản thu", id: "dropKhoanThu_TP" }, { label: "Kế hoạch đăng ký", id: "dropKeHoachDangKy_TP" }
+        ]];
+    },
+    _filtersKhongTinhPhi: function () {
+        return [[{ label: "Nghiệp vụ áp dụng", id: "dropNghiepVu_TP" }, { label: "Thời gian đào tạo", id: "dropThoiGianDaoTao_TP" }, { label: "Khoản thu", id: "dropKhoanThu_TP" }]];
+    },
+    // Dòng "Trạng thái sinh viên: ..." từ các ô tích trạng thái trên màn hình (tích hết thì ghi "tất cả")
+    _trangThaiLines: function () {
+        var all = $(".ckbDSTrangThaiSV_THP"), on = all.filter(":checked"), a = [];
+        if (all.length == 0 || on.length == 0) return [];
+        if (on.length == all.length) return ["Trạng thái sinh viên: tất cả"];
+        on.each(function () { a.push($(this).attr("title")); });
+        return ["Trạng thái sinh viên: " + a.join(", ")];
+    },
+    /*------------------------------------------
+    --Discription: Nút "Xuất Excel" chuẩn chung (Corei/exportexcel.js, edu.exporter.attachTable) gắn cạnh các danh sách kết quả:
+    -- xuất đúng danh sách đang xem, có tiêu đề, điều kiện lọc, dòng tổng và ngày xuất như mọi chức năng.
+    -------------------------------------------*/
+    _attachExport: function () {
+        var me = this;
+        if (!window.edu || !edu.exporter || typeof edu.exporter.attachTable !== "function") return;
+        var f = me._filters(), sub = function () { return me._trangThaiLines(); };
+        edu.exporter.attachTable({ table: "tblTinChi", after: "#btnRefresh", fileName: "KetQuaTinhHocPhiTinChi", title: "KẾT QUẢ TÍNH HỌC PHÍ - HỌC CHẾ TÍN CHỈ", subTitles: sub, filters: f });
+        edu.exporter.attachTable({ table: "tblNienChe", after: "#btnRefreshNienChe", fileName: "KetQuaTinhHocPhiNienChe", title: "KẾT QUẢ TÍNH HỌC PHÍ - HỌC CHẾ NIÊN CHẾ", subTitles: sub, filters: f });
+        edu.exporter.attachTable({ table: "tblKhongTinhPhi", before: "#btnDelete_KhongTinhPhi", fileName: "DanhSachKhongTinhPhi", title: "DANH SÁCH SINH VIÊN KHÔNG TÍNH PHÍ", filters: me._filtersKhongTinhPhi() });
     },
     endHangDoi: function () {
         var me = main_doc.TinhHocPhi;
@@ -1123,7 +1147,7 @@ TinhHocPhi.prototype = {
     --Discription: [0] GEN HTML ==> Systemroot
     --ULR: Modules
     -------------------------------------------*/
-    delete_KetQuaDaTinhPhi: function () {
+    req_KetQuaDaTinhPhi_Xoa: function () {
         var me = this;
         //format arId ===> [HocKy, HocPhan, LoaiKhoan, KieuHoc]
         var arrChecked_Id = edu.util.getArrCheckedIds("tblSinhVien", "checkX");
@@ -1139,35 +1163,7 @@ TinhHocPhi.prototype = {
             'strNguoiThucHien_Id': edu.system.userId,
             'strQLSV_NguoiHoc_Id': arrChecked_Id.toString(),
         };
-        //default
-        edu.system.beginLoading();
-        edu.system.makeRequest({
-            success: function (data) {
-                if (data.Success) {
-                    //remark and update new value on HTML
-                    var obj = {
-                        content: "Xóa thành công!",
-                        code: "",
-                    }
-                    edu.system.alertOnModal(obj);
-                }
-                else {
-                    edu.system.alert("Lỗi: " + data.Message);
-                }
-                edu.system.endLoading();
-            },
-            error: function (er) {
-                edu.system.endLoading();
-                edu.system.alert("Lỗi (er): " + JSON.stringify(er));
-            },
-            type: "POST",
-            action: obj_save.action,
-            versionAPI: obj_save.versionAPI,
-            contentType: true,
-            data: obj_save,
-            fakedb: [
-            ]
-        }, false, false, false, null);
+        return { action: obj_save.action, versionAPI: obj_save.versionAPI, type: "POST", data: obj_save };
     },
     /*------------------------------------------
     --Discription: [0] GEN HTML ==> Systemroot
@@ -1245,10 +1241,8 @@ TinhHocPhi.prototype = {
         /*III. Callback*/
     },
 
-    save_KhongTinhPhi: function (strQLSV_NguoiHoc_Id, strDaoTao_ChuongTrinh_Id, dPhanTram) {
+    req_KhongTinhPhi: function (strQLSV_NguoiHoc_Id, strDaoTao_ChuongTrinh_Id, dPhanTram) {
         var me = this;
-        var obj_notify = {};
-        //--Edit
         var obj_save = {
             'action': 'TC_ThuChi2_MH/FSkkLB4VAh4PJikoJDEXNB4CKS41HhEpKAPP',
             'func': 'PKG_TAICHINH_THUCHI2.Them_TC_NghiepVu_Chot_Phi',
@@ -1261,42 +1255,11 @@ TinhHocPhi.prototype = {
             'dPhanTram': dPhanTram,
             'strNguoiThucHien_Id': edu.system.userId,
         };
-        //if (obj_save.strId) {
-        //    obj_save.action = 'TC_KeToan_MH/EjQgHgARCB4KJBUuIC8eCikuIC8eCRUP';
-        //    obj_save.func = 'pkg_taichinh_ketoan.Sua_API_KeToan_Khoan_HT'
-        //}
-        //default
-        edu.system.makeRequest({
-            success: function (data) {
-                if (data.Success) {
-
-                    edu.system.alert("Thực hiện thành công");
-                }
-                else {
-                    edu.system.alert(data.Message);
-                }
-            },
-            error: function (er) {
-                edu.system.alertOnModal(obj_notify);
-            },
-            type: "POST",
-            action: obj_save.action,
-            complete: function () {
-                edu.system.start_Progress("zoneprocessProGes", function () {
-                    me.getList_KhongTinhPhi();
-                });
-            },
-            contentType: true,
-            data: obj_save,
-            fakedb: [
-            ]
-        }, false, false, false, null);
+        return { action: obj_save.action, type: "POST", data: obj_save };
     },
 
-    update_KhongTinhPhi: function (strId, dPhanTram) {
+    req_KhongTinhPhi_Sua: function (strId, dPhanTram) {
         var me = this;
-        var obj_notify = {};
-        //--Edit
         var obj_save = {
 			'action': 'TC_ThuChi2_MH/EjQgHhUCHg8mKSgkMRc0HgIpLjUeESko',
 			'func': 'PKG_TAICHINH_THUCHI2.Sua_TC_NghiepVu_Chot_Phi',
@@ -1305,36 +1268,7 @@ TinhHocPhi.prototype = {
             'dPhanTram': dPhanTram,
 			'strNguoiThucHien_Id' : edu.system.userId,
 		};
-        //if (obj_save.strId) {
-        //    obj_save.action = 'TC_KeToan_MH/EjQgHgARCB4KJBUuIC8eCikuIC8eCRUP';
-        //    obj_save.func = 'pkg_taichinh_ketoan.Sua_API_KeToan_Khoan_HT'
-        //}
-        //default
-        edu.system.makeRequest({
-            success: function (data) {
-                if (data.Success) {
-
-                    edu.system.alert("Thực hiện thành công");
-                }
-                else {
-                    edu.system.alert(data.Message);
-                }
-            },
-            error: function (er) {
-                edu.system.alertOnModal(obj_notify);
-            },
-            type: "POST",
-            action: obj_save.action,
-            complete: function () {
-                edu.system.start_Progress("zoneprocessProGes", function () {
-                    me.getList_KhongTinhPhi();
-                });
-            },
-            contentType: true,
-            data: obj_save,
-            fakedb: [
-            ]
-        }, false, false, false, null);
+        return { action: obj_save.action, type: "POST", data: obj_save };
     },
     getList_KhongTinhPhi: function (strDanhSach_Id) {
         var me = this;
@@ -1377,9 +1311,8 @@ TinhHocPhi.prototype = {
             ]
         }, false, false, false, null);
     },
-    delete_KhongTinhPhi: function (Ids) {
+    req_KhongTinhPhi_Xoa: function (Ids) {
         var me = this;
-        //--Edit
         var obj_save = {
             'action': 'TC_ThuChi2_MH/GS4gHhUCHg8mKSgkMRc0HgIpLjUeESko',
             'func': 'PKG_TAICHINH_THUCHI2.Xoa_TC_NghiepVu_Chot_Phi',
@@ -1387,50 +1320,7 @@ TinhHocPhi.prototype = {
             'strId': Ids,
             'strNguoiThucHien_Id': edu.system.userId,
         };
-        //default
-        edu.system.makeRequest({
-            success: function (data) {
-                if (data.Success) {
-                    obj = {
-                        title: "",
-                        content: "Xóa dữ liệu thành công!",
-                        code: ""
-                    };
-                    edu.system.afterComfirm(obj);
-                }
-                else {
-                    obj = {
-                        title: "",
-                        content: data.Message,
-                        code: "w"
-                    };
-                    edu.system.afterComfirm(obj);
-                }
-
-            },
-            error: function (er) {
-
-                obj = {
-                    title: "",
-                    content: JSON.stringify(er),
-                    code: "w"
-                };
-                edu.system.afterComfirm(obj);
-            },
-            type: "POST",
-            action: obj_save.action,
-
-            complete: function () {
-                edu.system.start_Progress("zoneprocessXXXX", function () {
-                    me.getList_KhongTinhPhi();
-                });
-            },
-            contentType: true,
-
-            data: obj_save,
-            fakedb: [
-            ]
-        }, false, false, false, null);
+        return { action: obj_save.action, type: "POST", data: obj_save };
     },
     /*------------------------------------------
     --Discription: [4] GenHTML Tiến độ đề tài

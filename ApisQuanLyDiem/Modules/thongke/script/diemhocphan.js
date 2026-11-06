@@ -13,6 +13,7 @@ DiemHocPhan.prototype = {
 
     init: function () {
         var me = this;
+        me._attachExport();
         /*------------------------------------------
         --Discription: Initial system
         -------------------------------------------*/
@@ -86,16 +87,25 @@ DiemHocPhan.prototype = {
             addKeyValue("dTongHopLaiDiemThanhPhan", edu.util.getValById('dropCachTinh'));
             addKeyValue("strNguoiDangNhap_Id", edu.system.userId);
         });
+        // Thực hiện thống kê: qua form tiến trình chung (Bước 1 hiện phạm vi áp dụng + tên bảng dữ liệu)
         $("#btnTongHopKetQua").click(function () {
-            me.save_TongHop();
+            var strBang = edu.util.getValById("txtSearch_BangDuLieu"), notes = [];
+            if (!edu.util.checkValue(strBang)) notes.push("Chưa nhập tên bảng dữ liệu.");
+            me._runJob({
+                title: "Thống kê điểm học phần", what: "Thống kê điểm học phần" + (strBang ? " — bảng dữ liệu: " + strBang : ""), fileName: "KetQuaThongKeDiemHocPhan",
+                notes: notes, request: function () { return me.req_TongHop(); }
+            });
         });
         $("#btnXemDanhSach").click(function () {
             me.getList_KetQua();
         });
         $("#btnDelete_DanhSach").click(function () {
-            edu.system.confirm("Bạn có chắc chắn xóa dữ liệu không?");
-            $("#btnYes").click(function (e) {
-                me.delete_TongHop();
+            var strBang = edu.util.getValById("txtSearch_BangDuLieu"), notes = ["Thao tác xóa toàn bộ dữ liệu của bảng thống kê đã chọn."];
+            if (!edu.util.checkValue(strBang)) notes.push("Chưa nhập tên bảng dữ liệu.");
+            me._runJob({
+                title: "Xóa bảng dữ liệu thống kê", what: "Xóa bảng dữ liệu" + (strBang ? ": " + strBang : ""), fileName: "KetQuaThongKeDiemHocPhan_Xoa",
+                notes: notes, filters: [], request: function () { return me.req_TongHop_Xoa(); },
+                refresh: function () { me.getList_KetQua(); }
             });
         });
     },
@@ -186,6 +196,38 @@ DiemHocPhan.prototype = {
             fakedb: [
             ]
         }, false, false, false, null);
+    },
+    /*------------------------------------------
+    --Discription: Chạy qua form tiến trình chung (Corei/processrun.js, edu.process.runJob): Bước 1 hiện phạm vi áp dụng thay cho hộp
+    -- "Bạn có chắc chắn...", chạy xong có kết quả/thời gian/ghi chú lỗi và xuất Excel như mọi chức năng.
+    -------------------------------------------*/
+    _runJob: function (cfg) {
+        if (!edu.process) {
+            edu.system.alert("Chưa cập nhật form tiến trình (thiếu Corei/processrun.js hoặc indexi.aspx).", "w");
+            return;
+        }
+        if (cfg.filters === undefined) cfg.filters = this._filters();
+        edu.process.runJob(cfg);
+    },
+    // Điều kiện đang chọn trên màn hình -> dòng "Điều kiện áp dụng" của form và file Excel xuất ra
+    _filters: function () {
+        return [[
+            { label: "Hệ đào tạo", id: "dropHeDaoTao" }, { label: "Khóa đào tạo", id: "dropKhoaDaoTao" }, { label: "Khoa quản lý", id: "dropKhoaQuanLy" },
+            { label: "Chương trình đào tạo", id: "dropChuongTrinhDaoTao" }, { label: "Lớp quản lý", id: "dropLopQuanLy" },
+            { label: "Tình trạng sinh viên", id: "dropTinhTrangSinhVien" }, { label: "Thang điểm", id: "dropThangDiem" },
+            { label: "Phạm vi tổng hợp", id: "dropPhanViTongHop" }, { label: "Thời gian", id: "dropPhanViTongHop_" + this.strPhamViMa },
+            { label: "Tính chất lọc", id: "dropTinhChatLoc" }, { label: "Thuộc tính điểm", id: "dropThuocTinhDiem" },
+            { label: "Tự động tính lại điểm", id: "dropTinhTuDong" }
+        ]];
+    },
+    /*------------------------------------------
+    --Discription: Nút "Xuất Excel" chuẩn chung (Corei/exportexcel.js, edu.exporter.attachTable) gắn cạnh các danh sách kết quả:
+    -- xuất đúng danh sách đang xem, có tiêu đề, điều kiện lọc, dòng tổng và ngày xuất như mọi chức năng.
+    -------------------------------------------*/
+    _attachExport: function () {
+        var me = this;
+        if (!window.edu || !edu.exporter || typeof edu.exporter.attachTable !== "function") return;
+        edu.exporter.attachTable({ table: "tblKetQua", after: "#btnXemDanhSach", fileName: "KetQuaThongKeDiemHocPhan", title: "KẾT QUẢ THỐNG KÊ ĐIỂM HỌC PHẦN", filters: me._filters() });
     },
     endHangDoi: function () {
         var me = main_doc.DiemHocPhan;
@@ -556,10 +598,9 @@ DiemHocPhan.prototype = {
     --Discription: [3] AccessDB HOC
     --ULR:  Modules
     -------------------------------------------*/
-    save_TongHop: function () {
+    // Tham số lệnh thống kê (giữ nguyên field; field trùng khóa thì giá trị sau ghi đè như bản cũ)
+    req_TongHop: function () {
         var me = this;
-        var obj_notify = {};
-        //--Edit
         var obj_save = {
             'action': 'D_TongHop_XuLy/ThucHien_ThongKe_DHP',
             'type': 'POST',
@@ -587,101 +628,17 @@ DiemHocPhan.prototype = {
             'strDaoTao_HocPhan_Id': edu.util.getValById('dropSearch_HocPhan'),
             'strNguoiThucHien_Id': edu.system.userId,
         };
-        //if (edu.util.checkValue(obj_save.strId)) {
-        //    obj_save.action = 'NS_HeSo_TangThem/CapNhat';
-        //}
-        //default
-        edu.system.makeRequest({
-            success: function (data) {
-                if (data.Success) {
-                    if (!edu.util.checkValue(obj_save.strId)) {
-                        obj_notify = {
-                            type: "s",
-                            content: "Thực hiện thành công!",
-                        }
-                        edu.system.alertOnModal(obj_notify);
-                    }
-                    else {
-                        obj_notify = {
-                            type: "i",
-                            content: "Cập nhật thành công!",
-                        }
-                        edu.system.alertOnModal(obj_notify);
-                    }
-                }
-                else {
-                    obj_notify = {
-                        type: "w",
-                        content: obj_save.action + " (er): " + data.Message,
-                    }
-                    edu.system.alertOnModal(obj_notify);
-                }
-            },
-            error: function (er) {
-                edu.system.alertOnModal(obj_notify);
-            },
-            type: "POST",
-            action: obj_save.action,
-
-            contentType: true,
-            data: obj_save,
-            fakedb: [
-            ]
-        }, false, false, false, null);
+        return { action: obj_save.action, type: "POST", data: obj_save };
     },
-    delete_TongHop: function (Ids) {
+    req_TongHop_Xoa: function () {
         var me = this;
-        //--Edit
         var obj_delete = {
             'action': 'D_ThongKe/Xoa_Diem_ThongKe_DiemHP',
             'type': 'POST',
             'strBangDuLieu': edu.util.getValById('txtSearch_BangDuLieu'),
             'strNguoiThucHien_Id': edu.system.userId,
         };
-        //default
-        edu.system.makeRequest({
-            success: function (data) {
-                if (data.Success) {
-                    obj = {
-                        title: "",
-                        content: "Xóa dữ liệu thành công!",
-                        code: ""
-                    };
-                    edu.system.afterComfirm(obj);
-                }
-                else {
-                    obj = {
-                        title: "",
-                        content: obj_delete + ": " + data.Message,
-                        code: "w"
-                    };
-                    edu.system.afterComfirm(obj);
-                }
-
-            },
-            error: function (er) {
-
-                obj = {
-                    title: "",
-                    content: obj_delete + ": " + JSON.stringify(er),
-                    code: "w"
-                };
-                edu.system.afterComfirm(obj);
-            },
-            type: "POST",
-            action: obj_delete.action,
-
-            complete: function () {
-                edu.system.start_Progress("zoneprocessXXXX", function () {
-                    me.getList_TangThem();
-                });
-            },
-            contentType: true,
-
-            data: obj_delete,
-            fakedb: [
-            ]
-        }, false, false, false, null);
+        return { action: obj_delete.action, type: "POST", data: obj_delete };
     },
 
     getList_CCTC: function () {

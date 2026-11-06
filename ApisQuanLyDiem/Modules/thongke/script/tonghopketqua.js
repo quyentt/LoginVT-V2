@@ -30,10 +30,15 @@ TongHopKetQua.prototype = {
         --Author: 
         --Discription: main action  
         -------------------------------------------*/
+        // Tổng hợp kết quả: đưa 1 yêu cầu vào hàng đợi qua form tiến trình chung (Bước 1 hiện phạm vi áp dụng thay cho hộp xác nhận)
         $("#btnTongHopKetQua").click(function () {
-            edu.system.confirm("Bạn có chắc chắn <span class='italic color-warning'>Tổng hợp kết quả</span> không?");
-            $("#btnYes").click(function (e) {
-                me.TaoHangDoi_TongHopKetQua_TuDong();
+            var notes = ["Hệ thống đưa yêu cầu vào hàng đợi và xử lý ở máy chủ; theo dõi tiến độ ở thanh tiến trình sau khi đóng form."];
+            if (!edu.util.checkValue(edu.util.getValById("dropPhanViTongHop"))) notes.push("Chưa chọn phạm vi tổng hợp.");
+            me._runJob({
+                title: "Tổng hợp kết quả học tập", what: "Tổng hợp kết quả học tập theo phạm vi đang chọn", fileName: "KetQuaTongHopKetQua",
+                notes: notes, okMessage: "Đã đưa vào hàng đợi xử lý",
+                request: function () { return me.req_TongHopKetQua(); },
+                onSuccess: function () { edu.system.createHangDoi(me.objHangDoi); }
             });
         });
         $("#dropKhoaQuanLy").on("select2:select", function () {
@@ -116,10 +121,9 @@ TongHopKetQua.prototype = {
     --Date of created: 23/08/2018
     --Discription: generating HangDoi db
     ----------------------------------------------*/
-    TaoHangDoi_TongHopKetQua_TuDong: function () {
+    // Yêu cầu tổng hợp kết quả đưa vào hàng đợi (1 yêu cầu cho cả phạm vi đang chọn)
+    req_TongHopKetQua: function () {
         var me = this;
-        var obj_notify = {};
-        //--Edit
         var obj_save = {
             'action': 'D_HangDoi/TaoHangDoi_TinhDiem_TuDong',
             
@@ -135,43 +139,29 @@ TongHopKetQua.prototype = {
             'dTongHopLaiDiemThanhPhan': edu.util.getValById('dropCachTinh'),
             'strNguoiThucHien_Id': edu.system.userId,
         };
-        //default
-        
-        edu.system.makeRequest({
-            success: function (data) {
-                if (data.Success) {
-                    var obj = {
-                        content: "Khởi tạo dữ liệu thành công!",
-                        code: "",
-                    }
-                    edu.system.afterComfirm(obj);
-                    edu.system.createHangDoi(me.objHangDoi);
-                }
-                else {
-                    var obj = {
-                        content: "TC_HangDoi.TaoHangDoi_TongHopKetQua_TuDong: " + data.Message,
-                        code: "w",
-                    }
-                    edu.system.afterComfirm(obj);
-                }
-                
-            },
-            error: function (er) {
-                
-                var obj = {
-                    content: "TC_HangDoi.TaoHangDoi_TongHopKetQua_TuDong (er): " + JSON.stringify(er),
-                    code: "w",
-                }
-                edu.system.afterComfirm(obj);
-            },
-            type: "GET",
-            action: obj_save.action,
-            
-            contentType: true,
-            data: obj_save,
-            fakedb: [
-            ]
-        }, false, false, false, null);
+        return { action: obj_save.action, type: "GET", data: obj_save };
+    },
+    /*------------------------------------------
+    --Discription: Chạy qua form tiến trình chung (Corei/processrun.js, edu.process.runJob): Bước 1 hiện phạm vi áp dụng thay cho hộp
+    -- "Bạn có chắc chắn...", chạy xong có kết quả/thời gian/ghi chú lỗi và xuất Excel như mọi chức năng.
+    -------------------------------------------*/
+    _runJob: function (cfg) {
+        if (!edu.process) {
+            edu.system.alert("Chưa cập nhật form tiến trình (thiếu Corei/processrun.js hoặc indexi.aspx).", "w");
+            return;
+        }
+        if (cfg.filters === undefined) cfg.filters = this._filters();
+        edu.process.runJob(cfg);
+    },
+    // Điều kiện đang chọn trên màn hình -> dòng "Điều kiện áp dụng" của form và file Excel xuất ra
+    _filters: function () {
+        return [[
+            { label: "Hệ đào tạo", id: "dropHeDaoTao" }, { label: "Khóa đào tạo", id: "dropKhoaDaoTao" }, { label: "Khoa quản lý", id: "dropKhoaQuanLy" },
+            { label: "Chương trình đào tạo", id: "dropChuongTrinhDaoTao" }, { label: "Lớp quản lý", id: "dropLopQuanLy" },
+            { label: "Tình trạng sinh viên", id: "dropTinhTrangSinhVien" }, { label: "Thang điểm", id: "dropThangDiem" },
+            { label: "Phạm vi tổng hợp", id: "dropPhanViTongHop" }, { label: "Thời gian tính", id: "dropPhanViTongHop_" + this.strPhamViMa },
+            { label: "Cách tính", id: "dropCachTinh" }
+        ]];
     },
     endHangDoi: function () {
         var me = main_doc.TongHopKetQua;

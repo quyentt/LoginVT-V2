@@ -1906,6 +1906,8 @@
     <script type="text/javascript" src="Corei/systemroot.js?v=<%= Guid.NewGuid().ToString() %>"></script> <!--CORE JS-->
     <script type="text/javascript" src="Corei/util.js?v=1.3.1.17"></script> <!--CORE JS-->
     <script type="text/javascript" src="Corei/systemextend.js?v=<%= Guid.NewGuid().ToString() %>"></script>
+    <script type="text/javascript" src="Corei/exportexcel.js?v=1.8.0.0"></script> <!--CORE JS: chuẩn xuất Excel dùng chung (edu.exporter)-->
+    <script type="text/javascript" src="Corei/processrun.js?v=1.6.0.0"></script> <!--CORE JS: form tiến trình dùng chung (edu.process)-->
     <!--CORE JS-->
     <script type="text/javascript" src="Config.js?v=<%= Guid.NewGuid().ToString() %>"></script><!--CORE JS-->
     <script type="text/javascript" src="App_Themes/Cms/Custom_V1/customs.js"></script><!-- custom -->
@@ -2023,6 +2025,8 @@
       edu['extend'] = new systemextend();
       edu['constant'] = new constant();
       edu['util'] = new util();
+      edu['exporter'] = new exportexcel();
+      edu['process'] = new processrun();
       $(document).ready(function () {
         edu.system.startApp();
         edu.extend.init();

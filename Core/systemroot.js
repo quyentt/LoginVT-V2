@@ -9716,3 +9716,17 @@ systemroot.prototype = {
     },
     
 }
+;
+/* Plugin "Yêu cầu hỗ trợ" (assets/plugin/btn-yeucau-hotro — bản dùng chung với _v2, dong-goi.py chép ra gốc). Đặt CUỐI TỆP để chạy ngay
+   khi systemroot được nạp (thẻ script nằm sau </body>) → có cả ở trang chủ / danh sách vai trò, không chờ page_load (2/11: page_load chỉ chạy
+   sau khi mở một màn, đứng ở trang chủ gõ console báo "not defined"). KHÔNG sửa index.aspx / indexi.aspx trên host.
+   TẠM ẨN (an: true): nút nổi chưa dựng, mở bằng console `btnYeuCauHoTro.hien()`. Bỏ ẩn: đổi an: false. Chế độ nhúng (nhung) như _v2.
+   Đường dẫn tương đối gốc ứng dụng, ?v= ngẫu nhiên như loadPage() để không dính cache. */
+try {
+    if (!window.UMS_HOTRO_CONFIG) window.UMS_HOTRO_CONFIG = { nhung: true, an: false };
+    if (!document.querySelector('script[src*="btn-yeucau-hotro.js"]')) {
+        var sHoTro = document.createElement('script');
+        sHoTro.src = 'assets/plugin/btn-yeucau-hotro/btn-yeucau-hotro.js?v=' + Date.now();
+        (document.body || document.head).appendChild(sHoTro);
+    }
+} catch (ex) { console.warn('[yeu-cau-ho-tro] không nạp được plugin', ex); }

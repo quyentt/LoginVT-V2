@@ -46,12 +46,18 @@ ChotTinhPhi.prototype = {
         --Author: nnthuong
         --Discription: main action  
         -------------------------------------------*/
+        // Chốt tính phí: đưa 1 yêu cầu vào hàng đợi qua form tiến trình chung (Bước 1 hiện phạm vi áp dụng thay cho hộp xác nhận)
         $("#btnChotTinhPhi").click(function () {
-            edu.system.confirm("Bạn có chắc chắn <span class='italic color-warning'>Tính học phí</span> không?");
-            $("#btnYes").click(function (e) {
-                me.TaoHangDoi_ChotTinhPhi_TuDong();
+            var notes = [];
+            if (!edu.util.checkValue(edu.util.getValById("dropThoiGianDaoTao_CTP"))) notes.push("Chưa chọn thời gian đào tạo.");
+            if (!edu.util.checkValue(edu.util.getValById("dropKhoanThu_CTP"))) notes.push("Chưa chọn khoản thu.");
+            me._runJob({
+                title: "Chốt tính phí", what: "Chốt tính phí (chuyển kế toán) theo phạm vi đang chọn", fileName: "KetQuaChotTinhPhi",
+                notes: notes, subTitles: me._trangThaiLines("ckbDSTrangThaiSV_CTP"),
+                okMessage: "Khởi tạo dữ liệu thành công, vui lòng chạy tiến trình để thực hiện!",
+                request: function () { return me.req_ChotTinhPhi(); },
+                onSuccess: function () { edu.system.createHangDoi(me.objHangDoi); }
             });
-
         });
         //$("#tblTaskBar_ChotTinhPhi").delegate('.btnStart', 'click', function () {
         //    var strId = this.id;
@@ -72,7 +78,8 @@ ChotTinhPhi.prototype = {
         //    //me.enableButton_Start(strHangDoi_Id);
         //});
 
-        $("#tblTaskBar_ChotTinhPhi").delegate("#btnXemDanhSach", "click", function () {
+        // Nút nằm ngoài bảng #tblTaskBar_ChotTinhPhi nên không delegate trên bảng được
+        $("#btnXemDanhSach").click(function () {
             me.getList_NienChe();
             me.getList_TinChi();
         });
@@ -139,10 +146,9 @@ ChotTinhPhi.prototype = {
     --Date of created: 23/08/2018
     --Discription: generating HangDoi db
     ----------------------------------------------*/
-    TaoHangDoi_ChotTinhPhi_TuDong: function () {
+    // Yêu cầu chốt tính phí (chuyển kế toán) đưa vào hàng đợi
+    req_ChotTinhPhi: function () {
         var me = this;
-        var obj_notify = {};
-        //--Edit
         var obj_save = {
             'action': 'TC_HangDoi/TaoHangDoi_ChuyenKeToan_TuDong',
             'versionAPI': 'v1.0',
@@ -155,47 +161,35 @@ ChotTinhPhi.prototype = {
             'strTrangThaiNguoiHoc_Id': edu.extend.getCheckedCheckBoxByClassName('ckbDSTrangThaiSV_CTP').toString(),
             'strNguoiThucHien_Id': edu.system.userId,
         };
-        //default
-        edu.system.beginLoading();
-        edu.system.makeRequest({
-            success: function (data) {
-                if (data.Success) {
-                    var obj = {
-                        content: "Khởi tạo dữ liệu thành công, vui lòng chạy tiến trình để thực hiện!",
-                        code: "",
-                    }
-                    edu.system.afterComfirm(obj);
-                    //var obj_Queue = {
-                    //    strLoaiNhiemVu: "CHOTTINHPHITUDONG" + $("#dropNghiepVu_CTP").val()
-                    //}
-                    //edu.system.getList_HangDoi(obj_Queue, "", "", me.genHTML_HangDoi);
-                    edu.system.createHangDoi(me.objHangDoi);
-                }
-                else {
-                    var obj = {
-                        content: "QLTC_HangDoi.TaoHangDoi_ChotTinhPhi_TuDong: " + data.Message,
-                        code: "w",
-                    }
-                    edu.system.afterComfirm(obj);
-                }
-                edu.system.endLoading();
-            },
-            error: function (er) {
-                edu.system.endLoading();
-                var obj = {
-                    content: "QLTC_HangDoi.TaoHangDoi_ChotTinhPhi_TuDong (er): " + JSON.stringify(er),
-                    code: "w",
-                }
-                edu.system.afterComfirm(obj);
-            },
-            type: "GET",
-            action: obj_save.action,
-            versionAPI: obj_save.versionAPI,
-            contentType: true,
-            data: obj_save,
-            fakedb: [
-            ]
-        }, false, false, false, null);
+        return { action: obj_save.action, versionAPI: obj_save.versionAPI, type: "GET", data: obj_save };
+    },
+    /*------------------------------------------
+    --Discription: Chạy qua form tiến trình chung (Corei/processrun.js, edu.process): trang chỉ khai báo danh sách bản ghi
+    -- + hàm dựng yêu cầu (req_*); form lo giờ bắt đầu/kết thúc, kết quả, lỗi, tổng hợp, xuất Excel.
+    -------------------------------------------*/
+    _noProcess: function () {
+        edu.system.alert("Chưa cập nhật form tiến trình (thiếu Corei/processrun.js hoặc indexi.aspx).", "w");
+    },
+    _runJob: function (cfg) {
+        if (!edu.process) { this._noProcess(); return; }
+        if (cfg.filters === undefined) cfg.filters = this._filters();
+        edu.process.runJob(cfg);
+    },
+    // Điều kiện đang chọn trên màn hình -> dòng "Điều kiện áp dụng" của form và file Excel xuất ra
+    _filters: function () {
+        return [[
+            { label: "Hệ đào tạo", id: "dropHeDaoTao_CTP" }, { label: "Khóa đào tạo", id: "dropKhoaDaoTao_CTP" },
+            { label: "Thời gian đào tạo", id: "dropThoiGianDaoTao_CTP" }, { label: "Khoản thu", id: "dropKhoanThu_CTP" },
+            { label: "Nghiệp vụ áp dụng", id: "dropNghiepVu_CTP" }
+        ]];
+    },
+    // Dòng "Trạng thái sinh viên: ..." từ các ô tích trạng thái trên màn hình (tích hết thì ghi "tất cả")
+    _trangThaiLines: function (strClass) {
+        var all = $("." + strClass), on = all.filter(":checked"), a = [];
+        if (all.length == 0 || on.length == 0) return [];
+        if (on.length == all.length) return ["Trạng thái sinh viên: tất cả"];
+        on.each(function () { a.push($(this).attr("title")); });
+        return ["Trạng thái sinh viên: " + a.join(", ")];
     },
     endHangDoi: function () {
         var me = main_doc.ChotTinhPhi;

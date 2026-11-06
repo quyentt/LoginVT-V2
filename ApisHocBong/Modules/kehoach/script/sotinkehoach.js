@@ -13,6 +13,7 @@ SoTinKeHoach.prototype = {
 
     init: function () {
         var me = this;
+        me._attachExport();
         /*------------------------------------------
         --Discription: Initial system
         -------------------------------------------*/
@@ -53,28 +54,45 @@ SoTinKeHoach.prototype = {
         });
 
         $("#btnSave_SoTinKeHoach").click(function () {
-            var arrThem = [];
+            // các dòng đã sửa số tín so với giá trị đang lưu (thuộc tính name của ô nhập)
+            var arrThem = [], map = {};
+            (me.dtSoTinKeHoach || []).forEach(function (r) { map[r.ID] = r; });
             $(".inputxau").each(function () {
                 var point = this;
                 if ($(point).val() != $(point).attr("name")) {
-                    arrThem.push(point.id.split('_')[1]);
+                    var strId = point.id.split('_')[1];
+                    arrThem.push({ ID: strId, row: map[strId] || {}, cu: $(point).attr("name"), moi: $(point).val() });
                 }
             });
             if (!arrThem.length) {
                 edu.system.alert("Không có thay đổi để lưu");
                 return;
             }
-            edu.system.confirm("Bạn có chắc chắn lưu " + arrThem.length + " dữ liệu không?");
-            $("#btnYes").click(function (e) {
-                edu.system.alert('<div id="zoneprocessXXXX"></div>');
-                edu.system.genHTML_Progress("zoneprocessXXXX", arrThem.length);
-                arrThem.forEach(e => {
-                    me.save_SoTinKeHoach(e);
-                });
+            me._run({
+                title: "Lưu số tín tối thiểu của kế hoạch", unit: "dòng", fileName: "KetQuaLuuSoTinKeHoach", items: arrThem,
+                columns: [
+                    { header: "Phạm vi áp dụng", render: function (it) { return it.row.PHAMVIAPDUNG_TEN || it.ID; } },
+                    { header: "Phân cấp", render: function (it) { return it.row.PHANCAPPHAMVI_TEN; } },
+                    { header: "Thời gian", render: function (it) { return it.row.THOIGIAN; } },
+                    { header: "Số tín cũ", render: function (it) { return it.cu; } },
+                    { header: "Số tín mới", render: function (it) { return it.moi; } }
+                ],
+                request: function (it) { return me.req_SoTinKeHoach_Sua(it.ID); },
+                refresh: function () { me.getList_SoTinKeHoach(); }
             });
         });
+        // Khởi tạo: 1 lệnh cho cả quỹ / thời gian / quy tắc đang chọn (form tiến trình chung, Bước 1 hiện điều kiện áp dụng)
         $("#btnKhoiTao").click(function () {
-            me.save_KhoiTao();
+            if (!edu.process) { me._run({}); return; }
+            var notes = [];
+            if (!edu.util.checkValue(edu.util.getValById("dropSearch_QuyHocBong"))) notes.push("Chưa chọn quỹ học bổng.");
+            if (!edu.util.checkValue(edu.util.getValById("dropQuyTacKhoiTao"))) notes.push("Chưa chọn quy tắc khởi tạo.");
+            edu.process.runJob({
+                title: "Khởi tạo số tín tối thiểu", what: "Khởi tạo dữ liệu số tín tối thiểu theo điều kiện đang chọn", fileName: "KetQuaKhoiTaoSoTin", notes: notes,
+                filters: [[{ label: "Quỹ học bổng", id: "dropSearch_QuyHocBong" }, { label: "Thời gian", id: "dropSearch_ThoiGian" }, { label: "Quy tắc khởi tạo", id: "dropQuyTacKhoiTao" }]],
+                request: function () { return me.req_KhoiTao(); },
+                refresh: function () { me.getList_SoTinKeHoach(); }
+            });
         });
     },
     /*------------------------------------------
@@ -173,10 +191,8 @@ SoTinKeHoach.prototype = {
     --Discription: [3] AccessDB HOC
     --ULR:  Modules
     -------------------------------------------*/
-    save_SoTinKeHoach: function (strId) {
+    req_SoTinKeHoach_Sua: function (strId) {
         var me = this;
-        var obj_notify = {};
-        //--Edit
         var obj_save = {
             'action': 'XLHV_HB_ThongTin_MH/EjQgHgkDHhA0OAUoLykeEi4VKC8FIC8mCjgP',
             'func': 'pkg_hocbong_thongtin.Sua_HB_QuyDinh_SoTinDangKy',
@@ -185,41 +201,11 @@ SoTinKeHoach.prototype = {
             'dSoQuyDinh': edu.system.getValById('txtSoTin_' + strId),
             'strNguoiThucHien_Id': edu.system.userId,
         };
-        //default
-        edu.system.makeRequest({
-            success: function (data) {
-                if (data.Success) {
-
-                    edu.system.alert("Thực hiện thành công");
-                }
-                else {
-                    obj_notify = {
-                        type: "w",
-                        content: obj_save.action + " (er): " + data.Message,
-                    }
-                    edu.system.alert(data.Message);
-                }
-            },
-            error: function (er) {
-                edu.system.alertOnModal(obj_notify);
-            },
-            type: "POST",
-            action: obj_save.action,
-            complete: function () {
-                edu.system.start_Progress("zoneprocessXXXX", function () {
-                    me.getList_SoTinKeHoach();
-                });
-            },
-            contentType: true,
-            data: obj_save,
-            fakedb: [
-            ]
-        }, false, false, false, null);
+        return { action: obj_save.action, type: "POST", data: obj_save };
     },
-    save_KhoiTao: function (strId) {
+    // Yêu cầu khởi tạo dữ liệu số tín tối thiểu theo quỹ / thời gian / quy tắc đang chọn
+    req_KhoiTao: function () {
         var me = this;
-        var obj_notify = {};
-        //--Edit
         var obj_save = {
             'action': 'XLHV_HB_TinhToan_MH/CikuKBUgLgU0DSgkNBUoLykSLhUoLwIpKAPP',
             'func': 'pkg_hocbong_tinhtoan.KhoiTaoDuLieuTinhSoTinChi',
@@ -229,33 +215,31 @@ SoTinKeHoach.prototype = {
             'strQuyTacTinhSoTin_Id': edu.system.getValById('dropQuyTacKhoiTao'),
             'strNguoiThucHien_Id': edu.system.userId,
         };
-        //default
-        edu.system.makeRequest({
-            success: function (data) {
-                if (data.Success) {
-
-                    edu.system.alert("Thực hiện thành công");
-                }
-                else {
-                    obj_notify = {
-                        type: "w",
-                        content: obj_save.action + " (er): " + data.Message,
-                    }
-                    edu.system.alert(data.Message);
-                }
-                me.getList_SoTinKeHoach();
-            },
-            error: function (er) {
-                edu.system.alertOnModal(obj_notify);
-            },
-            type: "POST",
-            action: obj_save.action,
-
-            contentType: true,
-            data: obj_save,
-            fakedb: [
-            ]
-        }, false, false, false, null);
+        return { action: obj_save.action, type: "POST", data: obj_save };
+    },
+    /*------------------------------------------
+    --Discription: Chạy qua form tiến trình chung (Corei/processrun.js, edu.process): trang chỉ khai báo danh sách bản ghi
+    -- + hàm dựng yêu cầu (req_*); form lo giờ bắt đầu/kết thúc, kết quả, lỗi, tổng hợp, xuất Excel.
+    -------------------------------------------*/
+    _run: function (cfg) {
+        if (!edu.process) {
+            edu.system.alert("Chưa cập nhật form tiến trình (thiếu Corei/processrun.js hoặc indexi.aspx).", "w");
+            return;
+        }
+        if (cfg.filters === undefined) cfg.filters = [[{ label: "Quỹ học bổng", id: "dropSearch_QuyHocBong" }, { label: "Thời gian", id: "dropSearch_ThoiGian" }]];
+        edu.process.run(cfg);
+    },
+    /*------------------------------------------
+    --Discription: Nút "Xuất Excel" chuẩn chung (Corei/exportexcel.js, edu.exporter.attachTable) gắn cạnh các danh sách kết quả:
+    -- xuất đúng danh sách đang xem, có tiêu đề, điều kiện lọc, dòng tổng và ngày xuất như mọi chức năng.
+    -------------------------------------------*/
+    _attachExport: function () {
+        var me = this;
+        if (!window.edu || !edu.exporter || typeof edu.exporter.attachTable !== "function") return;
+        edu.exporter.attachTable({
+            table: "tblSoTinKeHoach", before: "#btnSave_SoTinKeHoach", fileName: "SoTinToiThieuKeHoach", title: "SỐ TÍN TỐI THIỂU CỦA KẾ HOẠCH",
+            filters: [[{ label: "Quỹ học bổng", id: "dropSearch_QuyHocBong" }, { label: "Thời gian", id: "dropSearch_ThoiGian" }]]
+        });
     },
     getList_SoTinKeHoach: function (strDanhSach_Id) {
         var me = this;

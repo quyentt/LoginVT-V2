@@ -479,6 +479,9 @@
                             <i class="fa-light fa-screen-users"></i>Thiết đặt lớp không tổ chức thi</a>
                         <a id="btnHuyPhiTinChi" class="btn btn-soft-danger">
                             <i class="fa-solid fa-ban"></i>Hủy phí tín chỉ</a>
+                        <a id="btnExport_LopHocPhan" class="btn btn-soft-success" href="#"
+                           title="Xuất Excel bảng đang hiển thị (toàn bộ kết quả của điều kiện đang chọn, không chỉ trang hiện tại)">
+                            <i class="fa-solid fa-file-excel"></i>Xuất Excel</a>
                     </div>
                 </div>
 
@@ -530,9 +533,10 @@
                                     <th class="td-left">Tổ chức thi</th>
                                     <th class="td-left">Thuộc tính KLGD</th>
                                     <th class="td-left">Chế độ tính phí</th>
-                                    <!-- Ẩn theo yêu cầu (dùng cho tra cứu):-->
-                                    <th class="td-left">Dồn lớp</th>
-                                    <th class="td-left">Dồn nhóm lớp</th>
+                                    <!-- Chức năng tra cứu ("Xem kết quả đăng ký..."): lophocphan.js gỡ 2 cột này
+                                         (init + genTable_LopHocPhan, cùng 1 cờ bTraCuu). Chức năng Tổng hợp giữ nguyên. -->
+                                    <th class="td-left" id="thDonLop">Dồn lớp</th>
+                                    <th class="td-left" id="thDonNhomLop">Dồn nhóm lớp</th>
                                     <!-- -->
                                     <th class="td-center td-fixed">
                                         <input type="checkbox" id="chkSelectAll_LopHocPhan">
@@ -1330,7 +1334,8 @@
     </div>
 </div>
 
-<!-- XLSX-JS-STYLE (fork SheetJS có hỗ trợ style cell) — phục vụ Xuất Excel DS không đăng ký. Load 1 lần, idempotent. -->
+<!-- ĐÃ TẮT: nạp thư viện XLSX-JS-STYLE từ CDN (trước chỉ phục vụ Xuất Excel DS không đăng ký, mỗi chức năng 1 kiểu, cần internet).
+     Mọi chức năng xuất Excel nay dùng chuẩn chung edu.exporter (Corei/exportexcel.js). Muốn bật lại: bỏ comment khối script bên dưới.
 <script>
     (function loadXLSX_LopHocPhan() {
         if (typeof XLSX !== 'undefined' && XLSX.version) return;
@@ -1351,8 +1356,9 @@
         tryNext();
     })();
 </script>
+-->
 <!-- ----javascript---------------- -->
-<script src="modules/kehoachdangky/script/LopHocPhan.js?v=1.0.0.0"></script>
+<script src="modules/kehoachdangky/script/LopHocPhan.js?v=1.0.1.0"></script>
 <script type="text/javascript">
     var main_doc = {};
     main_doc['LopHocPhan'] = new LopHocPhan();

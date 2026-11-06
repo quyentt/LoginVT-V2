@@ -24,8 +24,12 @@ Một thẻ script, đặt **sau** các script của vỏ (đã gắn sẵn ở 
 <script src="assets/plugin/btn-yeucau-hotro/btn-yeucau-hotro.js"></script>
 ```
 
-Vỏ v1 (`index.aspx` gốc) gắn y hệt với đường dẫn `_v2/assets/plugin/btn-yeucau-hotro/btn-yeucau-hotro.js`; plugin tự nhận ra
-`edu.system` và lấy ngữ cảnh từ đó (`strChucNang_Id`, `dtChucNang`, `dtUngDung`, `userId`), `v = "1"`.
+Vỏ v1: KHÔNG sửa `index.aspx` / `indexi.aspx` — `Core/systemroot.js` và `Corei/systemroot.js` (khối `try` ở CUỐI TỆP, chạy ngay khi systemroot nạp — có từ trang chủ; trước 2/11 đặt trong `page_load` nên chỉ có sau khi mở một màn) tự chèn thẻ script nạp
+bản sao `assets/plugin/btn-yeucau-hotro/btn-yeucau-hotro.js` ở GỐC ứng dụng (dong-goi.py chép từ `_v2`) với
+`UMS_HOTRO_CONFIG = { nhung: true, an: true }`. **`an: true` = tạm ẩn** (2/11): nạp xong không dựng nút nổi, không hỏi Help định kỳ;
+dán vào console `btnYeuCauHoTro.hien()` thì nút hiện và chạy đủ. Bỏ ẩn hẳn: đổi `an: false` trong hai tệp systemroot.
+Plugin tự nhận ra `edu.system` và lấy ngữ cảnh từ đó (`strChucNang_Id`, `dtChucNang`, `dtUngDung`, `userId`), `v = "1"`.
+Gói v1: `python _harness/skin.py dong-goi` → `_v1_deploy/` (plugin + hai systemroot + help-sso.aspx + màn lột da), chép GỘP lên gốc ứng dụng.
 
 ## Cấu hình (tuỳ chọn)
 
@@ -43,7 +47,9 @@ Trước thẻ script, hoặc bằng `data-*` trên thẻ script, hoặc sửa `
   choMs: 10000,                                                       // chờ Help trả lời (danh sách / postMessage / help-san-sang) tối đa
   choChiaSeMs: 30000,                                                 // chờ người dùng trả lời hộp "Chia sẻ tab" khi chụp thật; quá thì vẽ lại bằng html2canvas
   nhung: false,                                                       // mục 11: trao đổi ngay trong popup — BẬT khi Help báo trang nhúng đã lên máy chủ
-  nhungUrl: "https://con98.api-apis.com/help-master/ho-tro/nhung"      // mở yêu cầu cũ trong iframe: POST token + id + v (Help 11.7)
+  nhungUrl: "https://con98.api-apis.com/help-master/ho-tro/nhung",     // mở yêu cầu cũ trong iframe: POST token + id + v (Help 11.7)
+  huongDanUrl: "https://con98.api-apis.com/help-master/huong-dan/khac/huong-dan-su-dung-chuc-nang-yeu-cau-ho-tro#thuc-hien"
+                                                                      // bài hướng dẫn trên Help: nút "?" tròn cạnh "Tạo yêu cầu mới" mở ở tab help-portal; "" = không hiện nút
 };</script>
 ```
 
@@ -67,6 +73,13 @@ Thử khi Help chưa có cửa nhận: `btnYeuCauHoTro.config.url = 'assets/plug
 3. Popup: dòng ngữ cảnh (tên màn, ứng dụng, phiên bản), thanh công cụ **Khung / Mũi tên / Cắt ảnh / Hoàn tác / Chụp lại / Ảnh khác / Bỏ ảnh** (bỏ = gửi không có trường `anh`, Hoàn tác lấy lại),
    dán ảnh bằng Ctrl+V, ô mô tả ≤ 2.000 ký tự, dòng nhắc "người cùng ứng dụng ở trường bạn sẽ thấy".
    Nét vẽ đỏ `#e11d48`, độ dày 3px (tỷ lệ theo bề ngang ảnh). Cắt: kéo chọn vùng, thả là cắt; sai thì Hoàn tác (30 bước).
+   **Số điện thoại + phòng ban** (`sdt` / `donvi`, bắt buộc khi gửi — phục vụ báo cáo): điền sẵn từ dòng người dùng trên API
+   (`LayDanhSachNguoiDung`: `SODIENTHOAI`, `TENDONVI`) rồi từ `hoSo` Help trả ở cửa danh sách; không lưu ở trình duyệt. Khung hai ô
+   **hiện** khi thiếu một trong hai, HOẶC khi đây là **yêu cầu đầu tiên** của người này (cửa danh sách `phamVi=toi` không lọc trả
+   `tong = 0`, người dùng chốt 2/11) — lúc đó ô đã điền sẵn để kiểm lại. Số yêu cầu lấy từ lần tải bảng / hỏi tin mới gần nhất; chưa biết
+   thì popup hỏi Help một lần (`kichCo = 1`); Help xác nhận `help-ho-tro-xong` thì +1 nên lần gửi sau không còn là "đầu tiên".
+   **Hướng dẫn nhanh** (4 slide, trước khi chụp) hiện khi trình duyệt này chưa xem (localStorage `yh-huongdan-v1`) HOẶC khi là yêu cầu
+   đầu tiên (`tong = 0`) — trường hợp sau mỗi phiên trang chỉ hiện một lần (Bỏ qua rồi bấm Tạo lại thì thôi). Xem lại: `btnYeuCauHoTro.huongDan()`.
 4. **"Gửi nhanh"** (bước 3a): phát token MỚI → form `multipart/form-data` submit vào iframe ẩn trong popup → chờ `postMessage`
    `{ loai: "help-ho-tro-xong", ok, id, url, soTuongTu }` từ đúng origin Help (tối đa `choMs`) → báo "Đã gửi" kèm link Xem, chèn
    dòng mới lên đầu bảng (không gọi lại cửa danh sách). Quá hạn hoặc `ok = false` → báo lỗi, popup giữ nguyên để gửi lại.
@@ -109,4 +122,4 @@ Không giữ token, không cookie Help, không SDK.
 - Cửa danh sách CHƯA thử với Help thật (26/10: Help mới có trên máy dev). Lên máy chủ thì chạy bước 5 mục 10.4: tài khoản trường có ≥ 25 yêu cầu,
   thử từng bộ lọc, Tải thêm, Gửi nhanh → dòng mới lên đầu, bấm dòng → mở đúng trang vấn đề.
 
-Dò trên máy: `btnYeuCauHoTro.mo()` (bảng), `.tao()` (chụp + popup), `.taiLai()`, `.dong()`, `.taiAnh()` (tải ảnh trong popup + in thông số môi trường).
+Dò trên máy: `btnYeuCauHoTro.hien()` (dựng nút khi đang `an`), `.mo()` (bảng), `.tao()` (chụp + popup), `.taiLai()`, `.dong()`, `.taiAnh()` (tải ảnh trong popup + in thông số môi trường).

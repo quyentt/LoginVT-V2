@@ -631,6 +631,125 @@
         background: #f1f5f9;
         color: #223771;
     }
+
+    /* ===== Modal "Khoản đã nộp" / "Khoản phải nộp": nút thẳng hàng, cùng cỡ =====
+       Trước đây indexi.aspx ép "Đóng"/"Lưu" thành display:block còn "Xóa"/"Phân bổ" là inline-flex => cao thấp + khoảng cách
+       icon-chữ khác nhau, các nút sát nhau 5px, thứ tự lộn xộn. Chuẩn: Xóa tách trái (outline đỏ), Đóng / Phân bổ (outline)
+       và Lưu (đặc) nhóm phải, cách nhau 10px. Pseudo clearfix của .modal-footer/.row phải tắt vì thành flex item cộng thêm gap. */
+    html body.skin-blue #myModalKhoanDaNop .modal-footer,
+    html body.skin-blue #myModalKhoanPhaiNop .modal-footer {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-end !important;
+        gap: 10px !important;
+    }
+
+    html body.skin-blue #myModalKhoanDaNop .modal-footer::before,
+    html body.skin-blue #myModalKhoanDaNop .modal-footer::after,
+    html body.skin-blue #myModalKhoanPhaiNop .modal-footer::before,
+    html body.skin-blue #myModalKhoanPhaiNop .modal-footer::after,
+    #zonePhanBo .aps-form-btn::before,
+    #zonePhanBo .aps-form-btn::after {
+        display: none !important;
+    }
+
+    html body.skin-blue #myModalKhoanDaNop .modal-footer .btn,
+    html body.skin-blue #myModalKhoanPhaiNop .modal-footer .btn,
+    html body.skin-blue #myModalKhoanDaNop #zonePhanBo #btnSave_PhanBo {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        min-height: 38px;
+        margin: 0 !important;
+        padding: 8px 18px !important;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        line-height: 1.2 !important;
+        border-radius: 8px !important;
+        box-shadow: none !important;
+        cursor: pointer;
+    }
+
+    html body.skin-blue #myModalKhoanDaNop .modal-footer .btn i,
+    html body.skin-blue #myModalKhoanPhaiNop .modal-footer .btn i,
+    html body.skin-blue #myModalKhoanDaNop #zonePhanBo #btnSave_PhanBo i {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* nút đang ẩn bằng style="display: none" (Xóa khi thêm mới) phải vẫn ẩn */
+    html body.skin-blue #myModalKhoanDaNop .modal-footer .btn[style*="display: none"],
+    html body.skin-blue #myModalKhoanPhaiNop .modal-footer .btn[style*="display: none"] {
+        display: none !important;
+    }
+
+    /* Đóng: xám outline */
+    html body.skin-blue #myModalKhoanDaNop .modal-footer .btn.btn-default,
+    html body.skin-blue #myModalKhoanPhaiNop .modal-footer .btn.btn-default {
+        background: #ffffff !important;
+        color: #475569 !important;
+        border: 1px solid #cbd5e1 !important;
+    }
+
+    html body.skin-blue #myModalKhoanDaNop .modal-footer .btn.btn-default:hover,
+    html body.skin-blue #myModalKhoanPhaiNop .modal-footer .btn.btn-default:hover {
+        background: #f1f5f9 !important;
+        border-color: #94a3b8 !important;
+        color: #334155 !important;
+    }
+
+    /* Phân bổ: xanh lá outline (nút phụ, mở vùng phân bổ) */
+    html body.skin-blue #myModalKhoanDaNop .modal-footer #btnPhanBo {
+        background: #ffffff !important;
+        color: #15803d !important;
+        border: 1px solid #16a34a !important;
+    }
+
+    html body.skin-blue #myModalKhoanDaNop .modal-footer #btnPhanBo:hover {
+        background: #16a34a !important;
+        color: #ffffff !important;
+    }
+
+    /* Lưu: nút chính (navy đặc của hệ thống), to hơn một chút */
+    html body.skin-blue #myModalKhoanDaNop .modal-footer .btn.btn-primary,
+    html body.skin-blue #myModalKhoanPhaiNop .modal-footer .btn.btn-primary {
+        min-width: 110px;
+        padding: 8px 24px !important;
+    }
+
+    /* Xóa: tách hẳn sang trái, outline đỏ — hover mới đổ đặc để tránh bấm nhầm */
+    html body.skin-blue #myModalKhoanDaNop .modal-footer .btnOpenDelete,
+    html body.skin-blue #myModalKhoanPhaiNop .modal-footer .btnOpenDelete {
+        order: -1;
+        margin-right: auto !important;
+        background: #ffffff !important;
+        color: #dc2626 !important;
+        border: 1px solid #dc2626 !important;
+    }
+
+    html body.skin-blue #myModalKhoanDaNop .modal-footer .btnOpenDelete:hover,
+    html body.skin-blue #myModalKhoanPhaiNop .modal-footer .btnOpenDelete:hover {
+        background: #dc2626 !important;
+        color: #ffffff !important;
+    }
+
+    /* Hàng "banner kết quả | Lưu phân bổ" trong vùng phân bổ: cùng 1 hàng, banner chiếm phần còn lại */
+    #zonePhanBo .aps-form-btn {
+        display: flex !important;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
+    #zonePhanBo #divKetQua_PhanBo {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    #zonePhanBo #divKetQua_PhanBo > div {
+        margin-bottom: 0 !important;
+    }
 </style>
 <div id="MainContent">
     <!-- Main content -->
@@ -1905,8 +2024,9 @@
                             </table>
                         </div>
                     </div>
-                    <!-- Row 3 -->
+                    <!-- Row 3: banner kết quả lưu (thay cho edu.system.alert) bên trái, nút Lưu phân bổ bên phải, cùng 1 hàng -->
                     <div class="row aps-form-btn text-right">
+                        <div id="divKetQua_PhanBo" style="display: none"></div>
                         <a class="submit btn btn-primary" id="btnSave_PhanBo"><i class="fa fa-save"></i>
                             <span class="lang" key="">Lưu phân bổ</span></a>
                     </div>
@@ -2004,7 +2124,7 @@
     </div>
 </div>
 <!-- page script -->
-<script src="modules/phieuthu/scripts/thutienkhac.js?v=1.0.0.13"></script>
+<script src="modules/phieuthu/scripts/thutienkhac.js?v=1.0.0.19"></script>
 <script src="modules/phieuthu/scripts/n2vi.min.js"></script>
 <script src="modules/hoadon/scripts/qrcode.min.js"></script>
 <script type="text/javascript">

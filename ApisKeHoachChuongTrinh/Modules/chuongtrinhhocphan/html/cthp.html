@@ -848,6 +848,15 @@
         font-size: 12px;
         white-space: nowrap;
     }
+
+    /* ═══ Danh sách chọn học phần (6 <ul class="sidebar-menu"> trong 4 form thêm học phần/khối) ═══
+       Root cause "rê chuột vào là mất thanh cuộn, lăn chuột không cuộn được danh sách":
+       styles-content.css (~dòng 18207) có rule toàn cục `.sidebar-menu:hover { overflow: hidden !important }`
+       (viết cho menu trái) → đè inline `overflow-y: scroll` của các <ul> này ngay khi chuột nằm trên dòng.
+       Vá scoped theo module: specificity cao hơn rule gốc nên thắng dù cùng !important. */
+    .aps-chuongtrinhhocphan ul.sidebar-menu:hover {
+        overflow-y: scroll !important;
+    }
 </style>
 <section class="content aps-KeHoachChuongTrinh">
     <div class="row aps-chuongtrinhhocphan">

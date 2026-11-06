@@ -1959,7 +1959,8 @@
                         <div id="kqdk_chip_loc" class="d-none" style="display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-bottom:10px;"></div>
                         </div><!-- /.kqdk-toolbar-sticky -->
 
-                        <!-- Sticky 3 cột đầu (STT 50, checkbox 50, Thao tác 130) — width cứng để left offset match chính xác -->
+                        <!-- Sticky 3 cột đầu (STT 50, checkbox 50, Thao tác 70) — width cứng để left offset match chính xác -->
+                        <!-- Cột Xóa (kqdk-colxoa) nằm Ở CUỐI hàng, không sticky. -->
                         <style>
                             #tblKQDK_HoSo thead th.kqdk-col1,
                             #tblKQDK_HoSo tbody td.kqdk-col1 {
@@ -1974,12 +1975,19 @@
                             #tblKQDK_HoSo thead th.kqdk-col3,
                             #tblKQDK_HoSo tbody td.kqdk-col3 {
                                 position: sticky; left: 100px; z-index: 4; background: #fff;
-                                width: 130px; min-width: 130px; max-width: 130px;
+                                /* 29/10/2026: cột Thao tác chỉ còn nút Xem/Sửa (nút Xóa đã chuyển xuống cột cuối) → thu hẹp 130 → 70 */
+                                width: 70px; min-width: 70px; max-width: 70px;
                                 border-right: 2px solid #cbd5e1;
                             }
                             #tblKQDK_HoSo thead th.kqdk-col1,
                             #tblKQDK_HoSo thead th.kqdk-col2 { background: #f8fafc; z-index: 5; }
                             #tblKQDK_HoSo thead th.kqdk-col3 { background: #f1f5f9; z-index: 5; }
+                            /* Cột Xóa Ở CUỐI hàng, tách xa nút Xem/Sửa */
+                            #tblKQDK_HoSo thead th.kqdk-colxoa,
+                            #tblKQDK_HoSo tbody td.kqdk-colxoa {
+                                width: 70px; min-width: 70px; max-width: 70px; text-align: center;
+                            }
+                            #tblKQDK_HoSo thead th.kqdk-colxoa { background: #f1f5f9; vertical-align: middle; }
                             /* Buffer padding cho cột Họ và tên (cột 4) — tránh chữ đầu bị dính vào border-right của cột Thao tác */
                             #tblKQDK_HoSo thead tr:first-child th:nth-child(4),
                             #tblKQDK_HoSo tbody tr td:nth-child(4) { padding-left: 14px; }
@@ -2059,6 +2067,9 @@
                                              chế độ "Đầy đủ" xô cột. -->
                                         <th class="td-center" colspan="14" style="background:#e2e8f0;color:#334155;">Hồ sơ &amp; kế hoạch</th>
                                         <th class="td-center" colspan="3" style="background:#fed7aa;color:#9a3412;">Hóa đơn (bổ sung)</th>
+                                        <!-- 29/10/2026: nút Xóa tách khỏi cột Thao tác, đặt Ở CUỐI hàng (class kqdk-colxoa).
+                                             JS _kqGanPhezuFull bỏ qua th này khi đánh số cột dữ liệu. -->
+                                        <th class="td-center kqdk-colxoa" rowspan="2">Xóa</th>
                                     </tr>
                                     <tr>
                                         <th class="td-center" style="min-width:130px;">Số CCCD</th>
@@ -3500,10 +3511,12 @@
                 <div class="d-flex align-items-end flex-wrap mb-15" style="gap:12px;">
                     <div style="flex:1; min-width:280px; max-width:460px;">
                         <label style="display:block;font-size:12.5px;font-weight:700;color:#334155;margin-bottom:4px;">
-                            Họ tên / Số CCCD / Mã hồ sơ / Mã sinh viên / Mã lớp quản lý
+                            Họ tên / Số CCCD / Mã hồ sơ
+                            <!-- 26/10/2026: bỏ "Mã sinh viên / Mã lớp quản lý" khỏi nhãn vì Tra cứu đã chuyển sang
+                                 dữ liệu TS (LayDS_HoSo_TS_FULL); khi sếp cho hàm khớp các từ khóa đó thì trả lại nhãn. -->
                         </label>
                         <input id="txtTraCuu_TuKhoa" class="form-control" style="height:40px;font-weight:600;color:#0f172a;"
-                               placeholder="VD: Nguyễn Khoa Vinh — 046211014012 — 66CCK2_VLVH">
+                               placeholder="VD: Nguyễn Khoa Vinh — 046211014012">
                     </div>
                     <div style="width:190px;">
                         <label style="display:block;font-size:12.5px;font-weight:700;color:#334155;margin-bottom:4px;">
@@ -3521,11 +3534,9 @@
 
                 <div class="alert alert-info" style="margin-bottom:12px;font-size:13px;">
                     <i class="fa-light fa-circle-info"></i>
-                    Tìm trên <b>toàn trường</b>, không phụ thuộc kế hoạch hay đợt đang mở. Cột
-                    <b>“Đang ở đâu”</b> cho biết em đó còn ở tuyển sinh (kế hoạch nào, đợt nào) hay
-                    đã sang người học (hệ, khóa, lớp). Một em có thể hiện <b>nhiều dòng</b> nếu nộp
-                    nhiều nguyện vọng hoặc đã học ở nhiều ngành.
-                    Gõ <b>mã lớp quản lý</b> thì ra <b>cả lớp</b> (tối đa 3 lớp khớp nhất).
+                    Tìm trên <b>toàn trường</b> theo <b>dữ liệu tuyển sinh</b>, không phụ thuộc kế hoạch hay đợt
+                    đang mở. Mỗi dòng là <b>một hồ sơ / một nguyện vọng</b>: cột <b>“Đang ở đâu”</b> cho biết
+                    kế hoạch nào, đợt nào, hệ và ngành nào; một em nộp nhiều lần thì hiện <b>nhiều dòng</b>.
                 </div>
 
                 <div class="table-responsive" style="max-height:calc(100vh - 300px);overflow:auto;">

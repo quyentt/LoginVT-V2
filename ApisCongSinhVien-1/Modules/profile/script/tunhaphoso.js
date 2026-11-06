@@ -1,4 +1,4 @@
-﻿/*----------------------------------------------
+/*----------------------------------------------
 --Author: 
 --Phone:
 --Date of created: 29/06/2018
@@ -40,7 +40,7 @@ TuNhapHoSo.prototype = {
         });
         $("#dropSearch_KeHoach").on("select2:select", function () {
             me.getList_TuNhapHoSo();
-            me.getList_DM_HoatDong(); 
+            me.getList_DM_HoatDong();
             var temp = $("#dropSearch_KeHoach option:selected").attr("name");
             if (temp == "0" || temp == 0) {
                 me.bcheck = true;
@@ -60,9 +60,9 @@ TuNhapHoSo.prototype = {
         edu.system.uploadAvatar(['uploadPicture_SV'], "");
     },
     /*------------------------------------------
-	--Discription: [4]  ACESS DB ==> thoi gian dao tao
+    --Discription: [4]  ACESS DB ==> thoi gian dao tao
     --Author: duyentt
-	-------------------------------------------*/
+    -------------------------------------------*/
     getList_KeHoach: function () {
         var me = this;
         var obj_list = {
@@ -227,7 +227,7 @@ TuNhapHoSo.prototype = {
             'strHanhDong_Id': edu.util.getValById('dropAAAA'),
         };
         //
-        
+
         edu.system.makeRequest({
             success: function (data) {
                 if (data.Success) {
@@ -238,15 +238,15 @@ TuNhapHoSo.prototype = {
                 else {
                     edu.system.alert(obj_list + " : " + data.Message, "s");
                 }
-                
+
             },
             error: function (er) {
-                
+
                 edu.system.alert(obj_list + " (er): " + JSON.stringify(er), "w");
             },
             type: 'GET',
             action: obj_list.action,
-            
+
             contentType: true,
             data: obj_list,
             fakedb: [
@@ -259,7 +259,7 @@ TuNhapHoSo.prototype = {
         //--Edit
         var obj_delete = {
             'action': 'NS_HeSo_TuNhapHoSo/Xoa',
-            
+
             'strIds': Ids,
             'strChucNang_Id': edu.system.strChucNang_Id,
             'strNguoiThucHien_Id': edu.system.userId
@@ -283,10 +283,10 @@ TuNhapHoSo.prototype = {
                     };
                     edu.system.afterComfirm(obj);
                 }
-                
+
             },
             error: function (er) {
-                
+
                 obj = {
                     title: "",
                     content: obj_delete + ": " + JSON.stringify(er),
@@ -303,7 +303,7 @@ TuNhapHoSo.prototype = {
                 });
             },
             contentType: true,
-            
+
             data: obj_delete,
             fakedb: [
             ]
@@ -327,10 +327,10 @@ TuNhapHoSo.prototype = {
             aoColumns: [
                 {
                     "mDataProp": "THUOCNHOM"
-                }      ,
+                },
                 {
                     "mDataProp": "TEN"
-                }            ]
+                }]
         };
         if (!me.bcheck) {
             jsonForm.aoColumns.push({
@@ -347,12 +347,12 @@ TuNhapHoSo.prototype = {
                     switch (aData.KIEUDULIEU.toUpperCase()) {
                         case "TEXT":
                         case "NUMBER":
-                            return '<' + strLoai +' id="m' + aData.ID + '"  class="form-control" value="' + me.getGiaTri(aData) + '" style="' + strDoDai +'" ' + strDuocSua + ' />';
+                            return '<' + strLoai + ' id="m' + aData.ID + '"  class="form-control" value="' + me.getGiaTri(aData) + '" style="' + strDoDai + '" ' + strDuocSua + ' />';
                         case "DATE": return '<input id="m' + aData.ID + '"  class="form-control input-datepicker" value="' + me.getGiaTri(aData) + '" ' + strDuocSua + ' />';
-                        case "TINH": 
+                        case "TINH":
                         case "HUYEN":
-                        case "XA": 
-                        case "LIST": 
+                        case "XA":
+                        case "LIST":
                             return '<select id="m' + aData.ID + '" class="select-opt"></select>';
                         case "FILE": return '<div id="m' + aData.ID + '"></div>';
                         //case "AVATAR": return '<div id="' + aData.ID + '"></div>';
@@ -360,15 +360,15 @@ TuNhapHoSo.prototype = {
                 }
             }
         },
-        {
-            "mDataProp": "KETQUAXACNHAN_TEN"
-        },
-        {
-            "mData": "KETQUAXACNHAN_TEN",
-            "mRender": function (nRow, aData) {
-                return '<div id="txtFileDinhKem' + aData.ID + '" ></div>';
-            }
-        });
+            {
+                "mDataProp": "KETQUAXACNHAN_TEN"
+            },
+            {
+                "mData": "KETQUAXACNHAN_TEN",
+                "mRender": function (nRow, aData) {
+                    return '<div id="txtFileDinhKem' + aData.ID + '" ></div>';
+                }
+            });
         edu.system.loadToTable_data(jsonForm);
         var arrFile = [];
         data.forEach(aData => {
@@ -397,14 +397,14 @@ TuNhapHoSo.prototype = {
                         var strXa = me.getGiaTri(objXa);
 
                         edu.extend.genDropTinhThanh(strTinh_Id, strHuyen_Id, strXa_Id, strTinh, strHuyen, strXa);
-                    };break;
+                    }; break;
                 }
             }
             arrFile.push("txtFileDinhKem" + aData.ID);
         });
 
         edu.system.uploadFiles(arrFile);
-        setTimeout(function (){
+        setTimeout(function () {
             data.forEach(aData => {
                 if (aData.KIEUDULIEU) {
 

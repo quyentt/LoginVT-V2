@@ -3582,6 +3582,26 @@ systemroot.prototype = {
         var iTongDuLieu = 0;
         //me.iGioiHanLuong = 1;
 
+        // Trang khai objHangDoi.process = { title, fileName, ... } (xem edu.process.runHangDoi trong Corei/processrun.js)
+        // thì "Bắt đầu" chạy từng nhiệm vụ trong form tiến trình chung; không khai (hoặc máy khách chưa có processrun mới) thì chạy kiểu cũ bên dưới.
+        if (objHangDoi.process && edu.process && typeof edu.process.runHangDoi === "function") {
+            var pc = {}, k;
+            for (k in objHangDoi.process) pc[k] = objHangDoi.process[k];
+            pc.queueId = strHangDoi_Id;
+            // dòng "Hàng đợi: ..." lấy từ chữ đang hiện ở thanh tiến trình ("- Thanh tiến trình <tên>: <ngày giờ tạo>")
+            var strTenHangDoi = $("#thanhtientrinh_" + objHangDoi.strName + strHangDoi_Id + " td").first().text().replace(/^\s*-\s*Thanh tiến trình\s*/i, "").trim();
+            pc.subTitles = [].concat(strTenHangDoi ? ["Hàng đợi: " + strTenHangDoi] : [], pc.subTitles || []);
+            // ô "n luồng cùng chạy" trên thanh tiến trình: "Chạy tuần tự" (giá trị 2) = từng nhiệm vụ một
+            pc.concurrency = pc.concurrency || function () { return me.iGioiHanLuong == 2 ? 1 : (parseInt(me.iGioiHanLuong, 10) || 10); };
+            pc.onClose = function (sum) {
+                if (typeof objHangDoi.callback == "function") objHangDoi.callback();
+                me.createHangDoi(objHangDoi);//vẽ lại thanh tiến trình theo số liệu thật của máy chủ (hàng đợi xong thì biến mất)
+                if (typeof objHangDoi.process.onClose == "function") objHangDoi.process.onClose(sum);
+            };
+            edu.process.runHangDoi(pc);
+            return;
+        }
+
         getList_XuLyNhiemVu();
         function getList_XuLyNhiemVu() {
             var iTinhTrang = 0;
@@ -8094,6 +8114,7 @@ systemroot.prototype = {
         // Panel tiến trình import (2026-09-17): trước đây bấm "Thực hiện import" không có phản hồi nào
         // ngoài overlay spinner toàn cục, người dùng tưởng máy treo rồi một lúc mới thấy bảng lỗi.
         // Panel đặt ngay trong modal nên không phụ thuộc z-index của #overlay.
+        row += '<div id="zoneImportPanel" style="display:none"></div>';
         row += '<div id="zoneImportProgress" style="display:none;margin:10px 0;padding:14px 16px;border:1px solid #dbe4f3;border-radius:8px;background:#f8fbff">';
         row += '<div style="display:flex;align-items:center;margin-bottom:10px">';
         row += '<i class="fa fa-spinner fa-spin" style="color:#2563eb;font-size:16px;margin-right:10px"></i>';
@@ -8139,7 +8160,21 @@ systemroot.prototype = {
         $("#modalBaoCao #modal_body").html(row);
         $("#modalBaoCao").modal("show");
         edu.system.uploadImport(["importToCheck"], me.getList_DataImport);
+        // Panel tiến trình + kết quả import dùng chung (Corei/processrun.js, edu.process.importPanel): đồng hồ, tổng hợp thành công/lỗi,
+        // bảng từng dòng, xuất Excel dòng lỗi. Chưa có file mới trên máy khách thì dùng lại cách hiển thị cũ bên dưới.
+        var ip = null;
+        if (window.edu && edu.process && typeof edu.process.importPanel === "function") {
+            ip = edu.process.importPanel({
+                container: "#zoneImportPanel",
+                title: strTenHienThi ? "Import " + strTenHienThi : "Kết quả import",
+                fileName: "KetQuaImport",
+                source: function () { return me.dtImport ? me.dtImport[$("#dropSearch_BangA").val()] : null; },
+                onBack: function () { ip.reset(); $("#tblChuaImport").show(); $("#tblImportLoi").hide(); }
+            });
+            $("#modalBaoCao").off("hidden.bs.modal.eduip").on("hidden.bs.modal.eduip", function () { ip.reset(); });
+        }
         $('#dropSearch_BangA').on('change', function () {
+            if (ip) ip.reset();
             $("#tblChuaImport").show();
             $("#tblImportLoi").hide();
             me.genTable_Import_View(me.dtImport[$("#dropSearch_BangA").val()], "tblBangA")
@@ -8168,12 +8203,18 @@ systemroot.prototype = {
                 if (dtSheet && dtSheet.length) iTong = dtSheet.length;
             } catch (ex) { }
             var dStart = new Date().getTime();
-            $("#lblImportNote").html("");
-            $("#zoneImportProgress").show();
             var btn = $("#btnThucHienImport");
             if (!btn.attr("data-html-goc")) btn.attr("data-html-goc", btn.html());
             btn.addClass("disabled").css("pointer-events", "none")
                 .html('<i class="fa fa-spinner fa-spin"></i> Đang import...');
+            if (ip) {
+                $("#zoneImportMsg").hide().html("");
+                ip.start(iTong);
+                $("#overlay").hide();
+                return;
+            }
+            $("#lblImportNote").html("");
+            $("#zoneImportProgress").show();
             var fnTick = function () {
                 var iGiay = Math.floor((new Date().getTime() - dStart) / 1000);
                 var strPhut = ("0" + Math.floor(iGiay / 60)).slice(-2);
@@ -8261,7 +8302,8 @@ systemroot.prototype = {
                 error: function (er) {
                     // Không tắt tiến trình ở đây thì thanh quay mãi khi bước lấy danh mục lỗi — 2026-09-17
                     _stopImportProgress();
-                    _showImportMsg("Không lấy được cấu hình danh mục import. Vui lòng thử lại.");
+                    if (ip) ip.fail("Không lấy được cấu hình danh mục import. Vui lòng thử lại.");
+                    else _showImportMsg("Không lấy được cấu hình danh mục import. Vui lòng thử lại.");
                 },
                 type: 'GET',
                 action: 'CMS_DanhMucThuocTinh/LayDanhSachDuLieuTheoBangDM',
@@ -8286,6 +8328,16 @@ systemroot.prototype = {
                     // Tắt thanh tiến trình trước khi dựng bảng lỗi, vì edu.system.alert bên dưới
                     // mở modal khác đè lên — 2026-09-17
                     _stopImportProgress();
+                    if (ip && data.Success) {
+                        // Kết quả hiển thị ngay trong modal import (không mở thêm hộp thoại chồng lên)
+                        ip.finish(data.Data);
+                        $("#tblChuaImport").hide();
+                        $("#tblImportLoi").hide();
+                        if (sCallback != undefined && sCallback != "undefined" && sCallback != "") {
+                            eval(sCallback);
+                        }
+                        return;
+                    }
                     if (data.Success) {
                         data = data.Data;
                         var arrDataLoi = [];
@@ -8339,7 +8391,8 @@ systemroot.prototype = {
                     }
                     else {
                         // Trước đây Success=false là im lặng hoàn toàn — 2026-09-17
-                        _showImportMsg("Import không thực hiện được: " + edu.util.returnEmpty(data.Message));
+                        if (ip) ip.fail("Import không thực hiện được: " + edu.util.returnEmpty(data.Message));
+                        else _showImportMsg("Import không thực hiện được: " + edu.util.returnEmpty(data.Message));
                     }
                 },
                 error: function (er) {
@@ -8347,14 +8400,16 @@ systemroot.prototype = {
                     // người dùng chỉ thấy màn hình đứng im rồi bất chợt hiện lỗi — 2026-09-17
                     _iImportRetry++;
                     if (_iImportRetry <= 2) {
-                        $("#lblImportNote").html('<i class="fa-solid fa-rotate-right" style="margin-right:6px"></i>Kết nối lỗi, đang thử lại lần ' + _iImportRetry + "/2...");
+                        if (ip) ip.note("Kết nối lỗi, đang thử lại lần " + _iImportRetry + "/2...");
+                        else $("#lblImportNote").html('<i class="fa-solid fa-rotate-right" style="margin-right:6px"></i>Kết nối lỗi, đang thử lại lần ' + _iImportRetry + "/2...");
                         setTimeout(function () {
                             ImportData(obj_list);
                         }, 1000);
                         return;
                     }
                     _stopImportProgress();
-                    _showImportMsg("Import thất bại: không gọi được máy chủ sau 3 lần thử. Vui lòng kiểm tra lại file rồi thực hiện lại.");
+                    if (ip) ip.fail("Import thất bại: không gọi được máy chủ sau 3 lần thử. Vui lòng kiểm tra lại file rồi thực hiện lại.");
+                    else _showImportMsg("Import thất bại: không gọi được máy chủ sau 3 lần thử. Vui lòng kiểm tra lại file rồi thực hiện lại.");
                 },
                 type: 'POST',
                 action: obj_list.action,
@@ -10257,3 +10312,17 @@ systemroot.prototype = {
         /*III. Callback*/
     },
 }
+;
+/* Plugin "Yêu cầu hỗ trợ" (assets/plugin/btn-yeucau-hotro — bản dùng chung với _v2, dong-goi.py chép ra gốc). Đặt CUỐI TỆP để chạy ngay
+   khi systemroot được nạp (thẻ script nằm sau </body>) → có cả ở trang chủ / danh sách vai trò, không chờ page_load (2/11: page_load chỉ chạy
+   sau khi mở một màn, đứng ở trang chủ gõ console báo "not defined"). KHÔNG sửa index.aspx / indexi.aspx trên host.
+   TẠM ẨN (an: true): nút nổi chưa dựng, mở bằng console `btnYeuCauHoTro.hien()`. Bỏ ẩn: đổi an: false. Chế độ nhúng (nhung) như _v2.
+   Đường dẫn tương đối gốc ứng dụng, ?v= ngẫu nhiên như loadPage() để không dính cache. */
+try {
+    if (!window.UMS_HOTRO_CONFIG) window.UMS_HOTRO_CONFIG = { nhung: true, an: false };
+    if (!document.querySelector('script[src*="btn-yeucau-hotro.js"]')) {
+        var sHoTro = document.createElement('script');
+        sHoTro.src = 'assets/plugin/btn-yeucau-hotro/btn-yeucau-hotro.js?v=' + Date.now();
+        (document.body || document.head).appendChild(sHoTro);
+    }
+} catch (ex) { console.warn('[yeu-cau-ho-tro] không nạp được plugin', ex); }

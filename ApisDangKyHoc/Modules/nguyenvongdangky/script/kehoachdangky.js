@@ -194,6 +194,59 @@ KeHoach.prototype = {
                 }
             });
         });
+        me.initFooter_Dinh();
+    },
+    /*------------------------------------------
+    --Discription: Footer (Xóa/Đóng/Lưu) luôn sát đáy màn hình khi form dài (bảng Phạm vi học phần hàng trăm dòng)
+    --Note: position:fixed + canh left/width theo khung form (CSS .footer-dinh trong html), chèn spacer giữ chỗ để form không giật.
+    --      Tới cuối form thì trả về vị trí tự nhiên. Không dùng CSS sticky vì phụ thuộc overflow của mọi tổ tiên.
+    -------------------------------------------*/
+    initFooter_Dinh: function () {
+        var $zone = $("#zoneEdit");
+        var $box = $zone.find(".form-container");
+        var $footer = $box.children(".box-footer");
+        if ($footer.length == 0) return;
+        var $spacer = $('<div style="display: none"></div>').insertAfter($footer);
+        var iTimer = 0, bFrame = false;
+        var reset = function () {
+            if (!$footer.hasClass("footer-dinh")) return;
+            $footer.removeClass("footer-dinh").css({ left: "", width: "" });
+            $spacer.hide();
+        };
+        var sync = function () {
+            if (!document.body.contains($zone[0])) {
+                //module đã bị thay bằng trang khác -> gỡ listener
+                clearInterval(iTimer);
+                document.removeEventListener("scroll", onEvent, true);
+                window.removeEventListener("resize", onEvent);
+                return;
+            }
+            if (!$zone.is(":visible")) { reset(); return; }
+            var rect = $box[0].getBoundingClientRect();
+            var iHeight = $footer.hasClass("footer-dinh") ? $spacer.height() : $footer.outerHeight();
+            var iViewport = window.innerHeight;
+            //đáy form còn dưới màn hình và đầu form đã lên trên chỗ footer => ghim; ngược lại để tự nhiên
+            if (rect.bottom > iViewport + 1 && rect.top < iViewport - iHeight) {
+                $spacer.height(iHeight).show();
+                //width/left phải kèm !important: CSS shell ép .box-footer { width:100% !important } nên .css() thường bị bỏ qua
+                $footer.addClass("footer-dinh");
+                $footer[0].style.setProperty("left", rect.left + "px", "important");
+                $footer[0].style.setProperty("width", rect.width + "px", "important");
+            }
+            else {
+                reset();
+            }
+        };
+        var onEvent = function () {
+            if (bFrame) return;
+            bFrame = true;
+            requestAnimationFrame(function () { bFrame = false; sync(); });
+        };
+        //scroll không nổi bọt -> bắt ở pha capture để dính cả .wrapper (khung cuộn thật của shell)
+        document.addEventListener("scroll", onEvent, true);
+        window.addEventListener("resize", onEvent);
+        //form đổi chiều cao (nạp học phần, slideDown/slideUp) không bắn scroll -> quét nhẹ định kỳ
+        iTimer = setInterval(sync, 250);
     },
     toggle_detail: function (strZone) {
         edu.util.toggle_overide("zone-bus", strZone);

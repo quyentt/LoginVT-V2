@@ -348,7 +348,7 @@ XacNhanKetQua.prototype = {
         var obj_list = {
             'action': 'SV_KeHoach_PhamVi/LayDSQLSV_KeHoach_PhamVi_DL',
             'type': 'GET',
-            'strTuKhoa': edu.util.getValById('txtAAAA'),
+            'strTuKhoa': edu.util.getValById('tblKetQua_input').trim(),
             'strQLSV_KeHoach_NguoiHoc_Id': edu.util.getValById('dropSearch_KeHoach'),
             'strNamNhapHoc': edu.util.getValById('txtAAAA'),
             'strKhoaQuanLy_Id': edu.util.getValById('dropAAAA'),

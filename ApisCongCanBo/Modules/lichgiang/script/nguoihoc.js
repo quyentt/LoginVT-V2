@@ -206,6 +206,7 @@ NguoiHoc.prototype = {
             };
             arrChecked_Id.forEach(e => {
                 addKeyValue('strDaoTao_LopHocPhan_Id', e);
+                addKeyValue('strDangKy_LopHocPhan_Id', e);
             });
 
             for (var x in obj_list) {
