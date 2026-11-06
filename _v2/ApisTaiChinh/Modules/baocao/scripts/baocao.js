@@ -1,6 +1,6 @@
 /* =========================================================================
    Báo cáo tài chính
-   Bản gốc: ApisTaiChinh/Modules/baocao/scripts/baocao.js (3.612 dòng)
+   Bản gốc: ApisTaiChinh/Modules/baocao/scripts/baocao.js (3.612 dòng; mốc f6f5425ca 7/11: 3.874 dòng)
    ---------------------------------------------------------------------------
    Lời gọi — chép nguyên bản gốc (tên tham số, kể cả `type` gửi kèm dữ liệu
    như bản gốc, và các lỗi chính tả strDaoVao_*):
@@ -12,10 +12,12 @@
        DKH_KeHoachDangKy/LayDSKeHoachTheoThoiGian (khi đổi học kỳ)
        ums.api.dm: QLTC.HTTHU · TAICHINH.PHANLOAICHUNGTU · KHCT.NCN · TAICHINH.BC.TINHTRANGBCLUU
        TC_KhoanThu/LayDanhSach · TC_ThuChi2/LayDSTaiChinh_Nam_BaoCao
-     Tab 1–2
+     Tab 1–4 (đã nộp / phải nộp / rút / miễn — cùng bộ lọc, cùng bộ cột)
        TC_BaoCao/LayDSThuTien · TC_BaoCao/LayDSNopTien   (POST, phân trang 10)
+       PKG_TAICHINH_BAOCAO2.LayDSRutTien · LayDSMienTien  (mã hoá, không phân trang)
        PKG_TAICHINH_THONGTIN.Xoa_TaiChinh_PhaiNop_TatCa   (từng dòng)
-     Tab 3 — kết nối kế toán
+       Xuất Excel: gọi lại đúng lời gọi của tab với pageSize 100000 → ums.ui.xuatXls
+     Tab 5 — kết nối kế toán
        TC_KeToan/LayDSAPI_DoiTac · LayDSTenBangDuLieu · TaoDuLieuKeToanChoTungAPI ·
        XoaBangDuLieuAPI · LayCauTrucHienThiDuLieuAPI · LayDSDuLieuAPI ·
        LayGiaTriDuLieuAPI · LayDSAPI_DoiTac_ChiTiet · CapNhatDuLieuNhomAPI ·
@@ -48,6 +50,38 @@
    Khác bản gốc:
      · Tab 1–2 có phân trang (bản gốc gửi pageIndex 1/pageSize 10 nhưng
        không vẽ phân trang nên chỉ xem được 10 dòng đầu).
+   Kéo gốc lần 12–13 (2/11, 7/11) — gốc v1.0.0.27 → 32:
+     Đã chuyển:
+     · Hai tab mới "3. Kết quả rút" / "4. Kết quả miễn" (PKG_TAICHINH_BAOCAO2
+       .LayDSRutTien / LayDSMienTien, action TC_BaoCao2_MH/…, tham số như
+       BaoCao2_MHEntity: strTaiChinh_CacKhoanThu_Ids, strOrderBy, strDangKy_
+       KeHoach_Id, không pageIndex/pageSize); cột như tab 1; tổng tiền +
+       bằng chữ; "Kết nối kế toán" thành tab 5.
+     · Bốn tab gom về một bộ cấu hình CFG + params/req/loadKetQua/veKetQua
+       (= _cfgKetQua / _getParams_KetQua / _reqKetQua / _loadKetQua).
+     · Nút "Xuất Excel" ở bốn tab (= edu.exporter.attachTable): nạp lại
+       TOÀN BỘ dòng theo điều kiện (pageSize 100000, giữ 10 phút cho cùng
+       điều kiện), hộp thoại trước khi xuất có số dòng, câu đối chiếu với
+       màn hình (lệch số bản ghi / tổng tiền / tổng máy chủ ≠ cộng dòng,
+       dòng trùng ID) và các danh sách "lọc thêm khi xuất" (khoản thu, học
+       kỳ, hệ, khoá, chương trình, lớp, khoa, trạng thái, người thu, hình
+       thức — mặc định tích đúng ô lọc ngoài màn). Tệp: tiêu đề, dòng điều
+       kiện, bảng, dòng tổng, ngày xuất. Chưa tìm / không có dòng → báo,
+       không nạp.
+     · Tổng tiền = 0 → bằng chữ "Không đồng." (= _setTongTien).
+     Khác gốc:
+     · Rút / miễn: gốc chỉ vẽ 500 dòng đầu + dòng ghi chú "Đang hiển thị
+       x/y dòng… bấm Xuất Excel"; ở đây phân trang tại máy khách trên toàn
+       bộ kết quả nên xem được đủ, không cần ghi chú.
+     · Xuất Excel dùng ums.ui.xuatXls (bảng HTML .xls, máy khách) thay
+       Corei/exportexcel.js ≥ 1.8.0 (ExcelJS, có định dạng số / gộp ô);
+       cột số tiền ghi dạng chữ đã định dạng.
+     · Hộp thoại xuất: đối chiếu hiện ngay khi nạp xong (gốc hiện trong hộp
+       xuất của exporter), không ghi vào tệp — như gốc.
+     · strNguoiThucHien_Id để hệ tự chèn (gốc gán edu.system.userId).
+     Cố ý bỏ:
+     · Kiểm phiên bản exporter (_exporterOk) — không có ở _v2.
+     · Ô "chọn tất cả" tab 2 gốc mới thêm — bản này đã có từ trước.
    Cố ý bỏ:
      · Vùng "zonebtnBaoCao_TC_DatLich": không nơi nào đổ nút vào.
      · Các nút trùng id btnXoaNamBaoCao/btnSaveNamBaoCao trong ba hộp thoại
@@ -258,7 +292,12 @@
     });
 
     /* =====================================================================
-       Tab 1–2: tổng thu, kết quả phải nộp
+       Tab 1–4: kết quả đã nộp / phải nộp / rút / miễn
+       Bốn tab dùng CHUNG bộ điều kiện lọc (params) và CHUNG bộ cột (cùng tên
+       cột trả về), chỉ khác lời gọi (CFG). Bấm "Tìm kiếm" chỉ nạp tab đang mở.
+       Đã nộp / phải nộp: API phân trang ở máy chủ. Rút / miễn: API mã hoá
+       PKG_TAICHINH_BAOCAO2 không có pageIndex/pageSize → trả đủ dòng, phân
+       trang tại máy khách.
        ===================================================================== */
     var tab = 'tongthu';
     var SIZE = 10;
@@ -277,6 +316,26 @@
         { title: 'Khoa quản lý', prop: 'KHOAQUANLY' },
         { title: 'Hệ đào tạo', prop: 'HEDAOTAO' }
     ];
+    /* Cấu hình từng tab — action / func chép nguyên bản gốc (_cfgKetQua) */
+    var CFG = {
+        tongthu: { tbl: 'tblTongThu', so: 'tongThu', chu: 'tongThuChu', xuat: 'xuatDanop',
+                   action: 'TC_BaoCao/LayDSThuTien', paged: true, keHoach: false, maDonHang: true,
+                   tien: 'Số tiền đã nộp', ngay: 'Ngày nộp', fileName: 'KetQuaDaNop', title: 'KẾT QUẢ ĐÃ NỘP', ten: 'tổng thu' },
+        phainop: { tbl: 'tblPhaiNop', so: 'tongPhaiNop', chu: 'tongPhaiNopChu', xuat: 'xuatPhainop',
+                   action: 'TC_BaoCao/LayDSNopTien', paged: true, keHoach: true, maDonHang: false,
+                   tien: 'Số tiền phải nộp', ngay: 'Ngày phát sinh', fileName: 'KetQuaPhaiNop', title: 'KẾT QUẢ PHẢI NỘP', ten: 'kết quả phải nộp' },
+        rut:     { tbl: 'tblRut', so: 'tongRut', chu: 'tongRutChu', xuat: 'xuatRut',
+                   action: 'TC_BaoCao2_MH/DSA4BRITNDUVKCQv', func: 'PKG_TAICHINH_BAOCAO2.LayDSRutTien', paged: false, keHoach: true, maDonHang: true,
+                   tien: 'Số tiền rút', ngay: 'Ngày phát sinh', fileName: 'KetQuaRut', title: 'KẾT QUẢ RÚT', ten: 'kết quả rút' },
+        mien:    { tbl: 'tblMien', so: 'tongMien', chu: 'tongMienChu', xuat: 'xuatMien',
+                   action: 'TC_BaoCao2_MH/DSA4BRIMKCQvFSgkLwPP', func: 'PKG_TAICHINH_BAOCAO2.LayDSMienTien', paged: false, keHoach: true, maDonHang: true,
+                   tien: 'Số tiền miễn', ngay: 'Ngày phát sinh', fileName: 'KetQuaMien', title: 'KẾT QUẢ MIỄN', ten: 'kết quả miễn' }
+    };
+    var XUAT_MAX = 100000;                  // iMaxRows_Export: số dòng tối đa nạp để xuất (API phân trang)
+    var CACHE_MS = 10 * 60 * 1000, CACHE_MAX = 60000;
+    var ketQua = {};                        // dữ liệu lần "Tìm kiếm" gần nhất của từng tab: { rows, count, tong, at } — chưa có khoá = chưa tìm
+    var cacheXuat = {};                     // dòng đã nạp để xuất: { sig, at, rows }
+    var xuatBiCat = {};
 
     function params(pageIndex) {
         var kt = khoanThuIds();
@@ -304,75 +363,75 @@
             strDoiTuong: mv('doiTuong'),
             strPhanLoaiChungTu_Id: mv('phanLoai'),
             strPhanLoaiCSDT: mv('phanLoaiCSDT'),
-            strNganhHoc_Id: mv('nganh')
+            strNganhHoc_Id: mv('nganh'),
+            strDaoTao_CoSoDaoTao_Id: mv('coSo')
         };
+    }
+    /* Lời gọi của một tab (= _reqKetQua). all: lấy toàn bộ để xuất Excel */
+    function req(k, page, all) {
+        var c = CFG[k], p = params(all ? 1 : page);
+        p.action = c.action;
+        if (c.keHoach) p.strDangKy_KeHoach_Id = mv('keHoach');
+        if (c.paged) { if (all) p.pageSize = XUAT_MAX; return p; }
+        /* API mã hoá (func + iM): tên tham số như BaoCao2_MHEntity, không phân trang */
+        p.func = c.func;
+        p.strTaiChinh_CacKhoanThu_Ids = p.strTAICHINH_CacKhoanThu_Ids;
+        delete p.strTAICHINH_CacKhoanThu_Ids;
+        delete p.versionAPI; delete p.pageIndex; delete p.pageSize;
+        p.strOrderBy = '';
+        p.strNguoiThucHien_Id = '';
+        return p;
     }
 
     function search(page) {
         if (!khoanThuIds().all.length) { ui.toast('Vui lòng chọn khoản thu. Để có thể lấy danh sách khoản thu!', 'warn'); return; }
-        if (tab === 'phainop') loadPhaiNop(page || 1);
-        else if (tab === 'tongthu') loadTongThu(page || 1);
+        if (CFG[tab]) loadKetQua(tab, page || 1);
     }
 
+    /* Tổng tiền + bằng chữ: TONGTIEN máy chủ trả ở mỗi dòng (tổng toàn bộ kết quả) */
     function tongTien(rows, elSo, elChu) {
         var t = rows.length ? num(rows[0].TONGTIEN) : 0;
         z(elSo).textContent = ui.money(t);
-        z(elChu).textContent = docSo(t);
+        z(elChu).textContent = t === 0 ? 'Không đồng.' : docSo(t);
     }
 
-    function loadTongThu(page) {
-        var p = params(page);
-        p.action = 'TC_BaoCao/LayDSThuTien';
-        p.strDaoTao_CoSoDaoTao_Id = mv('coSo');
-        z('tblTongThu').innerHTML = ui.empty('Đang tải…', 'fa-spinner fa-spin');
+    function loadKetQua(k, page) {
+        var c = CFG[k], p = req(k, page);
+        if (page === 1) { delete ketQua[k]; delete cacheXuat[k]; }     // tìm lại = muốn dữ liệu mới, bỏ bản đã nạp để xuất
+        z(c.tbl).innerHTML = ui.empty('Đang tải…', 'fa-spinner fa-spin');
         ums.api.call(p).then(function (r) {
-            var rows = rowsOf(r), total = Number(r.pager) || rows.length;
-            ui.table({
-                el: z('tblTongThu'), rows: rows,
-                columns: [
-                    { title: 'Số tiền đã nộp', cls: 'is-right is-nowrap', render: function (x) { return ui.money(x.SOTIEN); } },
-                    { title: 'Ngày nộp', prop: 'NGAYTAO_DD_MM_YYYY', cls: 'is-center is-nowrap' },
-                    { title: 'Mã đơn hàng', prop: 'MADONHANG' },
-                    { title: 'Chứng từ', prop: 'CHUNGTU' }
-                ].concat(COLS_SV),
-                page: {
-                    index: page, size: SIZE, total: total,
-                    onChange: function (pg) { if (pg >= 1 && pg <= Math.ceil(total / SIZE)) loadTongThu(pg); },
-                    onSize: function (v) { SIZE = v; loadTongThu(1); }
-                }
-            });
-            tongTien(rows, 'tongThu', 'tongThuChu');
-        }).catch(function (err) { z('tblTongThu').innerHTML = ui.fail(err.message); ums.api.handle(err, 'tổng thu'); });
+            var rows = rowsOf(r), total = c.paged ? (Number(r.pager) || rows.length) : rows.length;
+            /* ghi nhớ để xuất Excel đối chiếu: count = tổng bản ghi cả kết quả (Pager), không phải số dòng của trang */
+            ketQua[k] = { rows: rows, count: total, tong: rows.length ? num(rows[0].TONGTIEN) : NaN, at: Date.now() };
+            if (c.paged) veKetQua(k, rows, page, total);
+            else veKetQua(k, rows.slice(0, SIZE), 1, total);
+            tongTien(rows, c.so, c.chu);
+        }).catch(function (err) { z(c.tbl).innerHTML = ui.fail(err.message); ums.api.handle(err, c.ten); });
     }
-
-    var phaiNopRows = [];
-    function loadPhaiNop(page) {
-        var p = params(page);
-        p.action = 'TC_BaoCao/LayDSNopTien';
-        p.strDangKy_KeHoach_Id = mv('keHoach');
-        p.strDaoTao_CoSoDaoTao_Id = mv('coSo');
-        z('tblPhaiNop').innerHTML = ui.empty('Đang tải…', 'fa-spinner fa-spin');
-        ums.api.call(p).then(function (r) {
-            phaiNopRows = rowsOf(r);
-            var total = Number(r.pager) || phaiNopRows.length;
-            ui.table({
-                el: z('tblPhaiNop'), rows: phaiNopRows,
-                columns: [
-                    { head: '<input type="checkbox" data-allpick="phainop">', cls: 'is-center', width: '44px', render: function (x) {
-                        return '<input type="checkbox" data-pick="phainop" value="' + ui.esc(x.ID) + '">';
-                    } },
-                    { title: 'Số tiền phải nộp', cls: 'is-right is-nowrap', render: function (x) { return ui.money(x.SOTIEN); } },
-                    { title: 'Ngày phát sinh', prop: 'NGAYTAO_DD_MM_YYYY', cls: 'is-center is-nowrap' },
-                    { title: 'Chứng từ', render: function (x) { return String(x.KHONGHACHTOAN) === '1' ? 'Không hạch toán' : ''; } }
-                ].concat(COLS_SV),
-                page: {
-                    index: page, size: SIZE, total: total,
-                    onChange: function (pg) { if (pg >= 1 && pg <= Math.ceil(total / SIZE)) loadPhaiNop(pg); },
-                    onSize: function (v) { SIZE = v; loadPhaiNop(1); }
-                }
-            });
-            tongTien(phaiNopRows, 'tongPhaiNop', 'tongPhaiNopChu');
-        }).catch(function (err) { z('tblPhaiNop').innerHTML = ui.fail(err.message); ums.api.handle(err, 'kết quả phải nộp'); });
+    function veKetQua(k, rows, page, total) {
+        var c = CFG[k];
+        var cols = [];
+        if (k === 'phainop') cols.push({ head: '<input type="checkbox" data-allpick="phainop">', cls: 'is-center', width: '44px', render: function (x) {
+            return '<input type="checkbox" data-pick="phainop" value="' + ui.esc(x.ID) + '">';
+        } });
+        cols.push({ title: c.tien, cls: 'is-right is-nowrap', render: function (x) { return ui.money(x.SOTIEN); } });
+        cols.push({ title: c.ngay, prop: 'NGAYTAO_DD_MM_YYYY', cls: 'is-center is-nowrap' });
+        if (c.maDonHang) cols.push({ title: 'Mã đơn hàng', prop: 'MADONHANG' });
+        cols.push(k === 'phainop'
+            ? { title: 'Chứng từ', render: function (x) { return String(x.KHONGHACHTOAN) === '1' ? 'Không hạch toán' : ''; } }
+            : { title: 'Chứng từ', prop: 'CHUNGTU' });
+        ui.table({
+            el: z(c.tbl), rows: rows, columns: cols.concat(COLS_SV),
+            page: {
+                index: page, size: SIZE, total: total,
+                onChange: function (pg) {
+                    if (pg < 1 || pg > Math.ceil(total / SIZE)) return;
+                    if (c.paged) loadKetQua(k, pg);
+                    else veKetQua(k, ketQua[k].rows.slice((pg - 1) * SIZE, pg * SIZE), pg, total);
+                },
+                onSize: function (v) { SIZE = v; if (c.paged) loadKetQua(k, 1); else veKetQua(k, ketQua[k].rows.slice(0, SIZE), 1, total); }
+            }
+        });
     }
 
     function picks(g, scope) {
@@ -387,8 +446,192 @@
             if (!yes) return;
             ui.batch(ids.map(function (id) {
                 return { action: 'TC_ThongTin_MH/GS4gHhUgKAIpKC8pHhEpICgPLjEeFSA1AiAP', func: 'PKG_TAICHINH_THONGTIN.Xoa_TaiChinh_PhaiNop_TatCa', strId: id, strNguoiThucHien_Id: '' };
-            }), { title: 'Đang xoá', okText: 'Đã xoá' }).then(function () { loadPhaiNop(1); });
+            }), { title: 'Đang xoá', okText: 'Đã xoá' }).then(function () { loadKetQua('phainop', 1); });
         });
+    }
+
+    /* ---------- Xuất Excel bốn tab kết quả (= _attachExport, edu.exporter.attachTable) ----------
+       Xuất TOÀN BỘ dòng theo điều kiện đang chọn (gọi lại cùng API với pageSize XUAT_MAX), không chỉ trang
+       đang xem; hộp thoại trước khi xuất: số dòng, đối chiếu với màn hình, các danh sách "lọc thêm khi xuất".
+       Tệp: tiêu đề, dòng điều kiện, bảng, dòng tổng tiền, ngày xuất (ums.ui.xuatXls). */
+    Object.keys(CFG).forEach(function (k) {
+        z(CFG[k].xuat).innerHTML = ui.btn('excel', { attr: { 'data-act': 'xuat', 'data-key': k } });
+    });
+    function gio(ms) {
+        var d = new Date(ms), f2 = function (n) { return (n < 10 ? '0' : '') + n; };
+        return f2(d.getHours()) + ':' + f2(d.getMinutes()) + ':' + f2(d.getSeconds());
+    }
+    /* Văn bản đang chọn của một ô lọc (ô chọn nhiều → nối bằng ", ") */
+    function mt(name) {
+        var el = f(name);
+        if (!el || el.tagName !== 'SELECT') return el ? (el.value || '').trim() : '';
+        return Array.prototype.filter.call(el.options, function (o) { return o.selected && o.value; })
+            .map(function (o) { return o.textContent.trim(); }).join(', ');
+    }
+    function tenChecked(g) {
+        var all = root.querySelectorAll('input[data-g="' + g + '"]:not([data-all])'), ten = [];
+        each(all, function (x) { if (x.checked) ten.push(x.parentNode.textContent.trim()); });
+        return { all: all.length > 0 && ten.length === all.length, ten: ten };
+    }
+    function lietKe(o) {
+        if (o.all) return 'tất cả';
+        if (!o.ten.length) return 'không chọn';
+        return o.ten.length > 8 ? o.ten.slice(0, 8).join(', ') + ' ... (+' + (o.ten.length - 8) + ')' : o.ten.join(', ');
+    }
+    /* Các dòng điều kiện đầu tệp (= _filters_KetQua + _subTitles_KetQua; ô chưa chọn thì bỏ) */
+    function dongDieuKien(k) {
+        var out = [];
+        var nhom = [[['Cơ sở đào tạo', 'coSo'], ['Hệ đào tạo', 'he'], ['Khóa đào tạo', 'khoa'], ['Chương trình', 'ct'], ['Lớp', 'lop'], ['Học kỳ', 'hocKy']],
+                    [['Người thu', 'nguoiThu'], ['Năm nhập học', 'namNhapHoc'], ['Khoa quản lý', 'khoaQL'], ['Ngành - chuyên ngành', 'nganh'],
+                     ['Hình thức thu', 'hinhThucThu'], ['Phân loại chứng từ', 'phanLoai'], ['Đối tượng', 'doiTuong'], ['Cơ sở đào tạo tính theo', 'phanLoaiCSDT']]];
+        if (CFG[k].keHoach) nhom.push([['Kế hoạch đăng ký', 'keHoach']]);
+        nhom.forEach(function (ds) {
+            var s = ds.filter(function (x) { return mv(x[1]); }).map(function (x) { return x[0] + ': ' + mt(x[1]); }).join('; ');
+            if (s) out.push(s);
+        });
+        out.push('Khoản thu: ' + lietKe(tenChecked('kt')));
+        out.push('Trạng thái người học: ' + lietKe(tenChecked('tt')));
+        var tu = mv('tuNgay'), den = mv('denNgay');
+        if (tu || den) out.push('Thời gian: ' + (tu ? 'từ ngày ' + tu : '') + (tu && den ? ' ' : '') + (den ? 'đến ngày ' + den : ''));
+        if (mv('tuKhoa')) out.push('Từ khóa: ' + mv('tuKhoa'));
+        if (xuatBiCat[k]) out.push('Lưu ý: dữ liệu quá lớn, file chỉ gồm ' + XUAT_MAX + ' dòng đầu. Hãy thu hẹp điều kiện lọc để xuất đủ.');
+        return out;
+    }
+    /* Nạp toàn bộ dòng của một tab để xuất (= _fetchRows); giữ 10 phút cho cùng điều kiện */
+    function napDeXuat(k) {
+        var c = CFG[k], p = req(k, 1, true), sig = JSON.stringify(p), hit = cacheXuat[k];
+        if (hit && hit.sig === sig && Date.now() - hit.at < CACHE_MS) return Promise.resolve(hit.rows);
+        delete cacheXuat[k];
+        return ums.api.call(p).then(function (r) {
+            var rows = rowsOf(r);
+            xuatBiCat[k] = c.paged && rows.length >= XUAT_MAX;
+            if (rows.length && rows.length <= CACHE_MAX) cacheXuat[k] = { sig: sig, at: Date.now(), rows: rows };
+            return rows;
+        });
+    }
+    /* Đối chiếu dữ liệu nạp để xuất với màn hình (= _doiChieuTong): phiếu thu phát sinh liên tục nên hai bên có thể lệch.
+       Trả mảng câu báo; rỗng = khớp */
+    function doiChieu(k, rows) {
+        var msg = [], ls = ketQua[k], n = rows.length, may = n ? num(rows[0].TONGTIEN) : NaN;
+        if (ls && !isNaN(ls.count)) {
+            if (n !== ls.count) {
+                var ch = n - ls.count;
+                msg.push('Dữ liệu đã thay đổi kể từ lần tải gần nhất trên màn hình (lúc ' + gio(ls.at) + '): màn hình có ' + ui.so(ls.count) + ' bản ghi, dữ liệu nạp lại lúc ' +
+                    gio(Date.now()) + ' có ' + ui.so(n) + ' bản ghi (' + (ch > 0 ? '+' : '') + ui.so(ch) + '). Hệ thống đang có phiếu thu phát sinh liên tục; ' +
+                    'file Excel luôn lấy dữ liệu mới nhất tại lúc xuất. Bấm "Tìm kiếm" lại nếu muốn màn hình khớp với file.');
+            } else if (!isNaN(ls.tong) && !isNaN(may) && Math.abs(ls.tong - may) >= 0.5) {
+                msg.push('Số bản ghi bằng nhau nhưng tổng tiền đã đổi từ lần tải gần nhất trên màn hình (lúc ' + gio(ls.at) + '): ' + ui.money(ls.tong) + ' đ -> ' + ui.money(may) +
+                    ' đ (có phiếu thu bị sửa). Bấm "Tìm kiếm" lại nếu muốn màn hình khớp với file.');
+            }
+        }
+        if (!isNaN(may)) {
+            var cong = 0, congBoTrung = 0, trung = 0, da = {};
+            rows.forEach(function (x) {
+                var d = num(x.SOTIEN);
+                cong += d;
+                if (x.ID !== undefined && x.ID !== null && x.ID !== '') { if (da[x.ID]) { trung++; return; } da[x.ID] = true; }
+                congBoTrung += d;
+            });
+            if (Math.abs(cong - may) >= 0.5) {
+                var s = 'Trong chính dữ liệu vừa nạp: cộng ' + ui.so(n) + ' dòng = ' + ui.money(cong) + ' đ, KHÁC tổng máy chủ trả về cùng lần đó = ' + ui.money(may) +
+                    ' đ, lệch ' + ui.money(cong - may) + ' đ. Dòng Tổng trong file Excel luôn là phép cộng đúng các dòng có trong file; số lệch nằm ở dữ liệu máy chủ trả về.';
+                if (trung > 0) s += ' Có ' + trung + ' dòng trùng ID; nếu bỏ các dòng trùng thì tổng = ' + ui.money(congBoTrung) + ' đ' + (Math.abs(congBoTrung - may) < 0.5 ? ' (khớp tổng máy chủ).' : '.');
+                msg.push(s);
+                console.log('[baocao] lệch tổng ' + k + ': cộng các dòng=' + cong + ', máy chủ=' + may + ', số dòng=' + n + ', dòng trùng ID=' + trung);
+            }
+        }
+        return msg;
+    }
+    /* Cột tệp Excel (= _exportColumns): cùng bộ cột bốn tab, khác tiêu đề số tiền / ngày, mã đơn hàng, cột chứng từ */
+    function cotXuat(k) {
+        var c = CFG[k], cot = [{ title: c.tien, prop: 'SOTIEN', so: true }, { title: c.ngay, prop: 'NGAYTAO_DD_MM_YYYY' }];
+        if (c.maDonHang) cot.push({ title: 'Mã đơn hàng', prop: 'MADONHANG' });
+        cot.push(k === 'phainop' ? { title: 'Chứng từ', get: function (x) { return String(x.KHONGHACHTOAN) === '1' ? 'Không hạch toán' : ''; } } : { title: 'Chứng từ', prop: 'CHUNGTU' });
+        return cot.concat(COLS_SV.map(function (x) { return { title: x.title, prop: x.prop }; }));
+    }
+    /* Các danh sách "lọc thêm khi xuất" (= _exportFilters): mặc định tích đúng những gì đang chọn ngoài màn hình (tích hết = không lọc) */
+    function locXuat() {
+        var kt = tenChecked('kt'), tt = tenChecked('tt');
+        var split = function (name) { var s = mt(name); return s ? s.split(', ') : []; };
+        return [
+            { label: 'Khoản thu', field: 'TAICHINH_CACKHOANTHU_TEN', chon: kt.all ? [] : kt.ten },
+            { label: 'Học kỳ / đợt', field: 'DAOTAO_THOIGIANDAOTAO', chon: split('hocKy') },
+            { label: 'Hệ đào tạo', field: 'HEDAOTAO', chon: split('he') },
+            { label: 'Khóa đào tạo', field: 'KHOADAOTAO', chon: split('khoa') },
+            { label: 'Chương trình', field: 'NGANH', chon: split('ct') },
+            { label: 'Lớp học', field: 'LOP', chon: split('lop') },
+            { label: 'Khoa quản lý', field: 'KHOAQUANLY', chon: split('khoaQL') },
+            { label: 'Trạng thái người học', field: 'TRANGTHAINGUOIHOC_N1_TEN', chon: tt.all ? [] : tt.ten },
+            { label: 'Người thu', field: 'NGUOITAO_TENDAYDU', chon: [] },
+            { label: 'Hình thức', field: 'LOAICHUNGTU', chon: [] }
+        ];
+    }
+    function xuatExcel(k) {
+        var c = CFG[k], ls = ketQua[k];
+        /* chưa tìm / tìm không có dòng nào thì báo ngay, không đi nạp (= _thongBaoChuaCoDuLieu) */
+        if (!ls) { ui.toast('Chưa có dữ liệu. Vui lòng chọn điều kiện và bấm "Tìm kiếm" ở tab này trước khi xuất Excel.', 'warn'); return; }
+        if (!ls.rows.length) { ui.toast('Không có dữ liệu để xuất. Vui lòng đổi điều kiện và bấm "Tìm kiếm" lại.', 'warn'); return; }
+        if (!khoanThuIds().all.length) { ui.toast('Vui lòng chọn khoản thu.', 'warn'); return; }
+        var dlg = ui.dialog({
+            title: 'Xuất Excel — ' + c.title, icon: 'fa-file-excel', size: 'md',
+            body: '<div data-x="tt">' + ui.empty('Đang nạp toàn bộ dữ liệu theo điều kiện…', 'fa-spinner fa-spin') + '</div>',
+            buttons: [{ text: 'Xuất Excel', kind: 'excel', onClick: function (d) {
+                if (!d.body._rows) return false;
+                var chon = {}, rows = d.body._rows;
+                each(d.body.querySelectorAll('select[data-loc]'), function (s) {
+                    var v = Array.prototype.filter.call(s.options, function (o) { return o.selected; }).map(function (o) { return o.value; });
+                    if (v.length) chon[s.getAttribute('data-loc')] = v;
+                });
+                var loc = rows.filter(function (x) {
+                    for (var fld in chon) if (chon[fld].indexOf(e(x[fld])) < 0) return false;
+                    return true;
+                });
+                if (!loc.length) { ui.toast('Không còn dòng nào sau khi lọc thêm.', 'warn'); return false; }
+                ghiTep(k, loc);
+            } }]
+        });
+        napDeXuat(k).then(function (rows) {
+            if (!dlg.el.open) return;
+            dlg.body._rows = rows;
+            var msg = doiChieu(k, rows);
+            var h = '<p class="ums-u-mb-2"><b>' + ui.so(rows.length) + '</b> dòng theo điều kiện đang chọn' +
+                (xuatBiCat[k] ? ' (dữ liệu quá lớn, chỉ lấy ' + ui.so(XUAT_MAX) + ' dòng đầu)' : '') + '.</p>';
+            if (msg.length) h += msg.map(function (s) { return '<p class="ums-field__hint ums-u-mb-2">' + ui.esc(s) + '</p>'; }).join('');
+            h += '<div class="ums-legend ums-legend--cach">Lọc thêm khi xuất (bỏ trống = tất cả)</div>';
+            locXuat().forEach(function (l) {
+                var gt = {}, ds = [];
+                rows.forEach(function (x) { var v = e(x[l.field]); if (v !== '' && !gt[v]) { gt[v] = 1; ds.push(v); } });
+                if (ds.length < 2) return;
+                ds.sort();
+                h += ui.field(l.label, '<select class="ums-select" multiple data-loc="' + l.field + '">' + ds.map(function (v) {
+                    return '<option value="' + ui.esc(v) + '"' + (l.chon.indexOf(v) >= 0 ? ' selected' : '') + '>' + ui.esc(v) + '</option>';
+                }).join('') + '</select>');
+            });
+            dlg.body.querySelector('[data-x="tt"]').innerHTML = h;
+            each(dlg.body.querySelectorAll('select[data-loc]'), function (s) {
+                ui.select2(s, { placeholder: 'Tất cả', dropdownParent: window.jQuery ? jQuery(dlg.el) : undefined });
+            });
+        }).catch(function (err) {
+            dlg.body.querySelector('[data-x="tt"]').innerHTML = ui.fail(err.message);
+            ums.api.handle(err, 'nạp dữ liệu xuất Excel');
+        });
+    }
+    /* Ghi tệp: dòng điều kiện → bảng (STT + cột) → dòng tổng → ngày xuất. Dòng chú thích là dòng đặc biệt { _dong } chỉ đổ vào cột đầu */
+    function ghiTep(k, rows) {
+        var c = CFG[k], cot = cotXuat(k), tong = 0, stt = 0;
+        rows.forEach(function (x) { tong += num(x.SOTIEN); });
+        var d = new Date(), h2 = function (n) { return (n < 10 ? '0' : '') + n; };
+        var ngay = h2(d.getDate()) + '/' + h2(d.getMonth() + 1) + '/' + d.getFullYear() + ' ' + h2(d.getHours()) + ':' + h2(d.getMinutes());
+        var dong = dongDieuKien(k).map(function (s) { return { _dong: s }; })
+            .concat(rows, [{ _dong: 'Tổng tiền', _tong: tong }, { _dong: 'Ngày xuất: ' + ngay }]);
+        var cols = [{ title: 'STT', get: function (x) { return x._dong !== undefined ? x._dong : ++stt; } }].concat(cot.map(function (ct, i) {
+            return { title: ct.title, get: function (x) {
+                if (x._dong !== undefined) return i === 0 && x._tong !== undefined ? ui.money(x._tong) : '';
+                if (ct.get) return ct.get(x);
+                return ct.so ? ui.money(x[ct.prop]) : e(x[ct.prop]);
+            } };
+        }));
+        ui.xuatXls(c.fileName + '_' + d.getFullYear() + h2(d.getMonth() + 1) + h2(d.getDate()) + '.xls', { tieuDe: c.title, cot: cols, dong: dong });
     }
 
     /* =====================================================================
@@ -987,6 +1230,7 @@
         if (!b) return;
         switch (b.getAttribute('data-act')) {
             case 'search': search(1); break;
+            case 'xuat': xuatExcel(b.getAttribute('data-key')); break;
             case 'delPhaiNop': xoaPhaiNop(); break;
             case 'taoDuLieu': taoDuLieu(); break;
             case 'maKH': dlgMaKhachHang(); break;
@@ -1007,7 +1251,6 @@
         if (ev.key === 'Enter') { ev.preventDefault(); search(1); }     // bản gốc gọi activeTabFun (không tồn tại) — dùng Tìm kiếm
     });
 
-    z('tblTongThu').innerHTML = ui.empty('Vui lòng chọn khoản và ấn "Tìm kiếm" để tải danh sách', 'fa-magnifying-glass');
-    z('tblPhaiNop').innerHTML = ui.empty('Vui lòng chọn khoản và ấn "Tìm kiếm" để tải danh sách', 'fa-magnifying-glass');
+    Object.keys(CFG).forEach(function (k) { z(CFG[k].tbl).innerHTML = ui.empty('Vui lòng chọn khoản và ấn "Tìm kiếm" để tải danh sách', 'fa-magnifying-glass'); });
     z('tblKetNoi').innerHTML = ui.empty('Chọn bảng dữ liệu rồi bấm Tìm kiếm', 'fa-database');
 })();

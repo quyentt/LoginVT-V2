@@ -1273,6 +1273,22 @@
                 var before = num(row.TONGDULIEUDAHOANTHANH);
                 var ok = 0, bad = 0, n = 0;
                 if (!tasks.length) { finish(); toast('Hàng đợi không còn nhiệm vụ nào cần xử lý.', 'info'); return; }
+                /* opts.process = { title, fileName, subTitles?, info?, concurrency? (mặc định 1), autoStart? (mặc định true) } — kéo gốc lần 12–13 (gốc 4/11,
+                   objHangDoi.process): nút "Bắt đầu" chạy từng nhiệm vụ TRONG form tiến trình chung (giờ bắt đầu / kết thúc, kết quả, lỗi, xuất Excel)
+                   thay cho thanh tiến độ tại chỗ. Không truyền thì chạy như trước. */
+                if (opts.process) {
+                    var pc = opts.process, nT = tasks.length;
+                    return ums.process.run({
+                        title: pc.title || ('Chạy hàng đợi ' + (row.TEN || '')), fileName: pc.fileName || 'KetQuaHangDoi',
+                        subTitles: typeof pc.subTitles === 'function' ? pc.subTitles() : pc.subTitles,
+                        unit: 'nhiệm vụ', infoHeader: 'Nội dung xử lý',
+                        info: function (t, i) { return typeof pc.info === 'function' ? pc.info(t, i, nT) : (t.TEN || t.NOIDUNG || t.MOTA || ('Nhiệm vụ ' + (i + 1) + '/' + nT)); },
+                        items: tasks, concurrency: (typeof pc.concurrency === 'function' ? pc.concurrency() : pc.concurrency) || 1,
+                        autoStart: pc.autoStart !== false, okMessage: pc.okMessage || 'Đã xử lý',
+                        request: function (t) { return { action: 'CMS_HangDoiTuTao/XuLyNhiemVu_HangDoi', method: 'POST', strNguoiThucHien_Id: userId(), strId: t.ID, timeout: 3000000 }; },
+                        onClose: function (sum) { finish(); if (sum.ok && typeof opts.onDone === 'function') opts.onDone(); load(); }
+                    });
+                }
 
                 var idx = 0, conc = Math.max(1, opts.concurrency || 10);
                 function worker() {
@@ -1595,8 +1611,221 @@
     };
 
     R._tableCells = tableCells;          // để trang dò kiểm mảng ô
+
+    /* =====================================================================
+       FORM TIẾN TRÌNH DÙNG CHUNG — ums.process (kéo gốc lần 12–13, chuyển 7/11)
+       Bản viết lại của Corei/processrun.js (edu.process, gốc 4/11 — ~20 màn ở 8 phân hệ
+       của gốc dùng: tính phí, chốt / chuyển kế toán, phân bổ, xét học bổng, xét tốt nghiệp,
+       tổng hợp điểm, xử lý học vụ, ký túc xá…). Mọi việc chạy hàng loạt chỉ "gửi vào" đây:
+       danh sách bản ghi (Bước 1) + cách xử lý MỘT bản ghi; form lo phần còn lại — bảng
+       STT | thông tin | bắt đầu | kết thúc | kết quả | ghi chú, tiến độ, tổng hợp, Dừng /
+       Chạy tiếp / Chạy lại lỗi, xuất Excel lỗi · thành công · tất cả.
+
+           ums.process.run({
+               title, subTitles: [] | fn, notes: [] | fn,            điều kiện hiện trên form + ghi vào Excel; lưu ý ở đầu
+               dieuKien: [['Hệ đào tạo', 'idOChon' | phần tử | 'chữ'], …]   → dòng "Điều kiện áp dụng — …" (ums.process.dieuKien)
+               items: [], unit: 'sinh viên', infoHeader | info(it, i) | columns: [{ header|title, field|prop|render }],
+               request(it, i) → tham số ums.api.call (nhận cả dạng { action, type, data } của makeRequest cũ)
+                 | run(it, i) → Promise | { ok, message } | boolean,
+               okMessage: 'Đã thực hiện' | fn(it, i), concurrency: 1, stopOnError, autoStart,
+               fileName: 'KetQuaXxx', refresh() (khi đóng form mà có bản ghi thành công), onFinish(sum), onClose(sum)
+           }) → Promise<sum>  (sum = { total, ok, err, pending, elapsedMs }, trả khi đóng form)
+           ums.process.runJob({ title, what, request, onSuccess(sum), … })   lệnh MỘT lần cho cả phạm vi đang chọn — Bước 1 hiện
+                                                                            phạm vi thay cho hộp "Bạn có chắc chắn…" (như gốc)
+       Khác gốc: hộp thoại ums (tiến độ = hộp thoại, BO-CUC luật 1); thẻ "Đã nhận lệnh" không chép (hộp mở ngay);
+       hideModal / reopenModal không cần (hộp chọn của _v2 tự đóng trước); pickSinhVien / bindPhamVi / selectedRows
+       để màn tự làm (màn đã có ums.pat.pickSinhVienNganh, ô đánh dấu của ui.table).
+       ===================================================================== */
+    var P = {};
+    function pVal(v) { var a = []; for (var i = 1; i < arguments.length; i++) a.push(arguments[i]); return typeof v === 'function' ? v.apply(null, a) : v; }
+    function p2(n) { return (n < 10 ? '0' : '') + n; }
+    function pTime(d) { return d ? p2(d.getHours()) + ':' + p2(d.getMinutes()) + ':' + p2(d.getSeconds()) : ''; }
+    function pStamp(d) { return d.getFullYear() + p2(d.getMonth() + 1) + p2(d.getDate()) + '_' + p2(d.getHours()) + p2(d.getMinutes()); }
+    function pElapsed(ms) { var s = Math.floor(ms / 1000), h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60); return (h ? h + ':' + p2(m) : p2(m)) + ':' + p2(s % 60); }
+    /* [[nhãn, giá trị | phần tử | id phần tử], …] → "Điều kiện áp dụng — Nhãn: giá trị · …" (ô chọn lấy chữ mục đang chọn; rỗng thì bỏ; không có gì → '') */
+    P.dieuKien = function (list) {
+        var parts = [];
+        (list || []).forEach(function (x) {
+            var v = x[1], el = (typeof v === 'string' && document.getElementById(v)) ? document.getElementById(v) : v;
+            if (el && el.nodeType === 1) {
+                if (el.tagName === 'SELECT') v = Array.prototype.filter.call(el.options, function (o) { return o.selected && o.value; }).map(function (o) { return o.textContent.trim(); }).join(', ');
+                else if ('value' in el) v = el.value; else v = el.textContent;
+            }
+            if (v === null || v === undefined || String(v).trim() === '') return;
+            parts.push(x[0] + ': ' + String(v).trim());
+        });
+        return parts.length ? 'Điều kiện áp dụng — ' + parts.join(' · ') : '';
+    };
+    P.run = function (cfg) {
+        cfg = cfg || {};
+        var ui = ums.ui, esc = ui.esc, items = cfg.items || [];
+        return new Promise(function (resolve) {
+            if (!items.length) { ui.toast('Không có ' + (cfg.unit || 'bản ghi') + ' nào để xử lý.', 'warn'); resolve({ total: 0, ok: 0, err: 0, pending: 0, elapsedMs: 0 }); return; }
+            var cols = cfg.columns ? cfg.columns.map(function (c) { return { title: c.header || c.title || '', get: c.render || function (it) { return it[c.field || c.prop]; } }; })
+                : [{ title: cfg.infoHeader || 'Thông tin xử lý', get: cfg.info || function (it) { return it.TEN; } }];
+            var sub = [].concat(pVal(cfg.subTitles) || []), dk = P.dieuKien(cfg.dieuKien); if (dk) sub.push(dk);
+            var notes = [].concat(pVal(cfg.notes) || []);
+            var st = items.map(function () { return { s: 'cho', bd: null, kt: null, gc: '' }; });   // cho | chay | ok | loi
+            var total = items.length, ok = 0, err = 0, running = 0, stop = false, started = false, t0 = null, tEnd = null;
+            var conc = Math.min(Math.max(1, Number(cfg.concurrency) || 1), cfg.maxConcurrency || 10);
+            function cell(it, c, i) { var v = c.get(it, i); return v === null || v === undefined ? '' : String(v); }
+            function nhan(x) { return x.s === 'ok' ? ui.badge('Thành công', 'ok') : x.s === 'loi' ? ui.badge('Không thành công', 'bad') : x.s === 'chay' ? ui.badge('Đang chạy', 'info') : ui.badge('Chờ', 'mute'); }
+            var body = '<div class="ums-proc">' +
+                (sub.length ? '<div class="ums-proc__sub">' + sub.map(function (t) { return '<div>' + esc(t) + '</div>'; }).join('') + '</div>' : '') +
+                (notes.length ? '<div class="ums-proc__notes">' + notes.map(function (t) { return '<div><i class="fa-light fa-triangle-exclamation"></i> ' + esc(t) + '</div>'; }).join('') + '</div>' : '') +
+                '<div class="ums-proc__sum"><span data-p="sum"></span><span class="ums-u-muted" data-p="time"></span></div>' +
+                '<div class="ums-meter"><div class="ums-meter__track"><div class="ums-meter__fill" data-p="bar" style="width:0"></div></div><b data-p="pct">0%</b></div>' +
+                '<div class="ums-tablewrap ums-proc__tbl"><table class="ums-table ums-table--tight"><thead><tr><th class="is-center">STT</th>' +
+                cols.map(function (c) { return '<th>' + esc(c.title) + '</th>'; }).join('') +
+                '<th class="is-center">Bắt đầu</th><th class="is-center">Kết thúc</th><th class="is-center">Kết quả</th><th>Ghi chú</th></tr></thead><tbody>' +
+                items.map(function (it, i) {
+                    return '<tr data-i="' + i + '"><td class="is-center">' + (i + 1) + '</td>' + cols.map(function (c) { return '<td>' + esc(cell(it, c, i)) + '</td>'; }).join('') +
+                        '<td class="is-center is-nowrap" data-c="bd"></td><td class="is-center is-nowrap" data-c="kt"></td><td class="is-center" data-c="kq">' + nhan(st[i]) + '</td><td data-c="gc"></td></tr>';
+                }).join('') + '</tbody></table></div></div>';
+            var dlg = ui.dialog({
+                title: cfg.title || 'Thực hiện', icon: 'fa-list-check', size: 'xl', body: body,
+                buttons: [
+                    { text: 'Bắt đầu', icon: 'fa-play', kind: 'confirm', keepOpen: true, onClick: function () { start(); return false; } },
+                    { text: 'Dừng', icon: 'fa-pause', kind: 'confirm', mod: 'warn', keepOpen: true, onClick: function () { stop = true; veNut(); return false; } },
+                    { text: 'Chạy lại lỗi', icon: 'fa-rotate-right', kind: 'reload', mod: 'out-warn', keepOpen: true, onClick: function () { chayLaiLoi(); return false; } },
+                    { text: 'Xuất Excel', kind: 'excel', keepOpen: true, onClick: function () { xuat(); return false; } }
+                ],
+                onClose: function () {
+                    stop = true;
+                    var sum = tong();
+                    if (sum.ok > 0 && typeof cfg.refresh === 'function') cfg.refresh();
+                    if (typeof cfg.onClose === 'function') cfg.onClose(sum);
+                    resolve(sum);
+                }
+            });
+            var d = dlg.el;
+            function q(sel) { return d.querySelector(sel); }
+            function nut(i) { return q('[data-dlg="' + i + '"]'); }
+            function tong() { var pend = st.filter(function (x) { return x.s === 'cho' || x.s === 'chay'; }).length; return { total: total, ok: ok, err: err, pending: pend, elapsedMs: t0 ? ((tEnd || new Date()) - t0) : 0 }; }
+            function veTong() {
+                var sm = tong(), done = ok + err, pct = Math.round(done / total * 100);
+                q('[data-p="sum"]').innerHTML = 'Tổng <b>' + total + '</b> ' + esc(cfg.unit || 'bản ghi') + ' · thành công <b class="ums-proc__ok">' + ok + '</b> · lỗi <b class="ums-proc__loi">' + err + '</b> · còn lại <b>' + sm.pending + '</b>';
+                q('[data-p="time"]').textContent = t0 ? ' · ' + pElapsed(sm.elapsedMs) : '';
+                q('[data-p="bar"]').style.width = pct + '%'; q('[data-p="pct"]').textContent = pct + '%';
+            }
+            function veNut() {
+                var sm = tong(), dangChay = running > 0;
+                var bd = nut(0), dung = nut(1), lai = nut(2), xls = nut(3);
+                bd.style.display = (dangChay || sm.pending === 0) ? 'none' : ''; bd.querySelector('span').textContent = started ? 'Chạy tiếp' : 'Bắt đầu';
+                dung.style.display = dangChay ? '' : 'none';
+                lai.style.display = (dangChay || err === 0) ? 'none' : '';
+                xls.style.display = (!started || dangChay) ? 'none' : '';
+            }
+            function veDong(i) {
+                var tr = q('tr[data-i="' + i + '"]'), x = st[i]; if (!tr) return;
+                tr.querySelector('[data-c="bd"]').textContent = pTime(x.bd);
+                tr.querySelector('[data-c="kt"]').textContent = pTime(x.kt);
+                tr.querySelector('[data-c="kq"]').innerHTML = nhan(x);
+                tr.querySelector('[data-c="gc"]').textContent = x.gc || '';
+                tr.classList.toggle('is-bad', x.s === 'loi');
+            }
+            function goi(it, i) {
+                var p;
+                try {
+                    if (typeof cfg.run === 'function') p = Promise.resolve(cfg.run(it, i));
+                    else {
+                        var prm = cfg.request(it, i) || {}, call = {}, k;
+                        for (k in prm) call[k] = prm[k];
+                        if (call.data && typeof call.data === 'object') { for (k in call.data) call[k] = call.data[k]; delete call.data; }   // dạng { action, type, data } của makeRequest cũ
+                        if (call.type && !call.method) { call.method = call.type; delete call.type; }
+                        call.silent = true;
+                        p = ums.api.call(call).then(function (r) { return { ok: true, message: (r && r.message) || '' }; });
+                    }
+                } catch (ex) { p = Promise.resolve({ ok: false, message: ex && ex.message ? ex.message : String(ex) }); }
+                return p.then(function (r) {
+                    if (r === true || r === undefined || r === null) return { ok: true, message: '' };
+                    if (r === false) return { ok: false, message: '' };
+                    return { ok: !!r.ok, message: r.message || '' };
+                }, function (e) {
+                    if (e && e.expired) { stop = true; ums.api.handle(e); }
+                    return { ok: false, message: e && e.message ? e.message : String(e) };
+                });
+            }
+            function worker() {
+                if (stop) return Promise.resolve();
+                var i = -1, k;
+                for (k = 0; k < total; k++) if (st[k].s === 'cho') { i = k; break; }
+                if (i < 0) return Promise.resolve();
+                var x = st[i]; x.s = 'chay'; x.bd = new Date(); x.kt = null; x.gc = ''; running++; veDong(i); veNut();
+                return goi(items[i], i).then(function (r) {
+                    x.kt = new Date(); running--;
+                    if (r.ok) { x.s = 'ok'; ok++; x.gc = r.message || pVal(cfg.okMessage, items[i], i) || 'Đã thực hiện'; }
+                    else { x.s = 'loi'; err++; x.gc = r.message || 'Không thành công'; if (cfg.stopOnError) stop = true; }
+                    veDong(i); veTong();
+                    return worker();
+                });
+            }
+            function start() {
+                if (running) return;
+                started = true; stop = false; if (!t0) t0 = new Date(); tEnd = null;
+                veNut();
+                var pool = [], k;
+                for (k = 0; k < conc; k++) pool.push(worker());
+                Promise.all(pool).then(function () {
+                    if (running) return;
+                    tEnd = new Date(); veTong(); veNut();
+                    var sm = tong();
+                    if (sm.pending === 0) {
+                        ui.toast('Đã xử lý ' + (ok + err) + '/' + total + ' — thành công ' + ok + ', lỗi ' + err, err ? 'warn' : 'ok');
+                        if (typeof cfg.onFinish === 'function') cfg.onFinish(sm);
+                    }
+                });
+            }
+            function chayLaiLoi() {
+                st.forEach(function (x, i) { if (x.s === 'loi') { x.s = 'cho'; x.bd = x.kt = null; x.gc = ''; veDong(i); } });
+                err = 0; veTong(); start();
+            }
+            function xuatChon(loc, hau) {
+                var rows = items.map(function (it, i) { return { it: it, i: i, x: st[i] }; }).filter(loc);
+                if (!rows.length) return ui.toast('Không có dòng nào để xuất.', 'warn');
+                ui.xuatXls((cfg.fileName || 'KetQua') + hau + '_' + pStamp(new Date()), {
+                    tieuDe: (cfg.title || 'Kết quả').toUpperCase(), phu: sub,
+                    cot: [{ title: 'STT', get: function (r) { return r.i + 1; } }]
+                        .concat(cols.map(function (c) { return { title: c.title, get: function (r) { return cell(r.it, c, r.i); } }; }))
+                        .concat([{ title: 'Bắt đầu', get: function (r) { return pTime(r.x.bd); } }, { title: 'Kết thúc', get: function (r) { return pTime(r.x.kt); } },
+                            { title: 'Kết quả', get: function (r) { return r.x.s === 'ok' ? 'Thành công' : r.x.s === 'loi' ? 'Không thành công' : 'Chưa chạy'; } },
+                            { title: 'Ghi chú', get: function (r) { return r.x.gc; } }]),
+                    dong: rows
+                });
+            }
+            function xuat() {
+                if (!err || !ok) return xuatChon(function () { return true; }, '');
+                ui.dialog({ title: 'Xuất Excel', icon: 'fa-file-excel', size: 'sm', body: '<p class="ums-u-mb-0">Xuất danh sách nào?</p>', buttons: [
+                    { text: 'Chỉ lỗi (' + err + ')', kind: 'excel', mod: 'out-danger', onClick: function () { xuatChon(function (r) { return r.x.s === 'loi'; }, '_Loi'); } },
+                    { text: 'Chỉ thành công (' + ok + ')', kind: 'excel', mod: 'out-success', onClick: function () { xuatChon(function (r) { return r.x.s === 'ok'; }, '_ThanhCong'); } },
+                    { text: 'Tất cả', kind: 'excel', onClick: function () { xuatChon(function () { return true; }, ''); } }
+                ] });
+            }
+            veTong(); veNut();
+            if (cfg.autoStart) start();
+        });
+    };
+    /* Lệnh nghiệp vụ chạy MỘT lần cho cả phạm vi đang chọn (đưa vào hàng đợi máy chủ, tổng hợp, xoá bảng dữ liệu…):
+       form một bản ghi — Bước 1 hiện phạm vi áp dụng thay cho hộp "Bạn có chắc chắn…"; cfg như run, thêm
+       what (chữ ở dòng xử lý), onSuccess(sum) chạy ngay khi lệnh thành công (vd nạp lại hàng đợi). */
+    P.runJob = function (cfg) {
+        var c = {}, k;
+        for (k in cfg) c[k] = cfg[k];
+        var req = cfg.request, okFn = cfg.onSuccess, fin = cfg.onFinish;
+        delete c.what; delete c.onSuccess;
+        c.unit = cfg.unit || 'yêu cầu';
+        c.infoHeader = cfg.infoHeader || 'Nội dung xử lý';
+        c.items = [{ ID: '', TEN: cfg.what || cfg.title }];
+        c.info = function (it) { return it.TEN; };
+        c.okMessage = cfg.okMessage || 'Đã thực hiện';
+        c.request = function () { return req(); };
+        c.onFinish = function (sum) { if (sum.ok > 0 && typeof okFn === 'function') okFn(sum); if (typeof fin === 'function') fin(sum); };
+        return P.run(c);
+    };
+
     ums.files = FL;
     ums.report = R;
     ums.queue = Q;
+    ums.process = P;
 
 })(window);

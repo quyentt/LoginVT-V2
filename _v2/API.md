@@ -7,11 +7,11 @@ Lớp CSS có sẵn: `_v2/CLASS.md`. Tóm tắt màn gốc: `python _harness\tom
 ## Mục lục
 
 - **api.js** (10 hàm): `ums.api.call`, `ums.api.json`, `ums.api.call`, `ums.api.all`, `ums.api.dm`, `ums.api.handle`, `ums.util.xorB64`, `ums.util.unXor`, `ums.util.ngaySinh`, `ums.util.uuid`
-- **ui.js** (46 hàm): `ums.ui.escBr`, `ums.ui.money`, `ums.ui.so`, `ums.ui.docSo`, `ums.ui.truot`, `ums.ui.moDetails`, `ums.ui.ngayGio`, `ums.ui.empty`, `ums.ui.btn`, `ums.ui.iconBtn`, `ums.ui.actions`, `ums.ui.badge`, `ums.ui.chips`, `ums.ui.tabs`, `ums.ui.tabsActive`, `ums.ui.tile`, `ums.ui.cell`, `ums.ui.meter`, `ums.ui.table`, `ums.ui.sortRows`, `ums.ui.oTheoGoc`, `ums.ui.pagerBind`, `ums.ui.pager`, `ums.ui.options`, `ums.ui.filterInput`, `ums.ui.filterSelect`, `ums.ui.field`, `ums.ui.toast`, `ums.ui.confirm`, `ums.ui.xoaChon`, `ums.ui.dialog`, `ums.ui.batch`, `ums.ui.print`, `ums.ui.fail`, `ums.ui.datepicker`, `ums.ui.select2`, `ums.ui.hoverCard`, `ums.ui.file`, `ums.ui.enhance`, `ums.ui.khoangNgay`, `ums.ui.chart`, `ums.ui.reveal`, `ums.ui.swap`, `ums.ui.taiTep`, `ums.ui.xuatXls`, `ums.ui.napXLSX`
+- **ui.js** (47 hàm): `ums.ui.escBr`, `ums.ui.money`, `ums.ui.so`, `ums.ui.docSo`, `ums.ui.truot`, `ums.ui.moDetails`, `ums.ui.ngayGio`, `ums.ui.empty`, `ums.ui.btn`, `ums.ui.iconBtn`, `ums.ui.actions`, `ums.ui.badge`, `ums.ui.chips`, `ums.ui.tabs`, `ums.ui.tabsActive`, `ums.ui.tile`, `ums.ui.cell`, `ums.ui.meter`, `ums.ui.table`, `ums.ui.sortRows`, `ums.ui.oTheoGoc`, `ums.ui.pagerBind`, `ums.ui.pager`, `ums.ui.options`, `ums.ui.filterInput`, `ums.ui.filterSelect`, `ums.ui.field`, `ums.ui.toast`, `ums.ui.confirm`, `ums.ui.xoaChon`, `ums.ui.dialog`, `ums.ui.batch`, `ums.ui.print`, `ums.ui.fail`, `ums.ui.datepicker`, `ums.ui.select2`, `ums.ui.hoverCard`, `ums.ui.file`, `ums.ui.enhance`, `ums.ui.khoangNgay`, `ums.ui.chart`, `ums.ui.reveal`, `ums.ui.swap`, `ums.ui.taiTep`, `ums.ui.xuatXls`, `ums.ui.xuatBang`, `ums.ui.napXLSX`
 - **crud.js** (1 hàm): `ums.crud`
 - **patterns.js** (46 hàm): `ums.pat.num`, `ums.pat.money`, `ums.pat.page`, `ums.pat.panel`, `ums.pat.filterBar`, `ums.pat.fill`, `ums.pat.chain`, `ums.pat.haiLuoi`, `ums.pat.loc`, `ums.pat.dmTitle`, `ums.pat.val`, `ums.pat.checks`, `ums.pat.matrix`, `ums.pat.formTrang`, `ums.pat.pivot`, `ums.pat.master`, `ums.pat.masterItem`, `ums.pat.cards`, `ums.pat.groupTable`, `ums.pat.footSum`, `ums.pat.cardRow`, `ums.pat.pickSinhVien`, `ums.pat.pickSinhVienNganh`, `ums.pat.pickNhanSu`, `ums.pat.xacNhanChiTiet`, `ums.pat.sections`, `ums.pat.rows`, `ums.pat.phamVi`, `ums.pat.diaChi`, `ums.pat.chonPhamVi`, `ums.pat.emailHopLe`, `ums.pat.guiEmail`, `ums.pat.soDo`, `ums.pat.anhNguoi`, `ums.pat.dsNhanSuLoc`, `ums.pat.dsNhanSu`, `ums.pat.cotTrai`, `ums.pat.noCo`, `ums.pat.dauDoiTuong`, `ums.pat.datNoCo`, `ums.pat.datDau`, `ums.pat.thanhThu`, `ums.pat.datDaChon`, `ums.pat.datTongTab`, `ums.pat.masterNhanSu`, `ums.pat.boLocNguoiHoc`
 - **ref.js** (18 hàm): `ums.ref.heDaoTao`, `ums.ref.khoaDaoTao`, `ums.ref.chuongTrinh`, `ums.ref.lopQuanLy`, `ums.ref.hocPhan`, `ums.ref.thoiGianDaoTao`, `ums.ref.khoaQuanLy`, `ums.ref.coCauToChuc`, `ums.ref.nhanSu`, `ums.ref.nhanSuPage`, `ums.ref.tenNhanSu`, `ums.ref.xoaQuyetDinhKem`, `ums.ref.quaTrinhCuoiCung`, `ums.ref.sinhVien`, `ums.ref.sinhVienPage`, `ums.ref.dm`, `ums.ref.cascade`, `ums.ref.cascadeQuyen`
-- **report.js** (10 hàm): `ums.report.navigate`, `ums.report.mount`, `ums.report.run`, `ums.report.taiBangNhap`, `ums.report.nhapBangTuTep`, `ums.report.importChung`, `ums.upload`, `ums.queue.mount`, `ums.files.mount`, `ums.files.avatar`
+- **report.js** (13 hàm): `ums.report.navigate`, `ums.report.mount`, `ums.report.run`, `ums.report.taiBangNhap`, `ums.report.nhapBangTuTep`, `ums.report.importChung`, `ums.upload`, `ums.queue.mount`, `ums.files.mount`, `ums.files.avatar`, `ums.process.dieuKien`, `ums.process.run`, `ums.process.runJob`
 - **editor.js** (5 hàm): `ums.editor.sanSang`, `ums.editor.tao`, `ums.editor.donDep`, `ums.editor.toan`, `ums.editor.html`
 - **lamtruoc.js** (7 hàm): `ums.lamTruoc.batDau`, `ums.lamTruoc.danhMucRong`, `ums.lamTruoc.sauGoi`, `ums.lamTruoc.can`, `ums.lamTruoc.neuRong`, `ums.lamTruoc.layDanhMucCho`, `ums.lamTruoc.giuViTri`
 - **app.js** (6 hàm): `ums.app.openPath`, `ums.app.openHash`, `ums.app.timManTheoDuongDan`, `ums.app.hrefChucNang`, `ums.app.soanBaiChoPhep`, `ums.app.xuatMapping`
@@ -469,21 +469,29 @@ _(chưa có chú thích trong mã)_
  Ẩn vùng này, hiện vùng kia kèm hiệu ứng. Trả về vùng vừa hiện. 
 ```
 
-### `ums.ui.taiTep(ten, kieu, noiDung)`  <sub>ui.js:1615</sub>
+### `ums.ui.taiTep(ten, kieu, noiDung)`  <sub>ui.js:1616</sub>
 
 ```text
  ---------- Tải tệp dựng ở máy khách -----------------------------------
 ums.ui.taiTep('ten.csv', 'text/csv;charset=utf-8', noiDung)
-ums.ui.xuatXls('DSSV_20260922.xls', { tieuDe, cot: [{ title, get(dòng) }], dong })
+ums.ui.xuatXls('DSSV_20260922.xls', { tieuDe, phu: ['Điều kiện…'], cot: [{ title, get(dòng) }], dong })   phu: các dòng dưới tiêu đề (kéo gốc lần 13)
+ums.ui.xuatBang(bảng | id | khung chứa bảng, { ten, tieuDe, phu })   xuất đúng bảng .ums-table đang hiển thị (bỏ cột ô đánh dấu / không tên)
 Excel ở đây là BẢNG HTML lưu đuôi .xls (Excel mở được, không cần thư viện
 SheetJS tải từ CDN như vài màn gốc — _v2 không phụ thuộc CDN).        
 ```
 
-### `ums.ui.xuatXls(ten, o)`  <sub>ui.js:1620</sub>
+### `ums.ui.xuatXls(ten, o)`  <sub>ui.js:1621</sub>
 
 _(chưa có chú thích trong mã)_
 
-### `ums.ui.napXLSX()`  <sub>ui.js:1637</sub>
+### `ums.ui.xuatBang(tbl, o)`  <sub>ui.js:1635</sub>
+
+```text
+ Xuất bảng đang hiển thị (bản viết lại của edu.exporter.attachTable / exportTable, kéo gốc lần 12–13): đọc tiêu đề cột ở dòng
+cuối <thead>, bỏ cột không có tên hoặc chỉ chứa ô đánh dấu; mỗi <tr> của <tbody> một dòng (bỏ dòng "rỗng" của ui.table). 
+```
+
+### `ums.ui.napXLSX()`  <sub>ui.js:1658</sub>
 
 _(chưa có chú thích trong mã)_
 
@@ -1410,13 +1418,31 @@ Khác bản gốc:
    có lúc chạy tới; màn hình Tài chính cũng không dùng.
 ```
 
-### `ums.files.mount(hostEl, o)`  <sub>report.js:1375</sub>
+### `ums.files.mount(hostEl, o)`  <sub>report.js:1391</sub>
 
 _(chưa có chú thích trong mã)_
 
-### `ums.files.avatar(hostEl, o)`  <sub>report.js:1539</sub>
+### `ums.files.avatar(hostEl, o)`  <sub>report.js:1555</sub>
 
 _(chưa có chú thích trong mã)_
+
+### `ums.process.dieuKien(list)`  <sub>report.js:1646</sub>
+
+```text
+ [[nhãn, giá trị | phần tử | id phần tử], …] → "Điều kiện áp dụng — Nhãn: giá trị · …" (ô chọn lấy chữ mục đang chọn; rỗng thì bỏ; không có gì → '') 
+```
+
+### `ums.process.run(cfg)`  <sub>report.js:1659</sub>
+
+_(chưa có chú thích trong mã)_
+
+### `ums.process.runJob(cfg)`  <sub>report.js:1811</sub>
+
+```text
+ Lệnh nghiệp vụ chạy MỘT lần cho cả phạm vi đang chọn (đưa vào hàng đợi máy chủ, tổng hợp, xoá bảng dữ liệu…):
+form một bản ghi — Bước 1 hiện phạm vi áp dụng thay cho hộp "Bạn có chắc chắn…"; cfg như run, thêm
+what (chữ ở dòng xử lý), onSuccess(sum) chạy ngay khi lệnh thành công (vd nạp lại hàng đợi). 
+```
 
 
 ---
@@ -1702,7 +1728,7 @@ converted: tệp màn đã có trong _v2 chưa (GET đúng đường dẫn vỏ 
 
 </details>
 
-### `ums.canQuyetKhoa(url)`  <sub>can-quyet.js:317</sub>
+### `ums.canQuyetKhoa(url)`  <sub>can-quyet.js:327</sub>
 
 _(chưa có chú thích trong mã)_
 

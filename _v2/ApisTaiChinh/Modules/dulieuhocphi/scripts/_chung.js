@@ -184,6 +184,16 @@
         }), { cols: 3, what: 'trạng thái sinh viên' });
     };
 
+    /* Dòng "Trạng thái sinh viên: …" cho form tiến trình (gốc _trangThaiLines, kéo gốc lần 12–13): tích hết → "tất cả"; không tích → không có dòng */
+    H.trangThaiLines = function (tt) {
+        var box = tt && tt.el ? tt.el : null;
+        if (!box) return [];
+        var all = box.querySelectorAll('input[data-ck="one"]'), on = Array.prototype.filter.call(all, function (x) { return x.checked; });
+        if (!all.length || !on.length) return [];
+        if (on.length === all.length) return ['Trạng thái sinh viên: tất cả'];
+        return ['Trạng thái sinh viên: ' + on.map(function (x) { var l = x.closest('label'); return (l ? l.textContent : x.value).trim(); }).join(', ')];
+    };
+
     /* ---------- Bảng chọn sinh viên có ô đánh dấu (tblSinhVien) ----------- */
     H.pickTable = function (host, rows, cols) {
         var picked = {};

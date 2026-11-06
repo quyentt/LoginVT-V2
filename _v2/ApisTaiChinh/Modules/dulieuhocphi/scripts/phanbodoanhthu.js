@@ -22,6 +22,10 @@
    gốc). Khung "Lịch sử" bị display:none trong bản gốc — bỏ.
    Tham số báo cáo strLopQuanLy / strThoiGianDaoTao / strNghiepVu đọc từ ô
    không tồn tại nên luôn rỗng — vẫn gửi rỗng như bản gốc.
+   Kéo gốc lần 12–13 (7/11) — form tiến trình chung (ums.process): "Thực hiện phân bổ" → runJob (Bước 1 hiện
+   phạm vi + dòng "Dữ liệu nguồn / Phân bổ vào"), "Xoá đã chọn" → run từng bản ghi (cột phạm vi / năm / kỳ / tháng /
+   khoản thu), nút "Xuất Excel" bảng đã khai (ums.ui.xuatBang). Gốc còn chuyển "Xóa kết quả đã tính phí" sang runJob —
+   nút đó không có trên màn (mã chết, xem trên) nên không chép.
    ========================================================================= */
 (function () {
     'use strict';
@@ -61,6 +65,7 @@
                 '<div class="ums-panel__title"><i class="fa-light fa-list-check"></i> Thông tin đã khai phân bổ <span class="ums-u-faint ums-u-fz13" data-z="n"></span></div>' +
                 '<div class="ums-panel__tools">' +
                     '<button type="button" class="ums-btn ums-btn--delsel ums-btn--sm" data-a="xoa" disabled><i class="fa-light fa-trash-can"></i><span>Xoá đã chọn</span></button>' +
+                    ui.btn('excel', { cls: 'ums-btn--sm', attr: { 'data-a': 'xuat' } }) +
                     '<button type="button" class="ums-iconbtn" data-a="xem" title="Tải lại"><i class="fa-light fa-rotate-right"></i></button>' +
                 '</div>' +
             '</div>' +
@@ -186,32 +191,43 @@
                 return;
             }
         }
-        ums.api.call({
-            action: 'TC_PhanBo_DoanhThu/Them_TC_BC_PhanBo_DacThu',
-            type: 'POST',
-            strTaiChinh_CacKhoanThu_Id: v('pbKhoanThu'),
-            strDaoTao_HeDaoTao_Id: v('pbHe'),
-            strDaoTao_KhoaDaoTao_Id: v('pbKhoa'),
-            strDaoTao_ChuongTrinh_Id: v('pbCT'),
-            strNamHocDuLieu: v('pbNamHoc'),
-            strHocKyDuLieu: v('pbHocKy'),
-            strNamPhanBo: v('pbNamPB'),
-            strThangPhanBo: v('pbThangPB'),
-            strNguoiThucHien_Id: ''
-        }).then(function () {
-            ui.toast('Thêm mới thành công!', 'ok');
-            loadKetQua();
-        }).catch(fail('thực hiện phân bổ'));
+        var sub = [];
+        if (v('pbNamHoc') || v('pbHocKy')) sub.push('Dữ liệu nguồn: năm học ' + v('pbNamHoc') + ', học kỳ ' + v('pbHocKy'));
+        if (v('pbNamPB') || v('pbThangPB')) sub.push('Phân bổ vào: năm ' + v('pbNamPB') + ', tháng ' + v('pbThangPB'));
+        ums.process.runJob({
+            title: 'Phân bổ doanh thu', what: 'Phân bổ doanh thu theo phạm vi đang chọn', fileName: 'KetQuaPhanBoDoanhThu',
+            subTitles: sub, dieuKien: dieuKien(), okMessage: 'Thêm mới thành công!',
+            request: function () {
+                return {
+                    action: 'TC_PhanBo_DoanhThu/Them_TC_BC_PhanBo_DacThu',
+                    type: 'POST',
+                    strTaiChinh_CacKhoanThu_Id: v('pbKhoanThu'),
+                    strDaoTao_HeDaoTao_Id: v('pbHe'),
+                    strDaoTao_KhoaDaoTao_Id: v('pbKhoa'),
+                    strDaoTao_ChuongTrinh_Id: v('pbCT'),
+                    strNamHocDuLieu: v('pbNamHoc'),
+                    strHocKyDuLieu: v('pbHocKy'),
+                    strNamPhanBo: v('pbNamPB'),
+                    strThangPhanBo: v('pbThangPB'),
+                    strNguoiThucHien_Id: ''
+                };
+            },
+            refresh: loadKetQua
+        });
     }
+    function dieuKien() { return [['Khoản thu', 'pbKhoanThu'], ['Hệ đào tạo', 'pbHe'], ['Khóa đào tạo', 'pbKhoa'], ['Chương trình đào tạo', 'pbCT']]; }
 
     function xoa() {
         var list = picked();
         if (!list.length) return ui.toast('Vui lòng chọn đối tượng cần xóa?', 'warn');
-        ui.confirm('Bạn có chắc chắn xóa dữ liệu không?', { tone: 'bad', ok: 'Xoá' }).then(function (yes) {
-            if (!yes) return;
-            H.runAll(list.map(function (r) {
-                return { action: 'TC_PhanBo_DoanhThu/Xoa_TC_BC_PhanBo_DacThu', strId: r.ID, strNguoiThucHien_Id: '' };
-            }), 'Đang xoá', loadKetQua);
+        ums.process.run({
+            title: 'Xóa kết quả phân bổ doanh thu', unit: 'bản ghi', fileName: 'KetQuaXoaPhanBo', notes: ['Thao tác xóa dữ liệu các bản ghi phân bổ trong danh sách.'], items: list,
+            columns: [
+                { header: 'Phạm vi áp dụng', prop: 'PHAMVIAPDUNG_TEN' }, { header: 'Năm dữ liệu', prop: 'NAM_DULIEU' }, { header: 'Kỳ dữ liệu', prop: 'KY_DULIEU' },
+                { header: 'Năm phân bổ', prop: 'NAM_PHANBO' }, { header: 'Tháng phân bổ', prop: 'THANG_PHANBO' }, { header: 'Khoản thu', prop: 'TAICHINH_CACKHOANTHU_TEN' }
+            ],
+            request: function (r) { return { action: 'TC_PhanBo_DoanhThu/Xoa_TC_BC_PhanBo_DacThu', strId: r.ID, strNguoiThucHien_Id: '' }; },
+            refresh: loadKetQua
         });
     }
 
@@ -222,6 +238,8 @@
         if (a === 'xem') loadKetQua();
         else if (a === 'phanbo') phanBo();
         else if (a === 'xoa') xoa();
+        else if (a === 'xuat') ui.xuatBang(z('tbl'), { ten: 'KetQuaPhanBoDoanhThu', tieuDe: 'KẾT QUẢ PHÂN BỔ DOANH THU',
+            phu: [ums.process.dieuKien(dieuKien())].concat((v('pbNamHoc') || v('pbHocKy')) ? ['Dữ liệu nguồn: năm học ' + v('pbNamHoc') + ', học kỳ ' + v('pbHocKy')] : []).filter(Boolean) });
     });
 
     loadKetQua();

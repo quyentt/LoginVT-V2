@@ -92,6 +92,12 @@
             MAUIN_MASO: 'HOADONDHLUAT', TINHTRANG: 1, QRCODE: 'HD7001|0106543210|4850000' }]
     };
 
+    /* Danh sách phân bổ theo hợp đồng — giữ trạng thái để TC_DaNop_PhanBo/ThemMoi cộng dồn "Đã phân bổ" */
+    var PHANBO = [
+        { QLSV_NGUOIHOC_ID: 'SV1', QLSV_NGUOIHOC_MASO: 'BIT220263', QLSV_NGUOIHOC_HOTEN: 'Lê Minh Quân', PHANLOAI_TEN: 'Cá nhân', TONGTIENDAPHANBO: 0 },
+        { QLSV_NGUOIHOC_ID: 'SV2', QLSV_NGUOIHOC_MASO: 'BIT220281', QLSV_NGUOIHOC_HOTEN: 'Đỗ Thu Trang', PHANLOAI_TEN: 'Tập thể', TONGTIENDAPHANBO: 1500000 }
+    ];
+
     function like(rows, q) {
         q = String(q || '').toLowerCase();
         return rows.filter(function (r) { return !q || (r.TENDOITUONG + ' ' + r.MASODOITUONG).toLowerCase().indexOf(q) >= 0; });
@@ -142,9 +148,11 @@
         'TC_PhieuThu/LayTTPhieuThu_Rut': function () { return { rows: PHIEU }; },
         'TC_HoaDon/LayTTHoaDonThu_Rut': function () { return { rows: HOADON }; },
         'TC_NguoiHoc_QuanLy/LayDSHopDong': [{ ID: 'HD1', SOHOPDONG: 'HĐ-2026/015' }],
-        'TC_NguoiHoc_QuanLy/LayDanhSach': [
-            { QLSV_NGUOIHOC_ID: 'SV1', QLSV_NGUOIHOC_MASO: 'BIT220263', QLSV_NGUOIHOC_HOTEN: 'Lê Minh Quân', PHANLOAI_TEN: 'Cá nhân', TONGTIENDAPHANBO: 0 },
-            { QLSV_NGUOIHOC_ID: 'SV2', QLSV_NGUOIHOC_MASO: 'BIT220281', QLSV_NGUOIHOC_HOTEN: 'Đỗ Thu Trang', PHANLOAI_TEN: 'Tập thể', TONGTIENDAPHANBO: 1500000 }
-        ]
+        'TC_NguoiHoc_QuanLy/LayDanhSach': function () { return PHANBO.map(function (r) { return Object.assign({}, r); }); },
+        // Lưu phân bổ: cộng dồn "Đã phân bổ" của dòng (để màn đối chiếu sau khi nạp lại)
+        'TC_DaNop_PhanBo/ThemMoi': function (o) {
+            PHANBO.forEach(function (r) { if (r.QLSV_NGUOIHOC_ID === o.strQLSV_NguoiHoc_Id) r.TONGTIENDAPHANBO += parseFloat(String(o.dSoTien).replace(/[,\s]/g, '')) || 0; });
+            return { rows: [], message: 'Thêm mới thành công', raw: { Id: 'PB' + Date.now() } };
+        }
     });
 })();

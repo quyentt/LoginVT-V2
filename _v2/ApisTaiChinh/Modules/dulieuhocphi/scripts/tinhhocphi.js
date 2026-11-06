@@ -38,6 +38,13 @@
        nộp vẫn = parseInt(SOTIEN) − parseInt(SOTIENMIEN).
      · Tab "không tính phí" chỉ nạp khi mở tab / bấm Tải lại (bản gốc chỉ nạp
        khi bấm Tải lại).
+   Kéo gốc lần 12–13 (7/11) — form tiến trình chung (gốc Corei/processrun.js edu.process → ums.process):
+     · "Tính phí" vẫn hỏi lại rồi tạo hàng đợi (1 lời gọi, như gốc); nút "Bắt đầu" của hàng đợi nay chạy từng
+       nhiệm vụ TRONG form tiến trình (ums.queue.mount { process }) — giờ bắt đầu / kết thúc, kết quả, xuất Excel.
+     · "Xóa kết quả" → ums.process.runJob (Bước 1 hiện phạm vi thay hộp hỏi lại).
+     · Không tính phí: Thêm (mỗi SV một bản ghi, miễn 100%), Lưu % đã sửa (cột % cũ / % mới), Xóa đã chọn
+       → ums.process.run với cột Mã số / Họ tên / … thay ui.batch.
+     · Nút "Xuất Excel" cạnh ba bảng kết quả (gốc edu.exporter.attachTable → ums.ui.xuatBang) kèm dòng điều kiện.
    Bỏ: loadProgressBar, proSeq…, genHTML_HangDoi (mã chết — hàng đợi do
    ums.queue lo), fakedb, ô txtTuKhoa_Search / dropSearch_ChuongTrinh_PT
    không tồn tại (gửi chuỗi rỗng như bản gốc).
@@ -87,18 +94,19 @@
                 '<nav class="ums-tabs" data-z="tabs"></nav>' +
                 '<div data-tabp="tc">' +
                     '<div class="ums-panel__head"><div class="ums-panel__title"><i class="fa-light fa-list-ol"></i> Kết quả theo tín chỉ</div>' +
-                        '<div class="ums-panel__tools"><button type="button" class="ums-iconbtn" data-a="reloadtc" title="Tải lại"><i class="fa-light fa-rotate-right"></i></button></div></div>' +
+                        '<div class="ums-panel__tools">' + ui.btn('excel', { cls: 'ums-btn--sm', attr: { 'data-a': 'xuattc' } }) + '<button type="button" class="ums-iconbtn" data-a="reloadtc" title="Tải lại"><i class="fa-light fa-rotate-right"></i></button></div></div>' +
                     '<div class="ums-panel__body ums-panel__body--flush" data-z="tc"></div>' +
                 '</div>' +
                 '<div data-tabp="nc" hidden>' +
                     '<div class="ums-panel__head"><div class="ums-panel__title"><i class="fa-light fa-list-ol"></i> Kết quả theo niên chế</div>' +
-                        '<div class="ums-panel__tools"><button type="button" class="ums-iconbtn" data-a="reloadnc" title="Tải lại"><i class="fa-light fa-rotate-right"></i></button></div></div>' +
+                        '<div class="ums-panel__tools">' + ui.btn('excel', { cls: 'ums-btn--sm', attr: { 'data-a': 'xuatnc' } }) + '<button type="button" class="ums-iconbtn" data-a="reloadnc" title="Tải lại"><i class="fa-light fa-rotate-right"></i></button></div></div>' +
                     '<div class="ums-panel__body ums-panel__body--flush" data-z="nc"></div>' +
                 '</div>' +
                 '<div data-tabp="ktp" hidden>' +
                     '<div class="ums-panel__head"><div class="ums-panel__title"><i class="fa-light fa-user-slash"></i> Danh sách không tính phí</div>' +
                         '<div class="ums-panel__tools">' +
                             '<button type="button" class="ums-iconbtn" data-a="reloadktp" title="Tải lại"><i class="fa-light fa-rotate-right"></i></button>' +
+                            ui.btn('excel', { cls: 'ums-btn--sm', attr: { 'data-a': 'xuatktp' } }) +
                             '<button type="button" class="ums-btn ums-btn--out-info ums-btn--sm" data-a="importktp"><i class="fa-light fa-cloud-arrow-up"></i><span>Import chốt phí</span></button>' +
                             '<button type="button" class="ums-btn ums-btn--quiet ums-btn--sm" data-a="xoaktp"><i class="fa-light fa-trash-can"></i><span>Xóa</span></button>' +
                             '<button type="button" class="ums-btn ums-btn--save ums-btn--sm" data-a="luuktp"><i class="fa-light fa-floppy-disk"></i><span>Lưu</span></button>' +
@@ -177,10 +185,17 @@
     });
 
     /* ---------- Hàng đợi + báo cáo ------------------------------------------ */
+    function dieuKien() {
+        return [['Hệ đào tạo', 'thpHe'], ['Khóa đào tạo', 'thpKhoa'], ['Lớp quản lý', 'thpLop'], ['Thời gian đào tạo', 'thpThoiGian'],
+            ['Nghiệp vụ áp dụng', 'thpNghiepVu'], ['Khoản thu', 'thpKhoanThu'], ['Kế hoạch đăng ký', 'thpKeHoach']];
+    }
+    function dieuKienKTP() { return [['Nghiệp vụ áp dụng', 'thpNghiepVu'], ['Thời gian đào tạo', 'thpThoiGian'], ['Khoản thu', 'thpKhoanThu']]; }
+    function phuLines(dk) { var l = H.trangThaiLines(tt), t = ums.process.dieuKien(dk); if (t) l.push(t); return l; }
     var queue = ums.queue.mount(z('queue'), {
         strLoaiNhiemVu: 'TINHPHITUDONG',
         strName: 'TinhHocPhi',
-        onDone: function () { loadTinChi(); loadNienChe(); }        // objHangDoi.callback = endHangDoi
+        onDone: function () { loadTinChi(); loadNienChe(); },       // objHangDoi.callback = endHangDoi
+        process: { title: 'Tính học phí', fileName: 'KetQuaTinhHocPhi', subTitles: function () { return phuLines(dieuKien()); } }   // objHangDoi.process (gốc 4/11)
     });
 
     ums.report.mount(z('report'), {
@@ -322,19 +337,30 @@
         if (!v('thpKhoanThu')) return ui.toast('Bạn hãy chọn khoản thu', 'warn');
         H.pickSinhVien({
             onPick: function (list) {
-                H.runAll(list.map(function (sv) {
-                    return {
-                        action: 'TC_ThuChi2_MH/FSkkLB4VAh4PJikoJDEXNB4CKS41HhEpKAPP',
-                        func: 'PKG_TAICHINH_THUCHI2.Them_TC_NghiepVu_Chot_Phi',
-                        strDaoTao_ThoiGianDaoTao_Id: v('thpThoiGian'),
-                        strNghiepVuApDung_Id: v('thpNghiepVu'),
-                        strQLSV_NguoiHoc_Id: sv.QLSV_NGUOIHOC_ID,
-                        strDaoTao_ChuongTrinh_Id: sv.DAOTAO_TOCHUCCHUONGTRINH_ID,
-                        strTaiChinh_CacKhoanThu_Id: v('thpKhoanThu'),
-                        dPhanTram: 100,
-                        strNguoiThucHien_Id: ''
-                    };
-                }), 'Đang thêm sinh viên không tính phí', loadKhongTinhPhi);
+                // mỗi sinh viên chọn một bản ghi của form tiến trình, miễn 100% học phí (gốc edu.process.pickSinhVien)
+                ums.process.run({
+                    title: 'Thêm sinh viên vào danh sách không tính phí', unit: 'sinh viên', fileName: 'KetQuaThemKhongTinhPhi', dieuKien: dieuKienKTP(), items: list,
+                    columns: [
+                        { header: 'Mã số', render: function (r) { return H.e(r.QLSV_NGUOIHOC_MASO || r.MASO); } },
+                        { header: 'Họ tên', render: function (r) { return (H.e(r.QLSV_NGUOIHOC_HODEM || r.HODEM) + ' ' + H.e(r.QLSV_NGUOIHOC_TEN || r.TEN)).trim(); } },
+                        { header: 'Lớp quản lý', render: function (r) { return H.e(r.DAOTAO_LOPQUANLY_TEN); } }
+                    ],
+                    request: function (sv) {
+                        if (!sv || !sv.QLSV_NGUOIHOC_ID) throw new Error('Không tìm thấy dữ liệu của sinh viên.');
+                        return {
+                            action: 'TC_ThuChi2_MH/FSkkLB4VAh4PJikoJDEXNB4CKS41HhEpKAPP',
+                            func: 'PKG_TAICHINH_THUCHI2.Them_TC_NghiepVu_Chot_Phi',
+                            strDaoTao_ThoiGianDaoTao_Id: v('thpThoiGian'),
+                            strNghiepVuApDung_Id: v('thpNghiepVu'),
+                            strQLSV_NguoiHoc_Id: sv.QLSV_NGUOIHOC_ID,
+                            strDaoTao_ChuongTrinh_Id: sv.DAOTAO_TOCHUCCHUONGTRINH_ID,
+                            strTaiChinh_CacKhoanThu_Id: v('thpKhoanThu'),
+                            dPhanTram: 100,
+                            strNguoiThucHien_Id: ''
+                        };
+                    },
+                    refresh: loadKhongTinhPhi
+                });
             }
         });
     }
@@ -346,9 +372,15 @@
             if (String(H.e(r.PHANTRAM)) !== el.value) changed.push({ row: r, val: el.value });
         });
         if (!changed.length) return ui.toast('Không có thay đổi lưu', 'warn');
-        ui.confirm('Bạn có chắc chắn thêm ' + changed.length + ' và hủy 0?').then(function (yes) {
-            if (!yes) return;
-            H.runAll(changed.map(function (c) {
+        ums.process.run({
+            title: 'Lưu phần trăm không tính phí', unit: 'sinh viên', fileName: 'KetQuaLuuKhongTinhPhi', dieuKien: dieuKienKTP(), items: changed,
+            columns: [
+                { header: 'Mã số', render: function (c) { return H.e(c.row.QLSV_NGUOIHOC_MASO); } },
+                { header: 'Họ tên', render: function (c) { return (H.e(c.row.QLSV_NGUOIHOC_HODEM) + ' ' + H.e(c.row.QLSV_NGUOIHOC_TEN)).trim(); } },
+                { header: 'Phần trăm cũ', render: function (c) { return H.e(c.row.PHANTRAM); } },
+                { header: 'Phần trăm mới', render: function (c) { return c.val; } }
+            ],
+            request: function (c) {
                 return {
                     action: 'TC_ThuChi2_MH/EjQgHhUCHg8mKSgkMRc0HgIpLjUeESko',
                     func: 'PKG_TAICHINH_THUCHI2.Sua_TC_NghiepVu_Chot_Phi',
@@ -356,23 +388,32 @@
                     dPhanTram: c.val,
                     strNguoiThucHien_Id: ''
                 };
-            }), 'Đang lưu phần trăm không tính', loadKhongTinhPhi);
+            },
+            refresh: loadKhongTinhPhi
         });
     }
 
     function xoaKhongTinhPhi() {
         var rows = ktpChecked();
         if (!rows.length) return ui.toast('Vui lòng chọn đối tượng cần xóa?', 'warn');
-        ui.confirm('Bạn có chắc chắn xóa dữ liệu không?', { tone: 'bad', ok: 'Xoá' }).then(function (yes) {
-            if (!yes) return;
-            H.runAll(rows.map(function (r) {
+        ums.process.run({
+            title: 'Xóa sinh viên khỏi danh sách không tính phí', unit: 'sinh viên', fileName: 'KetQuaXoaKhongTinhPhi', dieuKien: dieuKienKTP(),
+            notes: ['Thao tác xóa dữ liệu các sinh viên trong danh sách.'], items: rows,
+            columns: [
+                { header: 'Mã số', render: function (r) { return H.e(r.QLSV_NGUOIHOC_MASO); } },
+                { header: 'Họ tên', render: function (r) { return (H.e(r.QLSV_NGUOIHOC_HODEM) + ' ' + H.e(r.QLSV_NGUOIHOC_TEN)).trim(); } },
+                { header: 'Chương trình', render: function (r) { return H.e(r.DAOTAO_CHUONGTRINH_TEN); } },
+                { header: 'Phần trăm', render: function (r) { return H.e(r.PHANTRAM); } }
+            ],
+            request: function (r) {
                 return {
                     action: 'TC_ThuChi2_MH/GS4gHhUCHg8mKSgkMRc0HgIpLjUeESko',
                     func: 'PKG_TAICHINH_THUCHI2.Xoa_TC_NghiepVu_Chot_Phi',
                     strId: r.ID,
                     strNguoiThucHien_Id: ''
                 };
-            }), 'Đang xoá', loadKhongTinhPhi);
+            },
+            refresh: loadKhongTinhPhi
         });
     }
 
@@ -401,20 +442,26 @@
     }
 
     function xoaKetQua() {
-        ui.confirm('Bạn có chắc chắn muốn xóa dữ liệu không!', { tone: 'bad', ok: 'Xoá', title: 'Xóa kết quả tính phí' }).then(function (yes) {
-            if (!yes) return;
-            ums.api.call({
-                action: 'TC_KetQuaDaTinhPhi/Xoa',
-                strDaoTao_ThoiGianDaoTao_Id: v('thpThoiGian'),
-                strDangKy_KeHoachDangKy_Id: v('thpKeHoach'),
-                strHeDaoTao_Id: v('thpHe'),
-                strKhoaDaoTao_Id: v('thpKhoa'),
-                strLopQuanLy_Id: v('thpLop'),
-                strNghiepVuApDung_Id: v('thpNghiepVu'),
-                strTaiChinh_CacKhoanThu_Id: v('thpKhoanThu'),
-                strNguoiThucHien_Id: '',
-                strQLSV_NguoiHoc_Id: svIds()
-            }).then(function () { ui.toast('Xóa thành công!', 'ok'); }).catch(fail('xóa kết quả'));
+        var nChon = svPick ? svPick.ids().length : 0;
+        ums.process.runJob({
+            title: 'Xóa kết quả đã tính phí', what: 'Xóa kết quả đã tính phí' + (nChon > 0 ? ' của ' + nChon + ' sinh viên đã chọn' : ' theo phạm vi đang chọn'),
+            fileName: 'KetQuaXoaKetQuaDaTinhPhi', notes: ['Thao tác xóa dữ liệu kết quả đã tính phí trong phạm vi đang chọn.'],
+            subTitles: H.trangThaiLines(tt), dieuKien: dieuKien(), okMessage: 'Xóa thành công!',
+            request: function () {
+                return {
+                    action: 'TC_KetQuaDaTinhPhi/Xoa',
+                    strDaoTao_ThoiGianDaoTao_Id: v('thpThoiGian'),
+                    strDangKy_KeHoachDangKy_Id: v('thpKeHoach'),
+                    strHeDaoTao_Id: v('thpHe'),
+                    strKhoaDaoTao_Id: v('thpKhoa'),
+                    strLopQuanLy_Id: v('thpLop'),
+                    strNghiepVuApDung_Id: v('thpNghiepVu'),
+                    strTaiChinh_CacKhoanThu_Id: v('thpKhoanThu'),
+                    strNguoiThucHien_Id: '',
+                    strQLSV_NguoiHoc_Id: svIds()
+                };
+            },
+            refresh: function () { loadTinChi(); loadNienChe(); }
         });
     }
 
@@ -430,6 +477,9 @@
             case 'xoaketqua': xoaKetQua(); break;
             case 'xem': loadNienChe(); loadTinChi(); break;
             case 'reloadtc': loadTinChi(); break;
+            case 'xuattc': ui.xuatBang(z('tc'), { ten: 'KetQuaTinhHocPhiTinChi', tieuDe: 'KẾT QUẢ TÍNH HỌC PHÍ - HỌC CHẾ TÍN CHỈ', phu: phuLines(dieuKien()) }); break;
+            case 'xuatnc': ui.xuatBang(z('nc'), { ten: 'KetQuaTinhHocPhiNienChe', tieuDe: 'KẾT QUẢ TÍNH HỌC PHÍ - HỌC CHẾ NIÊN CHẾ', phu: phuLines(dieuKien()) }); break;
+            case 'xuatktp': ui.xuatBang(z('ktp'), { ten: 'DanhSachKhongTinhPhi', tieuDe: 'DANH SÁCH SINH VIÊN KHÔNG TÍNH PHÍ', phu: [ums.process.dieuKien(dieuKienKTP())].filter(Boolean) }); break;
             case 'reloadnc': loadNienChe(); break;
             case 'reloadktp': loadKhongTinhPhi(); break;
             case 'themktp': themKhongTinhPhi(); break;

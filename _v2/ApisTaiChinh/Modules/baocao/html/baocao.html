@@ -2,8 +2,13 @@
     Báo cáo tài chính
     Bản gốc: ApisTaiChinh/Modules/baocao/html/baocao.html + scripts/baocao.js
     Bộ lọc dùng chung cho mọi mẫu báo cáo, chọn khoản thu + trạng thái SV,
-    ba tab: tổng thu · kết quả phải nộp · kết nối kế toán, và các hộp thoại
-    năm tài chính / báo cáo đã thực hiện / mã khách hàng / lịch báo cáo.
+    năm tab: tổng thu · kết quả phải nộp · kết quả rút · kết quả miễn ·
+    kết nối kế toán, và các hộp thoại năm tài chính / báo cáo đã thực hiện /
+    mã khách hàng / lịch báo cáo.
+    Kéo gốc lần 12–13 (2/11, 7/11): thêm hai tab Kết quả rút / Kết quả miễn
+    (cùng bộ cột tab 1), nút "Xuất Excel" ở bốn tab kết quả (nút dựng trong
+    JS, đổ vào [data-z="xuat*"]). Ô đánh dấu "chọn tất cả" của tab 2 gốc mới
+    thêm — bản này đã có từ trước.
 -->
 <link rel="stylesheet" href="../css/baocao.css">
 
@@ -35,9 +40,15 @@
         <nav class="ums-tabs" data-z="tabs">
             <a class="ums-tabs__item is-active" href="javascript:void(0)" data-tab="tongthu">1. Tổng thu</a>
             <a class="ums-tabs__item" href="javascript:void(0)" data-tab="phainop">2. Kết quả phải nộp</a>
-            <a class="ums-tabs__item" href="javascript:void(0)" data-tab="ketnoi">3. Kết nối kế toán</a>
+            <a class="ums-tabs__item" href="javascript:void(0)" data-tab="rut">3. Kết quả rút</a>
+            <a class="ums-tabs__item" href="javascript:void(0)" data-tab="mien">4. Kết quả miễn</a>
+            <a class="ums-tabs__item" href="javascript:void(0)" data-tab="ketnoi">5. Kết nối kế toán</a>
         </nav>
         <div data-pane="tongthu">
+            <div class="ums-panel__head">
+                <div class="ums-panel__title"><i class="fa-light fa-list"></i> Kết quả đã nộp</div>
+                <div class="ums-panel__tools" data-z="xuatDanop"></div>
+            </div>
             <div data-z="tblTongThu"></div>
             <div class="ums-tablefoot"><span>Bằng chữ: <i data-z="tongThuChu"></i></span><span class="ums-tablefoot__sum"><span>Tổng tiền: <b data-z="tongThu">0</b></span></span></div>
         </div>
@@ -45,11 +56,28 @@
             <div class="ums-panel__head">
                 <div class="ums-panel__title"><i class="fa-light fa-list"></i> Kết quả phải nộp</div>
                 <div class="ums-panel__tools">
+                    <span data-z="xuatPhainop"></span>
                     <button type="button" class="ums-btn ums-btn--quiet ums-btn--sm" data-act="delPhaiNop"><i class="fa-light fa-trash-can"></i><span>Xoá đã chọn</span></button>
                 </div>
             </div>
             <div data-z="tblPhaiNop"></div>
             <div class="ums-tablefoot"><span>Bằng chữ: <i data-z="tongPhaiNopChu"></i></span><span class="ums-tablefoot__sum"><span>Tổng tiền: <b data-z="tongPhaiNop">0</b></span></span></div>
+        </div>
+        <div data-pane="rut" hidden>
+            <div class="ums-panel__head">
+                <div class="ums-panel__title"><i class="fa-light fa-list"></i> Kết quả rút</div>
+                <div class="ums-panel__tools" data-z="xuatRut"></div>
+            </div>
+            <div data-z="tblRut"></div>
+            <div class="ums-tablefoot"><span>Bằng chữ: <i data-z="tongRutChu"></i></span><span class="ums-tablefoot__sum"><span>Tổng tiền: <b data-z="tongRut">0</b></span></span></div>
+        </div>
+        <div data-pane="mien" hidden>
+            <div class="ums-panel__head">
+                <div class="ums-panel__title"><i class="fa-light fa-list"></i> Kết quả miễn</div>
+                <div class="ums-panel__tools" data-z="xuatMien"></div>
+            </div>
+            <div data-z="tblMien"></div>
+            <div class="ums-tablefoot"><span>Bằng chữ: <i data-z="tongMienChu"></i></span><span class="ums-tablefoot__sum"><span>Tổng tiền: <b data-z="tongMien">0</b></span></span></div>
         </div>
         <div data-pane="ketnoi" hidden>
             <div class="ums-panel__body">

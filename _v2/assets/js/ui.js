@@ -1609,7 +1609,8 @@
 
     /* ---------- Tải tệp dựng ở máy khách -----------------------------------
        ums.ui.taiTep('ten.csv', 'text/csv;charset=utf-8', noiDung)
-       ums.ui.xuatXls('DSSV_20260922.xls', { tieuDe, cot: [{ title, get(dòng) }], dong })
+       ums.ui.xuatXls('DSSV_20260922.xls', { tieuDe, phu: ['Điều kiện…'], cot: [{ title, get(dòng) }], dong })   phu: các dòng dưới tiêu đề (kéo gốc lần 13)
+       ums.ui.xuatBang(bảng | id | khung chứa bảng, { ten, tieuDe, phu })   xuất đúng bảng .ums-table đang hiển thị (bỏ cột ô đánh dấu / không tên)
        Excel ở đây là BẢNG HTML lưu đuôi .xls (Excel mở được, không cần thư viện
        SheetJS tải từ CDN như vài màn gốc — _v2 không phụ thuộc CDN).        */
     ui.taiTep = function (ten, kieu, noiDung) {
@@ -1621,11 +1622,31 @@
         var cot = o.cot || [], dong = o.dong || [];
         var h = '<html xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="utf-8"></head><body><table border="1">' +
             (o.tieuDe ? '<tr><td colspan="' + cot.length + '" style="font-size:14pt;font-weight:bold">' + esc(o.tieuDe) + '</td></tr>' : '') +
+            (o.phu || []).map(function (l) { return '<tr><td colspan="' + cot.length + '" style="font-style:italic">' + esc(l) + '</td></tr>'; }).join('') +
             '<tr style="font-weight:bold;background:#D9E1F2">' + cot.map(function (c) { return '<td>' + esc(c.title) + '</td>'; }).join('') + '</tr>' +
             dong.map(function (r, i) {
                 return '<tr>' + cot.map(function (c) { var v = c.get ? c.get(r, i) : r[c.prop]; return '<td style="mso-number-format:\'\\@\'">' + esc(v === null || v === undefined ? '' : v) + '</td>'; }).join('') + '</tr>';
             }).join('') + '</table></body></html>';
         ui.taiTep(/\.xls$/i.test(ten) ? ten : ten + '.xls', 'application/vnd.ms-excel;charset=utf-8', h);
+    };
+
+    /* Xuất bảng đang hiển thị (bản viết lại của edu.exporter.attachTable / exportTable, kéo gốc lần 12–13): đọc tiêu đề cột ở dòng
+       cuối <thead>, bỏ cột không có tên hoặc chỉ chứa ô đánh dấu; mỗi <tr> của <tbody> một dòng (bỏ dòng "rỗng" của ui.table). */
+    ui.xuatBang = function (tbl, o) {
+        o = o || {};
+        tbl = typeof tbl === 'string' ? document.getElementById(tbl) : tbl;
+        if (tbl && tbl.tagName !== 'TABLE') tbl = tbl.querySelector('table');
+        if (!tbl || !tbl.tHead || !tbl.tHead.rows.length) return ui.toast('Không có bảng để xuất.', 'warn');
+        var ths = tbl.tHead.rows[tbl.tHead.rows.length - 1].cells, idx = [];
+        Array.prototype.forEach.call(ths, function (th, i) { var t = th.textContent.trim(); if (t && !th.querySelector('input')) idx.push({ i: i, t: t }); });
+        var dong = Array.prototype.filter.call(tbl.tBodies[0] ? tbl.tBodies[0].rows : [], function (tr) { return tr.cells.length >= ths.length; });
+        if (!idx.length || !dong.length) return ui.toast('Không có dữ liệu để xuất.', 'warn');
+        var d = new Date(), p = function (n) { return (n < 10 ? '0' : '') + n; };
+        ui.xuatXls((o.ten || 'Bang') + '_' + d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + '_' + p(d.getHours()) + p(d.getMinutes()), {
+            tieuDe: o.tieuDe, phu: o.phu,
+            cot: idx.map(function (c) { return { title: c.t, get: function (tr) { return tr.cells[c.i] ? tr.cells[c.i].textContent.trim() : ''; } }; }),
+            dong: dong
+        });
     };
 
     /* ---------- Thư viện SheetJS (xuất .xlsx nhiều sheet / đọc tệp Excel) ----------

@@ -52,6 +52,12 @@
     them("apiscongcanbo/modules/thongtinsinhvien/thanhtoanonline", [
         {"man":"Cổng cán bộ → Thanh toán online (thông tin sinh viên)","q":"Cấu hình cổng thanh toán VietinBank (VTB) đang ghi cứng tên đơn vị \"DHLAMNGHIEP\", mã merchant \"0500465853\" — trông như cấu hình của **trường khác**. Rủi ro: tiền sinh viên nộp có thể không về tài khoản của trường. **Nghiệp vụ Tài chính:** xác nhận với ngân hàng thông tin tài khoản / merchant đúng của trường. **Anh:** thay cấu hình trước khi cho sinh viên dùng.","ben":"oracle"}
     ]);
+    them("apistaichinh/modules/phieuthu/thutienkhac", [
+        {"man": "Tài chính → Phiếu thu → Thu tiền khác", "ben": "oracle", "q": "Phân bổ khoản đã nộp (kéo gốc 12–13, chuyển 7/11): `TC_DaNop_PhanBo/ThemMoi` nay gửi thêm `strTaiChinh_NguoiHoc_HD_Id` (hợp đồng đang chọn) — gốc tự ghi \"CHƯA xác minh với BE\". Cần chốt: thủ tục có đọc tham số này không, và cột TONGTIENDAPHANBO của `TC_NguoiHoc_QuanLy/LayDanhSach` có tính theo cặp (đối tác, hợp đồng) không?", "now": "Gửi như gốc; lưu xong đối chiếu cột \"Đã phân bổ\" — không tăng thì màn tự cảnh báo \"cần kiểm tra lại với BE\"."}
+    ]);
+    them("apistaichinh/modules/baocao/baocao", [
+        {"man": "Tài chính → Báo cáo", "host": true, "q": "Hai tab mới \"Kết quả rút\" / \"Kết quả miễn\" (kéo gốc 12–13, chuyển 7/11) gọi `TC_BaoCao2_MH` · `PKG_TAICHINH_BAOCAO2.LayDSRutTien / LayDSMienTien` — package và controller MỚI; tên cột trả về giả định giống tab \"Kết quả phải nộp\" như gốc ghi. Kiểm trên host có package / controller và đúng cột chưa.", "now": "Gọi như gốc; thiếu thì tab báo lỗi của máy chủ."}
+    ]);
     them("apiskehoachchuongtrinh/modules/chuongtrinhhocphan/cthp", [
         {"man":"Kế hoạch chương trình → Chương trình – học phần → Cập nhật CTDT","ben":"oracle","q":"Hai ô mới ở đầu khung \"Danh sách học phần\" (**khai tương đương / khai thay thế theo từng sinh viên**, bản kho gốc 29/09/2026) lưu bằng thủ tục PKG_KEHOACH_THONGTIN2.CapNhat_MoHinh_ChuongTrinh. Ảnh hưởng: nếu danh sách chương trình chưa trả hai cột này thì mở lại chương trình luôn hiện \"Không\" dù đã lưu \"Có\". **Anh:** (1) xác nhận KHCT_ToChucChuongTrinh/LayDanhSach trên máy chủ đã trả hai cột MOHINHTUONGDUONGTHEOPHAMVI và MOHINHTHAYTHETHEOPHAMVI; (2) cho biết cột thay thế lưu giá trị nào là \"Có\" — mã gốc đọc về nhận cả 1 và 2 nhưng khi lưu chỉ gửi 1 (tham số dMoHinhTT_PhamVi)."}
     ]);

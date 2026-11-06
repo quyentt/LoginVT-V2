@@ -64,7 +64,6 @@
      · save_HDBL gửi strDonViTinh_Ids rỗng (đọc ô #dropDonViTinhPTC_PT_Edit
        đã bị comment trong mẫu) — ĐVT chọn từng dòng chỉ đi theo "Thu tiền
        không sinh HĐBL" / HĐĐT.
-     · Phân bổ gửi cho MỌI dòng, kể cả dòng chưa nhập số tiền (dSoTien rỗng).
      · Họ tên người mua hàng (gốc 12/10): strTenNguoiThu + strNhap_HoTenNguoiMuaHang = tên đối tượng,
        bTenNguoiThu khi có tên — chỉ ở thuTienPayload; ô #strTenNguoiThu không có trên màn.
    Cố ý bỏ
@@ -72,6 +71,38 @@
        (display:none), không có đường bật.
      · Popover ảnh/thông tin sinh viên khi rê chuột — đọc cột sinh viên
        (ANH, HODEM, NGAYSINH_NGAY…) không có ở đối tượng khác.
+
+   KÉO GỐC LẦN 12–13 (2/11, 7/11) — gốc đổi thutienkhac.js +250 / .html +354
+   Đã chuyển
+     · Phân bổ (moPhanBo): chỉ lưu dòng CÓ số tiền > 0 và chưa lưu (gốc save_PhanBo);
+       kết quả báo MỘT lần bằng dải thông báo trong vùng phân bổ (showKetQua_PhanBo),
+       không alert từng dòng; lưu xong nạp lại bảng + hợp đồng (giữ hợp đồng đang chọn,
+       cbGenCombo_HopDong), dòng đã lưu điền lại + khoá + tô xanh, dòng lỗi điền lại;
+       đối chiếu "Đã phân bổ" sau khi nạp lại có tăng đúng số vừa lưu, không thì cảnh
+       báo "cần kiểm tra lại với BE". Áp số tiền bỏ qua ô đã khoá.
+     · TC_DaNop_PhanBo/ThemMoi gửi thêm strTaiChinh_NguoiHoc_HD_Id = hợp đồng đang
+       chọn (gốc tự ghi "CHƯA xác minh với BE").
+     · Bấm "Phân bổ" khi vùng đang mở = nạp lại (refresh_PhanBo): giữ số đã nhập chưa
+       lưu, dòng đã lưu về trạng thái mới.
+     · Lỗi xuất hoá đơn / thu tiền / HĐĐT / bản nháp: bóc JSON nhà cung cấp HĐĐT
+       (parseLoiHoaDon) → hộp thông báo gọn: mô tả + gợi ý theo mã lỗi + mã lỗi kỹ
+       thuật (alertLoiHoaDon → loiHoaDon, ui.dialog + CSS .ttk-loi). Hết phiên / mất
+       dịch vụ vẫn đi ums.api.handle.
+     · Nút HĐĐT: class icon trong danh mục không có glyph → icon mặc định theo vị trí
+       (iconCoGlyph; defaultIcons của gốc qua ums.iconFA4).
+   Khác gốc
+     · Gốc ẩn nút "Phân bổ" ngay sau khi mở vùng, nên nhánh "bấm lại = nạp lại" của
+       chính gốc không bao giờ chạy được. Ở đây giữ nút, bấm lại = nạp lại (đúng ý
+       định ghi trong chú thích của gốc).
+     · Lưu hàng loạt qua ui.batch (hộp tiến độ tầng chung, tắt toast gộp) thay vì bắn
+       N request song song; kết quả vẫn ghi vào dải thông báo như gốc.
+   Cố ý bỏ (thuần vỏ cũ)
+     · Toàn bộ +354 dòng CSS trong html gốc: thẻ nút HĐĐT (--hd-c, vòng tròn icon,
+       display:contents), nút chân modal BS3, [style*="display: none"], kiểu hộp
+       #myModalAlert — vỏ _v2 có nút / hộp thoại riêng.
+     · Gỡ khoá cuộn select2 4.0.3 khi đóng dropdown trong modal (lỗi thư viện vỏ cũ).
+     · console.log payload / response từng lần lưu phân bổ.
+     · Reset dải kết quả + hiện lại nút khi mở modal: biểu mẫu _v2 dựng mới mỗi lần.
    ========================================================================= */
 (function () {
     'use strict';
@@ -787,9 +818,27 @@
         if (khoanNT) khoanNT.uncheckAll();
     }
 
+    /* gốc 2/11: class icon trong danh mục (THONGTIN1) có thể không có trong bộ Font Awesome đang nạp → thẻ <i> rỗng,
+       nút "mất icon". Kiểm bằng ::before, không có glyph thì dùng icon mặc định theo vị trí (defaultIcons của gốc, đã đổi FA7). */
+    var ICON_HDDT_MACDINH = ['fa fa-file-text-o', 'fa fa-cloud-upload', 'fa fa-file-o', 'fa fa-paper-plane', 'fa fa-share-square-o'].map(function (t) { return ums.iconFA4(t); });
+    var glyphCache = {};
+    function iconCoGlyph(cls) {
+        if (glyphCache.hasOwnProperty(cls)) return glyphCache[cls];
+        var t = document.createElement('i');
+        t.className = cls;
+        t.style.cssText = 'position:absolute;left:-9999px;top:0;visibility:hidden';
+        document.body.appendChild(t);
+        var c = '';
+        try { c = window.getComputedStyle(t, '::before').getPropertyValue('content'); } catch (ex) { }
+        document.body.removeChild(t);
+        c = String(c || '').replace(/\s*\/\s*"[^"]*"\s*$/, '');      // FA7: content: var(--fa) / "" (alt-text) → chỉ xét phần glyph
+        return (glyphCache[cls] = !!c && c !== 'none' && c !== 'normal' && c !== '""' && c !== "''");
+    }
     function nutHDDT() {
         return (S.nutHDDT || []).map(function (n, i) {
-            var icon = n.THONGTIN1 && String(n.THONGTIN1).trim() ? ums.iconFA4(/^fa\s/.test(String(n.THONGTIN1).trim()) ? String(n.THONGTIN1).trim() : 'fa ' + String(n.THONGTIN1).trim()) : 'fa-light fa-file-invoice';
+            var t1 = n.THONGTIN1 ? String(n.THONGTIN1).trim() : '';
+            var icon = t1 ? ums.iconFA4(/^fa[\s-]/.test(t1) ? t1 : 'fa ' + t1) : ICON_HDDT_MACDINH[i % ICON_HDDT_MACDINH.length];
+            if (!iconCoGlyph(icon)) icon = ICON_HDDT_MACDINH[i % ICON_HDDT_MACDINH.length];
             return '<button type="button" class="ums-btn ums-btn--ghost" data-hddt="' + i + '" title="' + esc(n.TEN) + '">' +
                 '<i class="' + esc(icon) + '"></i><span>' + esc(n.TEN) + '</span></button>';
         }).join('');
@@ -864,6 +913,48 @@
             if (d.canDoi !== undefined) o.canDoi.push(d.canDoi);
         });
         return o;
+    }
+
+    /* parseLoiHoaDon / alertLoiHoaDon (gốc 2/11) — nhà cung cấp HĐĐT trả nguyên chuỗi JSON, vd
+       {"code":400,"message":"INVOICE_VALID_INPUT_INVALID_BUYER_TAX_CODE","data":"Mã số thuế người mua không hợp lệ"}
+       → bóc mô tả (data), mã lỗi (message), mã HTTP (code), gợi ý xử lý nếu biết mã; hiện hộp thông báo gọn thay cho
+       "Lỗi: {json}". Hết phiên / mất dịch vụ vẫn đi đường ums.api.handle. */
+    var GOI_Y_LOI_HD = {
+        'INVOICE_VALID_INPUT_INVALID_BUYER_TAX_CODE': 'Kiểm tra lại Mã số thuế của đối tượng (người mua): sai định dạng hoặc thừa ký tự. Nếu người mua là cá nhân không có mã số thuế thì để trống ô này, rồi xuất lại.'
+    };
+    function parseLoiHoaDon(msg) {
+        var s = msg === null || msg === undefined ? '' : String(msg).trim();
+        var res = { raw: s, title: s, code: '', http: '', hint: '' };
+        var i = s.indexOf('{'), j = s.lastIndexOf('}');
+        if (i !== -1 && j > i) {
+            try {
+                var o = JSON.parse(s.substring(i, j + 1));
+                if (o && typeof o === 'object') {
+                    var moTa = typeof o.data === 'string' ? o.data.trim() : '';
+                    var ma = typeof o.message === 'string' ? o.message.trim() : '';
+                    if (moTa) res.title = moTa;
+                    else if (ma) res.title = 'Nhà cung cấp hóa đơn từ chối yêu cầu';
+                    res.code = ma;
+                    if (o.code !== null && o.code !== undefined && o.code !== '') res.http = 'HTTP ' + o.code;
+                    if (ma && GOI_Y_LOI_HD[ma]) res.hint = GOI_Y_LOI_HD[ma];
+                }
+            } catch (ex) { /* không phải JSON hợp lệ → giữ nguyên chuỗi gốc */ }
+        }
+        return res;
+    }
+    function loiHoaDon(err, tieuDe) {
+        if (!err || err.expired || err.mang) return ums.api.handle(err, tieuDe);
+        console.error('[thutienkhac] ' + tieuDe, err.action || '', err);
+        var r = parseLoiHoaDon(err.message);
+        ui.dialog({
+            title: tieuDe || 'Không thực hiện được', icon: 'fa-triangle-exclamation', size: 'sm',
+            body: '<div class="ttk-loi"><div class="ttk-loi__icon"><i class="fa-light fa-exclamation"></i></div><div class="ttk-loi__body">' +
+                '<div class="ttk-loi__msg">' + esc(r.title || 'Máy chủ không trả về nội dung lỗi') + '</div>' +
+                (r.hint ? '<div class="ttk-loi__hint"><i class="fa-light fa-lightbulb"></i><span>' + esc(r.hint) + '</span></div>' : '') +
+                (r.code ? '<div class="ttk-loi__tech">Mã lỗi: <b>' + esc(r.code) + '</b>' + (r.http ? ' · ' + esc(r.http) : '') + '</div>' : '') +
+                '</div></div>'
+        });
+        return null;
     }
 
     /* save_HDBL — "Xuất biên lai" (thu: TC_DaNop/ThemMoi, rút: TC_TaiChinh_Rut/ThemMoi) */
@@ -945,7 +1036,7 @@
             if (khoanNT) khoanNT.uncheckAll();
             ui.toast('Thực hiện thu tiền thành công', 'ok');
             xemPhieu(id, 'HOADON');
-        }).catch(function (err) { ums.api.handle(err, 'xuất hoá đơn'); });
+        }).catch(function (err) { loiHoaDon(err, 'Không xuất được hóa đơn'); });
     }
 
     /* save_ThuTien — thu tiền không sinh HĐBL, và các nút hoá đơn điện tử */
@@ -999,7 +1090,7 @@
 
     function thuTien() {
         ums.api.call(thuTienPayload(undefined)).then(xongThuTien)
-            .catch(function (err) { ums.api.handle(err, 'thu tiền'); });
+            .catch(function (err) { loiHoaDon(err, 'Không thực hiện được thu tiền'); });
     }
 
     /* Nút HĐĐT: THONGTIN4 (nếu có) đổi base URL của tiền tố HDDT như bản gốc
@@ -1022,11 +1113,11 @@
                     ums.phieu.viewer(document.createElement('div')).show({ id: id, loai: 'HOADON' });
                     xongThuTien();
                 }, function (err) {
-                    ums.api.handle(err, 'xuất hoá đơn điện tử');
+                    loiHoaDon(err, 'Không xuất được hóa đơn điện tử');
                     loadTinhTrang();
                     dongPhieu();
                 });
-            }).catch(function (err) { ums.api.handle(err, 'thu tiền'); });
+            }).catch(function (err) { loiHoaDon(err, 'Không thực hiện được thu tiền'); });
         });
     }
 
@@ -1057,8 +1148,8 @@
                 obj.action = 'TC_HoaDonNhap_ChuaThu/ThemMoi';
                 ui.toast('Thêm bản nháp thành công', 'ok');
                 return ums.api.call(obj);
-            });
-        }).catch(function (err) { ums.api.handle(err, 'hoá đơn nháp'); });
+            }).catch(function (err) { ums.api.handle(err, 'hoá đơn nháp'); });
+        }, function (err) { loiHoaDon(err, 'Không tạo được bản nháp hóa đơn'); });   // lỗi của HDDT_HoaDon/ThemMoi_Nhap
     }
 
     /* delete_BL */
@@ -1169,12 +1260,16 @@
         ui.select2(b.querySelector('[data-f="tg"]'));
     }
 
-    /* btnPhanBo → getList_HopDong → getList_LoaiPhanBo → save_LoaiPhanBo */
+    /* btnPhanBo → getList_HopDong → getList_LoaiPhanBo → save_PhanBo / refresh_PhanBo / showKetQua_PhanBo
+       (gốc 2/11): chỉ lưu dòng CÓ số tiền > 0 và chưa lưu; kết quả báo MỘT lần bằng dải thông báo trong vùng
+       phân bổ (không alert từng dòng); lưu xong nạp lại bảng + hợp đồng (giữ hợp đồng đang chọn), dòng đã lưu
+       điền lại + khoá + tô xanh, dòng lỗi điền lại để sửa; đối chiếu "Đã phân bổ" có tăng đúng số vừa lưu.
+       Bấm "Phân bổ" khi vùng đã mở = nạp lại (giữ số đã nhập chưa lưu). */
     function moPhanBo(dlg, daNop) {
         var host = dlg.body.querySelector('[data-f="phanbo"]');
-        if (!host.hidden) return;
+        if (!host.hidden) return refreshPhanBo(host);
         host.hidden = false;
-        var dsPB = [];
+        var pb = host._pb = { ds: [], st: {}, daLuu: {}, dangLuu: false };
         host.innerHTML = '<div class="ums-legend">Phân bổ cho người học theo hợp đồng</div>' +
             '<div class="ums-grid ums-grid--3">' +
             ui.field('Hợp đồng', '<select class="ums-select" data-p="hd"><option value="">Chọn hợp đồng</option></select>') +
@@ -1182,17 +1277,31 @@
             ui.field('Áp số tiền', '<div class="ums-row"><input class="ums-input ums-u-flex1" data-p="st" placeholder="Nhập số tiền">' +
                 '<button type="button" class="ums-btn ums-btn--out-warn" data-p="ap"><i class="fa-light fa-check"></i><span>Áp</span></button></div>') +
             '</div><div data-p="bang" class="ums-u-mt-2"></div>' +
-            '<div class="ums-row ums-row--end ums-u-mt-4"><button type="button" class="ums-btn ums-btn--save" data-p="luu"><i class="fa-light fa-floppy-disk"></i><span>Lưu phân bổ</span></button></div>';
+            // Hàng cuối: dải kết quả (trái, chiếm phần còn lại) | nút Lưu phân bổ (phải) — như gốc #divKetQua_PhanBo
+            '<div class="ums-row ums-row--end ums-u-mt-4 ttk-pb__foot"><div class="ttk-pb__kq" data-p="kq" hidden></div>' +
+            '<button type="button" class="ums-btn ums-btn--save" data-p="luu"><i class="fa-light fa-floppy-disk"></i><span>Lưu phân bổ</span></button></div>';
         var hd = host.querySelector('[data-p="hd"]'), pv = host.querySelector('[data-p="pv"]');
 
+        /* showKetQua_PhanBo — s: xong · w: cảnh báo · e: lỗi · i: đang làm / tin */
+        function ketQua(loai, msg) {
+            var kq = host.querySelector('[data-p="kq"]');
+            var icon = { s: 'fa-circle-check', w: 'fa-triangle-exclamation', e: 'fa-circle-xmark', i: 'fa-circle-info' }[loai] || 'fa-circle-info';
+            kq.className = 'ttk-pb__kq is-' + (loai || 'i');
+            kq.innerHTML = '<i class="fa-light ' + icon + '"></i><span>' + esc(msg) + '</span>';
+            kq.hidden = false;
+        }
+        pb.ketQua = ketQua;
+
+        /* cbGenCombo_HopDong: nạp lại sau mỗi lần lưu — giữ hợp đồng đang chọn, KHÔNG bắn change (khỏi nạp lại bảng) */
         function loadHD() {
-            ums.api.call({ action: 'TC_NguoiHoc_QuanLy/LayDSHopDong', method: 'GET', type: 'GET', strQLSV_NguoiHoc_DoiTac_Id: S.hsId })
+            return ums.api.call({ action: 'TC_NguoiHoc_QuanLy/LayDSHopDong', method: 'GET', type: 'GET', strQLSV_NguoiHoc_DoiTac_Id: S.hsId })
                 .then(function (r) {
                     var keep = hd.value;
                     hd.innerHTML = ui.options(PK.rowsOf(r), { name: 'SOHOPDONG', title: 'Chọn hợp đồng' });
-                    hd.value = keep;
+                    if (keep && hd.querySelector('option[value="' + keep + '"]')) hd.value = keep;
                 }).catch(function (err) { ums.api.handle(err, 'hợp đồng'); });
         }
+        pb.loadHD = loadHD;
         loadHD();
         ums.api.dm('TAICHINH.HOPDONG.PHANLOAI').then(function (rows) {
             pv.innerHTML = ui.options(rows, { title: 'Tất cả phạm vi' });
@@ -1201,14 +1310,17 @@
         function draw() {
             var ten = pv.value && pv.options[pv.selectedIndex] ? pv.options[pv.selectedIndex].text.toLowerCase() : '';
             ui.table({
-                el: host.querySelector('[data-p="bang"]'), rows: dsPB, empty: 'Chọn hợp đồng để hiện danh sách',
+                el: host.querySelector('[data-p="bang"]'), rows: pb.ds, empty: 'Chọn hợp đồng để hiện danh sách',
                 columns: [
                     { title: 'Mã người học', prop: 'QLSV_NGUOIHOC_MASO' },
                     { title: 'Họ tên', prop: 'QLSV_NGUOIHOC_HOTEN' },
                     { title: 'Phạm vi', prop: 'PHANLOAI_TEN' },
-                    { title: 'Đã phân bổ', prop: 'TONGTIENDAPHANBO', cls: 'is-right' },
+                    { title: 'Đã phân bổ', cls: 'is-right', render: function (r) { return ui.money(r.TONGTIENDAPHANBO); } },
                     { title: 'Số tiền', width: '170px', render: function (r) {
-                        return '<input class="ums-input ums-input--sm" data-pb="' + esc(r.QLSV_NGUOIHOC_ID) + '" value="' + esc(r._st || '') + '">';
+                        var id = String(r.QLSV_NGUOIHOC_ID), luu = !!pb.daLuu[id];
+                        // dòng đã lưu: điền lại số, khoá + tô xanh (tránh lưu trùng) — như gốc
+                        return '<input class="ums-input ums-input--sm' + (luu ? ' ttk-pb__daluu' : '') + '" data-pb="' + esc(id) + '" value="' + esc(pb.st[id] || '') + '"' +
+                            (luu ? ' disabled title="Đã lưu phân bổ"' : '') + '>';
                     } }
                 ]
             });
@@ -1219,45 +1331,105 @@
         }
         draw();
 
+        /* getList_LoaiPhanBo(_, fnAfter) */
         function loadDS() {
-            ums.api.call({
+            return ums.api.call({
                 action: 'TC_NguoiHoc_QuanLy/LayDanhSach', method: 'GET', type: 'GET',
                 strTuKhoa: '', strQLSV_NguoiHoc_DoiTac_Id: S.hsId, dHieuLuc: 1,
                 strTaiChinh_NguoiHoc_HD_Id: hd.value, strNguoiTao_Id: '',
                 pageIndex: 1, pageSize: 100000
-            }).then(function (r) { dsPB = PK.rowsOf(r); draw(); })
-                .catch(function (err) { ums.api.handle(err, 'danh sách phân bổ'); });
+            }).then(function (r) { pb.ds = PK.rowsOf(r); draw(); return pb.ds; })
+                .catch(function (err) { ums.api.handle(err, 'danh sách phân bổ'); return pb.ds; });
         }
-        hd.addEventListener('change', loadDS);
+        pb.loadDS = loadDS;
+        hd.addEventListener('change', function () { pb.daLuu = {}; loadDS(); });
         pv.addEventListener('change', draw);
         host.addEventListener('input', function (ev) {
             var id = ev.target.getAttribute('data-pb');
-            if (!id) return;
-            dsPB.forEach(function (r) { if (String(r.QLSV_NGUOIHOC_ID) === id) r._st = ev.target.value; });
+            if (id) pb.st[id] = ev.target.value;
         });
+        // btnApSoTien: chỉ áp vào ô đang hiện VÀ chưa khoá (dòng đã lưu giữ nguyên)
         host.querySelector('[data-p="ap"]').addEventListener('click', function () {
             var v = host.querySelector('[data-p="st"]').value;
             host.querySelectorAll('[data-p="bang"] tbody tr').forEach(function (tr) {
                 if (tr.hidden) return;
                 var inp = tr.querySelector('[data-pb]');
-                if (!inp) return;
+                if (!inp || inp.disabled) return;
                 inp.value = v;
-                dsPB.forEach(function (r) { if (String(r.QLSV_NGUOIHOC_ID) === inp.getAttribute('data-pb')) r._st = v; });
+                pb.st[inp.getAttribute('data-pb')] = v;
             });
         });
+
+        /* save_PhanBo */
         host.querySelector('[data-p="luu"]').addEventListener('click', function () {
-            if (!dsPB.length) { ui.toast('Chưa có người học để phân bổ', 'warn'); return; }
-            ui.batch(dsPB.map(function (r) {
+            if (pb.dangLuu) return;
+            var arr = [];
+            pb.ds.forEach(function (r) {
+                var id = String(r.QLSV_NGUOIHOC_ID);
+                if (pb.daLuu[id]) return;                                   // đã lưu (ô khoá) → bỏ qua, tránh lưu trùng
+                var st = String(pb.st[id] || '').trim(), d = m.parse(st);
+                if (!isNaN(d) && d > 0) arr.push({ id: id, ten: r.QLSV_NGUOIHOC_HOTEN, st: st, so: d, truoc: m.parse(r.TONGTIENDAPHANBO) || 0 });
+            });
+            if (!arr.length) { ketQua('w', 'Chưa nhập số tiền phân bổ cho học viên nào.'); return; }
+            pb.dangLuu = true;
+            ketQua('i', 'Đang lưu phân bổ cho ' + arr.length + ' học viên...');
+            ui.batch(arr.map(function (r) {
                 return {
                     action: 'TC_DaNop_PhanBo/ThemMoi', type: 'POST',
                     strQLSV_NguoiHoc_DoiTac_Id: S.hsId,
-                    strQLSV_NguoiHoc_Id: r.QLSV_NGUOIHOC_ID,
+                    strQLSV_NguoiHoc_Id: r.id,
                     strTaiChinh_DaNop_Id: daNop.ID,
-                    dSoTien: (r._st || '').trim(),
+                    // gốc 2/11: gửi kèm hợp đồng đang chọn ("Đã phân bổ" tính theo cặp đối tác + hợp đồng) — gốc ghi CHƯA xác minh với BE
+                    strTaiChinh_NguoiHoc_HD_Id: hd.value,
+                    dSoTien: r.st,
                     strNguoiThucHien_Id: ''
                 };
-            }), { title: 'Đang lưu phân bổ', okText: 'Đã lưu phân bổ' }).then(function () { loadHD(); loadDS(); });
+            }), { title: 'Đang lưu phân bổ', toast: false }).then(function (kq) {
+                pb.dangLuu = false;
+                var ok = [], loi = [], iLoi = 0;
+                arr.forEach(function (r, i) {
+                    if (kq.results[i] !== undefined) { r.msg = kq.results[i] && kq.results[i].message; ok.push(r); }
+                    else { r.loi = kq.errors[iLoi++] || 'Không rõ lỗi'; loi.push(r); }
+                });
+                if (!loi.length) ketQua('s', 'Đã lưu phân bổ cho ' + ok.length + ' học viên (các dòng đã lưu được tô xanh).');
+                else {
+                    var sLoi = loi.slice(0, 3).map(function (r) { return (r.ten || r.id) + ': ' + r.loi; }).join('; ') + (loi.length > 3 ? ' ... (+' + (loi.length - 3) + ' lỗi nữa)' : '');
+                    ketQua(ok.length ? 'w' : 'e', (ok.length ? 'Lưu thành công ' + ok.length + '/' + arr.length + ' học viên. ' : 'Không lưu được phân bổ. ') + 'Lỗi: ' + sLoi);
+                }
+                if (!ok.length) return;
+                ok.forEach(function (r) { pb.daLuu[r.id] = true; });     // số đã nhập giữ trong pb.st → điền lại + khoá khi vẽ lại
+                loadDS().then(function (ds) {
+                    // Đối chiếu: máy chủ báo thành công nhưng "Đã phân bổ" (vừa nạp lại) có tăng đúng số vừa lưu không?
+                    var khongTang = [];
+                    ok.forEach(function (r) {
+                        var dong = ds.filter(function (e) { return String(e.QLSV_NGUOIHOC_ID) === r.id; })[0];
+                        if (!dong) return;
+                        var sau = m.parse(dong.TONGTIENDAPHANBO) || 0;
+                        if (sau < r.truoc + r.so) khongTang.push((r.ten || r.id) + ': ' + ui.money(r.truoc) + ' → ' + ui.money(sau) + ' (đã lưu ' + ui.money(r.so) + ')');
+                    });
+                    if (khongTang.length) {
+                        var be = ok[0].msg ? ' BE trả: "' + ok[0].msg + '".' : '';
+                        ketQua('w', 'Máy chủ báo lưu thành công nhưng "Đã phân bổ" CHƯA tăng ở ' + khongTang.length + '/' + ok.length + ' dòng (' +
+                            khongTang.slice(0, 2).join('; ') + (khongTang.length > 2 ? '; ...' : '') + ').' + be + ' Cần kiểm tra lại với BE.');
+                    }
+                });
+                loadHD();
+            });
         });
+    }
+
+    /* refresh_PhanBo — bấm "Phân bổ" khi vùng đang mở: nạp lại hợp đồng (giữ cái đang chọn) + bảng của hợp đồng đó
+       ("Đã phân bổ" lấy lại từ máy chủ). Số đã nhập chưa lưu giữ nguyên; dòng đã lưu (khoá, xanh) về trạng thái mới. */
+    function refreshPhanBo(host) {
+        var pb = host._pb;
+        if (!pb || pb.dangLuu) return;
+        var hd = host.querySelector('[data-p="hd"]');
+        Object.keys(pb.daLuu).forEach(function (id) { delete pb.st[id]; });
+        pb.daLuu = {};
+        pb.loadHD();
+        if (!hd.value) { pb.ketQua('w', 'Đã nạp lại danh sách hợp đồng. Hãy chọn hợp đồng để xem danh sách phân bổ.'); return; }
+        pb.ketQua('i', 'Đang nạp lại danh sách phân bổ...');
+        pb.loadDS().then(function () { pb.ketQua('i', 'Đã nạp lại danh sách phân bổ (cột "Đã phân bổ" được cập nhật).'); });
     }
 
     /* ---------------------------------------------------------------------

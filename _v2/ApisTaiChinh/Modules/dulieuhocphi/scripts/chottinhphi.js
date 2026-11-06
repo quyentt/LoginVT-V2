@@ -30,6 +30,10 @@
      · Hộp xác nhận ghi "Chốt tính phí" (bản gốc chép nhầm "Tính học phí").
    Bỏ: loadProgressBar, proSeq…, genHTML_HangDoi, getList_MauImport riêng
    (SYS_Import_PhanQuyen — hàm chết, không nơi nào gọi), fakedb.
+   Kéo gốc lần 12–13 (7/11): nút "Chốt tính phí" chạy qua FORM TIẾN TRÌNH CHUNG (gốc edu.process.runJob →
+   ums.process.runJob): Bước 1 hiện phạm vi áp dụng + lưu ý "Chưa chọn thời gian / khoản thu" thay cho hộp
+   "Bạn có chắc chắn…"; thành công thì nạp lại hàng đợi. Gốc cũng bọc danh sách tiến trình cuộn 300px (vỏ cũ,
+   ở đây hàng đợi là khung riêng bên phải — không cần).
    ========================================================================= */
 (function () {
     'use strict';
@@ -141,24 +145,32 @@
     });
 
     /* ---------- Chốt tính phí ------------------------------------------------ */
+    function dieuKien() {
+        return [['Hệ đào tạo', 'ctpHe'], ['Khóa đào tạo', 'ctpKhoa'], ['Thời gian đào tạo', 'ctpThoiGian'], ['Khoản thu', 'ctpKhoanThu'], ['Nghiệp vụ áp dụng', 'ctpNghiepVu']];
+    }
     function chot() {
-        ui.confirm('Bạn có chắc chắn Chốt tính phí không?', { title: 'Chốt tính phí', ok: 'Chốt tính phí' }).then(function (yes) {
-            if (!yes) return;
-            ums.api.call({
-                action: 'TC_HangDoi/TaoHangDoi_ChuyenKeToan_TuDong',
-                method: 'GET',
-                versionAPI: 'v1.0',
-                strTaiChinh_CacKhoanThu_Id: v('ctpKhoanThu'),
-                strDaoTao_ThoiGianDaoTao_Id: v('ctpThoiGian'),
-                strDaoTao_HeDaoTao_Id: v('ctpHe'),
-                strDaoTao_KhoaDaoTao_Id: v('ctpKhoa'),
-                strNghiepVuApDung_Id: v('ctpNghiepVu'),
-                strTrangThaiNguoiHoc_Id: tt.ids().join(','),
-                strNguoiThucHien_Id: ''
-            }).then(function () {
-                ui.toast('Khởi tạo dữ liệu thành công, vui lòng chạy tiến trình để thực hiện!', 'ok');
-                queue.reload();
-            }).catch(fail('tạo hàng đợi chốt tính phí'));
+        var notes = [];
+        if (!v('ctpThoiGian')) notes.push('Chưa chọn thời gian đào tạo.');
+        if (!v('ctpKhoanThu')) notes.push('Chưa chọn khoản thu.');
+        ums.process.runJob({
+            title: 'Chốt tính phí', what: 'Chốt tính phí (chuyển kế toán) theo phạm vi đang chọn', fileName: 'KetQuaChotTinhPhi',
+            notes: notes, subTitles: H.trangThaiLines(tt), dieuKien: dieuKien(),
+            okMessage: 'Khởi tạo dữ liệu thành công, vui lòng chạy tiến trình để thực hiện!',
+            request: function () {
+                return {
+                    action: 'TC_HangDoi/TaoHangDoi_ChuyenKeToan_TuDong',
+                    method: 'GET',
+                    versionAPI: 'v1.0',
+                    strTaiChinh_CacKhoanThu_Id: v('ctpKhoanThu'),
+                    strDaoTao_ThoiGianDaoTao_Id: v('ctpThoiGian'),
+                    strDaoTao_HeDaoTao_Id: v('ctpHe'),
+                    strDaoTao_KhoaDaoTao_Id: v('ctpKhoa'),
+                    strNghiepVuApDung_Id: v('ctpNghiepVu'),
+                    strTrangThaiNguoiHoc_Id: tt.ids().join(','),
+                    strNguoiThucHien_Id: ''
+                };
+            },
+            onSuccess: function () { queue.reload(); }
         });
     }
 

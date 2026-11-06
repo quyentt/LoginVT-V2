@@ -20,6 +20,7 @@ Vỏ cũ đổi thật: `Corei/exportexcel.js` (+303/−81), `Corei/processrun.j
 **PHÂN HỆ MỚI `Apisphanquyen`** (11 màn + `pqcommon.js`, module `phanquyen`): chưa có trong `_v2`, chưa có trong `THU_TU` của `tien-do.py` — chỉ làm khi người dùng gọi tên.
 Số theo phân hệ: Phân quyền 22 (mới) · Cổng cán bộ 10 · Tài chính 6 · Cổng sinh viên 2 · Cổng sinh viên-1 2 · KHCT 2 · Đăng ký học 1 · Sinh viên 1 · Tuyển sinh 1.
 **Người dùng 7/11: "pull về và ghi sổ"** — chỉ ghi sổ. Màn thuộc phân hệ đã chuyển mở diff khi tới lượt (`git diff -w b2cd522d1 f6f5425ca -- <tệp>`).
+**Tầng chung mới (7/11, khi chuyển Tài chính):** gốc 4/11 thêm `Corei/processrun.js` (`edu.process` — form tiến trình chạy hàng loạt) + `Corei/exportexcel.js` (`edu.exporter` — xuất Excel chuẩn, `attachTable`), và ~20 màn gốc trong hai bảng này chuyển sang dùng (ĐKH lophocphan; Học bổng kehoach / sotinkehoach / thuchienxet; KTX tinhphi; QLĐ diemhocphan / diemtrungbinh / tonghopketqua ×2 / inbangdiem; Rèn luyện tonghopdiem; TN kehoach / thuchienxet; XLHV kehoachxuly; Phân quyền). `_v2` đã có bản tương đương: **`ums.process.run / runJob / dieuKien`** (`assets/js/report.js`), **`ums.queue.mount({ process })`**, **`ums.ui.xuatBang`** + `ui.xuatXls { phu }` — các màn trên khi tới lượt chỉ việc gọi vào, KHÔNG dựng lại.
 
 | Phân hệ | Màn | Tệp gốc | Trạng thái |
 |---|---|---|---|
@@ -42,12 +43,12 @@ Số theo phân hệ: Phân quyền 22 (mới) · Cổng cán bộ 10 · Tài ch
 | KHCT (đã chuyển) | `lophoc/covanlop` | `ApisKeHoachChuongTrinh/Modules/lophoc/script/covanlop.js` | chưa xem |
 | Tuyển sinh (đã chuyển) | `tuyensinh/kehoachtuyensinhnew` | `ApisQuanlyTuyenSinh/Modules/tuyensinh/script/kehoachtuyensinhnew.js` | chưa xem |
 | Sinh viên (đã chuyển) | `hoso/DaQHHT` | `ApisSinhVien/Modules/hoso/html/DaQHHT.html` | chưa xem |
-| Tài chính (đã chuyển) | `baocao/baocao` | `ApisTaiChinh/Modules/baocao/html/baocao.html` | chưa xem |
-| Tài chính (đã chuyển) | `baocao/baocao` | `ApisTaiChinh/Modules/baocao/scripts/baocao.js` | chưa xem |
-| Tài chính (đã chuyển) | `dulieuhocphi/tinhhocphi` | `ApisTaiChinh/Modules/dulieuhocphi/html/tinhhocphi.html` | chưa xem |
-| Tài chính (đã chuyển) | `dulieuhocphi/tinhhocphi` | `ApisTaiChinh/Modules/dulieuhocphi/scripts/tinhhocphi.js` | chưa xem |
-| Tài chính (đã chuyển) | `phieuthu/thutienkhac` | `ApisTaiChinh/Modules/phieuthu/html/thutienkhac.html` | chưa xem |
-| Tài chính (đã chuyển) | `phieuthu/thutienkhac` | `ApisTaiChinh/Modules/phieuthu/scripts/thutienkhac.js` | chưa xem |
+| Tài chính (đã chuyển) | `baocao/baocao` | `ApisTaiChinh/Modules/baocao/html/baocao.html` | **đã chuyển 7/11** (tác tử) — hai tab mới "Kết quả rút" / "Kết quả miễn" (`PKG_TAICHINH_BAOCAO2.LayDSRutTien / LayDSMienTien`, chân Tổng tiền + Bằng chữ), "Kết nối kế toán" thành tab 5; nút Xuất Excel ở 4 tab |
+| Tài chính (đã chuyển) | `baocao/baocao` | `ApisTaiChinh/Modules/baocao/scripts/baocao.js` | **đã chuyển 7/11** (tác tử) — khối Tab 1–4 chung cấu hình `CFG`; Xuất Excel nạp lại toàn bộ (cache 10 phút) → hộp đối chiếu → `ui.xuatXls`. Khác gốc: rút / miễn phân trang máy khách thay vì cắt 500 dòng; bỏ kiểm phiên bản exporter. Host cần package BAOCAO2 + controller `TC_BaoCao2_MH` → `can-quyet.js` |
+| Tài chính (đã chuyển) | `dulieuhocphi/tinhhocphi` | `ApisTaiChinh/Modules/dulieuhocphi/html/tinhhocphi.html` | **đã xem 7/11 — bỏ**: như chottinhphi.html (cuộn 300px, vỏ cũ) |
+| Tài chính (đã chuyển) | `dulieuhocphi/tinhhocphi` | `ApisTaiChinh/Modules/dulieuhocphi/scripts/tinhhocphi.js` | **đã chuyển 7/11** — hàng đợi "Bắt đầu" chạy trong form tiến trình (`ums.queue.mount { process }`); Xóa kết quả → `runJob`; Thêm / Lưu % / Xóa không tính phí → `ums.process.run` có cột; nút Xuất Excel ba bảng (`ui.xuatBang` — bản viết lại `edu.exporter.attachTable`) |
+| Tài chính (đã chuyển) | `phieuthu/thutienkhac` | `ApisTaiChinh/Modules/phieuthu/html/thutienkhac.html` | **đã xem 7/11 — bỏ** (+354 dòng CSS vỏ cũ: thẻ nút HĐĐT, nút chân modal BS3…); `_v2` html không đổi |
+| Tài chính (đã chuyển) | `phieuthu/thutienkhac` | `ApisTaiChinh/Modules/phieuthu/scripts/thutienkhac.js` | **đã chuyển 7/11** (tác tử) — Phân bổ: chỉ lưu dòng có tiền > 0 chưa lưu, kết quả một dải thông báo, lưu xong nạp lại + khoá dòng đã lưu + đối chiếu cột "Đã phân bổ", payload thêm `strTaiChinh_NguoiHoc_HD_Id` (→ `can-quyet.js`); hộp lỗi hoá đơn điện tử bóc JSON nhà cung cấp + gợi ý theo mã (`parseLoiHoaDon`, 4 chỗ); icon nút HĐĐT mặc định khi class không có glyph. Khác gốc: lưu qua `ui.batch`; nút "Phân bổ" giữ, bấm lại = nạp lại |
 | Phân quyền (PHÂN HỆ MỚI, chưa chuyển) | `phanquyen/ghideduonglantruyen` | `Apisphanquyen/Modules/phanquyen/html/ghideduonglantruyen.html` | chưa xem (tệp MỚI) |
 | Phân quyền (PHÂN HỆ MỚI, chưa chuyển) | `phanquyen/hieuluquyen` | `Apisphanquyen/Modules/phanquyen/html/hieuluquyen.html` | chưa xem (tệp MỚI) |
 | Phân quyền (PHÂN HỆ MỚI, chưa chuyển) | `phanquyen/loaidoituong` | `Apisphanquyen/Modules/phanquyen/html/loaidoituong.html` | chưa xem (tệp MỚI) |
@@ -125,18 +126,18 @@ Số theo phân hệ: Tài chính 12 · Quản lý điểm 11 · Cổng cán b�
 | Rèn luyện (đã chuyển) | `tonghopdiem/tonghopdiem` | `ApisRenLuyen/Modules/tonghopdiem/script/tonghopdiem.js` | chưa xem |
 | Sinh viên (đã chuyển) | `kehoach/xacnhanketqua` | `ApisSinhVien/Modules/kehoach/html/xacnhanketqua.html` | chưa xem |
 | Sinh viên (đã chuyển) | `kehoach/xacnhanketqua` | `ApisSinhVien/Modules/kehoach/script/xacnhanketqua.js` | chưa xem |
-| Tài chính (đã chuyển) | `baocao/baocao` | `ApisTaiChinh/Modules/baocao/html/baocao.html` | chưa xem |
-| Tài chính (đã chuyển) | `baocao/baocao` | `ApisTaiChinh/Modules/baocao/scripts/baocao.js` | chưa xem |
-| Tài chính (đã chuyển) | `dulieuhocphi/chottinhphi` | `ApisTaiChinh/Modules/dulieuhocphi/html/chottinhphi.html` | chưa xem |
-| Tài chính (đã chuyển) | `dulieuhocphi/chuyendulieuketoan` | `ApisTaiChinh/Modules/dulieuhocphi/html/chuyendulieuketoan.html` | chưa xem |
-| Tài chính (đã chuyển) | `dulieuhocphi/phanbodoanhthu` | `ApisTaiChinh/Modules/dulieuhocphi/html/phanbodoanhthu.html` | chưa xem |
-| Tài chính (đã chuyển) | `dulieuhocphi/tinhhocphi` | `ApisTaiChinh/Modules/dulieuhocphi/html/tinhhocphi.html` | chưa xem |
-| Tài chính (đã chuyển) | `dulieuhocphi/chottinhphi` | `ApisTaiChinh/Modules/dulieuhocphi/scripts/chottinhphi.js` | chưa xem |
-| Tài chính (đã chuyển) | `dulieuhocphi/chuyendulieuketoan` | `ApisTaiChinh/Modules/dulieuhocphi/scripts/chuyendulieuketoan.js` | chưa xem |
-| Tài chính (đã chuyển) | `dulieuhocphi/phanbodoanhthu` | `ApisTaiChinh/Modules/dulieuhocphi/scripts/phanbodoanhthu.js` | chưa xem |
-| Tài chính (đã chuyển) | `dulieuhocphi/tinhhocphi` | `ApisTaiChinh/Modules/dulieuhocphi/scripts/tinhhocphi.js` | chưa xem |
-| Tài chính (đã chuyển) | `phieuthu/thutienkhac` | `ApisTaiChinh/Modules/phieuthu/html/thutienkhac.html` | chưa xem |
-| Tài chính (đã chuyển) | `phieuthu/thutienkhac` | `ApisTaiChinh/Modules/phieuthu/scripts/thutienkhac.js` | chưa xem |
+| Tài chính (đã chuyển) | `baocao/baocao` | `ApisTaiChinh/Modules/baocao/html/baocao.html` | **đã chuyển 7/11** (tác tử) — hai tab mới "Kết quả rút" / "Kết quả miễn" (`PKG_TAICHINH_BAOCAO2.LayDSRutTien / LayDSMienTien`, chân Tổng tiền + Bằng chữ), "Kết nối kế toán" thành tab 5; nút Xuất Excel ở 4 tab |
+| Tài chính (đã chuyển) | `baocao/baocao` | `ApisTaiChinh/Modules/baocao/scripts/baocao.js` | **đã chuyển 7/11** (tác tử) — khối Tab 1–4 chung cấu hình `CFG`; Xuất Excel nạp lại toàn bộ (cache 10 phút) → hộp đối chiếu → `ui.xuatXls`. Khác gốc: rút / miễn phân trang máy khách thay vì cắt 500 dòng; bỏ kiểm phiên bản exporter. Host cần package BAOCAO2 + controller `TC_BaoCao2_MH` → `can-quyet.js` |
+| Tài chính (đã chuyển) | `dulieuhocphi/chottinhphi` | `ApisTaiChinh/Modules/dulieuhocphi/html/chottinhphi.html` | **đã xem 7/11 — bỏ**: gốc bọc danh sách tiến trình cuộn 300px cho nút khỏi bị đẩy (vỏ cũ); `_v2` hàng đợi là khung riêng bên phải |
+| Tài chính (đã chuyển) | `dulieuhocphi/chuyendulieuketoan` | `ApisTaiChinh/Modules/dulieuhocphi/html/chuyendulieuketoan.html` | **đã xem 7/11 — bỏ**: như chottinhphi.html (cuộn 300px, vỏ cũ) |
+| Tài chính (đã chuyển) | `dulieuhocphi/phanbodoanhthu` | `ApisTaiChinh/Modules/dulieuhocphi/html/phanbodoanhthu.html` | **đã xem 7/11 — bỏ** (chỉ nâng `?v=`) |
+| Tài chính (đã chuyển) | `dulieuhocphi/tinhhocphi` | `ApisTaiChinh/Modules/dulieuhocphi/html/tinhhocphi.html` | **đã xem 7/11 — bỏ**: như chottinhphi.html (cuộn 300px, vỏ cũ) |
+| Tài chính (đã chuyển) | `dulieuhocphi/chottinhphi` | `ApisTaiChinh/Modules/dulieuhocphi/scripts/chottinhphi.js` | **đã chuyển 7/11** — "Chốt tính phí" chạy qua FORM TIẾN TRÌNH CHUNG mới `ums.process.runJob` (tầng chung `assets/js/report.js`, bản viết lại của `Corei/processrun.js` gốc): Bước 1 hiện phạm vi + lưu ý thay hộp hỏi lại; `H.trangThaiLines` (`_chung.js`) |
+| Tài chính (đã chuyển) | `dulieuhocphi/chuyendulieuketoan` | `ApisTaiChinh/Modules/dulieuhocphi/scripts/chuyendulieuketoan.js` | **đã xem 7/11 — không cần**: gốc sửa nút "Xem danh sách" không chạy (delegate sai bảng) — `_v2` đã đúng từ đầu (chú thích "Khác bản gốc") |
+| Tài chính (đã chuyển) | `dulieuhocphi/phanbodoanhthu` | `ApisTaiChinh/Modules/dulieuhocphi/scripts/phanbodoanhthu.js` | **đã chuyển 7/11** — Phân bổ → `runJob` (dòng Dữ liệu nguồn / Phân bổ vào); Xoá đã chọn → `ums.process.run`; nút Xuất Excel. "Xóa kết quả đã tính phí" gốc chuyển sang runJob nhưng nút không có trên màn (mã chết) — không chép |
+| Tài chính (đã chuyển) | `dulieuhocphi/tinhhocphi` | `ApisTaiChinh/Modules/dulieuhocphi/scripts/tinhhocphi.js` | **đã chuyển 7/11** — hàng đợi "Bắt đầu" chạy trong form tiến trình (`ums.queue.mount { process }`); Xóa kết quả → `runJob`; Thêm / Lưu % / Xóa không tính phí → `ums.process.run` có cột; nút Xuất Excel ba bảng (`ui.xuatBang` — bản viết lại `edu.exporter.attachTable`) |
+| Tài chính (đã chuyển) | `phieuthu/thutienkhac` | `ApisTaiChinh/Modules/phieuthu/html/thutienkhac.html` | **đã xem 7/11 — bỏ** (+354 dòng CSS vỏ cũ: thẻ nút HĐĐT, nút chân modal BS3…); `_v2` html không đổi |
+| Tài chính (đã chuyển) | `phieuthu/thutienkhac` | `ApisTaiChinh/Modules/phieuthu/scripts/thutienkhac.js` | **đã chuyển 7/11** (tác tử) — Phân bổ: chỉ lưu dòng có tiền > 0 chưa lưu, kết quả một dải thông báo, lưu xong nạp lại + khoá dòng đã lưu + đối chiếu cột "Đã phân bổ", payload thêm `strTaiChinh_NguoiHoc_HD_Id` (→ `can-quyet.js`); hộp lỗi hoá đơn điện tử bóc JSON nhà cung cấp + gợi ý theo mã (`parseLoiHoaDon`, 4 chỗ); icon nút HĐĐT mặc định khi class không có glyph. Khác gốc: lưu qua `ui.batch`; nút "Phân bổ" giữ, bấm lại = nạp lại |
 | Tốt nghiệp (đã chuyển) | `kehoach/kehoach` | `ApisTotNghiep/Modules/kehoach/html/kehoach.html` | chưa xem |
 | Tốt nghiệp (đã chuyển) | `kehoach/thuchienxet` | `ApisTotNghiep/Modules/kehoach/html/thuchienxet.html` | chưa xem |
 | Tốt nghiệp (đã chuyển) | `kehoach/kehoach` | `ApisTotNghiep/Modules/kehoach/script/kehoach.js` | chưa xem |

@@ -12,6 +12,10 @@
     }
     var THU = [0, 1, 2, 3, 4].map(function (i) { return sv(i, [12500000, 11800000, 680000, 12500000, 11170000][i], '0' + (i + 2) + '/09/2026', 'BL00012' + (30 + i), 'Chuyển khoản', i === 2 ? 'Bảo hiểm y tế' : 'Học phí'); });
     var NOP = [0, 1, 2].map(function (i) { return sv(i, [12500000, 12500000, 680000][i], '15/08/2026', '', '', i === 2 ? 'Bảo hiểm y tế' : 'Học phí'); });
+    /* Kéo gốc lần 12–13: tab rút / miễn (API mã hoá, không phân trang — trả đủ dòng, TONGTIEN ở mỗi dòng) */
+    function tongLai(rows) { var t = 0; rows.forEach(function (x) { t += x.SOTIEN; }); rows.forEach(function (x) { x.TONGTIEN = t; }); return rows; }
+    var RUT = tongLai([0, 1].map(function (i) { var r = sv(i, [2500000, 680000][i], '2' + i + '/09/2026', 'PC00004' + i, 'Tiền mặt', i === 1 ? 'Bảo hiểm y tế' : 'Học phí'); r.ID = 'RT' + i; return r; }));
+    var MIEN = tongLai([0, 1, 2, 3].map(function (i) { var r = sv(i, [12500000, 6250000, 6250000, 3125000][i], '0' + (i + 1) + '/09/2026', 'QD' + (120 + i) + '/QĐ-ĐHĐA', 'Miễn giảm', 'Học phí'); r.ID = 'MG' + i; return r; }));
 
     ums.demo.add({
         'pkg_kehoach_thongtin.LayDSDaoTao_CoSoDaoTao': [{ ID: 'CS1', MA: 'HN', TEN: 'Cơ sở Hà Nội' }, { ID: 'CS2', MA: 'TN', TEN: 'Cơ sở Thái Nguyên' }],
@@ -34,6 +38,8 @@
         'TC_ThuChi2/LayDSTaiChinh_Nam_Thang_BC': [{ ID: 'NT1', TAICHINH_NAM_BAOCAO_ID: 'NB1', NAM: '2026', THANG: '1' }, { ID: 'NT2', TAICHINH_NAM_BAOCAO_ID: 'NB1', NAM: '2026', THANG: '2' }],
         'TC_BaoCao/LayDSThuTien': { rows: THU, pager: 23 },
         'TC_BaoCao/LayDSNopTien': { rows: NOP, pager: 3 },
+        'PKG_TAICHINH_BAOCAO2.LayDSRutTien': RUT,
+        'PKG_TAICHINH_BAOCAO2.LayDSMienTien': MIEN,
         'TC_KeToan/LayDSAPI_DoiTac': [{ ID: 'DT1', TEN: 'Phần mềm kế toán FAST', TAIKHOAN: 'api', MATKHAU: 'x', DIACHI_API: 'https://ketoan.example', LINK_API: '/api/SyncData', LOAIXACTHUC_API: 'Basic' }],
         'TC_KeToan/LayDSTenBangDuLieu': [{ ID: 'BANG_T9', TEN: 'Chứng từ thu tháng 9/2026' }],
         'TC_KeToan/LayCauTrucHienThiDuLieuAPI': [{ THANHPHAN_ID: 'C1', THANHPHAN_TEN: 'Số tiền', KIEUDULIEU: 'NUMBER' }, { THANHPHAN_ID: 'C2', THANHPHAN_TEN: 'Tài khoản', KIEUDULIEU: 'TEXT' }],
