@@ -503,6 +503,15 @@
         color: #ffffff !important;
       }
 
+      /* [2026-11-04] Menu trái dài quá không cuộn được: div.sidebar-menu chính là khung cuộn
+         (assets/css/main.css:4137 overflow-y:scroll), nhưng rule toàn cục styles-content.css:18207
+         `.sidebar-menu:hover{overflow:hidden !important}` tắt cuộn ngay khi rê chuột vào menu.
+         Vá scoped theo menu trái của shell (đặc hiệu 0,3,0 > 0,2,0 nên thắng dù cùng !important);
+         không sửa rule toàn cục vì các module khác có thể đang dựa vào nó. */
+      .left-sidebar .sidebar-menu:hover {
+        overflow-y: scroll !important;
+      }
+
       .sidebar-menu-header {
         color: #ffffff !important;
         background: transparent !important;

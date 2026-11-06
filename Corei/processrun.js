@@ -21,7 +21,7 @@
 --      fileName: "KetQuaXepLoai",                        // tên file xuất
 --      notes: ["Chưa chọn năm học"],                     // lưu ý hiện ở khung Bước 1
 --      okMessage: "Đã đưa vào hàng đợi",                 // (tùy chọn) ghi chú khi thành công mà máy chủ không trả Message; có thể là hàm (it, i)
---      concurrency: 1,                                   // số bản ghi chạy cùng lúc (mặc định 1, tối đa 10)
+--      concurrency: 1,                                   // số bản ghi chạy cùng lúc (mặc định 1, tối đa 10; muốn nhiều hơn khai maxConcurrency)
 --      stopOnError: false, autoStart: false,
 --      (bấm là hiện NGAY thẻ "Đã nhận lệnh" rồi mới chuẩn bị: nạp danh sách -> dựng bảng -> mở form)
 --      onFinish: function (sum) {}, onClose: function (sum) {}   // sum = { total, ok, err, pending, elapsedMs }
@@ -98,6 +98,16 @@ var processrunApi = (function (root) {
                 resolve({ ok: false, message: "Không gửi được yêu cầu: " + (ex && ex.message ? ex.message : ex) });
             }
         });
+    }
+
+    // Mô tả 1 nhiệm vụ của hàng đợi: lấy trường mô tả nếu máy chủ có trả; không có thì ghi số thứ tự để vẫn đếm được
+    function taskText(it, i, n) {
+        var f = ["TEN", "MOTA", "NOIDUNG", "NOIDUNGXULY", "TENNHIEMVU", "NHIEMVU_TEN", "GHICHU"], j, v;
+        for (j = 0; j < f.length; j++) {
+            v = toText(it && it[f[j]]);
+            if (v !== "") return v;
+        }
+        return "Nhiệm vụ " + fmtInt(i + 1) + "/" + fmtInt(n);
     }
 
     // Mọi kiểu trả về của run/request quy về { ok, message }
@@ -215,19 +225,26 @@ var processrunApi = (function (root) {
     -- Bấm nút là hệ thống phản hồi NGAY (thẻ "Đã nhận lệnh... đang lên phương án") rồi mới làm phần nặng
     -- (nạp danh sách, dựng bảng, mở form) theo từng bước có hiển thị — không để màn hình đứng im.
     -------------------------------------------*/
-    var ACK_CSS = '#eduAck{position:fixed;top:0;right:0;bottom:0;left:0;z-index:2000;display:flex;align-items:center;justify-content:center;background:rgba(15,23,42,.5);animation:eaFade .15s ease-out}'
-        + '#eduAck.ea-leave{opacity:0;transition:opacity .22s}'
-        + '#eduAck .ea-card{display:flex;align-items:flex-start;gap:18px;width:480px;max-width:92vw;padding:22px 26px;border-radius:14px;background:#fff;box-shadow:0 18px 50px rgba(15,23,42,.35)}'
-        + '#eduAck .ea-ring{flex:0 0 46px;width:46px;height:46px;border:4px solid #dbe4ff;border-top-color:#223771;border-radius:50%;animation:eaSpin .85s linear infinite}'
+    // Thẻ hiện ngay, không hiệu ứng mờ dần: thẻ đang mờ dở lúc trình duyệt bận vẽ trông như bị xám/nhòe và dễ chồng với lớp nền của hộp thoại vừa đóng.
+    // Bố cục 2 tầng: hàng trên = vòng quay + tiêu đề (căn giữa theo chiều dọc), hàng dưới = các bước (biểu tượng cột trái, chữ thẳng hàng).
+    var ACK_CSS = '#eduAck{position:fixed;top:0;right:0;bottom:0;left:0;z-index:2000;display:flex;align-items:center;justify-content:center;background:rgba(15,23,42,.5)}'
+        + '#eduAck .ea-card{box-sizing:border-box;width:460px;max-width:92vw;padding:24px 28px 20px;border-radius:14px;background:#fff;box-shadow:0 18px 50px rgba(15,23,42,.35)}'
+        + '#eduAck .ea-top{display:flex;align-items:center;gap:16px}'
+        + '#eduAck .ea-ring{box-sizing:border-box;flex:0 0 44px;width:44px;height:44px;border:4px solid #dbe4ff;border-top-color:#223771;border-radius:50%;animation:eaSpin .85s linear infinite}'
         + '#eduAck .ea-body{flex:1 1 auto;min-width:0}'
-        + '#eduAck .ea-head{font-size:19px;font-weight:700;color:#1f3864}'
-        + '#eduAck .ea-title{margin-top:2px;font-weight:600;color:#0f172a;word-break:break-word}'
-        + '#eduAck .ea-steps{margin-top:12px;line-height:1.95;color:#334155}'
-        + '#eduAck .ea-step i{display:inline-block;width:22px}'
+        + '#eduAck .ea-head{font-size:18px;font-weight:700;line-height:1.3;color:#1f3864}'
+        + '#eduAck .ea-title{margin-top:2px;font-size:14px;font-weight:500;line-height:1.4;color:#475569;word-break:break-word}'
+        + '#eduAck .ea-steps{margin-top:16px;padding-top:12px;border-top:1px solid #e2e8f0}'
+        + '#eduAck .ea-step{display:flex;align-items:center;gap:10px;min-height:30px;font-size:14px;line-height:1.4;color:#334155}'
+        + '#eduAck .ea-step .ea-ic{flex:0 0 18px;width:18px;text-align:center;font-size:16px;line-height:1}'
+        + '#eduAck .ea-step .ea-t{flex:1 1 auto;min-width:0;word-break:break-word}'
         + '#eduAck .ea-step.ea-done{color:#067647}'
         + '#eduAck .ea-step.ea-now{color:#223771;font-weight:600}'
-        + '@keyframes eaSpin{to{transform:rotate(360deg)}}'
-        + '@keyframes eaFade{from{opacity:0}to{opacity:1}}';
+        + '#eduAck .ea-mini{box-sizing:border-box;display:inline-block;width:16px;height:16px;border:2px solid #dbe4ff;border-top-color:#223771;border-radius:50%;animation:eaSpin .8s linear infinite;vertical-align:middle}'
+        + '#eduAck .ea-pct{flex:0 0 auto;min-width:42px;text-align:right;font-weight:700;font-variant-numeric:tabular-nums}'
+        + '#eduAck .ea-bar{height:6px;margin:2px 0 8px 28px;border-radius:3px;background:#e8eefb;overflow:hidden}'
+        + '#eduAck .ea-bar>i{display:block;width:0;height:100%;border-radius:3px;background:#223771;transition:width .25s ease-out}'
+        + '@keyframes eaSpin{to{transform:rotate(360deg)}}';
     var IP_CSS = '.eduip{margin:10px 0;clear:both}'
         + '.eduip .ip-card{border:1px solid #dbe4f3;border-radius:8px;background:#f8fbff;padding:14px 16px}'
         + '.eduip .ip-head{display:flex;align-items:center;gap:10px;font-weight:700;color:#1e40af;font-size:14px}'
@@ -269,6 +286,7 @@ var processrunApi = (function (root) {
     }
     var ACK_PACE = 170;//mỗi bước hiện tối thiểu chừng này ms để người dùng kịp đọc
     var PREPARING = false;
+    var LOADING_Q = {};//hàng đợi đang nạp danh sách nhiệm vụ (chống bấm đúp "Bắt đầu")
 
     // Chờ trình duyệt thật sự vẽ xong khung hình hiện tại rồi mới chạy fn (có dự phòng khi tab bị ẩn nên không có khung hình)
     function paintThen(fn) {
@@ -277,32 +295,56 @@ var processrunApi = (function (root) {
         if (root.requestAnimationFrame) root.requestAnimationFrame(function () { root.requestAnimationFrame(function () { setTimeout(run, 0); }); });
         setTimeout(run, 250);
     }
-    // Thẻ "Đã nhận lệnh": next(textXongBuocTruoc, textBuocMoi) đánh dấu xong bước hiện tại và mở bước mới; close() ẩn thẻ
+    // Thẻ "Đã nhận lệnh": next(textXongBuocTruoc, textBuocMoi) đánh dấu xong bước hiện tại và mở bước mới;
+    // update(text, phanTram) đổi chữ bước đang chạy và (nếu có phanTram 0-100) vẽ thanh tiến độ; close() gỡ thẻ
     function showAck(title) {
         ensureCss();
         var old = root.document.getElementById("eduAck");
         if (old) old.parentNode.removeChild(old);
         var el = root.document.createElement("div");
         el.id = "eduAck";
-        el.innerHTML = '<div class="ea-card"><div class="ea-ring"></div><div class="ea-body"><div class="ea-head">Đã nhận lệnh</div>'
-            + '<div class="ea-title"></div><div class="ea-steps"></div></div></div>';
+        el.innerHTML = '<div class="ea-card"><div class="ea-top"><div class="ea-ring"></div><div class="ea-body"><div class="ea-head">Đã nhận lệnh</div>'
+            + '<div class="ea-title"></div></div></div><div class="ea-steps"></div></div>';
         el.querySelector(".ea-title").textContent = title || "";
         root.document.body.appendChild(el);
-        var steps = el.querySelector(".ea-steps"), cur = null;
+        var steps = el.querySelector(".ea-steps"), cur = null, bar = null;
+        function dropBar() { if (bar && bar.parentNode) bar.parentNode.removeChild(bar); bar = null; }
         return {
             next: function (doneText, nowText) {
-                if (cur && doneText) { cur.className = "ea-step ea-done"; cur.innerHTML = '<i class="fa fa-check-circle"></i>' + esc(doneText); }
+                dropBar();
+                if (cur && doneText) { cur.className = "ea-step ea-done"; cur.innerHTML = '<span class="ea-ic"><i class="fa fa-check-circle"></i></span><span class="ea-t">' + esc(doneText) + '</span>'; }
                 if (nowText) {
                     cur = root.document.createElement("div");
                     cur.className = "ea-step ea-now";
-                    cur.innerHTML = '<i class="fa fa-spinner fa-spin"></i>' + esc(nowText);
+                    cur.innerHTML = '<span class="ea-ic"><span class="ea-mini"></span></span><span class="ea-t">' + esc(nowText) + '</span>';
                     steps.appendChild(cur);
                 }
             },
+            // Đổi chữ của bước đang chạy (VD báo tiến độ) mà không thêm dòng mới
+            // (chỉ đổi chữ/số trong các phần tử có sẵn, không dựng lại biểu tượng: dựng lại thì vòng quay nhỏ bị quay lại từ đầu mỗi lần cập nhật)
+            update: function (nowText, percent) {
+                if (!cur) return;
+                var elT = cur.querySelector(".ea-t"), elP = cur.querySelector(".ea-pct");
+                if (nowText && elT) elT.textContent = nowText;
+                if (typeof percent === "number" && isFinite(percent)) {
+                    var p = Math.max(0, Math.min(100, Math.round(percent)));
+                    if (!elP) {
+                        elP = root.document.createElement("span");
+                        elP.className = "ea-pct";
+                        cur.appendChild(elP);
+                    }
+                    elP.textContent = p + "%";
+                    if (!bar) {
+                        bar = root.document.createElement("div");
+                        bar.className = "ea-bar";
+                        bar.innerHTML = "<i></i>";
+                        steps.appendChild(bar);
+                    }
+                    bar.firstChild.style.width = p + "%";
+                }
+            },
             close: function () {
-                if (!el.parentNode) return;
-                el.className = "ea-leave";
-                setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 260);
+                if (el.parentNode) el.parentNode.removeChild(el);
             }
         };
     }
@@ -312,7 +354,7 @@ var processrunApi = (function (root) {
         var items = cfg.items || [], i, c;
         var p = {
             items: items, unit: cfg.unit || "bản ghi", title: cfg.title || "Tiến trình", info: [], st: [],
-            conc: Math.max(1, Math.min(MAX_CONCURRENCY, parseInt(cfg.concurrency, 10) || 1)),
+            conc: Math.max(1, Math.min(parseInt(cfg.maxConcurrency, 10) || MAX_CONCURRENCY, parseInt(cfg.concurrency, 10) || 1)),
             cols: cfg.columns || [{
                 header: cfg.infoHeader || "Thông tin xử lý",
                 render: cfg.info || function (it) { return (it && typeof it === "object") ? (it.TEN || it.name || it.ID || "") : it; }
@@ -862,7 +904,7 @@ var processrunApi = (function (root) {
     --Discription: [5] API công khai
     -------------------------------------------*/
     return {
-        version: "1.6.0",
+        version: "1.7.0",
         open: open,
         callApi: callApi,
         // Các dòng đang tick ở bảng strTableId (ô tick có id = strPrefix + ID, mặc định "checkX"), tra đủ dữ liệu từ arrData theo ID.
@@ -930,6 +972,49 @@ var processrunApi = (function (root) {
                 if (typeof fin === "function") fin(sum);
             };
             this.run(c);
+        },
+
+        // Nút "Bắt đầu" của thanh tiến trình hàng đợi (CMS_HangDoiTuTao, vẽ bởi edu.system.createHangDoi) = chỗ THỰC SỰ tính/xử lý:
+        // nạp các nhiệm vụ còn lại của hàng đợi rồi chạy từng nhiệm vụ trong form (giờ bắt đầu/kết thúc, kết quả, lỗi, xuất Excel).
+        // Bước "khởi tạo" tạo hàng đợi chỉ là gọi đúng 1 hàm, không qua form này.
+        //   cfg: queueId (ID hàng đợi), title, subTitles (mảng hoặc hàm), fileName, concurrency (số hoặc hàm; "Chạy tuần tự" = 1),
+        //        info(it, i, n) / infoHeader (chữ mô tả 1 nhiệm vụ), autoStart (mặc định true: bấm "Bắt đầu" là chạy luôn),
+        //        refresh, onFinish, onClose ... như run
+        runHangDoi: function (cfg) {
+            var self = this, edu = root.edu, qid = cfg.queueId;
+            if (!qid || LOADING_Q[qid]) return;
+            if (!edu || !edu.system) { warn("Thiếu edu.system để chạy hàng đợi."); return; }
+            LOADING_Q[qid] = true;
+            var ack = showAck(cfg.title || "Chạy hàng đợi");
+            ack.next("", "Đang nạp các nhiệm vụ còn lại của hàng đợi…");
+            function val(v) { return typeof v === "function" ? v() : v; }
+            paintThen(function () {
+                callApi({
+                    type: "GET", action: "CMS_HangDoiTuTao/LayDSXuLyNhiemVu_HangDoi",
+                    data: { dTinhTrang: 0, strHangDoi_Id: qid, strNguoiThucHien_Id: edu.system.userId, strTuKhoa: "", pageIndex: 1, pageSize: 1000000 }
+                }).then(function (r) {
+                    LOADING_Q[qid] = false;
+                    ack.close();
+                    if (!r.ok) { warn("Không nạp được danh sách nhiệm vụ của hàng đợi: " + r.message); return; }
+                    var items = (r.data && r.data.Data) || [], n = items.length, c = {}, k;
+                    for (k in cfg) c[k] = cfg[k];
+                    delete c.queueId;
+                    c.unit = cfg.unit || "nhiệm vụ";
+                    c.infoHeader = cfg.infoHeader || "Nội dung xử lý";
+                    c.items = items;
+                    // máy chủ chưa trả mô tả nhiệm vụ thì ghi số thứ tự (xem hàm taskText)
+                    c.info = function (it, i) { return typeof cfg.info === "function" ? cfg.info(it, i, n) : taskText(it, i, n); };
+                    c.subTitles = val(cfg.subTitles) || [];
+                    c.concurrency = val(cfg.concurrency) || 1;
+                    c.maxConcurrency = 100;
+                    c.autoStart = cfg.autoStart !== false;
+                    c.okMessage = cfg.okMessage || "Đã xử lý";
+                    c.request = function (it) {
+                        return { type: "POST", action: "CMS_HangDoiTuTao/XuLyNhiemVu_HangDoi", contentType: true, data: { strNguoiThucHien_Id: edu.system.userId, strId: it.ID } };
+                    };
+                    self.run(c);
+                });
+            });
         },
 
         // Mở modal chọn sinh viên chung (edu.extend.genModal_SinhVien); chọn xong đóng modal rồi mở form tiến trình, mỗi sinh viên 1 bản ghi.

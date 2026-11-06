@@ -10,6 +10,67 @@ Xem lại đúng thay đổi của một tệp: `git diff -w <từ>..<đến> --
 
 ---
 
+## Lần kéo 13 (7/11) — mốc gốc nay là `f6f5425ca` (gốc lại force-push; mốc cũ `b2cd522d1`) — 59 tệp, CHƯA XEM màn nào
+
+Lần sau so: `git diff --name-status f6f5425ca origin/main`. 60 tệp gốc đổi: 47 tệp màn (9 phân hệ) + 12 tệp vỏ cũ / khác + `Apisphanquyen.zip` (bị `*.zip`
+của `.gitignore` chặn, KHÔNG lấy). Đã ghi đè 59 tệp bằng `git checkout origin/main -- <tệp>`. **Gốc đã lấy lại bản của ta** cho `help-sso.aspx`,
+`Core/systemroot.js`, `Corei/systemroot.js`, `assets/plugin/btn-yeucau-hotro/*`, `assets/css/tai-chinh.css` (diff -w rỗng) → không cần chèn lại đoạn nạp plugin.
+Vỏ cũ đổi thật: `Corei/exportexcel.js` (+303/−81), `Corei/processrun.js` (+107/−22), `indexi.aspx` (nâng `?v=` hai tệp đó), `index.aspx` (+9: vá cuộn menu trái
+`.left-sidebar .sidebar-menu:hover`), `styles-content.css` (thu hẹp `.sidebar-menu:hover` về `.main-sidebar`). `skin.py kiem` 11/11 OK không cần `ap`.
+**PHÂN HỆ MỚI `Apisphanquyen`** (11 màn + `pqcommon.js`, module `phanquyen`): chưa có trong `_v2`, chưa có trong `THU_TU` của `tien-do.py` — chỉ làm khi người dùng gọi tên.
+Số theo phân hệ: Phân quyền 22 (mới) · Cổng cán bộ 10 · Tài chính 6 · Cổng sinh viên 2 · Cổng sinh viên-1 2 · KHCT 2 · Đăng ký học 1 · Sinh viên 1 · Tuyển sinh 1.
+**Người dùng 7/11: "pull về và ghi sổ"** — chỉ ghi sổ. Màn thuộc phân hệ đã chuyển mở diff khi tới lượt (`git diff -w b2cd522d1 f6f5425ca -- <tệp>`).
+
+| Phân hệ | Màn | Tệp gốc | Trạng thái |
+|---|---|---|---|
+| Cổng cán bộ (đã chuyển) | `hoatdong/DaQHHT` | `ApisCongCanBo/Modules/hoatdong/html/DaQHHT.html` | chưa xem |
+| Cổng cán bộ (đã chuyển) | `lichgiang/lichgiang` | `ApisCongCanBo/Modules/lichgiang/html/lichgiang.html` | chưa xem |
+| Cổng cán bộ (đã chuyển) | `lichgiang/lichgiangnhieuphonghoc` | `ApisCongCanBo/Modules/lichgiang/html/lichgiangnhieuphonghoc.html` | chưa xem |
+| Cổng cán bộ (đã chuyển) | `lichgiang/doilich_modal` | `ApisCongCanBo/Modules/lichgiang/script/doilich_modal.js` | chưa xem (tệp MỚI) |
+| Cổng cán bộ (đã chuyển) | `lichgiang/lichgiang` | `ApisCongCanBo/Modules/lichgiang/script/lichgiang.js` | chưa xem |
+| Cổng cán bộ (đã chuyển) | `lichgiang/lichgiangnhieuphonghoc` | `ApisCongCanBo/Modules/lichgiang/script/lichgiangnhieuphonghoc.js` | chưa xem |
+| Cổng cán bộ (đã chuyển) | `nhapdiem/inbangdiem` | `ApisCongCanBo/Modules/nhapdiem/html/inbangdiem.html` | chưa xem |
+| Cổng cán bộ (đã chuyển) | `nhapdiem/inbangdiem` | `ApisCongCanBo/Modules/nhapdiem/script/inbangdiem.js` | chưa xem |
+| Cổng cán bộ (đã chuyển) | `phanlichgiang/phanlichgiang` | `ApisCongCanBo/Modules/phanlichgiang/html/phanlichgiang.html` | chưa xem |
+| Cổng cán bộ (đã chuyển) | `phanlichgiang/phanlichgiang` | `ApisCongCanBo/Modules/phanlichgiang/script/phanlichgiang.js` | chưa xem |
+| Cổng sinh viên-1 (chưa chuyển (thư mục biến thể, không có trong THU_TU)) | `hoctap/diemhoc` | `ApisCongSinhVien-1/Modules/hoctap/html/diemhoc.html` | chưa xem |
+| Cổng sinh viên-1 (chưa chuyển (thư mục biến thể, không có trong THU_TU)) | `hoctap/diemhoc` | `ApisCongSinhVien-1/Modules/hoctap/script/diemhoc.js` | chưa xem |
+| Cổng sinh viên (đã chuyển) | `hoctap/diemhoc` | `ApisCongSinhVien/Modules/hoctap/html/diemhoc.html` | chưa xem |
+| Cổng sinh viên (đã chuyển) | `hoctap/diemhoc` | `ApisCongSinhVien/Modules/hoctap/script/diemhoc.js` | chưa xem |
+| Đăng ký học (đã chuyển) | `kehoachdangky/lophocphan` | `ApisDangKyHoc/Modules/kehoachdangky/html/lophocphan.html` | chưa xem |
+| KHCT (đã chuyển) | `lophoc/covanlop` | `ApisKeHoachChuongTrinh/Modules/lophoc/html/covanlop.html` | chưa xem |
+| KHCT (đã chuyển) | `lophoc/covanlop` | `ApisKeHoachChuongTrinh/Modules/lophoc/script/covanlop.js` | chưa xem |
+| Tuyển sinh (đã chuyển) | `tuyensinh/kehoachtuyensinhnew` | `ApisQuanlyTuyenSinh/Modules/tuyensinh/script/kehoachtuyensinhnew.js` | chưa xem |
+| Sinh viên (đã chuyển) | `hoso/DaQHHT` | `ApisSinhVien/Modules/hoso/html/DaQHHT.html` | chưa xem |
+| Tài chính (đã chuyển) | `baocao/baocao` | `ApisTaiChinh/Modules/baocao/html/baocao.html` | chưa xem |
+| Tài chính (đã chuyển) | `baocao/baocao` | `ApisTaiChinh/Modules/baocao/scripts/baocao.js` | chưa xem |
+| Tài chính (đã chuyển) | `dulieuhocphi/tinhhocphi` | `ApisTaiChinh/Modules/dulieuhocphi/html/tinhhocphi.html` | chưa xem |
+| Tài chính (đã chuyển) | `dulieuhocphi/tinhhocphi` | `ApisTaiChinh/Modules/dulieuhocphi/scripts/tinhhocphi.js` | chưa xem |
+| Tài chính (đã chuyển) | `phieuthu/thutienkhac` | `ApisTaiChinh/Modules/phieuthu/html/thutienkhac.html` | chưa xem |
+| Tài chính (đã chuyển) | `phieuthu/thutienkhac` | `ApisTaiChinh/Modules/phieuthu/scripts/thutienkhac.js` | chưa xem |
+| Phân quyền (PHÂN HỆ MỚI, chưa chuyển) | `phanquyen/ghideduonglantruyen` | `Apisphanquyen/Modules/phanquyen/html/ghideduonglantruyen.html` | chưa xem (tệp MỚI) |
+| Phân quyền (PHÂN HỆ MỚI, chưa chuyển) | `phanquyen/hieuluquyen` | `Apisphanquyen/Modules/phanquyen/html/hieuluquyen.html` | chưa xem (tệp MỚI) |
+| Phân quyền (PHÂN HỆ MỚI, chưa chuyển) | `phanquyen/loaidoituong` | `Apisphanquyen/Modules/phanquyen/html/loaidoituong.html` | chưa xem (tệp MỚI) |
+| Phân quyền (PHÂN HỆ MỚI, chưa chuyển) | `phanquyen/nguontusinh` | `Apisphanquyen/Modules/phanquyen/html/nguontusinh.html` | chưa xem (tệp MỚI) |
+| Phân quyền (PHÂN HỆ MỚI, chưa chuyển) | `phanquyen/nhatkydongbo` | `Apisphanquyen/Modules/phanquyen/html/nhatkydongbo.html` | chưa xem (tệp MỚI) |
+| Phân quyền (PHÂN HỆ MỚI, chưa chuyển) | `phanquyen/phancapdoituong` | `Apisphanquyen/Modules/phanquyen/html/phancapdoituong.html` | chưa xem (tệp MỚI) |
+| Phân quyền (PHÂN HỆ MỚI, chưa chuyển) | `phanquyen/quanhephancap` | `Apisphanquyen/Modules/phanquyen/html/quanhephancap.html` | chưa xem (tệp MỚI) |
+| Phân quyền (PHÂN HỆ MỚI, chưa chuyển) | `phanquyen/quanlythutay` | `Apisphanquyen/Modules/phanquyen/html/quanlythutay.html` | chưa xem (tệp MỚI) |
+| Phân quyền (PHÂN HỆ MỚI, chưa chuyển) | `phanquyen/quyentheovaitro` | `Apisphanquyen/Modules/phanquyen/html/quyentheovaitro.html` | chưa xem (tệp MỚI) |
+| Phân quyền (PHÂN HỆ MỚI, chưa chuyển) | `phanquyen/tongquan` | `Apisphanquyen/Modules/phanquyen/html/tongquan.html` | chưa xem (tệp MỚI) |
+| Phân quyền (PHÂN HỆ MỚI, chưa chuyển) | `phanquyen/uyquyencanhan` | `Apisphanquyen/Modules/phanquyen/html/uyquyencanhan.html` | chưa xem (tệp MỚI) |
+| Phân quyền (PHÂN HỆ MỚI, chưa chuyển) | `phanquyen/ghideduonglantruyen` | `Apisphanquyen/Modules/phanquyen/script/ghideduonglantruyen.js` | chưa xem (tệp MỚI) |
+| Phân quyền (PHÂN HỆ MỚI, chưa chuyển) | `phanquyen/hieuluquyen` | `Apisphanquyen/Modules/phanquyen/script/hieuluquyen.js` | chưa xem (tệp MỚI) |
+| Phân quyền (PHÂN HỆ MỚI, chưa chuyển) | `phanquyen/loaidoituong` | `Apisphanquyen/Modules/phanquyen/script/loaidoituong.js` | chưa xem (tệp MỚI) |
+| Phân quyền (PHÂN HỆ MỚI, chưa chuyển) | `phanquyen/nguontusinh` | `Apisphanquyen/Modules/phanquyen/script/nguontusinh.js` | chưa xem (tệp MỚI) |
+| Phân quyền (PHÂN HỆ MỚI, chưa chuyển) | `phanquyen/nhatkydongbo` | `Apisphanquyen/Modules/phanquyen/script/nhatkydongbo.js` | chưa xem (tệp MỚI) |
+| Phân quyền (PHÂN HỆ MỚI, chưa chuyển) | `phanquyen/phancapdoituong` | `Apisphanquyen/Modules/phanquyen/script/phancapdoituong.js` | chưa xem (tệp MỚI) |
+| Phân quyền (PHÂN HỆ MỚI, chưa chuyển) | `phanquyen/pqcommon` | `Apisphanquyen/Modules/phanquyen/script/pqcommon.js` | chưa xem (tệp MỚI) |
+| Phân quyền (PHÂN HỆ MỚI, chưa chuyển) | `phanquyen/quanhephancap` | `Apisphanquyen/Modules/phanquyen/script/quanhephancap.js` | chưa xem (tệp MỚI) |
+| Phân quyền (PHÂN HỆ MỚI, chưa chuyển) | `phanquyen/quanlythutay` | `Apisphanquyen/Modules/phanquyen/script/quanlythutay.js` | chưa xem (tệp MỚI) |
+| Phân quyền (PHÂN HỆ MỚI, chưa chuyển) | `phanquyen/quyentheovaitro` | `Apisphanquyen/Modules/phanquyen/script/quyentheovaitro.js` | chưa xem (tệp MỚI) |
+| Phân quyền (PHÂN HỆ MỚI, chưa chuyển) | `phanquyen/uyquyencanhan` | `Apisphanquyen/Modules/phanquyen/script/uyquyencanhan.js` | chưa xem (tệp MỚI) |
+
 ## Lần kéo 12 (2/11) — mốc gốc nay là `b2cd522d1` (gốc lại force-push; mốc cũ `ab5b4f19`) — 73 tệp, CHƯA XEM màn nào
 
 Lần sau so: `git diff --name-status b2cd522d1 origin/main`. 73 tệp gốc đổi: 65 tệp màn (16 phân hệ) + 8 tệp vỏ cũ / khác. Đã ghi đè 70 tệp bằng

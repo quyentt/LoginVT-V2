@@ -562,8 +562,32 @@ LichGiang.prototype = {
         var objLich = me.dtLichHoc.find(function (e) { return e.ID === strId; });
         if (!objLich) return;
         me.strLichHoc_Id = strId;
+        // [2026-11-04] Dùng modal "Yêu cầu đổi lịch" MỚI (lưới tuần chọn thời gian, lọc phòng, kiểm tra từng ô) — dùng chung với trang Lịch giảng đường.
+        // Chưa nạp đủ file dùng chung (doilich_modal.js + lichgiangnhieuphonghoc.js) thì quay về modal cũ để chức năng không chết.
+        if (typeof LichGiangNhieuPhong !== 'undefined' && typeof DoiLichModal !== 'undefined') {
+            me.moDoiLichMoi(objLich);
+            return;
+        }
+        // Modal cũ (#modalDoiLich) — giữ lại làm đường lui:
         $("#modalDoiLich").modal("show");
         me.getList_KhoiTaoDoiLich(objLich);
+    },
+    // Modal đổi lịch mới: lần đầu bấm thì nạp giao diện + sự kiện + danh mục tòa/phòng (initDoiLichRieng) rồi mới mở; các lần sau mở ngay.
+    // Gửi yêu cầu xong → làm mới bảng "yêu cầu đổi lịch" của trang này (getList_DoiLich) như modal cũ.
+    moDoiLichMoi: function (objLich) {
+        var me = this;
+        var fnMo = function (obj) {
+            me.doiLichMoi.fnSauKhiGuiDoiLich = function () { me.getList_DoiLich(); };
+            me.doiLichMoi.moDoiLich(obj, null);
+        };
+        if (me.doiLichMoi && me.doiLichMoiSan) { fnMo(objLich); return; }
+        me.doiLichCho = objLich;              // bấm liên tiếp lúc đang nạp: chỉ mở buổi bấm sau cùng
+        if (me.doiLichMoi) return;
+        me.doiLichMoi = new LichGiangNhieuPhong();
+        me.doiLichMoi.initDoiLichRieng(function () {
+            me.doiLichMoiSan = true;
+            fnMo(me.doiLichCho);
+        });
     },
 
     /*------------------------------------------
@@ -1232,6 +1256,55 @@ LichGiang.prototype = {
         else return iDay;
     },
 
+    /*------------------------------------------
+    --2026-11-04: Chống "bấm nút mà không báo gì" (khách báo ở nút "Lưu điểm danh tự động").
+    --Nguyên nhân gốc (xem systemroot.js): edu.system.alert(null/undefined) bỏ qua âm thầm; nhánh error cũ gọi
+    --alertOnModal({}) nhưng không có #notify nên cũng không hiện gì; response rỗng thì makeRequest không gọi
+    --success lẫn error; không tìm thấy buổi học thì objLich.* ném TypeError trước cả khi gửi request.
+    --Các hàm dưới bảo đảm MỌI nhánh đều có thông báo cho người dùng.
+    -------------------------------------------*/
+    layBuoiDangChon: function () {
+        var me = this;
+        var objLich = me.dtLichHoc.find(function (e) { return e.ID === me.strLichHoc_Id; });
+        if (!objLich) {
+            edu.system.alert("Không xác định được buổi học đang chọn. Vui lòng đóng cửa sổ rồi chọn lại buổi học.", "w");
+        }
+        return objLich;
+    },
+    thongBaoLoi: function (er) {
+        var strMa = (er && er.status) ? " (mã " + er.status + ")" : "";
+        edu.system.alert("Không thực hiện được do lỗi kết nối máy chủ" + strMa + ". Vui lòng thử lại.", "w");
+    },
+    // Gọi API thao tác (lưu / gửi yêu cầu): thành công, thất bại (kể cả Message rỗng), lỗi mạng, response rỗng đều có thông báo.
+    goiThaoTac: function (obj_save, strThanhCong, fnThanhCong) {
+        var me = this;
+        var bDaPhanHoi = false;
+        edu.system.makeRequest({
+            success: function (data) {
+                bDaPhanHoi = true;
+                if (data.Success) {
+                    edu.system.alert(strThanhCong);
+                    if (typeof fnThanhCong === "function") fnThanhCong();
+                }
+                else {
+                    edu.system.alert(edu.util.returnEmpty(data.Message) || "Thực hiện không thành công (máy chủ không nêu lý do).", "w");
+                }
+            },
+            error: function (er) {
+                bDaPhanHoi = true;
+                me.thongBaoLoi(er);
+            },
+            complete: function () {
+                if (!bDaPhanHoi) edu.system.alert("Máy chủ không trả về dữ liệu. Vui lòng thử lại.", "w");
+            },
+            type: "POST",
+            action: obj_save.action,
+            contentType: true,
+            data: obj_save,
+            fakedb: []
+        }, false, false, false, null);
+    },
+
     save_NhapChuyenCan: function (point) {
         var me = this;
         var strid = point.id;
@@ -1359,9 +1432,8 @@ LichGiang.prototype = {
 
     save_TuGhiNhan: function (strId) {
         var me = this;
-        var obj_notify = {};
-        var today = new Date();
-        var objLich = me.dtLichHoc.find(e => e.ID === me.strLichHoc_Id);
+        var objLich = me.layBuoiDangChon();
+        if (!objLich) return;
         var obj_save = {
             'action': 'CC_GiangVien_TuGhiNhan/ThemMoi',
             'type': 'POST',
@@ -1375,36 +1447,12 @@ LichGiang.prototype = {
             'strNoiDungTuGhiNhan': edu.util.getValById('txtTuKhoaDiemDanh'),
             'strNguoiThucHien_Id': edu.system.userId,
         };
-        //default
-        edu.system.makeRequest({
-            success: function (data) {
-                if (data.Success) {
-                    edu.system.alert("Thực hiện thành công!");
-                }
-                else {
-                    obj_notify = {
-                        type: "w",
-                        content: obj_save.action + " (er): " + data.Message,
-                    }
-                    edu.system.alert(data.Message);
-                }
-            },
-            error: function (er) {
-                edu.system.alertOnModal(obj_notify);
-            },
-            type: "POST",
-            action: obj_save.action,
-            contentType: true,
-            data: obj_save,
-            fakedb: [
-            ]
-        }, false, false, false, null);
+        me.goiThaoTac(obj_save, "Thực hiện thành công!");
     },
     save_DiemDanhTuDong: function (strId) {
         var me = this;
-        var obj_notify = {};
-        var today = new Date();
-        var objLich = me.dtLichHoc.find(e => e.ID === me.strLichHoc_Id);
+        var objLich = me.layBuoiDangChon();
+        if (!objLich) return;
         var obj_save = {
             'action': 'CC_GiangVien_TuGhiNhan/ThucHienDiemDanhTuDong',
             'type': 'POST',
@@ -1417,32 +1465,10 @@ LichGiang.prototype = {
             'strDaoTao_LopHocPhan_Id': objLich.IDLOPHOCPHAN,
             'strNguoiThucHien_Id': edu.system.userId,
         };
-        //default
-        edu.system.makeRequest({
-            success: function (data) {
-                if (data.Success) {
-                    edu.system.alert("Thực hiện thành công!");
-                    me.getDetail_SiSo();
-                    me.getList_SinhVien();
-                }
-                else {
-                    obj_notify = {
-                        type: "w",
-                        content: obj_save.action + " (er): " + data.Message,
-                    }
-                    edu.system.alert(data.Message);
-                }
-            },
-            error: function (er) {
-                edu.system.alertOnModal(obj_notify);
-            },
-            type: "POST",
-            action: obj_save.action,
-            contentType: true,
-            data: obj_save,
-            fakedb: [
-            ]
-        }, false, false, false, null);
+        me.goiThaoTac(obj_save, "Thực hiện thành công!", function () {
+            me.getDetail_SiSo();
+            me.getList_SinhVien();
+        });
     },
 
     /*------------------------------------------
@@ -1451,7 +1477,8 @@ LichGiang.prototype = {
     -------------------------------------------*/
     save_DoiLich: function () {
         var me = this;
-        var objLich = me.dtLichHoc.find(e => e.ID === me.strLichHoc_Id);
+        var objLich = me.layBuoiDangChon();
+        if (!objLich) return;
         var arrGiangVien_Id = [];
         var arrGiangVienThayDoi_Id = [];
         me.dtGiangVienThayDoi.forEach((e, nRow) => {
@@ -1490,32 +1517,9 @@ LichGiang.prototype = {
             'strGiangVien_Ids': arrGiangVien_Id.toString(),
             'strGiangVien_ThayDoi_Ids': arrGiangVienThayDoi_Id.toString(),
         };
-        //default
-
-        edu.system.makeRequest({
-            success: function (data) {
-                if (data.Success) {
-                    edu.system.alert("Gửi yêu cầu thành công");
-                    me.getList_DoiLich();
-                }
-                else {
-                    edu.system.alert(data.Message);
-                }
-
-            },
-            error: function (er) {
-                edu.system.alert(obj_save.action + " (er): " + JSON.stringify(er), "w");
-
-            },
-            type: "POST",
-            action: obj_save.action,
-
-            contentType: true,
-
-            data: obj_save,
-            fakedb: [
-            ]
-        }, false, false, false, null);
+        me.goiThaoTac(obj_save, "Gửi yêu cầu thành công", function () {
+            me.getList_DoiLich();
+        });
     },
     getList_DoiLich: function (strDanhSach_Id) {
         var me = this;
@@ -1988,7 +1992,8 @@ LichGiang.prototype = {
     save_KiemTraTrungLich: function () {
         var me = this;
         //--Edit
-        var objLich = me.dtLichHoc.find(e => e.ID === me.strLichHoc_Id);
+        var objLich = me.layBuoiDangChon();
+        if (!objLich) return;
         var arrGiangVien_Id = [];
         var arrGiangVienThayDoi_Id = [];
         me.dtGiangVienThayDoi.forEach((e, nRow) => {
@@ -2037,7 +2042,8 @@ LichGiang.prototype = {
                     var dtResult = data.Data;
                     if (dtResult.length > 0) {
                         if (dtResult[0].HOPLE) edu.system.alert("Dữ liệu kiểm tra hợp lệ");
-                        else edu.system.alert(edu.system.returnEmpty(dtResult[0].THONGTINLOI));
+                        // edu.system.returnEmpty không tồn tại (chỉ có edu.util.returnEmpty) => trước đây ném TypeError, người dùng không thấy lý do trùng lịch
+                        else edu.system.alert(edu.util.returnEmpty(dtResult[0].THONGTINLOI) || "Lịch không hợp lệ (máy chủ không nêu lý do).", "w");
                     } else {
                         edu.system.alert("Không trả về dữ liệu");
                     }

@@ -137,6 +137,10 @@ PhanLichGiang.prototype = {
             me.toggle_LichGiang();
             $("#lblChiTietHocPhan").html(me.strHienThi);
         });
+        // Đổi cỡ cửa sổ / zoom trình duyệt khi đang ở màn phân giảng -> tính lại để nút Lưu vẫn hiện
+        $(window).off("resize.phanlichgiang").on("resize.phanlichgiang", function () {
+            if ($("#zoneEdit").is(":visible")) me.fit_KhungPhanGiang();
+        });
         $("#btnSave").click(function () {
             me.save_BaiHoc();
         });
@@ -370,9 +374,24 @@ PhanLichGiang.prototype = {
     toggle_Edit: function () {
         var me = this;
         edu.util.toggle_overide("zonecontent", "zoneEdit");
-        var ilength = window.innerHeight - 162;
-        $("#tblLichPhanGiang").parent().attr("style", "height: " + ilength + "px; overflow-y: scroll !important;");
-        $("#tblLichPhanGiang").parent().parent().attr("style", "height: " + (ilength + 10) + "px; overflow-y: scroll !important;;");
+        // Chờ các vùng khác thu gọn xong (slideUp) mới đo vị trí, nếu không sẽ đo lệch.
+        $(".zonecontent").promise().done(function () { me.fit_KhungPhanGiang(); });
+    },
+    /*------------------------------------------
+    --Discription: Khung "Lịch phân giảng cho học phần" phải vừa khít khung nhìn:
+    --  bảng cuộn BÊN TRONG #table-container, hàng nút Thêm dòng/Lưu luôn nằm ở đáy khung.
+    --  (CSS tương ứng ở phanlichgiang.html: #zoneEdit #zone_main > .box-body)
+    --  Trước đây dùng hằng số "innerHeight - 162" nên lệch ~100px: nút Lưu bị nhốt trong vùng
+    --  cuộn của khung và nằm dưới đáy màn hình -> người dùng báo "không thấy nút Lưu".
+    -------------------------------------------*/
+    fit_KhungPhanGiang: function () {
+        var $body = $("#tblLichPhanGiang").parent().parent();   // .box-body của #zone_main
+        if (!$body.is(":visible")) return;
+        $body.css("height", "");                                 // bỏ chiều cao cũ để đo lại từ đầu
+        $(".wrapper, html, body").scrollTop(0);                  // đo ở đầu trang (trang cuộn bằng .wrapper)
+        var iTop = $body[0].getBoundingClientRect().top;
+        var iHeight = Math.max(300, window.innerHeight - iTop - 12);
+        $body.css("height", iHeight + "px");
     },
 
     toggle_editBaiHoc: function () {

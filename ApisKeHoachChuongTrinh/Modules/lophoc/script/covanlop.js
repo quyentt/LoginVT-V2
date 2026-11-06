@@ -632,7 +632,7 @@ CoVanLop.prototype = {
             'pageSize': 1000000000,
             'strDaoTao_CoCauToChuc_Id': edu.util.getValById("dropSearch_BoMon"),
             'strNguoiThucHien_Id': "",
-            'dLaCanBoNgoaiTruong': 0
+            'dLaCanBoNgoaiTruong': -1//-1: toàn bộ nhân sự (gồm cả cán bộ ngoài trường); 0: chỉ trong trường
         };
         
         edu.system.makeRequest({
@@ -692,7 +692,7 @@ CoVanLop.prototype = {
             'pageSize': 1000000000,
             'strDaoTao_CoCauToChuc_Id': edu.util.getValById("dropBoMon"),
             'strNguoiThucHien_Id': "",
-            'dLaCanBoNgoaiTruong': 0
+            'dLaCanBoNgoaiTruong': -1//-1: toàn bộ nhân sự (gồm cả cán bộ ngoài trường); 0: chỉ trong trường
         };
         
         edu.system.makeRequest({

@@ -226,8 +226,11 @@
         max-width: 100%;
     }
 
-    /* Card style dùng chung cho cả nút HĐĐT (dynamic) và nút cố định bên phải */
+    /* Card style dùng chung cho cả nút HĐĐT (dynamic) và nút cố định bên phải.
+       Màu nhấn của từng nút đặt qua biến --hd-c (r,g,b): viền trên + icon + vòng tròn nền sau icon cùng 1 tone.
+       Biến không khai báo mặc định ở đây (tránh thắng specificity của rule màu riêng) mà dùng var(--hd-c, fallback). */
     #zoneActionXuatHoaDon .btnXuat_HDDT,
+    #zoneActionXuatHoaDon #btnXuat_HD,
     #zoneActionHoaDon > a,
     #zoneActionHoaDon > div,
     #btnSaveHDBL {
@@ -238,13 +241,14 @@
         padding: 12px 6px !important;
         background: linear-gradient(to bottom, #ffffff 0%, #fafbfc 100%) !important;
         border: 1px solid #d9dde2 !important;
-        border-top: 3px solid #6c757d !important;
+        border-top: 3px solid rgb(var(--hd-c, 108, 117, 125)) !important;
         border-radius: 8px !important;
         text-align: center !important;
         cursor: pointer;
         width: 96px !important;
         min-width: 96px !important;
-        min-height: 92px !important;
+        height: auto !important; /* styles-content.css ép .btnXuat_HDDT/#btnSaveHDBL height:38px → nội dung bị bóp/đè */
+        min-height: 104px !important;
         box-sizing: border-box !important;
         text-decoration: none !important;
         margin: 0 !important;
@@ -255,7 +259,18 @@
         transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
     }
 
+    /* Nút bị JS .hide() (style="display: none") phải ẩn thật: display:flex !important ở trên đè mất inline none
+       => trước đây "In", "Hủy" hiện sẵn khi chưa lưu, "Thu tiền" vẫn hiện sau khi đã lưu. */
+    #zoneActionXuatHoaDon .btnXuat_HDDT[style*="display: none"],
+    #zoneActionXuatHoaDon #btnXuat_HD[style*="display: none"],
+    #zoneActionHoaDon > a[style*="display: none"],
+    #zoneActionHoaDon > div[style*="display: none"],
+    #btnSaveHDBL[style*="display: none"] {
+        display: none !important;
+    }
+
     #zoneActionXuatHoaDon .btnXuat_HDDT:hover,
+    #zoneActionXuatHoaDon #btnXuat_HD:hover,
     #zoneActionHoaDon > a:hover,
     #zoneActionHoaDon > div:hover,
     #btnSaveHDBL:hover {
@@ -263,18 +278,47 @@
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
     }
 
-    /* Chuẩn hoá icon: gộp cả fa-4x động về 30px, đảm bảo hiện to */
+    /* Icon: vòng tròn nền nhạt cùng tone + glyph đậm. Dùng !important để thắng style inline từ danh mục
+       (THONGTIN3 có thể set màu trắng/nhạt → icon "mất") và cỡ fa-4x động. */
     #zoneActionXuatHoaDon .btnXuat_HDDT i,
+    #zoneActionXuatHoaDon #btnXuat_HD i,
     #zoneActionHoaDon > a > i,
     #zoneActionHoaDon > div > a > i,
     #zoneActionHoaDon .fa-4x,
     #zoneActionXuatHoaDon .fa-4x,
     #btnSaveHDBL i,
     #btnSaveHDBL .fa-4x {
-        display: block !important;
-        font-size: 30px !important;
-        margin-bottom: 8px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 44px !important;
+        height: 44px !important;
+        margin: 0 0 8px !important;
+        padding: 0 !important;
+        border-radius: 50% !important;
+        font-size: 22px !important;
         line-height: 1 !important;
+        flex: 0 0 auto !important; /* không để flex bóp icon khi thẻ thấp hơn nội dung */
+        color: rgb(var(--hd-c, 108, 117, 125)) !important;
+        background: rgba(var(--hd-c, 108, 117, 125), 0.14) !important;
+        transition: background 0.12s ease;
+    }
+
+    #zoneActionXuatHoaDon .btnXuat_HDDT:hover i,
+    #zoneActionXuatHoaDon #btnXuat_HD:hover i,
+    #zoneActionHoaDon > a:hover > i,
+    #zoneActionHoaDon > div:hover > a > i,
+    #btnSaveHDBL:hover i {
+        background: rgba(var(--hd-c, 108, 117, 125), 0.24) !important;
+    }
+
+    /* <a class="btn"> bọc icon (markup cũ): reskin của indexi.aspx + styles-content.css (.btnXuat_HDDT .btn { height/padding })
+       ép nó cao ~38px nên icon 44px tràn ra và nhãn bên dưới đè lên icon. Cho nó không sinh box (display: contents)
+       để vòng tròn icon là phần tử xếp thẳng trong thẻ. 2 id đầu selector để thắng rule 1-id của indexi. */
+    html body.skin-blue #main-content-wrapper #zoneActionXuatHoaDon .btnXuat_HDDT > a.btn,
+    html body.skin-blue #main-content-wrapper #zoneActionXuatHoaDon #btnXuat_HD > a.btn,
+    html body.skin-blue #main-content-wrapper #zoneActionHoaDon #btnSaveHDBL > a.btn {
+        display: contents !important;
     }
 
     /* Nhãn nút */
@@ -282,92 +326,31 @@
     #zoneActionHoaDon .lbsymbolHD,
     #btnSaveHDBL .lbsymbolHD {
         display: block !important;
+        font-family: inherit !important;
         font-size: 12px !important;
-        line-height: 1.25 !important;
+        line-height: 1.3 !important;
         white-space: normal !important;
         padding: 0 !important;
-        color: #2c3e50 !important;
+        color: #1e293b !important;
         font-weight: 600;
+        text-align: center;
     }
 
-    /* ===== Màu accent (border-top + icon color) theo ngữ nghĩa nút ===== */
-    #btnClose_HDBL {
-        border-top-color: #6c757d !important;
-    }
-
-    #btnClose_HDBL i {
-        color: #6c757d !important;
-    }
-
+    /* ===== Màu accent theo ngữ nghĩa nút: chỉ cần đặt --hd-c (r,g,b) ===== */
+    #btnClose_HDBL { --hd-c: 100, 116, 139; }                  /* Đóng: xám xanh */
     #btnIn_HDBL,
-    #btnLienHoaDon {
-        border-top-color: #2563eb !important;
-    }
+    #btnLienHoaDon { --hd-c: 37, 99, 235; }                    /* In / Liên: xanh dương */
+    #btnThuTien { --hd-c: 217, 119, 6; }                       /* Thu tiền không sinh HĐBL: cam (phương án thay thế) */
+    #btnHuy_HDBL { --hd-c: 220, 38, 38; }                      /* Hủy: đỏ (destructive) */
+    #btnSaveHDBL { --hd-c: 22, 163, 74; }                      /* Xuất biên lai: xanh lá */
+    #btnXuat_HD { --hd-c: 220, 38, 38; }                       /* Xuất hóa đơn */
 
-    #btnIn_HDBL i,
-    #btnLienHoaDon i {
-        color: #2563eb !important;
-    }
-
-    #btnThuTien,
-    #btnHuy_HDBL {
-        border-top-color: #dc3545 !important;
-    }
-
-    #btnThuTien i,
-    #btnHuy_HDBL i {
-        color: #dc3545 !important;
-    }
-
-    #btnSaveHDBL {
-        border-top-color: #16a34a !important;
-    }
-
-    #btnSaveHDBL i {
-        color: #16a34a !important;
-    }
-
-    /* ===== Cột trái: HĐĐT dynamic — mỗi nút 1 tone (server không set thì fallback) ===== */
-    #zoneActionXuatHoaDon .btnXuat_HDDT:nth-child(1) {
-        border-top-color: #dc3545 !important;
-    }
-
-    #zoneActionXuatHoaDon .btnXuat_HDDT:nth-child(2) {
-        border-top-color: #2563eb !important;
-    }
-
-    #zoneActionXuatHoaDon .btnXuat_HDDT:nth-child(3) {
-        border-top-color: #16a34a !important;
-    }
-
-    #zoneActionXuatHoaDon .btnXuat_HDDT:nth-child(4) {
-        border-top-color: #d946ef !important;
-    }
-
-    #zoneActionXuatHoaDon .btnXuat_HDDT:nth-child(5) {
-        border-top-color: #f59e0b !important;
-    }
-
-    /* Nếu icon HĐĐT không có màu (server không set style), fallback theo vị trí */
-    #zoneActionXuatHoaDon .btnXuat_HDDT:nth-child(1) i:not([style*="color"]) {
-        color: #dc3545 !important;
-    }
-
-    #zoneActionXuatHoaDon .btnXuat_HDDT:nth-child(2) i:not([style*="color"]) {
-        color: #2563eb !important;
-    }
-
-    #zoneActionXuatHoaDon .btnXuat_HDDT:nth-child(3) i:not([style*="color"]) {
-        color: #16a34a !important;
-    }
-
-    #zoneActionXuatHoaDon .btnXuat_HDDT:nth-child(4) i:not([style*="color"]) {
-        color: #d946ef !important;
-    }
-
-    #zoneActionXuatHoaDon .btnXuat_HDDT:nth-child(5) i:not([style*="color"]) {
-        color: #f59e0b !important;
-    }
+    /* Cột trái: nút HĐĐT dynamic — xoay 5 tone theo thứ tự (nút #btnXuat_HD là con thứ 1) */
+    #zoneActionXuatHoaDon .btnXuat_HDDT:nth-child(5n+1) { --hd-c: 220, 38, 38; }
+    #zoneActionXuatHoaDon .btnXuat_HDDT:nth-child(5n+2) { --hd-c: 37, 99, 235; }
+    #zoneActionXuatHoaDon .btnXuat_HDDT:nth-child(5n+3) { --hd-c: 22, 163, 74; }
+    #zoneActionXuatHoaDon .btnXuat_HDDT:nth-child(5n+4) { --hd-c: 192, 38, 211; }
+    #zoneActionXuatHoaDon .btnXuat_HDDT:nth-child(5n+5) { --hd-c: 217, 119, 6; }
 
 
     /* Nút Liên: bọc cả <a> trong ngoài, gỡ padding thừa của .btn */
@@ -413,6 +396,83 @@
             overflow: visible;
             justify-content: center;
         }
+    }
+
+    /* ===== Thông báo lỗi hóa đơn (me.alertLoiHoaDon) — dựng vào hộp #myModalAlert của edu.system.alert =====
+       Trước đây in nguyên chuỗi JSON của nhà cung cấp HĐĐT. Giờ: tiêu đề việc đang làm + mô tả tiếng Việt
+       + gợi ý xử lý (nếu biết mã lỗi) + mã lỗi kỹ thuật nhỏ, xám ở cuối để đọc cho BE/hỗ trợ. */
+    #myModalAlert .aps-loi-hd {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        text-align: left;
+        padding: 4px 2px;
+    }
+
+    #myModalAlert .aps-loi-hd-icon {
+        flex: 0 0 44px;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #fef2f2;
+        color: #dc2626;
+        font-size: 22px;
+    }
+
+    #myModalAlert .aps-loi-hd-body {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    #myModalAlert .aps-loi-hd-title {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: #b91c1c;
+        margin-bottom: 4px;
+    }
+
+    #myModalAlert .aps-loi-hd-msg {
+        font-size: 16px;
+        font-weight: 600;
+        color: #0f172a;
+        line-height: 1.4;
+        word-break: break-word;
+    }
+
+    #myModalAlert .aps-loi-hd-hint {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+        padding: 9px 12px;
+        background: #fffbeb;
+        border-left: 3px solid #f59e0b;
+        border-radius: 4px;
+        color: #78350f;
+        font-size: 13px;
+        line-height: 1.45;
+    }
+
+    #myModalAlert .aps-loi-hd-hint i {
+        color: #d97706;
+        margin-top: 2px;
+    }
+
+    #myModalAlert .aps-loi-hd-tech {
+        margin-top: 12px;
+        font-size: 11.5px;
+        color: #64748b;
+        word-break: break-all;
+    }
+
+    #myModalAlert .aps-loi-hd-tech b {
+        font-family: Consolas, "Courier New", monospace;
+        font-weight: 600;
+        color: #475569;
     }
 
     /* ===== Nút "Thêm đối tượng" trên header xanh =====
@@ -2124,7 +2184,7 @@
     </div>
 </div>
 <!-- page script -->
-<script src="modules/phieuthu/scripts/thutienkhac.js?v=1.0.0.19"></script>
+<script src="modules/phieuthu/scripts/thutienkhac.js?v=1.0.0.22"></script>
 <script src="modules/phieuthu/scripts/n2vi.min.js"></script>
 <script src="modules/hoadon/scripts/qrcode.min.js"></script>
 <script type="text/javascript">

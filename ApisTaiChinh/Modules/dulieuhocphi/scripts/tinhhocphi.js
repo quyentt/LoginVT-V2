@@ -62,25 +62,28 @@ TinhHocPhi.prototype = {
         me.objHangDoi = {
             strLoaiNhiemVu: "TINHPHITUDONG",
             strName: "TinhHocPhi",
-            callback: me.endHangDoi
+            callback: me.endHangDoi,
+            // Nút "Bắt đầu" ở thanh tiến trình mới là chỗ tính phí thật: chạy từng nhiệm vụ của hàng đợi trong form tiến trình chung (edu.process)
+            process: { title: "Tính học phí", fileName: "KetQuaTinhHocPhi" }
         };
         edu.system.createHangDoi(me.objHangDoi);
         /*------------------------------------------
         --Author: nnthuong
-        --Discription: main action  
+        --Discription: main action
         -------------------------------------------*/
-        // Tính học phí: đưa 1 yêu cầu vào hàng đợi qua form tiến trình chung (Bước 1 hiện phạm vi áp dụng thay cho hộp xác nhận)
+        // "Tính phí" chỉ KHỞI TẠO hàng đợi = gọi đúng 1 hàm; việc tính thật nằm ở nút "Bắt đầu" của thanh tiến trình (xem objHangDoi.process)
         $("#btnTinhHocPhi").click(function (e) {
             e.stopImmediatePropagation();
-            var nChon = edu.util.getArrCheckedIds("tblSinhVien", "checkX").length, notes = [];
-            if (!edu.util.checkValue(edu.util.getValCombo("dropThoiGianDaoTao_TP"))) notes.push("Chưa chọn thời gian đào tạo.");
-            if (!edu.util.checkValue(edu.util.getValById("dropKhoanThu_TP"))) notes.push("Chưa chọn khoản thu.");
-            me._runJob({
-                title: "Tính học phí", what: "Tính học phí" + (nChon > 0 ? " cho " + nChon + " sinh viên đã chọn" : " theo phạm vi đang chọn"),
-                fileName: "KetQuaTinhHocPhi", notes: notes, subTitles: me._trangThaiLines(),
-                okMessage: "Khởi tạo dữ liệu thành công, vui lòng chạy tiến trình để thực hiện!",
-                request: function () { return me.req_TinhHocPhi(); },
-                onSuccess: function () { edu.system.createHangDoi(me.objHangDoi); }
+            edu.system.confirm("Bạn có chắc chắn <span class='italic color-warning'>Tính học phí</span> không?");
+            $("#btnYes").click(function (e) {
+                // systemroot btnYes chỉ xóa #alert_content chứ không .modal('hide') → đóng hộp xác nhận ngay, hiện overlay ngay
+                // và tự tắt overlay khi hộp kết quả (afterComfirm) hiện ra
+                $('#myModalAlert').modal('hide');
+                edu.system.beginLoadings();
+                $(document).one('shown.bs.modal', function () {
+                    edu.system.endLoadings();
+                });
+                me.TaoHangDoi_TinhHocPhi_TuDong();
             });
         });
         //$("#tblTaskBar_TinhHocPhi").delegate('.btnStart', 'click', function () {
@@ -283,6 +286,31 @@ TinhHocPhi.prototype = {
             'strNguoiThucHien_Id': edu.system.userId,
         };
         return { action: obj_save.action, versionAPI: obj_save.versionAPI, type: "POST", data: obj_save };
+    },
+    // Khởi tạo: gọi đúng 1 hàm đưa yêu cầu tính phí vào hàng đợi (payload dựng bởi req_TinhHocPhi), xong vẽ lại thanh tiến trình để bấm "Bắt đầu"
+    TaoHangDoi_TinhHocPhi_TuDong: function () {
+        var me = this, r = me.req_TinhHocPhi();
+        edu.system.makeRequest({
+            success: function (data) {
+                if (data.Success) {
+                    edu.system.afterComfirm({ content: "Khởi tạo dữ liệu thành công, vui lòng chạy tiến trình để thực hiện!", code: "" });
+                    edu.system.createHangDoi(me.objHangDoi);
+                }
+                else {
+                    edu.system.afterComfirm({ content: "QLTC_HangDoi.TaoHangDoi_TinhHocPhi_TuDong: " + data.Message, code: "w" });
+                }
+            },
+            error: function (er) {
+                edu.system.afterComfirm({ content: "QLTC_HangDoi.TaoHangDoi_TinhHocPhi_TuDong (er): " + JSON.stringify(er), code: "w" });
+            },
+            type: r.type,
+            action: r.action,
+            versionAPI: r.versionAPI,
+            contentType: true,
+            data: r.data,
+            fakedb: [
+            ]
+        }, false, false, false, null);
     },
     /*------------------------------------------
     --Discription: Chạy qua form tiến trình chung (Corei/processrun.js, edu.process): trang chỉ khai báo danh sách bản ghi

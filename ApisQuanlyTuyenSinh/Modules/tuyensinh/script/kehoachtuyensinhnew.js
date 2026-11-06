@@ -765,6 +765,22 @@ KeHoachTuyenSinhNew.prototype = {
             me.saveKhai_HoSo();
         });
 
+        /* 02/11/2026 — nhớ NGƯỜI DÙNG có sửa gì NGOÀI tab 8 (Danh mục hồ sơ) hay không, để bấm
+           "Cập nhật hồ sơ" mà chỉ nhập danh mục thì chỉ lưu danh mục, KHÔNG gọi Sua_HoSo_TS
+           (xem saveSuaHoSo_Full). Chỉ tính thao tác của NGƯỜI: sự kiện do code kích (nạp dữ liệu vào
+           form) không có originalEvent nên bỏ qua; riêng select2 phát select2:select / unselect /
+           clear khi người dùng chọn, nên bắt thêm 3 sự kiện đó. Gặp nghi ngờ thì coi là ĐÃ SỬA —
+           thà gọi Sua_HoSo_TS thừa còn hơn bỏ sót thay đổi. */
+        $('#kqdk_khai').on('input change', 'input, select, textarea', function (e) {
+            if ($(this).closest('#kqdk_tab_hoso').length) return;   // tab 8 có đường lưu riêng
+            if (!e.originalEvent) return;
+            me._khaiDaSua = true;
+        });
+        $('#kqdk_khai').on('select2:select select2:unselect select2:clear', function (e) {
+            if ($(e.target).closest('#kqdk_tab_hoso').length) return;
+            me._khaiDaSua = true;
+        });
+
         // Đổi nguyện vọng đầu vào (mở picker → xác nhận CT học qua PKG_CORE_TS_HOSO.XacNhanChonChuongTrinhHoc)
         $("#btnKhaiDoiNVDauVao").click(function () {
             me.openChonNVDauVao();
@@ -3003,6 +3019,12 @@ KeHoachTuyenSinhNew.prototype = {
         me._kqdkVaoTuList = true;
         // Core_Person_Id — dùng cho tab 7 (ghi nhận nguồn khai thác) lúc bấm Cập nhật
         me.strSuaHoSo_CorePersonId = pick(d, ['COREPERSON_ID', 'CorePerson_Id', 'CORE_PERSON_ID', 'Core_Person_Id', 'PERSON_ID', 'Person_Id']);
+        /* 02/11/2026 — Hồ sơ ĐÃ PHÂN LỚP (INTAKE_ISSTUDYCREATED = 1, đã có hồ sơ học tập): Sua_HoSo_TS
+           KHÔNG sửa Đầu ra / Cơ sở đào tạo / Lớp dự kiến và trả "CANH BAO: Khong cap nhat ba truong…"
+           nếu vẫn bị gửi 3 trường đó → nhớ cờ để saveSuaHoSo_Full khỏi gửi. Vào hồ sơ mới thì coi như
+           chưa sửa gì ngoài tab 8 (_khaiDaSua = false). */
+        me._suaDaPhanLop = String(pick(d, ['INTAKE_ISSTUDYCREATED'])) === '1';
+        me._khaiDaSua = false;
 
         // Reset form + init DM (lazy, chỉ chạy lần đầu)
         me.resetKhai_HoSo();
@@ -3121,6 +3143,8 @@ KeHoachTuyenSinhNew.prototype = {
         me._suaMode = false;
         me.strSuaHoSo_Id = '';
         me.strSuaHoSo_NV_Id = '';
+        me._suaDaPhanLop = false;
+        me._khaiDaSua = false;
         me._isSavingKhai = false;
         me._isSavingSua = false;
         $('#kqdk_khai_edit_banner').addClass('d-none');
@@ -3539,6 +3563,14 @@ KeHoachTuyenSinhNew.prototype = {
             }
         };
 
+        /* 02/11/2026 — người dùng CHỈ nhập tab 8 (Danh mục hồ sơ), không đụng ô nào khác → chỉ lưu danh
+           mục, KHÔNG gọi Sua_HoSo_TS và các bảng người. Trước đây luôn gọi Sua_HoSo_TS nên hồ sơ đã
+           phân lớp bị BE trả "CANH BAO…" (Success=false) và cả chuỗi lưu dừng, danh mục không được ghi. */
+        if (!me._khaiDaSua) {
+            me._luuChiTab8(unlockSua);
+            return;
+        }
+
         var g = function (id) { return edu.system.getValById(id) || ''; };
         // Chụp Nơi sinh / Hộ khẩu + Thanh toán + Nguồn khai thác ngay bây giờ — _exitSuaMode() ở success sẽ dọn form
         var addrBlocks = me._collectAddrBlocks();
@@ -3660,6 +3692,13 @@ KeHoachTuyenSinhNew.prototype = {
             'strTS_DoiTacTuyenSinh_Khac': g('txtKQ_NguonKhaiThac_GhiChu'),
             'strExtra_Data': me._fitExtraData(extraFiltered)
         };
+        // 02/11/2026: hồ sơ đã phân lớp → không gửi 3 trường BE sẽ không sửa (Đầu ra, Cơ sở đào tạo,
+        // Lớp dự kiến), nếu không BE trả "CANH BAO: Khong cap nhat ba truong…". Đổi đầu ra của hồ sơ
+        // đã phân lớp dùng nút "Đổi nguyện vọng đầu vào" (API riêng), không đi qua đây.
+        if (me._suaDaPhanLop) {
+            ['strNguyenVong_DauRa_Id', 'strDaoTao_CoSoDaoTao_Id', 'strDaoTao_LopQuanLy_Id_DK',
+                'strDaoTao_LopQuanLy_DuKien'].forEach(function (k) { delete obj_save[k]; });
+        }
         // ⚠ Chống ghi đè rỗng: ô nào đang trống trên form thì BỎ HẲN khỏi payload,
         // không gửi chuỗi rỗng. Nếu gửi '' thì Sua_HoSo_TS sẽ xoá trắng dữ liệu đang có
         // (đã xảy ra: form Sửa không nạp được Điện thoại/Email/Giới tính → bấm Cập nhật là mất).
@@ -3678,7 +3717,12 @@ KeHoachTuyenSinhNew.prototype = {
         });
         edu.system.makeRequest({
             success: function (data) {
-                if (data && data.Success) {
+                /* Sua_HoSo_TS có thể trả Success=false kèm "CANH BAO: …" mà vẫn xử lý xong phần còn lại
+                   ("Cac thong tin khac van duoc xu ly") — đó là CẢNH BÁO, không phải lỗi: chạy tiếp chuỗi
+                   lưu và nêu nguyên văn lời BE ở thông báo cuối. Lỗi thật (không có chữ CANH BAO) vẫn dừng. */
+                var msgBE = (data && data.Message) || '';
+                var laCanhBao = !!(data && !data.Success && /CANH\s*BAO/i.test(msgBE));
+                if (data && (data.Success || laCanhBao)) {
                     // Tab 6 — thông tin hóa đơn KHÔNG được Sua_HoSo_TS ghi vào bảng
                     // PERSON_INVOICE_INFO (chỉ nằm trong strExtra_Data) → phải lưu riêng.
                     me.save_PersonInvoice(me.strSuaHoSo_CorePersonId || '');
@@ -3729,9 +3773,11 @@ KeHoachTuyenSinhNew.prototype = {
                             txtDM = '<br/>Danh mục hồ sơ: đã lưu ' + kq.done + '/' + kq.total + ' dòng'
                                 + (kq.failed ? ' <span class="text-danger">(lỗi: ' + kq.failed + ')</span>' : '');
                         }
+                        var txtCB = laCanhBao
+                            ? ('<br/><b>Hệ thống báo:</b> ' + $('<div>').text(msgBE).html()) : '';
                         edu.system.alert("Cập nhật hồ sơ thành công"
                             + me._addrWarnText(addrBlocks) + me._nguonWarnText()
-                            + me._hoaDonWarnText() + txtDM, "s");
+                            + me._hoaDonWarnText() + txtDM + txtCB, laCanhBao ? "w" : "s");
                         unlockSua();
                         me._exitSuaMode();
                         // Về lại screen list; việc tải lại do taiLaiDS lo — nó chờ cả
@@ -3756,6 +3802,33 @@ KeHoachTuyenSinhNew.prototype = {
             data: obj_save,
             fakedb: []
         }, false, false, false, null);
+    },
+
+    /*------------------------------------------
+    -- 02/11/2026: bấm "Cập nhật hồ sơ" khi người dùng CHỈ nhập tab 8 (Danh mục hồ sơ) → chỉ ghi các
+    -- dòng danh mục (Them_/Sua_TS_HoSo), không gọi Sua_HoSo_TS và các bảng người.
+    -- unlockSua: hàm mở khóa nút do saveSuaHoSo_Full truyền vào.
+    -------------------------------------------*/
+    _luuChiTab8: function (unlockSua) {
+        var me = main_doc.KeHoachTuyenSinhNew;
+        me._saveHoSoDM(function (kq) {
+            unlockSua();
+            if (!kq || !kq.total) {
+                edu.system.alert('Không có thay đổi nào để lưu.', 'i');
+                return;
+            }
+            if (kq.failed) {
+                // Hỏng một phần: giữ nguyên form để thử lại; hiện NGUYÊN lỗi BE (một alert duy nhất)
+                edu.system.alert('Danh mục hồ sơ: đã lưu ' + kq.done + '/' + kq.total + ' dòng (lỗi: ' + kq.failed + ')'
+                    + (kq.loi && kq.loi.length ? '<br/>' + kq.loi.slice(0, 5).join('<br/>') : ''), 'w');
+                return;
+            }
+            edu.system.alert('Đã lưu danh mục hồ sơ: ' + kq.done + '/' + kq.total + ' dòng', 's');
+            me._exitSuaMode();
+            // Về lại danh sách như luồng Cập nhật đầy đủ; danh sách không đổi gì nên khỏi tải lại
+            $('#kqdk_khai').addClass('d-none');
+            $('#kqdk_list').removeClass('d-none');
+        });
     },
 
     /*------------------------------------------
@@ -4640,7 +4713,7 @@ KeHoachTuyenSinhNew.prototype = {
     == Muốn bỏ hẳn cách chữa cháy này thì BE phải mở rộng view LayDS_HoSo_TS.
     ==========================================================================*/
     _ctMap: {},            // HOSO_ID → { hs: LayTT_HoSo_TS }  (trước là COREPERSON_ID → 3 API)
-    _KQ_BAN_CHUAN: '2026-10-29-tab8-person',
+    _KQ_BAN_CHUAN: '2026-11-02-luu-tab8',
 
     /*------------------------------------------
     -- 74 cột FE đọc từ LayDS_HoSo_TS_FULL (danh sách đã gửi sếp 28/10/2026).
@@ -7381,6 +7454,7 @@ KeHoachTuyenSinhNew.prototype = {
         // Reset trạng thái lock lưu hồ sơ
         main_doc.KeHoachTuyenSinhNew._isSavingKhai = false;
         main_doc.KeHoachTuyenSinhNew._isSavingSua = false;
+        main_doc.KeHoachTuyenSinhNew._khaiDaSua = false;   // form vừa dọn/nạp lại → chưa có thao tác nào của người dùng
         $('#btnKhaiSave').prop('disabled', false).removeClass('disabled');
 
         // Sang hồ sơ khác → quên bản ghi hóa đơn cũ, nếu không sẽ Sua_ nhầm sang người trước

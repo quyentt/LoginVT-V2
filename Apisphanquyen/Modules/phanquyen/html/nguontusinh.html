@@ -1,0 +1,267 @@
+﻿<section class="content aps-phanquyen aps-pq-nguontusinh">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="box box-solid">
+                    <div class="box-header with-border">
+                        <h3 class="box-title"><i class="fa fa-bolt"></i> Nguồn tự sinh — Kênh 4<small class="pq-tbl">dm_nguon_phamvi_nghiepvu</small><span class="pq-chip">DBA/dev khai báo</span></h3>
+                    <div class="pull-right">
+                        <a class="btn btn-primary btnAdd" id="btnAdd_Nguon" href="javascript:void(0)"><i class="fa fa-plus"></i> Thêm nguồn</a>
+                    </div>
+                    </div>
+                    <div class="box-body pd20">
+                        <p class="pq-mota">Khai 1 nguồn dữ liệu nghiệp vụ TỰ ĐỘNG sinh/mất quyền theo chính nó — không ai "gán" tay. Đổi phân công trong dữ liệu gốc là tự đổi quyền, hệ thống tự đồng bộ theo chu kỳ lam_tuoi_phut.</p>
+                        <div class="pq-filter">
+                            <div class="pq-f pq-f-wide"><label for="txtSearch_Nguon">Tìm kiếm</label><input id="txtSearch_Nguon" type="text" class="form-control" placeholder="Mã nguồn hoặc chức năng..." /></div>
+                            <div class="pq-f pq-f-btn"><a class="btn btn-default" id="btnSearch_Nguon" href="javascript:void(0)"><i class="fa fa-search"></i> Tìm kiếm</a></div>
+                            <div class="pq-count" id="lblCount_Nguon"></div>
+                        </div>
+                        <div class="scroll-table-x">
+                            <table id="tblNguonTuSinh" class="table table-hover table-bordered pq-table">
+                                <thead>
+                                    <tr>
+                                        <th class="td-center td-fixed">Stt</th>
+                                        <th class="td-center pq-col-act">Sửa</th>
+                                        <th class="td-center">Mã nguồn (ID)</th>
+                                        <th class="td-center">Chức năng</th>
+                                        <th class="td-center">Loại đối tượng</th>
+                                        <th class="td-center">Làm tươi (phút)</th>
+                                        <th class="td-center pq-col-act">Xóa</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td colspan="7" class="td-center pq-empty">Chưa có dữ liệu</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="modal fade pq-modal" id="myModalNguon" role="dialog" aria-labelledby="myModalNguon_lbl" aria-hidden="true">
+    <div class="modal-dialog modal-860 modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h3 class="box-title" id="myModalNguon_lbl"><i class="fa fa-bolt"></i> <span id="titleAction_Nguon">Thêm</span> nguồn tự sinh <span class="pq-title-badge" id="titleNguon"></span></h3>
+                <input type="hidden" value="" id="txtNguon_Id" />
+            </div>
+            <div class="modal-body aps-add-new">
+                
+                <div class="row aps-form">
+        <div class="row aps-form-item">
+            <div class="col-sm-3 aps-form-lable"><label style="font-weight: normal">Mã nguồn<span class="pq-req">*</span></label></div>
+            <div class="col-sm-9 aps-form-input">
+            <input type="text" id="txtNG_Ma" class="form-control" placeholder="vd: TKB_GV" />
+            <small class="pq-hint">Mã định danh của nguồn (khóa của bản ghi) — không đổi được khi Sửa.</small>
+            </div>
+            <div class="clear"></div>
+        </div>
+        <div class="row aps-form-item">
+            <div class="col-sm-3 aps-form-lable"><label style="font-weight: normal">Chức năng<span class="pq-req">*</span></label></div>
+            <div class="col-sm-9 aps-form-input">
+            <select id="dropNG_ChucNang" class="select-opt"><option value="">-- Chọn chức năng --</option></select>
+            <small class="pq-hint">Chức năng được cấp quyền tự động từ nguồn này.</small>
+            </div>
+            <div class="clear"></div>
+        </div>
+        <div class="row aps-form-item">
+            <div class="col-sm-3 aps-form-lable"><label style="font-weight: normal">Loại đối tượng<span class="pq-req">*</span></label></div>
+            <div class="col-sm-9 aps-form-input">
+            <select id="dropNG_LoaiDoiTuong" class="select-opt"><option value="">-- Chọn loại đối tượng --</option></select>
+            <small class="pq-hint">Phạm vi dữ liệu mà nguồn này sinh quyền (vd: lớp).</small>
+            </div>
+            <div class="clear"></div>
+        </div>
+        <div class="row aps-form-item">
+            <div class="col-sm-3 aps-form-lable"><label style="font-weight: normal">Câu truy vấn đồng bộ<span class="pq-req">*</span></label></div>
+            <div class="col-sm-9 aps-form-input">
+            <textarea id="txtNG_TruyVan" class="form-control pq-sql" rows="5" placeholder="SELECT ..."></textarea>
+            <small class="pq-hint">Truy vấn trên dữ liệu nghiệp vụ (vd: thời khóa biểu) mà job đồng bộ chạy để tự sinh/mất quyền.</small>
+            </div>
+            <div class="clear"></div>
+        </div>
+        <div class="row aps-form-item">
+            <div class="col-sm-3 aps-form-lable"><label style="font-weight: normal">Chu kỳ làm tươi (phút)<span class="pq-req">*</span></label></div>
+            <div class="col-sm-9 aps-form-input">
+            <input type="number" id="txtNG_LamTuoiPhut" class="form-control" placeholder="vd: 10" min="1" />
+            <small class="pq-hint">Job đồng bộ chạy lại nguồn này sau mỗi chu kỳ.</small>
+            </div>
+            <div class="clear"></div>
+        </div>
+                </div>
+            </div>
+            <div class="clear"></div>
+            <div id="notify"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times-circle-o"></i> <span class="lang" key="">Đóng</span></button>
+                <a class="submit btn btn-primary" id="btnSave_Nguon" href="javascript:void(0)"><i class="fa fa-check-circle"></i> <span class="lang" key="">Lưu</span></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Phân quyền dữ liệu — giao diện dùng chung cho cả 11 trang (v2). Prefix pq- để không đụng class của shell.
+       Quy tắc nào đè shell (indexi.aspx) đều scope theo .aps-phanquyen (trang) hoặc .pq-modal (modal) — không sửa CSS dùng chung. */
+
+    /* ===== Khung trang + đầu trang ===== */
+    html body.skin-blue #main-content-wrapper .aps-phanquyen .box.box-solid { border: 1px solid #e6ebf3; border-radius: 14px; box-shadow: 0 1px 2px rgba(15, 23, 42, .04), 0 14px 30px -18px rgba(30, 58, 138, .22); }
+    html body.skin-blue #main-content-wrapper .aps-phanquyen .box-header.with-border { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px 16px; padding: 16px 22px !important; border-bottom: 1px solid #edf1f7 !important; border-radius: 14px 14px 0 0; background: linear-gradient(180deg, #ffffff 0%, #f8faff 100%); }
+    html body.skin-blue #main-content-wrapper .aps-phanquyen .box-header.with-border::before,
+    html body.skin-blue #main-content-wrapper .aps-phanquyen .box-header.with-border::after { display: none !important; }
+    html body.skin-blue #main-content-wrapper .aps-phanquyen .box-header > .box-title { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 10px; margin: 0; font-size: 19px !important; font-weight: 700 !important; line-height: 1.25; letter-spacing: -.005em; }
+    html body.skin-blue #main-content-wrapper .aps-phanquyen .box-header > .box-title > .fa:first-child { flex: 0 0 40px; width: 40px; height: 40px; display: inline-flex; align-items: center; justify-content: center; margin-right: 4px; border-radius: 12px; background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%); box-shadow: inset 0 0 0 1px rgba(30, 58, 138, .10); color: #1e3a8a; font-size: 18px; }
+    html body.skin-blue #main-content-wrapper .aps-phanquyen .box-header .pull-right { margin-left: auto; float: none; }
+    .aps-phanquyen .pq-tbl { margin: 0; padding: 4px 9px; border: 1px solid #e2e8f0; border-radius: 7px; background: #f1f5f9; font: 600 11.5px/1 Consolas, "Courier New", monospace; letter-spacing: 0; color: #475569; }
+    .pq-chip { display: inline-block; margin: 0; padding: 3px 11px; border-radius: 999px; background: #e0e7ff; color: #1e3a8a; font-size: 12px; font-weight: 700; line-height: 18px; }
+    .pq-chip-warn { background: #fde7cc; color: #92400e; }
+    .pq-chip-grey { background: #e5e7eb; color: #374151; }
+
+    .aps-phanquyen .pq-mota { margin: 0 0 16px; max-width: none; padding: 12px 16px; border: 1px solid #e8edf5; border-left: 3px solid #6366f1; border-radius: 8px; background: #f8fafc; color: #334155; line-height: 1.65; }
+    .aps-phanquyen .pq-note { display: flex; gap: 10px; align-items: flex-start; margin: 0 0 16px; padding: 11px 15px; border: 1px solid #c7d2fe; border-radius: 8px; background: #eef2ff; color: #1e3a8a; line-height: 1.55; }
+    .aps-phanquyen .pq-note > i { margin-top: 3px; }
+    .aps-phanquyen .pq-note-warn { border-color: #f8c98e; background: #fff1de; color: #92400e; }
+
+    /* ===== Thanh lọc ===== */
+    .pq-filter { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px 16px; margin: 0 0 16px; padding: 14px 16px; border: 1px solid #e2e8f0; border-radius: 10px; background: #fff; box-shadow: 0 1px 2px rgba(15, 23, 42, .03); }
+    .pq-filter .pq-f { display: flex; flex-direction: column; gap: 5px; min-width: 190px; }
+    .pq-filter .pq-f.pq-f-wide { flex: 1 1 280px; max-width: 360px; }
+    .pq-filter .pq-f.pq-f-btn { min-width: 0; }
+    .pq-filter .pq-f > label { margin: 0; font-size: 11.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: #64748b; }
+    .pq-filter .select2-container { width: 100% !important; }
+    .pq-filter .pq-count { margin-left: auto; align-self: center; padding: 5px 13px; border-radius: 999px; background: #eef2ff; color: #1e3a8a; font-size: 12.5px; font-weight: 700; }
+    .pq-filter .pq-count:empty { display: none; }
+    .pq-toolbar { display: flex; justify-content: flex-end; margin: 0 0 12px; }
+
+    /* ===== Bảng ===== */
+    html body.skin-blue #main-content-wrapper .aps-phanquyen .scroll-table-x { border: 1px solid #e2e8f0; border-radius: 10px; background: #fff; }
+    html body.skin-blue #main-content-wrapper .aps-phanquyen table.pq-table { margin: 0 !important; border: 0; }
+    html body.skin-blue #main-content-wrapper .aps-phanquyen table.pq-table > thead > tr > th { padding: 12px 14px !important; border: 0 !important; border-bottom: 1px solid #dfe6f1 !important; background: #f3f6fc !important; color: #334155 !important; font-size: 12px !important; font-weight: 800 !important; letter-spacing: .045em; text-transform: uppercase; white-space: nowrap; vertical-align: middle; }
+    html body.skin-blue #main-content-wrapper .aps-phanquyen table.pq-table > tbody > tr > td { padding: 11px 14px !important; border: 0 !important; border-top: 1px solid #edf1f7 !important; vertical-align: middle; text-align: center; color: #0f172a !important; }
+    html body.skin-blue #main-content-wrapper .aps-phanquyen table.pq-table > tbody > tr:first-child > td { border-top: 0 !important; }
+    html body.skin-blue #main-content-wrapper .aps-phanquyen table.pq-table > tbody > tr:nth-child(even) > td { background: #fafbfe; }
+    html body.skin-blue #main-content-wrapper .aps-phanquyen table.pq-table.table-hover > tbody > tr:hover,
+    html body.skin-blue #main-content-wrapper .aps-phanquyen table.pq-table.table-hover > tbody > tr:hover > td { background: #eef2ff !important; }
+    .aps-phanquyen table.pq-table .pq-col-act { width: 64px; text-align: center; }
+    .aps-phanquyen table.pq-table td.pq-empty { color: #64748b; }
+    /* Nút thao tác trong dòng: vuông gọn; icon Xóa luôn đỏ, Sửa ngả xanh khi rê chuột. Giữ class chuẩn btnEdit/btnDelete của shell. Dữ liệu các cột căn giữa cho thẳng tiêu đề. */
+    html body.skin-blue #main-content-wrapper .aps-phanquyen table.pq-table td .btn { width: 32px; height: 32px; padding: 0 !important; justify-content: center; border: 1px solid transparent !important; border-radius: 8px !important; background: transparent !important; box-shadow: none !important; transition: background .12s, border-color .12s; }
+    html body.skin-blue #main-content-wrapper .aps-phanquyen table.pq-table td .btn i { font-size: 15px; }
+    html body.skin-blue #main-content-wrapper .aps-phanquyen table.pq-table td .btn.btnEdit:hover,
+    html body.skin-blue #main-content-wrapper .aps-phanquyen table.pq-table td .btn.btnRefresh:hover { border-color: #c7d2fe !important; background: #e0e7ff !important; }
+    html body.skin-blue #main-content-wrapper .aps-phanquyen table.pq-table td .btn.btnDelete i { color: #dc2626 !important; }
+    html body.skin-blue #main-content-wrapper .aps-phanquyen table.pq-table td .btn.btnDelete:hover { border-color: #fecaca !important; background: #fee2e2 !important; }
+    html body.skin-blue #main-content-wrapper .aps-phanquyen table.pq-table td .btn.btnDelete:hover i { color: #dc2626 !important; }
+    /* Dòng thông báo "không có dữ liệu" (colspan) → trạng thái rỗng có hình, không chỉ 1 dòng chữ */
+    html body.skin-blue #main-content-wrapper .aps-phanquyen table.pq-table > tbody > tr > td[colspan] { padding: 36px 14px !important; background: #fff !important; color: #64748b !important; font-size: 13.5px !important; text-align: center; }
+    html body.skin-blue #main-content-wrapper .aps-phanquyen table.pq-table > tbody > tr > td[colspan]::before { content: ""; display: block; width: 46px; height: 46px; margin: 0 auto 10px; background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23cbd5e1' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'><ellipse cx='12' cy='5.5' rx='8' ry='3'/><path d='M4 5.5v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6'/><path d='M4 11.5v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6'/></svg>") center / contain no-repeat; }
+    .pq-mono { padding: 1px 6px; border-radius: 5px; background: #f1f5f9; font-family: Consolas, "Courier New", monospace; font-size: 12.5px; color: #0f172a; }
+    .pq-sub { color: #64748b; }
+    .pq-sub .pq-mono, .pq-mono .pq-sub { padding: 0; background: transparent; }
+    .pq-pill { display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; line-height: 18px; white-space: nowrap; }
+    .pq-pill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+    .pq-pill-allow { background: #dcfce7; color: #166534; }
+    .pq-pill-deny { background: #fee2e2; color: #b91c1c; }
+    .pq-pill-warn { background: #fde7cc; color: #92400e; }
+    .pq-pill-blue { background: #e0e7ff; color: #1e3a8a; }
+    .pq-pill-grey { background: #e5e7eb; color: #374151; }
+    /* Dòng tự động: mờ đi, không bấm được. */
+    .pq-row-off { opacity: .35; pointer-events: none; }
+
+    /* ===== Thẻ số liệu: nền trắng, chữ đậm; màu tone chỉ ở khung icon + viền trái ===== */
+    .pq-kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; margin: 0 0 16px; }
+    .pq-kpi { display: flex; gap: 14px; align-items: center; padding: 15px 18px; background: #fff; border: 1px solid #e2e8f0; border-left: 4px solid #2563eb; border-radius: 12px; box-shadow: 0 1px 2px rgba(15, 23, 42, .04); }
+    .pq-kpi-ico { flex: 0 0 46px; height: 46px; display: flex; align-items: center; justify-content: center; border-radius: 12px; background: #e0e7ff; color: #1e3a8a; font-size: 20px; }
+    .pq-kpi-num { font-size: 29px; line-height: 1.1; font-weight: 800; color: #0f172a; font-variant-numeric: tabular-nums; }
+    .pq-kpi-lbl { font-size: 13px; font-weight: 600; color: #1e293b; }
+    .pq-kpi-sub { font-size: 12px; color: #64748b; }
+    .pq-kpi.pq-ok { border-left-color: #16a34a; }
+    .pq-kpi.pq-ok .pq-kpi-ico { background: #dcfce7; color: #166534; }
+    .pq-kpi.pq-warn { border-left-color: #d97706; }
+    .pq-kpi.pq-warn .pq-kpi-ico { background: #fde7cc; color: #92400e; }
+    .pq-kpi.pq-err { border-left-color: #dc2626; }
+    .pq-kpi.pq-err .pq-kpi-ico { background: #fee2e2; color: #991b1b; }
+
+    /* ===== Tổng quan: thẻ liên kết ===== */
+    .pq-group-title { display: flex; align-items: center; gap: 12px; margin: 24px 0 12px; font-size: 12px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: #475569; }
+    .pq-group-title::after { content: ""; flex: 1; height: 1px; background: #e2e8f0; }
+    .pq-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+    .pq-card { display: flex; flex-direction: column; gap: 10px; padding: 16px 18px; background: #fff; border: 1px solid #e2e8f0; border-left: 4px solid #2563eb; border-radius: 12px; box-shadow: 0 1px 2px rgba(15, 23, 42, .04); color: inherit; text-decoration: none; cursor: pointer; transition: transform .15s, box-shadow .15s, border-color .15s; }
+    .pq-card:hover { border-color: #a5b4fc; border-left-color: #2563eb; box-shadow: 0 10px 24px -10px rgba(30, 58, 138, .28); transform: translateY(-2px); color: inherit; text-decoration: none; }
+    .pq-card-head { display: flex; align-items: center; gap: 12px; }
+    .pq-card-ico { flex: 0 0 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 11px; background: #e0e7ff; color: #1e3a8a; font-size: 17px; }
+    .pq-card-title { font-size: 15px; font-weight: 700; color: #0f172a; }
+    .pq-card-desc { flex: 1; color: #475569; line-height: 1.55; }
+    .pq-card-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-top: 10px; border-top: 1px dashed #e6ebf3; }
+    .pq-card-count { color: #475569; font-weight: 700; }
+    .pq-card-count > i { margin-left: 2px; transition: transform .15s; }
+    .pq-card:hover .pq-card-count > i { transform: translateX(3px); color: #1e3a8a; }
+    .pq-card.pq-t-green { border-left-color: #16a34a; }
+    .pq-card.pq-t-green .pq-card-ico { background: #dcfce7; color: #166534; }
+    .pq-card.pq-t-orange { border-left-color: #d97706; }
+    .pq-card.pq-t-orange .pq-card-ico { background: #fde7cc; color: #92400e; }
+    .pq-card.pq-t-grey { border-left-color: #64748b; }
+    .pq-card.pq-t-grey .pq-card-ico { background: #e5e7eb; color: #374151; }
+
+    /* ===== Nhật ký: biểu đồ lượt chạy theo ngày ===== */
+    .pq-chart-box { margin: 0 0 16px; padding: 15px 18px; background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 1px 2px rgba(15, 23, 42, .04); }
+    .pq-chart-title { margin: 0 0 8px; font-size: 12px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; color: #475569; }
+    .pq-chart-wrap { position: relative; height: 150px; }
+    .pq-chart-empty { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #94a3b8; pointer-events: none; }
+
+    /* ===== Tab quản lý thủ công: gạch chân navy (cùng tone nút chính) ===== */
+    html body.skin-blue #main-content-wrapper .aps-phanquyen .pq-tabs { margin-bottom: 0; background: transparent; box-shadow: none; }
+    html body.skin-blue #main-content-wrapper .aps-phanquyen .pq-tabs > .nav-tabs { margin: 0 !important; border-bottom: 1px solid #e2e8f0 !important; }
+    html body.skin-blue #main-content-wrapper .aps-phanquyen .pq-tabs > .nav-tabs > li > a,
+    html body.skin-blue #main-content-wrapper .aps-phanquyen .pq-tabs > .nav-tabs > li > a:hover,
+    html body.skin-blue #main-content-wrapper .aps-phanquyen .pq-tabs > .nav-tabs > li > a:focus { margin: 0 8px 0 0; padding: 10px 18px; border: 0 !important; border-bottom: 3px solid transparent !important; border-radius: 8px 8px 0 0 !important; background: transparent !important; color: #64748b !important; font-weight: 700; }
+    html body.skin-blue #main-content-wrapper .aps-phanquyen .pq-tabs > .nav-tabs > li > a:hover { background: #f1f5f9 !important; color: #0f172a !important; }
+    html body.skin-blue #main-content-wrapper .aps-phanquyen .pq-tabs > .nav-tabs > li.active > a,
+    html body.skin-blue #main-content-wrapper .aps-phanquyen .pq-tabs > .nav-tabs > li.active > a:hover,
+    html body.skin-blue #main-content-wrapper .aps-phanquyen .pq-tabs > .nav-tabs > li.active > a:focus { border-bottom-color: #1e3a8a !important; background: #eef2ff !important; color: #1e3a8a !important; }
+    .aps-phanquyen .pq-tabs > .tab-content { padding: 16px 0 0 !important; background: transparent; }
+
+    /* ===== Modal ===== */
+    .pq-modal .pq-title-badge { display: inline-block; margin-left: 10px; padding: 1px 10px; border-radius: 999px; background: rgba(255, 255, 255, .18); color: #fff; font-size: 13px; font-weight: 600; vertical-align: middle; }
+    .pq-modal .pq-title-badge:empty { display: none; }
+    html body.skin-blue .modal.pq-modal .modal-header .box-title > .fa:first-child { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; margin-right: 6px; border-radius: 9px; background: rgba(255, 255, 255, .16); font-size: 15px; }
+    html body.skin-blue .modal.pq-modal .modal-content { border-radius: 14px; box-shadow: 0 24px 60px -20px rgba(15, 23, 42, .45); }
+    html body.skin-blue .modal.pq-modal .aps-form-lable label { color: #334155; font-weight: 600 !important; }
+    .pq-modal .pq-req { margin-left: 2px; color: #dc2626; }
+    .pq-modal .pq-hint { display: block; margin-top: 5px; color: #64748b; font-size: 12px; line-height: 1.45; }
+    .pq-modal textarea.form-control { min-height: 84px; }
+    .pq-modal textarea.pq-sql { min-height: 120px; font-family: Consolas, "Courier New", monospace; font-size: 12.5px; }
+    .pq-modal .pq-check { display: flex; align-items: flex-start; gap: 8px; margin: 0; font-weight: 400; cursor: pointer; }
+    .pq-modal .pq-check input { margin-top: 3px; }
+    .pq-modal [data-kieu][style*="display: none"] { display: none !important; }
+    .modal .select2-container--open, .modal .select2-container--open .select2-dropdown { z-index: 100060 !important; }
+    .modal .select2-results__options { max-height: 220px !important; overflow-y: auto !important; }
+</style>
+
+<script>
+    (function () {
+        if (typeof jQuery === 'undefined') return;
+        var $ = jQuery;
+        $(document).off('shown.bs.modal.__s2fix').on('shown.bs.modal.__s2fix', '.modal', function () {
+            var $modal = $(this);
+            $modal.find('select.select-opt, select[id^="drop"]').each(function () {
+                var $sel = $(this);
+                try { if ($sel.hasClass('select2-hidden-accessible')) $sel.select2('destroy'); } catch (e) { }
+                $sel.select2({ dropdownParent: $modal, width: '100%' });
+            });
+        });
+    })();
+</script>
+<!-- page script -->
+<script src="modules/phanquyen/script/pqcommon.js?v=1.0.0.13"></script>
+<script src="modules/phanquyen/script/nguontusinh.js?v=1.0.0.2"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['NguonTuSinh'] = new NguonTuSinh();
+    $(document).ready(function () {
+        main_doc.NguonTuSinh.init();
+    });
+</script>
+

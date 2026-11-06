@@ -1602,7 +1602,10 @@
     </div>
 </div>
 
-<script src="modules/lichgiang/script/lichgiang.js?v=1.0.0.5"></script>
+<!-- Modal "Yêu cầu đổi lịch" MỚI dùng chung với trang Lịch giảng đường: giao diện (doilich_modal.js) + xử lý (LichGiangNhieuPhong). Thiếu 1 trong 2 file thì tự quay về modal cũ. -->
+<script src="modules/lichgiang/script/doilich_modal.js?v=1.0.0.0"></script>
+<script src="modules/lichgiang/script/lichgiangnhieuphonghoc.js?v=3.19.0.0"></script>
+<script src="modules/lichgiang/script/lichgiang.js?v=1.0.0.7"></script>
 <script src="modules/lichgiang/script/jquery-searchbox.js"></script>
 <script type="text/javascript">
     var main_doc = {};
@@ -1613,6 +1616,8 @@
         // FIX 2026-08-26: Select2 trong modal — re-init voi dropdownParent = modal
         $(document).on('shown.bs.modal', '.modal', function () {
             var $modal = $(this);
+            // Modal đổi lịch mới (doilich_modal.js) tự quản select2 của nó (đã gắn dropdownParent + lọc/dựng lại theo từng lần mở)
+            if ($modal.is('#modal_doilich')) return;
             $modal.find('select.select-opt, select[id^="drop"]').each(function () {
                 var $sel = $(this);
                 // 2026-10-09: select đã được plugin searchBox thay thế (ô chọn giảng viên) thì KHÔNG bọc thêm select2,

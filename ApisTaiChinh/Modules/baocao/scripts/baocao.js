@@ -1176,11 +1176,20 @@ BaoCao.prototype = {
             return;
         }
         delete me._soDong[strKey];
+        delete me._lastSearch[strKey];
+        delete me._cacheRows[strKey];   // tìm kiếm lại = muốn dữ liệu mới, bỏ bản đã nạp để xuất
         edu.system.beginLoading();
         edu.system.makeRequest({
             success: function (data) {
                 if (data.Success) {
-                    me._soDong[strKey] = (data.Data || []).length;
+                    var arrData = data.Data || [], iTongBanGhi = parseInt(data.Pager, 10);
+                    me._soDong[strKey] = arrData.length;
+                    //ghi nhớ lần tải này để xuất Excel đối chiếu: Pager = tổng số bản ghi của cả kết quả (không phải số dòng của trang)
+                    me._lastSearch[strKey] = {
+                        at: new Date().getTime(),
+                        count: isNaN(iTongBanGhi) ? arrData.length : iTongBanGhi,
+                        tong: arrData.length > 0 ? parseFloat(arrData[0].TONGTIEN) : NaN
+                    };
                     me._genTable_KetQua(strKey, data.Data, data.Pager);
                 }
                 else {
@@ -1293,6 +1302,7 @@ BaoCao.prototype = {
                 filters: me._filters_KetQua(strKey),
                 subTitles: function () { return me._subTitles_KetQua(strKey); },
                 fetchAll: function () { return me._fetchRows(strKey); },
+                notice: function (rows) { return me._doiChieuTong(strKey, rows); },
                 columns: me._exportColumns(strKey),
                 extraFilters: function () { return me._exportFilters(); }
             };
@@ -1315,9 +1325,70 @@ BaoCao.prototype = {
         if (iSoDong === 0) return 'Không có dữ liệu để xuất. Vui lòng đổi điều kiện và bấm "Tìm kiếm" lại.';
         return "";
     },
+    // Đối chiếu dữ liệu nạp để xuất với những gì màn hình đang hiển thị. Hệ thống đang chạy thật (phiếu thu phát sinh liên tục) mà lưới chỉ
+    // giữ kết quả của lần tải gần nhất, còn xuất Excel nạp lại từ máy chủ ĐÚNG LÚC bấm nên 2 bên có thể lệch nhau vài bản ghi. Báo rõ trong
+    // hộp thoại xuất (không chặn xuất, không ghi vào file). Trả về chuỗi báo, các ý cách nhau bằng xuống dòng; rỗng = khớp hoàn toàn.
+    _lastSearch: {},   // lần tải gần nhất của từng tab (Tìm kiếm / chuyển trang): { at, count, tong }
+    _gio: function (iMs) {
+        var d = new Date(iMs), f = function (n) { return n < 10 ? "0" + n : "" + n; };
+        return f(d.getHours()) + ":" + f(d.getMinutes()) + ":" + f(d.getSeconds());
+    },
+    _doiChieuTong: function (strKey, rows) {
+        var me = this, arrMsg = [], ls = me._lastSearch[strKey], iSo = rows ? rows.length : 0;
+        var fmt = function (v) { return edu.util.formatCurrency(v); };
+        var dMay = iSo > 0 ? parseFloat(rows[0].TONGTIEN) : NaN;
+        //(1) Màn hình (lần tải gần nhất) so với dữ liệu vừa nạp để xuất: khác nhau nghĩa là có phiếu thu phát sinh / bị sửa trong khoảng giữa
+        if (ls && !isNaN(ls.count)) {
+            if (iSo !== ls.count) {
+                var iChenh = iSo - ls.count;
+                arrMsg.push("Dữ liệu đã thay đổi kể từ lần tải gần nhất trên màn hình (lúc " + me._gio(ls.at) + "): màn hình có " + fmt(ls.count) + " bản ghi, dữ liệu nạp lại lúc "
+                    + me._gio(new Date().getTime()) + " có " + fmt(iSo) + " bản ghi (" + (iChenh > 0 ? "+" : "") + fmt(iChenh) + "). Hệ thống đang có phiếu thu phát sinh liên tục; "
+                    + "file Excel luôn lấy dữ liệu mới nhất tại lúc xuất. Bấm \"Tìm kiếm\" lại nếu muốn màn hình khớp với file.");
+            }
+            else if (!isNaN(ls.tong) && !isNaN(dMay) && Math.abs(ls.tong - dMay) >= 0.5) {
+                arrMsg.push("Số bản ghi bằng nhau nhưng tổng tiền đã đổi từ lần tải gần nhất trên màn hình (lúc " + me._gio(ls.at) + "): " + fmt(ls.tong) + " đ -> " + fmt(dMay)
+                    + " đ (có phiếu thu bị sửa). Bấm \"Tìm kiếm\" lại nếu muốn màn hình khớp với file.");
+            }
+        }
+        //(2) Ngay trong dữ liệu vừa nạp (cùng 1 lần gọi): tổng máy chủ trả (TONGTIEN, dòng đầu) phải bằng tổng cộng các dòng
+        if (!isNaN(dMay)) {
+            var dCong = 0, dCongBoTrung = 0, iTrung = 0, objDa = {}, i, d, id;
+            for (i = 0; i < iSo; i++) {
+                d = parseFloat(rows[i].SOTIEN);
+                if (isNaN(d)) d = 0;
+                dCong += d;
+                id = rows[i].ID;
+                if (id !== undefined && id !== null && id !== "") {
+                    if (objDa[id]) { iTrung++; continue; }
+                    objDa[id] = true;
+                }
+                dCongBoTrung += d;
+            }
+            if (Math.abs(dCong - dMay) >= 0.5) {
+                var strMsg = "Trong chính dữ liệu vừa nạp: cộng " + fmt(iSo) + " dòng = " + fmt(dCong) + " đ, KHÁC tổng máy chủ trả về cùng lần đó = " + fmt(dMay)
+                    + " đ, lệch " + fmt(dCong - dMay) + " đ. Dòng Tổng trong file Excel luôn là phép cộng đúng các dòng có trong file; số lệch nằm ở dữ liệu máy chủ trả về.";
+                if (iTrung > 0) {
+                    strMsg += " Có " + iTrung + " dòng trùng ID; nếu bỏ các dòng trùng thì tổng = " + fmt(dCongBoTrung) + " đ"
+                        + (Math.abs(dCongBoTrung - dMay) < 0.5 ? " (khớp tổng máy chủ)." : ".");
+                }
+                arrMsg.push(strMsg);
+                console.log("[baocao] lệch tổng " + strKey + ": cộng các dòng=" + dCong + ", máy chủ=" + dMay + ", số dòng=" + iSo + ", dòng trùng ID=" + iTrung);
+            }
+        }
+        return arrMsg.join("\n");
+    },
     // Nạp lại toàn bộ dòng của 1 tab bằng đúng API + điều kiện đang chọn (Promise<mảng>)
+    // Lưới trên màn hình chỉ giữ 1 trang đầu (hoặc tối đa iMaxRows_HienThi dòng) nên xuất đủ buộc phải nạp lại từ máy chủ.
+    // Kết quả nạp được giữ lại: bấm Xuất Excel lần nữa (đổi lọc trong hộp thoại, lỡ đóng...) với CÙNG điều kiện thì lấy luôn, không nạp lại.
+    // Bấm "Tìm kiếm" hoặc quá iCacheMs thì bỏ để lấy dữ liệu mới.
+    iCacheMs: 10 * 60 * 1000,
+    iCacheMaxRows: 60000,
+    _cacheRows: {},
     _fetchRows: function (strKey) {
         var me = this, cfg = me._cfgKetQua[strKey], objReq = me._reqKetQua(strKey, true);
+        var strSig = objReq ? JSON.stringify(objReq.data) : "", hit = me._cacheRows[strKey];
+        if (objReq && hit && hit.sig === strSig && (new Date().getTime() - hit.at) < me.iCacheMs) return Promise.resolve(hit.rows);
+        delete me._cacheRows[strKey];
         return new Promise(function (resolve, reject) {
             if (!objReq) { reject(new Error("Vui lòng chọn khoản thu.")); return; }
             edu.system.makeRequest({
@@ -1325,6 +1396,7 @@ BaoCao.prototype = {
                     if (!data.Success) { reject(new Error(data.Message)); return; }
                     var arr = data.Data || [];
                     me._xuatBiCat[strKey] = cfg.paged && arr.length >= me.iMaxRows_Export;
+                    if (arr.length > 0 && arr.length <= me.iCacheMaxRows) me._cacheRows[strKey] = { sig: strSig, at: new Date().getTime(), rows: arr };
                     resolve(arr);
                 },
                 error: function (er) { reject(new Error(JSON.stringify(er))); },

@@ -917,6 +917,13 @@
                 <div class="block-label light-gray-bg text-dark">
                     <i class="fas fa-file-spreadsheet"></i><span>Tổng điểm</span>
                 </div>
+                <!-- Phạm vi tổng hợp: Toàn khóa / Năm học / Học kỳ (nạp bằng genHtml_TongDiem) -->
+                <div class="tongdiem-phamvi" style="padding: 8px 12px 6px;">
+                    <select id="selTongDiem_PhamVi" class="form-select form-select-sm" aria-label="Phạm vi tổng điểm" title="Phạm vi tổng hợp điểm">
+                        <option value="TOANKHOA">Toàn khóa</option>
+                    </select>
+                    <select id="selTongDiem_Ky" class="form-select form-select-sm" style="display: none; margin-top: 6px;" aria-label="Chọn năm học hoặc học kỳ"></select>
+                </div>
                 <ul class="list-unstyled mb-0">
                     <li><span class="subject">Tổng số tín chỉ</span><span id="lblTongTinChi"></span></li>
                     <li><span class="subject">Tổng số tín chỉ tích lũy</span><span id="lblTichLuy"></span></li>
@@ -1409,6 +1416,15 @@ DiemHoc.prototype = {
             me.getList_CanhBao();
         });
 
+        // Hộp "Tổng điểm": đổi phạm vi (Toàn khóa / Năm học / Học kỳ) và đổi năm học / học kỳ cụ thể
+        $('#selTongDiem_PhamVi').on('change', function () {
+            me.genCombo_TongDiemKy();
+            me.render_TongDiem();
+        });
+        $('#selTongDiem_Ky').on('change', function () {
+            me.render_TongDiem();
+        });
+
         $('#dropSearch_ThoiGianDangKy').on('select2:select', function (e) {
             me.getList_KetQuaDangKy(me.strNguoiHoc_Id);
         });
@@ -1565,29 +1581,80 @@ DiemHoc.prototype = {
         });
         $(point).popover('show');
     },
+    /*------------------------------------------
+    --Discription: Hộp "Tổng điểm" — chọn phạm vi Toàn khóa / Năm học / Học kỳ
+    --Nguồn: rsDiemTrungBinhChung, trường PHAMVITONGHOPDIEM_TEN = TOANKHOA | NAMHOC | HOCKY (NHIEUKY: không dùng)
+    --  Toàn khóa: DAOTAO_THOIGIANDAOTAO_ID === null (điều kiện cũ, giữ nguyên)
+    --  Năm học  : khóa theo NAMHOC
+    --  Học kỳ   : khóa theo NAMHOC + DAOTAO_THOIGIANDAOTAO_KY, DOTHOC === null (giống khối tổng kết từng kỳ)
+    -------------------------------------------*/
     genHtml_TongDiem: function () {
         var me = this;
-        var jsonSV = me.dtKetQua.rsDiemTrungBinhChung;
-
-        var temp = jsonSV.find(element => element.DAOTAO_THOIGIANDAOTAO_ID === null && element.LOAIDIEMTRUNGBINH_MA === 'TRUNGBINHCHUNG' && element.THUOCTINHLANTINH === 0 && element.THANGDIEM_MA === '10');
-        
-        temp !== undefined ? $("#lblTongTinChi").html(edu.util.returnEmpty(temp.TONGSOTINCHI)) : $("#lblTongTinChi").html("");
-        
-        //temp = jsonSV.find(element => element.DAOTAO_THOIGIANDAOTAO_ID === null && element.LOAIDIEMTRUNGBINH_MA === 'TRUNGBINHCHUNG' && element.THUOCTINHLANTINH === 0 && element.THANGDIEM_MA === '10');
-        temp !== undefined ? $("#lblTrungBinh10").html(edu.util.returnEmpty(temp.DIEMTRUNGBINH)) : $("#lblTrungBinh10").html("");
-
-        temp = jsonSV.find(element => element.DAOTAO_THOIGIANDAOTAO_ID === null && element.LOAIDIEMTRUNGBINH_MA === 'TRUNGBINHCHUNG' && element.THUOCTINHLANTINH === 0 && element.THANGDIEM_MA === '4');
-        temp !== undefined ? $("#lblTrungBinh4").html(edu.util.returnEmpty(temp.DIEMTRUNGBINH)) : $("#lblTrungBinh4").html("");
-        console.log(jsonSV.filter(element => element.DAOTAO_THOIGIANDAOTAO_ID === null && element.LOAIDIEMTRUNGBINH_MA === 'TRUNGBINHCHUNG' && element.THUOCTINHLANTINH === 0 && element.THANGDIEM_MA === '4'));
-        temp = jsonSV.find(element => element.DAOTAO_THOIGIANDAOTAO_ID === null && element.LOAIDIEMTRUNGBINH_MA === 'TRUNGBINHTICHLUY' && element.THUOCTINHLANTINH === 0 && element.THANGDIEM_MA === '10');
-        temp !== undefined ? $("#lblTichLuy").html(edu.util.returnEmpty(temp.TONGSOTINCHI)) : $("#lblTichLuy").html("");
-
-        //temp = jsonSV.find(element => element.DAOTAO_THOIGIANDAOTAO_ID === null && element.LOAIDIEMTRUNGBINH_MA === 'TRUNGBINHTICHLUY' && element.THUOCTINHLANTINH === 0 && element.THANGDIEM_MA === '10');
-        temp !== undefined ? $("#lblTichLuy10").html(edu.util.returnEmpty(temp.DIEMTRUNGBINH)) : $("#lblTichLuy10").html("");
-
-        temp = jsonSV.find(element => element.DAOTAO_THOIGIANDAOTAO_ID === null && element.LOAIDIEMTRUNGBINH_MA === 'TRUNGBINHTICHLUY' && element.THUOCTINHLANTINH === 0 && element.THANGDIEM_MA === '4');
-        temp !== undefined ? $("#lblTichLuy4").html(edu.util.returnEmpty(temp.DIEMTRUNGBINH)) : $("#lblTichLuy4").html("");
-        console.log(jsonSV.filter(element => element.DAOTAO_THOIGIANDAOTAO_ID === null && element.LOAIDIEMTRUNGBINH_MA === 'TRUNGBINHTICHLUY' && element.THUOCTINHLANTINH === 0 && element.THANGDIEM_MA === '4'));
+        var arr = me.dtKetQua.rsDiemTrungBinhChung || [];
+        var $pv = $("#selTongDiem_PhamVi");
+        $pv.empty().append($('<option>').val("TOANKHOA").text("Toàn khóa"));
+        if (arr.some(function (e) { return e.PHAMVITONGHOPDIEM_TEN == 'NAMHOC'; })) $pv.append($('<option>').val("NAMHOC").text("Năm học"));
+        if (arr.some(function (e) { return e.PHAMVITONGHOPDIEM_TEN == 'HOCKY' && e.DOTHOC === null; })) $pv.append($('<option>').val("HOCKY").text("Học kỳ"));
+        $pv.val("TOANKHOA"); // nạp lại dữ liệu (đổi chương trình/sinh viên) thì về Toàn khóa
+        me.genCombo_TongDiemKy();
+        me.render_TongDiem();
+    },
+    key_TongDiem: function (e, strPhamVi) {
+        return strPhamVi == 'HOCKY' ? String(e.NAMHOC) + '|' + e.DAOTAO_THOIGIANDAOTAO_KY : String(e.NAMHOC);
+    },
+    genCombo_TongDiemKy: function () {
+        var me = this;
+        var strPhamVi = $("#selTongDiem_PhamVi").val();
+        var $ky = $("#selTongDiem_Ky");
+        $ky.empty();
+        if (strPhamVi != 'NAMHOC' && strPhamVi != 'HOCKY') { $ky.hide(); return; }
+        var arrDaCo = {}, ds = [];
+        (me.dtKetQua.rsDiemTrungBinhChung || []).forEach(function (e) {
+            if (e.PHAMVITONGHOPDIEM_TEN != strPhamVi) return;
+            if (strPhamVi == 'HOCKY' && e.DOTHOC !== null) return;
+            var strKey = me.key_TongDiem(e, strPhamVi);
+            if (arrDaCo[strKey]) return;
+            arrDaCo[strKey] = true;
+            ds.push({
+                key: strKey,
+                nam: String(e.NAMHOC),
+                ky: Number(e.DAOTAO_THOIGIANDAOTAO_KY) || 0,
+                label: strPhamVi == 'NAMHOC' ? 'Năm học ' + e.NAMHOC : 'Năm học ' + e.NAMHOC + ' - Học kỳ ' + e.DAOTAO_THOIGIANDAOTAO_KY
+            });
+        });
+        ds.sort(function (a, b) { return b.nam.localeCompare(a.nam) || (b.ky - a.ky); }); // mới nhất lên đầu, giống thứ tự các bảng điểm
+        ds.forEach(function (d) { $ky.append($('<option>').val(d.key).text(d.label)); });
+        $ky.val(ds.length ? ds[0].key : '').show();
+    },
+    find_TongDiem: function (strLoai, strThang, strPhamVi) {
+        var me = this;
+        if (!strPhamVi) strPhamVi = $("#selTongDiem_PhamVi").val() || 'TOANKHOA';
+        var strKey = $("#selTongDiem_Ky").val();
+        return (me.dtKetQua.rsDiemTrungBinhChung || []).find(function (e) {
+            if (e.LOAIDIEMTRUNGBINH_MA !== strLoai || e.THUOCTINHLANTINH !== 0 || e.THANGDIEM_MA !== strThang) return false;
+            if (strPhamVi == 'NAMHOC' || strPhamVi == 'HOCKY') {
+                if (e.PHAMVITONGHOPDIEM_TEN != strPhamVi) return false;
+                if (strPhamVi == 'HOCKY' && e.DOTHOC !== null) return false;
+                return me.key_TongDiem(e, strPhamVi) === strKey;
+            }
+            return e.DAOTAO_THOIGIANDAOTAO_ID === null; // Toàn khóa: điều kiện cũ
+        });
+    },
+    render_TongDiem: function () {
+        var me = this;
+        var set = function (strId, objRow, strField) {
+            $("#" + strId).html(objRow !== undefined ? edu.util.returnEmpty(objRow[strField]) : "...");
+        };
+        var chung10 = me.find_TongDiem('TRUNGBINHCHUNG', '10');
+        var tichLuy10 = me.find_TongDiem('TRUNGBINHTICHLUY', '10');
+        // Tổng số tín chỉ chương trình là hằng số của chương trình, không đổi theo phạm vi → luôn lấy từ bản ghi toàn khóa
+        set("lblTongTinChiCTDT", me.find_TongDiem('TRUNGBINHCHUNG', '10', 'TOANKHOA'), 'TONGSOTINCHICTDT');
+        set("lblTongTinChi", chung10, 'TONGSOTINCHI');
+        set("lblTrungBinh10", chung10, 'DIEMTRUNGBINH');
+        set("lblTrungBinh4", me.find_TongDiem('TRUNGBINHCHUNG', '4'), 'DIEMTRUNGBINH');
+        set("lblTichLuy", tichLuy10, 'TONGSOTINCHI');
+        set("lblTichLuy10", tichLuy10, 'DIEMTRUNGBINH');
+        set("lblTichLuy4", me.find_TongDiem('TRUNGBINHTICHLUY', '4'), 'DIEMTRUNGBINH');
     },
     genHtml_BangDiem: function () {
         var me = this;
@@ -1656,11 +1723,13 @@ DiemHoc.prototype = {
             htmlBangDiem += '</table>';
             htmlBangDiem += '<div class="row py-4">';
             htmlBangDiem += '<div class="synthetic-line"></div>';
+            htmlBangDiem += '<div class="col-12"><div style="padding: 0 20px; font-weight: 600; color: #223771; margin-bottom: 6px;">Tổng kết học kỳ</div></div>';
             htmlBangDiem += '<div class="col-12 col-md-6">';
             htmlBangDiem += '<div class="summary-row">';
             htmlBangDiem += '<span class="color-66">Tổng tín chỉ</span>';
             var temp = me.dtKetQua.rsDiemTrungBinhChung.find(element => element.DAOTAO_THOIGIANDAOTAO_ID !== null && element.LOAIDIEMTRUNGBINH_MA === 'TRUNGBINHCHUNG' && element.THUOCTINHLANTINH === 0 && element.THANGDIEM_MA === '10' && element.NAMHOC === strNamHoc && element.DAOTAO_THOIGIANDAOTAO_KY == strHocKy && element.DOTHOC === null && element.PHAMVITONGHOPDIEM_TEN == 'HOCKY');
             var diem = temp !== undefined ? edu.util.returnEmpty(temp.TONGSOTINCHI) : "...";
+            var tempChung10 = temp; // giữ bản ghi TRUNGBINHCHUNG/10: temp bị ghi đè bởi TRUNGBINHTICHLUY ở dưới, "Điểm trung bình hệ 10" cần dùng lại bản này
             //console.log("TONGSOTINCHI");
             //console.log(temp);
             htmlBangDiem += '<span>'+ diem +'</span>';
@@ -1677,7 +1746,7 @@ DiemHoc.prototype = {
             htmlBangDiem += '<div class="col-12 col-md-6">';
             htmlBangDiem += '<div class="summary-row">';
             htmlBangDiem += '<span class="color-66">Điểm trung bình hệ 10</span>';
-            diem = temp !== undefined ? edu.util.returnEmpty(temp.DIEMTRUNGBINH) : "...";
+            diem = tempChung10 !== undefined ? edu.util.returnEmpty(tempChung10.DIEMTRUNGBINH) : "...";
             htmlBangDiem += '<span>' + diem + '</span>';
             htmlBangDiem += '</div>';
             htmlBangDiem += '</div>';
