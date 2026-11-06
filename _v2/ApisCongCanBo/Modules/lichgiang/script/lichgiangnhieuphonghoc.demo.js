@@ -61,9 +61,14 @@
                  rsDanhMucPhong: PH.slice(0, 12).map(function (p) { return { ID: p.ID, TENPHONGHOC: p.TEN.replace(/\(\d+\)$/, '') }; }),
                  rsDanhMucGiangVien: [{ ID: 'NS1', HODEM: 'Nguyễn Văn', TEN: 'Hùng', MASO: 'CB001' }, { ID: 'NS3', HODEM: 'Lê Quang', TEN: 'Minh', MASO: 'CB102' }] };
     };
+    /* Kéo gốc lần 12–13: hộp đổi lịch hỏi hàm này cho TỪNG Ô của lưới tuần → phòng P4 luôn vướng; thứ 4 tiết 7-9 vướng lịch sinh viên (thử ô vàng) */
     fx[C + 'KiemTraLichCanDoi'] = function (o) {
-        return o.strIdPhongHoc_ThayDoi === 'P4' ? [{ HOPLE: 0, THONGTINLOI: 'Phòng A2-104 đã có lớp IT2000.03 trong các tiết này' }] : [{ HOPLE: 1 }];
+        if (o.strIdPhongHoc_ThayDoi === 'P4') return [{ HOPLE: 0, THONGTINLOI: 'Phòng A2-104 đã có lớp IT2000.03 trong các tiết này' }];
+        if (parse(o.strNgayHoc_ThayDoi).getDay() === 3 && +o.strTietBatDau_ThayDoi === 7) return [{ HOPLE: 0, THONGTINLOI: 'Sinh viên lớp IT3200.02 có lịch học khác tiết 7-9' }];
+        return [{ HOPLE: 1 }];
     };
+    /* Kéo gốc lần 12–13: sĩ số lớp (TONGSOSV) → sức chứa tối thiểu mặc định khi lọc phòng trong hộp đổi lịch */
+    fx['CC_GiangVien_TuGhiNhan/LayChiTiet'] = [{ TONGSOSV: 45, TEN: 'Có mặt', SOLUONG: 40 }];
     fx[C + 'GuiYeuCauDoiLich'] = [];
     /* Kéo gốc 30/9 – 1/10: phòng trống một ngày + khung giờ (TKB_CHUNG.LAYPHONGHOCTRONG) — phòng không có lịch nào chạm
        khoảng giờ gửi lên; lọc theo loại phòng, bỏ qua buổi strIdLichBoQua. Phòng 3 luôn "bận" ngày Chủ nhật để thử trống một phần. */

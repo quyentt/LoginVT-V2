@@ -1702,7 +1702,7 @@ converted: tệp màn đã có trong _v2 chưa (GET đúng đường dẫn vỏ 
 
 </details>
 
-### `ums.canQuyetKhoa(url)`  <sub>can-quyet.js:313</sub>
+### `ums.canQuyetKhoa(url)`  <sub>can-quyet.js:317</sub>
 
 _(chưa có chú thích trong mã)_
 
@@ -1757,6 +1757,12 @@ _(chưa có chú thích trong mã)_
      · Gốc đổi resolveNguoiHocId: khi nhúng chỉ lấy main_doc.LichGiang.strSinhVien_Id (bỏ
        window._embeddedSinhVien_Id — trang XLHV gốc nhúng bằng biến đó nay rơi về id CÁN BỘ, lỗi của gốc).
        Ở đây id người học luôn truyền vào mount (o.nguoiHocId) nên không đổi, không lặp lỗi đó.
+   Kéo gốc lần 12–13 (gốc 4/11 — CCB hoatdong/DaQHHT, nhapdiem/inbangdiem; SV hoso/DaQHHT, Cổng SV diemhoc cùng lô):
+     · Hộp "Tổng điểm" có ô chọn PHẠM VI Toàn khóa / Năm học / Học kỳ + ô năm học / học kỳ cụ thể — veTongDiem(el, rs, o)
+       (QUA CỜ mount(host, { phamVi: true }); mặc định vẫn veTongKet toàn khóa như cũ). Dòng "Tổng số tín chỉ chương trình"
+       luôn lấy bản ghi toàn khóa (hằng số của chương trình — như gốc).
+     · Dưới bảng mỗi học kỳ thêm nhãn "Tổng kết học kỳ" — QUA CỜ veBangDiem(…, { nhanTongKet: true }) (mount bật theo phamVi).
+     · Gốc sửa lỗi "Điểm trung bình hệ 10" của học kỳ lấy nhầm bản ghi tích luỹ (tempChung10) — ở đây đã đúng từ đầu.
 ```
 
 </details>

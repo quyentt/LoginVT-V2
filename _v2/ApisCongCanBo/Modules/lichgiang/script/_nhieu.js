@@ -49,6 +49,19 @@
      onTuan(tuầnMới, tuầnCũ)   gọi khi đổi tuần, TRƯỚC khi nạp lại (màn dời khoảng ngày lọc theo tuần)
      N.chon(dd/mm/yyyy) nhảy tới tuần chứa ngày đó (nạp lại) · N.thanh(html) · ums.lg.chayNhom(ds, n, fn) dùng chung
 
+   Kéo gốc lần 12–13 (2/11, 7/11 — lichgiangnhieuphonghoc) — thêm hai tuỳ chọn, KHÔNG bắt buộc, không truyền thì như trước:
+     oTrongKhoa(dòng) → chữ   có chữ thì ô Trống của dòng đó vẽ thành <div> mờ (lớp is-khoa, title = chữ), không bấm được, không "+ Đổi lịch"
+                        (phòng ngoài danh mục phòng được đổi lịch vào)
+     ngayKhacThang: true  lịch tháng: ngày tràn sang tháng khác (hàng đầu / cuối) bấm được → chọn tuần chứa ngày đó (lịch lật sang tháng đó)
+
+   Kéo gốc lần 12/13 (7/11 — "Tra bận / rỗi" + xuất Excel theo mô-đun của lichgiangnhieuphonghocgiangvien) — đều KHÔNG bắt
+   buộc, không truyền thì khung chạy y như trước (màn phòng học không truyền):
+     truocLuoi: HTML     khối tĩnh đặt NGAY TRÊN lưới (trong thân khung lưới, trước dòng tóm tắt `thanh`) — thanh "Tra bận / rỗi"
+                        của màn giảng viên; ô trong đó được ui.enhance cùng màn
+     xuat.module        danh sách module (như cfg.module) CHỈ dùng khi xuất Excel / CSV — lưới tuần vẫn vẽ theo buổi;
+                        cần kèm khoangTiet(buổi). Gốc: exportToExcel_Module (mỗi buổi chia mô-đun 3 tiết, ô trống ghi "Trống")
+     N.chiTiet(buổi, dòng)   mở hộp chi tiết cho một buổi KHÔNG nằm trong lưới tuần (bảng bận/rỗi) — gốc: showScheduleDetail(objLichTruyen)
+
    Không chép (lỗi rõ của bản gốc, chung cho hai màn):
      · Nạp chồng: đổi đơn vị / tòa nhà, "Xem tất cả", đổi tháng… bắn 2–3 lượt
        nạp cùng lúc, lượt sau xoá mảng lượt trước đang đổ vào → buổi lẫn / lặp.
@@ -125,7 +138,8 @@
                     thanhTuan +
                     '<button type="button" class="ums-btn ums-btn--out-primary" data-a="tuan1"><span>Tuần sau</span><i class="fa-light fa-chevron-right"></i></button>' +
                 '</div></div>' +
-                '<div class="ums-panel__body ums-panel__body--flush">' + (cfg.thanh ? '<div class="lgn-thanhloc" data-z="thanhloc" hidden></div>' : '') +
+                '<div class="ums-panel__body ums-panel__body--flush">' + (cfg.truocLuoi ? '<div class="lgn-truocluoi">' + cfg.truocLuoi + '</div>' : '') +
+                (cfg.thanh ? '<div class="lgn-thanhloc" data-z="thanhloc" hidden></div>' : '') +
                 '<div class="lgn-khung" data-z="khung"></div></div></section>';
         ui.enhance(root);
         function z(k) { return root.querySelector('[data-z="' + k + '"]'); }
@@ -220,9 +234,10 @@
                 if (kh.su.length) return '<div class="lgn-md lgn-md--ban"' + st + '>' + kh.su.map(function (y) { return veSu(d, y); }).join('') + '</div>';
                 var nhan = '<span>T' + m.tu + '-' + m.den + '</span><b>Trống</b>';
                 var loc = cfg.oLoc && cfg.oLoc(s, m) ? ' is-loc' : '';
-                return cfg.oTrong
+                var khoa = cfg.oTrongKhoa ? cfg.oTrongKhoa(d) : '';          // kéo gốc 12–13: ô Trống của dòng không được đổi lịch vào → không bấm được
+                return cfg.oTrong && !khoa
                     ? '<button type="button" class="lgn-md lgn-md--trong' + loc + '"' + st + ' data-trong="' + esc(cfg.khoa(d)) + '|' + s + '|' + m.tu + '|' + m.den + '" title="Bấm để đổi lịch vào phòng này, tiết ' + m.tu + '-' + m.den + '">' + nhan + '<em>+ Đổi lịch</em></button>'
-                    : '<div class="lgn-md lgn-md--trong' + loc + '"' + st + '>' + nhan + '</div>';
+                    : '<div class="lgn-md lgn-md--trong' + loc + (khoa ? ' is-khoa' : '') + '"' + st + (khoa ? ' title="' + esc(khoa) + '"' : '') + '>' + nhan + '</div>';
             }).join('') + '</div>';
         }
         function veMotDong(d, i) {
@@ -321,7 +336,12 @@
                 var lui = (dau.getDay() + 6) % 7, tong = Math.ceil((lui + soNgay) / 7) * 7, h = '';
                 for (var c = 0; c < tong; c++) {
                     var d = new Date(nam, th, c - lui + 1), s = dmy(d), trongTuan = tuan && tuan.days.indexOf(s) >= 0 ? ' is-tuan' : '';
-                    if (d.getMonth() !== th) { h += '<span class="ums-lthang__o is-khac' + trongTuan + '">' + d.getDate() + '</span>'; continue; }
+                    if (d.getMonth() !== th) {        // kéo gốc 12–13 (cfg.ngayKhacThang): ngày tràn tháng khác bấm được → chọn tuần chứa ngày đó
+                        h += cfg.ngayKhacThang
+                            ? '<button type="button" class="ums-lthang__o is-khac is-bam' + trongTuan + '" data-ngay="' + s + '" title="' + s + '">' + d.getDate() + '</button>'
+                            : '<span class="ums-lthang__o is-khac' + trongTuan + '">' + d.getDate() + '</span>';
+                        continue;
+                    }
                     h += '<button type="button" class="ums-lthang__o' + (s === chon ? ' is-active' : '') + (dmy(hom) === s ? ' is-today' : '') + (coNgay[s] ? ' has-lich' : '') + trongTuan + '" data-ngay="' + s + '">' + d.getDate() + '</button>';
                 }
                 host.innerHTML = '<div class="ums-lthang"><div class="ums-lthang__head"><button type="button" class="ums-iconbtn" data-th="-1" title="Tháng trước"><i class="fa-light fa-chevron-left"></i></button>' +
@@ -376,6 +396,10 @@
             var p = b.getAttribute('data-su').split('|'), ds = lich[p[0]] || [], r = ds[Number(p[1])];
             if (!r) { ui.toast('Không tìm thấy thông tin lịch học!', 'warn'); return; }
             var dong = dsDong.filter(function (d) { return String(cfg.khoa(d)) === p[0]; })[0];
+            chiTietCua(r, dong);
+        }
+        /* Hộp chi tiết một buổi — tách ra (7/11) để màn mở được cho buổi ngoài lưới tuần (N.chiTiet) */
+        function chiTietCua(r, dong) {
             var c = cfg.chiTiet(r, dong), cx = 'Chưa có thông tin';
             function o(nhan, v, rong) { return '<div class="ums-field' + (rong ? ' lgn-ct__rong' : '') + '"><label class="ums-field__label">' + nhan + '</label><div class="ums-field__control"><div class="lgn-ct__v">' + esc(v || cx) + '</div></div></div>'; }
             var nc = cfg.nutChiTiet, duLieuNut = null;
@@ -466,7 +490,7 @@
         function thuCua(s) { var d = parse(s); return THU[d.getDay()] + ' (' + hai(d.getDate()) + '/' + hai(d.getMonth() + 1) + ')'; }
         /* Xuất theo module (pull 29/9): mỗi dòng của lưới ra N dòng = N module; lịch dài hơn một module thì gộp ô */
         function excelModule(dong, kq, ngay, bd, kt, ban) {
-            var X = cfg.xuat, cot = 3 + ngay.length, M = cfg.module;
+            var X = cfg.xuat, cot = 3 + ngay.length, M = X.module || cfg.module;
             var h = '<html xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="utf-8"></head><body><table border="1">' +
                 '<tr><td colspan="' + cot + '" style="font-size:16pt;font-weight:bold;text-align:center">' + esc(X.tieuDeTep) + (ban ? ' (ĐÁNH DẤU PHÒNG BẬN)' : '') + '</td></tr>' +
                 '<tr><td colspan="' + cot + '">Thời gian: ' + bd + ' - ' + kt + '</td></tr>' +
@@ -495,7 +519,7 @@
             return h + '</table></body></html>';
         }
         function csvModule(dong, kq, ngay, bd, kt, ban) {
-            var X = cfg.xuat, M = cfg.module;
+            var X = cfg.xuat, M = X.module || cfg.module;
             function c(v) { v = String(e(v)); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
             function phut(r) { return (parseInt(r.GIOBATDAU, 10) || 0) * 60 + (parseInt(r.PHUTBATDAU, 10) || 0); }
             var dongs = [[X.tieuDeTep + (ban ? ' (ĐÁNH DẤU PHÒNG BẬN)' : '')], ['Thời gian: ' + bd + ' - ' + kt], ['Số ' + cfg.donVi + ': ' + dong.length], ['Ngày xuất: ' + new Date().toLocaleString('vi-VN')]];
@@ -515,7 +539,7 @@
             return dongs.map(function (r) { return r.map(c).join(','); }).join('\r\n');
         }
         function excel(dong, kq, ngay, bd, kt, ban) {
-            if (cfg.module) return excelModule(dong, kq, ngay, bd, kt, ban);
+            if (cfg.module || cfg.xuat.module) return excelModule(dong, kq, ngay, bd, kt, ban);
             var X = cfg.xuat, cot = 3 + ngay.length;
             var h = '<html xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="utf-8"></head><body><table border="1">' +
                 '<tr><td colspan="' + cot + '" style="font-size:16pt;font-weight:bold;text-align:center">' + esc(X.tieuDeTep) + (ban ? ' (ĐÁNH DẤU PHÒNG BẬN)' : '') + '</td></tr>' +
@@ -538,7 +562,7 @@
             return h + '</table></body></html>';
         }
         function csv(dong, kq, ngay, bd, kt, ban) {
-            if (cfg.module) return csvModule(dong, kq, ngay, bd, kt, ban);
+            if (cfg.module || cfg.xuat.module) return csvModule(dong, kq, ngay, bd, kt, ban);
             var X = cfg.xuat;
             function c(v) { v = String(e(v)); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
             var dongs = [[X.tieuDeTep], ['Thời gian: ' + bd + ' - ' + kt], ['Số ' + cfg.donVi + ': ' + dong.length], [], ['STT'].concat(X.csvDau, ngay.map(thuCua))];
@@ -578,6 +602,7 @@
             veLai: veLai,
             chon: function (s) { return Promise.resolve(L.chon(s)); },
             thanh: function (html) { var t = z('thanhloc'); if (!t) return; t.innerHTML = html || ''; t.hidden = !html; },
+            chiTiet: chiTietCua,
             get tuan() { return tuan; }
         };
     };

@@ -9,6 +9,8 @@
    điểm danh, ô chọn cả cột (như gốc). Buổi lấy theo người đăng nhập.
    Nối tầng: Thời gian → Học phần (ums.pat.chain). Học phần của gốc không phụ
    thuộc thời gian; khoá theo luật chung — chọn thời gian mới chọn học phần.
+   Kéo gốc lần 13 (7/11): mẫu báo cáo gửi thêm strDangKy_LopHocPhan_Id cho MỖI lớp đã chọn
+   (cùng giá trị strDaoTao_LopHocPhan_Id) — bật cfg.dangKyLop của khung chung, như nguoihoctheokhoa.
    ========================================================================= */
 (function () {
     'use strict';
@@ -18,6 +20,7 @@
     function get(m, o) { return ums.api.call(Object.assign({ action: 'NS_ThongTinCanBo/' + m, method: 'GET', strNhanSu_HoSoCanBo_Id: uid() }, o || {})).then(function (r) { return arr(r.data); }); }
     ums.lg.nguoiHoc(document.getElementById('lg-nguoihoc'), {
         tieuDe: 'Danh sách người học theo lớp',
+        dangKyLop: true,   // kéo gốc lần 13 (7/11): mẫu báo cáo gửi thêm strDangKy_LopHocPhan_Id cùng giá trị mỗi lớp (gốc 4/11)
         dsThoiGian: function () { return get('LayDSThoiGianTheoLichCaNhan', { strDaoTao_ThoiGianDaoTao_Id: '' }); },
         dsHocPhan: function () { return get('LayDSHocPhanTheoLichCaNhan'); },
         dsLop: function (v) { return get('LayDSLopHocPhanTheoLichCaNhan', { strDaoTao_HocPhan_Id: v('hp'), strDaoTao_ThoiGianDaoTao_Id: v('tg') }); },

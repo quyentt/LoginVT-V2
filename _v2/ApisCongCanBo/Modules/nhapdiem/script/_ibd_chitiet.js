@@ -68,9 +68,16 @@
 
     /* ---------- Điểm TB · Tích luỹ khối · Rèn luyện (vẽ bằng ums.diemHoc) --- */
     ibd.diemTB = function (r) {
+        /* Kéo gốc lần 13 (gốc 4/11): hộp có cột trái "Tổng điểm" (7 dòng kể cả "Tổng số tín chỉ chương trình",
+           chọn phạm vi Toàn khóa / Năm học / Học kỳ) + cột phải bảng điểm (gốc col-3 / col-9) — cùng khung .ums-dh của tầng chung. */
         var h = hop('Điểm trung bình', 'fa-chart-simple', r).q('bang');
         get('SV_ThongTin/KetQuaHocTapCaNhan', { strChucNang_Id: cn(), strQLSV_NguoiHoc_Id: r.QLSV_NGUOIHOC_ID, strDaoTao_ChuongTrinh_Id: r.DAOTAO_TOCHUCCHUONGTRINH_ID })
-            .then(function (x) { var d = x.data || {}; ums.diemHoc.veBangDiem(h, arr(d.rsDiemKetThucHocPhan), arr(d.rsDiemTrungBinhChung), { chiTiet: false, ghiChu: false }); }).catch(loi(h));
+            .then(function (x) {
+                var d = x.data || {};
+                h.innerHTML = '<div class="ums-dh"><aside class="ums-dh__trai"><div class="ums-dh__nhom">Tổng điểm</div><div data-x="tong"></div></aside><div class="ums-dh__phai" data-x="bd"></div></div>';
+                ums.diemHoc.veTongDiem(h.querySelector('[data-x="tong"]'), arr(d.rsDiemTrungBinhChung), { ctdt: true });
+                ums.diemHoc.veBangDiem(h.querySelector('[data-x="bd"]'), arr(d.rsDiemKetThucHocPhan), arr(d.rsDiemTrungBinhChung), { chiTiet: false, ghiChu: false, nhanTongKet: true });
+            }).catch(loi(h));
     };
     ibd.tichLuy = function (r) {
         var h = hop('Chi tiết điểm theo khối', 'fa-layer-group', r).q('bang');

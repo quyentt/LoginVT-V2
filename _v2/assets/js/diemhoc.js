@@ -43,6 +43,12 @@
      · Gốc đổi resolveNguoiHocId: khi nhúng chỉ lấy main_doc.LichGiang.strSinhVien_Id (bỏ
        window._embeddedSinhVien_Id — trang XLHV gốc nhúng bằng biến đó nay rơi về id CÁN BỘ, lỗi của gốc).
        Ở đây id người học luôn truyền vào mount (o.nguoiHocId) nên không đổi, không lặp lỗi đó.
+   Kéo gốc lần 12–13 (gốc 4/11 — CCB hoatdong/DaQHHT, nhapdiem/inbangdiem; SV hoso/DaQHHT, Cổng SV diemhoc cùng lô):
+     · Hộp "Tổng điểm" có ô chọn PHẠM VI Toàn khóa / Năm học / Học kỳ + ô năm học / học kỳ cụ thể — veTongDiem(el, rs, o)
+       (QUA CỜ mount(host, { phamVi: true }); mặc định vẫn veTongKet toàn khóa như cũ). Dòng "Tổng số tín chỉ chương trình"
+       luôn lấy bản ghi toàn khóa (hằng số của chương trình — như gốc).
+     · Dưới bảng mỗi học kỳ thêm nhãn "Tổng kết học kỳ" — QUA CỜ veBangDiem(…, { nhanTongKet: true }) (mount bật theo phamVi).
+     · Gốc sửa lỗi "Điểm trung bình hệ 10" của học kỳ lấy nhầm bản ghi tích luỹ (tempChung10) — ở đây đã đúng từ đầu.
    ========================================================================= */
 (function (global) {
     'use strict';
@@ -92,6 +98,52 @@
         }).join('');
     }
 
+    /* Hộp "Tổng điểm" có chọn PHẠM VI (kéo gốc lần 12–13, gốc 4/11): ô Toàn khóa / Năm học / Học kỳ
+       (chỉ hiện phạm vi có dữ liệu) + ô năm học / học kỳ cụ thể (mới nhất lên đầu, như thứ tự bảng điểm).
+       Toàn khóa: DAOTAO_THOIGIANDAOTAO_ID rỗng (điều kiện cũ) · Năm học: PHAMVITONGHOPDIEM_TEN = NAMHOC, khoá NAMHOC
+       · Học kỳ: PHAMVITONGHOPDIEM_TEN = HOCKY, DOTHOC null, khoá NAMHOC + DAOTAO_THOIGIANDAOTAO_KY (NHIEUKY: không dùng).
+       Luôn THUOCTINHLANTINH = 0. Dòng TONGSOTINCHICTDT (o.ctdt) luôn lấy bản ghi toàn khóa. Thiếu → "..." (như gốc).
+       Hai ô chọn ít mục → data-no-s2 (không select2). o: như veTongKet. */
+    function veTongDiem(el, tbRows, o) {
+        o = o || {};
+        var all = arr(tbRows).filter(function (x) { return Number(x.THUOCTINHLANTINH) === 0; });
+        function toanKhoa(x) { return x.DAOTAO_THOIGIANDAOTAO_ID === null || x.DAOTAO_THOIGIANDAOTAO_ID === undefined || x.DAOTAO_THOIGIANDAOTAO_ID === ''; }
+        function thuoc(x, pv) { return x.PHAMVITONGHOPDIEM_TEN === pv && (pv !== 'HOCKY' || x.DOTHOC === null || x.DOTHOC === undefined); }
+        function key(x, pv) { return pv === 'HOCKY' ? String(e(x.NAMHOC)) + '|' + e(x.DAOTAO_THOIGIANDAOTAO_KY) : String(e(x.NAMHOC)); }
+        var pvs = [['TOANKHOA', 'Toàn khóa']];
+        if (all.some(function (x) { return thuoc(x, 'NAMHOC'); })) pvs.push(['NAMHOC', 'Năm học']);
+        if (all.some(function (x) { return thuoc(x, 'HOCKY'); })) pvs.push(['HOCKY', 'Học kỳ']);
+        el.innerHTML = '<div class="ums-dh__pv">' +
+            '<select class="ums-select ums-input--sm" data-pv data-no-s2 title="Phạm vi tổng hợp điểm">' +
+                pvs.map(function (x) { return '<option value="' + x[0] + '">' + x[1] + '</option>'; }).join('') + '</select>' +
+            '<select class="ums-select ums-input--sm" data-ky data-no-s2 title="Năm học / học kỳ" hidden></select></div>' +
+            '<div class="ums-dh__tk" data-tk></div>';
+        var sPv = el.querySelector('[data-pv]'), sKy = el.querySelector('[data-ky]'), tk = el.querySelector('[data-tk]');
+        var tkh = all.filter(toanKhoa);
+        function ve() {
+            var pv = sPv.value, k = sKy.value;
+            var ds = pv === 'TOANKHOA' ? tkh : all.filter(function (x) { return thuoc(x, pv) && key(x, pv) === k; });
+            veTongKet(tk, function (loai, thang, truong) {
+                var x = (truong === 'TONGSOTINCHICTDT' ? tkh : ds).filter(function (y) { return y.LOAIDIEMTRUNGBINH_MA === loai && String(y.THANGDIEM_MA) === String(thang); })[0];
+                return x && x[truong] !== null && x[truong] !== undefined ? x[truong] : '...';
+            }, o);
+        }
+        sPv.addEventListener('change', function () {
+            var pv = sPv.value, co = {}, ds = [];
+            if (pv !== 'TOANKHOA') all.forEach(function (x) {
+                if (!thuoc(x, pv)) return; var k = key(x, pv); if (co[k]) return; co[k] = 1;
+                ds.push({ k: k, nam: String(e(x.NAMHOC)), ky: Number(x.DAOTAO_THOIGIANDAOTAO_KY) || 0,
+                    ten: pv === 'NAMHOC' ? 'Năm học ' + e(x.NAMHOC) : 'Năm học ' + e(x.NAMHOC) + ' - Học kỳ ' + e(x.DAOTAO_THOIGIANDAOTAO_KY) });
+            });
+            ds.sort(function (a, b) { return b.nam.localeCompare(a.nam) || (b.ky - a.ky); });
+            sKy.innerHTML = ds.map(function (d) { return '<option value="' + esc(d.k) + '">' + esc(d.ten) + '</option>'; }).join('');
+            sKy.hidden = !ds.length;
+            ve();
+        });
+        sKy.addEventListener('change', ve);
+        ve();
+    }
+
     function veBangDiem(el, rows, tbRows, o) {
         o = o || {};
         var nhom = [], theo = {};
@@ -127,6 +179,7 @@
             /* Tổng kết học kỳ nằm NGOÀI bảng (người dùng yêu cầu 2026-09-23): để trong
                <tfoot> thì nó nằm trong .ums-tablewrap nên bị kéo ngang theo bảng, cuộn
                sang phải là mất hút. Nay là khối riêng ngay dưới bảng, luôn đứng yên. */
+            if (o.nhanTongKet) { var nhan = document.createElement('div'); nhan.className = 'ums-dh__nhom ums-dh__nhom--ky'; nhan.textContent = 'Tổng kết học kỳ'; host2.appendChild(nhan); }
             var box = document.createElement('div');
             box.className = 'ums-dh__tk ums-dh__tk--ky';
             veTongKet(box, lay, { tenTinChi: 'Tổng tín chỉ' });
@@ -232,9 +285,12 @@
                 q('moi').innerHTML = arr(d.rsDiemMoiNhat).map(function (x) {
                     return '<li><span>' + esc(e(x.DAOTAO_HOCPHAN_TEN) + ' - ' + e(x.DAOTAO_HOCPHAN_MA)) + '</span><b class="' + mauDiem(x.DIEM) + '">' + esc(e(x.DIEM)) + '</b></li>';
                 }).join('') || '<li class="ums-u-muted">Chưa có điểm</li>';
-                var chung = arr(d.rsDiemTrungBinhChung).filter(function (x) { return (x.DAOTAO_THOIGIANDAOTAO_ID === null || x.DAOTAO_THOIGIANDAOTAO_ID === undefined || x.DAOTAO_THOIGIANDAOTAO_ID === '') && Number(x.THUOCTINHLANTINH) === 0; });
-                function lay(loai, thang, truong) { var x = chung.filter(function (y) { return y.LOAIDIEMTRUNGBINH_MA === loai && String(y.THANGDIEM_MA) === String(thang); })[0]; return x ? e(x[truong]) : ''; }
-                veTongKet(q('tong'), lay, { ctdt: o.ctdt });
+                if (o.phamVi) veTongDiem(q('tong'), d.rsDiemTrungBinhChung, { ctdt: o.ctdt });
+                else {
+                    var chung = arr(d.rsDiemTrungBinhChung).filter(function (x) { return (x.DAOTAO_THOIGIANDAOTAO_ID === null || x.DAOTAO_THOIGIANDAOTAO_ID === undefined || x.DAOTAO_THOIGIANDAOTAO_ID === '') && Number(x.THUOCTINHLANTINH) === 0; });
+                    var lay = function (loai, thang, truong) { var x = chung.filter(function (y) { return y.LOAIDIEMTRUNGBINH_MA === loai && String(y.THANGDIEM_MA) === String(thang); })[0]; return x ? e(x[truong]) : ''; };
+                    veTongKet(q('tong'), lay, { ctdt: o.ctdt });
+                }
                 bangDiem(arr(d.rsDiemKetThucHocPhan));
                 ui.table({ el: pane('no'), rows: arr(d.rsHocPhanChuaHoanThanh), empty: 'Hiện tại chưa có học phần nợ nào', columns: [
                     { title: 'Mã học phần', prop: 'DAOTAO_HOCPHAN_MA', cls: 'is-nowrap' }, { title: 'Tên học phần', prop: 'DAOTAO_HOCPHAN_TEN' },
@@ -244,7 +300,7 @@
                     { title: 'Lớp học phần', prop: 'DIEM_DANHSACHHOC_TEN', cls: 'is-center' }] });
             }).catch(function (err) { pane('bangdiem').innerHTML = ui.fail(err.message); pane('no').innerHTML = ui.fail(err.message); });
         }
-        function bangDiem(rows) { veBangDiem(pane('bangdiem'), rows, tb.rsDiemTrungBinhChung, { bamDong: !!o.ctdt }); }
+        function bangDiem(rows) { veBangDiem(pane('bangdiem'), rows, tb.rsDiemTrungBinhChung, { bamDong: !!o.ctdt, nhanTongKet: !!o.phamVi }); }
         function tichLuy() {
             dangTai(pane('khoi'));
             goi('DSA4CiQ1EDQgFSgiKQ00OBUpJC4KKS4o', 'LayKetQuaTichLuyTheoKhoi', { strQLSV_NguoiHoc_Id: nh, strDaoTao_ChuongTrinh_Id: ct() }).then(function (r) {
@@ -349,6 +405,7 @@
 
     /* Các hàm vẽ dùng lại được ở màn khác (nhapdiem/inbangdiem gọi action gốc của nó rồi vẽ bằng các hàm này):
        veBangDiem(el, rsDiemKetThucHocPhan, rsDiemTrungBinhChung, { chiTiet: false, ghiChu: false }) · veTichLuy(el, data) · veRenLuyen(el, data)
-       mount(host, { nguoiHocId, diemQuaTrinh?: false, ctdt?: true }) · veBangDiem(…, { bamDong: false }) tắt bấm cả dòng */
-    ums.diemHoc = { mount: mount, veBangDiem: veBangDiem, veTongKet: veTongKet, veTichLuy: veTichLuy, veRenLuyen: veRenLuyen };
+       mount(host, { nguoiHocId, diemQuaTrinh?: false, ctdt?: true, phamVi?: true }) · veBangDiem(…, { bamDong: false }) tắt bấm cả dòng
+       veTongDiem(el, rsDiemTrungBinhChung, { ctdt?: true }) hộp Tổng điểm có chọn phạm vi · veBangDiem(…, { nhanTongKet: true }) nhãn "Tổng kết học kỳ" */
+    ums.diemHoc = { mount: mount, veBangDiem: veBangDiem, veTongKet: veTongKet, veTongDiem: veTongDiem, veTichLuy: veTichLuy, veRenLuyen: veRenLuyen };
 })(window);

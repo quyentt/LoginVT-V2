@@ -1,6 +1,8 @@
-/* Dữ liệu mẫu cho lichgiangnhieuphonghocgiangvien — chỉ dùng ở chế độ dựng thử. 120 giảng viên để thử phân trang ô chọn. */
+/* Dữ liệu mẫu cho lichgiangnhieuphonghocgiangvien — chỉ dùng ở chế độ dựng thử. 120 giảng viên để thử phân trang ô chọn;
+   cứ 10 người có 1 người "Nghỉ hưu" để thử ô Tình trạng nhân sự (kéo gốc lần 12). */
 (function () {
     var fx = {};
+    fx['CMS_DanhMucThuocTinh/LayDanhSachDuLieuTheoBangDM#NS.TTNS'] = [{ ID: 'TT1', MA: 'DLV', TEN: 'Đang làm việc' }, { ID: 'TT2', MA: 'NH', TEN: 'Nghỉ hưu' }, { ID: 'TT3', MA: 'TV', TEN: 'Thôi việc' }];
     function hai(n) { return (n < 10 ? '0' : '') + n; }
     function dmy(d) { return hai(d.getDate()) + '/' + hai(d.getMonth() + 1) + '/' + d.getFullYear(); }
     function parse(s) { var p = String(s || '').split('/'); return new Date(+p[2], +p[1] - 1, +p[0]); }
@@ -11,11 +13,12 @@
     var CB = [];
     for (var i = 1; i <= 120; i++) {
         var dv = ['B11', 'B12', 'K2'][i % 3];
-        CB.push({ ID: 'CB' + i, MASO: 'GV' + (1000 + i), HODEM: HO[i % 5], TEN: TEN[i % 6], DAOTAO_COCAUTOCHUC_ID: dv, DAOTAO_COCAUTOCHUC_TEN: (DV.filter(function (x) { return x.ID === dv; })[0] || {}).TEN });
+        CB.push({ ID: 'CB' + i, MASO: 'GV' + (1000 + i), HODEM: HO[i % 5], TEN: TEN[i % 6], DAOTAO_COCAUTOCHUC_ID: dv, DAOTAO_COCAUTOCHUC_TEN: (DV.filter(function (x) { return x.ID === dv; })[0] || {}).TEN,
+            TINHTRANGNHANSU_ID: i % 10 === 0 ? 'TT2' : 'TT1' });
     }
     fx['pkg_nhansu_hoso_v2.LayDSNhanSu_HoSo_v2'] = function (o) {
-        var dv = o.strDaoTao_CoCauToChuc_Id;
-        return CB.filter(function (r) { return !dv || r.DAOTAO_COCAUTOCHUC_ID === dv || (dv === 'K1' && /^B1/.test(r.DAOTAO_COCAUTOCHUC_ID)); });
+        var dv = o.strDaoTao_CoCauToChuc_Id, tt = o.strTinhTrangNhanSu_Id;
+        return CB.filter(function (r) { return (!dv || r.DAOTAO_COCAUTOCHUC_ID === dv || (dv === 'K1' && /^B1/.test(r.DAOTAO_COCAUTOCHUC_ID))) && (!tt || r.TINHTRANGNHANSU_ID === tt); });
     };
     var HP = [['L1', 'Lập trình hướng đối tượng', 'IT3100.01', 'A2-301'], ['L2', 'Cơ sở dữ liệu', 'IT3200.02', 'A1-205'], ['L3', 'Kinh tế vi mô', 'EC1010.01', 'C1-102']];
     fx['NS_ThongTinCanBo/LayDSLichGiang'] = function (o) {

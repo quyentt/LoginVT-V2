@@ -123,7 +123,7 @@
                 if (!id) { h('diem').innerHTML = ui.empty('Không tìm thấy QLSV_NGUOIHOC_ID cho mã ' + maNH + ' — sinh viên này có thể chưa có dữ liệu trong schema cũ', 'fa-circle-info'); return; }
                 // diemQuaTrinh: false — bản gốc của màn này (DaQHHT) không có hộp "Điểm quá trình",
                 // chỉ Cổng sinh viên mới có; giữ nút khoá đúng như gốc.
-                ums.diemHoc.mount(h('diem'), { nguoiHocId: id, diemQuaTrinh: false });
+                ums.diemHoc.mount(h('diem'), { nguoiHocId: id, diemQuaTrinh: false, phamVi: true });   // phamVi: kéo gốc lần 13 (7/11) — hộp Tổng điểm chọn Toàn khóa / Năm học / Học kỳ
             }).catch(function (err) { h('diem').innerHTML = ui.fail(err.message); });
         }
 
