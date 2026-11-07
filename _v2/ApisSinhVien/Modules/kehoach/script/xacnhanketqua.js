@@ -13,7 +13,8 @@
                                               chọn sẵn mục đầu
      SV_KeHoach_NguoiHoc/LayDSThongTinTheoKeHoach  GET  type · strChucNang_Id · strQLSV_KeHoach_NguoiHoc_Id · strNguoiThucHien_Id
                                               → ID · TEN · KIEUDULIEU (ô "Trường thông tin" + cột bảng)
-     SV_KeHoach_PhamVi/LayDSQLSV_KeHoach_PhamVi_DL  GET  type · strTuKhoa '' · strQLSV_KeHoach_NguoiHoc_Id · strNamNhapHoc ·
+     SV_KeHoach_PhamVi/LayDSQLSV_KeHoach_PhamVi_DL  GET  type · strTuKhoa = ô từ khóa (kéo gốc lần 12, 7/11: gốc đọc ô tìm của
+         bảng kết quả `tblKetQua_input` thay txtAAAA — bản này thêm ô "Nhập từ khóa tìm kiếm" ở thanh lọc, Enter = Tìm kiếm) · strQLSV_KeHoach_NguoiHoc_Id · strNamNhapHoc ·
                                               strKhoaQuanLy_Id · strHeDaoTao_Id · strKhoaDaoTao_Id · strChuongTrinh_Id · strLopQuanLy_Id ·
                                               strTrangThaiNguoiHoc_Id '' · strTruongThongTin_Id · strNguoiTao_Id '' · pageIndex · pageSize
                                               → ID · QLSV_NGUOIHOC_ID · DAOTAO_LOPQUANLY_MA · QLSV_NGUOIHOC_MASO / HODEM / TEN
@@ -77,6 +78,7 @@
                 '<div class="ums-field"><select class="ums-select" data-f="kh" data-ph="Chọn kế hoạch" data-required></select></div>' +
             '</div><div class="ums-filter ums-u-mt-3">' +
                 sel('tt', 'Chọn trường thông tin', true) +
+                '<div class="ums-field"><input class="ums-input" data-f="q" placeholder="Nhập từ khóa tìm kiếm" autocomplete="off"></div>' +
                 '<div class="ums-field ums-field--fit">' + ui.btn('search', { attr: { 'data-a': 'tim' } }) + '</div>' +
                 '<div class="ums-field ums-field--fit" data-z="bc"></div>' +
             '</div>' }) +
@@ -149,7 +151,7 @@
 
     function thamSo(p, s) {
         return { action: 'SV_KeHoach_PhamVi/LayDSQLSV_KeHoach_PhamVi_DL', method: 'GET', type: 'GET',
-            strTuKhoa: '', strQLSV_KeHoach_NguoiHoc_Id: f('kh').value, strNamNhapHoc: v('nam'), strKhoaQuanLy_Id: v('kql'),
+            strTuKhoa: (f('q').value || '').trim(), strQLSV_KeHoach_NguoiHoc_Id: f('kh').value, strNamNhapHoc: v('nam'), strKhoaQuanLy_Id: v('kql'),
             strHeDaoTao_Id: v('he'), strKhoaDaoTao_Id: v('khoa'), strChuongTrinh_Id: v('ct'), strLopQuanLy_Id: v('lop'),
             strTrangThaiNguoiHoc_Id: '', strTruongThongTin_Id: v('tt'), strNguoiTao_Id: '', pageIndex: p, pageSize: s };
     }
@@ -468,4 +470,5 @@
             case 'import': nhapTT(); break;
         }
     });
+    f('q').addEventListener('keydown', function (ev) { if (ev.key === 'Enter') { ev.preventDefault(); tim(1); } });
 })();
