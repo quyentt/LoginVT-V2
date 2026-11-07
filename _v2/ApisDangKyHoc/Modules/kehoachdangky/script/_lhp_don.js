@@ -34,8 +34,11 @@
        Danh sách lớp cuối = các lớp CÙNG học phần trên trang đang xem (như gốc).
      · "Chọn lớp" / "Đồng ý" khi chưa "Xác nhận SV dồn lớp": gốc lỗi JS
        (dtDonNhomLop undefined) → nay báo. "Đồng ý" thiếu lớp mới: gốc im lặng → báo.
-     · "Thực hiện rút": giữ nguyên — quay về danh sách ngay, chạy xong nạp lại bảng
-       nguồn (Đăng ký chi tiết hoặc Rút đăng ký).
+     · "Thực hiện rút": chạy trong form tiến trình (khung vẫn mở phía sau), có dòng thành công thì đóng khung + nạp lại
+       bảng nguồn (Đăng ký chi tiết hoặc Rút đăng ký).
+     · Kéo gốc lần 12 (7/11): Dồn lớp / Xóa / Chỉ xóa đúng lớp chọn / Xác nhận SV dồn lớp / Thực hiện rút chạy qua form
+       tiến trình chung ums.process.run (mỗi sinh viên một bản ghi, cột Mã số / Họ tên / Lớp quản lý (+ Học phần, % phí),
+       dòng điều kiện của thanh lọc qua o.dieuKien()), Bước 1 thay hộp hỏi lại.
    ========================================================================= */
 (function () {
     'use strict';
@@ -69,6 +72,12 @@
         if (soDuKien) c.push({ title: 'Số dự kiến', prop: 'SOLUONGDUKIENHOC', cls: 'is-center' });
         return c;
     }
+    function colsSV() {
+        return [{ header: 'Mã số', render: function (r) { return e(r.QLSV_NGUOIHOC_MASO); } },
+            { header: 'Họ tên', render: function (r) { return (e(r.QLSV_NGUOIHOC_HODEM) + ' ' + e(r.QLSV_NGUOIHOC_TEN)).trim(); } },
+            { header: 'Lớp quản lý', render: function (r) { return e(r.DAOTAO_LOPQUANLY_TEN); } }];
+    }
+    function dk(o) { return o.dieuKien ? o.dieuKien() : []; }
     function dauTrang(tieuDe, nut) {
         return pat.page(tieuDe, ui.btn('close', { attr: { 'data-a': 'dong' } }) + (nut || ''));
     }
@@ -117,10 +126,14 @@
             if (!ids.length) ui.toast('Vui lòng chọn đối tượng?', 'warn');
             return ids;
         }
-        function chay(ids, mk, tieuDe) {
+        function chay(ids, mk, cfg) {
             daDon = ids.map(String);
-            return ui.batch(ids.map(function (id) { return mk(timId(dsSV, id)); }), { title: tieuDe, okText: 'Thành công' })
-                .then(function () { napSV(); napKQ(); });
+            ums.process.run({
+                title: cfg.title, unit: 'sinh viên', fileName: cfg.fileName, subTitles: cfg.subTitles || [], notes: cfg.notes || [], dieuKien: dk(o),
+                items: ids.map(function (id) { return timId(dsSV, id); }).filter(Boolean), columns: colsSV(), okMessage: 'Thành công',
+                request: mk,
+                refresh: function () { napSV(); napKQ(); }
+            });
         }
         zone.addEventListener('click', function (ev) {
             var b = ev.target.closest('[data-a]');
@@ -130,32 +143,28 @@
             if (a === 'don') {
                 ids = chon(); if (!ids.length) return;
                 if (!pat.val(cuoi)) { ui.toast('Vui lòng chọn lớp cuối?', 'warn'); return; }
-                ui.confirm('Bạn có chắc chắn lưu dữ liệu không?', { title: 'Dồn lớp' }).then(function (ok) {
-                    if (!ok) return;
-                    var moi = pat.val(cuoi);
-                    chay(ids, function (r) {
-                        return { action: 'DKH_DangKy/ThucHienDonLopDangKyHoc', type: 'POST',
-                            strDaoTao_ChuongTrinh_Id: r.DAOTAO_TOCHUCCHUONGTRINH_ID, strQLSV_NguoiHoc_Id: r.QLSV_NGUOIHOC_ID,
-                            strDaoTao_HocPhan_Id: r.DAOTAO_HOCPHAN_ID, strDangKy_LopHocPhan_Cu_Ids: r.DANGKY_LOPHOCPHAN_ID,
-                            strDangKy_LopHocPhan_Moi_Ids: moi, strNguoiThucHien_Id: uid() };
-                    }, 'Đang dồn lớp');
-                });
+                var moi = pat.val(cuoi), oMoi = cuoi.options[cuoi.selectedIndex];
+                chay(ids, function (r) {
+                    return { action: 'DKH_DangKy/ThucHienDonLopDangKyHoc', type: 'POST',
+                        strDaoTao_ChuongTrinh_Id: r.DAOTAO_TOCHUCCHUONGTRINH_ID, strQLSV_NguoiHoc_Id: r.QLSV_NGUOIHOC_ID,
+                        strDaoTao_HocPhan_Id: r.DAOTAO_HOCPHAN_ID, strDangKy_LopHocPhan_Cu_Ids: r.DANGKY_LOPHOCPHAN_ID,
+                        strDangKy_LopHocPhan_Moi_Ids: moi, strNguoiThucHien_Id: uid() };
+                }, { title: 'Dồn lớp học phần', fileName: 'KetQuaDonLop', subTitles: ['Lớp cuối: ' + (oMoi ? oMoi.text.replace(/\s+/g, ' ').trim() : '')] });
             } else if (a === 'xoa' || a === 'xoachon') {
                 ids = chon(); if (!ids.length) return;
-                ui.confirm('Bạn có chắc chắn xóa dữ liệu không?', { tone: 'bad', ok: 'Xóa' }).then(function (ok) {
-                    if (!ok) return;
-                    chay(ids, a === 'xoa' ? function (r) {
-                        return { action: 'DKH_DangKy/ThucHienHuyDangKyHocHocPhan', type: 'POST',
-                            strDaoTao_ChuongTrinh_Id: r.DAOTAO_TOCHUCCHUONGTRINH_ID, strQLSV_NguoiHoc_Id: r.QLSV_NGUOIHOC_ID,
-                            strDaoTao_HocPhan_Id: r.DAOTAO_HOCPHAN_ID, strNguoiThucHien_Id: uid(),
-                            strDangKy_KeHoachDangKy_Id: r.DANGKY_KEHOACHDANGKY_ID };
-                    } : function (r) {
-                        return { action: 'DKH_TrucTiep_MH/FSk0IgkoJC8JNDgFIC8mCjgJLiINLjECKS4v', func: 'pkg_dangkyhoc_tructiep.ThucHienHuyDangKyHocLopChon',
-                            iM: iM(), strDaoTao_ChuongTrinh_Id: r.DAOTAO_TOCHUCCHUONGTRINH_ID, strQLSV_NguoiHoc_Id: r.QLSV_NGUOIHOC_ID,
-                            strDaoTao_HocPhan_Id: r.DAOTAO_HOCPHAN_ID, strNguoiThucHien_Id: uid(),
-                            strDangKy_KeHoachDangKy_Id: r.DANGKY_KEHOACHDANGKY_ID, strDangKy_LopHocPhan_Chon_Id: lop.ID };
-                    }, 'Đang xóa đăng ký');
-                });
+                chay(ids, a === 'xoa' ? function (r) {
+                    return { action: 'DKH_DangKy/ThucHienHuyDangKyHocHocPhan', type: 'POST',
+                        strDaoTao_ChuongTrinh_Id: r.DAOTAO_TOCHUCCHUONGTRINH_ID, strQLSV_NguoiHoc_Id: r.QLSV_NGUOIHOC_ID,
+                        strDaoTao_HocPhan_Id: r.DAOTAO_HOCPHAN_ID, strNguoiThucHien_Id: uid(),
+                        strDangKy_KeHoachDangKy_Id: r.DANGKY_KEHOACHDANGKY_ID };
+                } : function (r) {
+                    return { action: 'DKH_TrucTiep_MH/FSk0IgkoJC8JNDgFIC8mCjgJLiINLjECKS4v', func: 'pkg_dangkyhoc_tructiep.ThucHienHuyDangKyHocLopChon',
+                        iM: iM(), strDaoTao_ChuongTrinh_Id: r.DAOTAO_TOCHUCCHUONGTRINH_ID, strQLSV_NguoiHoc_Id: r.QLSV_NGUOIHOC_ID,
+                        strDaoTao_HocPhan_Id: r.DAOTAO_HOCPHAN_ID, strNguoiThucHien_Id: uid(),
+                        strDangKy_KeHoachDangKy_Id: r.DANGKY_KEHOACHDANGKY_ID, strDangKy_LopHocPhan_Chon_Id: lop.ID };
+                }, a === 'xoa'
+                    ? { title: 'Hủy đăng ký học phần của sinh viên', fileName: 'KetQuaHuyDangKyHocPhan', notes: ['Thao tác xóa dữ liệu đăng ký học phần của các sinh viên trong danh sách.'] }
+                    : { title: 'Hủy đăng ký lớp đang chọn của sinh viên', fileName: 'KetQuaHuyDangKyLopChon', notes: ['Thao tác xóa dữ liệu đăng ký lớp đang chọn của các sinh viên trong danh sách.'] });
             }
         });
     };
@@ -227,13 +236,17 @@
                 var ids = L.idChon(zSV, 'svn');
                 if (!ids.length) { ui.toast('Vui lòng chọn đối tượng?', 'warn'); return; }
                 nguon = ums.util.uuid();
-                ui.batch(ids.map(function (id) {
-                    var r = timId(dsSV, id);
-                    return { action: 'DKH_ThongTin2/Them_DangKy_DonLop_LichSu', type: 'POST',
-                        strDangKy_LopHocPhan_Id: r.DANGKY_LOPHOCPHAN_ID, strQLSV_NguoiHoc_Id: r.QLSV_NGUOIHOC_ID,
-                        strDaoTao_ChuongTrinh_Id: r.DAOTAO_TOCHUCCHUONGTRINH_ID, strNguonDuLieu_Id: nguon,
-                        strNguoiThucHien_Id: uid(), iM: iM() };
-                }), { title: 'Đang xác nhận sinh viên dồn lớp', okText: 'Thực hiện thành công' }).then(napTT);
+                ums.process.run({
+                    title: 'Dồn nhóm lớp - chuẩn bị dữ liệu', unit: 'sinh viên', fileName: 'KetQuaDonNhomLop', dieuKien: dk(o),
+                    items: ids.map(function (id) { return timId(dsSV, id); }).filter(Boolean), columns: colsSV(), okMessage: 'Thực hiện thành công',
+                    request: function (r) {
+                        return { action: 'DKH_ThongTin2/Them_DangKy_DonLop_LichSu', type: 'POST',
+                            strDangKy_LopHocPhan_Id: r.DANGKY_LOPHOCPHAN_ID, strQLSV_NguoiHoc_Id: r.QLSV_NGUOIHOC_ID,
+                            strDaoTao_ChuongTrinh_Id: r.DAOTAO_TOCHUCCHUONGTRINH_ID, strNguonDuLieu_Id: nguon,
+                            strNguoiThucHien_Id: uid(), iM: iM() };
+                    },
+                    refresh: napTT
+                });
                 return;
             }
             if (!tt) { ui.toast('Chưa có thông tin dồn lớp — hãy chọn sinh viên và bấm "Xác nhận SV dồn lớp" trước', 'warn'); return; }
@@ -325,22 +338,31 @@
                 ids = L.idChon(zB, 'rhp');
                 if (!ids.length) { ui.toast('Vui lòng chọn ít nhất một dòng?', 'warn'); return; }
                 var moTa = zone.querySelector('[data-f="mota"]').value || '';
-                ui.confirm('Thực hiện rút học phần cho ' + ids.length + ' dòng đã chọn?', { title: 'Thực hiện rút học phần' }).then(function (ok) {
-                    if (!ok) return;
-                    var calls = ids.map(function (id) {
-                        var r = timId(ds, id);
-                        var raw = pt(id) ? pt(id).value : '';
-                        var p = parseFloat(raw === null || raw === '' ? '0' : raw);
-                        if (isNaN(p)) p = 0;
+                // chụp sẵn % phí nhập ở từng dòng để mỗi sinh viên chạy với đúng giá trị đã nhập
+                var items = ids.map(function (id) {
+                    var raw = pt(id) ? pt(id).value : '', p = parseFloat(raw === null || raw === '' ? '0' : raw);
+                    return { ID: id, rec: timId(ds, id), pt: isNaN(p) ? 0 : p };
+                });
+                ums.process.run({
+                    title: 'Thực hiện rút học phần', unit: 'sinh viên', fileName: 'KetQuaRutHocPhan', dieuKien: dk(o),
+                    subTitles: moTa ? ['Mô tả chung: ' + moTa] : [], items: items, okMessage: 'Thực hiện thành công',
+                    columns: [
+                        { header: 'Mã số', render: function (it) { return it.rec ? e(it.rec.QLSV_NGUOIHOC_MASO) : it.ID; } },
+                        { header: 'Họ tên', render: function (it) { return it.rec ? (e(it.rec.QLSV_NGUOIHOC_HODEM) + ' ' + e(it.rec.QLSV_NGUOIHOC_TEN)).trim() : ''; } },
+                        { header: 'Học phần', render: function (it) { return it.rec ? L.tenMa(it.rec.DAOTAO_HOCPHAN_TEN, it.rec.DAOTAO_HOCPHAN_MA) : ''; } },
+                        { header: '% phí tính', render: function (it) { return it.pt; } }
+                    ],
+                    request: function (it) {
+                        var r = it.rec;
+                        if (!r) throw new Error('Không tìm thấy dữ liệu của bản ghi.');
                         return {
                             action: 'DKH_RutHocPhan_MH/FSk0IgkoJC8TNDUP', func: 'PKG_DANGKYHOC_RUTHOCPHAN.ThucHienRut', iM: iM(),
                             strDangKy_KeHoachDangKy_Id: r.DANGKY_KEHOACHDANGKY_ID, strDaoTao_HocPhan_Id: r.DAOTAO_HOCPHAN_ID,
                             strQLSV_NguoiHoc_Id: r.QLSV_NGUOIHOC_ID, strDaoTao_ThoiGianDaoTao_Id: r.DAOTAO_THOIGIANDAOTAO_ID,
-                            dPhanTramTinhPhi: p, strMoTa: moTa, strNguoiThucHien_Id: uid()
+                            dPhanTramTinhPhi: it.pt, strMoTa: moTa, strNguoiThucHien_Id: uid()
                         };
-                    });
-                    o.dong(false);
-                    ui.batch(calls, { title: 'Đang thực hiện rút học phần', okText: 'Thực hiện thành công' }).then(function () { o.dong(true); });
+                    },
+                    refresh: function () { o.dong(true); }
                 });
             }
         });

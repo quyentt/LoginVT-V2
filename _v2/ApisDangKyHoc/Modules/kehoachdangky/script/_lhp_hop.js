@@ -21,8 +21,10 @@
    ums.lhp.hopSVChonDon(idNguon)    Danh sách sinh viên chọn dồn — DKH_ThongTin2/LayDSDuLieuDonLop
 
    Khác bản gốc (đổi cách dựng, dữ liệu gửi đi giữ nguyên):
-     · Lưu / xoá hàng loạt qua ums.ui.batch rồi nạp lại MỘT lần (gốc: mỗi lời gọi
-       xong là nạp lại danh sách một lần).
+     · Lưu / xoá hàng loạt: kéo gốc lần 12 (7/11) chạy qua form tiến trình chung ums.process.run (mỗi lớp / sinh viên
+       một bản ghi, dòng phụ "Thuộc tính: …" / "Chế độ tính phí: …", điều kiện của thanh lọc qua tham số dieuKien),
+       Bước 1 thay hộp hỏi lại; hộp lớp đóng trước khi mở form (như gốc hideModal), hộp sinh viên giữ mở phía sau.
+       Lớp chưa có chế độ tính phí khi xóa → dòng "Bỏ qua" (không tính lỗi).
      · Xoá nhiều dòng trong hộp = nút "Xoá đã chọn" ở CHÂN hộp (luật chung).
      · "Xuất Excel" danh sách không đăng ký: bản gốc tải xlsx-js-style từ ba CDN
        → nay ums.ui.xuatXls (bảng HTML đuôi .xls, không phụ thuộc CDN), đúng cột,
@@ -43,6 +45,15 @@
     function iM() { return (ums.session && ums.session.iM) || ''; }
     function dang() { return ui.empty('Đang tải…', 'fa-spinner fa-spin'); }
     function hoTen(r) { return esc(e(r.QLSV_NGUOIHOC_HODEM) + ' ' + e(r.QLSV_NGUOIHOC_TEN)); }
+    function chuChon(sel) { var o = sel && sel.options[sel.selectedIndex]; return o ? o.text.replace(/\s+/g, ' ').trim() : ''; }
+    function dkCua(f) { return typeof f === 'function' ? f() : []; }
+    function colsLop() { return [{ header: 'Mã lớp', render: function (r) { return e(r.MALOP) || e(r.ID); } }, { header: 'Tên lớp', render: function (r) { return e(r.TENLOP); } }]; }
+    function colsSV() {
+        return [{ header: 'Mã số', render: function (r) { return e(r.QLSV_NGUOIHOC_MASO); } },
+            { header: 'Họ tên', render: function (r) { return (e(r.QLSV_NGUOIHOC_HODEM) + ' ' + e(r.QLSV_NGUOIHOC_TEN)).trim(); } },
+            { header: 'Lớp quản lý', render: function (r) { return e(r.DAOTAO_LOPQUANLY_TEN); } }];
+    }
+    function timLop(lop, ids) { return ids.map(function (id) { return lop.filter(function (x) { return String(x.ID) === String(id); })[0]; }).filter(Boolean); }
 
     /* ---------- Cột ô đánh dấu + "chọn tất cả" ---------------------------- */
     L.cotChon = function (nhom) {
@@ -172,7 +183,8 @@
     };
 
     /* ---------- Danh sách sinh viên của lớp (#myModal) --------------------- */
-    L.hopSinhVien = function (idLop) {
+    L.hopSinhVien = function (idLop, dieuKien) {
+        var dsSV = [];
         var d = ui.dialog({
             title: 'Danh sách sinh viên', icon: 'fa-users-between-lines', size: 'xl',
             body: '<div class="ums-filter ums-u-mb-4">' +
@@ -218,7 +230,7 @@
             ums.api.call({
                 action: 'DKH_PhanCong_LopHP/LayDSDangKyHoc', method: 'GET', type: 'GET',
                 strTuKhoa: '', strDaoTao_LopHocPhan_Id: idLop, strNguoiThucHien_Id: uid(), pageIndex: 1, pageSize: 1000000
-            }).then(function (r) { lm.nap(r.data); })
+            }).then(function (r) { dsSV = arr(r.data); lm.nap(r.data); })
                 .catch(function (err) { z.innerHTML = ui.fail(err.message); ums.api.handle(err, 'danh sách sinh viên của lớp'); });
         }
         nap();
@@ -227,16 +239,18 @@
             if (!ev.target.closest('[data-a="luu"]')) return;
             var ids = L.idChon(z, 'sv');
             if (!ids.length) { ui.toast('Vui lòng chọn đối tượng?', 'warn'); return; }
-            ui.confirm('Bạn có chắc chắn lưu dữ liệu không?', { title: 'Lưu chế độ tính phí' }).then(function (ok) {
-                if (!ok) return;
-                var cheDo = pat.val(cd);
-                ui.batch(ids.map(function (id) {
+            var cheDo = pat.val(cd);
+            ums.process.run({
+                title: 'Thiết lập chế độ tính phí cho sinh viên', unit: 'sinh viên', fileName: 'KetQuaCheDoTinhPhiSinhVien', dieuKien: dkCua(dieuKien),
+                subTitles: ['Chế độ tính phí: ' + chuChon(cd)], items: timLop(dsSV, ids), columns: colsSV(), okMessage: 'Thực hiện thành công',
+                request: function (r) {
                     return {
                         action: 'DKH_ThongTin2_MH/AikkBS4VKC8pFSgkLwIpLhIXFSkkLg0uMQkR',
                         func: 'PKG_DANGKYHOC_THONGTIN2.CheDoTinhTienChoSVTheoLopHP',
-                        iM: iM(), strDangKy_SinhVien_Lop_Id: id, strCheDoTinhPhi_Id: cheDo, strNguoiThucHien_Id: uid()
+                        iM: iM(), strDangKy_SinhVien_Lop_Id: r.ID, strCheDoTinhPhi_Id: cheDo, strNguoiThucHien_Id: uid()
                     };
-                }), { title: 'Đang lưu chế độ tính phí', okText: 'Thực hiện thành công' }).then(nap);
+                },
+                refresh: nap
             });
         });
     };
@@ -252,7 +266,7 @@
     }
 
     /* ---------- Thuộc tính phục vụ tính khối lượng (#myModalThuocTinhKLGD) -- */
-    L.hopThuocTinh = function (lop, xong) {
+    L.hopThuocTinh = function (lop, xong, dieuKien) {
         var d = ui.dialog({
             title: 'Thuộc tính phục vụ tính khối lượng', icon: 'fa-scale-balanced', size: 'xl',
             body: '<div class="ums-filter ums-u-mb-4"><div class="ums-field lhp-hop__cd"><select class="ums-select" data-f="pl" data-ph="--Chọn thuộc tính--"><option value=""></option></select></div></div>' +
@@ -270,28 +284,31 @@
             if (!ids.length) { ui.toast('Vui lòng chọn ít nhất một dòng?', 'warn'); return; }
             var p = pat.val(pl);
             if (!p) { ui.toast(luu ? 'Vui lòng chọn thuộc tính?' : 'Vui lòng chọn thuộc tính cần xóa?', 'warn'); return; }
-            ui.confirm(luu ? 'Bạn có chắc chắn lưu thuộc tính cho ' + ids.length + ' lớp đã chọn?'
-                : 'Bạn có chắc chắn xóa thuộc tính khỏi ' + ids.length + ' lớp đã chọn?', luu ? {} : { tone: 'bad', ok: 'Xóa' }).then(function (ok) {
-                if (!ok) return;
-                ui.batch(ids.map(function (id) {
+            var ten = chuChon(pl);
+            d.close();   // gốc hideModal rồi mở form tiến trình
+            ums.process.run({
+                title: luu ? 'Thêm thuộc tính phục vụ tính khối lượng' : 'Xóa thuộc tính phục vụ tính khối lượng', unit: 'lớp học phần',
+                fileName: luu ? 'KetQuaThemThuocTinhKLGD' : 'KetQuaXoaThuocTinhKLGD', dieuKien: dkCua(dieuKien),
+                subTitles: ['Thuộc tính: ' + ten], notes: luu ? [] : ['Thao tác xóa thuộc tính khỏi các lớp trong danh sách.'],
+                items: timLop(lop, ids), columns: colsLop(), okMessage: 'Thực hiện thành công',
+                request: function (r) {
                     return luu ? {
                         action: 'NS_KLGD_ThongTin_MH/FSkkLB4KDQYFHhEpIC8NLiAoHg0uMQkx', func: 'PKG_KLGV_V2_THONGTIN.Them_KLGD_PhanLoai_LopHp',
-                        iM: iM(), strDaoTao_LopHocPhan_Id: id, strPhanLoaiCachTinh_Id: p, strNguoiThucHien_Id: uid(),
+                        iM: iM(), strDaoTao_LopHocPhan_Id: r.ID, strPhanLoaiCachTinh_Id: p, strNguoiThucHien_Id: uid(),
                         strVaiTroDangNhap_Id: '', strChucNangHeThong_Id: '', strHanhDong_Code: ''
                     } : {
                         action: 'NS_KLGD_ThongTin_MH/GS4gHgoNBgUeESkgLw0uICgeDS4xCTFw', func: 'PKG_KLGV_V2_THONGTIN.Xoa_KLGD_PhanLoai_LopHp1',
-                        iM: iM(), strDaoTao_LopHocPhan_Id: id, strPhanLoaiCachTinh_Id: p, strNguoiThucHien_Id: uid(),
+                        iM: iM(), strDaoTao_LopHocPhan_Id: r.ID, strPhanLoaiCachTinh_Id: p, strNguoiThucHien_Id: uid(),
                         strVaiTroDangNhap_Id: '', strChucNangHeThong_Id: '', strHanhDong_Code: ''
                     };
-                }), { title: luu ? 'Đang lưu thuộc tính' : 'Đang xóa thuộc tính', okText: 'Thực hiện thành công' }).then(function () {
-                    d.close(); if (xong) xong();
-                });
+                },
+                refresh: function () { if (xong) xong(); }
             });
         }
     };
 
     /* ---------- Thiết lập chế độ tính phí cho lớp HP ------------------------ */
-    L.hopCheDo = function (lop, xong) {
+    L.hopCheDo = function (lop, xong, dieuKien) {
         var d = ui.dialog({
             title: 'Thiết lập chế độ tính phí', icon: 'fa-money-check-dollar', size: 'xl',
             body: '<div class="ums-filter ums-u-mb-4">' +
@@ -314,39 +331,44 @@
             var c = pat.val(cd), k = pat.val(kh);
             if (!c) { ui.toast('Vui lòng chọn chế độ tính phí?', 'warn'); return; }
             if (!k) { ui.toast('Vui lòng chọn kiểu học?', 'warn'); return; }
-            ui.confirm('Bạn có chắc chắn lưu chế độ tính phí cho ' + ids.length + ' lớp đã chọn?').then(function (ok) {
-                if (!ok) return;
-                ui.batch(ids.map(function (id) {
+            var sub = ['Chế độ tính phí: ' + chuChon(cd), 'Kiểu học: ' + chuChon(kh)];
+            d.close();
+            ums.process.run({
+                title: 'Thiết lập chế độ tính phí cho lớp học phần', unit: 'lớp học phần', fileName: 'KetQuaThietLapCheDoTinhPhi', dieuKien: dkCua(dieuKien),
+                subTitles: sub, items: timLop(lop, ids), columns: colsLop(), okMessage: 'Thực hiện thành công',
+                request: function (r) {
                     return {
                         action: 'DKH_ThongTin2_MH/ETMeBSAvJgo4Hg0uMQkxHgIpJAUuESkoHggvMgPP', func: 'PKG_DANGKYHOC_THONGTIN2.Pr_DangKy_LopHp_CheDoPhi_Ins',
-                        iM: iM(), strDangKy_LopHocPhan_Id: id, strHieuLuc: '1', strCheDoTinhPhi_Id: c, strKieuHoc_Id: k,
+                        iM: iM(), strDangKy_LopHocPhan_Id: r.ID, strHieuLuc: '1', strCheDoTinhPhi_Id: c, strKieuHoc_Id: k,
                         strNguoiThucHien_Id: uid(), strVaiTroDangNhap_Id: '', strChucNangHeThong_Id: '', strHanhDong_Code: ''
                     };
-                }), { title: 'Đang lưu chế độ tính phí', okText: 'Thực hiện thành công' }).then(xongLo);
+                },
+                refresh: function () { if (xong) xong(); }
             });
         }
         function xoa() {
             var ids = L.idChon(b, 'cd');
             if (!ids.length) { ui.toast('Vui lòng chọn ít nhất một dòng?', 'warn'); return; }
-            ui.confirm('Bạn có chắc chắn xóa chế độ tính phí khỏi ' + ids.length + ' lớp đã chọn?', { tone: 'bad', ok: 'Xóa' }).then(function (ok) {
-                if (!ok) return;
-                /* Id bản ghi = CHEDOTINHPHI_ID của dòng lớp; lớp chưa có chế độ thì bỏ qua (như gốc) */
-                var calls = ids.map(function (id) {
-                    var r = lop.filter(function (x) { return x.ID == id; })[0];   // eslint-disable-line eqeqeq
-                    return r && r.CHEDOTINHPHI_ID ? {
+            d.close();
+            ums.process.run({
+                title: 'Xóa chế độ tính phí của lớp học phần', unit: 'lớp học phần', fileName: 'KetQuaXoaCheDoTinhPhi', dieuKien: dkCua(dieuKien),
+                notes: ['Thao tác xóa chế độ tính phí khỏi các lớp trong danh sách.'], items: timLop(lop, ids), columns: colsLop(), okMessage: 'Thực hiện thành công',
+                /* Id bản ghi = CHEDOTINHPHI_ID của dòng lớp; lớp chưa có chế độ thì ghi "Bỏ qua" (như gốc) */
+                run: function (r) {
+                    if (!r.CHEDOTINHPHI_ID) return { ok: true, message: 'Bỏ qua: lớp chưa có chế độ tính phí để xóa.' };
+                    return ums.api.call({
                         action: 'DKH_ThongTin2_MH/ETMeBSAvJgo4Hg0uMQkxHgIpJAUuESkoHgUkLQPP', func: 'PKG_DANGKYHOC_THONGTIN2.Pr_DangKy_LopHp_CheDoPhi_Del',
                         iM: iM(), strId: r.CHEDOTINHPHI_ID, strNguoiThucHien_Id: uid(),
-                        strVaiTroDangNhap_Id: '', strChucNangHeThong_Id: '', strHanhDong_Code: ''
-                    } : null;
-                }).filter(Boolean);
-                if (!calls.length) { ui.toast('Các lớp đã chọn chưa có chế độ tính phí để xóa', 'info'); return; }
-                ui.batch(calls, { title: 'Đang xóa chế độ tính phí', okText: 'Thực hiện thành công' }).then(xongLo);
+                        strVaiTroDangNhap_Id: '', strChucNangHeThong_Id: '', strHanhDong_Code: '', silent: true
+                    }).then(function (x) { return { ok: true, message: (x && x.message) || '' }; });
+                },
+                refresh: function () { if (xong) xong(); }
             });
         }
     };
 
     /* ---------- Hủy phí tín chỉ (#myModalHuyPhiTinChi) ---------------------- */
-    L.hopHuyPhi = function (lop, xong) {
+    L.hopHuyPhi = function (lop, xong, dieuKien) {
         var d = ui.dialog({
             title: 'Hủy phí tín chỉ', icon: 'fa-ban', size: 'xl', body: '<div data-z="b"></div>',
             buttons: [{ text: 'Hủy phí', kind: 'del', icon: 'fa-ban', keepOpen: true, onClick: function () { chay(); return false; } }]
@@ -354,21 +376,24 @@
         ui.table({ el: d.body.querySelector('[data-z="b"]'), rows: lop, columns: cotLop() });
         function chay() {
             if (!lop.length) { ui.toast('Không có lớp nào để hủy phí?', 'warn'); return; }
-            ui.confirm('Bạn có chắc chắn hủy phí tín chỉ cho ' + lop.length + ' lớp đã chọn?', { tone: 'bad', ok: 'Hủy phí' }).then(function (ok) {
-                if (!ok) return;
-                ui.batch(lop.map(function (r) {
+            d.close();
+            ums.process.run({
+                title: 'Hủy phí tín chỉ theo lớp học phần', unit: 'lớp học phần', fileName: 'KetQuaHuyPhiTinChi', dieuKien: dkCua(dieuKien),
+                notes: ['Thao tác hủy phí tín chỉ của các lớp trong danh sách.'], items: lop, columns: colsLop(), okMessage: 'Thực hiện thành công',
+                request: function (r) {
                     return {
                         action: 'DKH_ThongTin2_MH/FSk0IgkoJC8JNDgRKSgVKC8CKSgVKSQuDS4x', func: 'PKG_DANGKYHOC_THONGTIN2.ThucHienHuyPhiTinChiTheoLop',
                         iM: iM(), strDaoTao_LopHocPhan_Id: r.ID, strNguoiThucHien_Id: uid(),
                         strVaiTroDangNhap_Id: '', strChucNangHeThong_Id: '', strHanhDong_Code: ''
                     };
-                }), { title: 'Đang hủy phí tín chỉ', okText: 'Thực hiện thành công' }).then(function () { d.close(); if (xong) xong(); });
+                },
+                refresh: function () { if (xong) xong(); }
             });
         }
     };
 
     /* ---------- Danh sách không đăng ký (#myModal_khongdangky) -------------- */
-    L.hopKhongDK = function (idKeHoach) {
+    L.hopKhongDK = function (idKeHoach, tenKeHoach) {
         var rs = [], page = { index: 1, size: 10 };
         var d = ui.dialog({
             title: 'Danh sách không đăng ký', icon: 'fa-user-slash', size: 'xl',
@@ -414,6 +439,8 @@
             var t = new Date();
             function p2(n) { return n < 10 ? '0' + n : String(n); }
             ui.xuatXls('DSKhongDangKy_' + t.getFullYear() + p2(t.getMonth() + 1) + p2(t.getDate()) + '_' + p2(t.getHours()) + p2(t.getMinutes()) + '.xls', {
+                tieuDe: 'DANH SÁCH SINH VIÊN KHÔNG ĐĂNG KÝ',      // kéo gốc lần 12: tiêu đề + dòng kế hoạch như edu.exporter
+                phu: tenKeHoach ? ['Kế hoạch đăng ký: ' + tenKeHoach] : [],
                 cot: [{ title: 'STT', get: function (r, i) { return i + 1; } }].concat(cot.map(function (c) {
                     return { title: c.title, get: c.prop ? function (r) { return r[c.prop]; } : function (r) { return Number(r.TONGNOPHI) || 0; } };
                 })),

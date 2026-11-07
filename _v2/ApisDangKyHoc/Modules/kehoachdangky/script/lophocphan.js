@@ -60,6 +60,16 @@
        hộp "không đăng ký" → nay mỗi bảng một số trang; bấm "Xem …" về trang 1.
      · Ô "Số đã đăng ký (từ/đến)" gõ chữ: gốc gửi NaN → nay coi như để trống (-1).
      · Lưu/xoá hàng loạt: gốc nạp lại danh sách sau MỖI lời gọi → nay một lần.
+   Kéo gốc lần 12 (7/11, lophocphan.js +922/−874, gốc 4/11 edu.process / edu.exporter):
+     · Mọi thao tác hàng loạt (Tổng hợp công nợ, Cân bằng / Hủy cân bằng nợ, Tạo DS nhập điểm, ba thiết lập 1/0, các hộp
+       thuộc tính KLGD / chế độ tính phí / hủy phí / chế độ tính phí SV, Dồn lớp / Xóa đăng ký / Dồn nhóm / Rút học phần)
+       chạy qua FORM TIẾN TRÌNH CHUNG ums.process.run — mỗi bản ghi một dòng (cột Mã lớp / Tên lớp, Mã số / Họ tên / Lớp
+       quản lý, hoặc Mã số / Họ tên / Lớp học phần), dòng điều kiện = các ô lọc đang chọn (dieuKien()), Bước 1 thay hộp
+       hỏi lại; xong nạp lại danh sách đang xem. Lớp chưa có chế độ tính phí khi xóa → ghi "Bỏ qua" chứ không báo lỗi.
+     · Nút "Xuất Excel" (gốc btnExport_LopHocPhan, edu.exporter.exportWithConfirm): xuất bảng ĐANG XEM với TOÀN BỘ kết quả
+       của điều kiện đang chọn (không chỉ trang hiện tại), bỏ cột nút bấm / ô đánh dấu, kèm dòng điều kiện + từ khóa + loại lớp.
+     · Chế độ TRA CỨU (gốc bTraCuu / _isTraCuu): cùng trang dùng cho hai chức năng; tên chức năng đang mở khớp "Xem kết quả"
+       → ẩn hai cột Dồn lớp / Dồn nhóm lớp (ums.state.menu + ums.state.chucNangId).
    Bỏ (mã chết): console.log, genList_TrangThaiSV bản thứ nhất (ghi vào
    #DSTrangThaiSV_LHD không tồn tại, bị bản sau đè), _rebuildLoaiLopOptions (rỗng),
    thanh cuộn ngang phụ ở đầu bảng (.scroll-top-mirror — bảng mới tự vuốt ngang),
@@ -86,6 +96,7 @@
             '<div data-z="loc"></div>' +
             ums.pat.panel({ title: 'Danh sách', icon: 'fa-list-timeline', count: 'tong', flush: true, cls: 'lhp-ds',
                 tools:
+                    ui.btn('excel', { attr: { 'data-a': 'xuat', title: 'Xuất Excel bảng đang hiển thị (toàn bộ kết quả của điều kiện đang chọn, không chỉ trang hiện tại)' } }) +
                     nutCC('tonghop', 'Tổng hợp công nợ', 'fa-coins', 'out-primary') +
                     nutCC('canbang', 'Cân bằng nợ', 'fa-scale-balanced', 'out-success') +
                     nutCC('huycanbang', 'Hủy cân bằng nợ', 'fa-ban', 'out-danger') +
@@ -107,6 +118,25 @@
     function bangCua(k) { return k === 'cb' ? 'ct' : k; }
     L.ganChon(root);
 
+    /* Chế độ tra cứu (gốc _isTraCuu): tên chức năng đang mở khớp "Xem kết quả" → ẩn hai cột Dồn */
+    var traCuu = (function () {
+        try {
+            var st = ums.state || {}, cn = (st.menu || []).filter(function (c) { return c.id === st.chucNangId; })[0];
+            return !!cn && /xem\s+kết\s+quả/i.test(String(cn.name || '').normalize('NFC'));
+        } catch (ex) { return false; }
+    })();
+    /* [nhãn, ô] cho dòng "Điều kiện áp dụng" của form tiến trình / tệp Excel (gốc getFilterLines) */
+    function dieuKien() {
+        return [['Thời gian đào tạo', loc.f('tg')], ['Kế hoạch đăng ký', loc.f('kh')], ['Hệ đào tạo', loc.f('he')], ['Khóa đào tạo', loc.f('khoa')],
+            ['Chương trình', loc.f('ct')], ['Khoa quản lý', loc.f('kql')], ['Học phần', loc.f('hp')], ['Hình thức học', loc.f('htt')], ['Kiểu học', loc.f('kieu')]];
+    }
+    /* Cột "Thông tin xử lý" của form tiến trình (gốc _colsLop / _colsDangKy) */
+    function colsLop() { return [{ header: 'Mã lớp', render: function (r) { return e(r.MALOP) || e(r.ID); } }, { header: 'Tên lớp', render: function (r) { return e(r.TENLOP); } }]; }
+    function colsDK() {
+        return [{ header: 'Mã số', render: function (r) { return e(r.QLSV_NGUOIHOC_MASO); } },
+            { header: 'Họ tên', render: function (r) { return (e(r.QLSV_NGUOIHOC_HODEM) + ' ' + e(r.QLSV_NGUOIHOC_TEN)).trim(); } },
+            { header: 'Lớp học phần', render: function (r) { return (e(r.DANGKY_LOPHOCPHAN_MA) + ' - ' + e(r.DANGKY_LOPHOCPHAN_TEN)).replace(/^ - | - $/g, ''); } }];
+    }
     var dang = 'lhp';                           // danh sách đang xem: lhp | ct | cb | rut
     var trang = { lhp: { index: 1, size: 10 }, ct: { index: 1, size: 10 }, cb: { index: 1, size: 10 }, rut: { index: 1, size: 10 } };
     var ds = { lhp: [], ct: [], rut: [] };      // dữ liệu đang vẽ của từng bảng (tra dòng theo ID)
@@ -117,7 +147,8 @@
             if (a === 'kdk') {
                 var kh = loc.v('kh');
                 if (!kh) { ui.toast('Vui lòng chọn kế hoạch đăng ký?', 'warn'); return; }
-                return L.hopKhongDK(kh);
+                var oKH = loc.f('kh').options[loc.f('kh').selectedIndex];
+                return L.hopKhongDK(kh, oKH ? oKH.text : '');
             }
             tim.xoa(true); tim.huyCache();
             trang[a].index = 1;
@@ -249,11 +280,11 @@
                 { title: 'Tính phí', cls: 'is-nowrap', render: function (r) { return r.KHONGTINHPHI ? 'Không tính phí' : ''; } },
                 { title: 'Tổ chức thi', cls: 'is-nowrap', render: function (r) { return r.KHONGTOCHUCTHI ? 'Không tổ chức thi' : ''; } },
                 { title: 'Thuộc tính KLGD', prop: 'PHANLOAICACHTINH_TEN' },
-                { title: 'Chế độ tính phí', prop: 'CHEDOTINHPHI_TEN' },
+                { title: 'Chế độ tính phí', prop: 'CHEDOTINHPHI_TEN' }
+            ].concat(traCuu ? [] : [
                 { title: 'Dồn lớp', cls: 'is-center', render: function (r) { return nutO('donlop', r.ID, 'Dồn lớp', 'add', 'fa-people-arrows'); } },
-                { title: 'Dồn nhóm lớp', cls: 'is-center', render: function (r) { return nutO('donnhom', r.ID, 'Dồn nhóm', 'add', 'fa-people-group'); } },
-                L.cotChon('lhp')
-            ];
+                { title: 'Dồn nhóm lớp', cls: 'is-center', render: function (r) { return nutO('donnhom', r.ID, 'Dồn nhóm', 'add', 'fa-people-group'); } }
+            ], [L.cotChon('lhp')]);
         },
         ct: function () {
             var SV = ['Thông tin sinh viên'], DK = ['Thông tin đăng ký'];
@@ -378,14 +409,43 @@
     function moKhung(k) { ui.swap(v('ds'), v(k)); }
     function veDS(k) { v(k).hidden = true; v(k).innerHTML = ''; ui.swap(v(k), v('ds')); }
 
+    /* ---------- Xuất Excel bảng đang xem (gốc exportCurrentTable) ------------ */
+    var XUAT = { lhp: ['DanhSachLopHocPhan', 'DANH SÁCH LỚP HỌC PHẦN'], ct: ['DangKyChiTiet', 'DANH SÁCH ĐĂNG KÝ HỌC CHI TIẾT'],
+        cb: ['DangKyChiTiet_CanBo', 'KẾT QUẢ ĐĂNG KÝ CHI TIẾT (CÁN BỘ ĐĂNG KÝ)'], rut: ['RutDangKy', 'DANH SÁCH SINH VIÊN RÚT ĐĂNG KÝ'] };
+    var COT_BO = ['Đã phân công', 'Dồn lớp', 'Dồn nhóm lớp'];      // cột nút bấm — không xuất
+    function cotXuat(b) {
+        return COT[b]().filter(function (c) { return c.title && COT_BO.indexOf(c.title) < 0; })
+            .map(function (c) { return c.title === 'Số sv đã đăng ký' ? { group: c.group, title: c.title, prop: 'SOSVDADANGKY' } : c; });
+    }
+    function xuat() {
+        var k = dang, b = bangCua(k);
+        if (!ds[b] || !ds[b].length) { ui.toast('Chưa có dữ liệu để xuất. Vui lòng bấm một nút "Xem danh sách …" ở phía trên trước.', 'warn'); return; }
+        ui.toast('Đang nạp toàn bộ kết quả để xuất…', 'info');
+        goi(k, { tuKhoa: loc.tuKhoa(), pageIndex: 1, pageSize: 100000 }).then(function (x) {
+            if (!x.rows.length) { ui.toast('Không có dữ liệu để xuất.', 'warn'); return; }
+            var them = [];
+            if (loc.tuKhoa()) them.push('Từ khóa: ' + loc.tuKhoa());
+            if (loc.loaiLop()) { var oL = loc.f('loai').options[loc.f('loai').selectedIndex]; them.push('Loại lớp: ' + (oL ? oL.text.trim() : loc.loaiLop())); }
+            var phu = [ums.process.dieuKien(dieuKien())].filter(Boolean).concat(them.length ? [them.join('; ')] : []);
+            var tmp = document.createElement('div');
+            ui.table({ el: tmp, rows: x.rows, columns: cotXuat(b), empty: 'Không có dữ liệu' });
+            ui.xuatBang(tmp, { ten: XUAT[k][0], tieuDe: XUAT[k][1], phu: phu });
+        }).catch(function (err) { ums.api.handle(err, 'xuất Excel'); });
+    }
+
     /* ---------- Thiết lập 1/0 cho lớp đã chọn ------------------------------- */
-    function thietLap(cau, lua, mk, tieuDe) {
+    function thietLap(cau, lua, mk, tieuDe, tep) {
         var rs = canChon('lhp', 'Vui lòng chọn đối tượng?');
         if (!rs) return;
         L.hoiChon({ title: tieuDe, cau: cau, lua: lua }).then(function (gt) {
             if (gt === null) return;
-            ui.batch(rs.map(function (r) { return mk(r.ID, gt); }), { title: tieuDe, okText: 'Thành công' })
-                .then(function () { nap('lhp'); });
+            var nhan = (lua.filter(function (x) { return x.v === gt; })[0] || {}).t || gt;
+            ums.process.run({
+                title: tieuDe, unit: 'lớp học phần', fileName: tep, subTitles: ['Thiết lập: ' + nhan], dieuKien: dieuKien(),
+                items: rs, columns: colsLop(), okMessage: 'Thành công',
+                request: function (r) { return mk(r.ID, gt); },
+                refresh: function () { nap('lhp'); }
+            });
         });
     }
 
@@ -396,19 +456,20 @@
         var a = b.getAttribute('data-a'), id = b.getAttribute('data-id'), rs;
         var lop = id ? ds.lhp.filter(function (r) { return String(r.ID) === String(id); })[0] : null;
 
+        if (a === 'xuat') return xuat();
         if (a === 'phamvi') return L.hopPhamVi(id);
-        if (a === 'dssv') return L.hopSinhVien(id);
+        if (a === 'dssv') return L.hopSinhVien(id, dieuKien);
         if (a === 'donlop' && lop) {
             moKhung('don');
             return L.donLop(v('don'), {
-                lop: lop,
+                lop: lop, dieuKien: dieuKien,
                 lopCungHP: ds.lhp.filter(function (r) { return r.ID !== lop.ID && r.DAOTAO_HOCPHAN_ID === lop.DAOTAO_HOCPHAN_ID; }),
                 dong: function () { veDS('don'); nap('lhp'); }
             });
         }
         if (a === 'donnhom' && lop) {
             moKhung('nhom');
-            return L.donNhom(v('nhom'), { lop: lop, dong: function () { veDS('nhom'); nap('lhp'); } });
+            return L.donNhom(v('nhom'), { lop: lop, dieuKien: dieuKien, dong: function () { veDS('nhom'); nap('lhp'); } });
         }
 
         if (a === 'tonghop') {
@@ -416,21 +477,21 @@
             if (!rs) return;
             rs = rs.filter(function (r) { return r.QLSV_NGUOIHOC_ID; });
             if (!rs.length) { ui.toast('Không tìm thấy dữ liệu các dòng đã chọn?', 'warn'); return; }
-            ui.confirm('Bạn có chắc chắn tổng hợp công nợ cho ' + rs.length + ' bản ghi đã chọn?', { title: 'Tổng hợp công nợ' }).then(function (ok) {
-                if (!ok) return;
-                // Tuần tự từng sinh viên như gốc (runNext)
-                ui.batch(rs.map(function (r) {
-                    return { action: 'TC_NguoiHoc/TongHopDuNoSinhVien', strNguoiThucHien_Id: uid(), strQLSV_NguoiHoc_Id: r.QLSV_NGUOIHOC_ID };
-                }), { title: 'Đang tổng hợp công nợ', okText: 'Tổng hợp công nợ thành công' }).then(function () { nap(dsCT()); });
+            ums.process.run({      // tuần tự từng sinh viên như gốc
+                title: 'Tổng hợp công nợ sinh viên', unit: 'bản ghi', fileName: 'KetQuaTongHopCongNo', dieuKien: dieuKien(),
+                items: rs, columns: colsDK(), okMessage: 'Tổng hợp công nợ thành công',
+                request: function (r) { return { action: 'TC_NguoiHoc/TongHopDuNoSinhVien', strNguoiThucHien_Id: uid(), strQLSV_NguoiHoc_Id: r.QLSV_NGUOIHOC_ID }; },
+                refresh: function () { nap(dsCT()); }
             });
         } else if (a === 'canbang' || a === 'huycanbang') {
             rs = canChon('ct', 'Vui lòng chọn ít nhất một bản ghi ở danh sách chi tiết?');
             if (!rs) return;
             var huy = a === 'huycanbang';
-            ui.confirm('Bạn có chắc chắn ' + (huy ? 'hủy cân bằng nợ' : 'cân bằng nợ') + ' cho ' + rs.length + ' bản ghi đã chọn?',
-                huy ? { tone: 'bad', ok: 'Hủy cân bằng nợ' } : { title: 'Cân bằng nợ' }).then(function (ok) {
-                if (!ok) return;
-                ui.batch(rs.map(function (r) {
+            ums.process.run({
+                title: huy ? 'Hủy cân bằng nợ' : 'Cân bằng nợ', unit: 'bản ghi', fileName: huy ? 'KetQuaHuyCanBangNo' : 'KetQuaCanBangNo', dieuKien: dieuKien(),
+                notes: huy ? ['Thao tác hủy cân bằng nợ của các bản ghi trong danh sách.'] : [],
+                items: rs, columns: colsDK(), okMessage: huy ? 'Hủy cân bằng nợ thành công' : 'Cân bằng nợ thành công',
+                request: function (r) {
                     return {
                         action: huy ? 'DKH_ThongTin2_MH/GS4gHhUVHhkgIg8pIC8eFRUeAhUeFQIP' : 'DKH_ThongTin2_MH/FSkkLB4VFR4ZICIPKSAvHhUVHgIVHhUC',
                         func: huy ? 'PKG_DANGKYHOC_THONGTIN2.Xoa_TT_XacNhan_TT_CT_TC' : 'PKG_DANGKYHOC_THONGTIN2.Them_TT_XacNhan_TT_CT_TC',
@@ -439,18 +500,18 @@
                         strDaoTao_HocPhan_Id: r.DAOTAO_HOCPHAN_ID, strNguoiThucHien_Id: uid(),
                         strVaiTroDangNhap_Id: '', strChucNangHeThong_Id: '', strHanhDong_Code: ''
                     };
-                }), { title: huy ? 'Đang hủy cân bằng nợ' : 'Đang cân bằng nợ', okText: huy ? 'Hủy cân bằng nợ thành công' : 'Cân bằng nợ thành công' })
-                    .then(function () { nap(dsCT()); });
+                },
+                refresh: function () { nap(dsCT()); }
             });
         } else if (a === 'klgd') {
             rs = canChon('lhp', 'Vui lòng chọn lớp học phần?');
-            if (rs) L.hopThuocTinh(rs, function () { nap('lhp'); });
+            if (rs) L.hopThuocTinh(rs, function () { nap('lhp'); }, dieuKien);
         } else if (a === 'chedo') {
             rs = canChon('lhp', 'Vui lòng chọn lớp học phần?');
-            if (rs) L.hopCheDo(rs, function () { nap('lhp'); });
+            if (rs) L.hopCheDo(rs, function () { nap('lhp'); }, dieuKien);
         } else if (a === 'huyphi') {
             rs = canChon('lhp', 'Vui lòng chọn lớp học phần?');
-            if (rs) L.hopHuyPhi(rs, function () { nap('lhp'); });
+            if (rs) L.hopHuyPhi(rs, function () { nap('lhp'); }, dieuKien);
         } else if (a === 'thuchienrut') {
             /* Ưu tiên dòng đánh dấu ở bảng Đăng ký chi tiết, không có thì bảng Rút đăng ký */
             var nguon = L.idChon(bang('ct'), 'ct').length ? 'ct' : (L.idChon(bang('rut'), 'rut').length ? 'rut' : null);
@@ -459,32 +520,36 @@
             if (!rs.length) { ui.toast('Không tìm thấy dữ liệu các dòng đã chọn?', 'warn'); return; }
             var dsNap = nguon === 'rut' ? 'rut' : dsCT();
             moKhung('rut');
-            L.rut(v('rut'), { ds: rs, dong: function (daChay) {
+            L.rut(v('rut'), { ds: rs, dieuKien: dieuKien, dong: function (daChay) {
                 if (!v('rut').hidden) veDS('rut');
                 if (daChay) nap(dsNap);
             } });
         } else if (a === 'nhapdiem') {
-            rs = canChon('lhp', 'Vui lòng chọn đối tượng?');
+            rs = canChon('lhp', 'Vui lòng chọn lớp học phần?');
             if (!rs) return;
-            ui.batch(rs.map(function (r) {
-                return { action: 'D_PhanQuyen_MH/FSAuBTQNKCQ0DykgMQUoJCwP', func: 'pkg_diem_phanquyen.TaoDuLieuNhapDiem',
-                    iM: iM(), strDaoTao_LopHocPhan_Id: r.ID, strNguoiThucHien_Id: uid() };
-            }), { title: 'Đang tạo danh sách nhập điểm', okText: 'Thực hiện thành công' });
+            ums.process.run({
+                title: 'Tạo danh sách nhập điểm', unit: 'lớp học phần', fileName: 'KetQuaTaoDSNhapDiem', dieuKien: dieuKien(),
+                items: rs, columns: colsLop(), okMessage: 'Thực hiện thành công',
+                request: function (r) {
+                    return { action: 'D_PhanQuyen_MH/FSAuBTQNKCQ0DykgMQUoJCwP', func: 'pkg_diem_phanquyen.TaoDuLieuNhapDiem',
+                        iM: iM(), strDaoTao_LopHocPhan_Id: r.ID, strNguoiThucHien_Id: uid() };
+                }
+            });
         } else if (a === 'loprieng') {
             thietLap('Chọn thiết lập lớp riêng?', [{ v: '1', t: 'Là lớp riêng' }, { v: '0', t: 'Không phải lớp riêng' }], function (lid, gt) {
                 return { action: 'DKH_PhanCong_LopHP/ThietDatThuocTinhLopRieng', type: 'POST',
                     strDaoTao_LopHocPhan_Id: lid, strNguoiThucHien_Id: uid(), dLopRieng: gt };
-            }, 'Thiết lập lớp riêng');
+            }, 'Thiết lập lớp riêng', 'KetQuaThietLapLopRieng');
         } else if (a === 'khongphi') {
             thietLap('Chọn Thiết đặt lớp không tín phí?', [{ v: '1', t: 'Lớp không tính phí' }, { v: '0', t: 'Lớp tính phí' }], function (lid, gt) {
                 return { action: 'DKH_ThongTin2_MH/FSkoJDUFIDUKKS4vJhUoLykRKSgP', func: 'PKG_DANGKYHOC_THONGTIN2.ThietDatKhongTinhPhi',
                     iM: iM(), strDaoTao_LopHocPhan_Id: lid, strNguoiThucHien_Id: uid(), dKhongTinhPhi: gt };
-            }, 'Thiết đặt lớp không tín phí');
+            }, 'Thiết đặt lớp không tính phí', 'KetQuaThietLapKhongTinhPhi');
         } else if (a === 'khongthi') {
             thietLap('Thiết đặt lớp không tổ chức thi?', [{ v: '1', t: 'Lớp không tổ chức thi' }, { v: '0', t: 'Lớp tổ chức thi' }], function (lid, gt) {
                 return { action: 'DKH_ThongTin2_MH/FSkoJDUFIDUKKS4vJhUuAik0IhUpKAPP', func: 'PKG_DANGKYHOC_THONGTIN2.ThietDatKhongToChucThi',
                     iM: iM(), strDaoTao_LopHocPhan_Id: lid, strNguoiThucHien_Id: uid(), dKhongToChucThi: gt };
-            }, 'Thiết đặt lớp không tổ chức thi');
+            }, 'Thiết đặt lớp không tổ chức thi', 'KetQuaThietLapKhongToChucThi');
         }
     });
 
