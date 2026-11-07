@@ -77,7 +77,10 @@
      · Ô cha → con (luật 6): Học kỳ → Hệ → Khoá → Chương trình, Khoá → Lớp (hộp đăng ký học); Loại kế hoạch → Kế hoạch
        (hộp kế hoạch khác — gốc nạp sẵn mọi kế hoạch, nay khoá tới khi chọn Loại).
    Khác gốc: Tên kế hoạch bắt buộc, Đến ngày không trước Từ ngày (gốc không kiểm gì); "Lưu" trong hộp học phần đóng hộp
-   (gốc để mở); lời gọi hàng loạt qua ums.ui.batch, xong nạp lại MỘT lần.
+   (gốc để mở); lưu học phần / cán bộ / sinh viên MỚI khi bấm Lưu kế hoạch qua ums.ui.batch, xong nạp lại MỘT lần.
+   Kéo gốc lần 12 (7/11): Xóa học phần đã lưu, Thêm phạm vi áp dụng (gốc edu.process.bindPhamVi), Xóa sinh viên / phạm vi
+   đã chọn chạy qua form tiến trình chung ums.process.run (mỗi bản ghi một dòng, cột Mã học phần / Tên hoặc Mã số / Họ tên /
+   Lớp / Chương trình / Khóa, dòng điều kiện của thanh lọc qua o.dieuKien()), Bước 1 thay hộp hỏi lại.
    ========================================================================= */
 (function () {
     'use strict';
@@ -88,6 +91,23 @@
     T.K = K;
     T.e = e;
     T.uid = function () { return (ums.session && ums.session.userId) || ''; };
+    /* Cột kế hoạch trên form tiến trình (gốc _colsKeHoach: Mã · Tên · Học kỳ · Từ · Đến · Phân loại); maKH = tên cột mã */
+    T.colsKeHoach = function (maKH) {
+        return [{ header: 'Mã', render: function (r) { return e(r[maKH || 'MA']); } },
+            { header: 'Tên kế hoạch', render: function (r) { return e(r.TEN); } },
+            { header: 'Học kỳ', render: function (r) { return e(r.DAOTAO_THOIGIANDAOTAO); } },
+            { header: 'Từ ngày', render: function (r) { return e(r.NGAYBATDAU); } },
+            { header: 'Đến ngày', render: function (r) { return e(r.NGAYKETTHUC); } },
+            { header: 'Phân loại', render: function (r) { return e(r.PHANLOAI_TEN); } }];
+    };
+    /* Cột phạm vi áp dụng / sinh viên (gốc _colsPhamVi) */
+    T.colsPhamVi = function () {
+        return [{ header: 'Mã số', render: function (r) { return e(r.QLSV_NGUOIHOC_MASO); } },
+            { header: 'Họ tên', render: function (r) { return e(r.QLSV_NGUOIHOC_HOTEN) || T.hoTen(r); } },
+            { header: 'Lớp quản lý', render: function (r) { return e(r.DAOTAO_LOPQUANLY_TEN); } },
+            { header: 'Chương trình', render: function (r) { return e(r.DAOTAO_CHUONGTRINH_TEN); } },
+            { header: 'Khóa', render: function (r) { return e(r.DAOTAO_KHOADAOTAO_TEN); } }];
+    };
     T.iM = function () { return (ums.session && ums.session.iM) || ''; };
     T.esc1 = function (s) { return window.CSS && CSS.escape ? CSS.escape(s) : String(s).replace(/"/g, '\\"'); };
 
@@ -270,9 +290,15 @@
             var cu = ids.filter(function (id) { return !K.tim(hpMoi, id); });
             if (moi.length) hpMoi = hpMoi.filter(function (x) { return moi.indexOf(String(x.ID)) < 0; });
             if (!cu.length) { veHP(); return; }
-            K.xoa(cu.map(function (id) {
-                return { action: 'TN_KeHoach_HocPhan/Xoa_TN_KeHoach_HocPhan', method: 'POST', type: 'POST', strIds: id, strNguoiThucHien_Id: '' };
-            }), function () { taiHP(); });
+            ums.process.run({
+                title: 'Xóa học phần khỏi kế hoạch', unit: 'học phần', fileName: 'KetQuaXoaHocPhan', dieuKien: dk(),
+                notes: ['Thao tác xóa dữ liệu các học phần trong danh sách.'],
+                items: cu.map(function (id) { return K.tim(hp, id); }).filter(Boolean),
+                columns: [{ header: 'Mã học phần', render: function (r) { return e(r.DAOTAO_HOCPHAN_MA); } }, { header: 'Tên học phần', render: function (r) { return e(r.DAOTAO_HOCPHAN_TEN); } }],
+                okMessage: 'Xóa thành công!',
+                request: function (r) { return { action: 'TN_KeHoach_HocPhan/Xoa_TN_KeHoach_HocPhan', method: 'POST', type: 'POST', strIds: r.ID, strNguoiThucHien_Id: '' }; },
+                refresh: function () { taiHP(); }
+            });
         }
         function luuHP(id) {
             var ds = hpMoi.slice();
@@ -385,8 +411,18 @@
                 strChucNang_Id: '', strTN_KeHoach_Id: khId, strQLSV_TrangThai_Id: trangThai,
                 strPhamViApDung_Id: phamVi, strNguoiThucHien_Id: '' };
         }
-        function chayPhamVi(calls) {
-            ui.batch(calls, { title: 'Đang thêm', okText: 'Thêm thành công!', show: true }).then(function () { taiSV(1); });
+        function dk() { return o.dieuKien ? o.dieuKien() : []; }
+        /* items = [{ ID: strPhamViApDung_Id, TEN: chữ hiện trên form }] — mỗi phạm vi một bản ghi (gốc edu.process.bindPhamVi) */
+        function chayPhamVi(items, trangThai) {
+            ums.process.run({
+                title: 'Thêm phạm vi áp dụng', unit: 'phạm vi', fileName: 'KetQuaThemPhamViApDung', dieuKien: dk(),
+                infoHeader: 'Phạm vi áp dụng', info: function (it) { return it.TEN; }, items: items, okMessage: 'Thêm thành công!',
+                request: function (it) {
+                    if (!it.ID) throw new Error('Không tìm thấy dữ liệu của sinh viên.');
+                    return goiPhamVi(it.ID, trangThai);
+                },
+                refresh: function () { taiSV(1); }
+            });
         }
         function themSV() {
             var tt = null;
@@ -395,9 +431,10 @@
                 return function (ids, params, dlg) {
                     var arr = ids ? String(ids).split(',') : [];
                     if (!arr.length) { ui.toast('Chưa chọn ' + ten + ' nào.', 'warn'); return; }
-                    var s = st();
+                    var s = st(), chu = {};
+                    K.qa(dlg.body, 'select option').forEach(function (op) { if (op.value) chu[op.value] = op.textContent.trim(); });
                     dlg.close();
-                    chayPhamVi(arr.map(function (id) { return goiPhamVi(id, s); }));
+                    chayPhamVi(arr.map(function (id) { return { ID: id, TEN: ten.charAt(0).toUpperCase() + ten.slice(1) + ': ' + (chu[id] || id) }; }), s);
                 };
             }
             var dlg = pat.pickSinhVien({
@@ -421,8 +458,9 @@
                 ],
                 group: { khoa: nhom('khóa'), chuongTrinh: nhom('chương trình'), lop: nhom('lớp') },
                 onPick: function (rows) {
-                    var s = st();
-                    chayPhamVi(rows.map(function (r) { return goiPhamVi(e(r.QLSV_NGUOIHOC_ID) + e(r.DAOTAO_TOCHUCCHUONGTRINH_ID), s); }));
+                    chayPhamVi(rows.map(function (r) {
+                        return { ID: r.QLSV_NGUOIHOC_ID ? e(r.QLSV_NGUOIHOC_ID) + e(r.DAOTAO_TOCHUCCHUONGTRINH_ID) : '', TEN: (e(r.QLSV_NGUOIHOC_MASO) + ' — ' + T.hoTen(r)).trim() };
+                    }), st());
                 }
             });
             /* "Thêm từng hệ" (btnAdd_He) — hộp chung chưa có, chèn vào đầu hàng "Thêm nhiều" */
@@ -467,9 +505,13 @@
         function xoaSV() {
             var ids = K.daChon(z('sv'), 'tnsv');
             if (!ids.length) { ui.toast('Vui lòng chọn đối tượng cần xóa?', 'warn'); return; }
-            K.xoa(ids.map(function (id) {
-                return { action: 'TN_KeHoach_PhamVi/Xoa', strIds: id, strNguoiThucHien_Id: '' };
-            }), function () { taiSV(); });
+            ums.process.run({
+                title: 'Xóa phạm vi áp dụng', unit: 'sinh viên', fileName: 'KetQuaXoaPhamViApDung', dieuKien: dk(),
+                notes: ['Thao tác xóa dữ liệu các sinh viên / phạm vi trong danh sách.'],
+                items: ids.map(function (id) { return K.tim(svRows, id) || K.tim(svMoi, id) || { ID: id }; }), columns: T.colsPhamVi(), okMessage: 'Xóa thành công!',
+                request: function (r) { return { action: 'TN_KeHoach_PhamVi/Xoa', strIds: r.ID, strNguoiThucHien_Id: '' }; },
+                refresh: function () { taiSV(); }
+            });
         }
 
         /* Bảng chọn sinh viên trong hai hộp (cột như cbGetListModal_SinhVien*) */

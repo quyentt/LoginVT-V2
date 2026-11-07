@@ -64,7 +64,11 @@
        · Mã số bấm được mở hộp kết quả học tập bằng ums.khxl.hocTap (ums.diemHoc — bản viết lại diemhoc của Cổng SV
          mà gốc nhúng vào #modalHTSinhVien). Nút chép mã số (btnCopyMSSV, sửa gốc 26/08) giữ, báo bằng thông báo nổi.
        · Hỏi lại bằng ums.ui.confirm (gốc gắn thêm trình xử lý #btnYes mỗi lần bấm → bấm lần hai chạy hai lần).
-       · Hàng loạt qua ums.ui.batch, xong nạp lại MỘT lần.
+       · Kéo gốc lần 12 (7/11, gốc 4/11 edu.process / edu.exporter): "Thực hiện xét" → ums.process.runJob (một yêu cầu cho mọi
+         kế hoạch đã chọn, dòng phụ "Kế hoạch xét: …", điều kiện Thời gian · Phân loại; thành công → nạp lại hàng đợi); Công nhận
+         / Hủy kết quả / "Thực hiện xét" từng sinh viên trong hộp đối tượng → ums.process.run (cột như gốc), Bước 1 thay hộp hỏi
+         lại. Nút "Xuất Excel": danh sách kế hoạch (đầu khung), hộp đối tượng xét (xuất ĐỦ mọi trang — gốc fetchAll), hộp đạt /
+         không đạt / đã công nhận (bảng đang xem) — ums.ui.xuatBang qua H.hopDS o.xuat.
        · Hộp "đã công nhận": ô tìm + nút Tìm kiếm của gốc KHÔNG gắn xử lý (strTuKhoa đọc txtAAAA) → nay gửi ô tìm.
        · Khoá học nạp lại cả khi bấm "chọn tất cả" kế hoạch (gốc chỉ khi bấm từng ô); Khoá học → Lớp: luật cha → con.
        · Ô Lớp quản lý: gốc nạp nhưng KHÔNG gửi đi ở lời gọi nào — giữ ô như gốc.
@@ -95,6 +99,7 @@
         pat.panel({
             title: 'Danh sách kế hoạch', icon: 'fa-file-certificate', count: 'n', flush: true, zone: 't',
             tools: ui.xoaChon('input[data-tnx]', { goc: '.ums-panel', text: 'Hủy kết quả xét', attr: { 'data-a': 'huy' } }) +
+                ui.btn('excel', { attr: { 'data-a': 'xuat' } }) +
                 ui.btn('search', { text: 'Thực hiện xét', mod: 'primary', icon: 'fa-file-check', attr: { 'data-a': 'hangdoi' } }) +
                 ui.btn('confirm', { text: 'Thực hiện công nhận kết quả chính thức', attr: { 'data-a': 'congnhan' } })
         });
@@ -113,6 +118,14 @@
     H.napHocKy([f('tg')], ['Tất cả học kỳ']);
 
     function daChon() { return K.daChon(q('[data-z="t"]'), 'tnx'); }
+    function dongChon() { return daChon().map(function (id) { return K.tim(rows, id); }).filter(Boolean); }
+    function dieuKien() { return [['Thời gian đào tạo', f('tg')], ['Phân loại', f('pl')]]; }
+    function phuKH(kh) { return function () { return H.phu(dieuKien(), kh ? ['Kế hoạch: ' + e(kh.TEN)] : []); }; }
+    function colsKH() {
+        return [{ header: 'Mã', render: function (r) { return e(r.TN_KEHOACH_MA); } }, { header: 'Tên kế hoạch', render: function (r) { return e(r.TEN); } },
+            { header: 'Học kỳ', render: function (r) { return e(r.DAOTAO_THOIGIANDAOTAO); } }, { header: 'Từ ngày', render: function (r) { return e(r.NGAYBATDAU); } },
+            { header: 'Đến ngày', render: function (r) { return e(r.NGAYKETTHUC); } }, { header: 'Phân loại', render: function (r) { return e(r.PHANLOAI_TEN); } }];
+    }
 
     /* Khoá học theo kế hoạch đã đánh dấu (chkKeHoach gốc) → Lớp quản lý theo khoá */
     var luotKhoa = 0;
@@ -210,34 +223,37 @@
 
     /* ---------- Thao tác trên kế hoạch đã chọn ----------------------------- */
     function taoHangDoi() {
-        ui.confirm('Bạn có chắc chắn Thực hiện xét không?', { title: 'Thực hiện xét', ok: 'Thực hiện xét' }).then(function (yes) {
-            if (!yes) return;
-            var ids = daChon();
-            if (!ids.length) { ui.toast('Vui lòng chọn đối tượng?', 'warn'); return; }
-            ums.api.call({ action: 'TN_HangDoi/TaoHangDoi_TN_TuDong', method: 'GET',
-                strTuKhoa: '', strChucNang_Id: '', strTN_KeHoach_Id: ids.join(','), strNguoiThucHien_Id: '' })
-                .then(function () {
-                    ui.toast('Khởi tạo dữ liệu thành công, vui lòng chạy tiến trình để thực hiện!', 'ok');
-                    hangDoi.reload();
-                }).catch(function (err) { ums.api.handle(err, 'TN_HangDoi/TaoHangDoi_TN_TuDong'); });
+        var chon = dongChon();
+        if (!chon.length) { ui.toast('Vui lòng chọn đối tượng?', 'warn'); return; }
+        var ids = chon.map(function (r) { return r.ID; });
+        ums.process.runJob({
+            title: 'Thực hiện xét tốt nghiệp', what: 'Thực hiện xét ' + chon.length + ' kế hoạch đã chọn', fileName: 'KetQuaThucHienXetTN',
+            subTitles: ['Kế hoạch xét: ' + chon.map(function (r) { return e(r.TEN); }).join('; ')], dieuKien: dieuKien(),
+            okMessage: 'Khởi tạo dữ liệu thành công, vui lòng chạy tiến trình để thực hiện!',
+            request: function () { return { action: 'TN_HangDoi/TaoHangDoi_TN_TuDong', method: 'GET', strTuKhoa: '', strChucNang_Id: '', strTN_KeHoach_Id: ids.join(','), strNguoiThucHien_Id: '' }; },
+            onSuccess: function () { hangDoi.reload(); }
         });
     }
     function congNhan() {
-        var ids = daChon();
-        if (!ids.length) { ui.toast('Vui lòng chọn đối tượng xét?', 'warn'); return; }
-        ui.confirm('Bạn có chắc chắn xét không?', { title: 'Công nhận kết quả chính thức', ok: 'Đồng ý' }).then(function (yes) {
-            if (!yes) return;
-            ui.batch(ids.map(function (id) {
-                return { action: 'TN_KetQua_CongNhan/ThemMoi', strId: '', strChucNang_Id: '', strTN_KeHoach_Id: id, strNguoiThucHien_Id: '' };
-            }), { title: 'Đang công nhận kết quả', okText: 'Thêm mới thành công!', show: true }).then(function () { load(); });
+        var chon = dongChon();
+        if (!chon.length) { ui.toast('Vui lòng chọn đối tượng xét?', 'warn'); return; }
+        ums.process.run({
+            title: 'Công nhận kết quả xét tốt nghiệp', unit: 'kế hoạch', fileName: 'KetQuaCongNhanKetQuaXetTN', dieuKien: dieuKien(),
+            items: chon, columns: colsKH(), okMessage: 'Thêm mới thành công!',
+            request: function (r) { return { action: 'TN_KetQua_CongNhan/ThemMoi', strId: '', strChucNang_Id: '', strTN_KeHoach_Id: r.ID, strNguoiThucHien_Id: '' }; },
+            refresh: function () { load(); }
         });
     }
     function huy() {
-        var ids = daChon();
-        if (!ids.length) { ui.toast('Vui lòng chọn đối tượng cần xóa?', 'warn'); return; }
-        K.xoa(ids.map(function (id) {
-            return { action: 'TN_KetQua_CongNhan/Xoa', strChucNang_Id: '', strTN_KeHoach_Id: id, strNguoiThucHien_Id: '' };
-        }), function () { load(); });
+        var chon = dongChon();
+        if (!chon.length) { ui.toast('Vui lòng chọn đối tượng cần xóa?', 'warn'); return; }
+        ums.process.run({
+            title: 'Hủy kết quả xét tốt nghiệp', unit: 'kế hoạch', fileName: 'KetQuaHuyKetQuaXetTN', dieuKien: dieuKien(),
+            notes: ['Thao tác xóa dữ liệu kết quả xét của các kế hoạch trong danh sách.'],
+            items: chon, columns: colsKH(), okMessage: 'Xóa thành công!',
+            request: function (r) { return { action: 'TN_KetQua_CongNhan/Xoa', strChucNang_Id: '', strTN_KeHoach_Id: r.ID, strNguoiThucHien_Id: '' }; },
+            refresh: function () { load(); }
+        });
     }
 
     /* ---------- Hộp danh sách người học ------------------------------------- */
@@ -272,6 +288,7 @@
         var chuaXet = false;
         hop({
             title: 'Danh sách đối tượng xét', icon: 'fa-user-gear', tim: 'may', chon: false,
+            xuat: { ten: 'DoiTuongXetTotNghiep', tieuDe: 'DANH SÁCH ĐỐI TƯỢNG XÉT TỐT NGHIỆP', phu: phuKH(kh), tatCa: true },
             phanTrang: function () { return !chuaXet; },
             onTim: function () { chuaXet = false; },
             call: function (p, s, tu) {
@@ -294,15 +311,22 @@
                     var them = K.qa(api.dlg.body, 'tbody input[data-xettn]').filter(function (x) { return x.checked && !x.hasAttribute('data-da'); })
                         .map(function (x) { return x.getAttribute('data-xettn'); });
                     if (!them.length) { ui.toast('Chưa đánh dấu thêm đối tượng nào để xét', 'warn'); return; }
-                    ui.confirm('Bạn có chắc chắn thêm ' + them.length + ' không?', { title: 'Thực hiện xét', ok: 'Thực hiện xét' }).then(function (yes) {
-                        if (!yes) return;
-                        ui.batch(them.map(function (id) {
+                    var ds = api.rows();
+                    ums.process.run({
+                        title: 'Thực hiện xét tốt nghiệp theo sinh viên', unit: 'sinh viên', fileName: 'KetQuaThucHienXetTheoSinhVien', dieuKien: dieuKien(),
+                        items: them.map(function (id) { return K.tim(ds, id) || { ID: id }; }),
+                        columns: [
+                            { header: 'Mã số', render: function (r) { return e(r.QLSV_NGUOIHOC_MASO) || e(r.ID); } },
+                            { header: 'Họ tên', render: function (r) { return e(r.QLSV_NGUOIHOC_HOTEN) || H.hoTen(r); } },
+                            { header: 'Lớp quản lý', render: function (r) { return e(r.DAOTAO_LOPQUANLY_TEN); } },
+                            { header: 'Chương trình', render: function (r) { return e(r.DAOTAO_CHUONGTRINH_TEN); } }
+                        ],
+                        okMessage: 'Cập nhật thành công!',
+                        request: function (r) {
                             return { action: 'TN_KeHoach_PhamVi/ThietLap_Xet_TN_KeHoach_PhamVi', method: 'POST', type: 'POST',
-                                strTN_KeHoach_PhamVi_Id: id, dThucHienXet: 1, strNguoiThucHien_Id: '' };
-                        }), { title: 'Đang thực hiện xét', okText: 'Cập nhật thành công!', show: true }).then(function () {
-                            chuaXet = false;
-                            api.tai();
-                        });
+                                strTN_KeHoach_PhamVi_Id: r.ID, dThucHienXet: 1, strNguoiThucHien_Id: '' };
+                        },
+                        refresh: function () { chuaXet = false; api.tai(); }
                     });
                 } }
             ]
@@ -311,6 +335,7 @@
     function hopDat(kh) {
         datApi = hop({
             title: 'Danh sách đạt', icon: 'fa-users-gear', phanTrang: true, tim: 'may', chon: 'dattn', khoaKQ: 'TN_KETQUA_ID',
+            xuat: { ten: 'KetQuaXetTotNghiepDat', tieuDe: 'DANH SÁCH SINH VIÊN ĐẠT ĐIỀU KIỆN TỐT NGHIỆP', phu: phuKH(kh) },
             chiTiet: { action: 'TN_KetQua/LayChiTiet', method: 'GET', strTN_KeHoach_Id: kh.ID },
             call: function (p, s, tu) { return gop({ action: 'TN_KetQua/LayDanhSach', method: 'GET' }, thamSoDS(kh, p, s, tu)); },
             columns: function () { return cotSV(H.cotXepLoai()); }
@@ -319,6 +344,7 @@
     function hopKhongDat(kh) {
         hop({
             title: 'Danh sách không đạt', icon: 'fa-users', phanTrang: true, tim: 'may', ben: true, khoaKQ: 'TN_KETQUA_ID',
+            xuat: { ten: 'KetQuaXetTotNghiepKhongDat', tieuDe: 'DANH SÁCH SINH VIÊN KHÔNG ĐẠT ĐIỀU KIỆN TỐT NGHIỆP', phu: phuKH(kh) },
             chiTiet: { action: 'TN_KetQua_Loi/LayChiTiet', method: 'GET', strTN_KeHoach_Id: kh.ID },
             call: function (p, s, tu) { return gop({ action: 'TN_KetQua_Loi/LayDanhSach', method: 'GET' }, thamSoDS(kh, p, s, tu)); },
             columns: function () {
@@ -352,6 +378,7 @@
     function hopDaCongNhan(kh) {
         hop({
             title: 'Danh sách đã công nhận', icon: 'fa-file-certificate', tim: 'may',
+            xuat: { ten: 'DanhSachDaCongNhanTotNghiep', tieuDe: 'DANH SÁCH SINH VIÊN ĐÃ CÔNG NHẬN TỐT NGHIỆP', phu: phuKH(kh) },
             call: function (p, s, tu) {
                 return { action: 'TN_ThongTin_MH/DSA4BRIVDx4KJDUQNCAeAi4vJg8pIC8P', func: 'pkg_totnghiep_thongtin.LayDSTN_KetQua_CongNhan',
                     strTuKhoa: tu, strTN_KeHoach_Id: kh.ID, strPhanLoai_Id: '', strDaoTao_HeDaoTao_Id: '', strDaoTao_KhoaDaoTao_Id: '',
@@ -387,6 +414,7 @@
             case 'hangdoi': taoHangDoi(); break;
             case 'congnhan': congNhan(); break;
             case 'huy': huy(); break;
+            case 'xuat': ui.xuatBang(q('[data-z="t"]'), { ten: 'DanhSachKeHoachXetTotNghiep', tieuDe: 'DANH SÁCH KẾ HOẠCH XÉT TỐT NGHIỆP', phu: H.phu(dieuKien()) }); break;
             case 'doituong': if (r) hopDoiTuong(r); break;
             case 'dat': if (r) hopDat(r); break;
             case 'khongdat': if (r) hopKhongDat(r); break;

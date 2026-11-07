@@ -54,7 +54,10 @@
      · Bảng của hai vùng / hộp vẽ qua ums.ui.table; tab 1 Chuẩn bị phân trang được (gốc gắn trang vào main_doc.KeHoach —
        không tồn tại). Ô đánh dấu ở hai bảng Chuẩn bị và hộp hạ bậc bị bỏ (gốc không nút nào dùng).
      · Thực hiện tạo dữ liệu xong thì nạp lại danh sách người học (gốc không nạp lại).
-   Khác gốc: hộp kế thừa hỏi lại TRƯỚC rồi mới đóng (gốc đóng hộp rồi hỏi); chạy hàng loạt qua ums.ui.batch, nạp lại MỘT lần.
+   Kéo gốc lần 12 (7/11, gốc 4/11 edu.process): Lưu (chỉ ô đã đổi) / Xóa điều kiện xếp loại → ums.process.run (cột Xếp loại ·
+   Thời gian); Kế thừa từ hệ đào tạo → ums.process.runJob (một lệnh, dòng "Kế hoạch đích: …", hộp chọn đóng rồi mở form thay
+   hộp hỏi lại); Kế thừa theo nhóm → ums.process.run hai việc (xếp loại + điều kiện xét); "Thực hiện tạo dữ liệu" (chuẩn bị)
+   → runJob với lưu ý "Chưa chọn thang điểm", điều kiện Thang điểm; dòng điều kiện Thời gian · Phân loại của thanh lọc (o.dieuKien).
    ========================================================================= */
 (function () {
     'use strict';
@@ -69,11 +72,9 @@
             buttons: [{ text: o.nut, kind: 'save', icon: 'fa-copy', onClick: function () {
                 var v = el.value;
                 if (!v) { ui.toast('Vui lòng ' + o.ph.toLowerCase().replace(/^-+|-+$/g, ''), 'warn'); return false; }
-                ui.confirm('Bạn có muốn kế thừa không?', { ok: 'Kế thừa', title: o.nut }).then(function (yes) {
-                    if (!yes) return;
-                    dlg.close();
-                    o.chay(v);
-                });
+                var op = el.options[el.selectedIndex];
+                dlg.close();   // gốc hideModal rồi mở form tiến trình (Bước 1 thay hộp hỏi lại)
+                o.chay(v, op ? op.text.replace(/\s+/g, ' ').trim() : '');
                 return false;
             } }] });
         var el = dlg.body.querySelector('[data-f="x"]');
@@ -87,7 +88,8 @@
        ===================================================================== */
     T.taoDieuKien = function (zone, o) {
         o = o || {};
-        var khId = '', xetDuyet = null, rows = [], tab = 'xet';
+        var khId = '', khTen = '', xetDuyet = null, rows = [], tab = 'xet';
+        function dk() { return o.dieuKien ? o.dieuKien() : []; }
 
         zone.innerHTML = pat.panel({
             title: 'Điều kiện xét', icon: 'fa-pen-field',
@@ -173,20 +175,34 @@
                 if (r && t.value !== e(r.XAUDIEUKIEN)) doi.push({ r: r, xau: t.value });
             });
             if (!doi.length) { ui.toast('Không có thay đổi để lưu', 'warn'); return; }
-            ui.batch(doi.map(function (x) {
-                var a = x.r;
-                return { action: TT + 'Sua_TN_XepLoai_DieuKien_Ad', method: 'POST', type: 'POST', iM: T.iM(),
-                    strId: a.ID, strChucNang_Id: '', strXauDieuKien: x.xau, strPhanLoai_Id: a.PHANLOAI_ID, strXepLoai_Id: a.XEPLOAI_ID,
-                    dThuTu: a.THUTU ? a.THUTU : undefined, strMoTa: a.MOTA, strPhamViApDung_Id: a.PHAMVIAPDUNG_ID,
-                    strDaoTao_ThoiGianDaoTao_Id: a.DAOTAO_THOIGIANDAOTAO_ID, strNgayApDung: '', strNguoiThucHien_Id: '' };
-            }), { title: 'Đang lưu điều kiện xếp loại', okText: 'Thực hiện thành công', show: true }).then(taiXL);
+            ums.process.run({
+                title: 'Lưu điều kiện xếp loại', unit: 'điều kiện', fileName: 'KetQuaLuuDieuKienXepLoai', dieuKien: dk(), items: doi,
+                columns: colsXL(function (x) { return x.r; }), okMessage: 'Thực hiện thành công',
+                request: function (x) {
+                    var a = x.r;
+                    return { action: TT + 'Sua_TN_XepLoai_DieuKien_Ad', method: 'POST', type: 'POST', iM: T.iM(),
+                        strId: a.ID, strChucNang_Id: '', strXauDieuKien: x.xau, strPhanLoai_Id: a.PHANLOAI_ID, strXepLoai_Id: a.XEPLOAI_ID,
+                        dThuTu: a.THUTU ? a.THUTU : undefined, strMoTa: a.MOTA, strPhamViApDung_Id: a.PHAMVIAPDUNG_ID,
+                        strDaoTao_ThoiGianDaoTao_Id: a.DAOTAO_THOIGIANDAOTAO_ID, strNgayApDung: '', strNguoiThucHien_Id: '' };
+                },
+                refresh: taiXL
+            });
+        }
+        function colsXL(lay) {
+            lay = lay || function (x) { return x; };
+            return [{ header: 'Xếp loại', render: function (x) { var r = lay(x); return e(r.XEPLOAI_TEN) || e(r.ID); } },
+                { header: 'Thời gian', render: function (x) { return e(lay(x).THOIGIAN); } }];
         }
         function xoa() {
             var ids = K.daChon(z('t'), 'tndk');
             if (!ids.length) { ui.toast('Vui lòng chọn đối tượng cần xóa?', 'warn'); return; }
-            K.xoa(ids.map(function (id) {
-                return { action: TT + 'Xoa_TN_XepLoai_DieuKien_Ad', method: 'POST', strIds: id, strChucNang_Id: '', strNguoiThucHien_Id: '' };
-            }), taiXL);
+            ums.process.run({
+                title: 'Xóa điều kiện xếp loại', unit: 'điều kiện', fileName: 'KetQuaXoaDieuKienXepLoai', dieuKien: dk(),
+                notes: ['Thao tác xóa dữ liệu các điều kiện trong danh sách.'],
+                items: ids.map(function (id) { return K.tim(rows, id); }).filter(Boolean), columns: colsXL(), okMessage: 'Xóa thành công!',
+                request: function (r) { return { action: TT + 'Xoa_TN_XepLoai_DieuKien_Ad', method: 'POST', strIds: r.ID, strChucNang_Id: '', strNguoiThucHien_Id: '' }; },
+                refresh: taiXL
+            });
         }
         function goiKeThua(loai, nguon) {
             return { action: TT + (loai === 'DIEUKIEN' ? 'KeThuaXetDuyet_DieuKien_Ad' : 'KeThuaXepLoai_DieuKien_Ad'), method: 'POST', type: 'POST',
@@ -196,11 +212,14 @@
             napHop({
                 title: 'Kế thừa', nhan: 'Hệ đào tạo', ph: '--Chọn hệ đào tạo--', nut: 'Kế thừa theo hệ',
                 nap: function (el) { ums.ref.cascadeQuyen({ he: el }); },
-                chay: function (he) {
-                    ums.api.call(goiKeThua(loai, he)).then(function () {
-                        ui.toast('Thực hiện thành công', 'ok');
-                        if (loai === 'DIEUKIEN') taiXet(); else taiXL();
-                    }).catch(function (err) { ums.api.handle(err, 'kế thừa'); });
+                chay: function (he, tenHe) {
+                    var bDK = loai === 'DIEUKIEN', ten = bDK ? 'Kế thừa điều kiện xét duyệt' : 'Kế thừa điều kiện xếp loại';
+                    ums.process.runJob({
+                        title: ten, what: ten + ' từ: ' + tenHe, fileName: bDK ? 'KetQuaKeThuaDieuKien' : 'KetQuaKeThuaXepLoai',
+                        subTitles: ['Kế hoạch đích: ' + khTen], okMessage: 'Thực hiện thành công',
+                        request: function () { return goiKeThua(loai, he); },
+                        refresh: function () { if (bDK) taiXet(); else taiXL(); }
+                    });
                 }
             });
         }
@@ -213,10 +232,15 @@
                         .then(function (r) { pat.fill(el, K.ds(r), { name: 'TEN', head: 'Chọn nhóm' }); })
                         .catch(function (err) { ums.api.handle(err, 'danh sách nhóm kế thừa'); });
                 },
-                chay: function (nhom) {
-                    ui.batch([goiKeThua('XEPLOAI', nhom), goiKeThua('DIEUKIEN', nhom)],
-                        { title: 'Đang kế thừa', okText: 'Thực hiện thành công', show: true })
-                        .then(function () { taiXet(); taiXL(); });
+                chay: function (nhom, tenNhom) {
+                    ums.process.run({
+                        title: 'Kế thừa theo nhóm', unit: 'việc', fileName: 'KetQuaKeThuaTheoNhom',
+                        subTitles: ['Nhóm nguồn: ' + tenNhom, 'Kế hoạch đích: ' + khTen],
+                        items: [{ ID: 'XL', TEN: 'Kế thừa điều kiện xếp loại' }, { ID: 'DK', TEN: 'Kế thừa điều kiện xét duyệt' }],
+                        infoHeader: 'Nội dung', info: function (it) { return it.TEN; }, okMessage: 'Thực hiện thành công',
+                        request: function (it) { return goiKeThua(it.ID === 'XL' ? 'XEPLOAI' : 'DIEUKIEN', nhom); },
+                        refresh: function () { taiXet(); taiXL(); }
+                    });
                 }
             });
         }
@@ -253,7 +277,7 @@
 
         return {
             mo: function (kh) {
-                khId = kh.ID;
+                khId = kh.ID; khTen = e(kh.TEN);
                 z('kh').textContent = e(kh.TEN) ? 'Kế hoạch: ' + e(kh.TEN) : '';
                 moTab('xet');
                 taiXet(); taiXL();
@@ -266,7 +290,7 @@
        ===================================================================== */
     T.taoChuanBi = function (zone, o) {
         o = o || {};
-        var khId = '', hpPage = 1, hpSize = 10;
+        var khId = '', khTen = '', hpPage = 1, hpSize = 10;
 
         zone.innerHTML = pat.panel({
             title: 'Chuẩn bị dữ liệu', icon: 'fa-database',
@@ -328,12 +352,15 @@
                 }).catch(function (err) { K.loi(host, err, 'danh sách người học'); });
         }
         function tao() {
-            ui.confirm('Bạn có muốn Thực hiện tạo dữ liệu không?', { ok: 'Thực hiện', title: 'Thực hiện tạo dữ liệu' }).then(function (yes) {
-                if (!yes) return;
-                ums.api.call({ action: 'TN_TinhToan_MH/FSgvKQUVAx4VDx4KJAkuICIpHgkuIhEpIC8P', func: 'pkg_totnghiep_tinhtoan.TinhDTB_TN_KeHoach_HocPhan',
-                    strTN_KeHoach_Id: khId, strThangDiem_Id: fTd.value, strNguoiThucHien_Id: '' })
-                    .then(function () { ui.toast('Thực hiện thành công', 'ok'); taiNH(); })
-                    .catch(function (err) { ums.api.handle(err, 'tạo dữ liệu'); });
+            ums.process.runJob({
+                title: 'Chuẩn bị dữ liệu xét tốt nghiệp', what: 'Tính điểm trung bình tốt nghiệp theo học phần của kế hoạch', fileName: 'KetQuaChuanBiDuLieuXet',
+                notes: fTd.value ? [] : ['Chưa chọn thang điểm.'], subTitles: ['Kế hoạch: ' + khTen], dieuKien: [['Thang điểm', fTd]],
+                okMessage: 'Thực hiện thành công',
+                request: function () {
+                    return { action: 'TN_TinhToan_MH/FSgvKQUVAx4VDx4KJAkuICIpHgkuIhEpIC8P', func: 'pkg_totnghiep_tinhtoan.TinhDTB_TN_KeHoach_HocPhan',
+                        strTN_KeHoach_Id: khId, strThangDiem_Id: fTd.value, strNguoiThucHien_Id: '' };
+                },
+                refresh: taiNH
             });
         }
 
@@ -352,7 +379,7 @@
 
         return {
             mo: function (kh) {
-                khId = kh.ID;
+                khId = kh.ID; khTen = e(kh.TEN);
                 z('kh').textContent = e(kh.TEN) ? 'Kế hoạch: ' + e(kh.TEN) : '';
                 fQ.value = '';
                 moTab('hp');

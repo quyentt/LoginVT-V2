@@ -29,8 +29,12 @@
    id đó) nên cột luôn là một nút trống; ở đây hiện tên đúng dòng (ý định của gốc, như bản Học bổng).
    Cố ý bỏ: getList_KeHoachXuLy2 (không ai gọi); cbGenCombo_KeHoachXuLy sau khi nạp danh sách (đổ kế hoạch vào ô "Chọn
    nhóm" của hộp kế thừa — hộp mở ra là nạp lại bằng LayDSTN_PhamVi_ApDung nên bị ghi đè ngay); khối JOB_TUDONG (đã chú thích).
-   Khác gốc: nút "Thêm mới" lên đầu trang (luật bố cục 5), "Xóa" là ums.ui.xoaChon ở đầu khung danh sách; xoá chạy
-   ums.ui.batch rồi nạp lại MỘT lần (gốc N lời gọi + setTimeout N×50ms); đóng vùng nào cũng nạp lại danh sách (toggle_form).
+   Khác gốc: nút "Thêm mới" lên đầu trang (luật bố cục 5), "Xóa" là ums.ui.xoaChon ở đầu khung danh sách; đóng vùng nào
+   cũng nạp lại danh sách (toggle_form).
+   Kéo gốc lần 12 (7/11, gốc 4/11 edu.process): Xóa kế hoạch (đây), xóa học phần / thêm – xóa phạm vi áp dụng (_tnkh_form.js),
+   lưu – xóa – kế thừa điều kiện xếp loại, kế thừa theo nhóm, chuẩn bị dữ liệu xét (_tnkh_dieukien.js) chạy qua form tiến trình
+   chung ums.process.run / runJob — mỗi bản ghi một dòng, cột như gốc, dòng điều kiện Thời gian đào tạo · Phân loại của thanh
+   lọc (dieuKien()), Bước 1 thay hộp hỏi lại; xong nạp lại MỘT lần.
    ========================================================================= */
 (function () {
     'use strict';
@@ -64,10 +68,11 @@
     function mo(k) { dangMo = vung[k]; ui.swap(zDs, dangMo); }
     function dong() { if (dangMo) ui.swap(dangMo, zDs); dangMo = null; load(); }
 
-    var form = T.taoForm(vung.form, { onClose: dong, onSaved: function () { load(); },
+    function dieuKien() { return [['Thời gian đào tạo', fTg], ['Phân loại', fPl]]; }
+    var form = T.taoForm(vung.form, { onClose: dong, onSaved: function () { load(); }, dieuKien: dieuKien,
         hocKyLoc: function () { return fTg.value; }, phanLoaiLoc: function () { return fPl.value; } });
-    var dk = T.taoDieuKien(vung.dk, { onClose: dong });
-    var cb = T.taoChuanBi(vung.cb, { onClose: dong });
+    var dk = T.taoDieuKien(vung.dk, { onClose: dong, dieuKien: dieuKien });
+    var cb = T.taoChuanBi(vung.cb, { onClose: dong, dieuKien: dieuKien });
 
     /* ---------- Danh sách kế hoạch ----------------------------------------- */
     var page = 1, size = (ums.cfg && ums.cfg.behavior && ums.cfg.behavior.pageSize) || 10, total = 0, rows = [];
@@ -146,7 +151,13 @@
     function xoa() {
         var ids = K.daChon(q('[data-z="t"]'), 'tnkh');
         if (!ids.length) { ui.toast('Vui lòng chọn đối tượng cần xóa?', 'warn'); return; }
-        K.xoa(ids.map(function (id) { return { action: 'TN_KeHoach/Xoa', strIds: id, strNguoiThucHien_Id: '' }; }), function () { load(); });
+        ums.process.run({
+            title: 'Xóa kế hoạch xét tốt nghiệp', unit: 'kế hoạch', fileName: 'KetQuaXoaKeHoachXetTN', dieuKien: dieuKien(),
+            notes: ['Thao tác xóa dữ liệu các kế hoạch trong danh sách.'],
+            items: ids.map(function (id) { return K.tim(rows, id); }).filter(Boolean), columns: T.colsKeHoach(), okMessage: 'Xóa thành công!',
+            request: function (r) { return { action: 'TN_KeHoach/Xoa', strIds: r.ID, strNguoiThucHien_Id: '' }; },
+            refresh: function () { load(); }
+        });
     }
 
     /* #myModal — getList_QuanSoTheoLop */
