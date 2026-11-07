@@ -10,7 +10,9 @@
    dữ liệu" · một tab "Danh sách Tổng hợp kết quả" (Lần học · Loại điểm trung bình · Tải lại + bảng).
    Lời gọi (chép nguyên):
        Danh mục DIEM.THANGDIEM · DIEM.LOAIDIEMTRUNGBINH              ô Thang điểm · Loại điểm trung bình
-       "Tính điểm" (hỏi lại): D_HangDoi/TaoHangDoi_TinhDiem_TuDong  GET → nạp lại hàng đợi
+       "Tính điểm": D_HangDoi/TaoHangDoi_TinhDiem_TuDong  GET → nạp lại hàng đợi — kéo gốc lần 12–13 (7/11): qua form tiến
+           trình chung ums.process.runJob (Bước 1 hiện điều kiện + lưu ý "Chưa chọn phạm vi tổng hợp" thay hộp hỏi lại)
+       "Xuất Excel" cạnh Tải lại (gốc edu.exporter.attachTable tblKetQua sau #btnRefresh) → ums.ui.xuatBang + dòng điều kiện
            (dTongHopLaiDiemThanhPhan đọc #dropCachTinh không có → rỗng)
        Hàng đợi: createHangDoi { strLoaiNhiemVu: 'TINHDIEMTUDONG', strName: 'TongHopKetQua' } → ums.queue.mount
            (không có #tblHistory_TongHopKetQua → không vẽ lịch sử); chạy xong → nạp lại danh sách (endHangDoi)
@@ -45,7 +47,7 @@
         pat.panel({ title: 'Tính chất lọc dữ liệu', icon: 'fa-filter', body: '<div class="qldtk-form">' + Q.truong('Thang điểm', Q.sel('td', 'Chọn thang điểm')) + '</div>' }) +
         '</div>' +
         pat.panel({ title: 'Danh sách Tổng hợp kết quả', icon: 'fa-list', count: 'n', flush: true,
-            tools: ui.btn('reload', { attr: { 'data-a': 'xem' } }),
+            tools: ui.btn('reload', { attr: { 'data-a': 'xem' } }) + ui.btn('excel', { attr: { 'data-a': 'xuat' } }),
             body: '<div class="ums-filter qldtk-loc">' +
                 '<div class="ums-field"><select class="ums-select" data-f="lan" data-required><option value="1">Lần 1</option><option value="0">Cao nhất</option></select></div>' +
                 '<div class="ums-field">' + Q.sel('ldtb', 'Chọn loại điểm trung bình') + '</div></div>' +
@@ -88,6 +90,7 @@
     }
 
     var hangDoi = ums.queue.mount(z('hd'), { strLoaiNhiemVu: 'TINHDIEMTUDONG', strName: 'TongHopKetQua', history: false, onDone: xem });
+    function dieuKien() { return Q.dieuKien(api, [['Thang điểm', 'td']]); }
 
     ums.report.mount(z('bc'), { import: false, collect: function (add) { Q.bc(add, api, api.thoiGian()); } });  // html gốc không có vùng _Import
     root.addEventListener('click', function (ev) {
@@ -95,11 +98,15 @@
         if (!a) return;
         var k = a.getAttribute('data-a');
         if (k === 'xem') xem();
-        else if (k === 'tinh') ui.confirm('Bạn có chắc chắn Tổng hợp kết quả không?', { ok: 'Tính điểm', title: 'Tổng hợp kết quả' }).then(function (ok) {
-            if (!ok) return;
-            ums.api.call(Object.assign({ action: 'D_HangDoi/TaoHangDoi_TinhDiem_TuDong', method: 'GET' }, chung(), { dTongHopLaiDiemThanhPhan: '' }))
-                .then(function () { ui.toast('Khởi tạo dữ liệu thành công!', 'ok'); hangDoi.reload(); })
-                .catch(function (err) { ums.api.handle(err, 'D_HangDoi/TaoHangDoi_TinhDiem_TuDong'); });
+        else if (k === 'tinh') ums.process.runJob({
+            title: 'Tổng hợp kết quả học tập', what: 'Tổng hợp kết quả học tập theo phạm vi đang chọn', fileName: 'KetQuaTongHopKetQua',
+            notes: ['Hệ thống đưa yêu cầu vào hàng đợi và xử lý ở máy chủ; theo dõi tiến độ ở thanh tiến trình sau khi đóng form.']
+                .concat(v('pv') ? [] : ['Chưa chọn phạm vi tổng hợp.']),
+            dieuKien: dieuKien(), okMessage: 'Đã đưa vào hàng đợi xử lý',
+            request: function () { return Object.assign({ action: 'D_HangDoi/TaoHangDoi_TinhDiem_TuDong', method: 'GET' }, chung(), { dTongHopLaiDiemThanhPhan: '' }); },
+            onSuccess: function () { hangDoi.reload(); }
         });
+        else if (k === 'xuat') ui.xuatBang(z('bang'), { ten: 'KetQuaTongHopDiem', tieuDe: 'KẾT QUẢ TỔNG HỢP ĐIỂM',
+            phu: [ums.process.dieuKien(dieuKien().concat([['Lần học', api.f('lan')], ['Loại điểm trung bình', api.f('ldtb')]]))].filter(Boolean) });
     });
 })();

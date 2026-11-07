@@ -151,6 +151,7 @@ Phieu.prototype = {
             edu.util.viewValById("dropKieuHienThi", data.CACHHIENTHICAUHOI);
             me["strCauHoi_Id"] = data.ID;
             $("#tblDapAn tbody").html("");
+            $("#zoneXoaCauHoi").hide(); // câu hỏi mới: chưa có gì để xóa
             me.toggle_edit();
         });
         $("#btnSave_CauHoi").click(function (e) {
@@ -158,9 +159,18 @@ Phieu.prototype = {
             me.save_CauHoi();
         });
         $("#btnDelete_CauHoi").click(function () {
-            me.delete_CauHoi(me.strCauHoi_Id);
+            var strId = me.strCauHoi_Id;
+            if (!strId) {
+                edu.system.alert("Câu hỏi chưa được lưu, không có gì để xóa!");
+                return;
+            }
+            edu.system.confirm(edu.constant.getting("NOTIFY", "CF_DELETE"));
+            $("#btnYes").click(function (e) {
+                me.delete_CauHoi(strId);
+            });
         });
         $("#tblNoiDung").delegate('.btnEditCauHoi', 'click', function (e) {
+            $("#zoneXoaCauHoi").show(); // sửa câu hỏi đã có: cho phép xóa
             me.toggle_edit();
             var strId = this.id;
             var data = me.dtCauHoi.find(e => e.ID == strId);
@@ -796,9 +806,11 @@ Phieu.prototype = {
         var me = this;
         $("#tblNoiDung").html("");
         var html = '';
-        me.dtNhom.push({ ID: null });
+        // Không push vào me.dtNhom: hàm này chạy lại nhiều lần (lưu/đóng/xóa câu hỏi) mà dtNhom
+        // không được tải lại -> push dồn làm câu hỏi chưa có nhóm bị vẽ nhân đôi.
+        var arrNhomHienThi = me.dtNhom.concat([{ ID: null }]);
 
-        me.dtNhom.forEach((oNhom, iNhom) => {
+        arrNhomHienThi.forEach((oNhom, iNhom) => {
             if (oNhom.TEN) {
                 html += '<div class="cmc-suvery-group">';
                 html += '<div class="title btnEditNhom btnEdit" id="' + oNhom.ID + '">';

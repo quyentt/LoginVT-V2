@@ -12,7 +12,9 @@
        dThuocTinhDiem, như gốc), Có tự động tính lại điểm trung bình (0 Không · 1 Có).
        "Thực hiện":  D_TongHop_XuLy/ThucHien_ThongKe_DTB  POST (strThoiGian_Id = ô thời gian của phạm vi đang chọn)
        "Xem bảng":   D_ThongKe/LayDSDiem_ThongKe_DTB     GET { strBangDuLieu }
-       "Xóa bảng":   D_ThongKe/Xoa_Diem_ThongKe_DTB      POST { strBangDuLieu } (hỏi lại như gốc)
+       "Xóa bảng":   D_ThongKe/Xoa_Diem_ThongKe_DTB      POST { strBangDuLieu }
+       Kéo gốc lần 12–13 (7/11): "Thực hiện" / "Xóa bảng" qua form tiến trình chung (Bước 1 thay hỏi lại) + nút "Xuất Excel"
+       cạnh bảng — khung chung lo (manBang: tep / tieuDeXuat / dk); điều kiện áp dụng theo _filters gốc.
    Lỗi gốc đã sửa:
      · Mẫu báo cáo đọc edu.DiemTrungBinh.strPhamViMa (không tồn tại) → TypeError; nay đọc phạm vi đang chọn.
      · Xoá xong gốc gọi me.getList_TangThem (không tồn tại) → nay chỉ xoá trắng bảng đang hiện.
@@ -32,6 +34,8 @@
     Q.manBang({
         root: root, tieuDe: 'Thống kê điểm trung bình', phamVi: true,
         ds: 'D_ThongKe/LayDSDiem_ThongKe_DTB', xoa: 'D_ThongKe/Xoa_Diem_ThongKe_DTB',
+        tep: 'KetQuaThongKeDiemTrungBinh', tieuDeXuat: 'KẾT QUẢ THỐNG KÊ ĐIỂM TRUNG BÌNH',
+        dk: [['Thang điểm', 'td'], ['Tính chất lọc', 'tcl'], ['Thuộc tính điểm', 'ttd'], ['Tự động tính lại điểm', 'tdg']],
         phai:
             Q.truong('Thang điểm', Q.sel('td', 'Chọn thang điểm')) +
             Q.truong('Tính chất lọc', chon('tcl', [['1', 'Cao nhất'], ['0', 'Thấp nhất']])) +

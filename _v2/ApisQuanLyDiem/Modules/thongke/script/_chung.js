@@ -17,6 +17,9 @@
    Khoa quản lý là lọc thêm cho Chương trình / Lớp (nạp lại khi đổi, không khoá) — như gốc.
    Tham số lớp chép nguyên chỗ lạ của gốc: strNganh_Id = ô Khoa quản lý; strKhoaQuanLy_Id gốc truyền dưới tên
    không được getList_LopQuanLy đọc → không gửi.
+   Kéo gốc lần 12–13 (7/11): gốc 4/11 chuyển "Thực hiện" / "Xóa bảng" sang form tiến trình chung (edu.process.runJob —
+   Bước 1 hiện điều kiện áp dụng + tên bảng thay hộp "Bạn có chắc") và gắn nút "Xuất Excel" chuẩn cạnh bảng kết quả
+   (edu.exporter.attachTable) → ở đây ums.process.runJob + ums.ui.xuatBang; dòng điều kiện = Q.dieuKien(api, thêm).
    ========================================================================= */
 (function () {
     'use strict';
@@ -121,7 +124,9 @@
             f: f, v: v,
             ma: function () { return ma; },
             /** edu.util.getValCombo('dropPhanViTongHop_' + strPhamViMa) — ô thời gian của phạm vi đang chọn */
-            thoiGian: function () { return ma ? v('tg_' + ma) : ''; }
+            thoiGian: function () { return ma ? v('tg_' + ma) : ''; },
+            /** ô thời gian đang hiện (của phạm vi đang chọn; màn không có ô phạm vi → ô Nhiều kỳ) — cho dòng điều kiện */
+            thoiGianEl: function () { return ma ? f('tg_' + ma) : (o.phamVi ? null : f('tg_NHIEUKY')); }
         };
     };
 
@@ -130,12 +135,25 @@
         return ums.api.call(call).then(function () { ui.toast(okText || 'Thực hiện thành công!', 'ok'); return true; })
             .catch(function (err) { ums.api.handle(err, call.action); return false; });
     };
+    /** Danh sách [nhãn, ô] cho dòng "Điều kiện áp dụng" của form tiến trình / tệp Excel (gốc _filters): các ô khung
+        "Thông tin" + them = [[nhãn, khoá data-f], …] ô khung phải (khoá không có trên màn thì bỏ). */
+    Q.dieuKien = function (api, them) {
+        var f = api.f;
+        var ds = [['Hệ đào tạo', f('he')], ['Khóa đào tạo', f('khoa')], ['Khoa quản lý', f('kql')], ['Chương trình đào tạo', f('ct')],
+            ['Lớp quản lý', f('lop')], ['Tình trạng sinh viên', f('tt')], ['Phạm vi tổng hợp', f('pv')], ['Thời gian', api.thoiGianEl()]];
+        (them || []).forEach(function (x) { var el = typeof x[1] === 'string' ? f(x[1]) : x[1]; if (el) ds.push([x[0], el]); });
+        return ds;
+    };
     /* =====================================================================
        Màn "thống kê ra BẢNG DỮ LIỆU" — diemhocphan, diemtrungbinh (hai tệp gốc chép nhau).
        Khung trái "Thông tin" (+ Xuất báo cáo) · khung phải "Tính chất lọc dữ liệu" (+ Thực hiện)
        · khung "Danh sách Tổng hợp kết quả": ô tên bảng dữ liệu + Xóa bảng / Xem bảng.
        cfg = { root, tieuDe, phamVi, phai: html các ô khung phải, ganPhai(root, api),
-               luu(api, g) → tham số lời gọi "Thực hiện", ds, xoa (action), bc(add, api) }
+               luu(api, g) → tham số lời gọi "Thực hiện", ds, xoa (action), bc(add, api),
+               tep: tên tệp kết quả (form tiến trình / Xuất Excel), tieuDeXuat: dòng tiêu đề tệp Excel,
+               dk: [[nhãn, khoá data-f], …] ô khung phải đưa vào dòng "Điều kiện áp dụng" (Q.dieuKien) }
+       "Thực hiện" / "Xóa bảng" chạy qua ums.process.runJob (Bước 1 hiện điều kiện + tên bảng; chưa nhập tên bảng thì
+       ghi chú cảnh báo, không chặn — như gốc); "Xuất Excel" = ums.ui.xuatBang bảng đang hiện kèm dòng điều kiện.
        Lời gọi danh sách / xoá (GET / POST, kiểu cũ, chép nguyên):
            <ds>  { strBangDuLieu, strNguoiThucHien_Id }    <xoa>  { strBangDuLieu, strNguoiThucHien_Id }
        ===================================================================== */
@@ -148,7 +166,8 @@
                 tools: ui.btn('search', { text: 'Thực hiện', icon: 'fa-calculator', attr: { 'data-a': 'thuchien' } }) }) +
             '</div>' +
             pat.panel({ title: 'Danh sách Tổng hợp kết quả', icon: 'fa-list', count: 'n', flush: true,
-                tools: ui.btn('del', { text: 'Xóa bảng', attr: { 'data-a': 'xoa' } }) + ui.btn('search', { text: 'Xem bảng', attr: { 'data-a': 'xem' } }),
+                tools: ui.btn('del', { text: 'Xóa bảng', attr: { 'data-a': 'xoa' } }) + ui.btn('search', { text: 'Xem bảng', attr: { 'data-a': 'xem' } }) +
+                    ui.btn('excel', { attr: { 'data-a': 'xuat' } }),
                 body: '<div class="ums-filter qldtk-loc">' + '<div class="ums-field">' + inp('bang', 'LIST BẢNG DỮ LIỆU') + '</div></div>' +
                     '<div data-z="bang">' + ui.empty('Nhập tên bảng dữ liệu rồi bấm Xem bảng', 'fa-table') + '</div>' });
         ui.enhance(root);
@@ -168,17 +187,25 @@
             }).catch(function (err) { z('bang').innerHTML = ui.fail(err.message); ums.api.handle(err, 'danh sách tổng hợp kết quả'); });
         }
         ums.report.mount(z('bc'), { import: false, collect: function (add) { cfg.bc(add, api); } });  // html gốc không có vùng _Import
+        function dieuKien() { return Q.dieuKien(api, cfg.dk); }
         root.addEventListener('click', function (ev) {
             var a = ev.target.closest('[data-a]');
             if (!a) return;
-            var k = a.getAttribute('data-a');
+            var k = a.getAttribute('data-a'), bang = g('bang'), tep = cfg.tep || 'KetQuaThongKe';
             if (k === 'xem') xem();
-            else if (k === 'thuchien') Q.chay(Object.assign({ method: 'POST' }, cfg.luu(api, g)));
-            else if (k === 'xoa') ui.confirm('Bạn có chắc chắn xóa dữ liệu không?', { tone: 'bad', ok: 'Xóa' }).then(function (ok) {
-                if (!ok) return;
-                Q.chay({ action: cfg.xoa, method: 'POST', strBangDuLieu: g('bang'), strNguoiThucHien_Id: '' }, 'Xóa dữ liệu thành công!')
-                    .then(function (xong) { if (xong) z('bang').innerHTML = ui.empty('Đã xóa bảng dữ liệu', 'fa-table'); });
+            else if (k === 'thuchien') ums.process.runJob({
+                title: cfg.tieuDe, what: cfg.tieuDe + (bang ? ' — bảng dữ liệu: ' + bang : ''), fileName: tep,
+                notes: bang ? [] : ['Chưa nhập tên bảng dữ liệu.'], dieuKien: dieuKien(),
+                request: function () { return Object.assign({ method: 'POST' }, cfg.luu(api, g)); }
             });
+            else if (k === 'xoa') ums.process.runJob({
+                title: 'Xóa bảng dữ liệu thống kê', what: 'Xóa bảng dữ liệu' + (bang ? ': ' + bang : ''), fileName: tep + '_Xoa',
+                notes: ['Thao tác xóa toàn bộ dữ liệu của bảng thống kê đã chọn.'].concat(bang ? [] : ['Chưa nhập tên bảng dữ liệu.']),
+                okMessage: 'Xóa dữ liệu thành công!',
+                request: function () { return { action: cfg.xoa, method: 'POST', strBangDuLieu: bang, strNguoiThucHien_Id: '' }; },
+                refresh: xem
+            });
+            else if (k === 'xuat') ui.xuatBang(z('bang'), { ten: tep, tieuDe: cfg.tieuDeXuat || cfg.tieuDe.toUpperCase(), phu: [ums.process.dieuKien(dieuKien())].filter(Boolean) });
         });
         root.querySelector('[data-f="bang"]').addEventListener('keydown', function (ev) { if (ev.key === 'Enter') { ev.preventDefault(); xem(); } });
         return api;

@@ -26,8 +26,12 @@
      · Hệ → Khoá → CT → Lớp KHOÁ theo luật cha → con; Khoa QL là cha TUỲ CHỌN của CT + Lớp (đổi thì xoá trắng CT, Lớp).
      · Mã số trong bảng kết quả gốc là liên kết .btnChiTiet KHÔNG có xử lý → chữ thường.
      · Thiếu hai nút của hộp chọn SV gốc: "Thêm từng hệ", "Thêm Khoa quản lý - khóa học" (ums.pat.pickSinhVienNganh chưa có — nợ tầng chung).
-     · Xoá nhiều dòng tab 2: ums.ui.xoaChon (hỏi lại, tự đếm).
-   Bỏ: page_load / objHangDoi tự dựng, alert từng dòng khi lưu / xoá (gộp bằng ums.ui.batch), fakedb.
+     · Xoá nhiều dòng tab 2: ums.ui.xoaChon (tự đếm; Bước 1 form tiến trình thay hỏi lại).
+     · Kéo gốc lần 12–13 (7/11, gốc 4/11 edu.process / edu.exporter): "Tính điểm" / "Xếp loại học tập" qua ums.process.runJob
+       (Bước 1 hiện điều kiện áp dụng + lưu ý "Chưa chọn phạm vi tổng hợp" thay hộp hỏi lại; thành công → nạp lại hàng đợi);
+       tab 2 "Thêm" (gốc edu.process.bindPhamVi) / "Xoá đã chọn": mỗi phạm vi một bản ghi của ums.process.run (cột như gốc);
+       nút "Xuất Excel" cạnh Tải lại (gốc attachTable tblKetQua) = ums.ui.xuatBang kèm dòng điều kiện + Lần học, Loại ĐTB.
+   Bỏ: page_load / objHangDoi tự dựng, alert từng dòng khi lưu / xoá (form tiến trình chung), fakedb.
    ========================================================================= */
 (function () {
     'use strict';
@@ -76,7 +80,7 @@
             '<div class="ums-filter thkq-loc">' +
                 '<div class="ums-field">' + sel('lan', 'Lần học', { req: true, opts: '<option value="1">Lần 1</option><option value="0">Cao nhất</option>' }) + '</div>' +
                 '<div class="ums-field">' + sel('ldtb', 'Chọn loại điểm trung bình') + '</div>' +
-                '<div class="ums-field ums-field--fit">' + ui.btn('reload', { mod: 'warn', attr: { 'data-a': 'tailai' } }) + '</div>' +
+                '<div class="ums-field ums-field--fit">' + ui.btn('reload', { mod: 'warn', attr: { 'data-a': 'tailai' } }) + ui.btn('excel', { attr: { 'data-a': 'xuat' } }) + '</div>' +
                 '<span class="ums-u-fz13 ums-u-muted thkq-dem" data-z="n"></span></div>' +
             '<div data-z="kq">' + ui.empty('Bấm "Xem danh sách" hoặc "Tải lại" để xem kết quả tổng hợp.', 'fa-list') + '</div>' }) + '</div>' +
         '<div data-pane="ts" hidden>' + pat.panel({ title: false, flush: true, body:
@@ -148,6 +152,11 @@
             strDaoTao_ChuongTrinh_Id: v('ct'), strDaoTao_LopQuanLy_Id: v('lop'), strPhamViTongHopDiem_Id: v('pv'), strDaoTao_ThoiGianDaoTao_Id: tgPV(),
             strThangDiem_Id: v('thang') };
     }
+    /* [nhãn, ô] cho dòng "Điều kiện áp dụng" của form tiến trình / tệp Excel (gốc _filters) */
+    function dieuKien() {
+        return [['Hệ đào tạo', f('he')], ['Khóa đào tạo', f('khoa')], ['Khoa quản lý', f('kql')], ['Chương trình đào tạo', f('ct')], ['Lớp quản lý', f('lop')],
+            ['Tình trạng sinh viên', f('tt')], ['Thang điểm', f('thang')], ['Phạm vi tổng hợp', f('pv')], ['Thời gian tính', pvMa ? f('pv_' + pvMa) : null], ['Cách tính', f('cach')]];
+    }
 
     /* ---------- Hàng đợi + báo cáo ---------------------------------------- */
     var q1o = { strLoaiNhiemVu: 'TINHDIEMTUDONG', strName: 'TongHopKetQua', history: z('h1'), concurrency: 10, onDone: taiKQ };
@@ -163,17 +172,19 @@
     } });
 
     function taoHangDoi(xepLoai) {
-        var ten = xepLoai ? 'Xếp loại học tập' : 'Tổng hợp kết quả';
-        ui.confirm('Bạn có chắc chắn ' + ten + ' không?', { title: ten, ok: xepLoai ? 'Xếp loại học tập' : 'Tính điểm' }).then(function (yes) {
-            if (!yes) return;
-            var o = Object.assign(dk(), { dTongHopLaiDiemThanhPhan: v('cach'), strNguoiThucHien_Id: uid() });
-            var goi = xepLoai
-                ? Object.assign({ action: 'D_HangDoi_MH/FSAuCSAvJgUuKB4ZJDENLiAoHhU0BS4vJgPP', func: 'diem_nhiemvu_hangdoi.TaoHangDoi_XepLoai_TuDong' }, o)
-                : Object.assign({ action: 'D_HangDoi/TaoHangDoi_TinhDiem_TuDong', method: 'GET' }, o);
-            ums.api.call(goi).then(function () {
-                ui.toast('Khởi tạo dữ liệu thành công!', 'ok');
-                (xepLoai ? q2 : q1).reload();
-            }).catch(hong(xepLoai ? 'TaoHangDoi_XepLoai_TuDong' : 'TaoHangDoi_TongHopKetQua_TuDong'));
+        var ten = xepLoai ? 'Xếp loại học tập' : 'Tổng hợp kết quả học tập';
+        ums.process.runJob({
+            title: ten, what: ten + ' theo phạm vi đang chọn', fileName: xepLoai ? 'KetQuaXepLoaiHocTap' : 'KetQuaTongHopKetQua',
+            notes: ['Hệ thống đưa yêu cầu vào hàng đợi và xử lý ở máy chủ; theo dõi tiến độ ở thanh tiến trình sau khi đóng form.']
+                .concat(v('pv') ? [] : ['Chưa chọn phạm vi tổng hợp.']),
+            dieuKien: dieuKien(), okMessage: 'Đã đưa vào hàng đợi xử lý',
+            request: function () {
+                var o = Object.assign(dk(), { dTongHopLaiDiemThanhPhan: v('cach'), strNguoiThucHien_Id: uid() });
+                return xepLoai
+                    ? Object.assign({ action: 'D_HangDoi_MH/FSAuCSAvJgUuKB4ZJDENLiAoHhU0BS4vJgPP', func: 'diem_nhiemvu_hangdoi.TaoHangDoi_XepLoai_TuDong' }, o)
+                    : Object.assign({ action: 'D_HangDoi/TaoHangDoi_TinhDiem_TuDong', method: 'GET' }, o);
+            },
+            onSuccess: function () { (xepLoai ? q2 : q1).reload(); }
         });
     }
 
@@ -207,27 +218,46 @@
                 { head: '<input type="checkbox" data-pvall title="Chọn tất cả">', cls: 'is-center', width: '44px', render: function (x, i) { return '<input type="checkbox" data-pvck="' + i + '">'; } }] });
         }).catch(function (err) { z('pv').innerHTML = ui.fail(err.message); });
     }
-    function luuPV(ids) {
-        if (!ids.length) return;
-        ui.batch(ids.map(function (id) {
-            return { action: 'D_ThongTin2_MH/FSkkLB4VLi8mCS4xCiQ1EDQgHhUpLigGKCAv', func: 'PKG_DIEM_THONGTIN2.Them_TongHopKetQua_ThoiGian', strPhamViTongHopDiem_Id: v('pv'),
-                strPhamViApDung_Id: id, strDaoTao_ThoiGianDaoTao_Id: v('tgts'), strDaoTao_ThoiGian_Tinh_Id: tgPV(), strNguoiThucHien_Id: uid() };
-        }), { title: 'Đang thêm phạm vi áp dụng', okText: 'Thực hiện thành công' }).then(taiPV);
+    /* items = [{ ID: strPhamViApDung_Id, TEN: chữ hiện trên form }] — mỗi phạm vi một bản ghi (gốc edu.process.bindPhamVi) */
+    function luuPV(items) {
+        if (!items.length) return;
+        ums.process.run({
+            title: 'Thêm phạm vi tổng hợp', unit: 'phạm vi', fileName: 'KetQuaThemPhamViTongHop', dieuKien: dieuKien(),
+            infoHeader: 'Phạm vi áp dụng', info: function (it) { return it.TEN; }, items: items,
+            request: function (it) {
+                if (!it.ID) throw new Error('Không tìm thấy dữ liệu của sinh viên.');
+                return { action: 'D_ThongTin2_MH/FSkkLB4VLi8mCS4xCiQ1EDQgHhUpLigGKCAv', func: 'PKG_DIEM_THONGTIN2.Them_TongHopKetQua_ThoiGian', strPhamViTongHopDiem_Id: v('pv'),
+                    strPhamViApDung_Id: it.ID, strDaoTao_ThoiGianDaoTao_Id: v('tgts'), strDaoTao_ThoiGian_Tinh_Id: tgPV(), strNguoiThucHien_Id: uid() };
+            },
+            refresh: taiPV
+        });
     }
     function themPV() {
         pat.pickSinhVienNganh({
-            onPick: function (rows) { luuPV((rows || []).map(function (x) { return e(x.QLSV_NGUOIHOC_ID) + e(x.DAOTAO_TOCHUCCHUONGTRINH_ID); })); },
-            onGroup: function (kind, ids) { luuPV(ids || []); }
+            onPick: function (rows) {
+                luuPV((rows || []).map(function (x) {
+                    return { ID: x.QLSV_NGUOIHOC_ID ? e(x.QLSV_NGUOIHOC_ID) + e(x.DAOTAO_TOCHUCCHUONGTRINH_ID) : '',
+                        TEN: (e(x.QLSV_NGUOIHOC_MASO) + ' — ' + e(x.QLSV_NGUOIHOC_HODEM) + ' ' + e(x.QLSV_NGUOIHOC_TEN)).trim() };
+                }));
+            },
+            onGroup: function (kind, ids, names) { luuPV((ids || []).map(function (id, i) { return { ID: id, TEN: (names && names[i]) || id }; })); }
         });
     }
     function xoaPV() {
         var chon = Array.prototype.map.call(z('pv').querySelectorAll('input[data-pvck]:checked'), function (c) { return DSPV[Number(c.getAttribute('data-pvck'))]; }).filter(Boolean);
         if (!chon.length) { ui.toast('Vui lòng chọn đối tượng cần xóa?', 'warn'); return; }
-        ui.confirm('Bạn có chắc chắn xóa ' + chon.length + ' dữ liệu không?', { tone: 'bad', ok: 'Xóa' }).then(function (yes) {
-            if (!yes) return;
-            ui.batch(chon.map(function (x) {
-                return { action: 'D_ThongTin2_MH/GS4gHhUuLyYJLjEKJDUQNCAeFSkuKAYoIC8P', func: 'PKG_DIEM_THONGTIN2.Xoa_TongHopKetQua_ThoiGian', strId: x.ID, strNguoiThucHien_Id: uid() };
-            }), { title: 'Đang xóa', okText: 'Xóa dữ liệu thành công!' }).then(taiPV);
+        ums.process.run({
+            title: 'Xóa phạm vi tổng hợp', unit: 'phạm vi', fileName: 'KetQuaXoaPhamViTongHop', dieuKien: dieuKien(),
+            notes: ['Thao tác xóa dữ liệu các phạm vi tổng hợp trong danh sách.'], items: chon,
+            columns: [
+                { header: 'Phạm vi tổng hợp điểm', render: function (r) { return e(r.PHAMVITONGHOPDIEM_TEN); } },
+                { header: 'Thời gian tính', render: function (r) { return e(r.DAOTAO_THOIGIANDAOTAO_TINH); } },
+                { header: 'Học kỳ sử dụng', render: function (r) { return e(r.DAOTAO_THOIGIANDAOTAO); } },
+                { header: 'Phạm vi áp dụng', render: function (r) { return e(r.PHAMVIAPDUNG_TEN); } }
+            ],
+            okMessage: 'Xóa dữ liệu thành công!',
+            request: function (x) { return { action: 'D_ThongTin2_MH/GS4gHhUuLyYJLjEKJDUQNCAeFSkuKAYoIC8P', func: 'PKG_DIEM_THONGTIN2.Xoa_TongHopKetQua_ThoiGian', strId: x.ID, strNguoiThucHien_Id: uid() }; },
+            refresh: taiPV
         });
     }
 
@@ -250,6 +280,8 @@
         if (a === 'tinhdiem') taoHangDoi(false);
         else if (a === 'xeploai') taoHangDoi(true);
         else if (a === 'xem' || a === 'tailai') taiKQ();
+        else if (a === 'xuat') ui.xuatBang(z('kq'), { ten: 'KetQuaTongHopDiem', tieuDe: 'KẾT QUẢ TỔNG HỢP ĐIỂM',
+            phu: [ums.process.dieuKien(dieuKien().concat([['Lần học', f('lan')], ['Loại điểm trung bình', f('ldtb')]]))].filter(Boolean) });
         else if (a === 'thempv') themPV();
         else if (a === 'xoapv') xoaPV();
     });

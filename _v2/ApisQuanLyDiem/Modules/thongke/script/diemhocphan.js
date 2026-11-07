@@ -13,7 +13,10 @@
            strThoiGian_Id khai HAI lần trong đối tượng gốc — lần sau thắng: = ô Nhiều kỳ.
            dThuocTinhDiem, strCoTuDongTinhLaiDiem đọc ô không có trên màn → rỗng.
        "Xem bảng":   D_ThongKe/LayDSDiem_ThongKe_DiemHP  GET { strBangDuLieu }
-       "Xóa bảng":   D_ThongKe/Xoa_Diem_ThongKe_DiemHP   POST { strBangDuLieu } (hỏi lại như gốc)
+       "Xóa bảng":   D_ThongKe/Xoa_Diem_ThongKe_DiemHP   POST { strBangDuLieu }
+       Kéo gốc lần 12–13 (7/11): "Thực hiện" / "Xóa bảng" qua form tiến trình chung (Bước 1 thay hỏi lại) + nút "Xuất Excel"
+       cạnh bảng — khung chung lo (manBang: tep / tieuDeXuat / dk); điều kiện áp dụng theo _filters gốc (khung trái + Thang
+       điểm, Tính chất lọc; Thuộc tính điểm / Tự động tính lại gốc kê nhưng màn này không có ô).
    Lỗi gốc đã sửa:
      · Mẫu báo cáo đọc edu.DiemHocPhan.strPhamViMa (biến không tồn tại) → TypeError, nút báo cáo không chạy.
        Nay strDaoTao_ThoiGianDaoTao_Id = ô Nhiều kỳ (ô thời gian duy nhất trên màn, cùng giá trị "Thực hiện" gửi).
@@ -33,6 +36,7 @@
     Q.manBang({
         root: root, tieuDe: 'Thống kê điểm học phần', phamVi: false,
         ds: 'D_ThongKe/LayDSDiem_ThongKe_DiemHP', xoa: 'D_ThongKe/Xoa_Diem_ThongKe_DiemHP',
+        tep: 'KetQuaThongKeDiemHocPhan', tieuDeXuat: 'KẾT QUẢ THỐNG KÊ ĐIỂM HỌC PHẦN', dk: [['Thang điểm', 'td'], ['Tính chất lọc', 'tcl']],
         phai:
             Q.truong('Thang điểm', Q.sel('td', 'Chọn thang điểm')) +
             Q.truong('Tính chất lọc', TCL) +

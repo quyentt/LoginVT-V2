@@ -10,6 +10,16 @@ Xem lại đúng thay đổi của một tệp: `git diff -w <từ>..<đến> --
 
 ---
 
+## Lần kéo 14 (7/11, chiều) — mốc gốc nay là `3829e32d8` (gốc lại force-push; mốc cũ `f6f5425ca`) — 3 tệp, ĐÃ XEM cả 3
+
+Lần sau so: `git diff --name-status 3829e32d8 origin/main`. Đã ghi đè 3 tệp bằng `git checkout origin/main -- <tệp>`; không có vỏ cũ / tầng chung đổi.
+Cùng phiên: chuyển Quản lý điểm (6 màn lần 12, bảng dưới) sang `_v2`.
+
+| Phân hệ | Màn | Tệp gốc | Trạng thái |
+|---|---|---|---|
+| Cổng cán bộ (đã chuyển) | `khaosat/phieu` | `ApisCongCanBo/Modules/khaosat/html/phieu.html` + `script/phieu.js` | **đã xem 7/11 — bỏ**: gốc sửa nút Xóa câu hỏi (tách trái, chỉ hiện khi sửa câu đã có, hỏi lại trước khi xoá), thêm nút Đóng cuối biểu mẫu, hết nhân đôi câu chưa có nhóm (concat thay push) — `_v2/…/khaosat/script/phieu.js` đã đúng cả ba từ trước (nút `xoaCau` ẩn khi thêm mới + `ui.confirm`; `dsNhom.concat`; Đóng do `pat.formTrang` lo) |
+| TKGG (đã chuyển) | `kehoach/lophocphan` | `ApisTKGG/Modules/kehoach/html/lophocphan.html` | **đã xem 7/11 — bỏ**: gốc dời nút Đóng / Lưu của biểu mẫu Thêm lớp học phần và khung Duyệt buổi học lên ĐẦU khung (danh sách dài thì nút cuối bị khuất) — `_v2` dùng `pat.formTrang`, nút ở đầu khung sẵn |
+
 ## Lần kéo 13 (7/11) — mốc gốc nay là `f6f5425ca` (gốc lại force-push; mốc cũ `b2cd522d1`) — 59 tệp, CHƯA XEM màn nào
 
 Lần sau so: `git diff --name-status f6f5425ca origin/main`. 60 tệp gốc đổi: 47 tệp màn (9 phân hệ) + 12 tệp vỏ cũ / khác + `Apisphanquyen.zip` (bị `*.zip`
@@ -109,17 +119,17 @@ Số theo phân hệ: Tài chính 12 · Quản lý điểm 11 · Cổng cán b�
 | KHCT (đã chuyển) | `phanlichgiang/quantri_phanlichgiang` | `ApisKeHoachChuongTrinh/Modules/phanlichgiang/script/quantri_phanlichgiang.js` | chưa xem |
 | Ký túc xá (đã chuyển) | `taichinh/tinhphi` | `ApisKyTucXa/Modules/taichinh/html/tinhphi.html` | chưa xem |
 | Ký túc xá (đã chuyển) | `taichinh/tinhphi` | `ApisKyTucXa/Modules/taichinh/script/tinhphi.js` | chưa xem |
-| Quản lý điểm (đã chuyển) | `thongke/diemhocphan` | `ApisQuanLyDiem/Modules/thongke/html/diemhocphan.html` | chưa xem |
-| Quản lý điểm (đã chuyển) | `thongke/diemtrungbinh` | `ApisQuanLyDiem/Modules/thongke/html/diemtrungbinh.html` | chưa xem |
-| Quản lý điểm (đã chuyển) | `thongke/tonghopketqua` | `ApisQuanLyDiem/Modules/thongke/html/tonghopketqua.html` | chưa xem |
-| Quản lý điểm (đã chuyển) | `thongke/diemhocphan` | `ApisQuanLyDiem/Modules/thongke/script/diemhocphan.js` | chưa xem |
-| Quản lý điểm (đã chuyển) | `thongke/diemtrungbinh` | `ApisQuanLyDiem/Modules/thongke/script/diemtrungbinh.js` | chưa xem |
-| Quản lý điểm (đã chuyển) | `thongke/tonghopketqua` | `ApisQuanLyDiem/Modules/thongke/script/tonghopketqua.js` | chưa xem |
-| Quản lý điểm (đã chuyển) | `tinhdiem/inbangdiem` | `ApisQuanLyDiem/Modules/tinhdiem/html/inbangdiem.html` | chưa xem |
-| Quản lý điểm (đã chuyển) | `tinhdiem/tonghopketqua` | `ApisQuanLyDiem/Modules/tinhdiem/html/tonghopketqua.html` | chưa xem |
-| Quản lý điểm (đã chuyển) | `tinhdiem/inbangdiem` | `ApisQuanLyDiem/Modules/tinhdiem/script/inbangdiem.js` | chưa xem |
-| Quản lý điểm (đã chuyển) | `tinhdiem/tonghopketqua` | `ApisQuanLyDiem/Modules/tinhdiem/script/tonghopketqua.js` | chưa xem |
-| Quản lý điểm (đã chuyển) | `tracuudiem/tracuudiem` | `ApisQuanLyDiem/Modules/tracuudiem/html/tracuudiem.html` | chưa xem |
+| Quản lý điểm (đã chuyển) | `thongke/diemhocphan` | `ApisQuanLyDiem/Modules/thongke/html/diemhocphan.html` | **đã xem 7/11 — bỏ** (chỉ nâng `?v=`) |
+| Quản lý điểm (đã chuyển) | `thongke/diemtrungbinh` | `ApisQuanLyDiem/Modules/thongke/html/diemtrungbinh.html` | **đã xem 7/11 — bỏ** (chỉ nâng `?v=`) |
+| Quản lý điểm (đã chuyển) | `thongke/tonghopketqua` | `ApisQuanLyDiem/Modules/thongke/html/tonghopketqua.html` | **đã xem 7/11 — bỏ** (chỉ nâng `?v=`) |
+| Quản lý điểm (đã chuyển) | `thongke/diemhocphan` | `ApisQuanLyDiem/Modules/thongke/script/diemhocphan.js` | **đã chuyển 7/11** — "Thực hiện" / "Xóa bảng" qua form tiến trình chung (`edu.process.runJob` → `ums.process.runJob`: Bước 1 hiện điều kiện áp dụng + tên bảng, cảnh báo "Chưa nhập tên bảng dữ liệu" không chặn, xoá xong nạp lại bảng) + nút "Xuất Excel" cạnh bảng (`edu.exporter.attachTable` → `ui.xuatBang` kèm dòng điều kiện) — làm ở khung chung `thongke/script/_chung.js` (manBang nhận `tep` / `tieuDeXuat` / `dk`; `Q.dieuKien`), màn chỉ khai một dòng |
+| Quản lý điểm (đã chuyển) | `thongke/diemtrungbinh` | `ApisQuanLyDiem/Modules/thongke/script/diemtrungbinh.js` | **đã chuyển 7/11** — như diemhocphan (khung chung); dòng điều kiện thêm Thuộc tính điểm / Tự động tính lại điểm |
+| Quản lý điểm (đã chuyển) | `thongke/tonghopketqua` | `ApisQuanLyDiem/Modules/thongke/script/tonghopketqua.js` | **đã chuyển 7/11** — html gốc KHÔNG nạp tệp này (nạp tinhdiem/script/tonghopketqua.js) nhưng cùng ý: `_v2` `thongke/script/tonghopketqua.js` "Tính điểm" → `ums.process.runJob` (ghi chú hàng đợi + "Chưa chọn phạm vi tổng hợp", thành công → nạp lại hàng đợi) + "Xuất Excel" cạnh Tải lại |
+| Quản lý điểm (đã chuyển) | `tinhdiem/inbangdiem` | `ApisQuanLyDiem/Modules/tinhdiem/html/inbangdiem.html` | **đã xem 7/11 — bỏ** (chỉ nâng `?v=`) |
+| Quản lý điểm (đã chuyển) | `tinhdiem/tonghopketqua` | `ApisQuanLyDiem/Modules/tinhdiem/html/tonghopketqua.html` | **đã xem 7/11 — bỏ** (chỉ nâng `?v=`) |
+| Quản lý điểm (đã chuyển) | `tinhdiem/inbangdiem` | `ApisQuanLyDiem/Modules/tinhdiem/script/inbangdiem.js` | **đã xem 7/11 — bỏ**: gốc đổi sang runJob nhưng html gốc vẫn là trang mẫu tĩnh không có nút nào → `_v2` giữ khung "chưa có nội dung" |
+| Quản lý điểm (đã chuyển) | `tinhdiem/tonghopketqua` | `ApisQuanLyDiem/Modules/tinhdiem/script/tonghopketqua.js` | **đã chuyển 7/11** — Tính điểm / Xếp loại học tập → `ums.process.runJob`; tab 2 Thêm (gốc `edu.process.bindPhamVi`) / Xoá đã chọn → `ums.process.run` mỗi phạm vi một bản ghi (cột như gốc) thay `ui.batch` + hỏi lại; Xuất Excel cạnh Tải lại (`ui.xuatBang` + điều kiện + Lần học, Loại ĐTB). Dò do-man + trang dò tạm: 4 màn QLĐ 0 lỗi console, form mở đúng |
+| Quản lý điểm (đã chuyển) | `tracuudiem/tracuudiem` | `ApisQuanLyDiem/Modules/tracuudiem/html/tracuudiem.html` | **đã xem 7/11 — bỏ**: chỉ thêm CSS nâng z-index menu "Xuất báo cáo" đè lên select2 (vỏ cũ ép `.select2-container` 99999) — `_v2` không ép z-index select2, menu báo cáo không bị che |
 | Tuyển sinh (đã chuyển) | `tuyensinh/kehoachtuyensinhnew` | `ApisQuanlyTuyenSinh/Modules/tuyensinh/html/kehoachtuyensinhnew.html` | chưa xem |
 | Tuyển sinh (đã chuyển) | `tuyensinh/kehoachtuyensinhnew` | `ApisQuanlyTuyenSinh/Modules/tuyensinh/script/kehoachtuyensinhnew.js` | chưa xem |
 | Rèn luyện (đã chuyển) | `tonghopdiem/tonghopdiem` | `ApisRenLuyen/Modules/tonghopdiem/html/tonghopdiem.html` | chưa xem |
