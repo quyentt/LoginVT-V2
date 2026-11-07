@@ -49,8 +49,8 @@ Số theo phân hệ: Phân quyền 22 (mới) · Cổng cán bộ 10 · Tài ch
 | Cổng sinh viên (đã chuyển) | `hoctap/diemhoc` | `ApisCongSinhVien/Modules/hoctap/html/diemhoc.html` | chưa xem |
 | Cổng sinh viên (đã chuyển) | `hoctap/diemhoc` | `ApisCongSinhVien/Modules/hoctap/script/diemhoc.js` | chưa xem |
 | Đăng ký học (đã chuyển) | `kehoachdangky/lophocphan` | `ApisDangKyHoc/Modules/kehoachdangky/html/lophocphan.html` | chưa xem |
-| KHCT (đã chuyển) | `lophoc/covanlop` | `ApisKeHoachChuongTrinh/Modules/lophoc/html/covanlop.html` | chưa xem |
-| KHCT (đã chuyển) | `lophoc/covanlop` | `ApisKeHoachChuongTrinh/Modules/lophoc/script/covanlop.js` | chưa xem |
+| KHCT (đã chuyển) | `lophoc/covanlop` | `ApisKeHoachChuongTrinh/Modules/lophoc/html/covanlop.html` | **đã xem 7/11 — bỏ** (chỉ nâng `?v=`) |
+| KHCT (đã chuyển) | `lophoc/covanlop` | `ApisKeHoachChuongTrinh/Modules/lophoc/script/covanlop.js` | **đã chuyển 7/11** — ô Giảng viên theo Bộ môn (`NS_HoSoV2/LayDanhSach`) gửi `dLaCanBoNgoaiTruong` -1 (toàn bộ nhân sự, kể cả cán bộ ngoài trường) thay 0 — `_v2/…/lophoc/script/covanlop.js` |
 | Tuyển sinh (đã chuyển) | `tuyensinh/kehoachtuyensinhnew` | `ApisQuanlyTuyenSinh/Modules/tuyensinh/script/kehoachtuyensinhnew.js` | chưa xem |
 | Sinh viên (đã chuyển) | `hoso/DaQHHT` | `ApisSinhVien/Modules/hoso/html/DaQHHT.html` | chưa xem |
 | Tài chính (đã chuyển) | `baocao/baocao` | `ApisTaiChinh/Modules/baocao/html/baocao.html` | **đã chuyển 7/11** (tác tử) — hai tab mới "Kết quả rút" / "Kết quả miễn" (`PKG_TAICHINH_BAOCAO2.LayDSRutTien / LayDSMienTien`, chân Tổng tiền + Bằng chữ), "Kết nối kế toán" thành tab 5; nút Xuất Excel ở 4 tab |
@@ -114,9 +114,9 @@ Số theo phân hệ: Tài chính 12 · Quản lý điểm 11 · Cổng cán b�
 | Học bổng (đã chuyển) | `kehoach/kehoach` | `ApisHocBong/Modules/kehoach/script/kehoach.js` | chưa xem |
 | Học bổng (đã chuyển) | `kehoach/sotinkehoach` | `ApisHocBong/Modules/kehoach/script/sotinkehoach.js` | chưa xem |
 | Học bổng (đã chuyển) | `kehoach/thuchienxet` | `ApisHocBong/Modules/kehoach/script/thuchienxet.js` | chưa xem |
-| KHCT (đã chuyển) | `chuongtrinhhocphan/cthp` | `ApisKeHoachChuongTrinh/Modules/chuongtrinhhocphan/html/cthp.html` | chưa xem |
-| KHCT (đã chuyển) | `phanlichgiang/quantri_phanlichgiang` | `ApisKeHoachChuongTrinh/Modules/phanlichgiang/html/quantri_phanlichgiang.html` | chưa xem |
-| KHCT (đã chuyển) | `phanlichgiang/quantri_phanlichgiang` | `ApisKeHoachChuongTrinh/Modules/phanlichgiang/script/quantri_phanlichgiang.js` | chưa xem |
+| KHCT (đã chuyển) | `chuongtrinhhocphan/cthp` | `ApisKeHoachChuongTrinh/Modules/chuongtrinhhocphan/html/cthp.html` | **đã xem 7/11 — bỏ**: chỉ thêm CSS vá `.sidebar-menu:hover` của vỏ cũ làm mất thanh cuộn danh sách chọn học phần — `_v2` không dùng `sidebar-menu` |
+| KHCT (đã chuyển) | `phanlichgiang/quantri_phanlichgiang` | `ApisKeHoachChuongTrinh/Modules/phanlichgiang/html/quantri_phanlichgiang.html` | **đã xem 7/11 — bỏ**: sửa thẻ `</div>` thiếu + bỏ BOM, thuần vỏ cũ |
+| KHCT (đã chuyển) | `phanlichgiang/quantri_phanlichgiang` | `ApisKeHoachChuongTrinh/Modules/phanlichgiang/script/quantri_phanlichgiang.js` | **đã xem 7/11 — bỏ**: gốc nhớ `IDHOCPHAN` của lớp học phần đang mở để Thêm bài học / ThemMoi không báo "Bạn phải chọn học phần" khi ô Học phần trống — khung chung `_v2` CCB `_phanlich.js` đã có `hpBaiHoc()` = `lop.IDHOCPHAN` rồi mới tới ô Học phần (cùng ý, chuyển từ CCB phanlichgiang) |
 | Ký túc xá (đã chuyển) | `taichinh/tinhphi` | `ApisKyTucXa/Modules/taichinh/html/tinhphi.html` | chưa xem |
 | Ký túc xá (đã chuyển) | `taichinh/tinhphi` | `ApisKyTucXa/Modules/taichinh/script/tinhphi.js` | chưa xem |
 | Quản lý điểm (đã chuyển) | `thongke/diemhocphan` | `ApisQuanLyDiem/Modules/thongke/html/diemhocphan.html` | **đã xem 7/11 — bỏ** (chỉ nâng `?v=`) |

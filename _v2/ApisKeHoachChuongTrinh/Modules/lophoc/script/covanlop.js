@@ -16,7 +16,7 @@
        KHCT_LopQuanLy_CoVan/Xoa           POST strIds (các dòng đánh dấu nối dấu phẩy — một lời gọi)
        KHCT_LopQuanLy/LayDanhSach         GET  ô Lớp (lọc + biểu mẫu): strDaoTao_KhoaDaoTao_Id, strDaoTao_ToChucCT_Id
                                                của THANH LỌC, còn lại '', trang 1 / 10000
-       NS_HoSoV2/LayDanhSach              GET  ô Giảng viên theo Bộ môn (strDaoTao_CoCauToChuc_Id, dLaCanBoNgoaiTruong 0,
+       NS_HoSoV2/LayDanhSach              GET  ô Giảng viên theo Bộ môn (strDaoTao_CoCauToChuc_Id, dLaCanBoNgoaiTruong -1 (kéo gốc lần 12, 7/11: -1 = toàn bộ nhân sự kể cả cán bộ ngoài trường; trước là 0),
                                                trang 1 / 1000000000); nhãn "HODEM TEN - MASO"
        KHCT_HeDaoTao/LayDanhSach · KHCT_KhoaDaoTao/LayDanhSach (theo Hệ) · KHCT_ToChucChuongTrinh/LayDanhSach (theo
        Khóa + Hệ) — GET; edu.system.getList_CoCauToChuc (Bộ môn, bản Corei); danh mục KHCT.VTGV (Vai trò)
@@ -53,7 +53,7 @@
 
     function napGV(bm) {
         return rows({ action: 'NS_HoSoV2/LayDanhSach', method: 'GET', strTuKhoa: '', pageIndex: 1, pageSize: 1000000000,
-            strDaoTao_CoCauToChuc_Id: e(bm), strNguoiThucHien_Id: '', dLaCanBoNgoaiTruong: 0 });
+            strDaoTao_CoCauToChuc_Id: e(bm), strNguoiThucHien_Id: '', dLaCanBoNgoaiTruong: -1 });
     }
     function tenGV(x) { return e(x.HODEM) + ' ' + e(x.TEN) + ' - ' + e(x.MASO); }
     function napLop(khoa, ct) {
