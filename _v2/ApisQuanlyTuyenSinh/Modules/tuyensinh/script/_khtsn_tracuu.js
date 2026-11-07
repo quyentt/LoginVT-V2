@@ -1,7 +1,13 @@
 /* =========================================================================
    ums.khtsn.moTraCuu() — hộp "Tra cứu người học" (bản gốc: modal #tra-cuu-nguoi-hoc, traCuu_* / _tc*)
    ---------------------------------------------------------------------------
-   Tìm trên TOÀN hệ thống theo họ tên / số CCCD / mã lớp, gộp ba nguồn như gốc:
+   Kéo gốc lần 12–13 (7/11; gốc 26–29/10 "sếp chốt"): tra cứu CHỈ dựa vào dữ liệu tuyển sinh — PKG_CORE_TS_HOSO.LayDS_HoSo_TS_FULL
+   (tham số kế hoạch BẮT BUỘC → hỏi TỪNG kế hoạch của Pr_Ts_KH_TuyenSinh_Get_List bỏ trống bộ lọc, nhớ tạm cả phiên, 6 luồng;
+   mỗi kiểu viết hoa/thường của từ khoá thử lần lượt, kiểu nào ra dòng thì dừng; lỗi của FULL giữ nguyên câu BE, hiện dưới
+   dòng tổng). Nguồn NGƯỜI HỌC (LayDSNguoiHoc_All, hồ sơ nhiều ngành, tra theo lớp) TẮT bằng cờ DUNG_NGUON_NH — bật lại thì
+   các nhánh dưới vẫn nguyên. Mỗi dòng = một hồ sơ / một nguyện vọng; kế hoạch / đợt / hệ / ngành đọc thẳng từ FULL, thiếu
+   mới suy từ nguyện vọng đầu ra.
+   Bản trước (còn giữ mã, tắt bằng cờ): gộp ba nguồn như gốc cũ:
      · Hồ sơ tuyển sinh: PKG_CORE_TS_HOSO.LayDS_HoSo_TS (pageSize 200) — thử lần lượt các kiểu viết hoa/thường
        của từ khoá (proc so khớp phân biệt hoa thường), dừng ở kiểu đầu tiên có kết quả.
      · Người học: PKG_CORE_NGUOIHOC_01.LayDSNguoiHoc_All (dBoQuaPhamVi 1) + pkg_hosohocvien.LayDanhSachHoSoNhieuNganh (tìm tên đúng hơn).
@@ -19,6 +25,50 @@
     var TT = { TRUNGTUYEN: 'Trúng tuyển', KHONGTRUNGTUYEN: 'Không trúng tuyển', CHOXETTUYEN: 'Chờ xét tuyển', DA_TIEPNHAN: 'Đã tiếp nhận',
         CHUA_TIEPNHAN: 'Chưa tiếp nhận', DA_NOPHOSO: 'Đã nộp hồ sơ', MOI: 'Mới tạo', HUY: 'Đã hủy' };
     var drMap = null, info = {};
+    var DUNG_NGUON_NH = false;       // gốc _TC_DUNG_NGUON_NGUOIHOC (29/10: tắt)
+    var dsKH = null, loiFull = '';
+    /* Id MỌI kế hoạch tuyển sinh (kể cả hết hiệu lực) — gốc _tcLayDsKeHoach; lỗi thì lùi về danh sách đang có trên màn */
+    function layDsKH() {
+        if (dsKH) return Promise.resolve(dsKH);
+        return ums.api.call({ action: T.TS + 'ETMeFTIeCgkeFTQ4JC8SKC8pHgYkNR4NKDI1', func: T.PTS + 'Pr_Ts_KH_TuyenSinh_Get_List', silent: true,
+            strTuKhoa: '', strLoai_TuyenSinh_Id: '', strTs_PhuongAn_TuyenSinh_Id: '', strNam_TuyenSinh: '', strNam_Hoc: '', strHoc_Ky: '',
+            strPlan_Status_Code: '', dIs_Active: '', strNguoiThucHien_Id: '', strVaiTroDangNhap_Id: '', strChucNangHeThong_Id: '', strHanhDong_Code: 'XEM' })
+            .then(T.rows, function () { return []; }).then(function (rows) {
+                var ids = [];
+                rows.concat(T.S.dtKH || []).forEach(function (d) { var id = T.id(d); if (id && ids.indexOf(id) < 0) ids.push(id); });
+                if (ids.length) dsKH = ids;
+                return ids;
+            });
+    }
+    /* FULL theo từng kế hoạch, gộp + bỏ trùng (HOSO_ID | TS_HOSO_NGUYENVONG_ID) */
+    function timHoSoFull(kw, size) {
+        var ds = bienThe(kw), i = 0;
+        return layDsKH().then(function (khIds) {
+            if (!khIds.length) return [];
+            return (function thu() {
+                if (i >= ds.length) return Promise.resolve([]);
+                var k = ds[i++], gom = [];
+                return T.hangDoi(khIds.map(function (khId) {
+                    return function () {
+                        var o = P.dsHoSoTS({ tuKhoa: k, kh: khId, full: true, pageSize: size || 200 });
+                        o.silent = true;
+                        return ums.api.call(o).then(T.rows, function (err) {
+                            if (!loiFull) loiFull = 'LayDS_HoSo_TS_FULL: ' + ((err && err.message) || '');
+                            return [];
+                        }).then(function (rs) { gom = gom.concat(rs); });
+                    };
+                }), 6).then(function () {
+                    var daCo = {}, ra = [];
+                    gom.forEach(function (r) {
+                        var key = (T.pick(r, ['HOSO_ID', 'ID']) || '') + '|' + (T.pick(r, ['TS_HOSO_NGUYENVONG_ID']) || '');
+                        if (daCo[key]) return;
+                        daCo[key] = 1; ra.push(r);
+                    });
+                    return ra.length || i >= ds.length ? ra : thu();
+                });
+            })();
+        });
+    }
 
     function bienThe(kw) {
         var out = [];
@@ -59,9 +109,9 @@
         var S = { ds: [], page: 1, size: 50, kw: '', chay: false };
         var dlg = ui.dialog({
             title: 'Tra cứu người học', icon: 'fa-magnifying-glass', size: 'xl',
-            body: '<div class="ums-u-fz13 ums-u-muted ums-u-mb-2">Tìm trên toàn hệ thống theo <b>họ tên</b>, <b>số CCCD</b> hoặc <b>mã lớp quản lý</b> — ' +
-                    'gồm cả hồ sơ tuyển sinh và người học đang học.</div>' +
-                '<div class="ums-searchbar"><input class="ums-input" data-tc="kw" placeholder="Họ tên / số CCCD / mã lớp (ít nhất 2 ký tự)" autocomplete="off">' +
+            body: '<div class="ums-u-fz13 ums-u-muted ums-u-mb-2">Tìm trên <b>toàn trường</b> theo <b>dữ liệu tuyển sinh</b>, không phụ thuộc kế hoạch hay đợt đang mở. ' +
+                    'Mỗi dòng là <b>một hồ sơ / một nguyện vọng</b>: cột <b>“Đang ở đâu”</b> cho biết kế hoạch nào, đợt nào, hệ và ngành nào; một em nộp nhiều lần thì hiện <b>nhiều dòng</b>.</div>' +
+                '<div class="ums-searchbar"><input class="ums-input" data-tc="kw" placeholder="Họ tên / số CCCD / mã hồ sơ (ít nhất 2 ký tự)" autocomplete="off">' +
                     '<div class="ums-inputwrap"><input class="ums-input" data-tc="ns" data-date placeholder="Ngày sinh (không bắt buộc)" autocomplete="off"><i class="fa-light fa-calendar"></i></div>' +
                     ui.btn('search', { text: 'Tra cứu', attr: { 'data-tc': 'tim' } }) +
                     ui.btn('reload', { text: 'Nhập lại', mod: 'ghost', icon: 'fa-rotate-left', attr: { 'data-tc': 'xoa' } }) + '</div>' +
@@ -70,7 +120,7 @@
         var b = dlg.body, q = function (k) { return b.querySelector('[data-tc="' + k + '"]'); };
         ui.enhance(b);
         setTimeout(function () { q('kw').focus(); }, 200);
-        veRong('Nhập họ tên, số CCCD hoặc mã lớp rồi bấm Tra cứu.');
+        veRong('Nhập họ tên, số CCCD hoặc mã hồ sơ rồi bấm Tra cứu.');
 
         function veRong(m) { q('bang').innerHTML = ui.empty(m, 'fa-magnifying-glass'); }
         function tim() {
@@ -78,9 +128,10 @@
             if (kw.length < 2) { ui.toast('Nhập ít nhất 2 ký tự (họ tên hoặc số CCCD) rồi tra cứu.', 'warn'); return; }
             if (S.chay) return;
             S.chay = true; S.kw = kw;
-            q('tong').textContent = '';
+            q('tong').textContent = ''; loiFull = '';
             q('bang').innerHTML = ui.empty('Đang tìm trên toàn hệ thống…', 'fa-spinner fa-spin');
             dauRa().then(function () {
+                if (!DUNG_NGUON_NH) return Promise.all([timHoSoFull(kw), [], [], [], T.napMapDM(T.DM.GIOITINH).catch(function () {})]);
                 return Promise.all([
                     timHoSo(kw),
                     P.nguoiHocAll({ strTuKhoa: kw }, true).catch(function () { return []; }),
@@ -109,11 +160,16 @@
             var ds = [];
             rowsTS.forEach(function (r) {
                 var ns = T.pick(r, ['COREPERSON_NGAYSINH']); if (!hop(ns)) return;
-                var dr = drMap[T.pick(r, ['NGUYENVONG_DAURA_ID'])] || {}, pid = T.pick(r, ['COREPERSON_ID', 'CORE_PERSON_ID', 'PERSON_ID']);
+                var dr0 = drMap[T.pick(r, ['NGUYENVONG_DAURA_ID'])] || {}, pid = T.pick(r, ['COREPERSON_ID', 'CORE_PERSON_ID', 'PERSON_ID']);
+                /* FULL trả thẳng kế hoạch / đợt / hệ / ngành của hồ sơ — thiếu mới suy từ nguyện vọng đầu ra (gốc 29/10) */
+                var dr = { khId: T.pick(r, ['TS_KEHOACH_TUYENSINH_ID']) || dr0.khId || '', khTen: T.pick(r, ['TS_KEHOACH_TUYENSINH_TEN']) || dr0.khTen || '',
+                    dotId: T.pick(r, ['TS_KEHOACH_TUYENSINH_DOT_ID']) || dr0.dotId || '', dotTen: T.pick(r, ['TS_KEHOACH_TUYENSINH_DOT_TEN']) || dr0.dotTen || '',
+                    heTen: T.pick(r, ['DAOTAO_HEDAOTAO_TEN']) || dr0.heTen || '', nganhTen: T.pick(r, ['DAOTAO_NGANH_TS_TEN']) || dr0.nganhTen || '' };
                 ds.push({ loai: 'TS', personId: pid, hoTen: T.pick(r, ['COREPERSON_HOTEN']), ngaySinh: ns,
-                    gioiTinh: T.tenDM(T.DM.GIOITINH, T.pick(r, ['COREPERSON_GIOITINH_ID'])), cccd: T.pick(r, ['PERSONIDEN_SOCCCD']),
+                    gioiTinh: T.pick(r, ['COREPERSON_GIOITINH_TEN']) || T.tenDM(T.DM.GIOITINH, T.pick(r, ['COREPERSON_GIOITINH_ID'])), cccd: T.pick(r, ['PERSONIDEN_SOCCCD']),
                     dienThoai: T.pick(r, ['PERSONCONTACT_DIENTHOAI']), hosoId: T.pick(r, ['HOSO_ID']), khId: dr.khId || '', dotId: dr.dotId || '',
-                    lop: lopNg[pid] || P.lopCua(r) || '',
+                    maSV: T.pick(r, ['COREPERSON_MASO']),
+                    lop: lopNg[pid] || P.lopCua(r) || T.pick(r, ['DAOTAO_LOPQUANLY_MA', 'DAOTAO_LOPQUANLY_TEN']) || '',
                     noi: dr.khTen ? '<b>Tuyển sinh</b><br><span class="khtsn-phu">' + ui.esc(dr.khTen) + (dr.dotTen ? ' — đợt ' + ui.esc(dr.dotTen) : '') + '</span>' +
                         (dr.heTen || dr.nganhTen ? '<br><span class="khtsn-phu">' + ui.esc(dr.heTen) + (dr.nganhTen ? ' • ' + ui.esc(dr.nganhTen) : '') + '</span>' : '')
                         : '<b>Tuyển sinh</b><br><span class="khtsn-phu">chưa xác định được kế hoạch/đợt</span>',
@@ -148,9 +204,10 @@
                 if (bs && !bs.hosoId) { soAn++; return false; }
                 return true;
             });
-            var soTS = ds.filter(function (x) { return x.loai === 'TS'; }).length;
-            q('tong').textContent = ds.length ? ds.length + ' kết quả — ' + soTS + ' hồ sơ tuyển sinh, ' + (ds.length - soTS) + ' người học' +
-                (S.soAnGan ? ' (ẩn ' + S.soAnGan + ' dòng chưa gắn quá trình học)' : '') + (soAn ? ' (ẩn ' + soAn + ' em không có hồ sơ tuyển sinh)' : '') : '';
+            var soTS = ds.filter(function (x) { return x.loai === 'TS'; }).length, soNH = ds.length - soTS;
+            q('tong').innerHTML = (ds.length ? ui.esc(ds.length + ' kết quả — ' + soTS + ' hồ sơ tuyển sinh' + (soNH ? ', ' + soNH + ' người học' : '') +
+                (S.soAnGan ? ' (ẩn ' + S.soAnGan + ' dòng chưa gắn quá trình học)' : '') + (soAn ? ' (ẩn ' + soAn + ' em không có hồ sơ tuyển sinh)' : '')) : '') +
+                (loiFull ? '<br><span class="ums-u-fz13" style="color:#b91c1c;word-break:break-word">' + ui.esc(loiFull) + '</span>' : '');
             if (!ds.length) {
                 veRong(soAn ? 'Tìm thấy ' + soAn + ' em nhưng không em nào có hồ sơ tuyển sinh nên đã ẩn hết.'
                     : 'Không tìm thấy ai khớp với "' + S.kw + '". Thử bỏ bớt dấu, nhập họ tên ngắn hơn, hoặc tra bằng số CCCD.');

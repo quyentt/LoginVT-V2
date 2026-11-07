@@ -4,7 +4,8 @@
    ---------------------------------------------------------------------------
    Bố cục hai cột trên + bảng kết quả dưới như gốc → khung chung ums.ktxTC.hangDoi (_hangdoi.js; dùng chung với chuyendulieuketoan).
    Lời gọi (chép nguyên):
-       KTX_HangDoi/TaoHangDoi_TinhPhi_TuDong   GET   strNam, strThang, strNghiepVuApDung_Id   (nút "Tính phí", hỏi trước)
+       KTX_HangDoi/TaoHangDoi_TinhPhi_TuDong   GET   strNam, strThang, strNghiepVuApDung_Id   (nút "Tính phí" — kéo gốc lần 12, 7/11:
+                                            qua form tiến trình chung ums.process.runJob, Bước 1 hiện kỳ tính thay hộp hỏi trước)
        Hàng đợi createHangDoi strLoaiNhiemVu "TINHPHIKTXTUDONG" → ums.queue.mount; chạy xong (endHangDoi) → nạp lại bảng kết quả
        KTX_TinhPhi/LayDanhSach   GET v1.0   strDaoTao_ThoiGianDaoTao_Id '' (ô dropThoiGianDaoTao_TP không có trong HTML), strNguoiThucHien_Id '',
                                             strNghiepVuApDung_Id, strThang, strNam
@@ -20,7 +21,8 @@
     ums.ktxTC.hangDoi({
         root: root, title: 'Tính phí', quyTrinh: 'Quy trình 2: Tính phí', lichSu: 'Lịch sử: Tính phí', danhSach: '1) Danh sách tính phí',
         loai: 'TINHPHIKTXTUDONG',
-        chay: { text: 'Tính phí', icon: 'fa-calculator', confirm: 'Bạn có chắc chắn Tính phí không?', action: 'KTX_HangDoi/TaoHangDoi_TinhPhi_TuDong', fail: 'TC_HangDoi.TaoHangDoi_TinhPhi_TuDong' },
+        chay: { text: 'Tính phí', icon: 'fa-calculator', confirm: 'Bạn có chắc chắn Tính phí không?', action: 'KTX_HangDoi/TaoHangDoi_TinhPhi_TuDong', fail: 'TC_HangDoi.TaoHangDoi_TinhPhi_TuDong',
+            job: { title: 'Tính phí ký túc xá', what: function (v) { return 'Tính phí tháng ' + v.thang + '/' + v.nam; }, fileName: 'KetQuaTinhPhiKyTucXa' } },
         list: function (f) {
             return { action: 'KTX_TinhPhi/LayDanhSach', method: 'GET', versionAPI: 'v1.0', strDaoTao_ThoiGianDaoTao_Id: '', strNguoiThucHien_Id: '', strNghiepVuApDung_Id: f.nv, strThang: f.thang, strNam: f.nam };
         },

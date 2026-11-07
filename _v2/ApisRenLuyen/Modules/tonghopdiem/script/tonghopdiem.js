@@ -25,6 +25,14 @@
      · Ô từ khoá gốc không được gửi đi (Enter chỉ tải lại) → lọc ngay trên danh sách (mã số, họ tên), Enter vẫn tải lại khi chưa có dữ liệu.
      · Ô "Phạm vi tổng hợp" (DIEM.PHAMVITONGHOPDIEM) gốc bị ẩn và không được đọc → bỏ.
      · Hệ → Khoá → CT → Lớp, Năm học → Thời gian: khoá con khi chưa chọn cha, đổi/xoá cha thì xoá trắng con (luật chung).
+   Kéo gốc lần 12 (7/11, gốc 4/11 edu.process / edu.exporter):
+     · "Thực hiện xếp loại" → ums.process.run chạy TỪNG LỚP QUẢN LÝ (lớp đang chọn ở ô Lớp; không chọn thì mọi lớp của ô;
+       ô trống thì một lần cho cả phạm vi), lưu ý "Chưa chọn Năm học / Thời gian", dòng điều kiện = 8 ô lọc; đóng form có dòng
+       thành công thì nạp lại danh sách.
+     · Hai nút "Xuất Excel" (gốc btnExport_KetQua: 2 sheet Kết quả + Thống kê; btnExport_ThieuDRL: toàn bộ danh sách thiếu)
+       → ums.ui.xuatBang: Kết quả rèn luyện (bảng đang xem), Thống kê số lượng (tệp riêng), Thiếu ĐRL (ĐỦ mọi trang,
+       vẽ bảng tạm) — mỗi tệp kèm dòng điều kiện lúc tìm.
+     · Import: panel tiến trình import của gốc (edu.process.importPanel) đã có sẵn ở ums.report.importChung.
    ========================================================================= */
 (function () {
     'use strict';
@@ -46,16 +54,26 @@
             { extra: '<div class="ums-field ums-field--fit" data-z="bc"></div>' +
                 '<div class="ums-field ums-field--fit">' + ui.btn('importer', { text: 'Import điểm rèn luyện', attr: { 'data-a': 'import' } }) + '</div>' }) +
         pat.panel({ title: 'Danh sách kết quả rèn luyện', icon: 'fa-list-ul', count: 'n', flush: true, zone: 'bang',
-            tools: ui.btn('save', { text: 'Thực hiện xếp loại kỳ, năm, toàn khóa', icon: 'fa-paper-plane', mod: 'primary', attr: { 'data-a': 'xeploai' } }) +
+            tools: ui.btn('excel', { attr: { 'data-a': 'xuatkq', title: 'Xuất danh sách kết quả ra Excel' } }) +
+                ui.btn('save', { text: 'Thực hiện xếp loại kỳ, năm, toàn khóa', icon: 'fa-paper-plane', mod: 'primary', attr: { 'data-a': 'xeploai' } }) +
                 ui.btn('report', { text: 'Thống kê danh sách còn thiếu điểm RL', icon: 'fa-chart-column', mod: 'out-primary', attr: { 'data-a': 'thieu' } }) }) +
         '<div data-z="khungThieu" hidden>' +
-        pat.panel({ title: 'Danh sách còn thiếu điểm rèn luyện', icon: 'fa-list-ul', count: 'nThieu', flush: true, zone: 'thieu' }) + '</div>' +
-        pat.panel({ title: 'Thống kê số lượng', icon: 'fa-list-ul', flush: true, zone: 'tk' });
+        pat.panel({ title: 'Danh sách còn thiếu điểm rèn luyện', icon: 'fa-list-ul', count: 'nThieu', flush: true, zone: 'thieu',
+            tools: ui.btn('excel', { attr: { 'data-a': 'xuatthieu', title: 'Xuất toàn bộ danh sách còn thiếu điểm rèn luyện ra Excel' } }) }) + '</div>' +
+        pat.panel({ title: 'Thống kê số lượng', icon: 'fa-list-ul', flush: true, zone: 'tk',
+            tools: ui.btn('excel', { attr: { 'data-a': 'xuattk', title: 'Xuất thống kê số lượng theo xếp loại ra Excel' } }) });
     ui.enhance(root);
     function z(k) { return root.querySelector('[data-z="' + k + '"]'); }
     function f(k) { return root.querySelector('[data-f="' + k + '"]'); }
     function v(k) { return pat.val(f(k)); }
     function thoiGian() { return v('tg') || v('nam'); }
+    /* [nhãn, ô] cho dòng "Điều kiện áp dụng" (gốc getFilterLines) — chụp lúc tìm để tệp Excel khớp dữ liệu đang xem */
+    function dieuKien() {
+        return [['Hệ đào tạo', f('he')], ['Khóa đào tạo', f('khoa')], ['Chương trình', f('ct')], ['Lớp quản lý', f('lop')],
+            ['Năm học', f('nam')], ['Thời gian đào tạo', f('tg')], ['Đối tượng', f('dt')], ['Trạng thái', f('tt')]];
+    }
+    var phuKQ = [], phuThieu = [];
+    function phuHienTai() { return [ums.process.dieuKien(dieuKien())].filter(Boolean); }
     z('bang').innerHTML = ui.empty('Chọn điều kiện rồi bấm "Tìm kiếm"', 'fa-hand-pointer');
     z('tk').innerHTML = ui.empty('Chưa có dữ liệu thống kê', 'fa-chart-column');
 
@@ -108,7 +126,7 @@
             strDaoTao_HeDaoTao_Id: v('he'), strDaoTao_KhoaDaoTao_Id: v('khoa'), strDaoTao_ChuongTrinh_Id: v('ct'), strChucNang_Id: cn(),
             strDaoTao_ThoiGianDaoTao_Id: thoiGian(), strQLSV_TrangThaiNguoiHoc_Id: v('tt'), strDoiTuongApDung_Id: v('dt'), strDaoTao_LopQuanLy_Id: v('lop'),
             strNguoiThucHien_Id: uid() })
-            .then(function (r) { DS = r.data || {}; ve(); veTK(); })
+            .then(function (r) { DS = r.data || {}; phuKQ = phuHienTai(); ve(); veTK(); })
             .catch(function (err) { z('bang').innerHTML = ui.fail(err.message); ums.api.handle(err, 'tổng hợp điểm rèn luyện'); });
     }
     function hoTen(x) { return esc(e(x.HODEM) + ' ' + e(x.TEN)); }
@@ -131,14 +149,45 @@
     }
 
     /* ---------- Xếp loại kỳ, năm, toàn khoá ------------------------------ */
+    /* Các lớp sẽ xếp loại (gốc getItems_XepLoai): lớp đang chọn; không chọn thì mọi lớp của ô; ô trống → một lần cho cả phạm vi */
+    function lopXepLoai() {
+        var sel = f('lop'), items = [], seen = {};
+        function lay(ops) { Array.prototype.forEach.call(ops, function (op) { if (!op.value || seen[op.value]) return; seen[op.value] = 1; items.push({ ID: op.value, TEN: op.textContent.replace(/\s+/g, ' ').trim() }); }); }
+        lay(sel.selectedOptions);
+        if (!items.length) lay(sel.options);
+        if (!items.length) items.push({ ID: '', TEN: 'Toàn bộ phạm vi đã chọn (không chia theo lớp)' });
+        return items;
+    }
     function xepLoai() {
-        ui.confirm('Bạn có chắc chắn muốn thực hiện không?', { title: 'Thực hiện xếp loại kỳ, năm, toàn khóa', tone: 'warn' }).then(function (yes) {
-            if (!yes) return;
-            ums.api.call({ action: 'RL_XuLy/TongHopDRLTheoKyNamToanKhoa', method: 'POST', strId: '', strChucNang_Id: cn(), strDaoTao_ThoiGianDaoTao_Id: thoiGian(),
-                strDoiTuongApDung_Id: v('dt'), strDaoTao_LopQuanLy_Id: v('lop'), strDaoTao_KhoaDaoTao_Id: v('khoa'), strDaoTao_ChuongTrinh_Id: v('ct'),
-                strNguoiThucHien_Id: uid() })
-                .then(function () { ui.toast('Thực hiện thành công', 'ok'); }).catch(loi('xếp loại'));
+        var tg = thoiGian(), dt = v('dt'), khoa = v('khoa'), ct = v('ct');   // chụp điều kiện lúc mở form: mọi lớp chạy cùng điều kiện
+        ums.process.run({
+            title: 'Thực hiện xếp loại rèn luyện kỳ, năm, toàn khóa', unit: 'lớp quản lý', fileName: 'KetQuaXepLoaiRenLuyen', dieuKien: dieuKien(),
+            notes: tg ? [] : ['Chưa chọn Năm học / Thời gian đào tạo.'], infoHeader: 'Lớp quản lý', info: function (it) { return it.TEN; }, items: lopXepLoai(),
+            okMessage: 'Thực hiện thành công',
+            request: function (it) {
+                return { action: 'RL_XuLy/TongHopDRLTheoKyNamToanKhoa', method: 'POST', strId: '', strChucNang_Id: cn(), strDaoTao_ThoiGianDaoTao_Id: tg,
+                    strDoiTuongApDung_Id: dt, strDaoTao_LopQuanLy_Id: it.ID, strDaoTao_KhoaDaoTao_Id: khoa, strDaoTao_ChuongTrinh_Id: ct, strNguoiThucHien_Id: uid() };
+            },
+            refresh: function () { if (DS) tai(); }
         });
+    }
+    /* Xuất Excel (gốc getOpts_ExportKetQua / getOpts_ExportThieuDRL) */
+    function xuatKQ() {
+        if (!DS || !arr(DS.rsChiTiet).length) { ui.toast('Chưa có dữ liệu để xuất. Vui lòng chọn điều kiện và bấm Tìm kiếm trước.', 'warn'); return; }
+        ui.xuatBang(z('bang'), { ten: 'TongHopDiemRenLuyen', tieuDe: 'DANH SÁCH KẾT QUẢ RÈN LUYỆN', phu: phuKQ });
+    }
+    function xuatTK() {
+        if (!DS || !arr(DS.rsThongKe).length) { ui.toast('Chưa có dữ liệu thống kê để xuất.', 'warn'); return; }
+        ui.xuatBang(z('tk'), { ten: 'ThongKeSoLuongXepLoai', tieuDe: 'THỐNG KÊ SỐ LƯỢNG THEO XẾP LOẠI', phu: phuKQ });
+    }
+    function xuatThieu() {
+        if (!THIEU.length) { ui.toast('Chưa có dữ liệu để xuất.', 'warn'); return; }
+        var tmp = document.createElement('div');     // đủ mọi trang, không chỉ trang đang xem
+        ui.table({ el: tmp, rows: THIEU, stt: false, empty: '', columns: [
+            { title: 'Mã số', prop: 'MASO' }, { title: 'Họ tên', render: hoTen }, { title: 'Trạng thái', prop: 'TRANGTHAI_TEN' }, { title: 'Lớp', prop: 'TENLOP' },
+            { title: 'Chương trình', render: function (x) { return esc(e(x.TENCHUONGTRINH) + ' - ' + e(x.MACHUONGTRINH)); } },
+            { title: 'Khóa học', prop: 'TENKHOA' }, { title: 'Khoa quản lý', prop: 'TENKHOAQUANLY' }, { title: 'Hệ đào tạo', prop: 'TENHEDAOTAO' }] });
+        ui.xuatBang(tmp, { ten: 'DanhSachThieuDiemRenLuyen', tieuDe: 'DANH SÁCH SINH VIÊN CÒN THIẾU ĐIỂM RÈN LUYỆN', phu: phuThieu });
     }
 
     /* ---------- Thống kê còn thiếu điểm rèn luyện ------------------------ */
@@ -157,6 +206,7 @@
             .then(function (r) {
                 var d = r.data;
                 THIEU = arr(d && d.rsChiTiet ? d.rsChiTiet : d);
+                phuThieu = phuHienTai();
                 trang.index = 1;
                 z('khungThieu').hidden = false;
                 veThieu();
@@ -199,6 +249,9 @@
         var a = b.getAttribute('data-a');
         if (a === 'search') tai();
         else if (a === 'xeploai') xepLoai();
+        else if (a === 'xuatkq') xuatKQ();
+        else if (a === 'xuattk') xuatTK();
+        else if (a === 'xuatthieu') xuatThieu();
         else if (a === 'thieu') thieu();
         else if (a === 'import') ums.report.importChung('Điểm rèn luyện', 'IMPORTWITHPROC_RLTK');
     });

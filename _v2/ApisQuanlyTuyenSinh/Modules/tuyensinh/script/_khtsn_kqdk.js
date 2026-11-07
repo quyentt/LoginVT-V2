@@ -5,7 +5,13 @@
    (#kqdk_import — _khtsn_import.js), Khai trực tiếp hồ sơ (#kqdk_khai — _khtsn_khai.js).
    ---------------------------------------------------------------------------
    Danh sách (tệp này):
-     PKG_CORE_TS_HOSO.LayDS_HoSo_TS_FULL (ưu tiên) → hỏng / rỗng thì LayDS_HoSo_TS (gốc: _fullViewHong)
+     PKG_CORE_TS_HOSO.LayDS_HoSo_TS_FULL — kéo gốc lần 12–13 (7/11; gốc 29/10 "sếp chốt dùng MỘT hàm FULL"): KHÔNG còn lùi về
+       LayDS_HoSo_TS khi hỏng / rỗng; lỗi thì hiện nguyên câu BE. LayDSPerson_Profile (dân tộc / tôn giáo) TẮT — FULL trả
+       PERSONPROFILE_*_TEN. Chế độ Đầy đủ: chi tiết tra theo HỒ SƠ (HOSO_ID, một hồ sơ = một LayTT_HoSo_TS + địa chỉ) thay vì
+       theo người (1 CCCD nhiều hồ sơ thì hồ sơ sau không còn hiện chi tiết của hồ sơ đầu); Get_Person_Family / hóa đơn TẮT
+       (FULL trả PERSONFAM_* / PERSONINVOICE_*). Cột "Xóa" tách khỏi Thao tác, đặt Ở CUỐI hàng (gốc kqdk-colxoa).
+       Tự kiểm FULL trả đủ cột chưa: gõ ở Console  ums.khtsn.kiemTraCotFULL()  sau khi mở một kế hoạch có hồ sơ.
+     Bản trước: FULL (ưu tiên) → hỏng / rỗng thì LayDS_HoSo_TS (gốc: _fullViewHong)
      Làm giàu cột (mỗi lượt chỉ cho các dòng ĐANG HIỆN, 6 luồng, có nhớ tạm — như gốc):
        Pr_Ts_Kh_Dau_Ra_Get_Ds (nguyện vọng → ngành / đợt), danh mục TUYENSINH.NGANHNGHE (mã ngành),
        LayDSPerson_Profile (dân tộc / tôn giáo — một lời gọi cho cả trang), GetPersonContactByPerson_Id (SĐT / email),
@@ -100,7 +106,7 @@
         PHẢI nằm CUỐI: cột Gọn và khoá bộ lọc 'i<chỉ số>' tham chiếu theo chỉ số). */
     function mang(d, dr) {
         var pick = T.pick, pid = T.pid(d);
-        var ct = C.ct[pid] || {}, hs = ct.hs || {}, hd = ct.hd || {};
+        var ct = C.ct[T.hid(d) || pid] || {}, hs = ct.hs || {}, hd = ct.hd || {};
         var bu = function (v, k) { return v || (hs[k] == null ? '' : hs[k]); };
         var fam = function (r, n) { return r ? (T.pickLoose(r, n) || '') : ''; };
         var tinh = function (r) { return r ? tenDiaDanh(r.PROVINCE_ID) : ''; };
@@ -406,21 +412,14 @@
         if (!Q) return;
         if (!Q.khId) { Q.rows = []; apDung(); return; }
         var q = Q;
-        var banGon = !!gon || C.fullHong;
+        /* gốc 29/10: CHỈ LayDS_HoSo_TS_FULL — không lùi về bản gọn, không nạp LayDSPerson_Profile (FULL trả tên dân tộc / tôn giáo) */
         ums.pat.panel && (Q.body.querySelector('[data-z="kqbang"]').innerHTML = ui.empty('Đang tải…', 'fa-spinner fa-spin'));
-        ums.api.call(P.dsHoSoTS({ kh: Q.khId, dot: T.S.dotKQ, full: !banGon, lopDK: true })).then(function (r) {
+        ums.api.call(P.dsHoSoTS({ kh: Q.khId, dot: T.S.dotKQ, full: true, lopDK: true })).then(function (r) {
             if (q !== Q) return;
-            var rows = T.rows(r);
-            if (!banGon && !rows.length) { napDS(true); return; }
-            Q.rows = rows;
-            var profIds = [];
-            rows.forEach(function (d) { var p = T.pid(d); if (p && !C.profile[p] && profIds.indexOf(p) < 0) profIds.push(p); });
-            var lo = [];
-            for (var i = 0; i < profIds.length; i += 300) lo.push(profIds.slice(i, i + 300));
+            Q.rows = T.rows(r);
             return Promise.all([
                 T.dauRaMap(Q.khId).then(function (m) { Q.dr = m; }),
-                T.ensureNganhMa(),
-                Promise.all(lo.map(function (b) { return P.dsProfile(b).then(function (a) { a.forEach(function (p) { if (p.PERSON_ID || p.Person_Id) C.profile[p.PERSON_ID || p.Person_Id] = p; }); }); }))
+                T.ensureNganhMa()
             ]).then(function () {
                 if (q !== Q) return;
                 apDung();
@@ -428,11 +427,46 @@
             });
         }).catch(function (err) {
             if (q !== Q) return;
-            if (!banGon) { C.fullHong = true; napDS(true); return; }
             Q.rows = []; apDung();
-            ums.api.handle(err, 'LayDS_HoSo_TS');
+            ums.api.handle(err, 'LayDS_HoSo_TS_FULL');
         });
     }
+    /* 74 cột FE đọc từ FULL (gốc _FULL_COT): '*' = bắt buộc, 'A|B' = nhận một trong hai */
+    var FULL_COT = ['*HOSO_ID', '*COREPERSON_ID', '*NGUYENVONG_DAURA_ID', '*TS_HOSO_NGUYENVONG_ID', 'TS_KEHOACH_TUYENSINH_ID', 'TS_KEHOACH_TUYENSINH_DOT_ID',
+        '*COREPERSON_HOTEN', 'COREPERSON_NGAYSINH', 'COREPERSON_GIOITINH_ID|COREPERSON_GIOITINH_TEN', 'COREPERSON_MASO', '*PERSONIDEN_SOCCCD', 'PERSONIDEN_NGAYCAP', 'PERSONIDEN_NOICAP',
+        'PERSONCONTACT_DIENTHOAI', 'PERSONCONTACT_EMAIL', 'PERSONPROFILE_DANTOC_TEN', 'PERSONPROFILE_TONGIAO_TEN', 'PERSONPROFILE_QUOCTICH_TEN',
+        'PERSONADDR_NOISINH', 'PERSONADDR_HK_TINH_TEN', 'PERSONADDR_HK_XA_TEN', 'PERSONADDR_HK_SONHA',
+        'HOSO_MAHOSO|MA_HOSO', 'HOSO_SOBAODANH|SO_BAO_DANH', 'HOSO_STATUS', 'HOSO_KETQUA', 'HOSO_NGAYNOP', 'HOSO_NGAYKETQUA',
+        'HOSO_KH_DOT_PT_TEN', 'HOSO_DOITUONG_TS_TEN', 'HOSO_DOITUONG_UT_TEN', 'HOSO_KHUVUC_UT_TEN',
+        'PERSONEDU_TINH_ID', 'PERSONEDU_MATRUONG', 'PERSONEDU_TRUONGMATEN', 'PERSONEDU_HOCLUC', 'PERSONEDU_HANHKIEM',
+        'XETTUYEN_TOHOPMON_CODE', 'XETTUYEN_DIEM_MON1', 'XETTUYEN_DIEM_MON2', 'XETTUYEN_DIEM_MON3', 'XETTUYEN_DIEMUUTIEN', 'XETTUYEN_DIEMTONGXT',
+        'PERSONFAM_BO_HOTEN', 'PERSONFAM_BO_NAMSINH', 'PERSONFAM_BO_NOIO', 'PERSONFAM_BO_SDT', 'PERSONFAM_ME_HOTEN', 'PERSONFAM_ME_NAMSINH', 'PERSONFAM_ME_NOIO', 'PERSONFAM_ME_SDT',
+        'KETQUA_QUYETDINH_MA', 'KETQUA_NGAYBANHANH', 'INTAKE_KHOA_TEN', 'INTAKE_NGANH_MA', 'INTAKE_NGAYTIEPNHAN', 'INTAKE_ISSTUDYCREATED', 'DAOTAO_LOPQUANLY_MA', 'DAOTAO_LOPQUANLY_TEN',
+        'PERSONINVOICE_TYPELOAI_TEN', 'PERSONINVOICE_TENDONVI', 'PERSONINVOICE_MAQHNS', 'PERSONINVOICE_DIACHI', 'PERSONINVOICE_MST', 'PERSONINVOICE_NGUOIMUA', 'PERSONINVOICE_EMAIL', 'PERSONINVOICE_SDT',
+        'TS_DOITACTUYENSINH_ID', 'TS_DOITACTUYENSINH_TEN', 'TS_KEHOACH_TUYENSINH_TEN', 'TS_KEHOACH_TUYENSINH_DOT_TEN', 'DAOTAO_HEDAOTAO_TEN', 'DAOTAO_CHUONGTRINH_TEN', 'DAOTAO_NGANH_TS_TEN'];
+    /* Gõ ở Console sau khi mở "Kết quả đăng ký" của kế hoạch có hồ sơ: in cột thiếu / sai hoa-thường / trống mọi dòng / thừa (gốc _kiemTraCotFULL) */
+    T.kiemTraCotFULL = function () {
+        var rows = (Q && Q.rows) || [];
+        if (!rows.length) { console.log('Chưa có dữ liệu — mở "Kết quả đăng ký" của một kế hoạch có hồ sơ rồi gõ lại.'); return null; }
+        var hoa = {}, daDoc = {}, thieu = [], thieuBB = [], rong = [], saiHoa = [];
+        Object.keys(rows[0]).forEach(function (k) { hoa[k.toUpperCase()] = k; });
+        var coGiaTri = function (t) { return rows.some(function (r) { var v = r[t]; return v !== null && v !== undefined && v !== ''; }); };
+        FULL_COT.forEach(function (s) {
+            var bb = s.charAt(0) === '*', tens = s.replace('*', '').split('|'), dung = null, thayTen = null;
+            tens.forEach(function (t) { daDoc[t.toUpperCase()] = 1; if (Object.prototype.hasOwnProperty.call(rows[0], t)) dung = dung || t; else if (hoa[t.toUpperCase()]) thayTen = thayTen || hoa[t.toUpperCase()]; });
+            if (!dung && thayTen) { saiHoa.push(tens[0] + '  →  response trả ' + thayTen); return; }
+            if (!dung) { thieu.push(tens[0]); if (bb) thieuBB.push(tens[0]); return; }
+            if (!coGiaTri(dung)) rong.push(dung);
+        });
+        var thua = Object.keys(rows[0]).filter(function (k) { return !daDoc[k.toUpperCase()]; });
+        console.log('=== KIỂM TRA CỘT LayDS_HoSo_TS_FULL === dòng:', rows.length, '| cột response:', Object.keys(rows[0]).length, '| cột FE cần:', FULL_COT.length);
+        console.log('CỘT BẮT BUỘC THIẾU (' + thieuBB.length + '):', thieuBB.length ? thieuBB : 'không thiếu');
+        console.log('CỘT THIẾU (' + thieu.length + '):', thieu.length ? thieu : 'không thiếu');
+        console.log('CỘT SAI CHỮ HOA/THƯỜNG (' + saiHoa.length + '):', saiHoa.length ? saiHoa : 'không có');
+        console.log('CỘT CÓ MẶT NHƯNG TRỐNG Ở MỌI DÒNG (' + rong.length + '):', rong.length ? rong : 'không có');
+        console.log('CỘT FULL TRẢ THỪA, FE CHƯA DÙNG (' + thua.length + '):', thua.length ? thua : 'không có');
+        return { thieuBatBuoc: thieuBB, thieu: thieu, saiHoa: saiHoa, rongMoiDong: rong, thua: thua };
+    };
 
     /* ---------- Lọc + sắp xếp (_kqApplyAllFilters) ------------------------ */
     function khopTim(d, kw) {
@@ -522,11 +556,14 @@
         var cols = [
             { head: '<input type="checkbox" data-kq="all" title="Chọn tất cả">', cls: 'is-center khtsn-kq__c2', width: '44px',
               render: function (d, i) { return '<input type="checkbox" data-kq="sel" data-i="' + (from + i) + '">'; } },
-            { title: 'Thao tác', cls: 'is-actions khtsn-kq__c3', width: '88px', render: function (d) {
+            { title: 'Thao tác', cls: 'is-actions khtsn-kq__c3', width: '56px', render: function (d) {
                 var id = ui.esc(T.hid(d)), nv = ui.esc(T.nvId(d));
-                return '<button type="button" class="ums-iconbtn ums-iconbtn--edit" data-kq="sua" data-id="' + id + '" data-nv="' + nv + '" title="Sửa hồ sơ"><i class="fa-light fa-pen-to-square"></i></button>' +
-                    '<button type="button" class="ums-iconbtn ums-iconbtn--del" data-kq="xoa" data-id="' + id + '" data-nv="' + nv + '" title="Xóa hồ sơ"><i class="fa-light fa-trash-can"></i></button>'; } }
+                return '<button type="button" class="ums-iconbtn ums-iconbtn--edit" data-kq="sua" data-id="' + id + '" data-nv="' + nv + '" title="Sửa hồ sơ"><i class="fa-light fa-pen-to-square"></i></button>'; } }
         ];
+        /* gốc 29/10: nút Xóa tách khỏi Thao tác, đặt Ở CUỐI hàng, xa nút Sửa */
+        var cotXoa = { title: 'Xóa', cls: 'is-center is-actions', width: '56px', render: function (d) {
+            var id = ui.esc(T.hid(d)), nv = ui.esc(T.nvId(d));
+            return '<button type="button" class="ums-iconbtn ums-iconbtn--del" data-kq="xoa" data-id="' + id + '" data-nv="' + nv + '" title="Xóa hồ sơ"><i class="fa-light fa-trash-can"></i></button>'; } };
         if (Q.mode === 'gon') {
             GON.forEach(function (c) {
                 cols.push({ head: thLoc(c.key, c.ten), cls: c.i === 2 || c.key === 'nganh' || c.i === 51 ? 'khtsn-kq__rong' : 'is-center is-nowrap',
@@ -539,8 +576,10 @@
                 cols.push(c);
             });
         }
+        cols.push(cotXoa);
         ui.table({
-            el: host, rows: shown, columns: cols, tableCls: 'ums-table--lined khtsn-kq__bang' + (Q.mode === 'gon' ? ' khtsn-kq__bang--gon' : ''),
+            /* chonCuoi: false — giữ thứ tự gốc: ô chọn + Sửa ở ĐẦU (ba cột dính trái), Xóa ở CUỐI hàng cách xa nút Sửa */
+            el: host, rows: shown, columns: cols, chonCuoi: false, tableCls: 'ums-table--lined khtsn-kq__bang' + (Q.mode === 'gon' ? ' khtsn-kq__bang--gon' : ''),
             empty: 'Không có dữ liệu',
             rowCls: function () { return 'khtsn-kq__dong'; },
             page: { index: Q.page, size: Q.size, total: Q.view.length, sizes: [25, 50, 100, 200, 'all'],
@@ -599,13 +638,13 @@
             }), 6).then(function () { return coMoi; });
         });
     }
-    /* Chế độ Đầy đủ: 4 lời gọi / người (_ensureChiTietForRows) */
+    /* Chế độ Đầy đủ (gốc 26/10): khoá theo HỒ SƠ (HOSO_ID), 1 hồ sơ = LayTT_HoSo_TS + địa chỉ (gia đình / hóa đơn tắt — FULL đã trả) */
     function napChiTiet(rows, ep) {
         var viec = [];
         rows.forEach(function (d) {
-            var p = T.pid(d);
-            if (!p || (p in C.ct) || viec.some(function (x) { return x.p === p; })) return;
-            viec.push({ p: p, h: T.hid(d) });
+            var p = T.pid(d), h = T.hid(d) || p;
+            if (!h || (h in C.ct) || viec.some(function (x) { return x.k === h; })) return;
+            viec.push({ k: h, p: p, h: T.hid(d) });
         });
         var tt = el('tt');
         if (!viec.length) { tt.hidden = true; return Promise.resolve(false); }
@@ -623,14 +662,11 @@
             C.ttMap = {}; (a || []).forEach(function (x) { C.ttMap[x.ID] = x.TEN || ''; });
         }, function () { C.ttMap = {}; })]);
         viec.forEach(function (v) {
-            C.ct[v.p] = {};
-            var con = 4, mot = function () { if (--con === 0) { xong++; ve(); } };
-            hang.push(function () { return (v.h ? P.layTTHoSo(v.h).then(function (r) { if (r) C.ct[v.p].hs = r; }) : Promise.resolve()).then(mot); });
-            hang.push(function () { return chuanBi.then(function (x) { return P.dsGiaDinh(v.p).then(function (rs) {
-                if (rs.length) { C.ct[v.p].bo = P.timGiaDinh(rs, 'BO', x[0]); C.ct[v.p].me = P.timGiaDinh(rs, 'ME', x[0]); } }); }).then(mot); });
-            hang.push(function () { return P.dsHoaDon(v.p).then(function (a) { if (a.length) C.ct[v.p].hd = a[0]; }).then(mot); });
-            hang.push(function () { return chuanBi.then(function (x) { return P.dsDiaChi(v.p).then(function (rs) {
-                if (rs.length) { C.ct[v.p].hk = P.timDiaChi(rs, 'HK', x[1]); C.ct[v.p].ns = P.timDiaChi(rs, 'NS', x[1]); } }); }).then(mot); });
+            C.ct[v.k] = {};
+            var con = 2, mot = function () { if (--con === 0) { xong++; ve(); } };
+            hang.push(function () { return (v.h ? P.layTTHoSo(v.h).then(function (r) { if (r) C.ct[v.k].hs = r; }) : Promise.resolve()).then(mot); });
+            hang.push(function () { return chuanBi.then(function (x) { return (v.p ? P.dsDiaChi(v.p) : Promise.resolve([])).then(function (rs) {
+                if (rs.length) { C.ct[v.k].hk = P.timDiaChi(rs, 'HK', x[1]); C.ct[v.k].ns = P.timDiaChi(rs, 'NS', x[1]); } }); }).then(mot); });
         });
         return T.hangDoi(hang, 6).then(function () { tt.hidden = true; tt.innerHTML = ''; if (ep) veTrang(); return !ep; });
     }

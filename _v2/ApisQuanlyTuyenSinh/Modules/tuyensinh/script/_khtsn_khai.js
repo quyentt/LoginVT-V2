@@ -12,6 +12,11 @@
      Thêm: SV_Core_TS_HoSo_MH / PKG_CORE_TS_HOSO.Them_HoSo_TS (param _Id; d* rỗng → null) → tra Core_Person_Id + HOSO_ID
            (LayDS_HoSo_TS theo CCCD / họ tên, thử lại tối đa 3 nhịp) → ghi bảng phụ (ums.khtsn.phu) + danh mục hồ sơ.
      Sửa: PKG_CORE_TS_HOSO.Sua_HoSo_TS — ô TRỐNG thì bỏ khỏi payload (chống ghi đè rỗng), d* ép số; strExtra_Data ≤ 990 byte.
+       Kéo gốc lần 12–13 (7/11; gốc 2/11): (1) người dùng CHỈ nhập tab Danh mục hồ sơ (không đụng ô nào khác — theo dõi sự kiện
+       do NGƯỜI gõ / chọn, kể cả select2) → bấm "Cập nhật hồ sơ" chỉ ghi danh mục, KHÔNG gọi Sua_HoSo_TS và các bảng người;
+       (2) hồ sơ ĐÃ PHÂN LỚP (INTAKE_ISSTUDYCREATED = 1) không gửi Đầu ra / Cơ sở đào tạo / Lớp dự kiến (BE không sửa ba
+       trường đó); (3) Sua_HoSo_TS trả Success=false kèm "CANH BAO: …" là CẢNH BÁO (phần còn lại vẫn xử lý) → chạy tiếp chuỗi
+       lưu, nêu nguyên câu BE ở thông báo cuối; lỗi thật vẫn dừng.
      Nạp khi Sửa: LayTT_HoSo_TS, LayTTPerson_Profile, GetPersonContactByPerson_Id, Get_Person_Address,
            GetPersonIdentifierByPerson_Id, LayDS_Bank_TS, Get_Person_Family, LayDS_PersonInvoiceInfo, LayDS_TS_HoSo_DoiTacTS.
      Trúng tuyển: Pr_Ts_Kh_Dau_Ra_Get_Ds (nguyện vọng — dIs_Active 1), TS_CORE_KEHOACH_MH / LayDS_PhuongThucTuyenSinh,
@@ -382,7 +387,12 @@
         }
 
         /* ---------- sự kiện chung ---------- */
+        /* gốc 2/11: nhớ NGƯỜI DÙNG có sửa gì NGOÀI tab Danh mục hồ sơ không (sự kiện do code kích không có isTrusted) */
+        function laTab8(el) { return !!(el && el.closest && (el.closest('[data-sec="hoso"]') || (el.getAttribute && el.getAttribute('data-hs')))); }
+        function ghiSua(ev) { if (ev && ev.isTrusted !== false && !laTab8(ev.target)) S.khaiDaSua = true; }
+        if (window.jQuery) jQuery(host).on('select2:select select2:unselect select2:clear', function (ev) { if (!laTab8(ev.target)) S.khaiDaSua = true; });
         host.addEventListener('input', function (ev) {
+            ghiSua(ev);
             var k = ev.target.getAttribute && ev.target.getAttribute('data-kq');
             if (!k) return;
             if (/^txtKQ_Diem/.test(k)) tinhTong();
@@ -400,6 +410,7 @@
         });
         host.addEventListener('change', function (ev) {
             var t = ev.target;
+            if (!(t.getAttribute && t.getAttribute('data-secmo'))) ghiSua(ev);
             if (t.getAttribute && t.getAttribute('data-secmo')) {
                 var s = t.closest('.khtsn-sec'); datMoMuc(s, t.checked);
                 var m = docMo(); m[s.getAttribute('data-sec')] = t.checked;
@@ -547,7 +558,7 @@
 
         /* ---------- đặt lại / mở ---------- */
         function xoaTrang() {
-            S.sua = false; S.hosoId = ''; S.nvId = ''; S.pid = ''; S.d = null; S.intake = ''; S.dtc = {};
+            S.sua = false; S.hosoId = ''; S.nvId = ''; S.pid = ''; S.d = null; S.intake = ''; S.dtc = {}; S.khaiDaSua = false; S.daPhanLop = false;
             Array.prototype.forEach.call(host.querySelectorAll('input[data-kq], select[data-kq]'), function (x) {
                 if (x.type === 'checkbox') return;
                 x.removeAttribute('data-cham');
@@ -571,6 +582,7 @@
             xoaTrang();
             S.sua = true; S.d = d; S.hosoId = T.hid(d); S.nvId = T.nvId(d); S.pid = T.pid(d);
             S.intake = T.pick(d, ['CORE_PERSON_INTAKE_ID', 'COREPERSON_INTAKE_ID', 'CorePerson_Intake_Id', 'INTAKE_ID']);
+            S.daPhanLop = String(T.pick(d, ['INTAKE_ISSTUDYCREATED'])) === '1';     // gốc 2/11: BE không sửa Đầu ra / Cơ sở / Lớp dự kiến
             q('bansua').hidden = false; q('doinv').hidden = false;
             q('luu').querySelector('span').textContent = 'Cập nhật hồ sơ';
             host.querySelector('.ums-panel__title').lastChild.textContent = ' Sửa hồ sơ — ' + (T.pick(d, ['COREPERSON_HOTEN']) || '');
@@ -878,9 +890,20 @@
                 });
             })();
         }
+        /* gốc 2/11: chỉ nhập tab Danh mục hồ sơ → chỉ ghi các dòng danh mục, không gọi Sua_HoSo_TS và các bảng người */
+        function luuChiTab8() {
+            var tha = dangLuu('Đang lưu danh mục…'), snap = chup();
+            luuLuoi(S.hosoId, snap.dot, snap.danhMuc).then(function (kq) {
+                tha();
+                if (!kq || !kq.total) { ui.toast('Không có thay đổi nào để lưu.', 'info'); return; }
+                thongBao('Đã lưu danh mục hồ sơ', snap, [], kq);
+                T.kqDong(true);
+            }).catch(function (err) { tha(); ums.api.handle(err, 'lưu danh mục hồ sơ'); });
+        }
         function luuSua() {
+            if (!S.khaiDaSua) { luuChiTab8(); return; }
             if (!g('txtKQ_HoTen')) { ui.toast('Vui lòng nhập Họ và tên', 'warn'); toiPanel('canhan', 'txtKQ_HoTen'); return; }
-            var snap = chup(), pid = S.pid;
+            var snap = chup(), pid = S.pid, canhBao = '';
             var extra = {};
             [['NgayCapCCCD', T.ngayISO(g('txtKQ_NgayCapCCCD'))], ['NoiCapCCCD', g('txtKQ_NoiCapCCCD')], ['NS_Huyen_Id', g('ddlKQ_NS_Huyen')], ['HK_Huyen_Id', g('ddlKQ_HK_Huyen')]]
                 .forEach(function (a) { if (a[1]) extra[a[0]] = a[1]; });
@@ -914,10 +937,15 @@
                 if (o[k] === '' || o[k] == null) { delete o[k]; return; }
                 if (k.charAt(0) === 'd') { var n = Number(o[k]); if (isNaN(n)) delete o[k]; else o[k] = n; }
             });
+            if (S.daPhanLop) ['strNguyenVong_DauRa_Id', 'strDaoTao_CoSoDaoTao_Id', 'strDaoTao_LopQuanLy_Id_DK', 'strDaoTao_LopQuanLy_DuKien'].forEach(function (k) { delete o[k]; });
             var tha = dangLuu('Đang cập nhật…');
-            ums.api.call(o).then(function () {
+            ums.api.call(o).then(null, function (err) {
+                /* "CANH BAO: …" = cảnh báo của BE, phần còn lại đã xử lý → chạy tiếp; lỗi thật vẫn dừng */
+                if (/CANH\s*BAO/i.test((err && err.message) || '')) { canhBao = err.message; return; }
+                throw err;
+            }).then(function () {
                 return Promise.all([luuPhu(pid, snap), luuLuoi(S.hosoId, snap.dot, snap.danhMuc)]).then(function (k) {
-                    thongBao('Cập nhật hồ sơ thành công', snap, k[0], k[1]);
+                    thongBao('Cập nhật hồ sơ thành công' + (canhBao ? ' — Hệ thống báo: ' + canhBao : ''), snap, k[0], k[1], canhBao ? 'warn' : undefined);
                     T.kqDong(true);
                 });
             }).catch(function (err) { ums.api.handle(err, 'Sua_HoSo_TS'); }).then(tha);

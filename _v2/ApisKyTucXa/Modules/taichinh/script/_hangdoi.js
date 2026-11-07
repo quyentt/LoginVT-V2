@@ -61,6 +61,20 @@
         function napLai() { return q.reload().then(veLichSu); }
 
         function chay() {
+            /* kéo gốc lần 12 (7/11, tinhphi): o.chay.job = { title, what(v), fileName } → form tiến trình chung ums.process.runJob
+               (Bước 1 hiện kỳ tính + nghiệp vụ áp dụng thay hộp xác nhận; lưu ý chưa nhập năm / tháng; thành công → nạp lại hàng đợi) */
+            if (o.chay.job) {
+                var v0 = f(), j = o.chay.job, notes = [];
+                if (!v0.nam || !v0.thang) notes.push('Chưa nhập đủ năm / tháng tính phí.');
+                ums.process.runJob({
+                    title: j.title, what: typeof j.what === 'function' ? j.what(v0) : j.what, fileName: j.fileName, notes: notes,
+                    subTitles: ['Kỳ tính: tháng ' + v0.thang + ' năm ' + v0.nam], dieuKien: [['Nghiệp vụ áp dụng', el.nv]],
+                    okMessage: 'Khởi tạo dữ liệu thành công, vui lòng chạy tiến trình để thực hiện!',
+                    request: function () { return { action: o.chay.action, method: 'GET', strNam: v0.nam, strThang: v0.thang, strNghiepVuApDung_Id: v0.nv }; },
+                    onSuccess: function () { napLai(); }
+                });
+                return;
+            }
             ui.confirm(o.chay.confirm, { ok: o.chay.text }).then(function (yes) {
                 if (!yes) return;
                 var v = f();

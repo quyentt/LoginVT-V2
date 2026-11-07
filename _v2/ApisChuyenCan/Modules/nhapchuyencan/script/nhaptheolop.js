@@ -83,7 +83,7 @@
     function loi(t) { return function (err) { ums.api.handle(err, t); }; }
     var tieuDe = root.querySelectorAll('.ums-panel__title')[1];
 
-    var dsHoc = [], dsId = '', trang = 1, co = 10, kieuDang = '', ngayDang = [];
+    var dsHoc = [], dsId = '', dsChon = null, trang = 1, co = 10, kieuDang = '', ngayDang = [];
 
     /* ---------- Ô lọc ----------------------------------------------------------- */
     ums.api.dm('DIEM.LOAIDANHSACH').then(function (d) { pat.fill(f('loai'), d, { head: pat.dmTitle(d) || 'Chọn loại danh sách' }); }).catch(loi('loại danh sách'));
@@ -145,6 +145,7 @@
         dsId = id;
         if (z('vungCt').hidden) ui.swap(z('vungDs'), z('vungCt'));
         var x = dsHoc.filter(function (r) { return r.ID === id; })[0];
+        dsChon = x || null;
         tieuDe.innerHTML = '<i class="fa-light fa-users"></i> Danh sách: ' + esc(x ? x.TEN : '') + ' <span class="ums-u-faint ums-u-fz13" data-z="nsv"></span>';
         Array.prototype.forEach.call(z('ds').querySelectorAll('[data-chon]'), function (b) {
             var on = b.getAttribute('data-chon') === id;
@@ -260,6 +261,10 @@
     ums.report.mount(z('bc'), { collect: function (add) {
         add('strTinhDenNgay', '');
         add('strDanhSachHoc_Id', dsId);
+        /* kéo gốc lần 12 (7/11): mẫu báo cáo nhận thêm lớp học phần + thời gian đào tạo của danh sách đang chọn */
+        add('strDangKy_LopHocPhan_Id', dsId);
+        add('strDaoTao_LopHocPhan_Id', dsId);
+        add('strDaoTao_ThoiGianDaoTao_Id', dsChon ? e(dsChon.DAOTAO_THOIGIANDAOTAO_ID) : '');
     } });
 
     root.addEventListener('click', function (ev) {
