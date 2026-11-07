@@ -23,7 +23,9 @@
      · "Kế thừa mặc định từ điều kiện chuẩn" (#btnSave_KeThuaDieuKien) KHÔNG có xử lý nào trong kehoach.js →
        giữ nút, đặt disabled.
      · Xoá hỏi lại tone đỏ; hộp kế thừa: gốc đóng hộp rồi hỏi lại — ở đây hỏi lại, đồng ý mới đóng hộp và chạy.
-     · Chạy hàng loạt qua ums.ui.batch, xong nạp lại bảng MỘT lần (gốc nạp lại sau mỗi start_Progress).
+     · Kéo gốc lần 12–13 (7/11): Lưu (chỉ ô đã đổi) / Xóa / Kế thừa theo nhóm chạy qua form tiến trình chung ums.process.run
+       (gốc edu.process.run — mỗi điều kiện / nhóm một bản ghi, cột Xếp loại hoặc Tên / Mô tả, dòng điều kiện Quỹ · Thời gian
+       của thanh lọc qua o.dieuKien()), Bước 1 thay hộp hỏi lại; xong nạp lại bảng MỘT lần.
    ========================================================================= */
 (function () {
     'use strict';
@@ -47,6 +49,7 @@
                 ui.btn('save', { attr: { 'data-a': 'luu' } })
         });
         function z(x) { return zone.querySelector('[data-z="' + x + '"]'); }
+        function dk() { return o.dieuKien ? o.dieuKien() : []; }
         K.ganChon(zone);
 
         function tai() {
@@ -78,34 +81,47 @@
                 if (r && t.value !== e(r.XAUDIEUKIEN)) doi.push({ id: r.ID, xau: t.value });
             });
             if (!doi.length) { ui.toast('Không có thay đổi để lưu', 'warn'); return; }
-            ui.confirm('Bạn có chắc chắn lưu ' + doi.length + ' dữ liệu không?', { ok: 'Lưu', title: 'Lưu điều kiện' }).then(function (yes) {
-                if (!yes) return;
-                ui.batch(doi.map(function (x) {
-                    return { action: DK + 'Sua_HB_XepLoai_DieuKien_Ad', method: 'POST', type: 'POST',
-                        strId: x.id, strXauDieuKien: x.xau, strNguoiThucHien_Id: '' };
-                }), { title: 'Đang lưu điều kiện', okText: 'Cập nhật thành công!', show: true }).then(tai);
+            ums.process.run({
+                title: 'Lưu điều kiện xét học bổng', unit: 'điều kiện', fileName: 'KetQuaLuuDieuKien', dieuKien: dk(), items: doi,
+                columns: [{ header: 'Xếp loại', render: function (x) { var r = K.tim(rows, x.id); return r && r.XEPLOAI_TEN ? r.XEPLOAI_TEN : x.id; } }],
+                okMessage: 'Cập nhật thành công!',
+                request: function (x) {
+                    return { action: DK + 'Sua_HB_XepLoai_DieuKien_Ad', method: 'POST', type: 'POST', strId: x.id, strXauDieuKien: x.xau, strNguoiThucHien_Id: '' };
+                },
+                refresh: tai
             });
         }
         function xoa() {
             var ids = K.daChon(z('t'), 'dkhb');
             if (!ids.length) { ui.toast('Vui lòng chọn đối tượng cần xóa?', 'warn'); return; }
-            K.xoa(ids.map(function (id) {
-                return { action: DK + 'Xoa_HB_XepLoai_DieuKien_Ad', method: 'POST', type: 'POST', strIds: id, strNguoiThucHien_Id: '' };
-            }), tai);
+            ums.process.run({
+                title: 'Xóa điều kiện xét học bổng', unit: 'điều kiện', fileName: 'KetQuaXoaDieuKien', dieuKien: dk(),
+                notes: ['Thao tác xóa dữ liệu các điều kiện trong danh sách.'],
+                items: ids.map(function (id) { return K.tim(rows, id); }).filter(Boolean),
+                columns: [{ header: 'Xếp loại', render: function (r) { return r.XEPLOAI_TEN || r.ID; } }],
+                okMessage: 'Xóa thành công!',
+                request: function (r) { return { action: DK + 'Xoa_HB_XepLoai_DieuKien_Ad', method: 'POST', type: 'POST', strIds: r.ID, strNguoiThucHien_Id: '' }; },
+                refresh: tai
+            });
         }
         function keThuaNhom() {
+            var ktn = [];
             var dlg = ui.dialog({
                 title: 'Danh sách', icon: 'fa-copy', size: 'lg', body: '<div data-z="ktn"></div>',
                 buttons: [{ text: 'Kế thừa theo nhóm', kind: 'save', icon: 'fa-copy', onClick: function () {
                     var ids = K.daChon(dlg.body, 'ktnhb');
                     if (!ids.length) { ui.toast('Vui lòng chọn đối tượng?', 'warn'); return false; }
-                    ui.confirm('Bạn có muốn kế thừa không?', { ok: 'Kế thừa', title: 'Kế thừa theo nhóm' }).then(function (yes) {
-                        if (!yes) return;
-                        dlg.close();
-                        ui.batch(ids.map(function (id) {
+                    dlg.close();   // gốc hideModal rồi mở form tiến trình
+                    ums.process.run({
+                        title: 'Kế thừa điều kiện xét theo nhóm', unit: 'nhóm', fileName: 'KetQuaKeThuaNhom', dieuKien: dk(),
+                        items: ids.map(function (id) { return K.tim(ktn, id); }).filter(Boolean),
+                        columns: [{ header: 'Tên', render: function (r) { return e(r.TEN); } }, { header: 'Mô tả', render: function (r) { return e(r.MOTA); } }],
+                        okMessage: 'Thực hiện thành công',
+                        request: function (r) {
                             return { action: 'XLHV_HB_ThongTin_MH/CiQVKTQgHgUoJDQKKCQvGTQNOB4AJQPP', func: 'pkg_hocbong_thongtin.KeThua_DieuKienXuLy_Ad',
-                                strPhamViNguon_Id: id, strPhamViDich_Id: khId, strNguoiThucHien_Id: '' };
-                        }), { title: 'Đang kế thừa', okText: 'Thực hiện thành công', show: true }).then(tai);
+                                strPhamViNguon_Id: r.ID, strPhamViDich_Id: khId, strNguoiThucHien_Id: '' };
+                        },
+                        refresh: tai
                     });
                     return false;
                 } }]
@@ -116,7 +132,8 @@
             ums.api.call({ action: 'XLHV_HB_ThongTin_MH/DSA4BRIJAx4RKSAsFygeADEFNC8m', func: 'pkg_hocbong_thongtin.LayDSHB_PhamVi_ApDung',
                 strNguoiThucHien_Id: '', strHB_QuyHocBong_Id: khId })
                 .then(function (r) {
-                    ui.table({ el: host, rows: K.ds(r), empty: 'Không có dữ liệu', columns: [
+                    ktn = K.ds(r);
+                    ui.table({ el: host, rows: ktn, empty: 'Không có dữ liệu', columns: [
                         { title: 'Tên', prop: 'TEN' },
                         { title: 'Mô tả', prop: 'MOTA' },
                         K.cotChon('ktnhb')

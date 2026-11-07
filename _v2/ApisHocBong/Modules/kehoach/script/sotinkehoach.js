@@ -20,6 +20,10 @@
        XLHV_HB_ThongTin_MH · pkg_hocbong_thongtin.Sua_HB_QuyDinh_SoTinDangKy — "Lưu": mỗi ô đã đổi một lời
             gọi (strId = ID dòng, dSoQuyDinh = giá trị ô); hỏi lại "lưu N dữ liệu", xong nạp lại.
    Khác gốc: mở màn KHÔNG tự nạp danh sách (gốc chú thích getList_SoTinKeHoach trong init) — giữ như gốc.
+   Kéo gốc lần 12–13 (7/11): "Lưu" chạy qua form tiến trình chung ums.process.run (mỗi dòng đã đổi một bản ghi: Phạm vi /
+   Phân cấp / Thời gian / Số tín cũ / Số tín mới), "Khởi tạo dữ liệu" qua ums.process.runJob (Bước 1 hiện điều kiện Quỹ ·
+   Thời gian · Quy tắc + lưu ý chưa chọn quỹ / quy tắc; xong — cả khi lỗi — nạp lại như gốc), nút "Xuất Excel" cạnh Lưu
+   (gốc edu.exporter.attachTable tblSoTinKeHoach) = ums.ui.xuatBang, cột Số tín lấy giá trị đang nhập.
    Cố ý bỏ: cột ô đánh dấu + ô "chọn tất cả" (không nút nào đọc: #btnXoaSoTinKeHoach không có trên
      html gốc, hàm delete_SoTinKeHoach không tồn tại).
    ========================================================================= */
@@ -45,7 +49,7 @@
         pat.panel({ title: 'Danh sách', icon: 'fa-rectangle-list', count: 'n', flush: true, zone: 'bang',
             tools: '<div class="ums-field hbth-quytac"><select class="ums-select" data-f="qt" data-ph="Chọn quy tắc"><option value=""></option></select></div>' +
                 ui.btn('search', { text: 'Khởi tạo dữ liệu', mod: 'primary', icon: 'fa-paper-plane', attr: { 'data-a': 'khoitao' } }),
-            foot: '<div class="hbth-chan">' + ui.btn('save', { text: 'Lưu', attr: { 'data-a': 'luu' } }) + '</div>' });
+            foot: '<div class="hbth-chan">' + ui.btn('excel', { attr: { 'data-a': 'xuat' } }) + ui.btn('save', { text: 'Lưu', attr: { 'data-a': 'luu' } }) + '</div>' });
     ui.enhance(root);
     function f(k) { return root.querySelector('[data-f="' + k + '"]'); }
     function z(k) { return root.querySelector('[data-z="' + k + '"]'); }
@@ -63,7 +67,8 @@
         pat.fill(f('qt'), d, { head: pat.dmTitle(d) || 'Chọn quy tắc' });
     }).catch(function (err) { ums.api.handle(err, 'quy tắc khởi tạo'); });
 
-    var luot = 0;
+    function dieuKien() { return [['Quỹ học bổng', f('quy')], ['Thời gian', f('tg')]]; }
+    var luot = 0, dsST = [];
     function tai() {
         var sh = ++luot;
         z('bang').innerHTML = ui.empty('Đang tải…', 'fa-spinner fa-spin');
@@ -72,7 +77,7 @@
             strDaoTao_ThoiGianDaoTao_Id: f('tg').value, strNguoiThucHien_Id: uid() })
             .then(function (r) {
                 if (sh !== luot) return;
-                var rs = arr(r.data);
+                var rs = dsST = arr(r.data);
                 ui.table({ el: z('bang'), rows: rs, empty: 'Không có dữ liệu', columns: [
                     { title: 'Phạm vi áp dụng', prop: 'PHAMVIAPDUNG_TEN' },
                     { title: 'Phân loại', prop: 'PHANCAPPHAMVI_TEN' },
@@ -96,22 +101,41 @@
             return i.value !== i.getAttribute('data-cu');
         });
         if (!doi.length) { ui.toast('Không có thay đổi để lưu', 'info'); return; }
-        ui.confirm('Bạn có chắc chắn lưu ' + doi.length + ' dữ liệu không?', { ok: 'Lưu' }).then(function (ok) {
-            if (!ok) return;
-            ui.batch(doi.map(function (i) {
+        var map = {};
+        dsST.forEach(function (r) { map[r.ID] = r; });
+        ums.process.run({
+            title: 'Lưu số tín tối thiểu của kế hoạch', unit: 'dòng', fileName: 'KetQuaLuuSoTinKeHoach', dieuKien: dieuKien(),
+            items: doi.map(function (i) { var id = i.getAttribute('data-st'); return { ID: id, row: map[id] || {}, cu: i.getAttribute('data-cu'), moi: i.value }; }),
+            columns: [
+                { header: 'Phạm vi áp dụng', render: function (it) { return it.row.PHAMVIAPDUNG_TEN || it.ID; } },
+                { header: 'Phân cấp', render: function (it) { return e(it.row.PHANCAPPHAMVI_TEN); } },
+                { header: 'Thời gian', render: function (it) { return e(it.row.THOIGIAN); } },
+                { header: 'Số tín cũ', render: function (it) { return e(it.cu); } },
+                { header: 'Số tín mới', render: function (it) { return e(it.moi); } }
+            ],
+            okMessage: 'Thực hiện thành công',
+            request: function (it) {
                 return { action: TT + 'EjQgHgkDHhA0OAUoLykeEi4VKC8FIC8mCjgP', func: 'pkg_hocbong_thongtin.Sua_HB_QuyDinh_SoTinDangKy',
-                    strId: i.getAttribute('data-st'), dSoQuyDinh: i.value, strNguoiThucHien_Id: uid() };
-            }), { title: 'Đang lưu', okText: 'Thực hiện thành công' }).then(tai);
+                    strId: it.ID, dSoQuyDinh: it.moi, strNguoiThucHien_Id: uid() };
+            },
+            refresh: tai
         });
     }
 
-    function khoiTao(b) {
-        b.disabled = true;
-        ums.api.call({ action: 'XLHV_HB_TinhToan_MH/CikuKBUgLgU0DSgkNBUoLykSLhUoLwIpKAPP', func: 'pkg_hocbong_tinhtoan.KhoiTaoDuLieuTinhSoTinChi',
-            strHB_QuyHocBong_Id: f('quy').value, strDaoTao_ThoiGianDaoTao_Id: f('tg').value,
-            strQuyTacTinhSoTin_Id: f('qt').value, strNguoiThucHien_Id: uid() })
-            .then(function () { ui.toast('Thực hiện thành công', 'ok'); }, function (err) { ums.api.handle(err, 'khởi tạo dữ liệu'); })
-            .then(function () { b.disabled = false; tai(); });      // gốc: xong (cả khi lỗi) nạp lại danh sách
+    function khoiTao() {
+        var notes = [];
+        if (!f('quy').value) notes.push('Chưa chọn quỹ học bổng.');
+        if (!f('qt').value) notes.push('Chưa chọn quy tắc khởi tạo.');
+        ums.process.runJob({
+            title: 'Khởi tạo số tín tối thiểu', what: 'Khởi tạo dữ liệu số tín tối thiểu theo điều kiện đang chọn', fileName: 'KetQuaKhoiTaoSoTin',
+            notes: notes, dieuKien: dieuKien().concat([['Quy tắc khởi tạo', f('qt')]]), okMessage: 'Thực hiện thành công',
+            request: function () {
+                return { action: 'XLHV_HB_TinhToan_MH/CikuKBUgLgU0DSgkNBUoLykSLhUoLwIpKAPP', func: 'pkg_hocbong_tinhtoan.KhoiTaoDuLieuTinhSoTinChi',
+                    strHB_QuyHocBong_Id: f('quy').value, strDaoTao_ThoiGianDaoTao_Id: f('tg').value,
+                    strQuyTacTinhSoTin_Id: f('qt').value, strNguoiThucHien_Id: uid() };
+            },
+            onClose: function (sum) { if (sum.ok || sum.err) tai(); }      // gốc: xong (cả khi lỗi) nạp lại danh sách
+        });
     }
 
     root.addEventListener('click', function (ev) {
@@ -120,7 +144,8 @@
         var a = b.getAttribute('data-a');
         if (a === 'search') tai();
         else if (a === 'luu') luu();
-        else if (a === 'khoitao') khoiTao(b);
+        else if (a === 'khoitao') khoiTao();
+        else if (a === 'xuat') ui.xuatBang(z('bang'), { ten: 'SoTinToiThieuKeHoach', tieuDe: 'SỐ TÍN TỐI THIỂU CỦA KẾ HOẠCH', phu: [ums.process.dieuKien(dieuKien())].filter(Boolean) });
     });
     f('q').addEventListener('keydown', function (ev) { if (ev.key === 'Enter') { ev.preventDefault(); tai(); } });
 })();

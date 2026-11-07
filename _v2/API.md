@@ -484,14 +484,11 @@ SheetJS tải từ CDN như vài màn gốc — _v2 không phụ thuộc CDN).
 
 _(chưa có chú thích trong mã)_
 
-### `ums.ui.xuatBang(tbl, o)`  <sub>ui.js:1635</sub>
+### `ums.ui.xuatBang(tbl, o)`  <sub>ui.js:1643</sub>
 
-```text
- Xuất bảng đang hiển thị (bản viết lại của edu.exporter.attachTable / exportTable, kéo gốc lần 12–13): đọc tiêu đề cột ở dòng
-cuối <thead>, bỏ cột không có tên hoặc chỉ chứa ô đánh dấu; mỗi <tr> của <tbody> một dòng (bỏ dòng "rỗng" của ui.table). 
-```
+_(chưa có chú thích trong mã)_
 
-### `ums.ui.napXLSX()`  <sub>ui.js:1658</sub>
+### `ums.ui.napXLSX()`  <sub>ui.js:1666</sub>
 
 _(chưa có chú thích trong mã)_
 
@@ -1728,7 +1725,7 @@ converted: tệp màn đã có trong _v2 chưa (GET đúng đường dẫn vỏ 
 
 </details>
 
-### `ums.canQuyetKhoa(url)`  <sub>can-quyet.js:327</sub>
+### `ums.canQuyetKhoa(url)`  <sub>can-quyet.js:330</sub>
 
 _(chưa có chú thích trong mã)_
 

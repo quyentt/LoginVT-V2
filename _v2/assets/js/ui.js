@@ -1632,6 +1632,14 @@
 
     /* Xuất bảng đang hiển thị (bản viết lại của edu.exporter.attachTable / exportTable, kéo gốc lần 12–13): đọc tiêu đề cột ở dòng
        cuối <thead>, bỏ cột không có tên hoặc chỉ chứa ô đánh dấu; mỗi <tr> của <tbody> một dòng (bỏ dòng "rỗng" của ui.table). */
+    /* chữ của một ô: ô nhập / ô chọn sửa ngay trong bảng (số tín, xâu điều kiện…) lấy giá trị đang nhập, không phải textContent */
+    function oChu(td) {
+        if (!td) return '';
+        var c = td.querySelector('input:not([type="checkbox"]):not([type="radio"]), select, textarea');
+        if (!c) return td.textContent.trim();
+        if (c.tagName === 'SELECT') return Array.prototype.filter.call(c.options, function (x) { return x.selected; }).map(function (x) { return x.textContent.trim(); }).join(', ');
+        return String(c.value || '').trim();
+    }
     ui.xuatBang = function (tbl, o) {
         o = o || {};
         tbl = typeof tbl === 'string' ? document.getElementById(tbl) : tbl;
@@ -1644,7 +1652,7 @@
         var d = new Date(), p = function (n) { return (n < 10 ? '0' : '') + n; };
         ui.xuatXls((o.ten || 'Bang') + '_' + d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + '_' + p(d.getHours()) + p(d.getMinutes()), {
             tieuDe: o.tieuDe, phu: o.phu,
-            cot: idx.map(function (c) { return { title: c.t, get: function (tr) { return tr.cells[c.i] ? tr.cells[c.i].textContent.trim() : ''; } }; }),
+            cot: idx.map(function (c) { return { title: c.t, get: function (tr) { return oChu(tr.cells[c.i]); } }; }),
             dong: dong
         });
     };

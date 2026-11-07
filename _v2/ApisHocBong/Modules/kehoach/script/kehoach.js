@@ -28,7 +28,9 @@
    Cố ý bỏ: khối nút .btn-show (display:none !important trong html gốc — ba nút mở hộp trùng nút trong bảng);
    ô "Phân loại" (dropSearch_PhanLoai / dropPhanLoai không có trên màn, dòng nạp HB.PHANLOAI đã bị chú thích).
    Khác gốc:
-       · Xoá kế hoạch: ums.ui.xoaChon + ums.ui.batch, xong nạp lại MỘT lần (gốc N lời gọi rồi setTimeout N×50ms).
+       · Xoá kế hoạch: ums.ui.xoaChon → form tiến trình chung ums.process.run (kéo gốc lần 12–13, 7/11 — gốc edu.process.run:
+         mỗi kế hoạch một bản ghi, cột Mã / Tên / Học kỳ / Từ / Đến, điều kiện Quỹ · Thời gian), xong nạp lại MỘT lần.
+         Cùng đợt: biểu mẫu (phạm vi áp dụng) và vùng điều kiện cũng chạy qua ums.process — xem _kh_form.js, _kh_dieukien.js.
        · Đóng biểu mẫu / vùng điều kiện thì nạp lại danh sách (toggle_form của gốc).
        · Hộp "Xem kết quả": bFilter của gốc gọi nhầm getList_KeHoachXuLy (nạp lại danh sách kế hoạch) → ô tìm
          lọc ngay trên bảng.
@@ -64,8 +66,9 @@
     function mo(k) { dangMo = vung[k]; ui.swap(zDs, dangMo); }
     function dong() { if (dangMo) ui.swap(dangMo, zDs); dangMo = null; load(); }
 
-    var form = H.taoForm(vung.form, { onClose: dong, onSaved: function () { load(); }, hocKyLoc: function () { return fTg.value; } });
-    var dk = H.taoDieuKien(vung.dk, { onClose: dong });
+    function dieuKien() { return H.dieuKien(fQuy, fTg); }
+    var form = H.taoForm(vung.form, { onClose: dong, onSaved: function () { load(); }, hocKyLoc: function () { return fTg.value; }, dieuKien: dieuKien });
+    var dk = H.taoDieuKien(vung.dk, { onClose: dong, dieuKien: dieuKien });
 
     /* ---------- Danh sách kế hoạch ----------------------------------------- */
     var page = 1, size = (ums.cfg && ums.cfg.behavior && ums.cfg.behavior.pageSize) || 10, total = 0, rows = [];
@@ -123,7 +126,14 @@
     function xoa() {
         var ids = K.daChon(q('[data-z="t"]'), 'khhb');
         if (!ids.length) { ui.toast('Vui lòng chọn đối tượng cần xóa?', 'warn'); return; }
-        K.xoa(ids.map(function (id) { return { action: 'HB_KeHoach/Xoa', strIds: id, strNguoiThucHien_Id: '' }; }), function () { load(); });
+        ums.process.run({
+            title: 'Xóa kế hoạch học bổng', unit: 'kế hoạch', fileName: 'KetQuaXoaKeHoachHocBong', dieuKien: dieuKien(),
+            notes: ['Thao tác xóa dữ liệu các kế hoạch trong danh sách.'],
+            items: ids.map(function (id) { return K.tim(rows, id); }).filter(Boolean), columns: H.colsKeHoach(true),
+            okMessage: 'Xóa thành công!',
+            request: function (r) { return { action: 'HB_KeHoach/Xoa', strIds: r.ID, strNguoiThucHien_Id: '' }; },
+            refresh: function () { load(); }
+        });
     }
 
     /* #myModal — getList_QuanSoTheoLop */

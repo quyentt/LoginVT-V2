@@ -37,6 +37,11 @@
        (+) o.phanTrang có thể là hàm (đọc lại mỗi lần vẽ — màn đổi giữa danh sách phân trang / không phân trang)
        (+) o.onTim(api) gọi TRƯỚC khi nạp lại do nút Tìm kiếm / Enter của hộp
        → api = { dlg, rows(), chon(), tai(trang), ben }
+       (+) o.xuat = { ten, tieuDe, phu: [] | fn, tatCa } — nút "Xuất Excel" ở chân hộp (gốc edu.exporter.attachTable, kéo gốc
+           lần 12–13): tatCa = nạp lại ĐỦ mọi trang (pageSize 100000, gốc fetchAll) rồi xuất; không thì xuất bảng đang xem.
+   H.dieuKien(fQuy, fTg)       [[nhãn, ô]] cho dòng "Điều kiện áp dụng" (gốc _filters: Quỹ học bổng · Thời gian đào tạo)
+   H.phu(dk, them)             các dòng dưới tiêu đề tệp Excel: them + dòng điều kiện (ums.process.dieuKien)
+   H.colsKeHoach(coMa)         cột kế hoạch trên form tiến trình (gốc _colsKeHoach: kehoach có Mã, thuchienxet có Phân loại)
    ========================================================================= */
 (function () {
     'use strict';
@@ -47,6 +52,16 @@
     var e = K.e;
     H.e = e;
     H.K = K;
+    H.dieuKien = function (fQuy, fTg) { return [['Quỹ học bổng', fQuy], ['Thời gian đào tạo', fTg]]; };
+    H.phu = function (dk, them) { var l = [].concat(them || []), t = ums.process.dieuKien(dk || []); if (t) l.push(t); return l; };
+    H.colsKeHoach = function (coMa) {
+        return (coMa ? [{ header: 'Mã', render: function (r) { return e(r.MA); } }] : []).concat([
+            { header: 'Tên kế hoạch', render: function (r) { return e(r.TEN); } },
+            { header: 'Học kỳ', render: function (r) { return e(r.DAOTAO_THOIGIANDAOTAO); } },
+            { header: 'Từ ngày', render: function (r) { return e(r.NGAYBATDAU); } },
+            { header: 'Đến ngày', render: function (r) { return e(r.NGAYKETTHUC); } }
+        ], coMa ? [] : [{ header: 'Phân loại', render: function (r) { return e(r.PHANLOAI_TEN); } }]);
+    };
 
     H.uid = function () { return (ums.session && ums.session.userId) || ''; };
     H.hoTen = K.hoTen;
@@ -135,9 +150,9 @@
                     (o.tim === 'may' ? '<div class="ums-field ums-field--fit">' + ui.btn('search', { attr: { 'data-a': 'tim' } }) + '</div>' : '') + '</div>' : '') +
                 '<div class="ums-row ums-row--between ums-u-mt-3"><b class="ums-u-navy">Danh sách <span class="ums-u-faint ums-u-fz13" data-z="n"></span></b></div>' +
                 (o.ben ? '<div class="ums-grid ums-grid--main-aside ums-u-mt-2">' + bang + '<div data-z="ben"></div></div>' : '<div class="ums-u-mt-2">' + bang + '</div>'),
-            buttons: (o.buttons || []).map(function (b) {
+            buttons: (o.xuat ? [{ text: 'Xuất Excel', kind: 'excel', onClick: function () { xuat(); return false; } }] : []).concat((o.buttons || []).map(function (b) {
                 return { text: b.text, kind: b.kind, icon: b.icon, mod: b.mod, onClick: function () { b.onClick(api); return false; } };
-            })
+            }))
         });
         var B = dlg.body;
         var host = B.querySelector('[data-z="t"]');
@@ -152,13 +167,28 @@
             tai: tai
         };
 
-        function ve() {
-            var n = B.querySelector('[data-z="n"]');
-            if (n) n.textContent = '(' + total + ')';
+        function cotVe() {
             var cols = (o.columns ? o.columns() : []).concat(cotDong.map(function (c) {
                 return { title: e(c.TEN), cls: 'is-center', render: function (r) { return esc(e(giaTri[r.ID + '_' + c.ID])); } };
             }));
             if (o.chon) cols.push(K.cotChon(o.chon));
+            return cols;
+        }
+        function xuat() {
+            var x = o.xuat, opt = { ten: x.ten, tieuDe: x.tieuDe, phu: typeof x.phu === 'function' ? x.phu() : x.phu };
+            if (!x.tatCa) return ui.xuatBang(host, opt);
+            var tuKhoa = o.tim === 'may' && q ? (q.value || '').trim() : '';
+            ui.toast('Đang nạp toàn bộ danh sách để xuất…', 'info');
+            ums.api.call(o.call(1, 100000, tuKhoa)).then(function (r) {
+                var tmp = document.createElement('div');
+                ui.table({ el: tmp, rows: K.ds(r), empty: 'Không có dữ liệu', columns: cotVe() });
+                ui.xuatBang(tmp, opt);
+            }).catch(function (err) { ums.api.handle(err, 'xuất Excel'); });
+        }
+        function ve() {
+            var n = B.querySelector('[data-z="n"]');
+            if (n) n.textContent = '(' + total + ')';
+            var cols = cotVe();
             ui.table({
                 el: host, rows: rows, empty: o.empty || 'Không có dữ liệu',
                 page: pt() ? {
