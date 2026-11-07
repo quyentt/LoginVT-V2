@@ -25,8 +25,13 @@
    Cố ý bỏ (mã chết của gốc): vùng #zoneDSNhanSu + nút .btnDSNhanSu (cột "Phân công" bị chú thích bỏ,
    vùng không có lối vào; bảng #tblPhanCong trong đó trùng id với bảng của biểu mẫu).
    Khác gốc:
-       · Xoá kế hoạch: ums.ui.xoaChon + ums.ui.batch, xong nạp lại MỘT lần (gốc bắn N lời gọi rồi
+       · Xoá kế hoạch: ums.ui.xoaChon → form tiến trình chung, xong nạp lại MỘT lần (gốc cũ bắn N lời gọi rồi
          setTimeout N×50ms mới nạp lại — dễ nạp trước khi xoá xong).
+   Kéo gốc lần 12 (7/11, gốc 4/11 edu.process / edu.exporter): mọi thao tác hàng loạt của màn (xóa kế hoạch; phân công /
+   xóa phân công cán bộ, thêm / xóa sinh viên không xử lý — _khxl_form.js; kế thừa theo nhóm — _khxl_dieukien.js; xóa kết
+   quả, Xét ở ba bảng — _khxl_ketqua.js qua ums.khxl.xet) chạy qua ums.process.run — mỗi bản ghi một dòng, cột như gốc,
+   dòng điều kiện Thời gian đào tạo của thanh lọc (dieuKien()), Bước 1 thay hộp hỏi lại. Nút "Xuất Excel" ở hai vùng Kết
+   quả xử lý / Danh sách xét (gốc attachTable) = ums.ui.xuatBang kèm dòng "Kế hoạch xử lý: …".
        · Đóng biểu mẫu / vùng con thì nạp lại danh sách (như toggle_form của gốc).
    ========================================================================= */
 (function () {
@@ -62,10 +67,11 @@
     function mo(k) { dangMo = vung[k]; ui.swap(zDs, dangMo); }
     function dong() { if (dangMo) ui.swap(dangMo, zDs); dangMo = null; load(); }
 
-    var form = K.taoForm(vung.form, { onClose: dong, onSaved: function () { load(); } });
-    var dk = K.taoDieuKien(vung.dk, { onClose: dong });
-    var kq = K.taoKetQua(vung.kq, { onClose: dong });
-    var xet = K.taoDSXet(vung.xet, { onClose: dong });
+    function dieuKien() { return [['Thời gian đào tạo', fTg]]; }
+    var form = K.taoForm(vung.form, { onClose: dong, onSaved: function () { load(); }, dieuKien: dieuKien });
+    var dk = K.taoDieuKien(vung.dk, { onClose: dong, dieuKien: dieuKien });
+    var kq = K.taoKetQua(vung.kq, { onClose: dong, dieuKien: dieuKien });
+    var xet = K.taoDSXet(vung.xet, { onClose: dong, dieuKien: dieuKien });
 
     /* ---------- Danh sách kế hoạch ----------------------------------------- */
     var page = 1, size = (ums.cfg && ums.cfg.behavior && ums.cfg.behavior.pageSize) || 10, total = 0, rows = [];
@@ -128,9 +134,15 @@
     function xoa() {
         var ids = K.daChon(q('[data-z="t"]'), 'kh');
         if (!ids.length) { ui.toast('Vui lòng chọn đối tượng cần xóa?', 'warn'); return; }
-        K.xoa(ids.map(function (id) {
-            return { action: 'XLHV_KeHoachXuLy/Xoa', strIds: id, strNguoiThucHien_Id: '' };
-        }), function () { load(); });
+        ums.process.run({
+            title: 'Xóa kế hoạch xử lý học vụ', unit: 'kế hoạch', fileName: 'KetQuaXoaKeHoachXuLy', dieuKien: dieuKien(),
+            notes: ['Thao tác xóa dữ liệu các kế hoạch xử lý trong danh sách.'],
+            items: ids.map(function (id) { return K.tim(rows, id); }).filter(Boolean),
+            columns: [{ header: 'Mã', render: function (r) { return e(r.MA); } }, { header: 'Tên kế hoạch', render: function (r) { return e(r.TEN); } }],
+            okMessage: 'Xóa thành công!',
+            request: function (r) { return { action: 'XLHV_KeHoachXuLy/Xoa', strIds: r.ID, strNguoiThucHien_Id: '' }; },
+            refresh: function () { load(); }
+        });
     }
 
     /* ---------- Sự kiện ----------------------------------------------------- */

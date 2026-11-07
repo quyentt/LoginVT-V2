@@ -46,7 +46,7 @@
     K.taoDieuKien = function (zone, o) {
         o = o || {};
         var DK = 'XLHV_DieuKienXuLy_AD/';
-        var khId = '', khSo = -1, ds1 = [], ds2 = [];
+        var khId = '', khTen = '', khSo = -1, ds1 = [], ds2 = [];
 
         zone.innerHTML =
             pat.panel({
@@ -117,13 +117,18 @@
                 buttons: [{ text: 'Kế thừa theo nhóm', kind: 'save', icon: 'fa-floppy-disk', onClick: function () {
                     var ids = K.daChon(dlg.body, 'ktn');
                     if (!ids.length) { ui.toast('Vui lòng chọn đối tượng?', 'warn'); return false; }
-                    ui.confirm('Bạn có muốn kế thừa không?', { ok: 'Kế thừa', title: 'Kế thừa theo nhóm' }).then(function (yes) {
-                        if (!yes) return;
-                        dlg.close();
-                        ui.batch(ids.map(function (id) {
+                    dlg.close();   // kéo gốc lần 12: gốc hideModal rồi mở form tiến trình chung (Bước 1 thay hộp hỏi lại)
+                    ums.process.run({
+                        title: 'Kế thừa điều kiện xử lý theo nhóm', unit: 'nhóm', fileName: 'KetQuaKeThuaNhom', dieuKien: o.dieuKien ? o.dieuKien() : [],
+                        subTitles: khTen ? ['Kế hoạch đích: ' + khTen] : [],
+                        items: ids.map(function (id) { return K.tim(rows, id); }).filter(Boolean),
+                        columns: [{ header: 'Tên', render: function (r) { return e(r.TEN); } }, { header: 'Mô tả', render: function (r) { return e(r.MOTA); } }],
+                        okMessage: 'Thực hiện thành công',
+                        request: function (r) {
                             return { action: K.TT + 'CiQVKTQgHgUoJDQKKCQvGTQNOB4AJQPP', func: K.P + 'KeThua_DieuKienXuLy_Ad',
-                                strPhamViNguon_Id: id, strPhamViDich_Id: khId, strNguoiThucHien_Id: '' };
-                        }), { title: 'Đang kế thừa', okText: 'Thực hiện thành công', show: true }).then(taiCa);
+                                strPhamViNguon_Id: r.ID, strPhamViDich_Id: khId, strNguoiThucHien_Id: '' };
+                        },
+                        refresh: taiCa
                     });
                     return false;
                 } }]
@@ -192,7 +197,7 @@
         return {
             mo: function (kh) {
                 if (zone._umsFormTrang) zone._umsFormTrang.close();     // biểu mẫu sửa của kế hoạch trước còn mở thì đóng
-                khId = kh.ID;
+                khId = kh.ID; khTen = e(kh.TEN) || e(kh.MA);
                 khSo = kh.SOLUONG === undefined || kh.SOLUONG === null || kh.SOLUONG === '' ? -1 : Number(kh.SOLUONG);   // -1 = không rõ → không chặn
                 z('kh').textContent = e(kh.MA) ? '— ' + e(kh.MA) : '';
                 taiCa();

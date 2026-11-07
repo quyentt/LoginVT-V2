@@ -104,28 +104,39 @@
         dh = ums.diemHoc.mount(dlg.body.querySelector('[data-z="dh"]'), { nguoiHocId: id, ctdt: true });
     };
 
-    /* ---------- Xét xử lý học vụ -------------------------------------------- */
-    K.xet = function (rows, ids, onDone) {
+    /* Cột sinh viên trên form tiến trình (gốc _colsSV) */
+    K.colsSV = function () {
+        return [{ header: 'Mã số', render: function (r) { return e(r.QLSV_NGUOIHOC_MASO); } },
+            { header: 'Họ tên', render: function (r) { return K.hoTen(r); } },
+            { header: 'Lớp quản lý', render: function (r) { return e(r.DAOTAO_LOPQUANLY_TEN); } },
+            { header: 'Chương trình', render: function (r) { return e(r.DAOTAO_CHUONGTRINH_TEN); } }];
+    };
+    /* ---------- Xét xử lý học vụ (kéo gốc lần 12: form tiến trình chung, gốc _xet) ----------
+       o = { tenKH: chữ dòng phụ "Kế hoạch xử lý: …", dieuKien: [[nhãn, ô]] } */
+    K.xet = function (rows, ids, onDone, o) {
+        o = o || {};
         if (!ids.length) { ui.toast('Vui lòng chọn đối tượng?', 'warn'); return; }
-        var calls = [];
-        ids.forEach(function (id) {
-            var a = K.tim(rows, id);
-            if (!a) return;
-            calls.push({
-                action: 'XLHV_TinhToan/XuLyHocVuNguoiHoc', method: 'POST',
-                strChucNang_Id: '',
-                strQLSV_NguoiHoc_Id: a.QLSV_NGUOIHOC_ID,
-                strDaoTao_LopQuanLy_Id: a.DAOTAO_LOPQUANLY_ID,
-                strDaoTao_ChuongTrinh_Id: a.DAOTAO_TOCHUCCHUONGTRINH_ID,
-                strQLSV_TrangThaiNguoiHoc_Id: a.QLSV_TRANGTHAINGUOIHOC_ID,
-                strDaoTao_ThoiGianDaoTao_Id: a.DAOTAO_THOIGIANDAOTAO_ID,
-                strXLHV_KeHoachXuLy_Id: a.XLHV_KEHOACHXULY_ID,
-                strLoaiXuLy_Id: a.LOAIXULY_ID,
-                strNguoiThucHien_Id: ''
-            });
+        var items = ids.map(function (id) { return K.tim(rows, id); }).filter(Boolean);
+        if (!items.length) { ui.toast('Không tìm thấy dữ liệu các dòng đã chọn?', 'warn'); return; }
+        return ums.process.run({
+            title: 'Xét xử lý học vụ', unit: 'sinh viên', fileName: 'KetQuaXetXuLyHocVu', dieuKien: o.dieuKien || [],
+            subTitles: o.tenKH ? ['Kế hoạch xử lý: ' + o.tenKH] : [], items: items, columns: K.colsSV(), okMessage: 'Cập nhật thành công!',
+            request: function (a) {
+                return {
+                    action: 'XLHV_TinhToan/XuLyHocVuNguoiHoc', method: 'POST',
+                    strChucNang_Id: '',
+                    strQLSV_NguoiHoc_Id: a.QLSV_NGUOIHOC_ID,
+                    strDaoTao_LopQuanLy_Id: a.DAOTAO_LOPQUANLY_ID,
+                    strDaoTao_ChuongTrinh_Id: a.DAOTAO_TOCHUCCHUONGTRINH_ID,
+                    strQLSV_TrangThaiNguoiHoc_Id: a.QLSV_TRANGTHAINGUOIHOC_ID,
+                    strDaoTao_ThoiGianDaoTao_Id: a.DAOTAO_THOIGIANDAOTAO_ID,
+                    strXLHV_KeHoachXuLy_Id: a.XLHV_KEHOACHXULY_ID,
+                    strLoaiXuLy_Id: a.LOAIXULY_ID,
+                    strNguoiThucHien_Id: ''
+                };
+            },
+            refresh: function () { if (onDone) onDone(); }
         });
-        return ui.batch(calls, { title: 'Đang xét xử lý học vụ', okText: 'Cập nhật thành công!', show: true })
-            .then(function () { if (onDone) onDone(); });
     };
 
     /** Hỏi lại rồi chạy hàng loạt (edu.system.confirm + genHTML_Progress) */

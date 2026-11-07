@@ -51,7 +51,9 @@
      · Nút Xóa / Thêm cán bộ / Thêm thành viên chuyển lên đầu từng khối (gốc ở góc khối / chân khối).
      · Kiểm trước khi Lưu: Mã, Tên, Học kỳ, Từ ngày, Đến ngày, Loại bắt buộc (máy chủ đòi — thiếu là "Du lieu khong hop le");
        Đến ngày không được trước Từ ngày (máy chủ không kiểm). Gốc không kiểm gì.
-     · Mỗi lời gọi xoá / thêm chạy qua ums.ui.batch, xong nạp lại MỘT lần (gốc: toast mỗi lời gọi).
+     · Kéo gốc lần 12 (7/11): phân công / xóa phân công cán bộ, thêm (gốc edu.process.bindPhamVi) / xóa sinh viên không xử lý
+       chạy qua form tiến trình chung ums.process.run — mỗi bản ghi một dòng (cột Tài khoản / Họ tên; Mã số / Họ tên / Lớp /
+       Chương trình), dòng phụ "Kế hoạch xử lý: …", điều kiện của thanh lọc qua o.dieuKien(); Bước 1 thay hộp hỏi lại.
    ========================================================================= */
 (function () {
     'use strict';
@@ -63,7 +65,9 @@
     K.taoForm = function (zone, o) {
         o = o || {};
         var TT = K.TT, P = K.P;
-        var khId = '', svRows = [], pcPage = 1, pcSize = 10, pcTotal = 0, svPage = 1, svSize = 10, svTotal = 0;
+        var khId = '', khTen = '', svRows = [], pcRows = [], pcPage = 1, pcSize = 10, pcTotal = 0, svPage = 1, svSize = 10, svTotal = 0;
+        function dk() { return o.dieuKien ? o.dieuKien() : []; }
+        function subKH() { return khTen ? ['Kế hoạch xử lý: ' + khTen] : []; }
 
         function inp(k, date) {
             return '<input class="ums-input" data-k="' + k + '" data-scope="form" autocomplete="off"' +
@@ -146,7 +150,7 @@
                 strTuKhoa: '', strNguoiDung_Id: '', strXLHV_KeHoach_Id: khId, strNguoiTao_Id: '',
                 pageIndex: pcPage, pageSize: pcSize
             }).then(function (r) {
-                var rows = K.ds(r);
+                var rows = pcRows = K.ds(r);
                 pcTotal = Number(r.pager) || rows.length;
                 z('pcn').textContent = '(' + pcTotal + ')';
                 ui.table({
@@ -164,19 +168,34 @@
             }).catch(function (err) { K.loi(host, err, 'cán bộ phân công'); });
         }
         function themPC() {
-            ums.tlKh.pickNguoiDung(function (ids) {
-                ui.batch(ids.map(function (id) {
-                    return { action: TT + 'FSkkLB4ZDQkXHgokCS4gIikeDykgLxI0', func: P + 'Them_XLHV_KeHoach_NhanSu',
-                        strChucNang_Id: '', strXLHV_KeHoach_Id: khId, strNguoiDung_Id: id, strNguoiThucHien_Id: '' };
-                }), { title: 'Đang thêm cán bộ', okText: 'Thực hiện thành công', show: true }).then(function () { taiPC(1); });
+            ums.tlKh.pickNguoiDung(function (ids, rows) {
+                var map = {};
+                (rows || []).forEach(function (r) { if (r) map[r.ID] = r; });
+                ums.process.run({
+                    title: 'Phân công nhân sự xử lý', unit: 'nhân sự', fileName: 'KetQuaPhanCong', dieuKien: dk(), subTitles: subKH(),
+                    items: ids.map(function (id) { return map[id] || { ID: id }; }),
+                    columns: [{ header: 'Tài khoản', render: function (r) { return e(r.TAIKHOAN) || e(r.ID); } }, { header: 'Họ tên', render: function (r) { return e(r.TENDAYDU); } }],
+                    okMessage: 'Thực hiện thành công',
+                    request: function (r) {
+                        return { action: TT + 'FSkkLB4ZDQkXHgokCS4gIikeDykgLxI0', func: P + 'Them_XLHV_KeHoach_NhanSu',
+                            strChucNang_Id: '', strXLHV_KeHoach_Id: khId, strNguoiDung_Id: r.ID, strNguoiThucHien_Id: '' };
+                    },
+                    refresh: function () { taiPC(1); }
+                });
             });
         }
         function xoaPC() {
             var ids = K.daChon(z('pc'), 'pc');
             if (!ids.length) { ui.toast('Vui lòng chọn đối tượng cần xóa?', 'warn'); return; }
-            K.xoa(ids.map(function (id) {
-                return { action: TT + 'GS4gHhkNCRceCiQJLiAiKR4PKSAvEjQP', func: P + 'Xoa_XLHV_KeHoach_NhanSu', strIds: id, strNguoiThucHien_Id: '' };
-            }), function () { taiPC(); });
+            ums.process.run({
+                title: 'Xóa phân công nhân sự xử lý', unit: 'nhân sự', fileName: 'KetQuaXoaPhanCong', dieuKien: dk(), subTitles: subKH(),
+                notes: ['Thao tác xóa dữ liệu phân công của các nhân sự trong danh sách.'],
+                items: ids.map(function (id) { return K.tim(pcRows, id); }).filter(Boolean),
+                columns: [{ header: 'Tài khoản', render: function (r) { return e(r.NGUOIDUNG_TAIKHOAN); } }, { header: 'Họ tên', render: function (r) { return e(r.NGUOIDUNG_TENDAYDU); } }],
+                okMessage: 'Xóa thành công!',
+                request: function (r) { return { action: TT + 'GS4gHhkNCRceCiQJLiAiKR4PKSAvEjQP', func: P + 'Xoa_XLHV_KeHoach_NhanSu', strIds: r.ID, strNguoiThucHien_Id: '' }; },
+                refresh: function () { taiPC(); }
+            });
         }
 
         /* ---------- Danh sách sinh viên áp dụng ------------------------------ */
@@ -220,8 +239,14 @@
                 strMoTa: '', strNguoiThucHien_Id: ''
             };
         }
-        function chayThemSV(calls) {
-            ui.batch(calls, { title: 'Đang thêm sinh viên', okText: 'Thêm sinh viên thành công!', show: true }).then(taiSV);
+        /* items = [{ TEN: chữ hiện trên form, call: tham số lời gọi }] — mỗi sinh viên / phạm vi một bản ghi (gốc edu.process.bindPhamVi) */
+        function chayThemSV(items) {
+            ums.process.run({
+                title: 'Thêm sinh viên vào danh sách không xử lý', unit: 'phạm vi', fileName: 'KetQuaThemSinhVienKhongXuLy', dieuKien: dk(), subTitles: subKH(),
+                infoHeader: 'Phạm vi áp dụng', info: function (it) { return it.TEN; }, items: items, okMessage: 'Thêm sinh viên thành công!',
+                request: function (it) { return it.call; },
+                refresh: function () { taiSV(); }
+            });
         }
         function themSV() {
             var tt = null;
@@ -229,9 +254,10 @@
                 return function (ids, params, dlg) {
                     var arr = ids ? String(ids).split(',') : [];
                     if (!arr.length) { ui.toast('Chưa chọn ' + ten + ' nào.', 'warn'); return; }
-                    var st = tt ? tt.ids().join(',') : '';
+                    var st = tt ? tt.ids().join(',') : '', chu = {};
+                    K.qa(dlg.body, 'select option').forEach(function (op) { if (op.value) chu[op.value] = op.textContent.trim(); });
                     dlg.close();
-                    chayThemSV(arr.map(function (id) { return goiThemSV(id, '', st); }));
+                    chayThemSV(arr.map(function (id) { return { ID: id, TEN: ten.charAt(0).toUpperCase() + ten.slice(1) + ': ' + (chu[id] || id), call: goiThemSV(id, '', st) }; }));
                 };
             }
             var dlg = pat.pickSinhVien({
@@ -255,7 +281,10 @@
                 ],
                 group: { khoa: nhom('khóa'), chuongTrinh: nhom('chương trình'), lop: nhom('lớp') },
                 onPick: function (rows) {
-                    chayThemSV(rows.map(function (r) { return goiThemSV(r.QLSV_NGUOIHOC_ID, r.DAOTAO_TOCHUCCHUONGTRINH_ID, r.QLSV_TRANGTHAINGUOIHOC_ID); }));
+                    chayThemSV(rows.map(function (r) {
+                        return { ID: r.QLSV_NGUOIHOC_ID, TEN: (e(r.QLSV_NGUOIHOC_MASO) + ' — ' + K.hoTen(r)).trim(),
+                            call: goiThemSV(r.QLSV_NGUOIHOC_ID, r.DAOTAO_TOCHUCCHUONGTRINH_ID, r.QLSV_TRANGTHAINGUOIHOC_ID) };
+                    }));
                 }
             });
             /* "Thêm từng hệ" (btnAdd_He của gốc) — hộp chung chưa có, chèn vào đầu hàng "Thêm nhiều" */
@@ -272,9 +301,13 @@
         function xoaSV() {
             var ids = K.daChon(z('sv'), 'svad');
             if (!ids.length) { ui.toast('Vui lòng chọn đối tượng cần xóa?', 'warn'); return; }
-            K.xoa(ids.map(function (id) {
-                return { action: 'XLHV_DanhSachKhongXuLy/Xoa', strIds: id, strNguoiThucHien_Id: '' };
-            }), taiSV);
+            ums.process.run({
+                title: 'Xóa sinh viên khỏi danh sách không xử lý', unit: 'sinh viên', fileName: 'KetQuaXoaSinhVienKhongXuLy', dieuKien: dk(), subTitles: subKH(),
+                notes: ['Thao tác xóa dữ liệu các sinh viên trong danh sách.'],
+                items: ids.map(function (id) { return K.tim(svRows, id); }).filter(Boolean), columns: K.colsSV(), okMessage: 'Xóa thành công!',
+                request: function (r) { return { action: 'XLHV_DanhSachKhongXuLy/Xoa', strIds: r.ID, strNguoiThucHien_Id: '' }; },
+                refresh: function () { taiSV(); }
+            });
         }
 
         /* ---------- Lưu kế hoạch -------------------------------------------- */
@@ -333,7 +366,7 @@
             switch (b.getAttribute('data-a')) {
                 case 'dong': if (o.onClose) o.onClose(); break;
                 case 'luu': luu(); break;
-                case 'xet-sv': K.xet(svRows, K.daChon(z('sv'), 'svad')); break;
+                case 'xet-sv': K.xet(svRows, K.daChon(z('sv'), 'svad'), null, { tenKH: khTen, dieuKien: dk() }); break;
                 case 'pc-them': themPC(); break;
                 case 'pc-xoa': xoaPC(); break;
                 case 'sv-them': themSV(); break;
@@ -344,6 +377,7 @@
 
         return {
             moThem: function () {
+                khTen = '';
                 khId = ''; svRows = [];
                 ['ma', 'ten', 'kq', 'tg', 'tu', 'den', 'loai'].forEach(function (x) { datGiaTri(k(x), ''); });
                 zone.querySelector('[data-f="svq"]').value = '';
@@ -351,7 +385,7 @@
                 trangThai(false);
             },
             moSua: function (d) {
-                khId = d.ID;
+                khId = d.ID; khTen = e(d.TEN) || e(d.MA);
                 datGiaTri(k('ma'), d.MA);
                 datGiaTri(k('ten'), d.TEN);
                 datGiaTri(k('kq'), d.KETQUACHINHTHUC);
