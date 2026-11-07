@@ -28,6 +28,8 @@
        hộp đổi lịch đóng lại (gốc xoá trắng nội dung nhưng để hộp mở).
      · Nút × (btn-close-1) trên mỗi thẻ lớp: gốc không có xử lý, chỉ trang trí → bỏ.
      · Tiền trên thẻ lớp định dạng dấu phẩy (gốc chỗ định dạng chỗ không).
+     · Kéo gốc lần 12 (7/11, dangky.js +19): bấm chọn chương trình khác thì khối người học (họ tên, mã số, ảnh) đổi theo
+       dòng chương trình đó (gốc updateThongTinSinhVien — một người học nhiều ngành, mỗi dòng LayDSChuongTrinh có mã số riêng).
    Bỏ (mã chết của gốc): runAA / iSoGiayCho (đếm giây chờ đã comment), toggle_detail, zone-bus, masonry,
      hai hộp "Điểm danh" / "Điểm quá trình" (gốc có hộp + trình xử lý nhưng KHÔNG nơi nào vẽ nút mở — xem
      tracuu, nơi hai hộp đó thật sự dùng).
@@ -129,19 +131,21 @@
             st.ct = arr(r.data);
             st.ctId = st.ct.length ? e(st.ct[0].DAOTAO_TOCHUCCHUONGTRINH_ID) : '';
             veCT();
-            var d = st.ct[0];
-            if (d) {
-                dat('ten', e(d.QLSV_NGUOIHOC_HODEM) + ' ' + e(d.QLSV_NGUOIHOC_TEN));
-                dat('ma', d.QLSV_NGUOIHOC_MASO);
-                if (d.QLSV_NGUOIHOC_ANH && ums.state.mode !== 'demo' && ums.files) {
-                    var img = new Image();
-                    img.alt = '';
-                    img.onload = function () { z('anh').innerHTML = ''; z('anh').appendChild(img); };
-                    img.src = ums.files.url(d.QLSV_NGUOIHOC_ANH);
-                }
-            }
+            thongTinSV(st.ct[0]);
             napKH();
         }).catch(function (err) { z('ct').innerHTML = ui.fail(err.message); ums.api.handle(err, 'chương trình đào tạo'); });
+    }
+    /* Khối người học theo dòng chương trình đang chọn (gốc updateThongTinSinhVien) */
+    function thongTinSV(d) {
+        if (!d) return;
+        dat('ten', e(d.QLSV_NGUOIHOC_HODEM) + ' ' + e(d.QLSV_NGUOIHOC_TEN));
+        dat('ma', d.QLSV_NGUOIHOC_MASO);
+        if (d.QLSV_NGUOIHOC_ANH && ums.state.mode !== 'demo' && ums.files) {
+            var img = new Image();
+            img.alt = '';
+            img.onload = function () { z('anh').innerHTML = ''; z('anh').appendChild(img); };
+            img.src = ums.files.url(d.QLSV_NGUOIHOC_ANH);
+        }
     }
     function veCT() {
         z('ct').innerHTML = st.ct.length ? ui.chips(st.ct.map(function (c) { return { key: e(c.DAOTAO_TOCHUCCHUONGTRINH_ID), label: e(c.DAOTAO_TOCHUCCHUONGTRINH_TEN) }; }), st.ctId)
@@ -616,7 +620,9 @@
     root.addEventListener('click', function (ev) {
         var t = ev.target, b;
         if ((b = t.closest('[data-z="ct"] [data-chip]'))) {
-            st.ctId = b.getAttribute('data-chip'); veCT(); napKH(); return;
+            st.ctId = b.getAttribute('data-chip');
+            thongTinSV(st.ct.filter(function (c) { return e(c.DAOTAO_TOCHUCCHUONGTRINH_ID) === st.ctId; })[0]);
+            veCT(); napKH(); return;
         }
         if ((b = t.closest('[data-z="kh"] [data-chip]'))) {
             st.khId = b.getAttribute('data-chip'); veKH();

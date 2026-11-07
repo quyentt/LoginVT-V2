@@ -56,6 +56,10 @@
        vẽ bằng khung rỗng chuẩn của ums.ui.table (không chép biểu tượng riêng từng bảng).
      · Cột Học phần nợ gốc đổi sang căn giữa — bản mới vốn đã căn giữa. resolveNguoiHocId gốc đổi
        nguồn id khi nhúng (main_doc.LichGiang) — màn này không nhúng, không liên quan.
+   Kéo gốc lần 12 (7/11, diemhoc.js +107/−35, html +9): hộp "Tổng điểm" có ô chọn PHẠM VI Toàn khóa / Năm học / Học kỳ
+     + ô năm học / học kỳ cụ thể (gốc genHtml_TongDiem / genCombo_TongDiemKy / render_TongDiem) → tầng chung
+     ums.diemHoc.veTongDiem (cùng lô với CCB DaQHHT 7/11); nhãn "Tổng kết học kỳ" dưới bảng mỗi kỳ → veBangDiem
+     { nhanTongKet: true }; lỗi tempChung10 (gốc mới sửa) bản này đã đúng từ trước.
    Bỏ (mã chết của gốc): resolveNguoiHocId (dò #zoneHTSinhVien / main_doc — vỏ mới
      đã có ums.thuVai, id người học luôn là ums.session.userId); popover_DiemHoc /
      popover_DiemThanhPhan (đã bị chú thích ở gốc); khối $(document).ready tô nền
@@ -176,7 +180,7 @@
             thongTinCaNhan(arr(d.rsThongTinNguoiHoc)[0] || {});
             diemMoi(arr(d.rsDiemMoiNhat));
             tongDiem();
-            DH.veBangDiem(pane('bangdiem'), arr(d.rsDiemKetThucHocPhan), tbChung);
+            DH.veBangDiem(pane('bangdiem'), arr(d.rsDiemKetThucHocPhan), tbChung, { nhanTongKet: true });
             hocPhanNo(arr(d.rsHocPhanChuaHoanThanh));
         }).catch(function (err) { loi(pane('bangdiem'))(err); loi(pane('no'))(err); });
     }
@@ -196,22 +200,10 @@
                 '<b class="' + mauDiem(x.DIEM) + '">' + esc(x.DIEM) + '</b></li>';
         }).join('') || '<li class="ums-u-muted">Chưa có điểm</li>';
     }
-    /* Tổng điểm: bản ghi KHÔNG gắn thời gian đào tạo (toàn khoá), THUOCTINHLANTINH = 0 */
-    function tongDiem() {
-        var chung = tbChung.filter(function (x) {
-            return (x.DAOTAO_THOIGIANDAOTAO_ID === null || x.DAOTAO_THOIGIANDAOTAO_ID === undefined || x.DAOTAO_THOIGIANDAOTAO_ID === '') &&
-                Number(x.THUOCTINHLANTINH) === 0;
-        });
-        function lay(loai, thang, truong) {
-            var x = chung.filter(function (y) {
-                return y.LOAIDIEMTRUNGBINH_MA === loai && String(y.THANGDIEM_MA) === String(thang);
-            })[0];
-            return x ? e(x[truong]) : '';
-        }
-        /* Sáu dòng "nhãn : số" của bản gốc gộp thành lưới Chung / Tích lũy ×
-           Tín chỉ · Hệ 10 · Hệ 4 (ums.diemHoc.veTongKet, người dùng yêu cầu 2026-09-23) */
-        DH.veTongKet(z('tong'), lay, { ctdt: true });
-    }
+    /* Tổng điểm (kéo gốc lần 12, 7/11): ô chọn phạm vi Toàn khóa / Năm học / Học kỳ + ô năm học / học kỳ cụ thể — tầng chung
+       ums.diemHoc.veTongDiem (lưới Chung / Tích lũy × Tín chỉ · Hệ 10 · Hệ 4 như veTongKet; THUOCTINHLANTINH = 0;
+       dòng "Tổng số tín chỉ chương trình" luôn lấy bản ghi toàn khóa) */
+    function tongDiem() { DH.veTongDiem(z('tong'), tbChung, { ctdt: true }); }
     function hocPhanNo(rows) {
         ui.table({ el: pane('no'), rows: rows, empty: 'Hiện tại chưa có học phần nợ nào', columns: [
             { title: 'Mã học phần', prop: 'DAOTAO_HOCPHAN_MA', cls: 'is-nowrap' },
