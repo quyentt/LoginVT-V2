@@ -53,7 +53,8 @@
         <!-- ===== Màu nhóm vai trò (9 nhóm theo roleGroups — tone của từng nhóm) ===== -->
         <div class="ums-panel">
             <div class="ums-panel__head">
-                <div class="ums-panel__title"><i class="fa-light fa-swatchbook"></i> Màu nhóm vai trò</div>
+                <div class="ums-panel__title"><i class="fa-light fa-swatchbook"></i> Màu nhóm vai trò
+                    <i class="fa-light fa-circle-question ums-help" tabindex="0" aria-label="Áp dụng ở đâu" data-help="Thẻ vai trò trên TRANG CHỦ: màu ô biểu tượng và màu tên vai trò của từng nhóm (Tuyển sinh, Đào tạo, Khảo thí…). Danh sách nhóm theo site.config roleGroups và danh mục dữ liệu nhomvaitro. Không ảnh hưởng màn nghiệp vụ."></i></div>
             </div>
             <div class="ums-panel__body" id="stTones"></div>
         </div>
@@ -61,7 +62,8 @@
         <!-- ===== Màu thẻ số liệu (tone dùng cho ums-stat ở dashboard, không liên quan nhóm vai trò) ===== -->
         <div class="ums-panel">
             <div class="ums-panel__head">
-                <div class="ums-panel__title"><i class="fa-light fa-chart-simple"></i> Màu thẻ số liệu</div>
+                <div class="ums-panel__title"><i class="fa-light fa-chart-simple"></i> Màu thẻ số liệu
+                    <i class="fa-light fa-circle-question ums-help" tabindex="0" aria-label="Áp dụng ở đâu" data-help="Thẻ số liệu và khối tô màu theo Ý NGHĨA DỮ LIỆU trong các màn nghiệp vụ: Tài chính (khoản phải nộp / đã nộp xanh lá, nợ đỏ, phiếu thu hổ phách), dashboard Nhân sự · NCKH · Nhập học, thẻ toà nhà / phòng Ký túc xá, khối xác nhận hồ sơ Cổng cán bộ (thông tin xanh dương, bản ghi sẽ xoá đỏ). Không liên quan nhóm vai trò."></i></div>
             </div>
             <div class="ums-panel__body" id="stTonesStat"></div>
         </div>
@@ -257,6 +259,10 @@
     }).join(''); }
     veTones('stTones', TONES_VT);
     veTones('stTonesStat', TONES_STAT);
+    /* Dấu "?" cạnh tiêu đề hai bảng màu: rê chuột (hoặc Tab vào) hiện nhóm màu đó áp dụng ở đâu (người dùng 9/11) */
+    ui.hoverCard(document.getElementById('screen') || document.body, '.ums-help[data-help]', function (el) {
+        return '<div class="ums-help__card">' + ui.esc(el.getAttribute('data-help')) + '</div>';
+    });
 
     /* ---------- Kích thước ---------------------------------------------- */
     document.getElementById('stSize').innerHTML =
