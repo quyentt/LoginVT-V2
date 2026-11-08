@@ -1,0 +1,174 @@
+<!-- Cấu hình nhóm vai trò: quyết định vai trò nằm ở nhóm nào trên màn hình "Danh sách vai trò" của trang chủ -->
+<style>
+    .aps-nhomvt .box-title {
+        font-size: 15px !important;
+        font-weight: 700 !important;
+        color: #0f172a !important;
+    }
+    .aps-nhomvt .aps-nhomvt-note {
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        border-left: 4px solid #1d4ed8;
+        border-radius: 6px;
+        padding: 10px 14px;
+        margin-bottom: 12px;
+        color: #0f172a;
+        font-size: 13.5px;
+        line-height: 1.55;
+    }
+    .aps-nhomvt .aps-nhomvt-tool {
+        margin-bottom: 10px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+    }
+    .aps-nhomvt .aps-nhomvt-tool .form-control {
+        font-size: 14px;
+        font-weight: 500;
+        color: #0f172a;
+        height: 34px;
+    }
+    .aps-nhomvt .aps-nhomvt-tool .nvt-search { flex: 1 1 280px; max-width: 460px; }
+    .aps-nhomvt .aps-nhomvt-tool .nvt-loc { flex: 0 0 290px; }
+    .aps-nhomvt .aps-nhomvt-tool .nvt-sort { flex: 0 0 240px; }
+    /* Dòng tiêu đề từng nhóm (chế độ "Sắp theo nhóm và thứ tự") */
+    .aps-nhomvt #tblNhomVaiTro tr.nvt-grp td { background: #f1f5f9 !important; padding: 8px 12px; font-size: 14px; color: #0f172a; border-top: 2px solid #cbd5e1; }
+    .aps-nhomvt #tblNhomVaiTro tr.nvt-grp .nvt-grp-n { color: #64748b; font-weight: 600; }
+    /* Ô thứ tự: ▲ [số] ▼ */
+    .aps-nhomvt .nvt-ord { display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .aps-nhomvt .nvt-ord .in-sttvt { width: 58px; height: 30px !important; text-align: center; padding: 0 4px !important; line-height: 28px !important; }
+    .aps-nhomvt .nvt-arrow { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 30px; border: 1px solid #cbd5e1; border-radius: 6px; background: #fff; color: #334155; font-size: 11px; line-height: 1; cursor: pointer; user-select: none; text-decoration: none; }
+    .aps-nhomvt .nvt-arrow:hover { background: #eef2ff; border-color: #6366f1; color: #3730a3; text-decoration: none; }
+    .aps-nhomvt .nvt-arrow.nvt-dis { opacity: .3; pointer-events: none; }
+    /* Ô chọn nhóm dạng select2: chấm màu nhóm trước tên (cùng màu nhóm trên trang chủ).
+       Danh sách xổ ra gắn ở body nên các class này KHÔNG nằm dưới .aps-nhomvt. */
+    .nvt-opt { white-space: nowrap; }
+    .nvt-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; box-sizing: border-box; vertical-align: middle; position: relative; top: -1px; }
+    .nvt-dot-none { background: #fff; border: 2px solid #94a3b8; }
+    /* indexi.aspx ép MỌI .select2-container lên z-index 99999 → ô chọn trong bảng sẽ nổi đè lên tiêu đề dính (z-index 2)
+       khi cuộn. Chỉ reset các ô nằm trong bảng; danh sách xổ ra gắn ở body nên không bị ảnh hưởng. */
+    .aps-nhomvt #tblNhomVaiTro .select2-container { z-index: auto !important; }
+    /* Ô select2 trong trang cao 34px = cùng chiều cao ô tìm kiếm và nút ở thanh công cụ.
+       styles.css chung ép padding 12px 3px cho mọi ô select2 → phải đặt lại padding thì chữ mới nằm giữa ô. */
+    .aps-nhomvt .select2-container--default .select2-selection--single { height: 34px !important; padding: 0 3px !important; }
+    /* AdminLTE đặt margin-top:-4px cho phần chữ (hợp ô cao 34px padding 5px) — với padding 0 phải bỏ thì chữ mới nằm giữa ô */
+    .aps-nhomvt .select2-container--default .select2-selection--single .select2-selection__rendered { line-height: 32px !important; margin-top: 0 !important; font-size: 14px; font-weight: 500; color: #0f172a; }
+    .aps-nhomvt .select2-container--default .select2-selection--single .select2-selection__arrow { height: 32px !important; }
+    .aps-nhomvt .aps-nhomvt-tool .nvt-info { margin-left: auto; color: #475569; font-weight: 600; font-size: 13px; }
+    /* Bảng dài: khung cuộn + tiêu đề dính trên cùng */
+    .aps-nhomvt .aps-nhomvt-scroll {
+        max-height: 62vh;
+        overflow: auto;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+    }
+    .aps-nhomvt #tblNhomVaiTro { margin-bottom: 0; }
+    .aps-nhomvt #tblNhomVaiTro thead th {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        background: #f1f5f9;
+        color: #0f172a;
+        font-weight: 700;
+        white-space: nowrap;
+        vertical-align: middle;
+    }
+    .aps-nhomvt #tblNhomVaiTro td {
+        vertical-align: middle !important;
+        color: #0f172a;
+        font-weight: 500;
+    }
+    .aps-nhomvt #tblNhomVaiTro td b { font-weight: 600; }
+    .aps-nhomvt #tblNhomVaiTro tr.nvt-changed td { background: #fffbeb; }
+    .aps-nhomvt #tblNhomVaiTro .sl-nhomvt { height: 32px; font-size: 14px; font-weight: 500; }
+    /* Thanh thao tác: nhóm nút bên phải, cách nhau >= 10px */
+    .aps-nhomvt .box-footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    /* AdminLTE .box-footer có clearfix ::before/::after — trong flex chúng thành 2 phần tử rỗng làm lệch space-between */
+    .aps-nhomvt .box-footer::before, .aps-nhomvt .box-footer::after { content: none; display: none; }
+    /* Nhãn trạng thái: tự định nghĩa để 3 trạng thái cùng cỡ, không phụ thuộc .label-* của theme */
+    .aps-nhomvt .nvt-badge { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; line-height: 1.4; white-space: nowrap; }
+    .aps-nhomvt .nvt-b-set { background: #d1fae5; color: #047857; }
+    .aps-nhomvt .nvt-b-def { background: #f1f5f9; color: #475569; }
+    .aps-nhomvt .nvt-b-chg { background: #ffedd5; color: #c2410c; }
+    .aps-nhomvt .box-footer .nvt-foot-btn { display: flex; gap: 10px; }
+    .aps-nhomvt .box-footer .nvt-foot-btn .btn { margin: 0; }
+    .aps-nhomvt .nvt-foot-count { font-size: 14px; font-weight: 600; color: #475569; }
+</style>
+<section class="content aps-cms">
+    <div class="row aps-nhomvt">
+        <div class="col-sm-12">
+            <div class="box box-solid box-shadow">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><i class="fa-light fa-layer-group"></i> Cấu hình nhóm và thứ tự vai trò</h3>
+                    <span class="pull-right badge bg-light-blue"><span id="lblNhomVT_Tong">0</span> vai trò</span>
+                </div>
+                <div class="box-body">
+                    <div class="aps-nhomvt-note">
+                        Chọn nhóm để mỗi vai trò hiện đúng nhóm trên màn hình <b>Danh sách vai trò</b> ở trang chủ.
+                        Để <b>"Theo mặc định hệ thống"</b> thì vai trò giữ nhóm mặc định. Thay đổi áp dụng cho <b>toàn hệ thống</b>,
+                        người dùng thấy sau khi tải lại trang.<br />
+                        <b>Sắp thứ tự:</b> bấm <b>▲ ▼</b> để đưa vai trò lên/xuống trong nhóm, hoặc gõ số vào ô <b>Thứ tự</b> rồi nhấn <b>Enter</b>
+                        (số nhỏ đứng trước; vai trò chưa có số đứng sau, theo tên). Thứ tự các <b>nhóm</b> chỉnh ở danh mục dữ liệu <code>nhomvaitro</code>
+                        (cột Thứ tự / HeSo1).<br />
+                        Nhóm và thứ tự được lưu dưới dạng thẻ <code>[nhom:...]</code> <code>[stt:...]</code> ở cuối ô <b>Mô tả</b> của vai trò (trang Vai trò) — vui lòng không xóa các thẻ này.
+                    </div>
+                    <div id="divNhomVT_Banner"></div>
+                    <div class="aps-nhomvt-tool">
+                        <input id="txtNhomVT_TuKhoa" class="form-control nvt-search" placeholder="Tìm theo tên hoặc mã vai trò..." autocomplete="off" />
+                        <div class="nvt-sort">
+                        <select id="dropNhomVT_SapXep" class="form-control" style="width:100%">
+                            <option value="nhom">Sắp theo nhóm và thứ tự</option>
+                            <option value="ten">Sắp theo tên A–Z</option>
+                        </select>
+                        </div>
+                        <div class="nvt-loc">
+                        <select id="dropNhomVT_Loc" class="form-control" style="width:100%">
+                            <option value="">Tất cả vai trò</option>
+                            <option value="set">Đã chọn nhóm</option>
+                            <option value="unset">Chưa chọn (theo mặc định)</option>
+                            <option value="changed">Có thay đổi chưa lưu</option>
+                            <!-- Các nhóm được nhomvaitro.js điền vào từ GROUPS (initFilterSelect) -->
+                            <optgroup label="Theo nhóm đã chọn"></optgroup>
+                        </select>
+                        </div>
+                        <a class="btn btn-default" id="btnNhomVT_TaiLai"><i class="fa-light fa-rotate"></i> Tải lại</a>
+                        <span class="nvt-info" id="lblNhomVT_HienThi"></span>
+                    </div>
+                    <div class="aps-nhomvt-scroll">
+                        <table id="tblNhomVaiTro" class="table table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="td-fixed td-center" style="width:60px">Stt</th>
+                                    <th>Tên vai trò</th>
+                                    <th>Mã vai trò</th>
+                                    <th>Vai trò cha</th>
+                                    <th style="width:330px">Nhóm hiển thị ở trang chủ</th>
+                                    <th class="td-center" style="width:150px">Thứ tự trong nhóm</th>
+                                    <th class="td-center" style="width:110px">Trạng thái</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="box-footer">
+                    <span class="nvt-foot-count" id="lblNhomVT_SoThayDoi">Chưa có thay đổi</span>
+                    <div class="nvt-foot-btn">
+                        <a class="btn btn-default" id="btnNhomVT_HoanTac"><i class="fa fa-undo"></i> <span class="lang" key="">Hoàn tác</span></a>
+                        <a class="btn btn-primary" id="btnNhomVT_Luu"><i class="fal fa-save"></i> <span class="lang" key="">Lưu thay đổi</span></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- page script -->
+<script src="modules/vaitro/script/nhomvaitro.js?v=1.0.0.0"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['NhomVaiTro'] = new NhomVaiTro();
+    $(document).ready(function () {
+        main_doc.NhomVaiTro.init();
+    });
+</script>

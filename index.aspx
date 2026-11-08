@@ -290,7 +290,7 @@
       .role-picker-chips {
         display: flex;
         flex-wrap: wrap;
-        gap: 8px;
+        gap: 6px;
         margin-bottom: 20px;
       }
 
@@ -298,7 +298,7 @@
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        padding: 7px 12px 5px 12px;
+        padding: 7px 10px 5px 10px;
         border: 1px solid #e2e8f0;
         background: #fff;
         color: #0f172a;
@@ -2319,110 +2319,251 @@
           var $input = $('#role-search-input');
           var $clear = $('#role-search-clear');
 
+          // ════════════════════════════════════════════════════════════════════════
+          // CẤU HÌNH NHÓM VAI TRÒ — CHỈNH TẠI ĐÂY
+          // Chia theo Điều 2 "Biên bản thỏa thuận hợp tác EAUT-APIS" (13/03/2026):
+          // 6 nhóm phân hệ của biên bản + 3 nhóm phụ (Nhân sự, Quản trị hệ thống, Khác).
+          //
+          //  Thứ tự ưu tiên khi xếp 1 vai trò vào nhóm (cao → thấp):
+          //  1) Thẻ [nhom:mã] trong MOTA : admin chọn ở trang CMS "Cấu hình nhóm vai trò". Lưu ở DB nên toàn hệ
+          //                            thống cùng thấy; thắng cả ROLE_GROUP + RULES bên dưới.
+          //  2) ROLE_GROUP           : "Tên vai trò" -> mã nhóm (mặc định khi chưa có thẻ ở MOTA). 1 dòng / 1 vai trò.
+          //                            Muốn chuyển vai trò sang nhóm khác: chỉ đổi mã nhóm cuối dòng.
+          //                            Tên gõ đúng như hiển thị trên thẻ (không phân biệt hoa/thường/dấu).
+          //  3) RULES                : luật DỰ PHÒNG theo TỪ KHÓA trong tên (dành cho vai trò mới chưa
+          //                            có ở ROLE_GROUP) + chọn icon. Khớp từ trên xuống, luật đầu tiên thắng.
+          //  Còn lại → nhóm "Khác".
+          //  GROUPS + GROUP_ORDER: danh sách nhóm CÓ SẴN (tên, màu, thứ tự) — luôn dùng làm dự phòng. Danh mục dữ liệu
+          //  "nhomvaitro" (CMS) ghi đè TÊN nhóm và thêm nhóm MỚI (xem NHOM_DM_MA bên dưới); mã có sẵn nên giữ nguyên.
+          //
+          //  Xem bảng "vai trò -> nhóm" hiện tại: mở F12 > Console, gõ  rolePickerDump()
+          // ════════════════════════════════════════════════════════════════════════
           var GROUPS = {
-            cong: { label: 'Cổng người dùng', bg: '#dbeafe', fg: '#1d4ed8', chipBg: '#eff6ff', chipFg: '#1d4ed8' },
-            hocvu: { label: 'Học vụ', bg: '#d1fae5', fg: '#047857', chipBg: '#ecfdf5', chipFg: '#047857' },
-            daotao: { label: 'Đào tạo', bg: '#ede9fe', fg: '#6d28d9', chipBg: '#f5f3ff', chipFg: '#6d28d9' },
-            taichinh: { label: 'Tài chính', bg: '#fef3c7', fg: '#b45309', chipBg: '#fffbeb', chipFg: '#b45309' },
-            nhansu: { label: 'Nhân sự', bg: '#ffe4e6', fg: '#be123c', chipBg: '#fff1f2', chipFg: '#be123c' },
-            quantri: { label: 'Quản trị', bg: '#f1f5f9', fg: '#475569', chipBg: '#f8fafc', chipFg: '#475569' },
+            // Bảng màu: 8 màu nhóm cách xa nhau trên vòng màu (hồng / tím / tím hồng / cam / xanh lá / xanh dương / xanh lơ / xanh olive)
+            // để nhận ra nhóm ngay khi lướt; "Khác" để xám. Màu nhóm do admin thêm ở danh mục lấy từ NEW_GROUP_COLORS.
+            tuyensinh: { label: 'Quản lý tuyển sinh và sinh viên', bg: '#fce7f3', fg: '#be185d', chipBg: '#fdf2f8', chipFg: '#be185d' },
+            daotao: { label: 'Quản lý đào tạo', bg: '#ede9fe', fg: '#6d28d9', chipBg: '#f5f3ff', chipFg: '#6d28d9' },
+            khaothi: { label: 'Quản lý khảo thí', bg: '#ffedd5', fg: '#c2410c', chipBg: '#fff7ed', chipFg: '#c2410c' },
+            taichinh: { label: 'Quản lý tài chính và học phí', bg: '#dcfce7', fg: '#15803d', chipBg: '#f0fdf4', chipFg: '#15803d' },
+            cong: { label: 'Hệ thống cổng thông tin', bg: '#dbeafe', fg: '#1d4ed8', chipBg: '#eff6ff', chipFg: '#1d4ed8' },
+            mobile: { label: 'Ứng dụng di động', bg: '#cffafe', fg: '#0e7490', chipBg: '#ecfeff', chipFg: '#0e7490' },
+            nhansu: { label: 'Nhân sự', bg: '#fae8ff', fg: '#a21caf', chipBg: '#fdf4ff', chipFg: '#a21caf' },
+            quantri: { label: 'Quản trị hệ thống', bg: '#ecfccb', fg: '#4d7c0f', chipBg: '#f7fee7', chipFg: '#4d7c0f' },
             khac: { label: 'Khác', bg: '#f3f4f6', fg: '#6b7280', chipBg: '#f9fafb', chipFg: '#6b7280' }
           };
-          var GROUP_ORDER = ['cong', 'hocvu', 'daotao', 'taichinh', 'nhansu', 'quantri', 'khac'];
+          var GROUP_ORDER = ['tuyensinh', 'daotao', 'khaothi', 'taichinh', 'cong', 'mobile', 'nhansu', 'quantri', 'khac'];
+
+          // Mã nhóm hợp lệ: tuyensinh | daotao | khaothi | taichinh | cong | mobile | nhansu | quantri | khac
+          var ROLE_GROUP = {
+            // 1. Quản lý tuyển sinh và sinh viên (tuyển sinh - nhập học, hồ sơ SV, học bổng, biến động SV, chuyên cần)
+            'Quản lý Tuyển Sinh': 'tuyensinh',
+            'Tạo kế hoạch tuyển sinh': 'tuyensinh',
+            'Tạo kế hoạch nhập học': 'tuyensinh',
+            'Thu hồ sơ nhập học': 'tuyensinh',
+            'Nhập học': 'tuyensinh',
+            'Thống kê nhập học': 'tuyensinh',
+            'Sinh viên': 'tuyensinh',
+            'Quản lý quyết định người học': 'tuyensinh',
+            'Chuyên cần': 'tuyensinh',
+            'Xét học bổng': 'tuyensinh',
+            'Điểm rèn luyện': 'tuyensinh',
+            'Ký túc xá': 'tuyensinh',
+
+            // 2. Quản lý đào tạo (CTĐT, kế hoạch đào tạo, đăng ký học phần, học vụ, tốt nghiệp)
+            'Kế hoạch chương trình': 'daotao',
+            'Tra cứu chương trình đào tạo': 'daotao',
+            'Chốt số lượng lớp đặc thù': 'daotao',
+            'Đăng ký học': 'daotao',
+            'Học lại Thi Lại': 'daotao',
+            'Xử lý học vụ': 'daotao',
+            'Xét tốt nghiệp': 'daotao',
+            'In VBC-CC': 'daotao',
+            'Luận Văn, Luận Án': 'daotao',
+            'Nghiên cứu khoa học': 'daotao',
+
+            // 3. Quản lý khảo thí (tổ chức thi, xếp lịch thi, điểm và kết quả học tập)
+            'Quản lý thi trắc nghiệm': 'khaothi',
+            'Thi phách': 'khaothi',
+            'Quản lý điểm': 'khaothi',
+            'Thống kê tiến độ nhập điểm': 'khaothi',
+            'Đăng ký thi lại': 'khaothi',
+
+            // 4. Quản lý tài chính và học phí (thu học phí, các khoản phí đào tạo)
+            'Tài chính': 'taichinh',
+            'Tài chính - tra cứu kết quả đăng ký học': 'taichinh',
+            'Tạo các mức phí nhập học': 'taichinh',
+
+            // 5. Hệ thống cổng thông tin (cổng SV / GV / cán bộ, dashboard)
+            'Cổng cán bộ': 'cong',
+            'Cổng cán bộ(admin)': 'cong',
+            'Cổng sinh viên - thủ vai': 'cong',
+            'Cổng thông tin khảo sát': 'cong',
+            'Dashboard': 'cong',
+
+            // 6. Ứng dụng di động
+            'App Sinh viên': 'mobile',
+
+            // Nhóm phụ (ngoài 6 nhóm của biên bản)
+            'Nhân sự': 'nhansu',
+            'Nhân sự 2026': 'nhansu',
+            'Thống kê giờ giảng': 'nhansu'
+          };
 
           function stripDiacritics(s) {
             return (s || '').toString().toLowerCase()
-              .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+              .normalize('NFD').replace(/[̀-ͯ]/g, '')
               .replace(/đ/g, 'd').replace(/Đ/g, 'd');
           }
+          function normName(s) {
+            return stripDiacritics(s).replace(/\s+/g, ' ').trim();
+          }
+          // Chuẩn hóa khóa 1 lần để tra nhanh (không phân biệt hoa/thường/dấu/khoảng trắng thừa).
+          var ROLE_GROUP_N = {};
+          Object.keys(ROLE_GROUP).forEach(function (k) { ROLE_GROUP_N[normName(k)] = ROLE_GROUP[k]; });
 
-          // Rule phân loại theo TÊN vai trò (đã bỏ dấu). MAUNGDUNG hay đổi format
-          // nên khớp theo tên là chắc ăn nhất. Rule cụ thể đặt trước rule chung
-          // (vd 'cong can bo(admin)' trước 'cong can bo', 'chuong trinh dao tao'
-          // trước 'chuong trinh'). Duyệt tuần tự, hit đầu tiên thắng.
+          // Luật DỰ PHÒNG theo TÊN vai trò (đã bỏ dấu) — chỉ dùng khi tên chưa có trong ROLE_GROUP,
+          // và để chọn icon. Luật cụ thể đặt trước luật chung (vd 'cong can bo(admin)' trước
+          // 'cong can bo'; 'hoc lai' trước 'thi lai'). Duyệt tuần tự, hit đầu tiên thắng.
           var RULES = [
-            // Ưu tiên đặc biệt (tránh bị rule chung bên dưới nuốt mất)
+            // Ưu tiên đặc biệt (tránh bị luật chung bên dưới nuốt mất)
+            { kw: 'phan quyen nhap diem', group: 'quantri', icon: 'fa-user-lock' },
             { kw: 'phan quyen', group: 'quantri', icon: 'fa-shield-halved' },
+            { kw: 'quan ly doi tuong chinh sach', group: 'taichinh', icon: 'fa-users-gear' },
             { kw: 'tra cuu ket qua dang ky', group: 'taichinh', icon: 'fa-receipt' },
             { kw: 'tra cuu chuong trinh', group: 'daotao', icon: 'fa-magnifying-glass' },
+            { kw: 'muc phi', group: 'taichinh', icon: 'fa-money-bill' },
+            { kw: 'hoc lai', group: 'daotao', icon: 'fa-rotate-right' },
 
-            // Cổng người dùng
+            // 6. Ứng dụng di động
+            { kw: 'app sinh vien', group: 'mobile', icon: 'fa-mobile-screen' },
+            { kw: 'di dong', group: 'mobile', icon: 'fa-mobile-screen' },
+            { kw: 'mobile', group: 'mobile', icon: 'fa-mobile-screen' },
+
+            // 5. Hệ thống cổng thông tin
             { kw: 'cong can bo(admin)', group: 'cong', icon: 'fa-user-shield' },
             { kw: 'cong can bo', group: 'cong', icon: 'fa-briefcase' },
             { kw: 'cong sinh vien', group: 'cong', icon: 'fa-circle-user' },
+            { kw: 'cong giang vien', group: 'cong', icon: 'fa-circle-user' },
             { kw: 'cong thong tin', group: 'cong', icon: 'fa-globe' },
-            { kw: 'app sinh vien', group: 'cong', icon: 'fa-mobile-screen' },
             { kw: 'dashboard', group: 'cong', icon: 'fa-gauge-high' },
 
-            // Học vụ
-            { kw: 'chuyen can', group: 'hocvu', icon: 'fa-calendar-check' },
-            { kw: 'hoc lai', group: 'hocvu', icon: 'fa-rotate-right' },
-            { kw: 'thi lai', group: 'hocvu', icon: 'fa-rotate-right' },
-            { kw: 'thi trac nghiem', group: 'hocvu', icon: 'fa-list-check' },
-            { kw: 'thi phach', group: 'hocvu', icon: 'fa-hashtag' },
-            { kw: 'quyet dinh nguoi hoc', group: 'hocvu', icon: 'fa-file-signature' },
-            { kw: 'quan ly diem', group: 'hocvu', icon: 'fa-pen-to-square' },
-            { kw: 'tien do nhap diem', group: 'hocvu', icon: 'fa-chart-line' },
-            { kw: 'nhap diem', group: 'hocvu', icon: 'fa-pen-to-square' },
-            { kw: 'xu ly hoc vu', group: 'hocvu', icon: 'fa-triangle-exclamation' },
-            { kw: 'ren luyen', group: 'hocvu', icon: 'fa-star' },
-            { kw: 'dang ky hoc', group: 'hocvu', icon: 'fa-pen-line' },
-            { kw: 'dang ky thi', group: 'hocvu', icon: 'fa-clipboard-list' },
-            { kw: 'tot nghiep', group: 'hocvu', icon: 'fa-circle-check' },
-            { kw: 'vbc', group: 'hocvu', icon: 'fa-certificate' },
-            { kw: 'chung chi', group: 'hocvu', icon: 'fa-certificate' },
-            { kw: 'bang cap', group: 'hocvu', icon: 'fa-certificate' },
-            { kw: 'chot so luong', group: 'hocvu', icon: 'fa-clipboard-check' },
+            // 3. Quản lý khảo thí
+            { kw: 'dang ky thi', group: 'khaothi', icon: 'fa-clipboard-list' },
+            { kw: 'thi trac nghiem', group: 'khaothi', icon: 'fa-list-check' },
+            { kw: 'thi phach', group: 'khaothi', icon: 'fa-hashtag' },
+            { kw: 'lich thi', group: 'khaothi', icon: 'fa-calendar-days' },
+            { kw: 'to chuc thi', group: 'khaothi', icon: 'fa-clipboard-list' },
+            { kw: 'khao thi', group: 'khaothi', icon: 'fa-clipboard-list' },
+            { kw: 'quan ly diem', group: 'khaothi', icon: 'fa-pen-to-square' },
+            { kw: 'tien do nhap diem', group: 'khaothi', icon: 'fa-chart-line' },
+            { kw: 'nhap diem', group: 'khaothi', icon: 'fa-pen-to-square' },
+            { kw: 'thi lai', group: 'khaothi', icon: 'fa-rotate-right' },
 
-            // Đào tạo
-            { kw: 'ke hoach nhap hoc', group: 'daotao', icon: 'fa-calendar-plus' },
-            { kw: 'ke hoach tuyen sinh', group: 'daotao', icon: 'fa-calendar-days' },
+            // 1. Quản lý tuyển sinh và sinh viên
+            { kw: 'ke hoach nhap hoc', group: 'tuyensinh', icon: 'fa-calendar-plus' },
+            { kw: 'ke hoach tuyen sinh', group: 'tuyensinh', icon: 'fa-calendar-days' },
+            { kw: 'tuyen sinh', group: 'tuyensinh', icon: 'fa-graduation-cap' },
+            { kw: 'thong ke nhap hoc', group: 'tuyensinh', icon: 'fa-chart-column' },
+            { kw: 'ho so nhap hoc', group: 'tuyensinh', icon: 'fa-folder-open' },
+            { kw: 'nhap hoc', group: 'tuyensinh', icon: 'fa-user-plus' },
+            { kw: 'ho so sinh vien', group: 'tuyensinh', icon: 'fa-id-card' },
+            { kw: 'bien dong', group: 'tuyensinh', icon: 'fa-right-left' },
+            { kw: 'quyet dinh nguoi hoc', group: 'tuyensinh', icon: 'fa-file-signature' },
+            { kw: 'chuyen can', group: 'tuyensinh', icon: 'fa-calendar-check' },
+            { kw: 'hoc bong', group: 'tuyensinh', icon: 'fa-award' },
+            { kw: 'ren luyen', group: 'tuyensinh', icon: 'fa-star' },
+            { kw: 'ky tuc xa', group: 'tuyensinh', icon: 'fa-building' },
+            { kw: 'danh hieu', group: 'tuyensinh', icon: 'fa-trophy' },
+            { kw: 'khen thuong', group: 'tuyensinh', icon: 'fa-trophy' },
+            { kw: 'sinh vien', group: 'tuyensinh', icon: 'fa-user-graduate' },
+
+            // 2. Quản lý đào tạo
             { kw: 'ke hoach chuong trinh', group: 'daotao', icon: 'fa-calendar' },
             { kw: 'chuong trinh dao tao', group: 'daotao', icon: 'fa-book-open' },
             { kw: 'chuong trinh', group: 'daotao', icon: 'fa-book-open' },
+            { kw: 'thoi khoa bieu', group: 'daotao', icon: 'fa-calendar-days' },
+            { kw: 'lich giang', group: 'daotao', icon: 'fa-calendar-days' },
+            { kw: 'dang ky hoc', group: 'daotao', icon: 'fa-pen-line' },
+            { kw: 'xu ly hoc vu', group: 'daotao', icon: 'fa-triangle-exclamation' },
+            { kw: 'hoc vu', group: 'daotao', icon: 'fa-triangle-exclamation' },
+            { kw: 'tot nghiep', group: 'daotao', icon: 'fa-circle-check' },
+            { kw: 'vbc', group: 'daotao', icon: 'fa-certificate' },
+            { kw: 'chung chi', group: 'daotao', icon: 'fa-certificate' },
+            { kw: 'bang cap', group: 'daotao', icon: 'fa-certificate' },
+            { kw: 'chot so luong', group: 'daotao', icon: 'fa-clipboard-check' },
             { kw: 'luan van', group: 'daotao', icon: 'fa-scroll' },
             { kw: 'luan an', group: 'daotao', icon: 'fa-scroll' },
             { kw: 'nghien cuu khoa hoc', group: 'daotao', icon: 'fa-flask' },
             { kw: 'nckh', group: 'daotao', icon: 'fa-flask' },
-            { kw: 'tuyen sinh', group: 'daotao', icon: 'fa-graduation-cap' },
-            { kw: 'nhap hoc', group: 'daotao', icon: 'fa-user-plus' },
 
-            // Tài chính
-            { kw: 'ky tuc xa', group: 'taichinh', icon: 'fa-building' },
-            { kw: 'hoc bong', group: 'taichinh', icon: 'fa-award' },
+            // 4. Quản lý tài chính và học phí
             { kw: 'hoc phi', group: 'taichinh', icon: 'fa-wallet' },
             { kw: 'tai chinh', group: 'taichinh', icon: 'fa-wallet' },
-            { kw: 'muc phi', group: 'taichinh', icon: 'fa-money-bill' },
+            { kw: 'thu phi', group: 'taichinh', icon: 'fa-money-bill' },
+            { kw: 'thanh toan', group: 'taichinh', icon: 'fa-credit-card' },
+            { kw: 'ke toan', group: 'taichinh', icon: 'fa-calculator' },
+            { kw: 'mien giam', group: 'taichinh', icon: 'fa-percent' },
 
             // Nhân sự
+            { kw: 'nhan su 2026', group: 'nhansu', icon: 'fa-id-badge' },
             { kw: 'nhan su', group: 'nhansu', icon: 'fa-users' },
             { kw: 'gio giang', group: 'nhansu', icon: 'fa-clock' },
             { kw: 'thong ke gio', group: 'nhansu', icon: 'fa-clock' },
-            { kw: 'sinh vien', group: 'nhansu', icon: 'fa-graduation-cap' },
 
-            // Quản trị
-            { kw: 'khao sat', group: 'quantri', icon: 'fa-clipboard-list' },
+            // Quản trị hệ thống
+            { kw: 'khao sat', group: 'quantri', icon: 'fa-clipboard-question' },
             { kw: 'he thong thong tin', group: 'quantri', icon: 'fa-server' },
+            { kw: 'quan tri he thong', group: 'quantri', icon: 'fa-user-gear' },
             { kw: 'he thong', group: 'quantri', icon: 'fa-server' },
             { kw: 'khoa quan ly', group: 'quantri', icon: 'fa-network-wired' },
             { kw: 'tin tuc', group: 'quantri', icon: 'fa-newspaper' },
             { kw: 'sms', group: 'quantri', icon: 'fa-comment-dots' },
             { kw: 'cms', group: 'quantri', icon: 'fa-gear' },
             { kw: 'chinh sach', group: 'quantri', icon: 'fa-scale-balanced' },
-            { kw: 'mien giam', group: 'quantri', icon: 'fa-percent' },
             { kw: 'doi tuong', group: 'quantri', icon: 'fa-user-tag' },
-            { kw: 'tra cuu', group: 'quantri', icon: 'fa-magnifying-glass' }
+
+            // Tra cứu chung -> cổng thông tin (biên bản: "Tra cứu kết quả học tập" thuộc cổng thông tin)
+            { kw: 'tra cuu', group: 'cong', icon: 'fa-magnifying-glass' }
           ];
           var FALLBACK = { group: 'khac', icon: 'fa-cube' };
 
+          // Thẻ nhóm do admin chọn ở trang CMS "Cấu hình nhóm vai trò" (ApisCMS/Modules/vaitro/html/nhomvaitro.html),
+          // lưu trong cột MOTA của vai trò dạng  "... [nhom:khaothi]"  → lưu ở DB nên toàn hệ thống cùng thấy.
+          // Mã nhóm phải là 1 khóa của GROUPS (đồng bộ với danh sách nhóm trong nhomvaitro.js).
+          function groupFromMoTa(moTa) {
+            var m = /\[nhom:([a-z0-9_]+)\]/i.exec(moTa || '');
+            return m ? m[1].toLowerCase() : '';
+          }
+          // Thứ tự trong nhóm: thẻ [stt:N] (số nguyên dương) trong MOTA, cũng do trang CMS "Cấu hình nhóm vai trò" ghi.
+          // Số nhỏ đứng trước; không có thẻ → null (đứng sau các vai trò có số, giữ thứ tự API = theo tên).
+          function sttFromMoTa(moTa) {
+            var m = /\[stt:(\d+)\]/i.exec(moTa || '');
+            var n = m ? parseInt(m[1], 10) : 0;
+            return n > 0 ? n : null;
+          }
+
+          // Trả về { group, icon, matched }. Thứ tự ưu tiên nhóm:
+          //   thẻ [nhom:..] trong MOTA (admin chọn) > ROLE_GROUP (tên chính xác) > RULES (từ khóa) > Khác.
+          // Icon luôn lấy từ RULES (nếu có luật khớp tên) — không phụ thuộc nhóm.
           function classify(role) {
-            var hay = stripDiacritics((role && (role.TENVAITRO || role.TENUNGDUNG)) || '');
+            var raw = (role && (role.TENVAITRO || role.TENUNGDUNG)) || '';
+            var hay = stripDiacritics(raw);
+            var rule = null;
             for (var i = 0; i < RULES.length; i++) {
-              if (hay.indexOf(RULES[i].kw) >= 0) {
-                return { group: RULES[i].group, icon: RULES[i].icon };
-              }
+              if (hay.indexOf(RULES[i].kw) >= 0) { rule = RULES[i]; break; }
             }
-            return FALLBACK;
+            var byTag = groupFromMoTa(role && role.MOTA);
+            if (byTag && !GROUPS[byTag]) {
+              console.warn('[role-picker] Thẻ [nhom:' + byTag + '] ở MOTA của "' + raw + '" không phải mã nhóm hợp lệ → bỏ qua.');
+              byTag = '';
+            }
+            var byName = ROLE_GROUP_N[normName(raw)];
+            var group = byTag || byName || (rule && rule.group) || FALLBACK.group;
+            if (!GROUPS[group]) {
+              console.warn('[role-picker] Mã nhóm không tồn tại "' + group + '" (vai trò: ' + raw + ') → chuyển về "khac".');
+              group = FALLBACK.group;
+            }
+            return { group: group, icon: rule ? rule.icon : FALLBACK.icon, matched: !!(byTag || byName || rule) };
           }
 
           function escapeHtml(s) {
@@ -2433,18 +2574,20 @@
 
           function enrich(list) {
             var unmatched = [];
-            var out = (list || []).map(function (r) {
+            var out = (list || []).map(function (r, idx) {
               var meta = classify(r);
               var iconClass = (r.TENANH && /^fa[-\s]/.test(r.TENANH))
                 ? r.TENANH
                 : ('fa-light ' + meta.icon);
-              if (meta === FALLBACK) unmatched.push(r.TENVAITRO || r.MAUNGDUNG);
+              if (!meta.matched) unmatched.push(r.TENVAITRO || r.MAUNGDUNG);
               return {
                 id: r.ID,
                 name: r.TENVAITRO || r.TENUNGDUNG || 'Vai trò',
-                code: r.MAUNGDUNG || '',
+                code: r.MAVAITRO || r.MAUNGDUNG || '',
                 group: meta.group,
-                icon: iconClass
+                icon: iconClass,
+                stt: sttFromMoTa(r.MOTA), // thứ tự trong nhóm (null = chưa đặt)
+                idx: idx                  // vị trí gốc từ API, để giữ thứ tự ổn định khi bằng nhau / chưa đặt
               };
             });
             if (unmatched.length) console.warn('[role-picker] Chưa phân nhóm được:', unmatched);
@@ -2452,6 +2595,102 @@
           }
 
           var state = { roles: [], query: '', filter: 'all', rendered: false };
+
+          // Tiện ích chỉnh nhóm: F12 > Console > rolePickerDump() → bảng "Vai trò | Mã vai trò | Nhóm | Thứ tự" theo đúng
+          // thứ tự đang hiển thị. Dùng để đối chiếu tên vai trò thật với ROLE_GROUP ở trên rồi chép tên vào đúng nhóm.
+          window.rolePickerDump = function () {
+            var list = state.roles.slice().sort(function (a, b) {
+              return (GROUP_ORDER.indexOf(a.group) - GROUP_ORDER.indexOf(b.group)) || byRoleOrder(a, b);
+            });
+            var rows = list.map(function (r) {
+              return { 'Vai trò': r.name, 'Mã vai trò': r.code, 'Nhóm': GROUPS[r.group].label, 'Thứ tự': r.stt === null ? '' : r.stt };
+            });
+            if (console.table) console.table(rows);
+            return rows.length + ' vai trò';
+          };
+
+          // ── Danh sách nhóm lấy từ danh mục dữ liệu "nhomvaitro" (CMS > Danh mục > Danh mục dữ liệu) ──
+          // GROUPS ở đầu hàm là danh sách CÓ SẴN, luôn dùng làm dự phòng khi danh mục lỗi/trống. Quy tắc gộp:
+          //  - Mã đã có sẵn: lấy TÊN trong danh mục làm nhãn (đổi tên nhóm không cần sửa code).
+          //  - Mã mới: thêm nhóm mới, xếp trước "Khác", màu lấy lần lượt từ NEW_GROUP_COLORS.
+          //  - Thứ tự nhóm: mặc định = nhóm có sẵn theo GROUP_ORDER, rồi nhóm mới (theo thứ tự danh mục trả về), rồi "Khác".
+          //    Dòng nào ở danh mục có số thứ tự (cột HeSo1 > 0, hoặc thẻ [stt:N] ở ô Mô tả) thì xếp theo số đó và đứng
+          //    TRƯỚC các dòng chưa có số. Thứ tự VAI TRÒ trong từng nhóm: thẻ [stt:N] ở MOTA của vai trò (xem byRoleOrder).
+          //  - Không bao giờ XÓA nhóm có sẵn (vai trò gắn nhóm đó vẫn phải có chỗ hiển thị); nhóm không có vai trò thì tự ẩn.
+          // Chờ danh mục đọc xong (tối đa 3s) rồi mới vẽ lần đầu để vai trò không nhảy nhóm; đến muộn thì vẽ lại.
+          var NHOM_DM_MA = 'nhomvaitro';
+          // Màu cho nhóm MỚI thêm ở danh mục: chọn các màu KHÁC 8 màu nhóm có sẵn (xem GROUPS)
+          var NEW_GROUP_COLORS = ['#0f766e', '#4338ca', '#b91c1c', '#a16207', '#92400e', '#0369a1', '#9a3412', '#115e59'];
+          var BASE_GROUP_ORDER = GROUP_ORDER.slice();
+          var dmExtra = [];            // mã nhóm MỚI (chỉ có trong danh mục), theo thứ tự gặp
+          var dm = { settled: false }; // true = đã đọc xong danh mục hoặc đã bỏ cuộc (lỗi/quá 3s) → được phép vẽ
+
+          function hexToRgba(hex, a) {
+            var n = parseInt(String(hex).replace('#', ''), 16);
+            return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')';
+          }
+          // Số thứ tự của 1 dòng nhóm trong danh mục: cột HeSo1 (> 0) trước, không có thì thẻ [stt:N] ở ô Mô tả; không có = null
+          function orderOfDm(r) {
+            var h = parseFloat(r && r.HESO1);
+            if (isFinite(h) && h > 0) return h;
+            var m = /\[stt:(\d+)\]/i.exec((r && r.MOTA) || '');
+            return m ? parseInt(m[1], 10) : null;
+          }
+          function mergeNhomDanhMuc(rows) {
+            var dmOrder = {}, seen = {};
+            (rows || []).forEach(function (r) {
+              var code = String((r && r.MA) || '').trim().toLowerCase();
+              var label = String((r && r.TEN) || '').trim();
+              if (!code || !label || seen[code]) return;
+              if (!/^[a-z0-9_]+$/.test(code)) {
+                console.warn('[role-picker] Bỏ qua mã nhóm không hợp lệ trong danh mục "' + NHOM_DM_MA + '": "' + r.MA + '" (chỉ dùng a-z, 0-9, _).');
+                return;
+              }
+              seen[code] = true;
+              var o = orderOfDm(r);
+              if (o !== null) dmOrder[code] = o;
+              if (GROUPS[code]) { GROUPS[code].label = label; return; }
+              var c = NEW_GROUP_COLORS[dmExtra.length % NEW_GROUP_COLORS.length];
+              GROUPS[code] = { label: label, bg: hexToRgba(c, 0.16), fg: c, chipBg: hexToRgba(c, 0.08), chipFg: c };
+              dmExtra.push(code);
+            });
+            // Thứ tự nhóm: mặc định = nhóm có sẵn rồi nhóm mới rồi "Khác". Dòng nào ở danh mục có số thứ tự thì xếp theo
+            // số đó và đứng TRƯỚC các dòng chưa có số; bằng nhau / chưa có số giữ thứ tự mặc định.
+            var list = BASE_GROUP_ORDER.filter(function (g) { return g !== 'khac'; }).concat(dmExtra, ['khac']);
+            var pos = {};
+            list.forEach(function (g, i) { pos[g] = i; });
+            var has = function (g) { return Object.prototype.hasOwnProperty.call(dmOrder, g); };
+            GROUP_ORDER = list.slice().sort(function (a, b) {
+              if (has(a) && has(b)) return (dmOrder[a] - dmOrder[b]) || (pos[a] - pos[b]);
+              if (has(a)) return -1;
+              if (has(b)) return 1;
+              return pos[a] - pos[b];
+            });
+          }
+          function loadNhomDanhMuc() {
+            if (!(window.edu && edu.system && typeof edu.system.makeRequest === 'function')) return false;
+            edu.system.makeRequest({
+              success: function (data) {
+                var wasSettled = dm.settled; // đã vẽ bằng danh sách có sẵn (do quá 3s) thì phải vẽ lại
+                try {
+                  if (data && data.Success && Array.isArray(data.Data) && data.Data.length) mergeNhomDanhMuc(data.Data);
+                  else console.warn('[role-picker] Danh mục nhóm "' + NHOM_DM_MA + '" trống/không đọc được → dùng danh sách mặc định.', data && data.Message);
+                } catch (e) { console.error('[role-picker] Lỗi gộp danh mục nhóm:', e); }
+                dm.settled = true;
+                if (wasSettled && state.rendered) tryRender(true);
+              },
+              error: function (er) {
+                console.warn('[role-picker] Không kết nối được danh mục nhóm "' + NHOM_DM_MA + '" → dùng danh sách mặc định.', er);
+                dm.settled = true;
+              },
+              type: 'GET',
+              action: 'CMS_DanhMucThuocTinh/LayDanhSachDuLieuTheoBangDM',
+              contentType: true,
+              data: { 'strMaBangDanhMuc': NHOM_DM_MA, 'strTieuChiSapXep': '', 'dTrangThai': 1 },
+              fakedb: []
+            }, false, false, false, null);
+            return true;
+          }
 
           function countByGroup(items) {
             var counts = {};
@@ -2468,11 +2707,18 @@
               '</button>';
           }
 
+          // Chip lọc dùng tên NGẮN để gọn 1 hàng: bỏ tiền tố "Quản lý " ("Quản lý khảo thí" → "Khảo thí").
+          // Tiêu đề từng nhóm bên dưới vẫn hiện tên đầy đủ lấy từ danh mục.
+          function chipLabel(label) {
+            var s = String(label || '').replace(/^\s*quản lý\s+/i, '').trim();
+            return s ? s.charAt(0).toUpperCase() + s.slice(1) : String(label || '');
+          }
+
           function renderChips() {
             var counts = countByGroup(state.roles);
             var html = chipHtml('all', 'Tất cả', state.roles.length);
             GROUP_ORDER.forEach(function (g) {
-              if (counts[g] > 0) html += chipHtml(g, GROUPS[g].label, counts[g]);
+              if (counts[g] > 0) html += chipHtml(g, escapeHtml(chipLabel(GROUPS[g].label)), counts[g]);
             });
             $chips.html(html);
           }
@@ -2494,6 +2740,14 @@
               '</div>';
           }
 
+          // Thứ tự vai trò trong 1 nhóm: có [stt:N] thì theo N tăng dần và đứng TRƯỚC; chưa có thì đứng sau, giữ thứ tự gốc từ API
+          function byRoleOrder(a, b) {
+            if (a.stt !== null && b.stt !== null) return (a.stt - b.stt) || (a.idx - b.idx);
+            if (a.stt !== null) return -1;
+            if (b.stt !== null) return 1;
+            return a.idx - b.idx;
+          }
+
           function renderGrid(items) {
             if (!items.length) {
               $grid.html('<div class="role-empty">Không tìm thấy vai trò phù hợp.</div>').addClass('role-picker-ready');
@@ -2507,8 +2761,9 @@
               GROUP_ORDER.forEach(function (g) {
                 var arr = byGroup[g];
                 if (!arr || !arr.length) return;
+                arr = arr.slice().sort(byRoleOrder); // theo thứ tự admin đặt ([stt:N]); chưa đặt thì giữ thứ tự API
                 html += '<section class="role-group">' +
-                  '<h3 class="role-group-title" style="--g:' + GROUPS[g].fg + '"><span>' + GROUPS[g].label + '</span>' +
+                  '<h3 class="role-group-title" style="--g:' + GROUPS[g].fg + '"><span>' + escapeHtml(GROUPS[g].label) + '</span>' +
                   '<span class="role-group-count">(' + arr.length + ')</span></h3>' +
                   '<div class="role-grid">' + arr.map(cardHtml).join('') + '</div>' +
                   '</section>';
@@ -2535,6 +2790,7 @@
           // Vì systemroot có thể render tile cũ trước → dùng MutationObserver để render lại
           // mỗi khi #zonedashbroad bị systemroot ghi đè (vd: back về, đổi vai trò).
           function tryRender(force) {
+            if (!dm.settled) return false; // chờ danh mục nhóm (tối đa 3s) để vẽ đúng nhóm ngay lần đầu
             var raw = (window.edu && edu.system && edu.system.dtUngDung) || null;
             if (!raw || !raw.length) return false;
             var same = state.rendered && state.roles.length === raw.length;
@@ -2544,6 +2800,10 @@
             apply();
             return true;
           }
+
+          // Đọc danh mục nhóm ngay; không gọi được hoặc quá 3s thì bỏ cuộc, dùng danh sách có sẵn (trang chủ không bao giờ bị treo)
+          if (!loadNhomDanhMuc()) dm.settled = true;
+          setTimeout(function () { dm.settled = true; }, 3000);
 
           var tries = 0;
           var timer = setInterval(function () {
