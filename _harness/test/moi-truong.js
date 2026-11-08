@@ -25,7 +25,8 @@ var THU_TU = [
     'assets/js/crud.js',
     'assets/js/patterns.js',
     'assets/js/ref.js',
-    'assets/js/demo-data.js'
+    'assets/js/demo-data.js',
+    'assets/js/nhom-vaitro.js'
 ];
 
 function tao(o) {

@@ -12,13 +12,7 @@
     gan('VT08', '[nhom:cong] [stt:2]');
 
     ums.demo.add({
-        /* Danh mục nhóm: đổi tên một nhóm có sẵn, thêm một nhóm mới có thứ tự, một dòng mã sai bị bỏ qua */
-        'CMS_DanhMucThuocTinh/LayDanhSachDuLieuTheoBangDM#nhomvaitro': [
-            { ID: 'NVT1', MA: 'daotao', TEN: 'Đào tạo & chương trình', HESO1: 1, MOTA: '', CHUNG_TENDANHMUC_TEN: 'Nhóm vai trò' },
-            { ID: 'NVT2', MA: 'thuvien', TEN: 'Thư viện', HESO1: 3, MOTA: '', CHUNG_TENDANHMUC_TEN: 'Nhóm vai trò' },
-            { ID: 'NVT3', MA: 'tuyensinh', TEN: 'Quản lý tuyển sinh và sinh viên', HESO1: 2, MOTA: '', CHUNG_TENDANHMUC_TEN: 'Nhóm vai trò' },
-            { ID: 'NVT4', MA: 'Nhóm lạ', TEN: 'Mã sai quy tắc', HESO1: null, MOTA: '', CHUNG_TENDANHMUC_TEN: 'Nhóm vai trò' }
-        ],
+        /* Danh mục nhóm "nhomvaitro": fixture chung ở assets/js/demo-data.js (trang chủ cũng dùng) */
         'CMS_QuanLyNguoiDung/SuaVaiTro': function (o) {
             var r = vt(o.strId);
             if (r) r.MOTA = o.strMoTa;

@@ -57,32 +57,30 @@
             .replace(/đ/g, 'd');
     }
 
-    /** Suy ra nhóm và biểu tượng của một vai trò từ tên, theo roleRules */
-    function classify(name) {
-        var key = noAccent(name);
-        var rules = CFG.roleRules || [];
-        for (var i = 0; i < rules.length; i++) {
-            if (key.indexOf(rules[i].kw) >= 0) {
-                return { group: rules[i].group, icon: rules[i].icon };
-            }
-        }
-        return { group: 'khac', icon: 'fa-light fa-cube' };
+    /** Nhóm, biểu tượng, thứ tự trong nhóm của một vai trò — bảng dùng chung ums.nhomVaiTro (nhom-vaitro.js):
+        thẻ [nhom:mã] trong MOTA > roleGroupMap (tên) > roleRules (từ khoá) > "khac" (8/11, theo index.aspx gốc) */
+    function classify(r) {
+        if (ums.nhomVaiTro) return ums.nhomVaiTro.phanLoai(r);
+        return { group: 'khac', icon: 'fa-light fa-cube', stt: '' };
     }
+    function nhomDS() { return ums.nhomVaiTro ? ums.nhomVaiTro.danhSach() : (CFG.roleGroups || []); }
 
     /* =====================================================================
        Chuẩn hoá dữ liệu — để phần vẽ không phải biết nguồn nào
        ===================================================================== */
-    function normRole(r) {
+    function normRole(r, idx) {
         var name = r.TENVAITRO || r.TENUNGDUNG || r.TEN || r.name || '';
-        var c = classify(name);
+        var c = classify(r);
         return {
             id: r.ID || r.id,
             name: name,
-            code: r.MAUNGDUNG || '',
+            code: r.MAVAITRO || r.MAUNGDUNG || '',
             report: r.TENFILEDINHKEM || '',
             thuVai: String(r.CHOPHEPTHUVAI || '') === '1',
             group: r.group || c.group,
-            icon: r.icon || c.icon
+            icon: r.icon || c.icon,
+            stt: c.stt || '',          // thứ tự trong nhóm ([stt:N] ở MOTA), '' = chưa đặt
+            idx: idx || 0              // vị trí máy chủ trả — giữ ổn định khi bằng nhau / chưa đặt
         };
     }
 
@@ -206,16 +204,19 @@
        Nạp dữ liệu
        ===================================================================== */
     function loadRoles() {
+        /* Đọc danh mục nhóm (tối đa 3 s) song song với danh sách vai trò, để lần vẽ đầu đã đúng nhóm (gốc: dm.settled) */
+        var san = ums.nhomVaiTro ? ums.nhomVaiTro.san() : Promise.resolve();
         if (state.mode === 'demo') {
-            return Promise.resolve((ums.demo.roles || []).map(normRole));
+            return san.then(function () { return (ums.demo.roles || []).map(normRole); });
         }
         var ep = (API.endpoints || {}).roles || {};
-        return ums.api.call({
+        var goi = ums.api.call({
             action: ep.action,
             func: ep.func,
             strChucNang_Id: ''
-        }).then(function (r) {
-            return (r.data || []).map(normRole);
+        });
+        return Promise.all([san, goi]).then(function (kq) {
+            return (kq[1].data || []).map(normRole);
         });
     }
 
@@ -508,7 +509,7 @@
     }
 
     function groups() {
-        return (CFG.roleGroups || []).filter(function (g) {
+        return nhomDS().filter(function (g) {
             return state.roles.some(function (r) { return r.group === g.key; });
         });
     }
@@ -517,7 +518,7 @@
         var list = [{ key: 'all', label: 'Tất cả', count: state.roles.length }].concat(
             groups().map(function (g) {
                 return {
-                    key: g.key, label: g.name,
+                    key: g.key, label: ums.nhomVaiTro ? ums.nhomVaiTro.tenNgan(g.name) : g.name,   // chip tên ngắn, gọn một hàng
                     count: state.roles.filter(function (r) { return r.group === g.key; }).length
                 };
             })
@@ -545,6 +546,7 @@
         el('roleList').innerHTML = groups().map(function (g) {
             var items = rows.filter(function (r) { return r.group === g.key; });
             if (!items.length) return '';
+            if (ums.nhomVaiTro) items = items.slice().sort(ums.nhomVaiTro.soSanh);   // [stt:N] admin đặt; chưa đặt giữ thứ tự máy chủ
             return '<div class="ums-section">' +
                 '<span class="ums-section__name">' + esc(g.name) + '</span>' +
                 '<span class="ums-section__count">(' + items.length + ')</span></div>' +

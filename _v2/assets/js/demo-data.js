@@ -16,8 +16,8 @@
 
     var ums = global.ums || (global.ums = {});
 
-    function role(id, ten, ma, thuVai) {
-        return { ID: id, TENVAITRO: ten, MAUNGDUNG: ma, CHOPHEPTHUVAI: thuVai ? '1' : '0' };
+    function role(id, ten, ma, thuVai, moTa) {
+        return { ID: id, TENVAITRO: ten, MAUNGDUNG: ma, MAVAITRO: ma, CHOPHEPTHUVAI: thuVai ? '1' : '0', MOTA: moTa || '' };
     }
 
     ums.demo = {
@@ -64,7 +64,7 @@
 
             role('R36', 'Nhân sự', 'NS'),
             role('R37', 'Nhân sự 2026', 'NS26'),
-            role('R38', 'Sinh viên', 'SV'),
+            role('R38', 'Sinh viên', 'SV', false, 'Hồ sơ người học [nhom:tuyensinh] [stt:1]'),   // thẻ do màn CMS "Cấu hình nhóm vai trò" ghi
             role('R39', 'Thống kê giờ giảng', 'TKGG'),
 
             role('R40', 'Hệ thống thông tin', 'HTTT'),
@@ -76,9 +76,9 @@
             role('R46', 'Tin tức', 'TT'),
             role('R47', 'Đối tượng chính sách miễn giảm', 'DTMG'),
 
-            role('R48', 'Khảo sát trực tuyến', 'KSTT'),
+            role('R48', 'Khảo sát trực tuyến', 'KSTT', false, '[nhom:thuvien]'),   // nhóm MỚI chỉ có ở danh mục nhomvaitro
 
-            role('R49', 'Danh hiệu', 'DH')
+            role('R49', 'Danh hiệu', 'DH', false, '[nhom:tuyensinh] [stt:2]')
         ],
 
         /* Cây chức năng mẫu của vai trò "Cổng cán bộ" (R02) — đủ màn của
@@ -1248,6 +1248,13 @@
            action). Tên cột lấy từ tệp .js gốc của từng màn hình.          */
         fixtures: {
             /* --- Danh mục dùng chung --- */
+            /* Nhóm vai trò trang chủ (ums.nhomVaiTro): đổi tên một nhóm có sẵn, thêm nhóm mới "thuvien", một dòng mã sai bị bỏ */
+            'CMS_DanhMucThuocTinh/LayDanhSachDuLieuTheoBangDM#nhomvaitro': [
+                { ID: 'NVT1', MA: 'daotao', TEN: 'Đào tạo & chương trình', HESO1: 1, MOTA: '', CHUNG_TENDANHMUC_TEN: 'Nhóm vai trò' },
+                { ID: 'NVT2', MA: 'thuvien', TEN: 'Thư viện', HESO1: 3, MOTA: '', CHUNG_TENDANHMUC_TEN: 'Nhóm vai trò' },
+                { ID: 'NVT3', MA: 'tuyensinh', TEN: 'Quản lý tuyển sinh và sinh viên', HESO1: 2, MOTA: '', CHUNG_TENDANHMUC_TEN: 'Nhóm vai trò' },
+                { ID: 'NVT4', MA: 'Nhóm lạ', TEN: 'Mã sai quy tắc', HESO1: null, MOTA: '', CHUNG_TENDANHMUC_TEN: 'Nhóm vai trò' }
+            ],
             'CMS_DanhMucThuocTinh/LayDanhSachDuLieuTheoBangDM#TAICHINH.MAUIN': [
                 dm('MI1', 'HDDT', 'Hoá đơn điện tử', 'Loại mẫu in'), dm('MI2', 'HDGTGT', 'Hoá đơn giá trị gia tăng', 'Loại mẫu in'), dm('MI3', 'BL', 'Biên lai thu tiền', 'Loại mẫu in')
             ],

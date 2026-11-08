@@ -1617,18 +1617,18 @@ _(chưa có chú thích trong mã)_
 
 </details>
 
-### `ums.app.openPath(path)`  <sub>app.js:824</sub>
+### `ums.app.openPath(path)`  <sub>app.js:826</sub>
 
 _(chưa có chú thích trong mã)_
 
-### `ums.app.openHash(ma)`  <sub>app.js:837</sub>
+### `ums.app.openHash(ma)`  <sub>app.js:839</sub>
 
 ```text
  Mở chức năng theo MÃ HIỂN THỊ (DUONGDANHIENTHI, vd "#tintuc") — thay
 edu.system.triggerChucNang_MaHienThi (Core/systemroot.js:6514). 
 ```
 
-### `ums.app.timManTheoDuongDan(duoi)`  <sub>app.js:847</sub>
+### `ums.app.timManTheoDuongDan(duoi)`  <sub>app.js:849</sub>
 
 ```text
  Tìm màn theo ĐUÔI đường dẫn (đầy đủ, có tiền tố phân hệ như screenUrl — vd 'apiscms/modules/danhmuc/html/danhmucdulieu.html'
@@ -1637,17 +1637,17 @@ màn của vai trò đang mở trước, sau đó chỉ mục mọi vai trò c�
 lamtruoc.js tự kiểm trước khi nhảy. 
 ```
 
-### `ums.app.hrefChucNang(id)`  <sub>app.js:863</sub>
+### `ums.app.hrefChucNang(id)`  <sub>app.js:865</sub>
 
 ```text
  Đường dẫn hash mở một chức năng theo id — cho thẻ <a> (lối tắt ở bảng điều khiển) 
 ```
 
-### `ums.app.soanBaiChoPhep()`  <sub>app.js:870</sub>
+### `ums.app.soanBaiChoPhep()`  <sub>app.js:872</sub>
 
 _(chưa có chú thích trong mã)_
 
-### `ums.app.xuatMapping(onTienDo)`  <sub>app.js:891</sub>
+### `ums.app.xuatMapping(onTienDo)`  <sub>app.js:893</sub>
 
 ```text
  Xuất MAPPING chức năng (màn Cài đặt, nút "Xuất mapping" — 2026-09-26). Danh mục Function ID chuẩn để nạp vào

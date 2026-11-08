@@ -10,7 +10,7 @@ Xem lại đúng thay đổi của một tệp: `git diff -w <từ>..<đến> --
 
 ---
 
-## Lần kéo 15 (8/11) — mốc gốc nay là `6a8567efc` (gốc lại force-push; mốc cũ `3829e32d8`) — 5 tệp, đã chuyển 1 (màn CMS), còn `index.aspx` chưa xem
+## Lần kéo 15 (8/11) — mốc gốc nay là `6a8567efc` (gốc lại force-push; mốc cũ `3829e32d8`) — 5 tệp, ĐÃ XEM HẾT (màn CMS + index.aspx đã chuyển 8–9/11)
 
 Lần sau so: `git diff --name-status 6a8567efc origin/main`. Đã ghi đè 5 tệp bằng `git checkout origin/main -- <tệp>`. `skin.py kiem` OK không cần `ap`.
 Không đổi `Core/` / `Corei/` / `help-sso.aspx` / `mapping.aspx` → không phải chèn lại đoạn nạp plugin. `.claude/settings*.json` gốc chỉ thêm dòng cho phép lệnh (máy khác) — lấy theo gốc.
@@ -18,7 +18,7 @@ Không đổi `Core/` / `Corei/` / `help-sso.aspx` / `mapping.aspx` → không p
 
 | Phân hệ | Màn | Tệp gốc | Trạng thái |
 |---|---|---|---|
-| Vỏ cũ `index.aspx` (trang chủ "Danh sách vai trò", tầng chung) | phân nhóm vai trò | `index.aspx` (+321/−61) | **chưa xem** — gốc đổi 7 nhóm → **9 nhóm theo Điều 2 "Biên bản thỏa thuận hợp tác EAUT-APIS" 13/03/2026** (tuyensinh · daotao · khaothi · taichinh · cong · mobile · nhansu · quantri · khac), bảng `ROLE_GROUP` tên vai trò → nhóm, thẻ `[nhom:mã]` trong MOTA vai trò (DB, thắng mọi luật), danh mục dữ liệu `nhomvaitro` ghi đè tên nhóm / thêm nhóm, `rolePickerDump()`. Bên `_v2` tương ứng: `assets/config/site.config.js` `roleGroups` + `rules` (7 nhóm cũ, khớp từ khoá) và `app.js` `groups()` — khi chuyển: đổi danh sách nhóm, thêm bảng tên → nhóm, đọc thẻ `[nhom:…]` từ MOTA + danh mục `nhomvaitro` |
+| Vỏ cũ `index.aspx` (trang chủ "Danh sách vai trò", tầng chung) | phân nhóm vai trò | `index.aspx` (+321/−61) | **đã chuyển 9/11** (người dùng "làm 1") — gốc đổi 7 → 9 nhóm theo Điều 2 biên bản EAUT-APIS 13/03/2026 + bảng ROLE_GROUP tên → nhóm + thẻ `[nhom:mã]` `[stt:N]` trong MOTA + danh mục `nhomvaitro` + RULES dự phòng. Bên `_v2`: tầng chung MỚI `assets/js/nhom-vaitro.js` (`ums.nhomVaiTro`: san / danhSach / gop / phanLoai / tagOf / sttOf / withTags / soSanh / tenNgan — dùng chung trang chủ + màn CMS); `site.config.js` roleGroups 9 nhóm (tone mới pink/violet/orange/emerald/azure/cyan/fuchsia/olive/gray), `roleGroupMap` (39 tên), `roleRules` chép RULES gốc (80 luật); `app.js` classify/normRole/loadRoles/groups/drawChips/drawRoles đọc từ ums.nhomVaiTro (chờ danh mục ≤ 3 s, chip tên ngắn, sắp theo [stt]); `tile.css` thêm lớp 9 tone; vỏ nạp tệp mới. Kiểm: 5 test đơn vị mới (35/35 đạt), dò Edge trang chủ 9 nhóm + nhóm danh mục mới có màu + CMS vẫn chạy. CHƯA kiểm host. Bỏ: 2 dòng CSS chip của vỏ cũ |
 | CMS (đã chuyển) | `vaitro/nhomvaitro` — "Cấu hình nhóm vai trò" (MỚI) | `ApisCMS/Modules/vaitro/html/nhomvaitro.html` (174) + `script/nhomvaitro.js` (643) | **đã chuyển 8/11** (người dùng "chuyển 1 màn trước") → `_v2/ApisCMS/Modules/vaitro/{html,script,css}/nhomvaitro.*` + `.demo.js`, menu mẫu R44 `CMS-vaitro-nhomvaitro`. Một cột như gốc; mỗi dòng vai trò: ô chọn nhóm (select thường, 9–10 mục) + ▲ số ▼; ghi thẻ `[nhom:mã]` `[stt:N]` vào MOTA qua `SuaVaiTro`; lưu hàng loạt bằng `ums.process.run`; đối chiếu lại sau lưu. Danh mục `nhomvaitro` qua `ums.api.dm` (trống → 9 nhóm có sẵn). Dò Edge đạt (do-man + trang dò tạm: đổi nhóm, ▲▼, Enter, lọc, lưu, hoàn tác, tải lại). Nút Lưu / Hoàn tác đưa lên đầu trang (dính đỉnh). CHƯA kiểm host. **Việc chờ:** khi chuyển dòng `index.aspx` ở trên, dời NHOM_MAC_DINH / tagOf / sttOf / gopNhom lên tầng chung dùng chung với trang chủ |
 | — | — | `.claude/settings.json`, `.claude/settings.local.json` | lấy theo gốc, không phải màn |
 

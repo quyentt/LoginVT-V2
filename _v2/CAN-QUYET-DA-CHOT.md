@@ -4381,3 +4381,14 @@ Cần kiểm trên host:
 - `kehoach`: gốc XOÁ KẾ HOẠCH bằng action xoá tiêu chuẩn `HB_XepLoaiDanhHieu/Xoa_XLDH_TieuChuan_AD` (strIds = ID kế hoạch) — kho không có action xoá kế hoạch nào khác → chép nguyên; lên host thử xoá một kế hoạch thử xem có mất khỏi danh sách không.
 - `kehoach`: `Them_XLDH_KeHoach` có trả `Id` của kế hoạch mới không (biểu mẫu dựa vào đó để lưu cán bộ / sinh viên ngay sau khi tạo).
 - `thuchienxet`: hàng đợi `XET_DH` / `HB_DanhHieuHangDoi/TaoHangDoi_XLDH_TuDong` chưa chạy thật lần nào (Luận văn cũng chưa kiểm host).
+
+### trang chủ _v2 — nhóm vai trò (assets/js/nhom-vaitro.js + app.js, 9/11)
+
+- **[Cần quyết]** Bản gốc đợi danh mục "nhomvaitro" tối đa 3 s rồi mới vẽ trang chủ; đến muộn thì vẽ lại. Bản mới cũng chờ ≤ 3 s (song song với danh sách vai trò) nhưng KHÔNG vẽ lại khi danh mục đến muộn — lần vẽ sau (đổi chip, F5) mới nhận. Đồng ý?
+  - → Làm như hiện tại: trang chủ không nhấp nháy; danh mục chậm quá 3 s là bất thường, nên ghi nhận khi kiểm host.
+- **[Cần quyết]** Chip lọc dùng tên ngắn bỏ tiền tố "Quản lý " như gốc; tiêu đề nhóm giữ tên đầy đủ.
+  - → Làm như hiện tại.
+- **[Cần quyết]** Nhóm mới thêm ở danh mục không có tone trong site.config → nhom-vaitro.js tự chèn lớp `.ums-tile--<mã>` với màu lần lượt MAU_MOI (như NEW_GROUP_COLORS gốc).
+  - → Làm như hiện tại.
+- **[Kiểm trên host]** Danh mục dữ liệu `nhomvaitro` trên host đã khai chưa; chưa thì trang chủ dùng 9 nhóm có sẵn và màn CMS "Cấu hình nhóm vai trò" hiện khung "Cần làm trước".
+  - → Chấp nhận hành vi hiện tại (chưa kiểm trên host).

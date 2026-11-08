@@ -189,7 +189,8 @@ Ngoại lệ: `Core` có danh sách trắng 2 đường dẫn đặt **trước*
 login.aspx (code-behind không có trong repo)
    └─► index.aspx: checkChucNang() → LayDSVaiTroNguoiDung → dtUngDung
          └─► Trang chủ "Danh sách vai trò" (dựng inline tại index.aspx:1992,
-             phân nhóm bằng khớp từ khoá trên TÊN vai trò, 7 nhóm)
+             9 nhóm theo biên bản EAUT-APIS 13/03/2026 — gốc 8/11: thẻ [nhom:mã] trong MOTA
+             > bảng ROLE_GROUP tên → nhóm > từ khoá; danh mục dữ liệu `nhomvaitro`)
                └─► setUngDung(vaiTro)  [Core:5051]
                      ├─ appId = VaiTro_Id, appCode = MAUNGDUNG
                      └─ getlistByUser_ChucNang() → genHTML_MenuVertical()
@@ -311,6 +312,7 @@ báo "đã up" → chạy `python _harness\dong-goi.py --da-up`** (lấy gói hi
 | `assets/js/api.js` | Bản viết lại của `makeRequest` — giữ nguyên giao thức (action/func/iM/JWT) nhưng trả Promise |
 | `assets/js/ui.js` | `ums.ui.*` — sinh bảng, nút, nhãn, biểu mẫu, thông báo nổi |
 | `assets/js/app.js` | Điều hướng ba tầng `#/` → `#/r/<vaiTro>` → `#/r/<vaiTro>/<chucNang>` |
+| `assets/js/nhom-vaitro.js` | `ums.nhomVaiTro` — nhóm vai trò trang chủ (9/11): 9 nhóm theo biên bản EAUT-APIS từ `site.config` `roleGroups` + `roleGroupMap` + `roleRules`, gộp danh mục `nhomvaitro`, thẻ `[nhom:mã]` `[stt:N]` trong MOTA; trang chủ và màn CMS `vaitro/nhomvaitro` cùng dùng |
 | `assets/js/demo-data.js` | Dữ liệu dựng thử, giữ đúng hình dạng máy chủ trả |
 
 ### Điểm cần nhớ của `_v2`
@@ -337,7 +339,7 @@ ba lối: tiếp quản, chuyển màn cũ, viết màn mới; TRAINING.md mục
 `_v2/CHO-CHUYEN-SAU-PULL.md` (mốc mới, mỗi tệp một dòng: phân hệ, màn, trạng thái **"chưa xem"**) → THÔNG BÁO số tệp theo phân hệ đã / chưa chuyển → **HỎI "chuyển sang `_v2` ngay không?"** (người dùng 12/10) rồi dừng chờ trả lời. Tệp gốc KHÔNG up host (người dùng chỉ làm `_v2`).
 **Diff của một tệp chỉ mở khi tới lượt làm đúng màn đó**: người dùng gọi kiểm host / chuyển phân hệ ấy, hoặc đang sửa chính màn ấy — lúc đó đọc `git diff -w <mốc cũ> <mốc mới> -- <tệp>`,
 chuyển sang `_v2` (thuần CSS vỏ cũ thì bỏ; mã mới lỗi rõ → làm theo ý định + ghi `can-quyet.js`), đổi dòng sổ thành "đã chuyển". Màn thuộc phân hệ chưa chuyển: không bao giờ mở diff.
-Mỗi phiên fetch tối đa một lần, ở đầu. Lịch sử 15 lần kéo (mốc hiện tại `6a8567efc`, 8/11 — sổ `_v2/CHO-CHUYEN-SAU-PULL.md`: lần 15 chưa xem 2 mục (index.aspx đổi 9 nhóm vai trò theo biên bản EAUT-APIS + màn CMS mới `vaitro/nhomvaitro`), lần 13 còn Apisphanquyen (mới, chỉ làm khi gọi tên); gốc hay force-push; kéo về không ghi đè `help-sso.aspx` / `mapping.aspx` — gốc giữ bản cũ của ta — và chèn lại đoạn nạp plugin ở `Corei/systemroot.js`): `_v2/NHAT-KY-CHUYEN.md`. Đã tắt cảnh báo CRLF (`core.safecrlf false`).
+Mỗi phiên fetch tối đa một lần, ở đầu. Lịch sử 15 lần kéo (mốc hiện tại `6a8567efc`, 8/11 — sổ `_v2/CHO-CHUYEN-SAU-PULL.md`: lần 15 HẾT (9 nhóm vai trò trang chủ → `assets/js/nhom-vaitro.js` + màn CMS `vaitro/nhomvaitro`, 9/11, chưa kiểm host), lần 13 còn Apisphanquyen (mới, chỉ làm khi gọi tên); gốc hay force-push; kéo về không ghi đè `help-sso.aspx` / `mapping.aspx` — gốc giữ bản cũ của ta — và chèn lại đoạn nạp plugin ở `Corei/systemroot.js`): `_v2/NHAT-KY-CHUYEN.md`. Đã tắt cảnh báo CRLF (`core.safecrlf false`).
 
 ### Chép tối thiểu
 

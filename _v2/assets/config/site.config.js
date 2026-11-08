@@ -202,6 +202,16 @@ window.UMS_CONFIG = {
     amber: { fg: "#d99400", bg: "#fdf3dc" },
     red: { fg: "#e0455c", bg: "#fdeaed" },
     slate: { fg: "#64748b", bg: "#eef1f6" },
+    /* 8/11 — màu 9 nhóm vai trò theo biên bản EAUT-APIS (fg = chữ / viền, bg = nền nhạt; giữ đúng GROUPS của index.aspx gốc) */
+    pink: { fg: "#be185d", bg: "#fce7f3" },
+    violet: { fg: "#6d28d9", bg: "#ede9fe" },
+    orange: { fg: "#c2410c", bg: "#ffedd5" },
+    emerald: { fg: "#15803d", bg: "#dcfce7" },
+    azure: { fg: "#1d4ed8", bg: "#dbeafe" },
+    cyan: { fg: "#0e7490", bg: "#cffafe" },
+    fuchsia: { fg: "#a21caf", bg: "#fae8ff" },
+    olive: { fg: "#4d7c0f", bg: "#ecfccb" },
+    gray: { fg: "#6b7280", bg: "#f3f4f6" },
   },
 
   /* =====================================================================
@@ -211,14 +221,77 @@ window.UMS_CONFIG = {
        `key` phải khớp với `g` của từng vai trò trong dữ liệu.
        ===================================================================== */
   roleGroups: [
-    { key: "cong", name: "Cổng người dùng", tone: "blue" },
-    { key: "hocvu", name: "Học vụ", tone: "green" },
-    { key: "daotao", name: "Đào tạo", tone: "purple" },
-    { key: "taichinh", name: "Tài chính", tone: "amber" },
-    { key: "nhansu", name: "Nhân sự", tone: "red" },
-    { key: "quantri", name: "Quản trị", tone: "slate" },
-    { key: "khac", name: "Khác", tone: "slate" },
+    { key: "tuyensinh", name: "Quản lý tuyển sinh và sinh viên", tone: "pink" },
+    { key: "daotao", name: "Quản lý đào tạo", tone: "violet" },
+    { key: "khaothi", name: "Quản lý khảo thí", tone: "orange" },
+    { key: "taichinh", name: "Quản lý tài chính và học phí", tone: "emerald" },
+    { key: "cong", name: "Hệ thống cổng thông tin", tone: "azure" },
+    { key: "mobile", name: "Ứng dụng di động", tone: "cyan" },
+    { key: "nhansu", name: "Nhân sự", tone: "fuchsia" },
+    { key: "quantri", name: "Quản trị hệ thống", tone: "olive" },
+    { key: "khac", name: "Khác", tone: "gray" },
   ],
+
+  /* =====================================================================
+       6b. VAI TRÒ → NHÓM (tên chính xác) — 8/11, theo ROLE_GROUP của index.aspx gốc
+       ---------------------------------------------------------------------
+       Thứ tự ưu tiên khi xếp một vai trò (ums.nhomVaiTro.phanLoai):
+         1) thẻ [nhom:mã] trong Mô tả vai trò (màn CMS "Cấu hình nhóm vai trò")
+         2) bảng này: "Tên vai trò" → mã nhóm (không phân biệt hoa thường / dấu)
+         3) roleRules (mục 9) theo từ khoá — dự phòng cho vai trò mới
+         4) còn lại → "khac"
+       Muốn chuyển vai trò sang nhóm khác: đổi mã nhóm cuối dòng. Tên gõ đúng như
+       hiển thị trên thẻ. Danh mục dữ liệu "nhomvaitro" (CMS) ghi đè TÊN nhóm và
+       thêm nhóm mới; mã có sẵn ở roleGroups giữ nguyên.
+       ===================================================================== */
+  roleGroupMap: {
+    // 1. Quản lý tuyển sinh và sinh viên
+    "Quản lý Tuyển Sinh": "tuyensinh",
+    "Tạo kế hoạch tuyển sinh": "tuyensinh",
+    "Tạo kế hoạch nhập học": "tuyensinh",
+    "Thu hồ sơ nhập học": "tuyensinh",
+    "Nhập học": "tuyensinh",
+    "Thống kê nhập học": "tuyensinh",
+    "Sinh viên": "tuyensinh",
+    "Quản lý quyết định người học": "tuyensinh",
+    "Chuyên cần": "tuyensinh",
+    "Xét học bổng": "tuyensinh",
+    "Điểm rèn luyện": "tuyensinh",
+    "Ký túc xá": "tuyensinh",
+    // 2. Quản lý đào tạo
+    "Kế hoạch chương trình": "daotao",
+    "Tra cứu chương trình đào tạo": "daotao",
+    "Chốt số lượng lớp đặc thù": "daotao",
+    "Đăng ký học": "daotao",
+    "Học lại Thi Lại": "daotao",
+    "Xử lý học vụ": "daotao",
+    "Xét tốt nghiệp": "daotao",
+    "In VBC-CC": "daotao",
+    "Luận Văn, Luận Án": "daotao",
+    "Nghiên cứu khoa học": "daotao",
+    // 3. Quản lý khảo thí
+    "Quản lý thi trắc nghiệm": "khaothi",
+    "Thi phách": "khaothi",
+    "Quản lý điểm": "khaothi",
+    "Thống kê tiến độ nhập điểm": "khaothi",
+    "Đăng ký thi lại": "khaothi",
+    // 4. Quản lý tài chính và học phí
+    "Tài chính": "taichinh",
+    "Tài chính - tra cứu kết quả đăng ký học": "taichinh",
+    "Tạo các mức phí nhập học": "taichinh",
+    // 5. Hệ thống cổng thông tin
+    "Cổng cán bộ": "cong",
+    "Cổng cán bộ(admin)": "cong",
+    "Cổng sinh viên - thủ vai": "cong",
+    "Cổng thông tin khảo sát": "cong",
+    "Dashboard": "cong",
+    // 6. Ứng dụng di động
+    "App Sinh viên": "mobile",
+    // Nhóm phụ
+    "Nhân sự": "nhansu",
+    "Nhân sự 2026": "nhansu",
+    "Thống kê giờ giảng": "nhansu",
+  },
 
   /* =====================================================================
        7. CÁC DÒNG CHỮ CỐ ĐỊNH
@@ -290,73 +363,114 @@ window.UMS_CONFIG = {
   },
 
   /* =====================================================================
-       9. PHÂN NHÓM VAI TRÒ TỰ ĐỘNG
+       9. PHÂN NHÓM VAI TRÒ TỰ ĐỘNG — luật DỰ PHÒNG theo từ khoá (8/11: theo RULES của index.aspx gốc)
        ---------------------------------------------------------------------
-       API chỉ trả tên vai trò, không trả nhóm. Hệ hiện hành phân nhóm bằng
-       cách khớp từ khoá trên TÊN vai trò đã bỏ dấu (index.aspx:2020) — vì
-       mã ứng dụng hay đổi định dạng nên khớp theo tên chắc ăn hơn.
+       Chỉ dùng khi tên vai trò chưa có trong roleGroupMap (mục 6b) và chưa có
+       thẻ [nhom:…] trong Mô tả; BIỂU TƯỢNG của thẻ vai trò luôn lấy từ đây
+       (luật khớp tên đầu tiên), không phụ thuộc nhóm.
 
        Duyệt tuần tự, khớp đầu tiên thắng. Đặt luật cụ thể TRƯỚC luật chung.
        ===================================================================== */
   roleRules: [
+    // Ưu tiên đặc biệt (tránh bị luật chung bên dưới nuốt mất)
+    { kw: "phan quyen nhap diem", group: "quantri", icon: "fa-light fa-user-lock" },
     { kw: "phan quyen", group: "quantri", icon: "fa-light fa-shield-halved" },
-    {
-      kw: "tra cuu ket qua dang ky",
-      group: "taichinh",
-      icon: "fa-light fa-receipt",
-    },
-    {
-      kw: "tra cuu chuong trinh",
-      group: "daotao",
-      icon: "fa-light fa-magnifying-glass",
-    },
+    { kw: "quan ly doi tuong chinh sach", group: "taichinh", icon: "fa-light fa-users-gear" },
+    { kw: "tra cuu ket qua dang ky", group: "taichinh", icon: "fa-light fa-receipt" },
+    { kw: "tra cuu chuong trinh", group: "daotao", icon: "fa-light fa-magnifying-glass" },
+    { kw: "muc phi", group: "taichinh", icon: "fa-light fa-money-bill" },
+    { kw: "hoc lai", group: "daotao", icon: "fa-light fa-rotate-right" },
 
-    {
-      kw: "cong can bo(admin)",
-      group: "cong",
-      icon: "fa-light fa-user-shield",
-    },
+    // 6. Ứng dụng di động
+    { kw: "app sinh vien", group: "mobile", icon: "fa-light fa-mobile-screen" },
+    { kw: "di dong", group: "mobile", icon: "fa-light fa-mobile-screen" },
+    { kw: "mobile", group: "mobile", icon: "fa-light fa-mobile-screen" },
+
+    // 5. Hệ thống cổng thông tin
+    { kw: "cong can bo(admin)", group: "cong", icon: "fa-light fa-user-shield" },
     { kw: "cong can bo", group: "cong", icon: "fa-light fa-briefcase" },
     { kw: "cong sinh vien", group: "cong", icon: "fa-light fa-circle-user" },
+    { kw: "cong giang vien", group: "cong", icon: "fa-light fa-circle-user" },
     { kw: "cong thong tin", group: "cong", icon: "fa-light fa-globe" },
-    { kw: "app sinh vien", group: "cong", icon: "fa-light fa-mobile" },
-    { kw: "dashboard", group: "cong", icon: "fa-light fa-gauge" },
+    { kw: "dashboard", group: "cong", icon: "fa-light fa-gauge-high" },
 
-    { kw: "chuyen can", group: "hocvu", icon: "fa-light fa-calendar-check" },
-    { kw: "hoc lai", group: "hocvu", icon: "fa-light fa-rotate-right" },
-    { kw: "thi lai", group: "hocvu", icon: "fa-light fa-arrow-rotate-right" },
-    { kw: "trac nghiem", group: "hocvu", icon: "fa-light fa-list-check" },
-    { kw: "quan ly diem", group: "hocvu", icon: "fa-light fa-pen-to-square" },
-    { kw: "nhap diem", group: "hocvu", icon: "fa-light fa-chart-line" },
-    { kw: "thi phach", group: "hocvu", icon: "fa-light fa-hashtag" },
-    { kw: "ren luyen", group: "hocvu", icon: "fa-light fa-star" },
-    { kw: "tot nghiep", group: "hocvu", icon: "fa-light fa-circle-check" },
-    { kw: "hoc vu", group: "hocvu", icon: "fa-light fa-triangle-exclamation" },
-    { kw: "dang ky hoc", group: "hocvu", icon: "fa-light fa-pen" },
-    { kw: "vbc", group: "hocvu", icon: "fa-light fa-certificate" },
-    { kw: "quyet dinh", group: "hocvu", icon: "fa-light fa-file-signature" },
-    { kw: "lop dac thu", group: "hocvu", icon: "fa-light fa-clipboard-check" },
+    // 3. Quản lý khảo thí
+    { kw: "dang ky thi", group: "khaothi", icon: "fa-light fa-clipboard-list" },
+    { kw: "thi trac nghiem", group: "khaothi", icon: "fa-light fa-list-check" },
+    { kw: "thi phach", group: "khaothi", icon: "fa-light fa-hashtag" },
+    { kw: "lich thi", group: "khaothi", icon: "fa-light fa-calendar-days" },
+    { kw: "to chuc thi", group: "khaothi", icon: "fa-light fa-clipboard-list" },
+    { kw: "khao thi", group: "khaothi", icon: "fa-light fa-clipboard-list" },
+    { kw: "quan ly diem", group: "khaothi", icon: "fa-light fa-pen-to-square" },
+    { kw: "tien do nhap diem", group: "khaothi", icon: "fa-light fa-chart-line" },
+    { kw: "nhap diem", group: "khaothi", icon: "fa-light fa-pen-to-square" },
+    { kw: "thi lai", group: "khaothi", icon: "fa-light fa-rotate-right" },
 
-    { kw: "tuyen sinh", group: "daotao", icon: "fa-light fa-graduation-cap" },
-    { kw: "nhap hoc", group: "daotao", icon: "fa-light fa-user-plus" },
-    { kw: "luan van", group: "daotao", icon: "fa-light fa-book-open" },
-    { kw: "nghien cuu", group: "daotao", icon: "fa-light fa-flask" },
-    { kw: "chuong trinh", group: "daotao", icon: "fa-light fa-calendar" },
+    // 1. Quản lý tuyển sinh và sinh viên
+    { kw: "ke hoach nhap hoc", group: "tuyensinh", icon: "fa-light fa-calendar-plus" },
+    { kw: "ke hoach tuyen sinh", group: "tuyensinh", icon: "fa-light fa-calendar-days" },
+    { kw: "tuyen sinh", group: "tuyensinh", icon: "fa-light fa-graduation-cap" },
+    { kw: "thong ke nhap hoc", group: "tuyensinh", icon: "fa-light fa-chart-column" },
+    { kw: "ho so nhap hoc", group: "tuyensinh", icon: "fa-light fa-folder-open" },
+    { kw: "nhap hoc", group: "tuyensinh", icon: "fa-light fa-user-plus" },
+    { kw: "ho so sinh vien", group: "tuyensinh", icon: "fa-light fa-id-card" },
+    { kw: "bien dong", group: "tuyensinh", icon: "fa-light fa-right-left" },
+    { kw: "quyet dinh nguoi hoc", group: "tuyensinh", icon: "fa-light fa-file-signature" },
+    { kw: "chuyen can", group: "tuyensinh", icon: "fa-light fa-calendar-check" },
+    { kw: "hoc bong", group: "tuyensinh", icon: "fa-light fa-award" },
+    { kw: "ren luyen", group: "tuyensinh", icon: "fa-light fa-star" },
+    { kw: "ky tuc xa", group: "tuyensinh", icon: "fa-light fa-building" },
+    { kw: "danh hieu", group: "tuyensinh", icon: "fa-light fa-trophy" },
+    { kw: "khen thuong", group: "tuyensinh", icon: "fa-light fa-trophy" },
+    { kw: "sinh vien", group: "tuyensinh", icon: "fa-light fa-user-graduate" },
 
-    { kw: "ky tuc xa", group: "taichinh", icon: "fa-light fa-building" },
-    { kw: "hoc bong", group: "taichinh", icon: "fa-light fa-award" },
+    // 2. Quản lý đào tạo
+    { kw: "ke hoach chuong trinh", group: "daotao", icon: "fa-light fa-calendar" },
+    { kw: "chuong trinh dao tao", group: "daotao", icon: "fa-light fa-book-open" },
+    { kw: "chuong trinh", group: "daotao", icon: "fa-light fa-book-open" },
+    { kw: "thoi khoa bieu", group: "daotao", icon: "fa-light fa-calendar-days" },
+    { kw: "lich giang", group: "daotao", icon: "fa-light fa-calendar-days" },
+    { kw: "dang ky hoc", group: "daotao", icon: "fa-light fa-pen-line" },
+    { kw: "xu ly hoc vu", group: "daotao", icon: "fa-light fa-triangle-exclamation" },
+    { kw: "hoc vu", group: "daotao", icon: "fa-light fa-triangle-exclamation" },
+    { kw: "tot nghiep", group: "daotao", icon: "fa-light fa-circle-check" },
+    { kw: "vbc", group: "daotao", icon: "fa-light fa-certificate" },
+    { kw: "chung chi", group: "daotao", icon: "fa-light fa-certificate" },
+    { kw: "bang cap", group: "daotao", icon: "fa-light fa-certificate" },
+    { kw: "chot so luong", group: "daotao", icon: "fa-light fa-clipboard-check" },
+    { kw: "luan van", group: "daotao", icon: "fa-light fa-scroll" },
+    { kw: "luan an", group: "daotao", icon: "fa-light fa-scroll" },
+    { kw: "nghien cuu khoa hoc", group: "daotao", icon: "fa-light fa-flask" },
+    { kw: "nckh", group: "daotao", icon: "fa-light fa-flask" },
+
+    // 4. Quản lý tài chính và học phí
+    { kw: "hoc phi", group: "taichinh", icon: "fa-light fa-wallet" },
     { kw: "tai chinh", group: "taichinh", icon: "fa-light fa-wallet" },
+    { kw: "thu phi", group: "taichinh", icon: "fa-light fa-money-bill" },
+    { kw: "thanh toan", group: "taichinh", icon: "fa-light fa-credit-card" },
+    { kw: "ke toan", group: "taichinh", icon: "fa-light fa-calculator" },
+    { kw: "mien giam", group: "taichinh", icon: "fa-light fa-percent" },
 
+    // Nhân sự
+    { kw: "nhan su 2026", group: "nhansu", icon: "fa-light fa-id-badge" },
     { kw: "nhan su", group: "nhansu", icon: "fa-light fa-users" },
-    { kw: "sinh vien", group: "nhansu", icon: "fa-light fa-user-graduate" },
     { kw: "gio giang", group: "nhansu", icon: "fa-light fa-clock" },
+    { kw: "thong ke gio", group: "nhansu", icon: "fa-light fa-clock" },
 
+    // Quản trị hệ thống
+    { kw: "khao sat", group: "quantri", icon: "fa-light fa-clipboard-question" },
+    { kw: "he thong thong tin", group: "quantri", icon: "fa-light fa-server" },
+    { kw: "quan tri he thong", group: "quantri", icon: "fa-light fa-user-gear" },
     { kw: "he thong", group: "quantri", icon: "fa-light fa-server" },
-    { kw: "quan tri", group: "quantri", icon: "fa-light fa-sliders" },
-    { kw: "khao sat", group: "quantri", icon: "fa-light fa-clipboard-list" },
-    { kw: "mien giam", group: "quantri", icon: "fa-light fa-scale-balanced" },
-    { kw: "sms", group: "quantri", icon: "fa-light fa-comment-dots" },
+    { kw: "khoa quan ly", group: "quantri", icon: "fa-light fa-network-wired" },
     { kw: "tin tuc", group: "quantri", icon: "fa-light fa-newspaper" },
+    { kw: "sms", group: "quantri", icon: "fa-light fa-comment-dots" },
+    { kw: "cms", group: "quantri", icon: "fa-light fa-gear" },
+    { kw: "chinh sach", group: "quantri", icon: "fa-light fa-scale-balanced" },
+    { kw: "doi tuong", group: "quantri", icon: "fa-light fa-user-tag" },
+
+    // Tra cứu chung → cổng thông tin (biên bản: "Tra cứu kết quả học tập" thuộc cổng thông tin)
+    { kw: "tra cuu", group: "cong", icon: "fa-light fa-magnifying-glass" },
   ],
 
   /* =====================================================================

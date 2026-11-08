@@ -21,8 +21,8 @@
            dTrangThai 1, strChung_VaiTro_Cha_Id ""
        CMS_QuanLyNguoiDung/SuaVaiTro   versionAPI, strMaVaiTro, strTenVaiTro, strMoTa (đã gắn thẻ),
            dThuTu, dTrangThai 1, strLoaiVaiTro_Id, strChung_VaiTro_Cha_Id, strNguoiThucHien_Id "", strId
-       Danh mục dữ liệu "nhomvaitro" (ums.api.dm): Mã = mã nhóm, Tên = tên nhóm, HESO1 hoặc
-           thẻ [stt:N] ở MOTA = thứ tự nhóm. Trống / lỗi → dùng 9 nhóm có sẵn (NHOM_MAC_DINH).
+       Danh mục dữ liệu "nhomvaitro" (ums.nhomVaiTro.san → ums.api.dm): Mã = mã nhóm, Tên = tên nhóm,
+           HESO1 hoặc thẻ [stt:N] ở MOTA = thứ tự nhóm. Trống / lỗi → 9 nhóm có sẵn (site.config roleGroups).
 
    Khác gốc / cố ý:
      · Ô chọn nhóm trong bảng là <select> thường (9–10 mục) thay select2 — BO-CUC luật 2.
@@ -32,9 +32,8 @@
      · Danh mục trống thì tầng chung tự hiện khung "Cần làm trước" (ums.lamTruoc) — không
        thêm thông báo riêng.
 
-   Việc chờ: khi chuyển phân nhóm TRANG CHỦ (_v2/assets/js/app.js + site.config roleGroups)
-   sang 9 nhóm, dời NHOM_MAC_DINH / tagOf / sttOf / gopNhom ở đây lên tầng chung để hai nơi
-   dùng chung một bảng (CHO-CHUYEN-SAU-PULL.md lần kéo 15, dòng index.aspx).
+   Bảng nhóm (site.config roleGroups + danh mục "nhomvaitro"), tagOf / sttOf / withTags nằm ở tầng chung
+   assets/js/nhom-vaitro.js (ums.nhomVaiTro) — trang chủ app.js dùng cùng bảng đó (8/11).
    ========================================================================= */
 (function () {
     'use strict';
@@ -43,84 +42,26 @@
     var root = document.getElementById('cms-nhomvaitro');
     if (!root) return;
 
-    var DM_MA = 'nhomvaitro';
-    /* color = màu chấm nhóm — đúng màu nhóm trên trang chủ gốc (GROUPS.fg, index.aspx) */
-    var NHOM_MAC_DINH = [
-        { code: 'tuyensinh', label: 'Quản lý tuyển sinh và sinh viên', color: '#be185d' },
-        { code: 'daotao',    label: 'Quản lý đào tạo',                 color: '#6d28d9' },
-        { code: 'khaothi',   label: 'Quản lý khảo thí',                color: '#c2410c' },
-        { code: 'taichinh',  label: 'Quản lý tài chính và học phí',    color: '#15803d' },
-        { code: 'cong',      label: 'Hệ thống cổng thông tin',         color: '#1d4ed8' },
-        { code: 'mobile',    label: 'Ứng dụng di động',                color: '#0e7490' },
-        { code: 'nhansu',    label: 'Nhân sự',                         color: '#a21caf' },
-        { code: 'quantri',   label: 'Quản trị hệ thống',               color: '#4d7c0f' },
-        { code: 'khac',      label: 'Khác',                            color: '#6b7280' }
-    ];
-    var MAU_MOI = ['#0f766e', '#4338ca', '#b91c1c', '#a16207', '#92400e', '#0369a1', '#9a3412', '#115e59'];
+    /* Bảng nhóm, thẻ [nhom:] [stt:], gộp danh mục "nhomvaitro": dùng chung với trang chủ — assets/js/nhom-vaitro.js (8/11) */
+    var N = ums.nhomVaiTro;
+    var tagOf = N.tagOf, sttOf = N.sttOf, withTags = N.withTags;
+    function norm(s) {
+        return String(s === null || s === undefined ? '' : s).toLowerCase()
+            .normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd');
+    }
 
     var S = {
         rows: [], byId: {},
-        nhom: NHOM_MAC_DINH.slice(),
+        nhom: [],       // [{ code, label, color }] — từ N.danhSach() (key → code, name → label)
         doi: {},        // ID vai trò → mã nhóm mới ('' = theo mặc định); chỉ dòng KHÁC giá trị đã lưu
         stt: {},        // ID vai trò → thứ tự mới ('' = bỏ); chỉ dòng KHÁC giá trị đã lưu
         daLuu: {},      // ID → { nhom, stt } lưu thành công lần gần nhất (đối chiếu lại với máy chủ)
         laRank: {},     // mã nhóm lạ → thứ hạng khối
         timer: 0
     };
+    function datNhomDS() { S.nhom = N.danhSach().map(function (g) { return { code: g.key, label: g.name, color: g.color }; }); }
+    datNhomDS();
 
-    /* ---------- Thẻ trong MOTA (cùng quy ước với trang chủ gốc) ----------- */
-    function tagOf(moTa) { var m = /\[nhom:([a-z0-9_]+)\]/i.exec(moTa || ''); return m ? m[1].toLowerCase() : ''; }
-    function sttOf(moTa) { var m = /\[stt:(\d+)\]/i.exec(moTa || ''); var n = m ? parseInt(m[1], 10) : 0; return n > 0 ? String(n) : ''; }
-    function withTags(moTa, code, stt) {
-        var out = String(moTa === null || moTa === undefined ? '' : moTa)
-            .replace(/\s*\[nhom:[a-z0-9_]+\]/ig, '').replace(/\s*\[stt:\d+\]/ig, '').trim();
-        if (code) out += (out ? ' ' : '') + '[nhom:' + code + ']';
-        if (stt) out += (out ? ' ' : '') + '[stt:' + stt + ']';
-        return out;
-    }
-    function norm(s) {
-        return String(s === null || s === undefined ? '' : s).toLowerCase()
-            .normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd');
-    }
-
-    /* ---------- Danh sách nhóm: có sẵn + danh mục "nhomvaitro" ------------- */
-    function thuTuDm(r) {
-        var h = parseFloat(r && r.HESO1);
-        if (isFinite(h) && h > 0) return h;
-        var m = /\[stt:(\d+)\]/i.exec((r && r.MOTA) || '');
-        return m ? parseInt(m[1], 10) : null;
-    }
-    /* Mã có sẵn: lấy TÊN danh mục làm nhãn. Mã mới: thêm trước "Khác", màu lần lượt MAU_MOI. Không xoá nhóm có sẵn.
-       Thứ tự: dòng có số (HESO1 / [stt:N]) xếp theo số và đứng TRƯỚC dòng chưa có số. Mã chỉ a-z 0-9 _. */
-    function gopNhom(rows) {
-        var seen = {}, extra = [], doiTen = {}, thuTu = {};
-        (rows || []).forEach(function (r) {
-            var code = String((r && r.MA) || '').trim().toLowerCase(), label = String((r && r.TEN) || '').trim();
-            if (!code || !label || seen[code]) return;
-            if (!/^[a-z0-9_]+$/.test(code)) { if (window.console) console.warn('[nhomvaitro] Bỏ mã nhóm không hợp lệ trong danh mục: "' + r.MA + '"'); return; }
-            seen[code] = true;
-            var o = thuTuDm(r);
-            if (o !== null) thuTu[code] = o;
-            if (NHOM_MAC_DINH.some(function (g) { return g.code === code; })) doiTen[code] = label; else extra.push({ code: code, label: label });
-        });
-        var out = [], khac = null;
-        NHOM_MAC_DINH.forEach(function (g) {
-            var it = { code: g.code, label: doiTen[g.code] || g.label, color: g.color };
-            if (g.code === 'khac') khac = it; else out.push(it);
-        });
-        extra.forEach(function (g, i) { out.push({ code: g.code, label: g.label, color: MAU_MOI[i % MAU_MOI.length] }); });
-        if (khac) out.push(khac);
-        var pos = {};
-        out.forEach(function (g, i) { pos[g.code] = i; });
-        out.sort(function (a, b) {
-            var ha = thuTu.hasOwnProperty(a.code), hb = thuTu.hasOwnProperty(b.code);
-            if (ha && hb) return (thuTu[a.code] - thuTu[b.code]) || (pos[a.code] - pos[b.code]);
-            if (ha) return -1;
-            if (hb) return 1;
-            return pos[a.code] - pos[b.code];
-        });
-        return out;
-    }
     function nhomCua(code) { for (var i = 0; i < S.nhom.length; i++) if (S.nhom[i].code === code) return S.nhom[i]; return null; }
     function labelOf(code) { if (!code) return 'Theo mặc định'; var g = nhomCua(code); return g ? g.label : '(mã lạ: ' + code + ')'; }
     function colorOf(code) { var g = nhomCua(code); return g ? g.color : '#94a3b8'; }
@@ -293,10 +234,8 @@
 
     /* ---------- Nạp dữ liệu ------------------------------------------------- */
     function napNhom() {
-        return ums.api.dm(DM_MA).then(function (rows) {
-            if (rows && rows.length) S.nhom = gopNhom(rows);
-            else S.nhom = NHOM_MAC_DINH.slice();        // danh mục trống: tầng chung tự báo khung "Cần làm trước"
-        }, function () { S.nhom = NHOM_MAC_DINH.slice(); });
+        /* N.san(): danh mục đọc MỘT lần cho cả phiên (ums.api.dm nhớ kết quả); trống thì tầng chung tự báo khung "Cần làm trước" */
+        return N.san().then(datNhomDS, datNhomDS);
     }
     function napVaiTro() {
         return ums.api.call({

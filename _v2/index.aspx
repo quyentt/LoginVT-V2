@@ -172,6 +172,7 @@
     <script src="assets/js/can-quyet.js?v=<%= V("assets/js/can-quyet.js") %>"></script>
     <script src="assets/js/lamtruoc.js?v=<%= V("assets/js/lamtruoc.js") %>"></script>
     <script src="assets/js/thuvai.js?v=<%= V("assets/js/thuvai.js") %>"></script>
+    <script src="assets/js/nhom-vaitro.js?v=<%= V("assets/js/nhom-vaitro.js") %>"></script>
     <%-- Plugin "Yêu cầu hỗ trợ" (tự chứa: assets/plugin/btn-yeucau-hotro/README.md) — nút nổi chụp màn hình, sửa ảnh, gửi sang Cổng Help --%>
     <script>window.UMS_HOTRO_CONFIG = { nhung: true };</script>
     <%-- 27/10: chế độ nhúng (docx mục 11) — BẬT 27/10 sau khi Help lên trang nhúng + cheDo=nhung trên con98; tắt = đổi false --%>
