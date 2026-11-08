@@ -164,7 +164,8 @@
                 ['vaitro', 'Vai trò', 'fa fa-user-secret', [
                     ['vaitro', 'Quản lý vai trò'],
                     ['vaitrochucnang', 'Vai trò - chức năng'],
-                    ['vaitronguoidung', 'Vai trò - người dùng']]],
+                    ['vaitronguoidung', 'Vai trò - người dùng'],
+                    ['nhomvaitro', 'Cấu hình nhóm vai trò']]],
                 ['chucnang', 'Chức năng', 'fa fa-sitemap', [
                     ['chucnang', 'Quản lý chức năng'],
                     ['configurechucnang', 'Cấu hình chức năng'],

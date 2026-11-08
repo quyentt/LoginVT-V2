@@ -1463,6 +1463,17 @@ Các mục đã gỡ khỏi `assets/js/can-quyet.js` kèm quyết định. Muố
 - **[Kiểm trên host]** Đổi ô "Ứng dụng" trong khung chỉnh sửa nay nạp thêm LayDSChucNangTheoUDVaiTro của ứng dụng mới (gốc so nhầm với ứng dụng cũ).
   - → Chấp nhận hành vi hiện tại (chưa kiểm trên host).
 
+### apiscms/modules/vaitro/nhomvaitro
+
+- **[Cần quyết]** Nút "Hoàn tác" / "Lưu thay đổi": bản gốc đặt ở chân khung dưới bảng (bảng 1.000 vai trò cuộn dài thì mất nút). Bản mới đưa lên đầu trang (dính đỉnh khi cuộn), chân khung chỉ còn dòng đếm "N thay đổi chưa lưu". Đồng ý?
+  - → Làm như hiện tại: nút ở đầu trang theo luật nút dính đỉnh của _v2; bố cục một cột giữ nguyên.
+- **[Cần quyết]** Ô chọn nhóm trong bảng: bản gốc dùng select2 có chấm màu trong danh sách xổ; bản mới dùng <select> thường (9–10 mục, BO-CUC luật 2) và vẽ chấm màu bên trái ô.
+  - → Làm như hiện tại.
+- **[Cần quyết]** Danh mục "nhomvaitro" trống / lỗi: bản gốc hiện dải chữ "đang dùng danh sách nhóm mặc định"; bản mới dùng 9 nhóm có sẵn và để tầng chung hiện khung "Cần làm trước" (ums.lamTruoc) trỏ tới màn danh mục dữ liệu.
+  - → Làm như hiện tại.
+- **[Kiểm trên host]** SuaVaiTro có ghi lại MOTA kèm thẻ `[nhom:…]` `[stt:…]` không — màn tự đối chiếu sau lưu và báo dải vàng nếu máy chủ nhận mà không ghi (như gốc).
+  - → Chấp nhận hành vi hiện tại (chưa kiểm trên host).
+
 ### apiscms/modules/vaitro/vaitronguoidung
 
 - **[Kiểm trên host]** Xoá người dùng khỏi vai trò gửi strCore_NhanSu_Id = ID dòng của LayDSNguoiDungVaiTro (như gốc); đúng chỉ khi ID dòng là ID người dùng.
