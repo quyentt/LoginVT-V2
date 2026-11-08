@@ -4392,3 +4392,5 @@ Cần kiểm trên host:
   - → Làm như hiện tại.
 - **[Kiểm trên host]** Danh mục dữ liệu `nhomvaitro` trên host đã khai chưa; chưa thì trang chủ dùng 9 nhóm có sẵn và màn CMS "Cấu hình nhóm vai trò" hiện khung "Cần làm trước".
   - → Chấp nhận hành vi hiện tại (chưa kiểm trên host).
+- **[Cần quyết]** Màn Cài đặt (9/11, người dùng hỏi "màu nhóm giao diện có bị ảnh hưởng"): mục "Màu nhóm vai trò" trước liệt kê 6 tone cũ mà cả thẻ số liệu dashboard cũng dùng → nay tách hai bảng: "Màu nhóm vai trò" lấy tone của từng nhóm trong `roleGroups` (9 nhóm), "Màu thẻ số liệu" giữ 6 tone cũ.
+  - → Đã làm, người dùng đồng ý.

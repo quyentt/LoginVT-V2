@@ -50,12 +50,20 @@
             </div>
         </div>
 
-        <!-- ===== Màu nhóm vai trò ===== -->
+        <!-- ===== Màu nhóm vai trò (9 nhóm theo roleGroups — tone của từng nhóm) ===== -->
         <div class="ums-panel">
             <div class="ums-panel__head">
                 <div class="ums-panel__title"><i class="fa-light fa-swatchbook"></i> Màu nhóm vai trò</div>
             </div>
             <div class="ums-panel__body" id="stTones"></div>
+        </div>
+
+        <!-- ===== Màu thẻ số liệu (tone dùng cho ums-stat ở dashboard, không liên quan nhóm vai trò) ===== -->
+        <div class="ums-panel">
+            <div class="ums-panel__head">
+                <div class="ums-panel__title"><i class="fa-light fa-chart-simple"></i> Màu thẻ số liệu</div>
+            </div>
+            <div class="ums-panel__body" id="stTonesStat"></div>
         </div>
 
     </div>
@@ -217,13 +225,24 @@
         colorField('color.warn', 'Cảnh báo') +
         colorField('color.bad', 'Lỗi');
 
-    /* ---------- Tông màu nhóm vai trò ----------------------------------- */
-    var TONES = [
+    /* ---------- Tông màu ---------------------------------------------------
+       Hai bảng tách bạch (9/11): "Màu nhóm vai trò" = tone của từng nhóm trong site.config roleGroups (9 nhóm theo
+       biên bản EAUT-APIS — đổi ở đây là thẻ vai trò trên trang chủ đổi); "Màu thẻ số liệu" = 6 tone cũ mà ums-stat
+       ở dashboard và vài nhãn dùng. Trước 9/11 hai nhóm dùng chung 6 tone nên chỉnh màu vai trò làm dashboard đổi theo. */
+    var TONES_VT = [], daCo = {};
+    (cfg.roleGroups || []).forEach(function (g) {
+        var k = g.tone || 'slate';
+        if (daCo[k]) return;
+        daCo[k] = true;
+        TONES_VT.push([k, g.name]);
+    });
+    var TONES_STAT = [
         ['blue', 'Xanh dương'], ['green', 'Xanh lá'], ['purple', 'Tím'],
         ['amber', 'Hổ phách'], ['red', 'Đỏ'], ['slate', 'Xám']
     ];
+    var TONES = TONES_VT.concat(TONES_STAT);
 
-    document.getElementById('stTones').innerHTML = TONES.map(function (t) {
+    function veTones(id, list) { document.getElementById(id).innerHTML = list.map(function (t) {
         var fg = val('tone.' + t[0] + '.fg') || '#64748b';
         var bg = val('tone.' + t[0] + '.bg') || '#eef1f6';
         return '<div class="ums-tonerow">' +
@@ -235,7 +254,9 @@
             '<input type="color" class="ums-color__swatch" data-color="tone.' + t[0] + '.fg" value="' + ui.esc(fg) + '" title="Màu chữ">' +
             '<input type="color" class="ums-color__swatch" data-color="tone.' + t[0] + '.bg" value="' + ui.esc(bg) + '" title="Màu nền">' +
             '</span></div>';
-    }).join('');
+    }).join(''); }
+    veTones('stTones', TONES_VT);
+    veTones('stTonesStat', TONES_STAT);
 
     /* ---------- Kích thước ---------------------------------------------- */
     document.getElementById('stSize').innerHTML =
