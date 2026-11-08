@@ -550,10 +550,11 @@
             return '<div class="ums-section">' +
                 '<span class="ums-section__name">' + esc(g.name) + '</span>' +
                 '<span class="ums-section__count">(' + items.length + ')</span></div>' +
-                '<div class="ums-grid ums-grid--cards">' +
+                '<div class="ums-grid ums-grid--cards ums-grid--vaitro">' +
                 items.map(function (r) {
+                    /* Thẻ vai trò gọn (người dùng 9/11): không dòng tên nhóm, tên lấy màu nhóm, ô biểu tượng nhỏ — tile.css .ums-grid--vaitro */
                     return ums.ui.tile({
-                        name: r.name, group: g.name, icon: r.icon,
+                        name: r.name, icon: r.icon,
                         tone: g.tone, href: '#/r/' + r.id
                     });
                 }).join('') + '</div>';
