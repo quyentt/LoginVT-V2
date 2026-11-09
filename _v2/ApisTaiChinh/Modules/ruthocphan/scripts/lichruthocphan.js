@@ -17,7 +17,7 @@
      DKH_RutHocPhan/LayDSThoiGianRut   strNguoiThucHien_Id                      → ô Đợt (ID / THOIGIAN), chọn sẵn mục đầu
      DKH_RutHocPhan/LayDSRut           strTuKhoa, strDaoTao_ThoiGianDaoTao_Id, strDaoTao_HeDaoTao_Id, strNguoiThucHien_Id
                                         → mỗi dòng = 1 sinh viên × 1 học phần, có NGAYRUT_DD_MM_YYYY
-     Hệ đào tạo: edu.system.getList_HeDaoTao → ums.ref.heDaoTao (bản không lọc quyền, như gốc).
+     Hệ đào tạo: edu.system.getList_HeDaoTao → ums.ref.heDaoTao (bản không lọc quyền, như gốc; PHẢI truyền pageIndex 1 / pageSize 1000000 — kiểm host 9/11).
    API không lọc theo khoảng ngày và không có số liệu theo ngày → nạp cả đợt rồi nhóm theo ngày ở máy khách
    (như gốc). Không tính lại số liệu: chỉ cộng các cột số của chính danh sách trả về.
 
@@ -189,7 +189,8 @@
 
     /* ---------- Nạp dữ liệu từ máy chủ ---------- */
     function napHeDaoTao() {
-        return ums.ref.heDaoTao().then(function (rows) {
+        // kiểm host 9/11: gọi không tham số → pageIndex / pageSize = 0 → ORA-24338 (con trỏ không mở); truyền đúng objList của gốc
+        return ums.ref.heDaoTao({ strHinhThucDaoTao_Id: '', strBacDaoTao_Id: '', strTuKhoa: '', pageIndex: 1, pageSize: 1000000 }).then(function (rows) {
             var el = F('he');
             el.innerHTML = '<option value="">Tất cả hệ đào tạo</option>' + (rows || []).map(function (r) {
                 return '<option value="' + esc(r.ID) + '">' + esc(r.TENHEDAOTAO) + '</option>';

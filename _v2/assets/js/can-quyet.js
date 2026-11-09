@@ -335,8 +335,7 @@
     /* Tài chính — màn MỚI kéo gốc lần 16 (9/11) "Lịch rút học phần", CHƯA kiểm host (host chưa khai chức năng). */
     them(TC + "ruthocphan/lichruthocphan", [
         {"man":"Tài chính → Rút học phần → Lịch rút học phần","ben":"oracle","q":"DKH_RutHocPhan/LayDSRut không lọc theo khoảng ngày và không trả số liệu theo ngày → màn nạp CẢ ĐỢT rồi nhóm theo ngày ở máy khách (như gốc). Đợt lớn (hàng nghìn lượt rút) sẽ nặng; nếu host chậm cần procedure trả số liệu theo ngày hoặc nhận tham số từ / đến ngày.","now":"Nạp cả đợt, nhóm theo ngày ở trình duyệt."},
-        {"man":"Tài chính → Rút học phần → Lịch rút học phần","host":true,"q":"Dòng rút không có NGAYRUT_DD_MM_YYYY thì không lên lịch; màn báo \"Có N lượt rút không có ngày rút\" (gốc cũng vậy). Kiểm host xem có dòng nào thế không — có thì là dữ liệu cần sửa.","now":"Đếm và báo ở đầu lưới tuần."},
-        {"man":"Tài chính → Rút học phần → Lịch rút học phần","host":true,"q":"Chức năng chưa có trên menu host (màn mới của kho gốc): chờ host khai DUONGDANFILE /Modules/ruthocphan/html/lichruthocphan.html dưới ApisTaiChinh rồi mới kiểm host được.","now":"Chỉ chạy bằng menu mẫu R33."}
+        {"man":"Tài chính → Rút học phần → Lịch rút học phần","host":true,"q":"Dòng rút không có NGAYRUT_DD_MM_YYYY thì không lên lịch; màn báo \"Có N lượt rút không có ngày rút\" (gốc cũng vậy). Kiểm host xem có dòng nào thế không — có thì là dữ liệu cần sửa.","now":"Đếm và báo ở đầu lưới tuần."}
     ]);
 
     ums.canQuyet = S;
