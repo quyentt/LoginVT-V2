@@ -343,6 +343,11 @@
                         <td>Tự dựng, mỗi bản một tên thuộc tính riêng</td>
                         <td><code>ums.pat.checks(host, rows, {…})</code></td>
                     </tr>
+                    <tr>
+                        <td><b>Nút cuối hàng ô lọc (có nhãn trên) tụt xuống thấp hơn ô nhập 16px</b> dù ô nút đã <code>align-items: flex-end</code> (Lịch rút học phần, 9/11)</td>
+                        <td><code>.ums-field</code> có lề dưới 16px, nhưng <code>.ums-field:last-child</code> bỏ lề — ô nút là con cuối lưới nên mất lề trong khi ô nhập bên cạnh còn → hàng lưới cao hơn 16px, nút căn đáy rơi xuống đó. Ghi đè bằng lớp đơn không ăn vì <code>:last-child</code> có độ ưu tiên (0,2,0).</td>
+                        <td>Trả lề cho ô nút bằng bộ chọn thắng được: <code>.ums-field.&lt;lớp màn&gt;:last-child { margin-bottom: var(--ums-sp-4) }</code>; rồi đo <code>getBoundingClientRect().bottom</code> của nút và ô nhập phải bằng nhau.</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
