@@ -39,6 +39,9 @@ def main():
         print(__doc__); return
     html_p = args[0].replace('\\', '/')
     js_p = args[1].replace('\\', '/') if len(args) > 1 else re.sub(r'/html/([^/]+)\.html$', r'/script/\1.js', html_p)
+    # 9/11: vài module gốc đặt JS ở scripts/ (ApisTaiChinh phieurut, ruthocphan) — không có script/<tên>.js thì thử scripts/
+    if len(args) == 1 and not os.path.exists(js_p) and os.path.exists(js_p.replace('/script/', '/scripts/')):
+        js_p = js_p.replace('/script/', '/scripts/')
     html, js = doc(html_p), doc(js_p)
     hl, jl = html.split('\n'), js.split('\n')
     print('# %s (%d dòng)  +  %s (%d dòng)' % (html_p, len(hl), js_p, len(jl)))

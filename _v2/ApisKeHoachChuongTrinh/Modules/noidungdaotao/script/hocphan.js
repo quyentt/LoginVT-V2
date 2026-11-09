@@ -20,6 +20,11 @@
        KHCT_MonHoc/LayDanhSach    GET  strThuocBoMon_Id = Bộ môn đang lọc (ô Môn học của thanh lọc)
    Danh mục: KHCT.TTHP (thuộc tính), KHCT.LOAIPHANBO (loại phân bổ), DAOTAO.LOAIHOCPHAN (loại học phần).
    Import: nút "Import" → showImportChung('Học phần', 'IMPORTWITHPROC_HP') của gốc (ums.report.importChung).
+   Xuất Excel (kéo gốc lần 16, 9/11 — gốc edu.exporter.attachTable + fetchAll): nút cạnh Import, xuất TOÀN BỘ học phần
+       theo điều kiện đang lọc (LayDanhSach pageSize 1000000), kèm cột "Tên học phần tiếng Anh" (bảng không có) để dò
+       học phần chưa có tên tiếng Anh; API danh sách không trả TENTA → nạp từng học phần bằng LayChiTiet (8 cùng lúc,
+       ums.ui.batch); hộp hỏi trước khi xuất báo số chưa có tên tiếng Anh + ô "lọc thêm khi xuất" (Tên tiếng Anh, Bộ môn).
+       Tầng chung: ums.ui.xuatXls thay edu.exporter (tệp .xls bảng HTML, không CDN); không có phiên bản exporter để kiểm.
 
    Khác gốc (sửa lỗi / tự chốt):
    - Ô Bộ môn của biểu mẫu gốc bị nạp HAI nguồn đè nhau (getList_CoCauToChuc và danh mục KHCT.BOMON — cái
@@ -35,7 +40,7 @@
     'use strict';
     var root = document.getElementById('khct-hocphan');
     if (!root) return;
-    var N = ums.khctND, pat = ums.pat;
+    var N = ums.khctND, pat = ums.pat, ui = ums.ui;
     var BOMON = N.srcBoMon();
     var TTHP = { dm: 'KHCT.TTHP' };
     var MONHOC = { call: { action: 'KHCT_MonHoc/LayDanhSach', method: 'GET', strTuKhoa: '', strThuocBoMon_Id: '',
@@ -72,6 +77,84 @@
         luoi.load(row ? row.ID : '');
     }
 
+    /* ---------- Xuất Excel (gốc 9/11: edu.exporter.attachTable + fetchAll) ----------------
+       Xuất TOÀN BỘ học phần theo điều kiện đang lọc, kèm "Tên học phần tiếng Anh". API danh sách
+       có thể không trả TENTA → nạp từng học phần bằng LayChiTiet; học phần nạp lỗi ghi
+       "(không nạp được)" — không để trống kẻo hiểu nhầm là chưa có tên tiếng Anh. */
+    var TT = { co: 'Đã có tên tiếng Anh', chua: 'Chưa có tên tiếng Anh', loi: 'Không nạp được' };
+    function ttTenTA(r) {
+        if (r.__tenTaLoi) return TT.loi;
+        return String(r.TENTA === null || r.TENTA === undefined ? '' : r.TENTA).replace(/\s+/g, '') === '' ? TT.chua : TT.co;
+    }
+    function napTatCa(c) {
+        var call = c.cfg.list.call(c.filterValues(), { index: 1, size: 1000000 });
+        call.pageIndex = 1; call.pageSize = 1000000;
+        return ums.api.call(call).then(function (r) { var d = r.data; return Array.isArray(d) ? d : (d && d.rs) || []; });
+    }
+    function boSungTenTA(rows) {
+        if (!rows.length || rows.some(function (r) { return r.TENTA !== undefined; })) return Promise.resolve(rows);
+        return ui.batch(rows.map(function (r) {
+            return function () {
+                return ums.api.call({ action: 'KHCT_HocPhan/LayChiTiet', method: 'GET', strId: r.ID, silent: true }).then(function (x) {
+                    var d = Array.isArray(x.data) ? x.data[0] : null;
+                    if (!d) throw new Error('Không có dữ liệu chi tiết');
+                    r.TENTA = d.TENTA === null || d.TENTA === undefined ? '' : d.TENTA;
+                }, function (err) { r.TENTA = ''; r.__tenTaLoi = 1; throw err; });
+            };
+        }), { title: 'Đang nạp tên tiếng Anh của ' + rows.length + ' học phần', concurrency: 8, toast: false, show: true })
+            .then(function () { return rows; });
+    }
+    function chuThuan(v) { return String(v === null || v === undefined ? '' : v).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim(); }
+    var COT_XUAT = [
+        { title: 'Mã học phần', prop: 'MA' },
+        { title: 'Tên học phần', prop: 'TEN' },
+        { title: 'Tên học phần tiếng Anh', get: function (r) { return r.__tenTaLoi ? '(không nạp được)' : r.TENTA; } },
+        { title: 'Bộ môn', prop: 'THUOCBOMON_TEN' },
+        { title: 'Môn học', prop: 'DAOTAO_MONHOC_TEN' },
+        { title: 'Thuộc tính học phần', prop: 'THUOCTINHHOCPHAN_TEN' },
+        { title: 'Số tín chỉ', prop: 'HOCTRINH' },
+        { title: 'Sử dụng trong CTĐT', get: function (r) { return chuThuan(r.HOCPHANSUDUNGTRONGCTDT); } }
+    ];
+    function mucChon(list) { return list.map(function (t) { return '<option value="' + ui.esc(t) + '">' + ui.esc(t) + '</option>'; }).join(''); }
+    function hopXuat(c, rows) {
+        var nChua = rows.filter(function (r) { return ttTenTA(r) === TT.chua; }).length,
+            nLoi = rows.filter(function (r) { return ttTenTA(r) === TT.loi; }).length;
+        var boMon = [];
+        rows.forEach(function (r) { var t = r.THUOCBOMON_TEN; if (t && boMon.indexOf(t) < 0) boMon.push(t); });
+        boMon.sort(function (a, b) { return String(a).localeCompare(String(b), 'vi'); });
+        var luuY = [];
+        if (nChua) luuY.push('Có ' + nChua + '/' + rows.length + ' học phần chưa có tên tiếng Anh. Chọn "' + TT.chua + '" ở ô "Tên tiếng Anh" bên dưới để chỉ xuất các học phần này.');
+        if (nLoi) luuY.push('Không nạp được tên tiếng Anh của ' + nLoi + ' học phần (tệp ghi "(không nạp được)") — thử xuất lại.');
+        var body = '<div class="ums-u-mb-2">Sẽ xuất <b>' + rows.length + '</b> học phần theo điều kiện đang lọc.</div>' +
+            (luuY.length ? '<div class="ums-u-fz13 ums-u-danger ums-u-mb-2">' + luuY.map(function (t) { return '<div><i class="fa-light fa-triangle-exclamation"></i> ' + ui.esc(t) + '</div>'; }).join('') + '</div>' : '') +
+            '<div class="ums-u-fz13 ums-u-muted ums-u-mb-2">Lọc thêm khi xuất (bỏ trống = tất cả):</div>' +
+            ui.field('Tên tiếng Anh', '<select class="ums-select" data-x="ta"><option value="">Tất cả</option>' + mucChon([TT.co, TT.chua].concat(nLoi ? [TT.loi] : [])) + '</select>') +
+            ui.field('Bộ môn', '<select class="ums-select" data-x="bm"><option value="">Tất cả</option>' + mucChon(boMon) + '</select>');
+        ui.dialog({
+            title: 'Xuất Excel danh sách học phần', icon: 'fa-file-excel', size: 'sm', body: body,
+            buttons: [{ text: 'Xuất Excel', kind: 'excel', onClick: function (api) {
+                var ta = api.body.querySelector('[data-x="ta"]').value, bm = api.body.querySelector('[data-x="bm"]').value;
+                var dong = rows.filter(function (r) { return (!ta || ttTenTA(r) === ta) && (!bm || r.THUOCBOMON_TEN === bm); });
+                if (!dong.length) { ui.toast('Không có học phần nào khớp điều kiện lọc thêm.', 'warn'); return false; }
+                var phu = [], dk = ums.process.dieuKien([['Bộ môn', N.fl(c, 'bomon')], ['Môn học', N.fl(c, 'monhoc')], ['Thuộc tính học phần', N.fl(c, 'tthp')]]);
+                var tk = (c.filterValues().q || '').trim();
+                if (dk) phu.push(dk);
+                if (tk) phu.push('Từ khóa: ' + tk);
+                if (ta || bm) phu.push('Lọc thêm khi xuất — ' + [ta ? 'Tên tiếng Anh: ' + ta : '', bm ? 'Bộ môn: ' + bm : ''].filter(Boolean).join(' · '));
+                var d = new Date(), p = function (n) { return (n < 10 ? '0' : '') + n; };
+                ui.xuatXls('DanhSachHocPhan_' + d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + '_' + p(d.getHours()) + p(d.getMinutes()),
+                    { tieuDe: 'DANH SÁCH HỌC PHẦN', phu: phu, cot: COT_XUAT, dong: dong });
+            } }]
+        });
+    }
+    function xuatExcel(c) {
+        ui.toast('Đang nạp toàn bộ danh sách để xuất…', 'info');
+        napTatCa(c).then(boSungTenTA).then(function (rows) {
+            if (!rows.length) return ui.toast('Không có học phần nào để xuất.', 'warn');
+            hopXuat(c, rows);
+        }).catch(function (err) { ums.api.handle(err, 'xuất Excel học phần'); });
+    }
+
     var crud = ums.crud({
         root: root,
         title: 'Học phần',
@@ -83,7 +166,7 @@
         formDelete: false,
         toolbar: [{ text: 'Import', icon: 'fa-cloud-arrow-up', mod: 'out-info', onClick: function (c) {
             ums.report.importChung('Học phần', 'IMPORTWITHPROC_HP', { onDone: function () { c.load(); } });
-        } }],
+        } }, { text: 'Xuất Excel', icon: 'fa-file-excel', mod: 'out-info', onClick: function (c) { xuatExcel(c); } }],
         filters: [
             { key: 'q', type: 'text', label: 'Nhập từ khóa tìm kiếm' },
             { key: 'bomon', type: 'select', label: 'Chọn bộ môn', source: BOMON },

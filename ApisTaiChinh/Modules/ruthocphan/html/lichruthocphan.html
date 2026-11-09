@@ -1,0 +1,872 @@
+<style>
+    /* ===== Lịch rút học phần — CSS scope theo #rhpWrap / #modalRhpChiTiet =====
+       Không dùng calendar.css của shell mới (vỏ indexi.aspx không nạp) và KHÔNG dùng class .btn cho nút điều hướng
+       (systemroot.js:144 gắn spinner + disabled 1s cho mọi .btn).
+       Khoảng cách: vỏ indexi.aspx đặt .box-body padding 0, .box margin-bottom 14px !important và .row không có lề âm
+       => nội dung dính mép hộp, và cột Bootstrap (padding 15px) làm các khối lệch mép nhau. Vì vậy trang này KHÔNG dùng
+       .row/.col mà tự dựng lưới, và ghi đè padding/margin bằng #rhpWrap#rhpWrap (2 id) để thắng rule của vỏ. */
+    #rhpWrap {
+        --rhp-navy: #223771;
+        --rhp-blue: #2f55a4;
+        --rhp-orange: #ec4c00;
+        --rhp-line: #e5e9f2;
+        --rhp-text: #0f172a;
+        --rhp-muted: #64748b;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        padding-bottom: 28px;
+    }
+
+    #rhpWrap#rhpWrap .box {
+        margin: 0 !important;
+    }
+
+    #rhpWrap#rhpWrap .box > .box-header {
+        padding: 16px 22px !important;
+    }
+
+    #rhpWrap#rhpWrap .box > .box-body {
+        padding: 20px 22px 22px !important;
+    }
+
+    #rhpWrap .rhp-nav {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        cursor: pointer;
+        color: var(--rhp-blue);
+        text-decoration: none;
+        user-select: none;
+    }
+
+    #rhpWrap .rhp-nav:hover {
+        background: rgba(47, 85, 164, .12);
+    }
+
+    #rhpWrap .rhp-mini-head .rhp-nav {
+        color: #fff;
+    }
+
+    #rhpWrap .rhp-mini-head .rhp-nav:hover {
+        background: rgba(255, 255, 255, .2);
+    }
+
+    #rhpWrap .rhp-weeknav {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 600;
+        color: var(--rhp-text);
+    }
+
+    #rhpWrap .rhp-hom-nay {
+        cursor: pointer;
+        color: var(--rhp-blue);
+        font-weight: 600;
+        padding: 4px 14px;
+        border: 1px solid var(--rhp-blue);
+        border-radius: 16px;
+        margin-left: 8px;
+        font-size: 12.5px;
+        user-select: none;
+    }
+
+    #rhpWrap .rhp-hom-nay:hover {
+        background: var(--rhp-blue);
+        color: #fff;
+    }
+
+    /* ----- Bộ lọc ----- */
+    #rhpWrap .rhp-link {
+        cursor: pointer;
+        color: var(--rhp-blue);
+        font-weight: 600;
+        user-select: none;
+        text-decoration: none;
+    }
+
+    #rhpWrap .rhp-count {
+        display: inline-block;
+        min-width: 20px;
+        height: 20px;
+        line-height: 20px;
+        padding: 0 6px;
+        border-radius: 10px;
+        background: var(--rhp-orange);
+        color: #fff;
+        font-size: 12px;
+        font-weight: 700;
+        text-align: center;
+        margin: 0 4px;
+    }
+
+    #rhpWrap .rhp-fgrid {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 16px 22px;
+        align-items: end;
+    }
+
+    #rhpWrap .rhp-f {
+        min-width: 0;
+    }
+
+    #rhpWrap .rhp-f > label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        color: #475569;
+        margin-bottom: 6px;
+    }
+
+    #rhpWrap .rhp-f .select2-container {
+        width: 100% !important;
+    }
+
+    #rhpWrap .rhp-s3 {
+        grid-column: span 3;
+    }
+
+    #rhpWrap .rhp-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    #rhpWrap .rhp-sub-title {
+        font-size: 12.5px;
+        font-weight: 700;
+        color: var(--rhp-muted);
+        text-transform: uppercase;
+        letter-spacing: .5px;
+        margin: 22px 0 16px;
+        padding-top: 18px;
+        border-top: 1px dashed #d5dcea;
+    }
+
+    @media (max-width: 991px) {
+        #rhpWrap .rhp-s3 {
+            grid-column: span 6;
+        }
+    }
+
+    @media (max-width: 575px) {
+        #rhpWrap .rhp-s3 {
+            grid-column: span 12;
+        }
+    }
+
+    /* ----- Thẻ số liệu: nền trắng, chữ đen đậm; màu tone chỉ ở khung icon + viền trái ----- */
+    #rhpWrap .rhp-kpis {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+    }
+
+    #rhpWrap .rhp-kpi {
+        background: #fff;
+        border: 1px solid var(--rhp-line);
+        border-left: 4px solid var(--c);
+        border-radius: 12px;
+        padding: 16px 20px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        min-width: 0;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, .04);
+    }
+
+    #rhpWrap .rhp-kpi .ic {
+        flex: 0 0 46px;
+        width: 46px;
+        height: 46px;
+        border-radius: 12px;
+        background: var(--bg);
+        color: var(--c);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 21px;
+    }
+
+    #rhpWrap .rhp-kpi .v {
+        font-size: 23px;
+        font-weight: 700;
+        color: var(--rhp-text);
+        line-height: 1.15;
+    }
+
+    #rhpWrap .rhp-kpi .l {
+        font-size: 13px;
+        color: var(--rhp-muted);
+        margin-top: 3px;
+    }
+
+    #rhpWrap .rhp-kpi-foot {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 12px;
+    }
+
+    #rhpWrap .rhp-kpi-cap {
+        font-size: 13px;
+        color: var(--rhp-muted);
+        margin: 0 4px;
+    }
+
+    #rhpWrap .rhp-kpi-cap b {
+        color: var(--rhp-text);
+    }
+
+    /* Thông báo trong trang (thay cho alert) */
+    #rhpWrap .rhp-banner {
+        border-left: 4px solid var(--rhp-blue);
+        background: #eff6ff;
+        padding: 10px 14px;
+        margin-bottom: 16px;
+        border-radius: 6px;
+        color: var(--rhp-text);
+    }
+
+    #rhpWrap .rhp-banner.w {
+        border-left-color: #d97706;
+        background: #fffbeb;
+    }
+
+    #rhpWrap .rhp-banner.e {
+        border-left-color: #dc2626;
+        background: #fef2f2;
+    }
+
+    /* ----- Khối chính: lưới tuần (trái) + lịch tháng (phải); tự dựng lưới để thẳng mép với bộ lọc và thẻ số liệu ----- */
+    #rhpWrap .rhp-main {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 320px;
+        gap: 18px;
+        align-items: start;
+    }
+
+    @media (max-width: 1199px) {
+        #rhpWrap .rhp-main {
+            grid-template-columns: minmax(0, 1fr);
+        }
+    }
+
+    /* ----- Lưới tuần: chỉ trục ngang theo ngày, KHÔNG có trục giờ ----- */
+    #rhpWrap .rhp-scroll-x {
+        overflow-x: auto;
+        padding-bottom: 2px;
+    }
+
+    #rhpWrap .rhp-week {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(148px, 1fr));
+        min-width: 1036px;
+        border: 1px solid var(--rhp-line);
+        border-radius: 10px;
+        background: #fff;
+        overflow: hidden;
+    }
+
+    #rhpWrap .rhp-day {
+        border-right: 1px solid var(--rhp-line);
+        min-height: 320px;
+        background: #fff;
+    }
+
+    #rhpWrap .rhp-day:last-child {
+        border-right: 0;
+    }
+
+    #rhpWrap .rhp-day-head {
+        text-align: center;
+        padding: 12px 6px 10px;
+        border-bottom: 2px solid #b9c7e6;
+        line-height: 1.45;
+    }
+
+    #rhpWrap .rhp-day-head .w {
+        color: var(--rhp-text);
+        font-weight: 700;
+        font-size: 14px;
+    }
+
+    #rhpWrap .rhp-day-head .d {
+        color: var(--rhp-muted);
+        font-size: 12.5px;
+    }
+
+    #rhpWrap .rhp-day.is-today .rhp-day-head {
+        background: #eef3ff;
+    }
+
+    #rhpWrap .rhp-day.is-sel .rhp-day-head .w,
+    #rhpWrap .rhp-day.is-sel .rhp-day-head .d {
+        color: var(--rhp-orange);
+    }
+
+    /* Thẻ tóm tắt: đầu thẻ đổ màu chữ trắng + thân trắng (giống thẻ Thời khóa biểu cá nhân); ô không có dữ liệu để trắng */
+    #rhpWrap .rhp-card {
+        margin: 12px 10px;
+        background: #fff;
+        border: 1px solid var(--rhp-line);
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, .12);
+        cursor: pointer;
+        overflow: hidden;
+    }
+
+    #rhpWrap .rhp-card:hover,
+    #rhpWrap .rhp-card:focus {
+        box-shadow: 0 4px 12px rgba(34, 55, 113, .30);
+        outline: none;
+    }
+
+    #rhpWrap .rhp-card-head {
+        background: var(--rhp-navy);
+        color: #fff;
+        padding: 10px 12px;
+        font-weight: 700;
+        font-size: 14px;
+        line-height: 1.35;
+    }
+
+    #rhpWrap .rhp-card-head small {
+        display: block;
+        font-weight: 500;
+        font-size: 12px;
+        opacity: .92;
+        margin-top: 1px;
+    }
+
+    #rhpWrap .rhp-card-body {
+        padding: 12px 12px 12px;
+        font-size: 13px;
+        color: #334155;
+    }
+
+    #rhpWrap .rhp-kv {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 3px 0;
+    }
+
+    #rhpWrap .rhp-kv b {
+        color: var(--rhp-text);
+        text-align: right;
+    }
+
+    #rhpWrap .rhp-kv-big {
+        display: block;
+        margin-top: 4px;
+        padding: 6px 0 2px;
+    }
+
+    #rhpWrap .rhp-kv-big b {
+        display: block;
+        font-size: 16px;
+        text-align: left;
+        margin-top: 1px;
+    }
+
+    #rhpWrap .rhp-hp-cap {
+        font-size: 12px;
+        color: var(--rhp-muted);
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px dashed #d7deec;
+    }
+
+    #rhpWrap .rhp-hp {
+        list-style: none;
+        margin: 4px 0 0;
+        padding: 0;
+    }
+
+    #rhpWrap .rhp-hp li {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        line-height: 1.65;
+    }
+
+    #rhpWrap .rhp-hp li span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        min-width: 0;
+    }
+
+    #rhpWrap .rhp-hp li b {
+        color: var(--rhp-text);
+    }
+
+    #rhpWrap .rhp-more {
+        color: var(--rhp-muted);
+        font-size: 12px;
+        margin-top: 2px;
+    }
+
+    #rhpWrap .rhp-view {
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid #eef1f7;
+        color: var(--rhp-blue);
+        font-weight: 600;
+        text-align: right;
+    }
+
+    /* ----- Lịch tháng nhỏ ----- */
+    #rhpWrap .rhp-mini-box {
+        overflow: hidden;
+    }
+
+    #rhpWrap .rhp-mini-head {
+        background: var(--rhp-navy);
+        color: #fff;
+        padding: 12px 14px 12px 20px;
+        font-weight: 700;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    #rhpWrap .rhp-mini-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        padding: 10px 14px 6px;
+        text-align: center;
+    }
+
+    #rhpWrap .rhp-mini-grid .wd {
+        font-weight: 600;
+        color: var(--rhp-muted);
+        padding: 8px 0;
+        font-size: 13px;
+    }
+
+    #rhpWrap .rhp-mini-grid .dd {
+        padding: 3px 0;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+    }
+
+    #rhpWrap .rhp-mini-grid .dd span {
+        width: 32px;
+        height: 32px;
+        line-height: 32px;
+        border-radius: 50%;
+        font-size: 13.5px;
+        color: var(--rhp-text);
+    }
+
+    #rhpWrap .rhp-mini-grid .dd.other span {
+        color: #b4bccb;
+    }
+
+    #rhpWrap .rhp-mini-grid .dd.inweek {
+        background: #f1f5fb;
+    }
+
+    #rhpWrap .rhp-mini-grid .dd.today span {
+        box-shadow: inset 0 0 0 2px var(--rhp-blue);
+    }
+
+    /* Ô có dữ liệu rút = tròn xanh đặc chữ trắng (giống ô "có lịch" của Thời khóa biểu cá nhân); ô đang chọn = cam */
+    #rhpWrap .rhp-mini-grid .dd.has span {
+        background: var(--rhp-blue);
+        color: #fff;
+        font-weight: 700;
+    }
+
+    #rhpWrap .rhp-mini-grid .dd.sel span {
+        background: var(--rhp-orange);
+        color: #fff;
+        font-weight: 700;
+    }
+
+    #rhpWrap .rhp-legend {
+        margin: 6px 20px 0;
+        padding: 14px 0 18px;
+        border-top: 1px solid #eef1f7;
+        font-size: 13px;
+        color: #334155;
+    }
+
+    #rhpWrap .rhp-legend div {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 3px 0;
+    }
+
+    #rhpWrap .rhp-legend i {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        flex: 0 0 16px;
+    }
+
+    /* ----- Modal chi tiết ----- */
+    #modalRhpChiTiet .modal-dialog {
+        width: 96%;
+        max-width: 1700px;
+    }
+
+    #modalRhpChiTiet .rhp-title-badge {
+        display: inline-block;
+        margin-left: 8px;
+        padding: 2px 10px;
+        border-radius: 12px;
+        background: #eaf0ff;
+        color: #223771;
+        border: 1px solid #c7d4f5;
+        font-size: 13px;
+        font-weight: 600;
+        vertical-align: middle;
+    }
+
+    #modalRhpChiTiet .rhp-tool {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+    }
+
+    #modalRhpChiTiet .rhp-tong {
+        color: #334155;
+        font-size: 14px;
+    }
+
+    #modalRhpChiTiet .rhp-tong b {
+        color: #0f172a;
+    }
+
+    #modalRhpChiTiet .rhp-tim {
+        position: relative;
+        flex: 0 1 380px;
+        min-width: 220px;
+    }
+
+    /* Icon kính lúp: căn giữa theo chiều dọc, không bắt chuột. Chừa chỗ bằng padding-left với 2 id để thắng rule
+       `html body.skin-blue #main-content-wrapper .form-control { padding: 6px 12px !important }` của vỏ */
+    #modalRhpChiTiet .rhp-tim i {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+        pointer-events: none;
+        z-index: 2;
+    }
+
+    #modalRhpChiTiet#modalRhpChiTiet .rhp-tim input.form-control {
+        padding-left: 40px !important;
+    }
+
+    #modalRhpChiTiet .rhp-chips {
+        margin-bottom: 10px;
+    }
+
+    #modalRhpChiTiet .rhp-chip {
+        display: inline-block;
+        margin: 0 6px 4px 0;
+        padding: 2px 10px;
+        border-radius: 12px;
+        background: #f1f5f9;
+        border: 1px solid #dbe3ef;
+        color: #334155;
+        font-size: 12.5px;
+    }
+
+    #modalRhpChiTiet .rhp-chip b {
+        color: #0f172a;
+    }
+
+    #modalRhpChiTiet .rhp-tbl-wrap {
+        max-height: 62vh;
+        overflow: auto;
+        border: 1px solid #e5e9f2;
+    }
+
+    #modalRhpChiTiet .rhp-tbl-wrap table {
+        margin: 0;
+        white-space: nowrap;
+    }
+
+    #modalRhpChiTiet .rhp-tbl-wrap thead th {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        background: #f1f5f9;
+        text-align: center;
+        vertical-align: middle;
+        white-space: normal;
+        line-height: 1.25;
+        color: #0f172a;
+    }
+
+    #modalRhpChiTiet .rhp-tbl-wrap tbody td {
+        vertical-align: middle;
+        color: #0f172a;
+    }
+
+    #modalRhpChiTiet .rhp-tbl-wrap td.c {
+        text-align: center;
+    }
+
+    #modalRhpChiTiet .rhp-tbl-wrap td.r {
+        text-align: right;
+    }
+
+    /* Cột chữ dài cho xuống dòng để các cột số + dòng Tổng nằm trong màn hình đầu tiên, không phải cuộn ngang mới thấy */
+    #modalRhpChiTiet .rhp-tbl-wrap td.w {
+        white-space: normal;
+        min-width: 190px;
+        max-width: 300px;
+    }
+
+    #modalRhpChiTiet .rhp-tbl-wrap td.w div + div {
+        margin-top: 3px;
+        padding-top: 3px;
+        border-top: 1px dotted #cbd5e1;
+    }
+
+    /* Tô nền xen kẽ THEO TỪNG SINH VIÊN (1 sinh viên có thể rút nhiều học phần) + vạch đầu nhóm */
+    #modalRhpChiTiet .rhp-tbl-wrap tbody tr.g1 td {
+        background: #f7f9fd;
+    }
+
+    #modalRhpChiTiet .rhp-tbl-wrap tbody tr.first td {
+        border-top: 2px solid #cbd5e1;
+    }
+
+    #modalRhpChiTiet .rhp-na {
+        color: #b4bccb;
+    }
+
+    #modalRhpChiTiet .rhp-trong {
+        text-align: center;
+        padding: 26px 0;
+        color: #64748b;
+    }
+
+    /* Dòng tổng (cột số, không cộng STT/%): ghim ở đáy khung cuộn để luôn nhìn thấy khi danh sách dài */
+    #modalRhpChiTiet .rhp-sum-row td {
+        background: #f1f5f9;
+        font-weight: 700;
+        border-top: 2px solid #cbd5e1;
+        position: sticky;
+        bottom: 0;
+        z-index: 1;
+    }
+</style>
+
+<section class="content">
+    <div id="rhpWrap">
+        <!-- Bộ lọc -->
+        <div class="box box-solid">
+            <div class="box-header with-border">
+                <h3 class="box-title"><i class="fa fa-filter"></i> Bộ lọc</h3>
+                <div class="pull-right">
+                    <a class="rhp-link" id="rhpToggleLoc" title="Thu gọn / mở rộng bộ lọc nâng cao">
+                        <i class="fa fa-sliders"></i> Bộ lọc nâng cao
+                        <span class="rhp-count" id="rhpSoLoc" style="display: none">0</span>
+                        <i class="fa fa-chevron-up" id="rhpIconLoc"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="box-body">
+                <!-- Lọc tại máy chủ (bấm Tìm kiếm / đổi đợt, hệ để nạp lại) -->
+                <div class="rhp-fgrid">
+                    <div class="rhp-f rhp-s3">
+                        <label>Đợt đăng ký</label>
+                        <select id="dropSearch_DotRut" class="select-opt" style="width: 100%"></select>
+                    </div>
+                    <div class="rhp-f rhp-s3">
+                        <label>Hệ đào tạo</label>
+                        <select id="dropSearch_HeDaoTao_Rut" class="select-opt" style="width: 100%"></select>
+                    </div>
+                    <div class="rhp-f rhp-s3">
+                        <label>Từ khóa</label>
+                        <input type="text" id="txtRhpTuKhoa" class="form-control" placeholder="Mã sinh viên hoặc họ và tên">
+                    </div>
+                    <div class="rhp-f rhp-s3 rhp-actions">
+                        <a class="btn btn-primary" id="rhpBtnTim"><i class="fa fa-search"></i> Tìm kiếm</a>
+                        <a class="btn btn-default" id="rhpBtnXoaLoc"><i class="fa fa-eraser"></i> Xóa bộ lọc</a>
+                    </div>
+                </div>
+                <!-- Lọc ngay trên dữ liệu đã nạp (không gọi lại máy chủ); số trong ngoặc = số lượt rút -->
+                <div id="rhpLocNangCao">
+                    <div class="rhp-sub-title">Lọc trên kết quả đã tải</div>
+                    <div class="rhp-fgrid">
+                        <div class="rhp-f rhp-s3">
+                            <label>Từ ngày rút</label>
+                            <input type="text" id="dpRhpTuNgay" class="form-control input-datepicker rhp-loc-ngay" placeholder="dd/mm/yyyy" maxlength="10" autocomplete="off">
+                        </div>
+                        <div class="rhp-f rhp-s3">
+                            <label>Đến ngày rút</label>
+                            <input type="text" id="dpRhpDenNgay" class="form-control input-datepicker rhp-loc-ngay" placeholder="dd/mm/yyyy" maxlength="10" autocomplete="off">
+                        </div>
+                        <div class="rhp-f rhp-s3">
+                            <label>Khóa đào tạo</label>
+                            <select id="dropRhpKhoa" class="select-opt rhp-loc" style="width: 100%"></select>
+                        </div>
+                        <div class="rhp-f rhp-s3">
+                            <label>Chương trình đào tạo</label>
+                            <select id="dropRhpChuongTrinh" class="select-opt rhp-loc" style="width: 100%"></select>
+                        </div>
+                        <div class="rhp-f rhp-s3">
+                            <label>Lớp quản lý</label>
+                            <select id="dropRhpLop" class="select-opt rhp-loc" style="width: 100%"></select>
+                        </div>
+                        <div class="rhp-f rhp-s3">
+                            <label>Học phần</label>
+                            <select id="dropRhpHocPhan" class="select-opt rhp-loc" style="width: 100%"></select>
+                        </div>
+                        <div class="rhp-f rhp-s3">
+                            <label>Trạng thái người học</label>
+                            <select id="dropRhpTrangThai" class="select-opt rhp-loc" style="width: 100%"></select>
+                        </div>
+                        <div class="rhp-f rhp-s3">
+                            <label>Kiểu học</label>
+                            <select id="dropRhpKieuHoc" class="select-opt rhp-loc" style="width: 100%"></select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Số liệu theo bộ lọc -->
+        <div>
+            <div class="rhp-kpis" id="rhpKpi"></div>
+            <div class="rhp-kpi-foot">
+                <div class="rhp-kpi-cap" id="rhpKpiCap"></div>
+                <a class="btn btn-success rhp-export" id="rhpBtnXuat" title="Xuất Excel toàn bộ kết quả đang lọc (tất cả các ngày)"><i class="fa fa-file-excel-o"></i> Xuất Excel</a>
+            </div>
+        </div>
+
+        <div class="rhp-main">
+            <!-- Lưới tuần -->
+            <div class="box box-solid">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><i class="fa fa-calendar"></i> Lịch rút học phần</h3>
+                    <div class="pull-right rhp-weeknav">
+                        <a class="rhp-nav" id="rhpTuanTruoc" title="Tuần trước"><i class="fa fa-chevron-left"></i></a>
+                        <span id="rhpNhanTuan"></span>
+                        <a class="rhp-nav" id="rhpTuanSau" title="Tuần sau"><i class="fa fa-chevron-right"></i></a>
+                        <a class="rhp-hom-nay" id="rhpHomNay" title="Về tuần hiện tại">Hôm nay</a>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div id="rhpThongBao"></div>
+                    <div class="rhp-scroll-x">
+                        <div class="rhp-week" id="rhpTuan"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lịch tháng + chú thích -->
+            <div class="box box-solid rhp-mini-box">
+                <div class="rhp-mini-head">
+                    <span><i class="fa fa-calendar"></i> <span id="rhpNhanThang"></span></span>
+                    <span>
+                        <a class="rhp-nav" id="rhpThangTruoc" title="Tháng trước"><i class="fa fa-chevron-left"></i></a>
+                        <a class="rhp-nav" id="rhpThangSau" title="Tháng sau"><i class="fa fa-chevron-right"></i></a>
+                    </span>
+                </div>
+                <div class="rhp-mini-grid" id="rhpThang"></div>
+                <div class="rhp-legend">
+                    <div><i style="background: var(--rhp-blue)"></i> Ngày có sinh viên rút học phần</div>
+                    <div><i style="background: var(--rhp-orange)"></i> Ngày đang chọn</div>
+                    <div><i style="box-shadow: inset 0 0 0 2px var(--rhp-blue)"></i> Hôm nay</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Modal: danh sách sinh viên rút trong 1 ngày -->
+<div class="modal fade" id="modalRhpChiTiet" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span><span class="sr-only">Đóng</span>
+                </button>
+                <h3 class="box-title">
+                    <i class="fa fa-user-times"></i> Sinh viên rút học phần - <span id="rhpModalNgay"></span>
+                    <span class="rhp-title-badge" id="rhpModalDot"></span>
+                </h3>
+            </div>
+            <div class="modal-body">
+                <div class="rhp-tool">
+                    <div class="rhp-tong" id="rhpModalTong"></div>
+                    <div class="rhp-tim">
+                        <i class="fa fa-search"></i>
+                        <input type="text" id="txtRhpModalTim" class="form-control" placeholder="Tìm theo mã sinh viên, họ tên, học phần, lớp...">
+                    </div>
+                </div>
+                <div class="rhp-chips" id="rhpModalLoc"></div>
+                <div class="rhp-tbl-wrap">
+                    <table class="table table-hover table-bordered" id="tblRhpChiTiet">
+                        <thead>
+                            <tr>
+                                <th style="min-width: 48px">STT</th>
+                                <th style="min-width: 110px">Mã sinh viên</th>
+                                <th style="min-width: 170px">Họ và tên</th>
+                                <th style="min-width: 130px">Lớp quản lý</th>
+                                <th>Học phần</th>
+                                <th>Lớp học phần</th>
+                                <th style="min-width: 96px">Số tín chỉ học tập</th>
+                                <th style="min-width: 96px">Số tín chỉ tính phí</th>
+                                <th style="min-width: 96px">Tỷ lệ tính phí (%)</th>
+                                <th style="min-width: 128px">Số tiền phải nộp (đ)</th>
+                                <th>Chương trình đào tạo</th>
+                                <th style="min-width: 110px">Khóa đào tạo</th>
+                                <th style="min-width: 120px">Trạng thái người học</th>
+                                <th style="min-width: 90px">Kiểu học</th>
+                                <th style="min-width: 130px">Người thực hiện rút</th>
+                                <th>Ghi chú</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                        <tfoot></tfoot>
+                    </table>
+                </div>
+            </div>
+            <div class="clear"></div>
+            <div class="modal-footer">
+                <div class="pull-right aps-list-btn">
+                    <a class="btn btn-success rhp-export" id="rhpBtnXuatNgay" title="Xuất Excel danh sách đang hiển thị"><i class="fa fa-file-excel-o"></i> Xuất Excel</a>
+                    <!-- Lề đặt inline !important: vỏ có `.modal-footer .pull-right { gap:0 !important }` và `.aps-list-btn .btn { margin-left:8px !important }` nên gap/margin trong stylesheet của trang không ăn -->
+                    <button type="button" class="btn btn-default" style="margin-left: 12px !important" data-dismiss="modal">
+                        <i class="fa fa-times-circle-o"></i>
+                        <span class="lang" key="">Đóng</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="modules/ruthocphan/scripts/lichruthocphan.js?v=1.4.2.0"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['LichRutHocPhan'] = new LichRutHocPhan();
+    $(document).ready(function () {
+        main_doc.LichRutHocPhan.init();
+    });
+</script>

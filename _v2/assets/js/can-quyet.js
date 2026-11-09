@@ -323,6 +323,22 @@
         {"man":"Chuyên cần → Tổng hợp theo dõi theo ngày","ben":"oracle","q":"Bấm **Tìm kiếm** với mọi bộ lọc (kiểu chuyên cần, lớp đã có ngày chuyên cần ở danh sách học, khoảng ngày rộng 2020–2032) → bảng chỉ có cột **Tổng**, không có cột ngày nào → không xem / nhập được gì trên màn này. Ngoài ra tìm một sinh viên (vd 20233195) ra 65 dòng giống hệt nhau (chỉ khác ID), 10 dòng mỗi trang. Bản gốc gọi y hệt. Backend: kiểm thủ tục `PKG_CHUYENCAN_THONGTIN.LayKQQLSV_NguoiHoc_ChuyenCan` — rsNgay luôn rỗng trên host (ngày chuyên cần theo lớp lấy từ đâu, có cần khởi tạo ở màn Nhập chuyên cần theo lớp — màn này host chưa khai chức năng — không?) và rs trả trùng theo từng bản ghi đăng ký thay vì gom theo người học. Kiểm host 6/10."}
     ]);
 
+    /* Đăng ký học — màn MỚI kéo gốc lần 16 (9/11), chuyển cùng ngày, CHƯA kiểm host. Gốc tự ghi "giả định chưa xác nhận với máy chủ". */
+    them("apisdangkyhoc/modules/kehoachdangky/canhbaotckt", [
+        {"man":"Đăng ký học → Kế hoạch đăng ký → Cảnh báo TC-KT","host":true,"q":"Mẫu email mã **DKH_CANHBAO_THAYDOI_NGOAIDOT** phải có trong Cấu trúc nội dung gửi email (màn tự tạo qua nút \"Mẫu email\" nếu chưa có). Máy chủ phải tra được nội dung / biến từ `strDuLieuId` = ID dòng đăng ký (LayDSDangKyHoc*) hoặc ID dòng rút (LayDSRut) — gốc ghi \"giả định chưa xác nhận với máy chủ\".","now":"Gửi từng dòng bằng ThucHienGuiEmailTheoCauTruc với strDuLieuId = ID dòng; kiểm host xem email tới có đủ biến không."},
+        {"man":"Đăng ký học → Kế hoạch đăng ký → Cảnh báo TC-KT","ben":"oracle","q":"Dòng của LayDSDangKyHocDoCanBo / LayDSDangKyHoc / LayDSRut phải có cột **ID** (thiếu thì không chọn gửi được — màn báo số dòng thiếu ID) và **DANGKY_KEHOACHDANGKY_ID** để gợi ý đúng kế hoạch (thiếu thì so với mọi kế hoạch, gợi ý có thể lệch khi nhiều đợt chồng nhau).","now":"Thiếu ID: dòng không có ô đánh dấu, đầu trang báo số dòng thiếu."},
+        {"man":"Đăng ký học → Kế hoạch đăng ký → Cảnh báo TC-KT","host":true,"q":"Cửa sổ rút học phần giả định = NGAYBATDAUTINHRUTHOCPHAN đến hết ngày + SONGAYDUOCPHEPRUTHOCPHAN (giả định (b) của gốc, chưa xác nhận) — cột \"Đợt chính thức\" / \"ngoài đợt\" tính theo đó.","now":"Tính như gốc; kiểm host đối chiếu vài dòng rút với đợt thật."},
+        {"man":"Đăng ký học → Kế hoạch đăng ký → Cảnh báo TC-KT","ben":"oracle","q":"CHƯA có danh sách **HỦY đăng ký / ĐỔI lịch**: hàm lịch sử cũ DKH_XuLy/LayKetQuaLichSuDangKyHoc đã bị xoá dưới CSDL (gốc comment 9/11). Cần hàm mới rồi mở lại nguồn LICHSU.","now":"Chỉ hai nguồn Đăng ký / Rút; nguồn Lịch sử không dựng."},
+        {"man":"Đăng ký học → Kế hoạch đăng ký → Cảnh báo TC-KT","host":true,"q":"LayDS_TienTrinhGuiEmail: tên cột người gửi chưa rõ (màn dò lần lượt NGUOITAO_TAIKHOAN → NGUOITAO_TENDAYDU → NGUOITHUCHIEN_TAIKHOAN → NGUOITAO_HOTEN → NGUOITAO); lọc \"Chỉ lượt gửi của tôi\" gửi strNguoiTao_Id = userId.","now":"Dò cột lần lượt; kiểm host xem cột nào có thật rồi rút gọn."}
+    ]);
+
+    /* Tài chính — màn MỚI kéo gốc lần 16 (9/11) "Lịch rút học phần", CHƯA kiểm host (host chưa khai chức năng). */
+    them(TC + "ruthocphan/lichruthocphan", [
+        {"man":"Tài chính → Rút học phần → Lịch rút học phần","ben":"oracle","q":"DKH_RutHocPhan/LayDSRut không lọc theo khoảng ngày và không trả số liệu theo ngày → màn nạp CẢ ĐỢT rồi nhóm theo ngày ở máy khách (như gốc). Đợt lớn (hàng nghìn lượt rút) sẽ nặng; nếu host chậm cần procedure trả số liệu theo ngày hoặc nhận tham số từ / đến ngày.","now":"Nạp cả đợt, nhóm theo ngày ở trình duyệt."},
+        {"man":"Tài chính → Rút học phần → Lịch rút học phần","host":true,"q":"Dòng rút không có NGAYRUT_DD_MM_YYYY thì không lên lịch; màn báo \"Có N lượt rút không có ngày rút\" (gốc cũng vậy). Kiểm host xem có dòng nào thế không — có thì là dữ liệu cần sửa.","now":"Đếm và báo ở đầu lưới tuần."},
+        {"man":"Tài chính → Rút học phần → Lịch rút học phần","host":true,"q":"Chức năng chưa có trên menu host (màn mới của kho gốc): chờ host khai DUONGDANFILE /Modules/ruthocphan/html/lichruthocphan.html dưới ApisTaiChinh rồi mới kiểm host được.","now":"Chỉ chạy bằng menu mẫu R33."}
+    ]);
+
     ums.canQuyet = S;
     /* Phân hệ CHƯA kiểm trên host: mục của các phân hệ này ghi lúc chuyển đổi, chưa xác nhận trên hệ thật — bảng "Màn đang có lỗi backend"
        gắn nhãn "chưa kiểm trên host". Kiểm xong phân hệ nào thì gỡ tiền tố của nó khỏi đây. */

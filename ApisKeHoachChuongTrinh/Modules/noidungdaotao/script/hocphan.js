@@ -171,6 +171,9 @@ HocPhan.prototype = {
         });
 
         edu.system.getList_MauImport("zonebtnHP");
+
+        // Nút "Xuất Excel" (chuẩn chung edu.exporter): thiếu exporter thì bỏ qua, các chức năng khác của trang vẫn chạy
+        me._attachExport();
     },
 
     toggle_notify: function () {
@@ -335,22 +338,27 @@ HocPhan.prototype = {
             ]
         }, false, false, false, null);
     },
-    getList_HocPhan: function () {
-        var me = main_doc.HocPhan;
-
-        //--Edit
-        var obj_list = {
+    /*------------------------------------------
+    --Discription: Tham số gọi danh sách học phần theo các ô tìm kiếm đang chọn trên màn hình.
+    -- Dùng chung cho nạp từng trang (getList_HocPhan) và xuất Excel toàn bộ (_fetchAll_HocPhan): 2 nơi luôn cùng điều kiện.
+    -------------------------------------------*/
+    req_HocPhan: function (iPageIndex, iPageSize) {
+        return {
             'action': 'KHCT_HocPhan/LayDanhSach',
-
-
             'strTuKhoa': edu.util.getValById("txtSearch_TuKhoa"),
             'strDaoTao_MonHoc_Id': edu.util.getValById("dropSearch_MonHoc"),
             'strThuocBoMon_Id': edu.util.getValById("dropSearch_BoMon"),
             'strThuocTinhHocPhan_Id': edu.util.getValById("dropSearch_ThuocTinhHocPhan"),
             'strNguoiThucHien_Id': "",
-            'pageIndex': edu.system.pageIndex_default,
-            'pageSize': edu.system.pageSize_default
+            'pageIndex': iPageIndex,
+            'pageSize': iPageSize
         };
+    },
+    getList_HocPhan: function () {
+        var me = main_doc.HocPhan;
+
+        //--Edit
+        var obj_list = me.req_HocPhan(edu.system.pageIndex_default, edu.system.pageSize_default);
 
 
         edu.system.makeRequest({
@@ -383,6 +391,148 @@ HocPhan.prototype = {
 
             ]
         }, false, false, false, null);
+    },
+    /*------------------------------------------
+    --Discription: Nút "Xuất Excel" chuẩn chung (Corei/exportexcel.js: edu.exporter.attachTable + fetchAll).
+    -- Xuất TOÀN BỘ học phần theo điều kiện đang chọn trên màn hình (không chỉ trang đang xem), kèm TÊN HỌC PHẦN TIẾNG ANH
+    -- (bảng trên màn hình không có cột này) để kiểm tra chính tả / học phần chưa có tên tiếng Anh.
+    -- Hộp thoại hỏi trước khi xuất báo số học phần chưa có tên tiếng Anh và có ô "lọc thêm khi xuất" để chỉ xuất đúng các học phần đó.
+    -------------------------------------------*/
+    _TT_CO_TA: "Đã có tên tiếng Anh",
+    _TT_CHUA_TA: "Chưa có tên tiếng Anh",
+    _TT_LOI_TA: "Không nạp được",
+    _exporterOk: function () {
+        var arrV = String((window.edu && edu.exporter && edu.exporter.version) || "0").split(".");
+        return parseInt(arrV[0], 10) > 1 || (parseInt(arrV[0], 10) == 1 && parseInt(arrV[1], 10) >= 8);
+    },
+    _attachExport: function () {
+        var me = this;
+        if (!window.edu || !edu.exporter || typeof edu.exporter.attachTable !== "function" || !me._exporterOk()) {
+            console.log("[hocphan] Chưa gắn nút Xuất Excel: cần Corei/exportexcel.js từ phiên bản 1.8.0 (và indexi.aspx trỏ đúng phiên bản).");
+            return;
+        }
+        edu.exporter.attachTable({
+            table: "tblHocPhan",
+            after: "#btnDelete",
+            fileName: "DanhSachHocPhan",
+            title: "DANH SÁCH HỌC PHẦN",
+            filters: [[
+                { label: "Bộ môn", id: "dropSearch_BoMon" },
+                { label: "Môn học", id: "dropSearch_MonHoc" },
+                { label: "Thuộc tính học phần", id: "dropSearch_ThuocTinhHocPhan" }
+            ]],
+            subTitles: function () {
+                var strTuKhoa = $.trim(edu.util.getValById("txtSearch_TuKhoa"));
+                return strTuKhoa ? ["Từ khóa: " + strTuKhoa] : [];
+            },
+            fetchAll: function () { return me._fetchAll_HocPhan(); },
+            columns: me._exportColumns(),
+            notice: function (rows) { return me._exportNotice(rows); },
+            // "Lọc thêm khi xuất": không tích gì = tất cả. Điều kiện trên màn hình đã được máy chủ lọc sẵn nên không đặt mặc định.
+            extraFilters: function () {
+                return [
+                    { label: "Tên tiếng Anh", get: function (r) { return me._trangThaiTenTA(r); } },
+                    { label: "Bộ môn", field: "THUOCBOMON_TEN" }
+                ];
+            }
+        });
+    },
+    // Cột file Excel: tên tiếng Việt và tiếng Anh đứng cạnh nhau để đối chiếu; cột "Sử dụng trong CTĐT" rất dài nên để cuối cùng
+    _exportColumns: function () {
+        return [
+            { header: "Mã học phần", field: "MA" },
+            { header: "Tên học phần", field: "TEN", width: 42 },
+            { header: "Tên học phần tiếng Anh", width: 42, render: function (r) { return r.__tenTaLoi ? "(không nạp được)" : r.TENTA; } },
+            { header: "Bộ môn", field: "THUOCBOMON_TEN" },
+            { header: "Môn học", field: "DAOTAO_MONHOC_TEN" },
+            { header: "Thuộc tính học phần", field: "THUOCTINHHOCPHAN_TEN" },
+            { header: "Số tín chỉ", field: "HOCTRINH", type: "number", align: "center" },
+            { header: "Sử dụng trong CTĐT", field: "HOCPHANSUDUNGTRONGCTDT", html: true, width: 70 }
+        ];
+    },
+    _trangThaiTenTA: function (r) {
+        var me = this;
+        if (r.__tenTaLoi) return me._TT_LOI_TA;
+        return String(r.TENTA === null || r.TENTA === undefined ? "" : r.TENTA).replace(/\s+/g, "") === "" ? me._TT_CHUA_TA : me._TT_CO_TA;
+    },
+    // Khung lưu ý (màu cam, không chặn xuất) trong hộp thoại hỏi trước khi xuất
+    _exportNotice: function (rows) {
+        var me = this, iThieu = 0, iLoi = 0, arr = [];
+        rows.forEach(function (r) {
+            var s = me._trangThaiTenTA(r);
+            if (s === me._TT_CHUA_TA) iThieu++;
+            else if (s === me._TT_LOI_TA) iLoi++;
+        });
+        if (iThieu > 0) arr.push("Có " + iThieu + "/" + rows.length + " học phần chưa có tên tiếng Anh. Chọn \"" + me._TT_CHUA_TA + "\" ở ô lọc \"Tên tiếng Anh\" bên dưới để chỉ xuất các học phần này.");
+        if (iLoi > 0) arr.push("Không nạp được tên tiếng Anh của " + iLoi + " học phần (file ghi \"(không nạp được)\") — thử xuất lại.");
+        return arr.join("\n");
+    },
+    // Nạp lại TOÀN BỘ học phần bằng đúng API + điều kiện đang chọn (Promise<mảng>); bảng trên màn hình chỉ giữ 1 trang
+    _fetchAll_HocPhan: function () {
+        var me = this;
+        return new Promise(function (resolve, reject) {
+            var objReq = me.req_HocPhan(1, 1000000);
+            edu.system.makeRequest({
+                success: function (data) {
+                    if (!data.Success) { reject(new Error(data.Message)); return; }
+                    resolve(data.Data || []);
+                },
+                error: function (er) { reject(new Error(JSON.stringify(er))); },
+                type: "GET",
+                action: objReq.action,
+                contentType: true,
+                data: objReq,
+                fakedb: [
+                ]
+            }, false, false, false, null);
+        }).then(function (rows) { return me._bosungTenTA(rows); });
+    },
+    // API danh sách có thể KHÔNG trả TENTA (tên tiếng Anh chỉ thấy ở API chi tiết dùng cho form Sửa). Khi đó nạp thêm từng học phần
+    // bằng hàm chi tiết chuẩn của module (KHCT_HocPhan/LayChiTiet), 8 yêu cầu cùng lúc, có thẻ báo tiến độ. Học phần nào nạp lỗi thì
+    // đánh dấu (__tenTaLoi) để file ghi rõ "(không nạp được)" — KHÔNG để trống, vì trống nghĩa là "chưa có tên tiếng Anh" (sẽ gây hiểu nhầm).
+    _bosungTenTA: function (rows) {
+        var me = this;
+        if (!rows.length || rows.some(function (r) { return r.TENTA !== undefined; })) return Promise.resolve(rows);
+        var iTong = rows.length, iXong = 0, iDong = 0, iNext = 0, MAX = 8;
+        var ack = (edu.process && typeof edu.process.ack === "function") ? edu.process.ack("Xuất Excel", "Đang nạp tên tiếng Anh của " + iTong + " học phần…") : null;
+        console.log("[hocphan] API danh sách không trả TENTA → nạp từng học phần bằng KHCT_HocPhan/LayChiTiet (" + iTong + " yêu cầu).");
+        return new Promise(function (resolve) {
+            function chayTiep() {
+                while (iDong < MAX && iNext < iTong) {
+                    (function (row) {
+                        iDong++;
+                        me._getTenTA(row.ID).then(function (strTA) { row.TENTA = strTA; }, function () { row.TENTA = ""; row.__tenTaLoi = 1; })
+                            .then(function () {
+                                iDong--; iXong++;
+                                if (ack && (iXong % 10 === 0 || iXong === iTong)) ack.update("Đang nạp tên tiếng Anh… " + iXong + "/" + iTong, iXong * 100 / iTong);
+                                if (iXong >= iTong) { if (ack) ack.close(); resolve(rows); }
+                                else chayTiep();
+                            });
+                    })(rows[iNext++]);
+                }
+            }
+            chayTiep();
+        });
+    },
+    // Tên tiếng Anh của 1 học phần (Promise<string>): hàm chi tiết chuẩn KHCT_HocPhan/LayChiTiet, cùng hàm form Sửa đang dùng
+    _getTenTA: function (strId) {
+        var objReq = { action: 'KHCT_HocPhan/LayChiTiet', type: 'GET', data: { 'strId': strId } };
+        function layTA(data) {
+            var d = data && data.Data;
+            if (!data || !data.Success || !d || !d[0]) throw new Error((data && data.Message) || "Không có dữ liệu chi tiết");
+            return d[0].TENTA === null || d[0].TENTA === undefined ? "" : d[0].TENTA;
+        }
+        // callApi (edu.process): đã bắt lỗi mạng và tự ẩn lớp phủ "Đang tải" mà mỗi makeRequest bật lên
+        if (edu.process && typeof edu.process.callApi === "function") {
+            return edu.process.callApi(objReq).then(function (r) { return layTA(r.data); });
+        }
+        return new Promise(function (resolve, reject) {
+            edu.system.makeRequest({
+                success: function (data) { try { resolve(layTA(data)); } catch (ex) { reject(ex); } },
+                error: function (er) { reject(new Error(JSON.stringify(er))); },
+                type: objReq.type, action: objReq.action, contentType: true, data: objReq.data, fakedb: []
+            }, false, false, false, null);
+        });
     },
     getDetail_HocPhan: function (strId) {
         var me = main_doc.HocPhan;

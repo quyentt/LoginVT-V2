@@ -1,0 +1,286 @@
+﻿
+<section class="content aps-canhbaotckt" id="cbtcktWrap">
+    <style>
+        /* Trang "Gửi cảnh báo TC-KT" — CSS chỉ áp trong .aps-canhbaotckt, không đụng giao diện chung */
+        /* Vỏ indexi.aspx ép .box-body padding 0 và .box margin-bottom 14px !important -> nội dung dính mép; vá bằng 2 id để thắng rule của vỏ */
+        #cbtcktWrap#cbtcktWrap .box { margin: 0 0 18px !important; }
+        #cbtcktWrap#cbtcktWrap .box > .box-header { padding: 16px 22px !important; }
+        #cbtcktWrap#cbtcktWrap .box > .box-body { padding: 18px 22px 22px !important; }
+        #cbtcktWrap#cbtcktWrap .box > .box-footer { padding: 12px 22px !important; }
+        /* Vỏ ép MỌI .select2-container lên z-index 99999 !important, còn lớp "Đang tải dữ liệu" của vỏ chỉ có z-index 1051 -> ô chọn nổi đè lên lớp tải ("dính đằng sau").
+           Chỉ hạ ô chọn nằm TRONG trang này; danh sách thả xuống được select2 gắn vào body nên vẫn nằm trên cùng. */
+        #cbtcktWrap#cbtcktWrap .select2-container { z-index: auto !important; }
+        .aps-canhbaotckt .cb-actions .btn + .btn { margin-left: 10px; }
+        .aps-canhbaotckt .cb-toolbar { display: flex; justify-content: flex-end; flex-wrap: wrap; margin: 0 0 12px; }
+        .aps-canhbaotckt .cb-actions .btn-primary { font-weight: 700; padding-left: 18px; padding-right: 18px; }
+        .aps-canhbaotckt .cb-intro { margin: 0 0 12px; padding: 9px 14px; border-left: 4px solid #223771; border-radius: 6px; background: #f1f5fb; color: #0f172a; line-height: 1.55; }
+        .aps-canhbaotckt .cb-banner { margin: 0 0 12px; padding: 10px 14px; border: 1px solid #c7d7fe; border-radius: 8px; background: #eff4ff; color: #223771; font-weight: 600; line-height: 1.5; }
+        .aps-canhbaotckt .cb-banner.w { border-color: #fedf89; background: #fffaeb; color: #b54708; }
+        .aps-canhbaotckt .cb-banner.e { border-color: #fecdca; background: #fef3f2; color: #b42318; }
+        .aps-canhbaotckt .cb-banner.s { border-color: #abefc6; background: #ecfdf3; color: #067647; }
+        .aps-canhbaotckt .cb-banner i { margin-right: 6px; }
+        .aps-canhbaotckt .cb-tabs { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 12px; border-bottom: 1px solid #e2e8f0; }
+        .aps-canhbaotckt .cb-tab { display: inline-block; margin-bottom: -1px; padding: 8px 16px; border: 1px solid transparent; border-radius: 6px 6px 0 0; color: #334155; font-weight: 600; cursor: pointer; }
+        .aps-canhbaotckt .cb-tab:hover { color: #223771; text-decoration: none; }
+        .aps-canhbaotckt .cb-tab.on { border-color: #e2e8f0 #e2e8f0 #fff; background: #fff; color: #223771; }
+        .aps-canhbaotckt .cb-tab .badge { margin-left: 6px; background: #223771; }
+        .aps-canhbaotckt .cb-filter { margin: 0 0 10px; }
+        .aps-canhbaotckt .cb-filter .item-search { margin-bottom: 8px; }
+        .aps-canhbaotckt .cb-chk { display: inline-flex; align-items: center; gap: 6px; margin: 6px 0 0; font-weight: 600; color: #334155; cursor: pointer; }
+        .aps-canhbaotckt .cb-chk input { margin: 0; }
+        .aps-canhbaotckt .cb-wrap { overflow-x: auto; }
+        .aps-canhbaotckt .cb-chonbar { margin: 0 0 8px; color: #334155; font-weight: 600; }
+        .aps-canhbaotckt .cb-link { margin-left: 16px; color: #223771; font-weight: 600; text-decoration: underline; cursor: pointer; }
+        .aps-canhbaotckt #tblThayDoi td:nth-child(3) { white-space: nowrap; }
+        .aps-canhbaotckt #tblThayDoi td:nth-child(5) { min-width: 220px; }
+        .aps-canhbaotckt #tblThayDoi td:nth-child(6) { min-width: 200px; max-width: 420px; }
+        .aps-canhbaotckt .cb-wrap table th { white-space: nowrap; vertical-align: middle; }
+        .aps-canhbaotckt .cb-wrap table td { vertical-align: middle; }
+        .aps-canhbaotckt .cb-tag { display: inline-block; padding: 2px 9px; border-radius: 12px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+        .aps-canhbaotckt .cb-tag.ngoai { background: #fef3f2; color: #b42318; }
+        .aps-canhbaotckt .cb-tag.trong { background: #ecfdf3; color: #067647; }
+        .aps-canhbaotckt .cb-tag.kxd { background: #eef2f7; color: #475569; }
+        .aps-canhbaotckt .cb-tag.da { background: #eff4ff; color: #223771; }
+        .aps-canhbaotckt .cb-noidung { display: block; max-width: 460px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .aps-canhbaotckt .cb-note { margin: 4px 0 0; color: #64748b; font-size: 12.5px; }
+        .aps-canhbaotckt .cb-view { margin: 0; padding: 10px 12px; max-height: 360px; overflow: auto; border: 1px solid #cbd5e1; border-radius: 6px; background: #f8fafc; white-space: pre-wrap; word-break: break-word; font-family: inherit; color: #0f172a; }
+    </style>
+        <!-- ===== Màn chính: danh sách thay đổi + lịch sử gửi ===== -->
+        <div class="zone-bus" id="zonebatdau">
+            <div class="box box-solid">
+                <div class="box-header with-border">
+                    <h3 class="box-title">
+                        <i class="fa fa-envelope"></i> Gửi cảnh báo thay đổi đăng ký / rút học phần cho Phòng TC-KT
+                    </h3>
+                </div>
+                <div class="box-body">
+                    <div class="cb-toolbar cb-actions">
+                        <a id="btnMauEmail" class="btn btn-default"><i class="fa fa-file-text-o"></i> Mẫu email</a>
+                        <a id="btnGuiLai" class="btn btn-default" style="display: none"><i class="fa fa-repeat"></i> Gửi lại mục đã chọn</a>
+                        <a id="btnGuiTCKT" class="btn btn-primary"><i class="fa fa-paper-plane"></i> Gửi cho TC-KT</a>
+                    </div>
+                    <div class="cb-intro">
+                        Tick các thay đổi đăng ký/rút học phần cần báo, rồi bấm <b>Gửi cho TC-KT</b>.
+                        Nội dung và người nhận email do Phòng tự chỉnh ở <b>Mẫu email</b>; mọi lượt gửi được lưu ở tab <b>Lịch sử đã gửi</b>.
+                        Cột <b>Đợt chính thức</b> chỉ là gợi ý (so với thời gian đăng ký/rút của kế hoạch; chọn đúng <b>Kế hoạch</b> thì gợi ý chính xác hơn), việc chọn gửi do người dùng quyết định.
+                        Nguồn dữ liệu hiện có: đăng ký (do cán bộ thực hiện hoặc tất cả) và rút học phần. <b>Hủy đăng ký / đổi lịch</b> chưa có danh sách vì hàm lịch sử cũ đã bị xóa.
+                    </div>
+                    <div id="cbThongBao"></div>
+                    <div id="cbThongBaoPhu"></div>
+                    <div class="cb-tabs">
+                        <a class="cb-tab on" data-pane="paneThayDoi"><i class="fa fa-exchange"></i> Thay đổi cần gửi <span class="badge" id="lblThayDoi_Tong"></span></a>
+                        <a class="cb-tab" data-pane="paneLichSu"><i class="fa fa-history"></i> Lịch sử đã gửi <span class="badge" id="lblLichSu_Tong"></span></a>
+                    </div>
+
+                    <!-- ===== Tab 1: thay đổi cần gửi ===== -->
+                    <div class="cb-pane" id="paneThayDoi">
+                        <div class="cb-filter">
+                            <div class="col-sm-3 item-search">
+                                <select id="dropNguon" class="select-opt">
+                                    <option value="DOCANBO">Đăng ký do cán bộ thực hiện</option>
+                                    <option value="DANGKY">Tất cả đăng ký</option>
+                                    <option value="RUT">Rút học phần</option>
+                                    <!-- ẨN 09/11/2026: nguồn LICHSU vì hàm DKH_XuLy/LayKetQuaLichSuDangKyHoc đã bị xóa dưới DB (sếp xác nhận); mở lại nếu BE có hàm lịch sử mới
+                                    <option value="LICHSU">Đăng ký / hủy / đổi lịch học phần</option>
+                                    -->
+                                </select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <select id="dropSearch_DotRut" class="select-opt"></select>
+                            </div>
+                            <div class="cb-f-kehoach">
+                                <div class="col-sm-4 item-search">
+                                    <select id="dropSearch_KeHoach" class="select-opt"></select>
+                                </div>
+                            </div>
+                            <!-- ẨN 09/11/2026: bộ lọc Năm/Kỳ/Đợt (chữ) của nguồn LICHSU, xem ghi chú ở ô Nguồn
+                            <div class="cb-f-lichsu">
+                                <div class="col-sm-2 item-search"><input id="txtSearch_Nam" class="form-control" placeholder="Năm" /></div>
+                                <div class="col-sm-2 item-search"><input id="txtSearch_Ky" class="form-control" placeholder="Kỳ" /></div>
+                                <div class="col-sm-2 item-search"><input id="txtSearch_Dot" class="form-control" placeholder="Đợt" /></div>
+                            </div>
+                            -->
+                            <div class="clear"></div>
+                            <div class="col-sm-3 item-search"><input id="txtTuKhoa" class="form-control" placeholder="Mã số / họ tên / học phần" /></div>
+                            <div class="col-sm-2 item-search"><input id="txtTuNgay" class="form-control input-datepicker" placeholder="Từ ngày" /></div>
+                            <div class="col-sm-2 item-search"><input id="txtDenNgay" class="form-control input-datepicker" placeholder="Đến ngày" /></div>
+                            <div class="col-sm-3 item-search">
+                                <label class="cb-chk"><input type="checkbox" id="chkAnTrongDot" /> Ẩn thay đổi trong đợt chính thức</label>
+                            </div>
+                            <div class="col-sm-2 item-search">
+                                <a id="btnSearch_ThayDoi" class="btn btn-default"><i class="fa fa-search"></i> <span class="lang" key="">Tìm kiếm</span></a>
+                            </div>
+                            <div class="clear"></div>
+                        </div>
+                        <div class="cb-chonbar" id="cbChonBar" style="display: none">
+                            <span id="lblDaChon">Đã chọn 0 dòng</span>
+                            <a id="lnkChonTatCa" class="cb-link" style="display: none"></a>
+                            <a id="lnkBoChon" class="cb-link" style="display: none">Bỏ chọn tất cả</a>
+                        </div>
+                        <div class="cb-wrap aps-table-select scroll-table-x">
+                            <table id="tblThayDoi" class="table table-hover table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th class="td-fixed td-center">Stt</th>
+                                        <th class="td-center">Mã số</th>
+                                        <th class="td-center">Họ tên</th>
+                                        <th class="td-center">Kỳ</th>
+                                        <th class="td-center">Học phần</th>
+                                        <th class="td-center">Lớp học phần</th>
+                                        <th class="td-center">Thời điểm</th>
+                                        <th class="td-center">Người thực hiện</th>
+                                        <th class="td-center">Hành động</th>
+                                        <th class="td-center">Kết quả</th>
+                                        <th class="td-center">Đợt chính thức</th>
+                                        <th class="td-center">Đã gửi (máy này)</th>
+                                        <th class="td-fixed td-center"><input type="checkbox" id="chkSelectAll_ThayDoi" /></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- load from js -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- ===== Tab 2: lịch sử đã gửi ===== -->
+                    <div class="cb-pane" id="paneLichSu" style="display: none">
+                        <div class="cb-filter">
+                            <div class="col-sm-3 item-search"><input id="txtLS_TuKhoa" class="form-control" placeholder="Người nhận / nội dung" /></div>
+                            <div class="col-sm-2 item-search"><input id="txtLS_TuNgay" class="form-control input-datepicker" placeholder="Từ ngày" /></div>
+                            <div class="col-sm-2 item-search"><input id="txtLS_DenNgay" class="form-control input-datepicker" placeholder="Đến ngày" /></div>
+                            <div class="col-sm-2 item-search">
+                                <select id="dropLS_TrangThai" class="select-opt">
+                                    <option value="">Tất cả trạng thái</option>
+                                    <option value="0">Chưa gửi</option>
+                                    <option value="1">Thành công</option>
+                                    <option value="2">Gửi lỗi</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-3 item-search">
+                                <label class="cb-chk"><input type="checkbox" id="chkLS_CuaToi" /> Chỉ lượt gửi của tôi</label>
+                            </div>
+                            <div class="clear"></div>
+                            <div class="col-sm-2 item-search">
+                                <a id="btnSearch_LichSu" class="btn btn-default"><i class="fa fa-search"></i> <span class="lang" key="">Tìm kiếm</span></a>
+                            </div>
+                            <div class="clear"></div>
+                        </div>
+                        <div class="cb-wrap aps-table-select scroll-table-x">
+                            <table id="tblLichSuGui" class="table table-hover table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th class="td-fixed td-center">Stt</th>
+                                        <th class="td-center">Gửi tới</th>
+                                        <th class="td-center">Nội dung</th>
+                                        <th class="td-center">Ngày gửi</th>
+                                        <th class="td-center">Trạng thái</th>
+                                        <th class="td-center">Người gửi</th>
+                                        <th class="td-fixed td-center">Xem</th>
+                                        <th class="td-fixed td-center"><input type="checkbox" id="chkSelectAll_LichSu" /></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- load from js -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== Mẫu email (cấu trúc nội dung gửi email) ===== -->
+        <div class="zone-bus" id="zoneMau" style="display: none">
+            <div class="box box-solid">
+                <div class="box-header with-border">
+                    <h3 class="box-title">
+                        <i class="fa fa-file-text-o"></i> Mẫu email cảnh báo TC-KT
+                        <span class="badge bg-light-blue" id="lblMau_Ma"></span>
+                    </h3>
+                </div>
+                <div class="box-body">
+                    <div id="cbThongBaoMau"></div>
+                    <div class="aps-form">
+                        <div class="row aps-form-item">
+                            <div class="col-sm-2 aps-form-lable">Tên email hiển thị</div>
+                            <div class="col-sm-10 aps-form-input"><input type="text" id="txtMau_TenHienThi" class="form-control" /></div>
+                        </div>
+                        <div class="row aps-form-item">
+                            <div class="col-sm-2 aps-form-lable">Tiêu đề</div>
+                            <div class="col-sm-10 aps-form-input"><input type="text" id="txtMau_TieuDe" class="form-control" /></div>
+                        </div>
+                        <div class="row aps-form-item">
+                            <div class="col-sm-2 aps-form-lable">Nội dung</div>
+                            <div class="col-sm-10 aps-form-input">
+                                <textarea id="editor_Mau" style="width: 100%; height: 220px" class="form-control-textarea"></textarea>
+                                <p class="cb-note">Các biến có thể chèn vào nội dung do máy chủ quy định cho mẫu này (hỏi bộ phận kỹ thuật nếu cần thêm thông tin sinh viên/học phần vào email).</p>
+                            </div>
+                        </div>
+                        <div class="row aps-form-item">
+                            <div class="col-sm-2 aps-form-lable">Danh sách email nhận</div>
+                            <div class="col-sm-10 aps-form-input">
+                                <textarea id="txtMau_DanhSach" style="width: 100%; height: 90px" class="form-control-textarea" placeholder="Email Phòng TC-KT — nhập đúng định dạng như màn Cấu trúc nội dung gửi email đang dùng"></textarea>
+                            </div>
+                        </div>
+                        <div class="row aps-form-item">
+                            <div class="col-sm-2 aps-form-lable">Ghi chú</div>
+                            <div class="col-sm-10 aps-form-input"><input type="text" id="txtMau_GhiChu" class="form-control" /></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="box-footer">
+                    <div class="pull-right cb-actions">
+                        <a class="btn btn-default btnCloseMau"><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+                        <a class="btn btn-primary" id="btnSaveMau"><i class="fa fa-save"></i> <span class="lang" key="">Lưu mẫu</span></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== Chi tiết 1 email đã gửi ===== -->
+        <div class="zone-bus" id="zoneChiTiet" style="display: none">
+            <div class="box box-solid">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><i class="fa fa-envelope-open-o"></i> Chi tiết email</h3>
+                </div>
+                <div class="box-body">
+                    <div class="aps-form">
+                        <div class="row aps-form-item">
+                            <div class="col-sm-2 aps-form-lable">Gửi tới</div>
+                            <div class="col-sm-10 aps-form-input"><label id="lblCT_Nhan"></label></div>
+                        </div>
+                        <div class="row aps-form-item">
+                            <div class="col-sm-2 aps-form-lable">Tiêu đề</div>
+                            <div class="col-sm-10 aps-form-input"><label id="lblCT_TieuDe"></label></div>
+                        </div>
+                        <div class="row aps-form-item">
+                            <div class="col-sm-2 aps-form-lable">Ngày gửi</div>
+                            <div class="col-sm-10 aps-form-input"><label id="lblCT_Ngay"></label></div>
+                        </div>
+                        <div class="row aps-form-item">
+                            <div class="col-sm-2 aps-form-lable">Trạng thái</div>
+                            <div class="col-sm-10 aps-form-input"><label id="lblCT_TrangThai"></label></div>
+                        </div>
+                        <div class="row aps-form-item">
+                            <div class="col-sm-2 aps-form-lable">Nội dung</div>
+                            <div class="col-sm-10 aps-form-input"><pre id="lblCT_NoiDung" class="cb-view"></pre></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="box-footer">
+                    <div class="pull-right cb-actions">
+                        <a class="btn btn-default btnCloseChiTiet"><i class="fa fa-times"></i> <span class="lang" key="">Đóng</span></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+</section>
+<script src="modules/kehoachdangky/script/canhbaotckt.js?v=1.0.0.0"></script>
+<script type="text/javascript">
+    var main_doc = {};
+    main_doc['CanhBaoTCKT'] = new CanhBaoTCKT();
+    $(document).ready(function () {
+        main_doc.CanhBaoTCKT.init();
+    });
+</script>

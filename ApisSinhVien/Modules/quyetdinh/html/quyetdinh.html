@@ -130,6 +130,51 @@
         color: #94a3b8;
         font-style: italic;
     }
+
+    /* ═══ Bộ lọc text trên danh sách "Sinh viên thực hiện" (form Thêm/Sửa quyết định) ═══ */
+    .aps-quyetdinh .qd-sv-filter {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-right: 12px;
+    }
+    .aps-quyetdinh .qd-sv-filter .qd-sv-filter-box {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+    .aps-quyetdinh .qd-sv-filter .qd-sv-filter-icon {
+        position: absolute;
+        left: 10px;
+        color: #64748b;
+        pointer-events: none;
+    }
+    /* #id#id + !important: vỏ có `html body.skin-blue #main-content-wrapper .form-control { padding: 6px 12px !important }`
+       (indexi.aspx) và `.form-control { padding: ... !important }` (styles.css) nên padding thường không ăn → icon đè lên chữ */
+    .aps-quyetdinh .qd-sv-filter #txtLoc_SinhVien#txtLoc_SinhVien {
+        width: 260px;
+        padding-left: 32px !important;
+        padding-right: 28px !important;
+    }
+    .aps-quyetdinh .qd-sv-filter .qd-sv-filter-clear {
+        position: absolute;
+        right: 9px;
+        color: #64748b;
+        text-decoration: none;
+    }
+    .aps-quyetdinh .qd-sv-filter .qd-sv-filter-count {
+        white-space: nowrap;
+        font-size: 12px;
+        font-weight: 600;
+        color: #223771;
+    }
+    .aps-quyetdinh .qd-sv-filter .qd-sv-filter-count.qd-none {
+        color: #dc2626;
+    }
+    /* Dòng bị lọc ẩn: dùng class + !important vì CSS toàn cục có thể đè display của tr (jQuery .hide() không ăn) */
+    .aps-quyetdinh #tblInput_DTSV_SinhVien tbody tr.qd-filter-hidden {
+        display: none !important;
+    }
 </style>
 <section class="content aps-sinhvien">
     <div class="row aps-quyetdinh">
@@ -526,6 +571,17 @@
                             </div>
                         </div>
                         <div class="pull-right d-flex aps-list-btn">
+                            <!-- Bộ lọc text trên danh sách sinh viên bên dưới (lọc ngay trên trình duyệt, không gọi API) -->
+                            <div class="qd-sv-filter">
+                                <div class="qd-sv-filter-box">
+                                    <i class="fa fa-search qd-sv-filter-icon"></i>
+                                    <input type="text" id="txtLoc_SinhVien" class="form-control" autocomplete="off"
+                                        placeholder="Lọc: mã số, họ tên, lớp, khóa…"
+                                        title="Gõ nhiều từ cách nhau bằng dấu cách (khớp tất cả các từ). Không cần gõ dấu tiếng Việt." />
+                                    <a href="#" id="btnLoc_SinhVien_Xoa" class="qd-sv-filter-clear" title="Xóa bộ lọc" style="display: none"><i class="fa fa-times"></i></a>
+                                </div>
+                                <span id="lblLoc_SinhVien" class="qd-sv-filter-count"></span>
+                            </div>
                             <a class="btn btn-soft-red" id="btnChonTrangThaiChuyen">
                                 <i class="fa-solid fa-repeat"></i> Chọn trạng thái cần chuyển</a>
                             <a class="btn btn-soft-puple" id="btnChonLopChuyen">
@@ -952,7 +1008,7 @@
         tryNext();
     })();
 </script>
-<script src="modules/quyetdinh/script/quyetdinh.js?v=1.0.0.2"></script>
+<script src="modules/quyetdinh/script/quyetdinh.js?v=1.0.0.3"></script>
 <script type="text/javascript">
     var main_doc = {};
     main_doc['QuyetDinh'] = new QuyetDinh();

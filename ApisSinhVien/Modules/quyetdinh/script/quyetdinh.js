@@ -609,6 +609,35 @@ QuyetDinh.prototype = {
             $group.toggleClass("qd-collapsed");
             $group.nextUntil(".qd-group-row").toggle(!$group.hasClass("qd-collapsed"));
         });
+
+        /*------------------------------------------
+        --Discription: Bộ lọc text trên danh sách "Sinh viên thực hiện" (form Thêm/Sửa quyết định)
+        --Note: lọc ngay trên trình duyệt (không gọi API), gõ dừng 250ms mới lọc để bảng vài nghìn dòng không bị khựng
+        -------------------------------------------*/
+        var iTimerLocSV = 0;
+        $("#txtLoc_SinhVien").on("input", function () {
+            clearTimeout(iTimerLocSV);
+            iTimerLocSV = setTimeout(function () { me.filter_SinhVien(); }, 250);
+        });
+        $("#txtLoc_SinhVien").on("keydown", function (e) {
+            if (e.which === 13) { // Enter: lọc ngay, không submit form
+                e.preventDefault();
+                clearTimeout(iTimerLocSV);
+                me.filter_SinhVien();
+            }
+            else if (e.which === 27) { // Esc: xóa bộ lọc
+                e.preventDefault();
+                clearTimeout(iTimerLocSV);
+                $(this).val("");
+                me.filter_SinhVien();
+            }
+        });
+        $("#btnLoc_SinhVien_Xoa").click(function (e) {
+            e.preventDefault();
+            clearTimeout(iTimerLocSV);
+            $("#txtLoc_SinhVien").val("").focus();
+            me.filter_SinhVien();
+        });
     },
 
     popup: function () {
@@ -640,6 +669,8 @@ QuyetDinh.prototype = {
         $("#tblInput_DTSV_SinhVien tbody").html("");
         $("#tblCauHinhThongTin tbody").html("");
         $("#tblQDNhanSu tbody").html("");
+        $("#txtLoc_SinhVien").val("");
+        me.filter_SinhVien();
     },
     toggle_form: function () {
         edu.util.toggle_overide("zone-bus", "zonebatdau");
@@ -1218,6 +1249,8 @@ QuyetDinh.prototype = {
         me.getList_HinhThuc();
         edu.system.viewFiles("txtQuyetDinh_File", data.ID, "SV_Files");
         me.strQuyetDinh_Id = data.ID;
+        // Mở quyết định khác: bỏ từ khóa lọc của quyết định trước
+        $("#txtLoc_SinhVien").val("");
         me.getList_SinhVien();
         me.getList_QDNhanSu();
     },
@@ -1373,6 +1406,8 @@ QuyetDinh.prototype = {
             me.arrSinhVien_Id.push(data[i].SINHVIEN_ID);
             me.arrSinhVien.push(data[i]);
         }
+        // Bảng vừa vẽ lại (mở form sửa / sau khi đổi trạng thái, lớp, % phí...) → áp lại từ khóa đang gõ ở ô lọc
+        me.filter_SinhVien();
     },
     addHTMLinto_SinhVien: function (strNhanSu_Id) {
         var me = main_doc.QuyetDinh;
@@ -1397,6 +1432,11 @@ QuyetDinh.prototype = {
         }
         var aData = edu.util.objGetOneDataInData(strNhanSu_Id, edu.extend.dtSinhVien, "ID");
         me.arrSinhVien.push(aData);
+        // Đang lọc mà thêm sinh viên mới: xóa bộ lọc để dòng vừa thêm không bị ẩn mất
+        if ($.trim($("#txtLoc_SinhVien").val()) !== "") {
+            $("#txtLoc_SinhVien").val("");
+            me.filter_SinhVien();
+        }
         //2. get id and get val
         //3. create html
         var html = "";
@@ -1428,6 +1468,86 @@ QuyetDinh.prototype = {
             $("#tblInput_DTSV_SinhVien tbody").html("");
             $("#tblInput_DTSV_SinhVien tbody").html('<tr><td colspan="14">Không tìm thấy dữ liệu!</td></tr>');
         }
+        me.filter_SinhVien();
+    },
+
+    /*------------------------------------------
+    --Discription: Bộ lọc text trên bảng "Sinh viên thực hiện" (#tblInput_DTSV_SinhVien)
+    --Note: so khớp không phân biệt hoa/thường và KHÔNG cần dấu tiếng Việt; nhiều từ cách nhau dấu cách = phải khớp tất cả.
+    --      Dòng bị ẩn sẽ tự BỎ TÍCH: các nút Xóa sinh viên / đổi trạng thái / đổi lớp / % phí / kỳ hiệu lực
+    --      lấy danh sách theo ô đã tích (edu.util.getArrCheckedIds, không phân biệt đang ẩn hay hiện) nên nếu giữ tích thì thao tác sẽ
+    --      trúng cả sinh viên người dùng không nhìn thấy.
+    -------------------------------------------*/
+    norm_TimKiem: function (value) {
+        return String(value === null || value === undefined ? "" : value).toLowerCase()
+            .normalize("NFD").replace(/[̀-ͯ]/g, "")
+            .replace(/đ/g, "d").replace(/\s+/g, " ").replace(/^ | $/g, "");
+    },
+    filter_SinhVien: function () {
+        var me = this;
+        var $txt = $("#txtLoc_SinhVien");
+        var strKey = me.norm_TimKiem($txt.val());
+        var arrToken = strKey === "" ? [] : strKey.split(" ");
+        var $tbody = $("#tblInput_DTSV_SinhVien tbody");
+        var arrRow = $tbody.children("tr[id^='rm_row']").get();
+        var iTotal = arrRow.length, iShow = 0, iVisible = 0, iVisibleChecked = 0, iUnchecked = 0;
+
+        $tbody.children("tr.qd-filter-empty").remove();
+        for (var i = 0; i < arrRow.length; i++) {
+            var tr = arrRow[i];
+            var bShow = true;
+            if (arrToken.length) {
+                // Chuỗi tìm kiếm của dòng: bỏ cột # / Hình ảnh (2 ô đầu) và ô checkbox (ô cuối); tính 1 lần rồi cache trên dòng
+                var strText = $.data(tr, "qdText");
+                if (strText === undefined) {
+                    strText = me.norm_TimKiem($(tr).children("td").slice(2, -1).map(function () { return $(this).text(); }).get().join(" "));
+                    $.data(tr, "qdText", strText);
+                }
+                for (var t = 0; t < arrToken.length; t++) {
+                    if (strText.indexOf(arrToken[t]) === -1) { bShow = false; break; }
+                }
+            }
+            var bWasHidden = tr.classList.contains("qd-filter-hidden");
+            var chk = tr.querySelector("input[type='checkbox']");
+            if (bShow) {
+                iShow++;
+                if (bWasHidden) {
+                    tr.classList.remove("qd-filter-hidden");
+                    // dòng hiện lại mà không được tích thì không giữ màu "đã chọn" cũ (ô "chọn tất cả" có thể tô cả dòng đang ẩn)
+                    if (chk && !chk.checked) tr.classList.remove("tr-bg");
+                }
+                // Dòng mới thêm (chưa lưu) không có ô tích nên không tính vào trạng thái "chọn tất cả"
+                if (chk) {
+                    iVisible++;
+                    if (chk.checked) iVisibleChecked++;
+                }
+            }
+            else {
+                tr.classList.add("qd-filter-hidden");
+                tr.classList.remove("tr-bg");
+                if (chk && chk.checked) { chk.checked = false; chk.removeAttribute("checked"); iUnchecked++; }
+            }
+        }
+
+        // Ô "chọn tất cả" ở đầu bảng phản ánh đúng các dòng đang hiển thị
+        $("#tblInput_DTSV_SinhVien thead .chkSystemSelectAll").prop("checked", iVisible > 0 && iVisibleChecked === iVisible);
+
+        // Dòng thông báo khi không có sinh viên nào khớp
+        if (arrToken.length && iTotal > 0 && iShow === 0) {
+            $tbody.append('<tr class="qd-filter-empty"><td colspan="14" class="td-center">Không có sinh viên nào khớp "' + me.esc_ChiTiet($.trim($txt.val())) + '"</td></tr>');
+        }
+
+        // Nhãn đếm + nút xóa bộ lọc
+        var $lbl = $("#lblLoc_SinhVien");
+        if (arrToken.length && iTotal > 0) {
+            var strLbl = iShow + "/" + iTotal;
+            if (iUnchecked > 0) strLbl += " · đã bỏ tích " + iUnchecked + " dòng bị ẩn";
+            $lbl.text(strLbl).toggleClass("qd-none", iShow === 0);
+        }
+        else {
+            $lbl.text("").removeClass("qd-none");
+        }
+        $("#btnLoc_SinhVien_Xoa").toggle($txt.val() !== "");
     },
 
     getList_HinhThuc: function () {

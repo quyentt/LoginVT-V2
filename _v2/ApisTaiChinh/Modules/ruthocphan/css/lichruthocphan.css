@@ -1,0 +1,89 @@
+/* =========================================================================
+   Lịch rút học phần (Tài chính) — CSS riêng của màn, tiền tố ums-lrhp-.
+   Bản gốc có 674 dòng CSS .rhp-* trên vỏ cũ; ở đây chỉ giữ phần bố cục riêng
+   (lưới tuần, thẻ ngày, thẻ số liệu 5 cột, chú thích lịch). Thẻ số liệu dùng
+   .ums-stat, lịch tháng dùng .ums-lthang của tầng chung.
+   ========================================================================= */
+
+/* ---------- Bộ lọc ---------------------------------------------------- */
+.ums-lrhp-acts { display: flex; align-items: flex-end; }
+.ums-lrhp-adv { margin-top: var(--ums-sp-4); padding-top: var(--ums-sp-3); border-top: 1px dashed var(--ums-line); }
+.ums-lrhp-adv .ums-legend { margin-bottom: var(--ums-sp-2); }
+
+/* ---------- Thẻ số liệu: 5 thẻ một hàng ------------------------------- */
+.ums-lrhp-kpis { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--ums-sp-3); }
+.ums-lrhp-kpifoot { display: flex; align-items: center; justify-content: space-between; gap: var(--ums-sp-3); flex-wrap: wrap;
+    margin: var(--ums-sp-2) 0 var(--ums-sp-4); }
+.ums-lrhp-cap { color: var(--ums-ink-2); font-size: var(--ums-fz-13); }
+.ums-lrhp-cap b { color: var(--ums-navy); }
+
+/* ---------- Lưới tuần (trái) + lịch tháng (phải) ---------------------- */
+.ums-lrhp-main { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: var(--ums-sp-4); align-items: start; }
+.ums-lrhp-main > .ums-panel { margin: 0; }
+.ums-lrhp-weeknav { display: flex; align-items: center; gap: var(--ums-sp-2); flex-wrap: wrap; }
+.ums-lrhp-weeknav > b { color: var(--ums-navy); font-size: var(--ums-fz-13); white-space: nowrap; }
+
+/* Thông báo trong trang (gốc .rhp-banner): i = thông tin, w = cảnh báo, e = lỗi */
+.ums-lrhp-banner { display: flex; gap: var(--ums-sp-2); align-items: flex-start; margin-bottom: var(--ums-sp-3); padding: var(--ums-sp-2) var(--ums-sp-3);
+    border-radius: var(--ums-r-1); background: var(--ums-g-blue-bg); color: var(--ums-g-blue); font-size: var(--ums-fz-13); }
+.ums-lrhp-banner.is-w { background: var(--ums-g-amber-bg); color: #8a5a00; }
+.ums-lrhp-banner.is-e { background: var(--ums-g-red-bg); color: var(--ums-g-red); }
+.ums-lrhp-banner i { margin-top: 2px; }
+
+.ums-lrhp-scroll { overflow-x: auto; overscroll-behavior-x: contain; }
+.ums-lrhp-week { display: grid; grid-template-columns: repeat(7, minmax(150px, 1fr)); gap: var(--ums-sp-2); min-width: 1120px; }
+.ums-lrhp-day { display: flex; flex-direction: column; gap: var(--ums-sp-2); min-height: 150px; padding: var(--ums-sp-2);
+    border: 1px solid var(--ums-line); border-radius: var(--ums-r-2); background: var(--ums-surface-2); }
+.ums-lrhp-day.is-sel { border-color: var(--ums-blue); background: var(--ums-blue-l); }
+.ums-lrhp-day__head { text-align: center; }
+.ums-lrhp-day__head .w { color: var(--ums-ink-2); font-size: var(--ums-fz-12); font-weight: var(--ums-fw-semibold); text-transform: uppercase; }
+.ums-lrhp-day__head .d { color: var(--ums-navy); font-size: var(--ums-fz-13); font-weight: var(--ums-fw-semibold); }
+.ums-lrhp-day.is-today .ums-lrhp-day__head .d { color: #f26522; }
+.ums-lrhp-day__trong { flex: 1; display: grid; place-items: center; color: var(--ums-ink-3); font-size: var(--ums-fz-12); }
+
+/* Thẻ tóm tắt một ngày — bấm mở danh sách */
+.ums-lrhp-card { flex: 1; display: flex; flex-direction: column; border: 1px solid var(--ums-line); border-radius: var(--ums-r-2);
+    background: var(--ums-surface); cursor: pointer; overflow: hidden; transition: box-shadow var(--ums-t), border-color var(--ums-t); }
+.ums-lrhp-card:hover, .ums-lrhp-card:focus-visible { border-color: var(--ums-blue); box-shadow: 0 4px 14px rgba(15, 23, 42, .12); outline: none; }
+.ums-lrhp-card__head { padding: var(--ums-sp-2) var(--ums-sp-3); background: var(--ums-blue); color: #fff; font-weight: var(--ums-fw-semibold); font-size: var(--ums-fz-13); }
+.ums-lrhp-card__head small { display: block; opacity: .85; font-weight: var(--ums-fw-regular); font-size: var(--ums-fz-12); }
+.ums-lrhp-card__body { flex: 1; display: flex; flex-direction: column; padding: var(--ums-sp-2) var(--ums-sp-3); font-size: var(--ums-fz-12); }
+.ums-lrhp-kv { display: flex; justify-content: space-between; gap: var(--ums-sp-2); padding: 3px 0; color: var(--ums-ink-2); }
+.ums-lrhp-kv b { color: var(--ums-ink); white-space: nowrap; }
+.ums-lrhp-kv--big b { color: var(--ums-g-red); font-size: var(--ums-fz-13); }
+.ums-lrhp-hpcap { margin-top: var(--ums-sp-2); color: var(--ums-ink-3); font-size: var(--ums-fz-11); text-transform: uppercase; letter-spacing: .02em; }
+.ums-lrhp-hp { list-style: none; margin: 0; padding: 0; }
+.ums-lrhp-hp li { display: flex; justify-content: space-between; gap: var(--ums-sp-2); padding: 2px 0; }
+.ums-lrhp-hp li span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ums-lrhp-hp li b { color: var(--ums-navy); }
+.ums-lrhp-more { color: var(--ums-ink-3); font-size: var(--ums-fz-11); }
+.ums-lrhp-view { margin-top: auto; padding-top: var(--ums-sp-2); color: var(--ums-blue); font-weight: var(--ums-fw-semibold); }
+
+/* Chú thích dưới lịch tháng */
+.ums-lrhp-legend { display: grid; gap: 6px; margin-top: var(--ums-sp-3); color: var(--ums-ink-2); font-size: var(--ums-fz-12); }
+.ums-lrhp-legend > div { display: flex; align-items: center; gap: var(--ums-sp-2); }
+.ums-lrhp-legend i { display: inline-block; width: 14px; height: 14px; border-radius: 50%; flex: 0 0 14px; }
+.ums-lrhp-legend .is-co { box-shadow: inset 0 0 0 2px var(--ums-blue); }
+.ums-lrhp-legend .is-chon { background: #f26522; }
+.ums-lrhp-legend .is-nay { background: var(--ums-blue); }
+.ums-lrhp-legend .is-tuan { background: var(--ums-blue-l); }
+
+/* ---------- Hộp danh sách một ngày ------------------------------------ */
+.ums-lrhp-tool { display: flex; align-items: center; gap: var(--ums-sp-3); flex-wrap: wrap; margin-bottom: var(--ums-sp-3); }
+.ums-lrhp-tong { color: var(--ums-ink-2); font-size: var(--ums-fz-13); }
+.ums-lrhp-tong b { color: var(--ums-navy); }
+.ums-lrhp-tim { flex: 1 1 260px; max-width: 420px; margin-left: auto; }
+.ums-lrhp-chips { margin-bottom: var(--ums-sp-3); font-size: var(--ums-fz-12); }
+.ums-lrhp-chips .ums-chip b { margin-left: 4px; }
+/* Các học phần của cùng một sinh viên nằm liền nhau: đổi nền theo nhóm, dòng đầu nhóm có vạch trên */
+.ums-table tr.ums-lrhp-g1 > td { background: var(--ums-surface-2); }
+.ums-table tr.ums-lrhp-first > td { border-top: 2px solid var(--ums-line-2); }
+.ums-lrhp-lop > div + div { margin-top: 2px; }
+
+@media (max-width: 1199px) {
+    .ums-lrhp-kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .ums-lrhp-main { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 767px) {
+    .ums-lrhp-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

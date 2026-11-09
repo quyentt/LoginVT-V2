@@ -60,6 +60,9 @@
      · Xoá học phần đã lưu: gốc vẽ lại bảng bằng Data của lời gọi XOÁ (thường rỗng → bảng trắng) — nay nạp lại danh sách.
      · Đổi ô học phần của vùng công nhận: gốc chỉ nạp lại khi CHỌN thêm, bỏ bớt thì bảng giữ cột cũ — nay nạp lại cả khi bỏ.
      · "Chọn lớp cần chuyển": ô Hệ/Khoá/CT/Lớp nay khoá theo luật cha → con (gốc nạp sẵn mọi tầng).
+   Kéo gốc lần 16 (9/11): ô lọc chữ trên bảng "Sinh viên thực hiện" (gốc filter_SinhVien — bỏ dấu, nhiều từ khớp tất cả, dòng bị ẩn
+     bỏ tích, nhãn n/tổng, Enter lọc ngay, Esc xoá) → pat.loc tầng chung, vẽ lại bảng theo dòng khớp. Khác gốc: dòng mới chưa lưu luôn hiện
+     nên không xoá bộ lọc khi bổ sung SV; Esc chỉ xoá bộ lọc khi ô có chữ (ô trống để Esc tầng chung đóng màn).
    Cố ý bỏ (mã chết): getList_MauImport riêng (CM_Import_PhanQuyen → #zonebtnBaoCao_LHD không có), KHCT_HocPhan/LayDanhSach
      (getList_HocPhan — đã chú thích lời gọi), genHTML_ThongTin, genComBo_HocPhan, arrSinhVien_Id / SINHVIEN_ID (cột không có),
      vùng Import trong chân biểu mẫu (đã chú thích), resetCombobox.
@@ -191,7 +194,7 @@
     function x(k) { return st.extra ? st.extra.querySelector('[data-z="' + k + '"]') : null; }
     function moBieuMau(row, extra) {
         st.id = row ? row.ID : '';
-        st.sv = []; st.moi = []; st.hp = []; st.hpMoi = []; st.ns = []; st.nsMoi = [];
+        st.sv = []; st.moi = []; st.hp = []; st.hpMoi = []; st.ns = []; st.nsMoi = []; st.locSV = '';
         st.extra = extra;
         extra.innerHTML =
             '<div class="ums-grid ums-grid--2 ums-cols ums-u-mb-4">' +
@@ -204,6 +207,10 @@
                 body: '<div class="ums-row ums-row--between ums-u-mb-2">' +
                         ui.btn('add', { text: 'Bổ sung sinh viên', mod: 'out-success', attr: { 'data-a': 'sv-them' } }) +
                         '<div class="ums-row">' +
+                            // gốc 9/11: ô lọc chữ trên bảng Sinh viên thực hiện — lọc ngay ở máy trạm, bỏ dấu, nhiều từ = khớp tất cả
+                            '<div class="ums-field ums-field--fit"><input class="ums-input" data-z="svloc" autocomplete="off" placeholder="Lọc: mã số, họ tên, lớp, khóa…" ' +
+                                'title="Gõ nhiều từ cách nhau bằng dấu cách (khớp tất cả các từ). Không cần gõ dấu tiếng Việt."></div>' +
+                            '<span class="ums-u-fz13 ums-u-semi ums-u-nowrap" data-z="svlocn"></span>' +
                             ui.btn('edit', { text: 'Chọn trạng thái cần chuyển', mod: 'out-warn', icon: 'fa-repeat', attr: { 'data-a': 'sv-tt' } }) +
                             ui.btn('edit', { text: 'Chọn lớp cần chuyển', mod: 'out-primary', icon: 'fa-people-arrows', attr: { 'data-a': 'sv-lop', 'data-n': 'N1' } }) +
                             ui.btn('edit', { text: 'Chọn lớp ngành 2', mod: 'out-primary', icon: 'fa-people-arrows', attr: { 'data-a': 'sv-lop', 'data-n': 'N2' } }) +
@@ -325,14 +332,25 @@
             .then(function (r) { if (id === st.id) { st.sv = arr(r.data); veSV(); } })
             .catch(function (err) { host.innerHTML = ui.fail(err.message); ums.api.handle(err, 'sinh viên của quyết định'); });
     }
+    /* Lọc chữ ở máy trạm trên bảng Sinh viên thực hiện (gốc 9/11 filter_SinhVien): bỏ dấu, không phân biệt hoa thường,
+       nhiều từ cách nhau dấu cách = phải khớp tất cả; dòng mới chưa lưu (st.moi) luôn hiện. Dòng bị lọc ẩn thì BỎ TÍCH —
+       các nút hàng loạt (Xóa / trạng thái / lớp / % phí / kỳ) đọc ô đã tích, giữ tích thì trúng cả sinh viên không nhìn thấy. */
+    var COT_LOC = ['QLSV_NGUOIHOC_MASO', 'QLSV_NGUOIHOC_HODEM', 'QLSV_NGUOIHOC_TEN', 'DAOTAO_LOPQUANLY_TEN', 'NHOMLOP_TEN',
+        'DAOTAO_TOCHUCCHUONGTRINH_TEN', 'DAOTAO_KHOADAOTAO_TEN', 'TRANGTHAINGUOIHOC_MOI_TEN', 'DAOTAO_LOPQUANLY_MOI_TEN',
+        'PHAMTRAMTINHPHI', 'DAOTAO_LOPQUANLY_N2_TEN', 'DSKETQUANHIEUKY'];
+    function tuLoc() { return String(st.locSV || '').trim().split(/\s+/).filter(Boolean); }
+    function locSV() { return tuLoc().reduce(function (rows, t) { return pat.loc(rows, t, COT_LOC); }, st.sv); }
     function veSV() {
         var host = x('svt');
         if (!host) return;
-        var rows = st.sv.map(function (r) { return { r: r }; }).concat(st.moi.map(function (m) { return { m: m }; }));
+        var daTich = {};
+        qa(host, 'input[data-qdsv]:checked').forEach(function (c) { daTich[c.getAttribute('data-qdsv')] = 1; });
+        var dangLoc = tuLoc().length > 0, hien = dangLoc ? locSV() : st.sv;
+        var rows = hien.map(function (r) { return { r: r }; }).concat(st.moi.map(function (m) { return { m: m }; }));
         var n = x('svn');
-        if (n) n.textContent = '(' + rows.length + ')';
+        if (n) n.textContent = '(' + (st.sv.length + st.moi.length) + ')';
         function g(o, k) { return o.r ? esc(e(o.r[k])) : ''; }
-        ui.table({ el: host, rows: rows, empty: 'Chưa có sinh viên thực hiện', columns: Q.cotSV().concat([
+        ui.table({ el: host, rows: rows, empty: dangLoc && st.sv.length ? 'Không có sinh viên nào khớp từ khóa đang lọc' : 'Chưa có sinh viên thực hiện', columns: Q.cotSV().concat([
             { title: 'Trạng thái mới', render: function (o) { return g(o, 'TRANGTHAINGUOIHOC_MOI_TEN'); } },
             { title: 'Lớp mới', render: function (o) { return g(o, 'DAOTAO_LOPQUANLY_MOI_TEN'); } },
             { title: '% tính phí', cls: 'is-center', render: function (o) { return g(o, 'PHAMTRAMTINHPHI'); } },
@@ -347,6 +365,20 @@
                     : '<button type="button" class="ums-iconbtn ums-iconbtn--del" data-a="sv-bo" data-id="' + esc(o.m.ID) + '" title="Bỏ dòng chưa lưu"><i class="fa-light fa-trash-can"></i></button>';
             } }
         ]) });
+        // giữ tích cho dòng còn hiện; đếm dòng đang tích bị lọc ẩn (đã bỏ tích); ô "chọn tất cả" theo dòng đang hiện
+        var hienId = {}, boTich = 0;
+        hien.forEach(function (r) { hienId[r.ID] = 1; });
+        Object.keys(daTich).forEach(function (id) { if (!hienId[id]) boTich++; });
+        qa(host, 'input[data-qdsv]').forEach(function (c) { if (daTich[c.getAttribute('data-qdsv')]) c.checked = true; });
+        var all = host.querySelector('input[data-qdsvall]');
+        if (all) all.checked = hien.length > 0 && hien.every(function (r) { return daTich[r.ID]; });
+        var lbl = x('svlocn');
+        if (lbl) {
+            if (dangLoc && st.sv.length) {
+                lbl.textContent = hien.length + '/' + st.sv.length + (boTich ? ' · đã bỏ tích ' + boTich + ' dòng bị ẩn' : '');
+                lbl.classList.toggle('ums-u-danger', !hien.length);
+            } else { lbl.textContent = ''; lbl.classList.remove('ums-u-danger'); }
+        }
     }
     function daChon() { return qa(x('svt'), 'input[data-qdsv]:checked').map(function (c) { return c.getAttribute('data-qdsv'); }); }
     function canChon(msg) { var ids = daChon(); if (!ids.length) ui.toast(msg || 'Vui lòng chọn sinh viên?', 'warn'); return ids; }
@@ -778,7 +810,19 @@
             case 'hp-taods': taoDS(); break;
         }
     });
+    var henLoc = 0;
+    function datLoc(v) { clearTimeout(henLoc); st.locSV = v; veSV(); }
+    root.addEventListener('input', function (ev) {
+        if (!ev.target.matches || !ev.target.matches('[data-z="svloc"]')) return;
+        clearTimeout(henLoc);
+        var v = ev.target.value;
+        henLoc = setTimeout(function () { st.locSV = v; veSV(); }, 250);
+    });
     root.addEventListener('keydown', function (ev) {
         if (ev.key === 'Enter' && ev.target.matches && ev.target.matches('[data-f="q"]')) { ev.preventDefault(); crud.load(1); }
+        if (ev.target.matches && ev.target.matches('[data-z="svloc"]')) {
+            if (ev.key === 'Enter') { ev.preventDefault(); datLoc(ev.target.value); }
+            else if (ev.key === 'Escape' && ev.target.value) { ev.preventDefault(); ev.target.value = ''; datLoc(''); }
+        }
     });
 })();

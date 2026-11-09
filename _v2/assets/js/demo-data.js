@@ -225,6 +225,7 @@
                     ['quanlytoanbo', 'Quản lý toàn bộ'],
                     ['apphihocphan', 'Áp phí học phần'],
                     ['ruthocphan', 'Rút học phần'],
+                    ['canhbaotckt', 'Cảnh báo TC-KT'],
                     ['baocaodangkyhoc', 'Báo cáo đăng ký học'],
                     ['lichsu', 'Lịch sử']]],
                 ['canbodangky', 'Cán bộ đăng ký', 'fa fa-user-plus', [
@@ -1190,6 +1191,9 @@
             ]],
             ['phieurut', 'Rút tiền', 'fa fa-money-bill', [
                 ['ruttien', 'Phiếu rút tiền']
+            ]],
+            ['ruthocphan', 'Rút học phần', 'fa fa-user-times', [
+                ['lichruthocphan', 'Lịch rút học phần']
             ]],
             ['hoadon', 'Hoá đơn', 'fa fa-file-text', [
                 ['xuathoadon', 'Xuất hoá đơn'],

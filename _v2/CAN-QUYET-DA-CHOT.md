@@ -4394,3 +4394,21 @@ Cần kiểm trên host:
   - → Chấp nhận hành vi hiện tại (chưa kiểm trên host).
 - **[Cần quyết]** Màn Cài đặt (9/11, người dùng hỏi "màu nhóm giao diện có bị ảnh hưởng"): mục "Màu nhóm vai trò" trước liệt kê 6 tone cũ mà cả thẻ số liệu dashboard cũng dùng → nay tách hai bảng: "Màu nhóm vai trò" lấy tone của từng nhóm trong `roleGroups` (9 nhóm), "Màu thẻ số liệu" giữ 6 tone cũ.
   - → Đã làm, người dùng đồng ý.
+
+### Đăng ký học — `kehoachdangky/canhbaotckt` "Cảnh báo TC-KT" (màn MỚI kéo gốc lần 16, 9/11)
+
+- **[Cần quyết]** Có khoá ô Kế hoạch theo ô Đợt (cha → con) không? Gốc để hai ô lọc ĐỘC LẬP gửi thẳng máy chủ; dòng kế hoạch (`DKH_KeHoachDangKy/LayDanhSach`) không có cột thời gian đào tạo nên không lọc được ở trình duyệt.
+  - → Giữ như gốc (hai ô độc lập), không áp `pat.chain`. Muốn khoá thì máy chủ phải trả cột đợt trong kế hoạch — ghi ở `can-quyet.js` nếu người dùng yêu cầu.
+- **[Cần quyết]** Cảnh báo chặn (chưa chọn dòng, mẫu thiếu tiêu đề / nội dung / người nhận): gốc `edu.system.alert` chồng lên banner.
+  - → Toast + dải thông báo trong trang (CSS riêng của màn `cbtckt-`), không hộp thoại.
+- **[Cần quyết]** Nguồn LICHSU (hủy / đổi lịch) gốc đã comment vì hàm CSDL bị xoá.
+  - → Không dựng; việc dữ liệu ghi `can-quyet.js`.
+
+### Tài chính — `ruthocphan/lichruthocphan` "Lịch rút học phần" (màn MỚI kéo gốc lần 16, 9/11)
+
+- **[Cần quyết]** Khối "Lọc trên kết quả đã tải" (8 ô facet) gốc mở sẵn; bản mới ẩn sẵn sau nút "Bộ lọc nâng cao" mang số bộ lọc đang bật.
+  - → Ẩn sẵn theo luật thanh lọc `_v2`; muốn mở sẵn đổi `hidden` ở `data-z="adv"` (1 dòng).
+- **[Cần quyết]** "Hôm nay" gốc ưu tiên ngày máy chủ (`edu.util.dateToday()`); `_v2` chưa có hàm tương đương.
+  - → Dùng ngày máy khách; lệch múi giờ chỉ ảnh hưởng ô tô đậm "hôm nay".
+- **[Cần quyết]** Xuất Excel: gốc `edu.exporter` có hộp "lọc thêm khi xuất"; bản mới `ui.xuatBang` xuất đúng bảng đang hiện (đã lọc bằng facet).
+  - → Làm như hiện tại.
