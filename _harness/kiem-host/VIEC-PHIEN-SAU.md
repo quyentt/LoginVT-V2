@@ -14,6 +14,11 @@ Quy ước bắt buộc (chi tiết ở CLAUDE.md mục 9 và bộ nhớ):
 
 ## 0. Thông báo phải đưa ra đầu phiên
 
+**10/11 (đêm) — TỒN kiểm host theo lần kéo gốc** (người dùng 10/11 hỏi "còn những lần kéo trước, chưa kiểm có ghi sổ chưa" — trước đó sổ KHÔNG ghi, nay đã ghi vào đầu mục lần 12 / 13 của `_v2/CHO-CHUYEN-SAU-PULL.md`):
+- Lần 15 + 16: đã kiểm trang chủ 9 nhóm, TC `lichruthocphan`, SV `quyetdinh` (9–10/11, ĐẠT). Còn CMS `vaitro/nhomvaitro`, ĐKH `canhbaotckt` (phân hệ chưa hoàn thiện), KHCT `hocphan` (chờ gọi tên).
+- **Lần 12 + 13 (chuyển 7/11, đã up): CHƯA kiểm host màn nào.** Ở phân hệ đã hoàn thiện có **18 màn** cần kiểm trước: Tài chính 5 (baocao, chottinhphi, phanbodoanhthu, tinhhocphi, thutienkhac) · Cổng cán bộ 7 (DaQHHT, lichgiangnhieuphonghoc + hộp đổi lịch, lichgiangnhieuphonghocgiangvien, nguoihoc, inbangdiem, phanlichgiang) · Cổng SV 2 (diemhoc, dangky) · Chuyên cần nhaptheolop · Sinh viên xacnhanketqua · Rèn luyện tonghopdiem · XLHV kehoachxuly. Danh sách đầy đủ + điểm cần kiểm từng màn: đầu mục lần 12 / 13 trong `CHO-CHUYEN-SAU-PULL.md`.
+- Lần 11: 14 màn đã kiểm 21/10; còn 4 màn KHCT `cthp` / `phanquyen`, TS `kehoachtuyensinhnew`, TN `quanlythongtin` chờ gọi tên phân hệ. Lần 14: 2 màn đã xem, `_v2` không đổi → không cần kiểm.
+
 **20–21/10 (máy gốc) — kéo gốc lần 11 (mốc `ab5b4f19`, 32 tệp):** ĐÃ CHUYỂN 3 màn đổi lớn nhất theo lệnh "chuyển 3 màn trước": CCB `khaosat/kehoach`
 (Xuất Excel kết quả chi tiết), SV `quyetdinh` (tab Danh sách chi tiết + Xuất báo cáo), KHCT `cthp` (Dạng cây, sắp xếp cột, nhãn học kỳ ở Khối bắt buộc;
 21/10 sửa thêm: Đóng / Esc vùng con về đúng một tầng, nút Đóng → Xoá → Lưu lên đầu khung). Tầng chung mới: `ums.ui.napXLSX`, `ui.table` cfg.sort +

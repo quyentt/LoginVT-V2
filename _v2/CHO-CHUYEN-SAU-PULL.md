@@ -48,7 +48,12 @@ Cùng phiên: chuyển Quản lý điểm (6 màn lần 12, bảng dưới) sang
 | Cổng cán bộ (đã chuyển) | `khaosat/phieu` | `ApisCongCanBo/Modules/khaosat/html/phieu.html` + `script/phieu.js` | **đã xem 7/11 — bỏ**: gốc sửa nút Xóa câu hỏi (tách trái, chỉ hiện khi sửa câu đã có, hỏi lại trước khi xoá), thêm nút Đóng cuối biểu mẫu, hết nhân đôi câu chưa có nhóm (concat thay push) — `_v2/…/khaosat/script/phieu.js` đã đúng cả ba từ trước (nút `xoaCau` ẩn khi thêm mới + `ui.confirm`; `dsNhom.concat`; Đóng do `pat.formTrang` lo) |
 | TKGG (đã chuyển) | `kehoach/lophocphan` | `ApisTKGG/Modules/kehoach/html/lophocphan.html` | **đã xem 7/11 — bỏ**: gốc dời nút Đóng / Lưu của biểu mẫu Thêm lớp học phần và khung Duyệt buổi học lên ĐẦU khung (danh sách dài thì nút cuối bị khuất) — `_v2` dùng `pat.formTrang`, nút ở đầu khung sẵn |
 
-## Lần kéo 13 (7/11) — mốc gốc nay là `f6f5425ca` (gốc lại force-push; mốc cũ `b2cd522d1`) — 59 tệp, CHƯA XEM màn nào
+## Lần kéo 13 (7/11) — mốc gốc nay là `f6f5425ca` (gốc lại force-push; mốc cũ `b2cd522d1`) — 59 tệp, ĐÃ XEM HẾT 7/11 (trừ Apisphanquyen mới), **CHƯA KIỂM HOST màn nào**
+
+**Kiểm host (ghi 10/11 — người dùng hỏi "chưa kiểm có ghi sổ chưa"):** mọi màn "đã chuyển 7/11" dưới đây đều CHƯA mở lại trên host (đã up trong gói 7–9/11).
+Thuộc phân hệ ĐÃ hoàn thiện — kiểm trước, theo luật: **Tài chính** `baocao/baocao` (2 tab Kết quả rút / miễn + Xuất Excel), `dulieuhocphi/tinhhocphi` (hàng đợi form tiến trình), `phieuthu/thutienkhac` (Phân bổ) ·
+**Cổng cán bộ** `hoatdong/DaQHHT` (hộp Tổng điểm phạm vi), `lichgiang/lichgiangnhieuphonghoc` + hộp "Yêu cầu đổi lịch" (`_lichgiang_doilich.js`, chọn buổi), `nhapdiem/inbangdiem` (hộp Điểm trung bình), `phanlichgiang/phanlichgiang` (hàng nút dính) ·
+**Cổng sinh viên** `hoctap/diemhoc` (Tổng điểm phạm vi, thủ vai). Phân hệ chưa hoàn thiện (chờ gọi tên): KHCT `lophoc/covanlop`, Tuyển sinh `kehoachtuyensinhnew`.
 
 Lần sau so: `git diff --name-status f6f5425ca origin/main`. 60 tệp gốc đổi: 47 tệp màn (9 phân hệ) + 12 tệp vỏ cũ / khác + `Apisphanquyen.zip` (bị `*.zip`
 của `.gitignore` chặn, KHÔNG lấy). Đã ghi đè 59 tệp bằng `git checkout origin/main -- <tệp>`. **Gốc đã lấy lại bản của ta** cho `help-sso.aspx`,
@@ -110,7 +115,14 @@ Số theo phân hệ: Phân quyền 22 (mới) · Cổng cán bộ 10 · Tài ch
 | Phân quyền (PHÂN HỆ MỚI, chưa chuyển) | `phanquyen/quyentheovaitro` | `Apisphanquyen/Modules/phanquyen/script/quyentheovaitro.js` | chưa xem (tệp MỚI) |
 | Phân quyền (PHÂN HỆ MỚI, chưa chuyển) | `phanquyen/uyquyencanhan` | `Apisphanquyen/Modules/phanquyen/script/uyquyencanhan.js` | chưa xem (tệp MỚI) |
 
-## Lần kéo 12 (2/11) — mốc gốc nay là `b2cd522d1` (gốc lại force-push; mốc cũ `ab5b4f19`) — 73 tệp, CHƯA XEM màn nào
+## Lần kéo 12 (2/11) — mốc gốc nay là `b2cd522d1` (gốc lại force-push; mốc cũ `ab5b4f19`) — 73 tệp, ĐÃ XEM HẾT 7/11, **CHƯA KIỂM HOST màn nào**
+
+**Kiểm host (ghi 10/11):** mọi màn "đã chuyển 7/11" dưới đây đều CHƯA mở lại trên host (đã up trong gói 7–9/11).
+Thuộc phân hệ ĐÃ hoàn thiện — kiểm trước: **Tài chính** `baocao/baocao`, `dulieuhocphi/chottinhphi` (Chốt tính phí → runJob), `dulieuhocphi/phanbodoanhthu` (Phân bổ / Xoá đã chọn / Xuất Excel), `dulieuhocphi/tinhhocphi`, `phieuthu/thutienkhac` ·
+**Cổng cán bộ** `lichgiang/lichgiangnhieuphonghoc` (nút Đổi lịch dạy, hộp chọn buổi), `lichgiang/lichgiangnhieuphonghocgiangvien` (ô Tình trạng nhân sự — kiểm tên mục NS.TTNS trên host), `lichgiang/nguoihoc` (mẫu báo cáo gửi thêm `strDangKy_LopHocPhan_Id`) ·
+**Cổng sinh viên** `dangkyhoc/dangky` (đổi chương trình → khối người học đổi theo) · **Chuyên cần** `nhapchuyencan/nhaptheolop` (mẫu báo cáo thêm 3 tham số) ·
+**Sinh viên** `kehoach/xacnhanketqua` (ô từ khoá bảng kết quả) · **Rèn luyện** `tonghopdiem/tonghopdiem` (3 nút Xuất Excel, Xếp loại → process.run — Xếp loại là thao tác KHÔNG hoàn lại, chỉ mở hộp) ·
+**Xử lý học vụ** `kehoachxuly/kehoachxuly` (10 thao tác qua form tiến trình). Phân hệ chưa hoàn thiện (chờ gọi tên): Quản lý điểm 4 (`thongke/diemhocphan`, `diemtrungbinh`, `tonghopketqua`, `tinhdiem/tonghopketqua`), Học bổng 3 (`kehoach/kehoach`, `sotinkehoach`, `thuchienxet`), ĐKH `kehoachdangky/lophocphan` (15 thao tác hàng loạt), Tốt nghiệp 2 (`kehoach/kehoach`, `thuchienxet`), Ký túc xá `taichinh/tinhphi`, Tuyển sinh `kehoachtuyensinhnew`.
 
 Lần sau so: `git diff --name-status b2cd522d1 origin/main`. 73 tệp gốc đổi: 65 tệp màn (16 phân hệ) + 8 tệp vỏ cũ / khác. Đã ghi đè 70 tệp bằng
 `git checkout origin/main -- <tệp>`; **3 tệp KHÔNG ghi đè nguyên**: `help-sso.aspx`, `mapping.aspx` (gốc chứa bản cũ của chính ta → giữ bản máy) và
