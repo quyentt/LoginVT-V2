@@ -325,3 +325,9 @@ Luật kiểm host hiện hành nằm ở CLAUDE.md mục 9 (bản rút gọn). 
 - Bẫy bộ thử: thân hàm truyền qua Bash trong dấu nháy kép có `!` → node báo MODULE_NOT_FOUND (history expansion) → ghi thân hàm ra tệp scratchpad rồi `"$(cat tệp)"`; `cd` trong các lệnh Bash chạy song song không tin được → dùng đường dẫn tuyệt đối. Esc tổng hợp (`dispatchEvent`) không đóng `<dialog>` native — không kết luận được qua CDP, hộp dùng `ui.dialog` chuẩn.
 - Không ghi CSDL, không có dấu ZKT. Chưa kiểm: SV `quyetdinh`, CMS `nhomvaitro`, ĐKH `canhbaotckt` (chờ người dùng sau khi báo Tài chính).
 - **00:20 — người dùng "đã up" → so kích thước 3 tệp trên host = gói (Last-Modified 16:27–16:30 UTC) → `--da-up` (gói trống); tải lại trang host (gói `5c846bed36d6`), Từ khóa bằng tệp thật: "Nguyễn Duy" 43 / "dung" 78 / "nguyen dung" 15 / "2023" 392 lượt, Xóa bộ lọc về 3.394, 0 lời gọi thêm → `loi-code.js xong`. **Sổ lỗi mã TRỐNG. Tài chính xong lượt kéo gốc 16.** Commit + đẩy.**
+
+## 10/11 (00:30–00:45) — Sinh viên: màn Quyết định (kéo gốc 16, ô lọc SV thực hiện) — ĐẠT
+
+- Vai trò Sinh viên `2BD6D7…`, màn `quyetdinh/quyetdinh` (gói `5c846bed36d6`): mở sạch 10 QĐ, 0 lỗi JS. Sửa QĐ đầu (995/QĐ-ĐHCNĐA, 290 SV, 5 lời gọi nạp chi tiết) → ô lọc `data-z=svloc`: mã "20221554" 1/290; tên không dấu "thuc" 1/290; hai từ "vu thuc" 1/290; không khớp → 0/290 đỏ + "đã bỏ tích 1 dòng bị ẩn" + dòng trống đúng câu; Enter lọc ngay; Esc có chữ chỉ xoá lọc (biểu mẫu còn, 1 nút Đóng); Esc rỗng → tầng chung đóng biểu mẫu về danh sách (10 dòng, 0 hộp). Không lưu, không ghi CSDL.
+- Bẫy bộ thử: cột 3 bảng SV là MÃ, tên ở cột 4 — lấy tên bằng regex chữ hoa đầu từ. Esc tổng hợp trên ô input CÓ chạy qua handler màn + tầng chung (khác `<dialog>` native).
+- Sổ: `da-kiem.json` ghiChu; `CHO-CHUYEN-SAU-PULL.md` lần 16 dòng SV. Sổ lỗi mã trống, gói trống → commit + đẩy. Còn lại lần 15 + 16: CMS `vaitro/nhomvaitro` (CMS thử ghi dở), ĐKH `canhbaotckt` (ĐKH đọc sâu) — chờ người dùng; KHCT `hocphan` chờ gọi tên.
