@@ -22,7 +22,9 @@
    (như gốc). Không tính lại số liệu: chỉ cộng các cột số của chính danh sách trả về.
 
    Khác gốc (cách làm, không đổi bố cục):
-     · Bỏ nút "Tìm kiếm": gõ Từ khóa là tự nạp lại sau 400 ms / Enter (luật thanh lọc _v2); thêm nút Tải lại chuẩn.
+     · Bỏ nút "Tìm kiếm": gõ Từ khóa là tự lọc sau 200 ms / Enter (luật thanh lọc _v2); thêm nút Tải lại chuẩn.
+     · Từ khóa lọc TẠI MÁY KHÁCH (mã + họ tên, bỏ dấu, nhiều từ phải khớp hết), strTuKhoa gửi rỗng — kiểm host 9/11:
+       thủ tục chỉ khớp mã SV, gõ họ tên ra 0 dù nhãn hứa "Mã sinh viên hoặc họ và tên". Máy chủ chỉ còn lọc Đợt + Hệ.
      · Khối "Lọc trên kết quả đã tải" ẨN SẴN (gốc mở sẵn); nút "Bộ lọc nâng cao" mang số bộ lọc đang bật.
      · Xuất Excel dùng ums.ui.xuatBang (bảng HTML .xls) thay edu.exporter — vỏ _v2 không có edu.exporter;
        cột và dòng điều kiện dưới tiêu đề giữ như gốc; hộp "lọc thêm khi xuất" của chuẩn cũ không có.
@@ -216,7 +218,7 @@
         var req = ++S.req;
         var o = {
             action: C + 'LayDSRut', method: 'GET',
-            strTuKhoa: (F('tuKhoa').value || '').trim(),
+            strTuKhoa: '',      // kiểm host 9/11: thủ tục chỉ khớp MÃ SV, họ tên ra 0 → từ khoá lọc tại máy khách (dat), luôn nạp cả đợt
             strDaoTao_ThoiGianDaoTao_Id: F('dot').value || '',
             strDaoTao_HeDaoTao_Id: F('he').value || '',
             strNguoiThucHien_Id: ''
@@ -253,9 +255,16 @@
 
     /* ---------- Lọc trên dữ liệu đã nạp ---------- */
     function docLoc() {
-        var o = { tu: docNgay('tu'), den: docNgay('den') };
+        var o = { tu: docNgay('tu'), den: docNgay('den'), tk: chuanHoa(F('tuKhoa').value).trim().split(/\s+/).filter(Boolean) };
         LOC.forEach(function (f) { o[f.k] = F(f.k).value || ''; });
         return o;
+    }
+    /* Từ khoá: mọi từ đều phải có trong "mã · họ đệm · tên" (bỏ dấu, không phân biệt hoa thường) — tính một lần mỗi dòng */
+    function khopTuKhoa(r, tk) {
+        if (!tk.length) return true;
+        if (r._tk === undefined) r._tk = chuanHoa([r.QLSV_NGUOIHOC_MASO, r.QLSV_NGUOIHOC_HODEM, r.QLSV_NGUOIHOC_TEN].join(' '));
+        for (var i = 0; i < tk.length; i++) if (r._tk.indexOf(tk[i]) === -1) return false;
+        return true;
     }
     /* Dòng có thỏa bộ lọc không (boQua = ô lọc không tính — khi dựng danh sách lựa chọn của chính ô đó) */
     function dat(r, o, boQua) {
@@ -265,7 +274,7 @@
         }
         if (o.tu && (!r._k || r._k < o.tu)) return false;
         if (o.den && (!r._k || r._k > o.den)) return false;
-        return true;
+        return khopTuKhoa(r, o.tk);
     }
     /* Dựng lại lựa chọn từng ô (facet). Trả true nếu có ô bị đưa về "Tất cả" vì giá trị cũ không còn */
     function taoOptionLoc() {
@@ -318,8 +327,8 @@
     function xoaLoc() {
         ['tu', 'den'].forEach(function (k) { var el = F(k); if (el._flatpickr) el._flatpickr.clear(); else el.value = ''; });
         LOC.forEach(function (f) { F(f.k).value = ''; s2(F(f.k)); });
-        /* Từ khóa / hệ đào tạo là lọc tại máy chủ: chỉ nạp lại khi đang có giá trị */
-        var canNap = !!((F('tuKhoa').value || '').trim() || F('he').value);
+        /* Hệ đào tạo là lọc tại máy chủ: chỉ nạp lại khi đang có giá trị; từ khoá lọc tại máy khách */
+        var canNap = !!F('he').value;
         F('tuKhoa').value = '';
         F('he').value = ''; s2(F('he'));
         if (canNap) napRut(); else apDungLoc(false);
@@ -638,7 +647,7 @@
     root.addEventListener('keydown', function (ev) {
         var card = ev.target.closest('.ums-lrhp-card[data-ngay]');
         if (card && (ev.key === 'Enter' || ev.key === ' ')) { ev.preventDefault(); moChiTiet(card.getAttribute('data-ngay')); return; }
-        if (ev.target === F('tuKhoa') && ev.key === 'Enter') { ev.preventDefault(); if (hen) clearTimeout(hen); napRut(); }
+        if (ev.target === F('tuKhoa') && ev.key === 'Enter') { ev.preventDefault(); if (hen) clearTimeout(hen); hen = null; apDungLoc(false); }
     });
     root.addEventListener('change', function (ev) {
         var f = ev.target.getAttribute && ev.target.getAttribute('data-f');
@@ -656,7 +665,7 @@
     }
     root.addEventListener('input', function (ev) {
         var f = ev.target.getAttribute && ev.target.getAttribute('data-f');
-        if (f === 'tuKhoa') { if (hen) clearTimeout(hen); hen = setTimeout(function () { hen = null; napRut(); }, 400); }
+        if (f === 'tuKhoa') { if (hen) clearTimeout(hen); hen = setTimeout(function () { hen = null; apDungLoc(false); }, 200); }   // lọc tại máy khách, không gọi máy chủ
         else if (f === 'tu' || f === 'den') locNgay();
     });
 

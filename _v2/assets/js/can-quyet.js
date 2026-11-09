@@ -332,10 +332,11 @@
         {"man":"Đăng ký học → Kế hoạch đăng ký → Cảnh báo TC-KT","host":true,"q":"LayDS_TienTrinhGuiEmail: tên cột người gửi chưa rõ (màn dò lần lượt NGUOITAO_TAIKHOAN → NGUOITAO_TENDAYDU → NGUOITHUCHIEN_TAIKHOAN → NGUOITAO_HOTEN → NGUOITAO); lọc \"Chỉ lượt gửi của tôi\" gửi strNguoiTao_Id = userId.","now":"Dò cột lần lượt; kiểm host xem cột nào có thật rồi rút gọn."}
     ]);
 
-    /* Tài chính — màn MỚI kéo gốc lần 16 (9/11) "Lịch rút học phần", CHƯA kiểm host (host chưa khai chức năng). */
+    /* Tài chính — màn MỚI kéo gốc lần 16 (9/11) "Lịch rút học phần" (menu host: "Theo dõi biến động rút đăng ký học"). Kiểm host 9/11 (lái tay):
+       3 đợt đều không có dòng thiếu ngày rút → bỏ mục "cần kiểm trên host"; đợt lớn nhất 3.394 lượt nạp ~2 s, chấp nhận được. */
     them(TC + "ruthocphan/lichruthocphan", [
         {"man":"Tài chính → Rút học phần → Lịch rút học phần","ben":"oracle","q":"DKH_RutHocPhan/LayDSRut không lọc theo khoảng ngày và không trả số liệu theo ngày → màn nạp CẢ ĐỢT rồi nhóm theo ngày ở máy khách (như gốc). Đợt lớn (hàng nghìn lượt rút) sẽ nặng; nếu host chậm cần procedure trả số liệu theo ngày hoặc nhận tham số từ / đến ngày.","now":"Nạp cả đợt, nhóm theo ngày ở trình duyệt."},
-        {"man":"Tài chính → Rút học phần → Lịch rút học phần","host":true,"q":"Dòng rút không có NGAYRUT_DD_MM_YYYY thì không lên lịch; màn báo \"Có N lượt rút không có ngày rút\" (gốc cũng vậy). Kiểm host xem có dòng nào thế không — có thì là dữ liệu cần sửa.","now":"Đếm và báo ở đầu lưới tuần."}
+        {"man":"Tài chính → Rút học phần → Lịch rút học phần","ben":"oracle","q":"Chọn Hệ đào tạo \"Đào tạo khác\" hoặc \"Song ngành Chính quy\" → máy chủ trả Y HỆT danh sách của \"Đại học chính quy\" (đợt 2025-2026 HK3: cả ba cùng 1.869 lượt, 10 hệ còn lại 0), trong khi mọi dòng đều thuộc khóa Đại học Chính quy. Người xem tưởng hai hệ đó có sinh viên rút. Gốc gửi cùng tham số (strDaoTao_HeDaoTao_Id), kiểm bằng lời gọi thẳng 9/11. Cần backend xem điều kiện lọc hệ trong thủ tục LayDSRut (có thể một số hệ đang được coi là \"không lọc\").","now":"Gửi đúng tham số như gốc, không lọc lại ở máy khách."}
     ]);
 
     ums.canQuyet = S;
