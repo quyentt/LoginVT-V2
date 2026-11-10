@@ -106,6 +106,9 @@
        Hai ô chọn ít mục → data-no-s2 (không select2). o: như veTongKet. */
     function veTongDiem(el, tbRows, o) {
         o = o || {};
+        /* Kiểm host 10/11 (người dùng chụp DaQHHT): nơi gọi đưa vào chính ô .ums-dh__tk của cột trái → khối con .ums-dh__tk lồng trong nó
+           dính luật ".ums-dh__tk > div { display: flex }" thành MỘT hàng ngang, nhãn và số đè nhau. Ô ngoài chỉ còn là vỏ bọc → bỏ lớp. */
+        el.classList.remove("ums-dh__tk");
         var all = arr(tbRows).filter(function (x) { return Number(x.THUOCTINHLANTINH) === 0; });
         function toanKhoa(x) { return x.DAOTAO_THOIGIANDAOTAO_ID === null || x.DAOTAO_THOIGIANDAOTAO_ID === undefined || x.DAOTAO_THOIGIANDAOTAO_ID === ''; }
         function thuoc(x, pv) { return x.PHAMVITONGHOPDIEM_TEN === pv && (pv !== 'HOCKY' || x.DOTHOC === null || x.DOTHOC === undefined); }
