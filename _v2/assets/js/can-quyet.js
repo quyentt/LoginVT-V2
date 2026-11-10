@@ -47,7 +47,6 @@
         {"man":"Cổng cán bộ → Lịch giảng → Lịch giảng đường (nhiều phòng học)","ben":"oracle","q":"Màn mới có nhãn **sức chứa** từng phòng và ô lọc \"Sức chứa (chỗ)\" (bản kho gốc 29/09/2026), nhưng chưa rõ thủ tục pkg_congthongtincanbo.LayDSPhongHoc trả sức chứa ở cột nào — mã gốc cũng phải dò chín tên cột rồi lấy số \"(N)\" cuối tên phòng. Ảnh hưởng: nếu không có cột sức chứa và tên phòng không kèm \"(N)\" thì nhãn không hiện và lọc sức chứa loại **hết** phòng. **Anh:** cho biết tên cột sức chứa (hoặc bổ sung vào thủ tục); đồng thời xác nhận LayLichPhongHoc có trả IDLICHHOC để nhận đúng buổi dạy của người đang đăng nhập."}
     ]);
     them("apiscongcanbo/modules/lichgiang/lichgiangnhieuphonghocgiangvien", [
-        {"man":"Cổng cán bộ → Lịch giảng → Lịch giảng nhiều giảng viên","host":true,"q":"Ô **Tình trạng nhân sự** (danh mục NS.TTNS, kéo gốc lần 12, chuyển 7/11) tự chọn mặc định theo TÊN mục khớp /^đang (làm việc|công tác)/ (dự phòng: có \"làm việc\" / \"công tác\" và không \"nghỉ\" / \"thôi\" / \"chuyển\"); không khớp → \"Tất cả\" (như gốc). Cần kiểm tên mục chuẩn trên host để mặc định bắt đúng.","now":"Khớp theo tên như trên; trượt thì để Tất cả."}
     ]);
     them("apiscongcanbo/modules/thongtinsinhvien/thanhtoanonline", [
         {"man":"Cổng cán bộ → Thanh toán online (thông tin sinh viên)","q":"Cấu hình cổng thanh toán VietinBank (VTB) đang ghi cứng tên đơn vị \"DHLAMNGHIEP\", mã merchant \"0500465853\" — trông như cấu hình của **trường khác**. Rủi ro: tiền sinh viên nộp có thể không về tài khoản của trường. **Nghiệp vụ Tài chính:** xác nhận với ngân hàng thông tin tài khoản / merchant đúng của trường. **Anh:** thay cấu hình trước khi cho sinh viên dùng.","ben":"oracle"}
@@ -337,6 +336,11 @@
     them(TC + "ruthocphan/lichruthocphan", [
         {"man":"Tài chính → Rút học phần → Lịch rút học phần","ben":"oracle","q":"DKH_RutHocPhan/LayDSRut không lọc theo khoảng ngày và không trả số liệu theo ngày → màn nạp CẢ ĐỢT rồi nhóm theo ngày ở máy khách (như gốc). Đợt lớn (hàng nghìn lượt rút) sẽ nặng; nếu host chậm cần procedure trả số liệu theo ngày hoặc nhận tham số từ / đến ngày.","now":"Nạp cả đợt, nhóm theo ngày ở trình duyệt."},
         {"man":"Tài chính → Rút học phần → Lịch rút học phần","ben":"oracle","q":"Chọn Hệ đào tạo \"Đào tạo khác\" hoặc \"Song ngành Chính quy\" → máy chủ trả Y HỆT danh sách của \"Đại học chính quy\" (đợt 2025-2026 HK3: cả ba cùng 1.869 lượt, 10 hệ còn lại 0), trong khi mọi dòng đều thuộc khóa Đại học Chính quy. Người xem tưởng hai hệ đó có sinh viên rút. Gốc gửi cùng tham số (strDaoTao_HeDaoTao_Id), kiểm bằng lời gọi thẳng 9/11. Cần backend xem điều kiện lọc hệ trong thủ tục LayDSRut (có thể một số hệ đang được coi là \"không lọc\").","now":"Gửi đúng tham số như gốc, không lọc lại ở máy khách."}
+    ]);
+
+    /* Cổng cán bộ — kiểm host 10/11 hộp Điểm trung bình (kéo gốc 12–13): phạm vi Năm học trên host thiếu năm. Cùng dữ liệu cho Cổng SV hoctap/diemhoc. */
+    them("apiscongcanbo/modules/nhapdiem/inbangdiem", [
+        {"man":"Cổng cán bộ → Xem thông tin học tập (In bảng điểm) → cột Điểm TB → hộp Điểm trung bình","ben":"oracle","q":"Chọn phạm vi **Năm học** thì ô năm chỉ có MỘT mục và hiện \"Năm học _\" (gốc cũng hiện y hệt): thủ tục SV_ThongTin/KetQuaHocTapCaNhan trả 8 dòng phạm vi NAMHOC đều trỏ một thời gian đào tạo 513C1BE7… có NAMHOC = \"_\" (DAOTAO_THOIGIANDAOTAO_NAMHOC cũng \"_\"), trong khi sinh viên K14 (20233191) đã học 2023–2026 và phạm vi Học kỳ có đủ 2025_2026 HK1 / HK2. Người xem không biết số liệu năm nào, các năm khác không có. Cần backend xem bản ghi thời gian đào tạo kiểu năm học chưa khai NAMHOC và việc tổng hợp theo năm chỉ ra một dòng.","now":"_v2 hiện nhãn \"Năm học (chưa khai năm học)\" thay \"Năm học _\"; số liệu vẫn hiện theo dòng máy chủ trả."}
     ]);
 
     ums.canQuyet = S;

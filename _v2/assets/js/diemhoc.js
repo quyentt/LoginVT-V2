@@ -132,8 +132,11 @@
             var pv = sPv.value, co = {}, ds = [];
             if (pv !== 'TOANKHOA') all.forEach(function (x) {
                 if (!thuoc(x, pv)) return; var k = key(x, pv); if (co[k]) return; co[k] = 1;
+                /* Kiểm host 10/11: dòng phạm vi NAMHOC của máy chủ có NAMHOC = "_" (thời gian đào tạo chưa khai năm học) → gốc hiện "Năm học _";
+                   ở đây hiện nhãn rõ nghĩa, dữ liệu vẫn chọn / tính được (ben dữ liệu trong can-quyet.js) */
+                var namHien = /^[\s_]*$/.test(String(e(x.NAMHOC))) ? '(chưa khai năm học)' : e(x.NAMHOC);
                 ds.push({ k: k, nam: String(e(x.NAMHOC)), ky: Number(x.DAOTAO_THOIGIANDAOTAO_KY) || 0,
-                    ten: pv === 'NAMHOC' ? 'Năm học ' + e(x.NAMHOC) : 'Năm học ' + e(x.NAMHOC) + ' - Học kỳ ' + e(x.DAOTAO_THOIGIANDAOTAO_KY) });
+                    ten: pv === 'NAMHOC' ? 'Năm học ' + namHien : 'Năm học ' + namHien + ' - Học kỳ ' + e(x.DAOTAO_THOIGIANDAOTAO_KY) });
             });
             ds.sort(function (a, b) { return b.nam.localeCompare(a.nam) || (b.ky - a.ky); });
             sKy.innerHTML = ds.map(function (d) { return '<option value="' + esc(d.k) + '">' + esc(d.ten) + '</option>'; }).join('');
