@@ -343,6 +343,10 @@
         {"man":"Cổng cán bộ → Xem thông tin học tập (In bảng điểm) → cột Điểm TB → hộp Điểm trung bình","ben":"oracle","q":"Chọn phạm vi **Năm học** thì ô năm chỉ có MỘT mục và hiện \"Năm học _\" (gốc cũng hiện y hệt): thủ tục SV_ThongTin/KetQuaHocTapCaNhan trả 8 dòng phạm vi NAMHOC đều trỏ một thời gian đào tạo 513C1BE7… có NAMHOC = \"_\" (DAOTAO_THOIGIANDAOTAO_NAMHOC cũng \"_\"), trong khi sinh viên K14 (20233191) đã học 2023–2026 và phạm vi Học kỳ có đủ 2025_2026 HK1 / HK2. Người xem không biết số liệu năm nào, các năm khác không có. Cần backend xem bản ghi thời gian đào tạo kiểu năm học chưa khai NAMHOC và việc tổng hợp theo năm chỉ ra một dòng.","now":"_v2 hiện nhãn \"Năm học (chưa khai năm học)\" thay \"Năm học _\"; số liệu vẫn hiện theo dòng máy chủ trả."}
     ]);
 
+    them("apiscongsinhvien/modules/hoctap/diemhoc", [
+        {"man":"Cổng sinh viên → Theo dõi kết quả học tập → cột trái Tổng điểm → phạm vi Năm học","ben":"oracle","q":"Kiểm host 10/11 (thủ vai Đặng Bác Ái 20233195, K14 QTKD): chọn phạm vi **Năm học** thì ô năm chỉ có MỘT mục và máy chủ trả NAMHOC = \"_\" (thủ tục SV_ThongTin/KetQuaHocTapCaNhan, cùng lỗi đã ghi ở Cổng cán bộ → In bảng điểm với SV 20233191). Phạm vi Học kỳ có đủ 2025_2026 HK1–HK3 và 2026_2027 HK1 nên dòng tổng hợp theo năm lẽ ra phải có 2–3 năm. Cần backend xem bản ghi thời gian đào tạo chưa khai năm học (DAOTAO_THOIGIANDAOTAO_NAMHOC \"_\").","now":"_v2 hiện nhãn \"Năm học (chưa khai năm học)\" thay dấu gạch; số liệu của dòng đó vẫn tính được. Gốc hiện \"Năm học _\"."}
+    ]);
+
     ums.canQuyet = S;
     /* Phân hệ CHƯA kiểm trên host: mục của các phân hệ này ghi lúc chuyển đổi, chưa xác nhận trên hệ thật — bảng "Màn đang có lỗi backend"
        gắn nhãn "chưa kiểm trên host". Kiểm xong phân hệ nào thì gỡ tiền tố của nó khỏi đây. */
