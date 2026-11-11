@@ -99,7 +99,7 @@ Không dùng redirect kèm token trong URL. Cách làm:
 2. Bấm vào → app mở một trang của **chính app**, trang đó lấy token ở mục 1 rồi **tự gửi form POST** sang Help:
 
 ```html
-<form method="POST" action="https://con98.api-apis.com/help-master/dang-nhap-truong">
+<form method="POST" action="https://help.api-apis.com/dang-nhap-truong">
   <input type="hidden" name="token" value="<JWT vừa phát hành>">
 </form>
 <script>document.forms[0].submit()</script>

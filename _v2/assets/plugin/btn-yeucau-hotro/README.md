@@ -37,8 +37,8 @@ Trước thẻ script, hoặc bằng `data-*` trên thẻ script, hoặc sửa `
 
 ```html
 <script>window.UMS_HOTRO_CONFIG = {
-  url: "https://con98.api-apis.com/help-master/ho-tro/gui",          // cửa nhận form (mặc định)
-  listUrl: "https://con98.api-apis.com/help-master/ho-tro/danh-sach", // cửa danh sách JSON (mục 10.2)
+  url: "https://help.api-apis.com/ho-tro/gui",          // cửa nhận form (mặc định)
+  listUrl: "https://help.api-apis.com/ho-tro/danh-sach", // cửa danh sách JSON (mục 10.2)
   tokenUrl: "help-sso.aspx",                                          // trang phát token (POST roles + uid + json=1)
   v: "",                                                              // rỗng = theo vỏ (_v2: help.version; v1: "1")
   text: "Yêu cầu hỗ trợ",
@@ -47,8 +47,8 @@ Trước thẻ script, hoặc bằng `data-*` trên thẻ script, hoặc sửa `
   choMs: 10000,                                                       // chờ Help trả lời (danh sách / postMessage / help-san-sang) tối đa
   choChiaSeMs: 30000,                                                 // chờ người dùng trả lời hộp "Chia sẻ tab" khi chụp thật; quá thì vẽ lại bằng html2canvas
   nhung: false,                                                       // mục 11: trao đổi ngay trong popup — BẬT khi Help báo trang nhúng đã lên máy chủ
-  nhungUrl: "https://con98.api-apis.com/help-master/ho-tro/nhung",     // mở yêu cầu cũ trong iframe: POST token + id + v (Help 11.7)
-  huongDanUrl: "https://con98.api-apis.com/help-master/huong-dan/khac/huong-dan-su-dung-chuc-nang-yeu-cau-ho-tro#thuc-hien"
+  nhungUrl: "https://help.api-apis.com/ho-tro/nhung",     // mở yêu cầu cũ trong iframe: POST token + id + v (Help 11.7)
+  huongDanUrl: "https://help.api-apis.com/huong-dan/khac/huong-dan-su-dung-chuc-nang-yeu-cau-ho-tro#thuc-hien"
                                                                       // bài hướng dẫn trên Help: nút "?" tròn cạnh "Tạo yêu cầu mới" mở ở tab help-portal; "" = không hiện nút
 };</script>
 ```

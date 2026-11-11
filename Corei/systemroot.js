@@ -47,7 +47,7 @@ systemroot.prototype = {
     dtChucNang: [],
     pathChucNang: '',
     // Cổng Help: {functionId} = ID chức năng; v=1 = giao diện cũ (bản _v2 gửi v=2). Để rỗng = giữ nút "?" cũ
-    strHelpUrl: 'https://con98.api-apis.com/help-master/mo?ma={functionId}&v=1',
+    strHelpUrl: 'https://help.api-apis.com/mo?ma={functionId}&v=1',
     tokenJWT: '',
     flag_alert: false,
     iSoLuong: 0,

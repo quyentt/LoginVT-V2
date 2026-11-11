@@ -10,6 +10,27 @@ Xem lại đúng thay đổi của một tệp: `git diff -w <từ>..<đến> --
 
 ---
 
+## Lần kéo 17 (11/11) — mốc gốc nay là `b67c16ae8` (mốc cũ `48c88f236`) — 14 tệp, CHƯA XEM tệp nào
+
+Lần sau so: `git diff --name-status b67c16ae8 origin/main`. Đã ghi đè cả 14 tệp bằng `git checkout origin/main -- <tệp>`.
+Không đổi `Core/` / `Corei/` / vỏ cũ / `help-sso.aspx` / `mapping.aspx`; `systemroot.js` hai bản trên host trùng bản máy (đã tải về so 11/11). `skin.py kiem` OK không cần `ap`.
+**Người dùng 11/11: "ghi lại pull"** — chỉ kéo + ghi sổ, chưa mở diff, chưa chuyển. Số theo phân hệ (đều đã chuyển): Sinh viên 7 · Tốt nghiệp 4 · KHCT 2 · Học bổng 1.
+
+| Phân hệ | Màn | Tệp gốc (+thêm / −bớt) | Trạng thái |
+|---|---|---|---|
+| Sinh viên (đã chuyển) | `hoso/quanlytoanbo` | `ApisSinhVien/Modules/hoso/html/quanlytoanbo.html` (+2/−2) + `script/quanlytoanbo.js` (+2/−2) | chưa xem |
+| Sinh viên (đã chuyển) | `hoso/hoso_capnhat` | `ApisSinhVien/Modules/hoso/html/hoso_capnhat.html` (+1/−1) | chưa xem |
+| Sinh viên (đã chuyển) | `hoso/hoso_danhsach` | `ApisSinhVien/Modules/hoso/html/hoso_danhsach.html` (+1/−1) | chưa xem |
+| Sinh viên (đã chuyển) | `hoso/hoso_taomoi` | `ApisSinhVien/Modules/hoso/html/hoso_taomoi.html` (+2/−2) | chưa xem |
+| Sinh viên (đã chuyển) | `hoso/xemhoso` | `ApisSinhVien/Modules/hoso/html/xemhoso.html` (+1/−1) | chưa xem |
+| Sinh viên (đã chuyển) | `hoso` — script dùng chung `zoneEditModal_inject.js` (không có tệp cùng tên trong `_v2`) | `ApisSinhVien/Modules/hoso/script/zoneEditModal_inject.js` (+54/−7) | chưa xem |
+| Tốt nghiệp (đã chuyển) | `vanbang/quanlythongtin` | `ApisTotNghiep/Modules/vanbang/html/quanlythongtin.html` (+1/−1) + `script/quanlythongtin.js` (+93/−10) | chưa xem |
+| Tốt nghiệp (đã chuyển) | `vanbang/thuchienin` | `ApisTotNghiep/Modules/vanbang/html/thuchienin.html` (+12/−2) + `script/thuchienin.js` (+17/−4) | chưa xem |
+| KHCT (đã chuyển) | `phanlichgiang/quantri_phanlichgiang` | `ApisKeHoachChuongTrinh/Modules/phanlichgiang/html/quantri_phanlichgiang.html` (+25/−1) + `script/quantri_phanlichgiang.js` (+5/−0) | chưa xem |
+| Học bổng (đã chuyển) | `kehoach/kehoach` | `ApisHocBong/Modules/kehoach/script/kehoach.js` (+1/−1) | chưa xem |
+
+---
+
 ## Lần kéo 16 (9/11) — mốc gốc nay là `48c88f236` (mốc cũ `6a8567efc`) — 10 tệp, ĐÃ XEM HẾT 4 màn (người dùng "chuyển v2" 9/11, 2 tác tử con cho 2 màn mới)
 
 Lần sau so: `git diff --name-status 48c88f236 origin/main`. Đã ghi đè 7 tệp màn bằng `git checkout origin/main -- <tệp>`.

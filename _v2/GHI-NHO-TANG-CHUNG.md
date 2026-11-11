@@ -140,7 +140,7 @@ CLAUDE.md mục 10 chỉ còn bản tóm tắt; chi tiết từng khối (menu, 
   (kế thừa `Apis.LoginVT.Index` → `user_id` / `fullname` / `tokenjwt` / `app_id`; người đăng nhập = `HttpContext.User` kiểu `CustomPrincipal`,
   có `Username`) phát JWT RS256 90 giây tự dựng rồi tự POST sang Help; `_v2/help-jwks.aspx` = khoá công khai (trang công khai, đăng ký với
   Help). Cấu hình + khoá RSA ở `App_Data/help-sso/` của ứng dụng cha (tự tạo lần đầu; `iss` = mã trường `ums-qtdh`, `helpUrl` =
-  `https://con98.api-apis.com/help-master` — Help dùng chung nhiều trường, phân biệt bằng `iss`). Mục menu người dùng "Soạn bài hướng dẫn":
+  `https://help.api-apis.com` — Help dùng chung nhiều trường, phân biệt bằng `iss`). Mục menu người dùng "Soạn bài hướng dẫn":
   `site.config.js` `help.sso`, `chrome.js` + `app.js soanBaiChoPhep`. **ĐÃ CHẠY ĐÚNG trên host ở chế độ `?xem=1`** (48 mã `MAVAITRO`, email,
   tên); CHƯA gửi thật sang Help (Help chưa triển khai). Kiểm: `node _harness/kiem-host/sso-xem.js` (chỉ đọc). Bảng mã vai trò gửi Help:
   `_harness/gui-help/bang-ma-vai-tro.md`. Hướng dẫn: `_v2/TRIEN-KHAI.md` mục 9. **Bài học đã trả giá (đừng lặp lại):**

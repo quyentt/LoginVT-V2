@@ -167,7 +167,7 @@ window.UMS_CONFIG = {
        trong CSDL (cột DUONGDANHUONGDANSUDUNG) thì mở link đó. Có `url` rồi thì Cổng Help được ưu tiên.
        ===================================================================== */
   help: {
-    url: "https://con98.api-apis.com/help-master/mo?ma={functionId}&v={version}",   // Help dời sang /help thì đổi ở đây
+    url: "https://help.api-apis.com/mo?ma={functionId}&v={version}",   // Help đổi địa chỉ thì đổi ở đây (11/11: help.api-apis.com, bỏ /help-master)
     app: "UMS",          // mã ứng dụng bên Help đặt cho hệ này — mẫu link hiện không dùng
     version: "2",        // phiên bản phần mềm gửi sang Help: "2" = giao diện mới _v2
     lang: "vi",

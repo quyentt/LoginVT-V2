@@ -38,6 +38,30 @@
         /* Firefox 3.5 - 3.6 */
         box-shadow: 1px 1px 1px 1px #ccc;
     }
+
+    /* Danh sach lich phan giang: them thanh cuon doc.
+       assets/css/all.css:7181 ep `.scroll-table-x { overflow-y: hidden !important }`
+       -> de inline overflow-y cua toggle_Edit -> bang bi cat, khong cuon duoc. Va scoped theo id. */
+    .aps-KeHoachChuongTrinh #zoneEdit #table-container {
+        overflow-y: auto !important;
+        overflow-x: auto !important;
+    }
+    /* Giu tieu de bang khi cuon doc (thead 2 dong: dong 2 dinh duoi dong 1, chieu cao do bang JS) */
+    .aps-KeHoachChuongTrinh #zoneEdit #tblLichPhanGiang thead th {
+        position: sticky;
+        top: 0;
+        z-index: 3;
+        background: #fff;
+        box-shadow: inset 0 -1px 0 #ddd;
+    }
+    .aps-KeHoachChuongTrinh #zoneEdit #tblLichPhanGiang thead tr:nth-child(2) th {
+        top: var(--plg-thead-h1, 34px);
+    }
+    /* Ban sao header cu (moveScroll trong JS, position:fixed theo man hinh) dung cung luc voi
+       sticky se bi lech/de len thanh tren -> an di, khong xoa code */
+    .aps-KeHoachChuongTrinh #zoneEdit #clone {
+        display: none !important;
+    }
 </style>
 <section class="content aps-KeHoachChuongTrinh">
     <div class="row aps-quantri_phanlichgiang">
@@ -554,7 +578,7 @@
 </div>
 
 <!-- page script -->
-<script src="modules/phanlichgiang/script/quantri_phanlichgiang.js?v=1.0.0.1"></script>
+<script src="modules/phanlichgiang/script/quantri_phanlichgiang.js?v=1.0.0.2"></script>
 <script type="text/javascript">
     var main_doc = {};
     main_doc['PhanLichGiang'] = new PhanLichGiang();

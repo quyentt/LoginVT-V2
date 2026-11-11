@@ -85,6 +85,37 @@ QuanLyThongTin.prototype = {
         $("[id$=chkSelectAll_QuanLyThongTin]").on("click", function () {
             edu.util.checkedAll_BgRow(this, { table_id: "tblQuanLyThongTin" });
         });
+        // Sinh số hiệu / số vào sổ: chạy qua form tiến trình chung (Corei/processrun.js, edu.process) — tuần tự từng sinh viên,
+        // hiện kết quả từng dòng, Dừng / Chạy tiếp / Chạy lại lỗi, xuất Excel. Bước 1 của form thay cho hộp "Bạn có chắc chắn...".
+        $("#btnSinhSoHieu").off('click').on('click', function () {
+            var arrSelected = me._selected("tblQuanLyThongTin", me.dtQuanLyThongTin);
+            if (arrSelected.length == 0) {
+                edu.system.alert("Vui lòng chọn đối tượng cần sinh số hiệu!");
+                return;
+            }
+            me._run({
+                title: "Sinh tự động số hiệu văn bằng", unit: "sinh viên", fileName: "KetQuaSinhSoHieuVanBang",
+                concurrency: 1,
+                items: arrSelected, columns: me._colsSinhVien(),
+                request: function (it) { return me.req_SinhTuDongSoHieu(it.ID); },
+                refresh: function () { me.getList_QuanLyThongTin(); }
+            });
+        });
+        $("#btnSinhSoVaoSo").off('click').on('click', function () {
+            var arrSelected = me._selected("tblQuanLyThongTin", me.dtQuanLyThongTin);
+            if (arrSelected.length == 0) {
+                edu.system.alert("Vui lòng chọn đối tượng cần sinh số vào sổ!");
+                return;
+            }
+            me._run({
+                title: "Sinh tự động số vào sổ cấp bằng", unit: "sinh viên", fileName: "KetQuaSinhSoVaoSo",
+                concurrency: 1,
+                items: arrSelected, columns: me._colsSinhVien(),
+                request: function (it) { return me.req_SinhSoVaoSo(it.ID); },
+                refresh: function () { me.getList_QuanLyThongTin(); }
+            });
+        });
+        /* Bản cũ (hộp xác nhận + thanh % trong alert, $("#btnYes").click gắn chồng mỗi lần bấm) — giữ lại để tham khảo
         $("#btnSinhSoHieu").click(function () {
             var arrChecked_Id = edu.util.getArrCheckedIds("tblQuanLyThongTin", "checkX");
             if (arrChecked_Id.length == 0) {
@@ -95,12 +126,7 @@ QuanLyThongTin.prototype = {
             $("#btnYes").click(function (e) {
                 edu.system.alert('<div id="zoneprocessQuanLyThongTin"></div>');
                 edu.system.genHTML_Progress("zoneprocessQuanLyThongTin", arrChecked_Id.length);
-                //edu.system.iGioiHanLuong = 1;
-                //me.save_SinhTuDongSoHieu(arrChecked_Id[i]);
                 me.save_SinhTuDongSoHieu(arrChecked_Id, 0);
-                //for (var i = 0; i < arrChecked_Id.length; i++) {
-                //    me.save_SinhTuDongSoHieu(arrChecked_Id[i]);
-                //}
             });
         });
         $("#btnSinhSoVaoSo").click(function () {
@@ -114,12 +140,9 @@ QuanLyThongTin.prototype = {
                 edu.system.alert('<div id="zoneprocessQuanLyThongTin"></div>');
                 edu.system.genHTML_Progress("zoneprocessQuanLyThongTin", arrChecked_Id.length);
                 me.save_SinhSoVaoSo(arrChecked_Id, 0);
-                //edu.system.iGioiHanLuong = 1;
-                //for (var i = 0; i < arrChecked_Id.length; i++) {
-                //    me.save_SinhSoVaoSo(arrChecked_Id[i]);
-                //}
             });
         });
+        */
 
         $("#btnGanSoVaoSoTrucTiep").off('click').on('click', function () {
             var arrChecked_Id = edu.util.getArrCheckedIds("tblQuanLyThongTin", "checkX");
@@ -415,7 +438,10 @@ QuanLyThongTin.prototype = {
         edu.util.toggle_overide("zone-bus", "zoneEdit");
     },
     loadBtnQuanLyThongTin: function (data) {
-        main_doc.QuanLyThongTin.dtQuanLyThongTin = data;
+        // Danh mục tình trạng duyệt: lưu biến riêng — trước đây ghi đè dtQuanLyThongTin (cache danh sách SV) nên tùy API nào về sau
+        // mà nút Sửa / Sinh số không tìm thấy dòng đã tick
+        //main_doc.QuanLyThongTin.dtQuanLyThongTin = data;
+        main_doc.QuanLyThongTin.dtTinhTrangDuyet = data;
         var row = "";
         row += '<div style="margin-left: auto; margin-right: auto; width: ' + ((data.length) * 90) + 'px">';
         for (var i = 0; i < data.length; i++) {
@@ -913,6 +939,63 @@ QuanLyThongTin.prototype = {
             fakedb: [
             ]
         }, false, false, false, null);
+    },
+    /*------------------------------------------
+    --Discription: Form tiến trình chung (Corei/processrun.js, edu.process): trang chỉ khai báo danh sách bản ghi
+    -- + hàm dựng yêu cầu (req_*); form lo chạy tuần tự, kết quả từng dòng, lỗi, tổng hợp, xuất Excel.
+    -------------------------------------------*/
+    // Giữ nguyên action + tham số của save_SinhTuDongSoHieu (GET TN_KetQua_CongNhan_VB/SinhSoHieuVanBang)
+    req_SinhTuDongSoHieu: function (strTN_KetQua_CongNhan_VB_Id) {
+        var obj_save = {
+            'action': 'TN_KetQua_CongNhan_VB/SinhSoHieuVanBang',
+            'strNgayThucHien': edu.util.getValById('txtAAAA'),
+            'strPhanLoai_Id': edu.util.getValById('dropSearch_PhanLoai'),
+            'strTN_KetQua_CongNhan_VB_Id': strTN_KetQua_CongNhan_VB_Id,
+            'strNguoiThucHien_Id': edu.system.userId,
+        };
+        return { action: obj_save.action, type: "GET", contentType: true, data: obj_save };
+    },
+    // Giữ nguyên action + tham số của save_SinhSoVaoSo (GET TN_KetQua_CongNhan_VB/SinhSoVaoSo)
+    req_SinhSoVaoSo: function (strTN_KetQua_CongNhan_VB_Id) {
+        var obj_save = {
+            'action': 'TN_KetQua_CongNhan_VB/SinhSoVaoSo',
+            'strNgayThucHien': edu.util.getValById('txtAAAA'),
+            'strPhanLoai_Id': edu.util.getValById('dropSearch_PhanLoai'),
+            'strTN_KetQua_CongNhan_VB_Id': strTN_KetQua_CongNhan_VB_Id,
+            'strNguoiThucHien_Id': edu.system.userId,
+        };
+        return { action: obj_save.action, type: "GET", contentType: true, data: obj_save };
+    },
+    _run: function (cfg) {
+        if (!edu.process) {
+            edu.system.alert("Chưa cập nhật form tiến trình (thiếu Corei/processrun.js hoặc indexi.aspx).", "w");
+            return;
+        }
+        if (cfg.filters === undefined) cfg.filters = this._filters();
+        edu.process.run(cfg);
+    },
+    // Điều kiện đang chọn trên màn hình -> dòng "Điều kiện áp dụng" của form và file Excel xuất ra
+    _filters: function () {
+        return [
+            [{ label: "Phân loại", id: "dropSearch_PhanLoai" }, { label: "Kế hoạch", id: "dropSearch_KeHoach" }, { label: "Quyết định", id: "dropSearch_QuyetDinh" }],
+            [{ label: "Hệ đào tạo", id: "dropSearch_HeDaoTao" }, { label: "Khóa đào tạo", id: "dropSearch_KhoaDaoTao" }, { label: "Chương trình", id: "dropSearch_ChuongTrinh" }]
+        ];
+    },
+    // Các dòng đang tick ở bảng strTableId (tra đủ dữ liệu từ arrData theo ID)
+    _selected: function (strTableId, arrData) {
+        if (edu.process) return edu.process.selectedRows(strTableId, arrData);
+        var map = {};
+        (arrData || []).forEach(function (r) { map[r.ID] = r; });
+        return edu.util.getArrCheckedIds(strTableId, "checkX").map(function (id) { return map[id]; }).filter(function (r) { return !!r; });
+    },
+    _colsSinhVien: function () {
+        return [
+            { header: "Mã số", render: function (r) { return r.QLSV_NGUOIHOC_MASO; } },
+            { header: "Họ tên", render: function (r) { return edu.util.returnEmpty(r.QLSV_NGUOIHOC_HODEM) + " " + edu.util.returnEmpty(r.QLSV_NGUOIHOC_TEN); } },
+            { header: "Lớp", render: function (r) { return r.DAOTAO_LOPQUANLY_TEN; } },
+            { header: "Số hiệu bằng (trước)", render: function (r) { return r.SOHIEUBANG; } },
+            { header: "Số vào sổ (trước)", render: function (r) { return r.SOVAOSOCAPBANG; } }
+        ];
     },
     save_SinhQuyetDinh: function (strTN_KetQua_CongNhan_VB_Id, objForm) {
         var me = this;

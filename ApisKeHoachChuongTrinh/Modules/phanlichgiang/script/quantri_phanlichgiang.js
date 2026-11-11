@@ -1183,6 +1183,11 @@ PhanLichGiang.prototype = {
         for (var i = 0; i < me.dtHoatDong.length; i++) {
             $("#zoneSoTietLichGiang").append(me.dtHoatDong[i].TENHINHTHUCHOC + " : <b>" + me.dtHoatDong[i].SOLUONG + "; </b>");
         }
+        // Sticky thead 2 dong: dong 2 phai dinh ngay duoi dong 1 -> do chieu cao dong 1 that
+        var iThead_H1 = $("#tblLichPhanGiang thead tr:first").outerHeight();
+        if (iThead_H1 > 0) {
+            document.getElementById("tblLichPhanGiang").style.setProperty("--plg-thead-h1", iThead_H1 + "px");
+        }
         function moveScroll() {
             var scroll = $("#tblLichPhanGiang").parent().scrollTop();
             var anchor_top = $("#tblLichPhanGiang").offset().top;

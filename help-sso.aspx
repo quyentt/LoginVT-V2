@@ -60,7 +60,7 @@
     public class CauHinh
     {
         public string iss = "ums-qtdh";                                 // mã trường — cố định, KHÔNG phải địa chỉ web
-        public string helpUrl = "https://con98.api-apis.com/help-master";// gốc Cổng Help (đổi /help-master ↔ /help ở đây)
+        public string helpUrl = "https://help.api-apis.com";// gốc Cổng Help (11/11: help.api-apis.com, bỏ /help-master; host đè bằng App_Data/help-sso/help-sso.json)
         public string postPath = "/dang-nhap-truong";                    // đường nhận token của Help
         public string aud = "help-master";                               // Help KIỂM claim này, sai là 401
         public int ttlSeconds = 90;                                      // Help yêu cầu 60–120 giây

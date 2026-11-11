@@ -11,7 +11,7 @@
    GẮN VÀO VỎ — một thẻ script, đặt SAU các script của vỏ:
        <script src="assets/plugin/btn-yeucau-hotro/btn-yeucau-hotro.js"></script>
    Cấu hình (tuỳ chọn) — một trong hai cách:
-       window.UMS_HOTRO_CONFIG = { url: '…/help-master/ho-tro/gui', v: '2', text: 'Yêu cầu hỗ trợ' };
+       window.UMS_HOTRO_CONFIG = { url: '…/ho-tro/gui', v: '2', text: 'Yêu cầu hỗ trợ' };
        <script src="…/btn-yeucau-hotro.js" data-url="…" data-v="2" data-token-url="help-sso.aspx">
 
    Plugin làm ba việc như tài liệu (mục 10.4): đọc danh sách yêu cầu của người dùng (POST JSON tới cửa
@@ -47,13 +47,13 @@
     var cau = global.UMS_HOTRO_CONFIG || {};
 
     var CFG = {
-        url: cau.url || ds.url || 'https://con98.api-apis.com/help-master/ho-tro/gui',   // cửa nhận của Help (tài liệu mục 4)
-        listUrl: cau.listUrl || ds.listUrl || 'https://con98.api-apis.com/help-master/ho-tro/danh-sach',   // cửa danh sách (mục 10.2)
+        url: cau.url || ds.url || 'https://help.api-apis.com/ho-tro/gui',   // cửa nhận của Help (tài liệu mục 4)
+        listUrl: cau.listUrl || ds.listUrl || 'https://help.api-apis.com/ho-tro/danh-sach',   // cửa danh sách (mục 10.2)
         tokenUrl: cau.tokenUrl || ds.tokenUrl || 'help-sso.aspx',                          // phát token: cùng trang SSO, thêm json=1
         nhung: /^(1|true)$/i.test(String(cau.nhung != null ? cau.nhung : (ds.nhung || ''))), // mục 11: trao đổi ngay trong popup — BẬT khi Help báo trang nhúng đã lên máy chủ
-        nhungUrl: cau.nhungUrl || ds.nhungUrl || 'https://con98.api-apis.com/help-master/ho-tro/nhung',   // mở yêu cầu cũ: POST token + id + v vào iframe (11.7)
+        nhungUrl: cau.nhungUrl || ds.nhungUrl || 'https://help.api-apis.com/ho-tro/nhung',   // mở yêu cầu cũ: POST token + id + v vào iframe (11.7)
         an: /^(1|true)$/i.test(String(cau.an != null ? cau.an : (ds.an || ''))),   // TẠM ẨN (vỏ v1, 2/11): nạp xong không dựng nút nổi, không hỏi Help; console `btnYeuCauHoTro.hien()` mới dựng
-        huongDanUrl: cau.huongDanUrl || ds.huongDanUrl || 'https://con98.api-apis.com/help-master/huong-dan/khac/huong-dan-su-dung-chuc-nang-yeu-cau-ho-tro#thuc-hien',   // bài hướng dẫn dùng tính năng trên Help — nút "?" cạnh "Tạo yêu cầu mới" (người dùng 2/11)
+        huongDanUrl: cau.huongDanUrl || ds.huongDanUrl || 'https://help.api-apis.com/huong-dan/khac/huong-dan-su-dung-chuc-nang-yeu-cau-ho-tro#thuc-hien',   // bài hướng dẫn dùng tính năng trên Help — nút "?" cạnh "Tạo yêu cầu mới" (người dùng 2/11)
         kichCo: Number(cau.kichCo || ds.kichCo || 20),                                      // số dòng mỗi lần tải (Help tối đa 50)
         choMs: Number(cau.choMs || ds.choMs || 10000),                                      // chờ Help trả lời (danh sách / postMessage) tối đa
         choChiaSeMs: Number(cau.choChiaSeMs || ds.choChiaSeMs || 30000),                    // chờ người dùng trả lời hộp "Chia sẻ tab" khi chụp thật
@@ -889,7 +889,7 @@
             mauCache = [];
             for (var i = 0; i < 26; i++) {
                 var m = mans[i % mans.length], ng = new Date(Date.now() - i * 31 * 3600 * 1000), d = de[i % de.length] + (i >= de.length ? ' (lặp lại)' : '');
-                mauCache.push({ id: 'mau-' + i, maHienThi: 'HT-' + (240 - i), url: helpGoc() + '/help-master/van-de/mau-' + i, tieuDe: d, moTa: 'Mô tả mẫu của yêu cầu "' + d + '".',
+                mauCache.push({ id: 'mau-' + i, maHienThi: 'HT-' + (240 - i), url: helpGoc() + '/van-de/mau-' + i, tieuDe: d, moTa: 'Mô tả mẫu của yêu cầu "' + d + '".',
                                 ma: m[0], ten: m[1], v: nc.v || '2', trangThai: tt[(i * 3) % tt.length], ngayTao: gioVN(new Date(ng.getTime() - 5 * 3600 * 1000)), ngayCapNhat: gioVN(ng), _ng: ng.getTime(),
                                 uuTien: i % 6 === 0 ? 'cao' : (i % 6 === 3 ? 'thap' : 'binh-thuong'), soPhanHoiMoi: i % 4 === 1 ? 1 + (i % 3) : 0, cuaToi: i % 5 !== 3, nguoiTao: i % 5 === 3 ? 'Người khác cùng trường' : '' });
             }

@@ -2037,7 +2037,7 @@ KeHoachXuLy.prototype = {
                 
                 {
                     "mRender": function (nRow, aData) {
-                        return '<textarea id="inputxau' + aData.ID + '" style="height: 300px" class="form-control inputxau" name="' + edu.util.returnEmpty(aData.XAUDIEUKIEN) + '">' + edu.util.returnEmpty(aData.XAUDIEUKIEN) + '</textarea>';
+                        return '<textarea id="inputxau' + aData.ID + '" style="height: 600px !important" class="form-control inputxau" name="' + edu.util.returnEmpty(aData.XAUDIEUKIEN) + '">' + edu.util.returnEmpty(aData.XAUDIEUKIEN) + '</textarea>';
                     }
                 },
                 {

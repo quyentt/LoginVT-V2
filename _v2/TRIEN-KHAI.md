@@ -345,7 +345,7 @@ Mặc định của `help-sso.json` (sửa tay khi cài cho trường khác — 
 cố định, không phải địa chỉ web; Help dùng nó để chọn bộ khoá):
 
 ```json
-{ "iss": "ums-qtdh", "helpUrl": "https://con98.api-apis.com/help-master",
+{ "iss": "ums-qtdh", "helpUrl": "https://help.api-apis.com",
   "postPath": "/dang-nhap-truong", "aud": "help-master", "ttlSeconds": 90,
   "rolesClaim": "realm_access", "keyFile": "help-sso.key.xml",
   "apiHost": "", "iM": "AzzSystem",
@@ -355,7 +355,7 @@ cố định, không phải địa chỉ web; Help dùng nó để chọn bộ k
   "userFunc": "pkg_chung_quanlynguoidung.LayDanhSachNguoiDung", "emailColumn": "EMAIL" }
 ```
 
-Help dời từ `/help-master` sang `/help`: đổi `helpUrl` rồi lưu, không cần deploy lại.
+Help đổi địa chỉ (11/11/2026: `con98.api-apis.com/help-master` → `help.api-apis.com`): đổi `helpUrl` trong tệp này rồi lưu, không cần deploy lại. `aud` giữ `help-master`.
 Xoay khoá: xoá `help-sso.key.xml`, lần bấm sau tự sinh khoá mới; Help đọc lại JWKS trong
 10 phút.
 
