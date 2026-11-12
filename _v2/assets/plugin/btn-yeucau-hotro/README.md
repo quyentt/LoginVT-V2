@@ -42,6 +42,7 @@ Trước thẻ script, hoặc bằng `data-*` trên thẻ script, hoặc sửa `
   tokenUrl: "help-sso.aspx",                                          // trang phát token (POST roles + uid + json=1)
   v: "",                                                              // rỗng = theo vỏ (_v2: help.version; v1: "1")
   text: "Yêu cầu hỗ trợ",
+  textNhanVien: "Xử lý yêu cầu",                                      // chữ trên nút nổi khi Help báo đây là tài khoản hỗ trợ (mục 13.2 + 15)
   target: "help-portal",                                              // tên tab cố định, trùng tab nút "?"
   kichCo: 20,                                                         // dòng mỗi lần tải (Help tối đa 50)
   choMs: 10000,                                                       // chờ Help trả lời (danh sách / postMessage / help-san-sang) tối đa
@@ -78,8 +79,9 @@ Thử khi Help chưa có cửa nhận: `btnYeuCauHoTro.config.url = 'assets/plug
    **hiện** khi thiếu một trong hai, HOẶC khi đây là **yêu cầu đầu tiên** của người này (cửa danh sách `phamVi=toi` không lọc trả
    `tong = 0`, người dùng chốt 2/11) — lúc đó ô đã điền sẵn để kiểm lại. Số yêu cầu lấy từ lần tải bảng / hỏi tin mới gần nhất; chưa biết
    thì popup hỏi Help một lần (`kichCo = 1`); Help xác nhận `help-ho-tro-xong` thì +1 nên lần gửi sau không còn là "đầu tiên".
-   **Hướng dẫn nhanh** (4 slide, trước khi chụp) hiện khi trình duyệt này chưa xem (localStorage `yh-huongdan-v1`) HOẶC khi là yêu cầu
-   đầu tiên (`tong = 0`) — trường hợp sau mỗi phiên trang chỉ hiện một lần (Bỏ qua rồi bấm Tạo lại thì thôi). Xem lại: `btnYeuCauHoTro.huongDan()`.
+   **Thông báo lần đầu** (11/11, thay 4 slide "Hướng dẫn nhanh" đã bỏ): lúc vào ứng dụng, tài khoản chưa từng gửi yêu cầu (`tong = 0`)
+   thấy MỘT lần modal "Bạn có thể gửi yêu cầu hỗ trợ trực tiếp từ ứng dụng" với nút **Cách thực hiện** (= `huongDanUrl`). Nhớ theo tài khoản
+   ở localStorage `yh-thongbao-v1:<uid>`; tắt bằng `thongBao: false`; mở tay: `btnYeuCauHoTro.thongBao()`.
 4. **"Gửi nhanh"** (bước 3a): phát token MỚI → form `multipart/form-data` submit vào iframe ẩn trong popup → chờ `postMessage`
    `{ loai: "help-ho-tro-xong", ok, id, url, soTuongTu }` từ đúng origin Help (tối đa `choMs`) → báo "Đã gửi" kèm link Xem, chèn
    dòng mới lên đầu bảng (không gọi lại cửa danh sách). Quá hạn hoặc `ok = false` → báo lỗi, popup giữ nguyên để gửi lại.
@@ -96,6 +98,18 @@ Thử khi Help chưa có cửa nhận: `btnYeuCauHoTro.config.url = 'assets/plug
    - **Lối lui**: không có `help-san-sang` sau `choMs` → thông báo kèm nút **"Mở trong Help"** (mở `url` ở tab `help-portal`). Nút này luôn hiện
      khi đã có `url` (Help đề nghị, để trao đổi dài mở bản đầy đủ).
    - Dựng thử: iframe nạp `thu-nhung.html` (cùng thư mục); `btnYeuCauHoTro.moChat(dong)` mở trao đổi cho một dòng.
+6. **Tài khoản hỗ trợ của công ty** (tài liệu mục 13.2 + 15, 12/11): cửa danh sách trả `laNhanVien: true`, `urlHoTro`, `soDem`, `soTinMoi`
+   (`ds` luôn rỗng). Tài khoản này không gửi yêu cầu và không có danh sách trong phần mềm:
+   - Nút nổi đổi chữ thành `textNhanVien` ("Xử lý yêu cầu"), mang số `soDem` (yêu cầu Mới + Đang xử lý họ được xử lý; 0 thì không hiện),
+     đỏ + nảy khi `soTinMoi > 0`. Số mới theo lần hỏi định kỳ `hoiMs` (5 phút; Help giới hạn không dày hơn 30 giây).
+   - Bấm nút nổi (và `btnYeuCauHoTro.mo()` / `.tao()`) mở thẳng `urlHoTro` ở tab `help-portal` — không bảng, không popup gửi.
+   - Không hiện thông báo lần đầu (dù `tong = 0`).
+   - Mở bảng TRƯỚC khi plugin kịp biết: bảng giấu bộ lọc + nút tạo, chỉ còn câu "Tài khoản của bạn là tài khoản hỗ trợ" và nút
+     "Tới màn hình hỗ trợ". Chế độ nhúng nhận `help-loi` với `lyDo = "tai-khoan-ho-tro"` cũng hiện câu và nút đó.
+   - Thiếu trường (Help bản cũ) = tài khoản thường; Help đổi lại thành tài khoản thường thì nút tự trở về ở lần hỏi kế.
+   - Dựng thử: `btnYeuCauHoTro.config.mauNhanVien = true` rồi mở bảng (hoặc đặt `mauNhanVien: true` trong cấu hình trước khi nạp).
+7. **Yêu cầu bị gộp** (mục 14, 12/11): trạng thái `DA_GOP` chỉ tới qua `help-trang-thai` khi popup đang mở đúng yêu cầu đó — vẽ như
+   "Đã đóng" (nhãn "Đã gộp", xám, không dấu mức ảnh hưởng, không đếm tin mới), không sinh chip lọc vì cửa danh sách không trả mã này.
 
 ## Gọi Help
 
