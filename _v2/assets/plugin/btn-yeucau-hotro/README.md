@@ -42,7 +42,6 @@ Trước thẻ script, hoặc bằng `data-*` trên thẻ script, hoặc sửa `
   tokenUrl: "help-sso.aspx",                                          // trang phát token (POST roles + uid + json=1)
   v: "",                                                              // rỗng = theo vỏ (_v2: help.version; v1: "1")
   text: "Yêu cầu hỗ trợ",
-  textNhanVien: "Xử lý yêu cầu",                                      // chữ trên nút nổi khi Help báo đây là tài khoản hỗ trợ (mục 13.2 + 15)
   target: "help-portal",                                              // tên tab cố định, trùng tab nút "?"
   kichCo: 20,                                                         // dòng mỗi lần tải (Help tối đa 50)
   choMs: 10000,                                                       // chờ Help trả lời (danh sách / postMessage / help-san-sang) tối đa
@@ -100,12 +99,12 @@ Thử khi Help chưa có cửa nhận: `btnYeuCauHoTro.config.url = 'assets/plug
    - Dựng thử: iframe nạp `thu-nhung.html` (cùng thư mục); `btnYeuCauHoTro.moChat(dong)` mở trao đổi cho một dòng.
 6. **Tài khoản hỗ trợ của công ty** (tài liệu mục 13.2 + 15, 12/11): cửa danh sách trả `laNhanVien: true`, `urlHoTro`, `soDem`, `soTinMoi`
    (`ds` luôn rỗng). Tài khoản này không gửi yêu cầu và không có danh sách trong phần mềm:
-   - Nút nổi đổi chữ thành `textNhanVien` ("Xử lý yêu cầu"), mang số `soDem` (yêu cầu Mới + Đang xử lý họ được xử lý; 0 thì không hiện),
-     đỏ + nảy khi `soTinMoi > 0`. Số mới theo lần hỏi định kỳ `hoiMs` (5 phút; Help giới hạn không dày hơn 30 giây).
-   - Bấm nút nổi (và `btnYeuCauHoTro.mo()` / `.tao()`) mở thẳng `urlHoTro` ở tab `help-portal` — không bảng, không popup gửi.
+   - Nút nổi GIỮ chữ "Yêu cầu hỗ trợ" (người dùng chốt 12/11), mang số `soDem` (yêu cầu Mới + Đang xử lý họ được xử lý; 0 thì không
+     hiện), đỏ + nảy khi `soTinMoi > 0`. Số mới theo lần hỏi định kỳ `hoiMs` (5 phút; Help giới hạn không dày hơn 30 giây).
+   - Bấm nút nổi (và `btnYeuCauHoTro.mo()` / `.tao()`) vẫn mở bảng, nhưng bảng giấu bộ lọc + nút tạo, chỉ còn câu "Tài khoản của bạn là
+     tài khoản hỗ trợ", dòng "Có N yêu cầu đang chờ xử lý" và nút "Tới màn hình hỗ trợ" (mở `urlHoTro` ở tab `help-portal`). Không popup gửi.
    - Không hiện thông báo lần đầu (dù `tong = 0`).
-   - Mở bảng TRƯỚC khi plugin kịp biết: bảng giấu bộ lọc + nút tạo, chỉ còn câu "Tài khoản của bạn là tài khoản hỗ trợ" và nút
-     "Tới màn hình hỗ trợ". Chế độ nhúng nhận `help-loi` với `lyDo = "tai-khoan-ho-tro"` cũng hiện câu và nút đó.
+   - Chế độ nhúng nhận `help-loi` với `lyDo = "tai-khoan-ho-tro"` cũng hiện câu và nút đó.
    - Thiếu trường (Help bản cũ) = tài khoản thường; Help đổi lại thành tài khoản thường thì nút tự trở về ở lần hỏi kế.
    - Dựng thử: `btnYeuCauHoTro.config.mauNhanVien = true` rồi mở bảng (hoặc đặt `mauNhanVien: true` trong cấu hình trước khi nạp).
 7. **Yêu cầu bị gộp** (mục 14, 12/11): trạng thái `DA_GOP` chỉ tới qua `help-trang-thai` khi popup đang mở đúng yêu cầu đó — vẽ như

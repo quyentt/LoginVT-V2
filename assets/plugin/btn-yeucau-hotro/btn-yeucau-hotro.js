@@ -59,7 +59,6 @@
         choChiaSeMs: Number(cau.choChiaSeMs || ds.choChiaSeMs || 30000),                    // chờ người dùng trả lời hộp "Chia sẻ tab" khi chụp thật
         v: cau.v || ds.v || '',                                                             // rỗng = lấy theo vỏ (_v2: help.version), mặc định "2"
         text: cau.text || ds.text || 'Yêu cầu hỗ trợ',
-        textNhanVien: cau.textNhanVien || ds.textNhanVien || 'Xử lý yêu cầu',               // chữ trên nút nổi khi Help báo đây là tài khoản hỗ trợ (mục 13.2 + 15)
         mauNhanVien: !!(cau.mauNhanVien || ds.mauNhanVien),                                 // dựng thử: dữ liệu mẫu trả laNhanVien = true để xem nút của tài khoản hỗ trợ
         target: cau.target || ds.target || 'help-portal',                                   // tên tab cố định (trùng tab của nút "?")
         maxRong: Number(cau.maxRong || ds.maxRong || 1600),                                 // thu ảnh về ≤ 1600px bề ngang
@@ -496,10 +495,11 @@
     var soYeuCauToi = null;
     function ghiSoYeuCau(kq) { if (kq && kq.tong != null && !isNaN(Number(kq.tong))) soYeuCauToi = Number(kq.tong); }
     /* ---------- Tài khoản hỗ trợ của công ty (tài liệu mục 13.2 + 15, 12/11): cửa danh sách trả laNhanVien = true, urlHoTro, soDem,
-       soTinMoi (ds luôn rỗng). Tài khoản này KHÔNG gửi yêu cầu và không có danh sách trong phần mềm: nút nổi đổi chữ thành
-       CFG.textNhanVien, mang số soDem (yêu cầu Mới + Đang xử lý họ được xử lý), đỏ + nảy khi soTinMoi > 0; bấm nút là mở urlHoTro ở tab
-       help-portal — không bảng, không popup, không thông báo lần đầu. Ghi ở MỌI lời gọi cửa danh sách (layDanhSach); thiếu trường
-       (Help bản cũ) = tài khoản thường. Chưa kịp biết mà đã mở bảng thì bảng hiện câu báo + nút "Tới màn hình hỗ trợ". ---------- */
+       soTinMoi (ds luôn rỗng). Tài khoản này KHÔNG gửi yêu cầu và không có danh sách trong phần mềm. Nút nổi GIỮ chữ "Yêu cầu hỗ trợ"
+       (người dùng chốt 12/11), mang số soDem (yêu cầu Mới + Đang xử lý họ được xử lý), đỏ + nảy khi soTinMoi > 0. Bấm nút vẫn mở bảng,
+       nhưng bảng chỉ có câu "Tài khoản của bạn là tài khoản hỗ trợ", số đang chờ và nút "Tới màn hình hỗ trợ" (mở urlHoTro ở tab
+       help-portal) — không bộ lọc, không nút tạo, không popup gửi, không thông báo lần đầu. Ghi ở MỌI lời gọi cửa danh sách
+       (layDanhSach); thiếu trường (Help bản cũ) = tài khoản thường. ---------- */
     var nhanVien = null;   // { url, soDem, soTinMoi } hoặc null
     function soKhongAm(x) { x = Number(x); return x > 0 ? Math.floor(x) : 0; }
     function ghiNhanVien(j) {
@@ -509,23 +509,18 @@
             ? { url: /^https?:\/\//i.test(String(j.urlHoTro || '')) ? String(j.urlHoTro) : helpGoc() + '/ho-tro', soDem: soKhongAm(j.soDem), soTinMoi: soKhongAm(j.soTinMoi) }
             : null;
         if (nhanVien) veNutNhanVien();
-        else if (truoc) {   // quản trị Help đổi lại thành tài khoản thường: trả nút về như cũ
-            var fab = document.querySelector('.yh-fab'), chu = fab && fab.querySelector('span');
-            if (chu) chu.textContent = CFG.text;
-            datBaoMoi(0);
-        }
+        else if (truoc) datBaoMoi(0);   // quản trị Help đổi lại thành tài khoản thường: trả nút về như cũ
     }
     function veNutNhanVien() {
         var fab = document.querySelector('.yh-fab'), nv = nhanVien; if (!fab || !nv) return;
-        var chu = fab.querySelector('span'), so = fab.querySelector('.yh-fab__so');
-        if (chu) chu.textContent = CFG.textNhanVien;
+        var so = fab.querySelector('.yh-fab__so');
         if (nv.soDem > 0) {
             if (!so) { so = el('b', 'yh-fab__so'); fab.appendChild(so); }
             so.textContent = nv.soDem > 99 ? '99+' : String(nv.soDem);
         } else if (so && so.parentNode) so.parentNode.removeChild(so);
         fab.classList.toggle('is-moi', nv.soTinMoi > 0);
-        fab.title = CFG.textNhanVien + ' — ' + (nv.soDem > 0 ? nv.soDem + ' yêu cầu đang chờ xử lý' : 'không có yêu cầu đang chờ xử lý') +
-            (nv.soTinMoi > 0 ? ', ' + nv.soTinMoi + ' tin chưa đọc' : '') + '. Bấm để tới màn hình hỗ trợ trên Help';
+        fab.title = CFG.text + ' — tài khoản hỗ trợ: ' + (nv.soDem > 0 ? nv.soDem + ' yêu cầu đang chờ xử lý' : 'không có yêu cầu đang chờ xử lý') +
+            (nv.soTinMoi > 0 ? ', ' + nv.soTinMoi + ' tin chưa đọc' : '');
     }
     function moHoTro() { if (nhanVien) global.open(nhanVien.url, CFG.target); }
     function chuanHoSo(x) { x = x || {}; return { sdt: String(x.sdt || x.soDienThoai || '').trim(), donvi: String(x.donvi || x.donVi || x.phongBan || '').trim() }; }
@@ -802,7 +797,6 @@
 
     function moBang() {
         if (bang) { dongBang(); return; }
-        if (nhanVien) { moHoTro(); return; }   // tài khoản hỗ trợ: bấm nút là sang màn hình hỗ trợ của Help (mục 15)
         datBaoMoi(0);   // mở bảng = người dùng đã thấy tin mới: nút về màu thường (bảng tự tải danh sách có dòng chưa đọc)
         napCss();
         var ad = adapter(), nc = ad.nguCanh();
@@ -870,10 +864,12 @@
     function veDs() {
         var b = bang, h = b.box.querySelector('[data-yh="ds"]'), dm = {};
         b.dm.forEach(function (d) { dm[d.ma] = d; });
-        var nv = !!nhanVien;   // mở bảng trước khi biết đây là tài khoản hỗ trợ: giấu bộ lọc + nút tạo, chỉ còn câu báo và nút sang Help (13.2)
+        var nv = !!nhanVien;   // tài khoản hỗ trợ: giấu bộ lọc + nút tạo, chỉ còn câu báo, số đang chờ và nút sang Help (13.2 + 15)
         b.box.querySelector('.yh-loc').hidden = nv; b.box.querySelector('.yh-bang__foot').hidden = nv;
         if (nv) {
             h.innerHTML = '<div class="yh-trong"><i class="fa-light fa-headset"></i><div>Tài khoản của bạn là tài khoản hỗ trợ.</div>' +
+                (nhanVien.soDem > 0 ? '<div class="yh-trong__so">Có <b>' + nhanVien.soDem + '</b> yêu cầu đang chờ xử lý' +
+                    (nhanVien.soTinMoi > 0 ? ', <b>' + nhanVien.soTinMoi + '</b> tin chưa đọc' : '') + '.</div>' : '') +
                 '<button type="button" class="yh-btn yh-btn--chinh" data-yh="hoTro"><i class="fa-light fa-arrow-up-right-from-square"></i>Tới màn hình hỗ trợ</button></div>';
             return;
         }
@@ -1052,7 +1048,7 @@
 
     /* ---------- Nút nổi ---------- */
     function moTuNut() {
-        if (nhanVien) { moHoTro(); return; }
+        if (nhanVien) { if (!bang) moBang(); return; }   // tài khoản hỗ trợ không gửi yêu cầu: mở bảng có câu báo
         var fab = document.querySelector('.yh-fab'); if (fab) fab.classList.add('is-busy');
         chup().then(function (c) { moPopup(c, ''); }, function (e) { moPopup(null, e.message); })
               .then(function () { if (fab) fab.classList.remove('is-busy'); });
